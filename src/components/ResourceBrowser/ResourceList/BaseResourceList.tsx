@@ -57,6 +57,7 @@ import searchWorker from '@Config/searchWorker'
 
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import {
+    AI_BUTTON_CONFIG_MAP,
     DEFAULT_K8SLIST_PAGE_SIZE,
     K8S_EMPTY_GROUP,
     MANDATORY_NODE_LIST_HEADERS,
@@ -77,11 +78,12 @@ import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
-import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap } from './utils'
+import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap, getShowAIButton } from './utils'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
 const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const BaseResourceListContent = ({
     isLoading,
@@ -107,7 +109,6 @@ const BaseResourceListContent = ({
     addTab,
     hideBulkSelection = false,
     shouldOverrideSelectedResourceKind = false,
-    setWidgetEventDetails,
     lowercaseKindToResourceGroupMap,
     handleResourceClick: onResourceClick,
 }: BaseResourceListProps) => {
@@ -188,6 +189,14 @@ const BaseResourceListContent = ({
 
     // SORTING HOOK
     const { sortBy, sortOrder, handleSorting, clearFilters } = useStateFilters({ initialSortKey })
+
+    const gvkString = useMemo(
+        () =>
+            Object.values(selectedResource?.gvk || {})
+                .filter((value) => !!value)
+                .join('/'),
+        [selectedResource],
+    )
 
     const changePage = (pageNo: number) => {
         setResourceListOffset(pageSize * (pageNo - 1))
@@ -399,8 +408,15 @@ const BaseResourceListContent = ({
                 className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
-                {headers.map((columnName) =>
-                    columnName === 'name' ? (
+                {headers.map((columnName) => {
+                    const aiButtonConfig = AI_BUTTON_CONFIG_MAP[gvkString]
+                    const showAIButton =
+                        !!ExplainWithAIButton &&
+                        aiButtonConfig &&
+                        columnName === aiButtonConfig.column &&
+                        getShowAIButton(aiButtonConfig, resourceData[columnName] as string)
+
+                    return columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
                             className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
@@ -539,9 +555,26 @@ const BaseResourceListContent = ({
                                         )}
                                 </span>
                             </ConditionalWrap>
+                            {showAIButton && (
+                                <div className="ml-4">
+                                    <ExplainWithAIButton
+                                        isIconButton
+                                        intelligenceConfig={{
+                                            clusterId,
+                                            metadata: {
+                                                object: `${selectedResource?.gvk?.Kind}/${resourceData.name as string}`,
+                                                namespace: resourceData.namespace,
+                                                status: resourceData.status ?? '',
+                                            },
+                                            prompt: `Debug what's wrong with ${resourceData.name as string}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
+                                            analyticsCategory: 'AI_RB_RESOURCE',
+                                        }}
+                                    />
+                                </div>
+                            )}
                         </div>
-                    ),
-                )}
+                    )
+                })}
             </div>
         )
     }
@@ -584,7 +617,7 @@ const BaseResourceListContent = ({
                         filteredData={filteredResourceList.slice(resourceListOffset, resourceListOffset + pageSize)}
                         handleResourceClick={handleResourceClick}
                         searchText={searchText}
-                        setWidgetEventDetails={setWidgetEventDetails}
+                        clusterId={clusterId}
                     />
                 ) : (
                     <div ref={resourceListRef} className="scrollable-resource-list dc__overflow-auto">

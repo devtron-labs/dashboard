@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { useMemo } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
 import { AppStatus, AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
@@ -22,11 +22,18 @@ import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-hel
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
 import './appDetails.scss'
+import { importComponentFromFELibrary } from '@Components/common'
+import { getAppTypeCategory } from './utils'
+
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
     const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
-    const displayMessage = message && (appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isFluxCDApp)
+    const isStatusHealthy = useMemo(() => status.toLowerCase() === 'healthy', [status])
+
+    const deploymentObject = appDetails.resourceTree?.nodes?.find((node) => node.kind === 'Deployment' || 'Rollout')
+    const debugObject = `${deploymentObject?.kind}/${deploymentObject?.name}`
 
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
@@ -38,36 +45,42 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
 
     const renderBottomContainer = () => {
         return (
-            <div className="flexbox dc__content-space w-100">
-                {displayMessage && (
+            <div className="flexbox dc__content-space dc__gap-4 w-100">
+                {isStatusHealthy && message && (
                     <Tippy className="default-tt dc__mxw-200-imp" placement="bottom" content={message} arrow={false}>
                         <div className="app-details-info-card__bottom-container__message fs-12 fw-4 dc__ellipsis-right dc__mxw-175">
                             {message}
                         </div>
                     </Tippy>
                 )}
-                <div
-                    className={`app-details-info-card__bottom-container__details fs-12 fw-6 ${
-                        displayMessage ? 'ml-4' : ''
-                    }`}
-                >
-                    Details
-                </div>
+                <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
+                {!isStatusHealthy && (deploymentObject || message) && (
+                    <ExplainWithAIButton
+                        intelligenceConfig={{
+                            clusterId: appDetails.clusterId,
+                            metadata: {
+                                ...(deploymentObject ? {debugObject} : {message}),
+                                namespace: appDetails.namespace,
+                                status,
+                            },
+                            prompt: `Debug ${message ?? 'error'} ${deploymentObject ? `of ${debugObject}`: ''} in ${appDetails.namespace}`,
+                            analyticsCategory: `AI_${getAppTypeCategory(appDetails.appType)}_APP_STATUS`,
+                        }}
+                    />
+                )}
             </div>
         )
     }
 
     if (cardLoading) {
-        return <LoadingCard wider={displayMessage} />
+        return <LoadingCard />
     }
 
     return (
         <div
             data-testid="app-status-card"
             onClick={showApplicationDetailedModal}
-            className={`app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 ${
-                displayMessage ? 'w-250' : 'w-200'
-            }`}
+            className="app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">

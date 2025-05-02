@@ -36,6 +36,10 @@
     &--col-3 {
         grid-template-columns: 1fr 1fr 20px;
     }
+
+    &.explain-ai-button {
+        grid-template-columns: 1fr 1fr 32px 20px !important;
+    }
 }
 
 .ephemeral-delete-button .dc__hover-color-r500 {

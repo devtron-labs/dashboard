@@ -48,7 +48,6 @@ export const K8SResourceList = ({
     renderRefreshBar,
     isOpen,
     updateK8sResourceTab,
-    setWidgetEventDetails,
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
@@ -130,11 +129,12 @@ export const K8SResourceList = ({
             group={group}
             addTab={addTab}
             hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
-            setWidgetEventDetails={setWidgetEventDetails}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             handleResourceClick={handleResourceClick}
         >
-            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
+            {PodRestart && (
+                <PodRestart aiWidgetAnalyticsEvent="AI_RB_POD_RESTART" rbacPayload={getPodRestartRBACPayload()} />
+            )}
         </BaseResourceList>
     )
 }

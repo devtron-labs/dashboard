@@ -22,7 +22,7 @@ import {
     OPTIONAL_NODE_LIST_HEADERS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { K8SResourceListType } from '../Types'
+import { K8SResourceListType, ShowAIButtonConfig } from '../Types'
 import { ResourceListUrlFiltersType } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
@@ -87,4 +87,11 @@ export const getFirstResourceFromKindResourceMap = (
     return Object.values(lowercaseKindToResourceGroupMap).find(
         (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
+}
+
+export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, value: string) => {
+    if (aiButtonConfig.includeValues) {
+        return aiButtonConfig.includeValues.has(value)
+    }
+    return !aiButtonConfig.excludeValues.has(value)
 }

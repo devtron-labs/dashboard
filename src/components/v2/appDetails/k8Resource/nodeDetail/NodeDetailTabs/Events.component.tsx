@@ -32,6 +32,8 @@ const EventsComponent = ({
     isDeleted,
     isResourceBrowserView,
     selectedResource,
+    clusterId,
+    aiWidgetEventDetails,
 }: ResourceInfoActionPropsType) => {
     const params = useParams<{
         actionName: string
@@ -89,7 +91,14 @@ const EventsComponent = ({
         }
 
         if (events.length) {
-            return <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
+            return (
+                <EventsTable
+                    loading={loading}
+                    eventsList={events}
+                    clusterId={clusterId}
+                    aiWidgetAnalyticsEvent={aiWidgetEventDetails}
+                />
+            )
         }
 
         return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />

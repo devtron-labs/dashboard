@@ -20,3 +20,5 @@ export enum ApplicationsGAEvents {
     REFRESH_ARGO_APP_RESOURCE_TREE = 'REFRESH_ARGO_APP_RESOURCE_TREE',
     REFRESH_FLUX_APP_RESOURCE_TREE = 'REFRESH_FLUX_APP_RESOURCE_TREE',
 }
+
+export const EXPLAIN_AI_EXCLUDED_STATUS = new Set(['healthy', 'running', 'completed', 'ready'])

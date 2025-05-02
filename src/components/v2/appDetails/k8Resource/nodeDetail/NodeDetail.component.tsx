@@ -39,6 +39,7 @@ import {
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
+import { getAppTypeCategory } from '@Components/app/details/appDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import { EDITOR_VIEW } from '@Config/constants'
@@ -565,6 +566,12 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
+                            aiWidgetEventDetails={
+                                isResourceBrowserView
+                                    ? 'AI_RB_EVENT'
+                                    : `AI_${getAppTypeCategory(appDetails.appType)}_EVENT`
+                            }
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>

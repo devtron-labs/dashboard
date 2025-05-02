@@ -31,6 +31,7 @@ import {
     AppEnvironment,
     SelectPickerOptionType,
     IconsProps,
+    AppType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
@@ -399,3 +400,17 @@ export const getEnvOptions = (env: AppEnvironment): SelectPickerOptionType<numbe
     label: env.environmentName,
     value: env.environmentId,
 })
+
+export const getAppTypeCategory = (appType: AppType) => {
+    switch (appType) {
+        case AppType.DEVTRON_APP:
+            return 'DA'
+        case AppType.DEVTRON_HELM_CHART:
+        case AppType.EXTERNAL_HELM_CHART:
+            return 'HA'
+        case AppType.EXTERNAL_ARGO_APP:
+            return 'ACG'
+        case AppType.EXTERNAL_FLUX_APP:
+            return 'FCD'
+    }
+}
