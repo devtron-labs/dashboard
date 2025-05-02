@@ -603,7 +603,7 @@ const ChartDeploymentHistory = ({
                     renderCodeEditor()}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && VirtualHistoryArtifact && (
                     <VirtualHistoryArtifact
-                        titleName={`${helmAppPackageName}.tgz`}
+                        titleName={helmAppPackageName}
                         params={paramsData}
                         status={deployment.status}
                     />
