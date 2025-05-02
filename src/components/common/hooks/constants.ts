@@ -31,3 +31,6 @@ export const FILE_READING_FAILED_STATUS = {
     },
     status: FileReaderStatus.FAILED,
 }
+
+export const ONLINE_BANNER_TIMEOUT = 3000
+export const INTERNET_CONNECTIVITY_INTERVAL = 30000

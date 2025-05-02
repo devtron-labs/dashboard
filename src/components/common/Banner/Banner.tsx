@@ -34,7 +34,8 @@ import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStac
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
 import { useOnline } from '../hooks'
-import { ANNOUNCEMENT_CONFIG, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
+import { ONLINE_BANNER_TIMEOUT } from '../hooks/constants'
+import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { useVersionUpdateReload } from './useVersionUpdateReload'
 import {
     getBannerConfig,

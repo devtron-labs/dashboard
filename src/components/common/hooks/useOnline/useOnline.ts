@@ -1,47 +1,56 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { getIsRequestAborted, showError, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getInternetConnectivity } from '@Services/service'
 
+import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
+
 export const useOnline = () => {
     const [online, setOnline] = useState(navigator.onLine)
-    const realTimeConnectivityAbortRef = useRef<AbortController>()
+    const abortControllerRef = useRef<AbortController>()
+    const timeoutRef = useRef<NodeJS.Timeout>()
     const { isAirgapped } = useMainContext()
 
-    const checkRealConnectivity = async () => {
-        realTimeConnectivityAbortRef.current = new AbortController()
-
-        const timeoutId = setTimeout(() => realTimeConnectivityAbortRef.current.abort(), 10000)
+    const checkConnectivity = async () => {
+        // Cancel any pending request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort()
+        }
+        const controller = new AbortController()
+        abortControllerRef.current = controller
 
         try {
-            await getInternetConnectivity(realTimeConnectivityAbortRef.current)
+            await getInternetConnectivity(abortControllerRef.current)
             setOnline(true)
-        } catch (error) {
-            if (getIsRequestAborted(error)) {
-                showError(error)
-            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (_) {
             setOnline(false)
         } finally {
-            clearTimeout(timeoutId)
+            if (!isAirgapped) {
+                timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+            }
         }
+    }
+    const handleOffline = () => setOnline(false)
+    const handleOnline = async () => {
+        // Verify connectivity when browser reports online
+        await checkConnectivity()
     }
 
     useEffect(() => {
         if (isAirgapped) return null
-        const handleOffline = () => setOnline(false)
 
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        checkRealConnectivity()
-
-        const intervalId = setInterval(checkRealConnectivity, 3000)
-
+        window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
 
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        checkConnectivity()
+
         return () => {
-            clearInterval(intervalId)
+            clearTimeout(timeoutRef.current)
             window.removeEventListener('offline', handleOffline)
-            realTimeConnectivityAbortRef.current?.abort()
+            abortControllerRef.current?.abort()
         }
     }, [isAirgapped])
 

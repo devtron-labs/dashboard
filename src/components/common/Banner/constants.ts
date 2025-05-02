@@ -35,5 +35,3 @@ export const ANNOUNCEMENT_CONFIG: AnnouncementConfigTypes = {
     buttonText: window._env_.ANNOUNCEMENT_BANNER_BUTTON_TEXT,
     buttonLink: window._env_.ANNOUNCEMENT_BANNER_BUTTON_LINK,
 }
-
-export const ONLINE_BANNER_TIMEOUT = 3000 // online banner timeout
