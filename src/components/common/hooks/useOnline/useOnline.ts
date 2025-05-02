@@ -27,7 +27,7 @@ export const useOnline = () => {
         } catch (_) {
             setOnline(false)
         } finally {
-            if (!isAirgapped) {
+            if (!isAirgapped && !online) {
                 timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
             }
         }
