@@ -32,7 +32,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
     const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
     const isStatusHealthy = useMemo(() => status.toLowerCase() === 'healthy', [status])
 
-    const deploymentObject = appDetails.resourceTree?.nodes?.find((node) => node.kind === 'Deployment' || 'Rollout')
+    const deploymentObject = appDetails.resourceTree?.nodes?.find((node) => node.kind === 'Deployment' || node.kind === 'Rollout')
     const debugObject = `${deploymentObject?.kind}/${deploymentObject?.name}`
 
     const showApplicationDetailedModal = (): void => {
