@@ -54,20 +54,24 @@ const bannerVariants = {
     enter: {
         y: -40,
         opacity: 0,
+        height: 0,
     },
     center: {
         y: 0,
         opacity: 1,
+        height: 'auto',
     },
     exitUp: (isBannerReplaced: boolean) =>
         !isBannerReplaced
             ? {
                   y: -40,
                   opacity: 0,
+                  height: 0,
               }
             : {
                   y: 40,
                   opacity: 0,
+                  height: 0,
               },
 }
 
@@ -168,6 +172,7 @@ export const Banner = () => {
         <AnimatePresence custom={!!bannerVariant}>
             {bannerVariant && config && (
                 <MotionDiv
+                    layout
                     key={bannerVariant}
                     variants={bannerVariants}
                     initial="enter"

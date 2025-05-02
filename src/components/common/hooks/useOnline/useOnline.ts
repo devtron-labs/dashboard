@@ -23,11 +23,9 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         try {
             await getInternetConnectivity(abortControllerRef.current)
             setOnline(true)
-            // TODO: Del this and uncomment code below
-            onOnline()
-            // if (!online) {
-            //     onOnline()
-            // }
+            if (!online) {
+                onOnline()
+            }
         } catch {
             setOnline(false)
         } finally {
