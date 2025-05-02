@@ -36,29 +36,34 @@ import {
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { BannerConfigProps, BannerConfigType } from './types'
 
+const getVariantWithIconMap = (iconName: IconsProps['name']): Record<BannerVariant, IconsProps['name']> => ({
+    [BannerVariant.INTERNET_CONNECTIVITY]: 'ic-disconnect',
+    [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
+    [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'ic-info-outline',
+    [BannerVariant.LICENSE]: iconName,
+    [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
+})
+
+const getVariantWithIconColorMap = (
+    type: InfoBlockProps['variant'],
+): Record<BannerVariant, IconBaseColorType | null> => ({
+    [BannerVariant.INTERNET_CONNECTIVITY]: null,
+    [BannerVariant.VERSION_UPDATE]: null,
+    [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
+    [BannerVariant.LICENSE]: null,
+    [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[type],
+})
 export const getBannerIcon = (
     bannerVariant: BannerVariant,
     type: InfoBlockProps['variant'],
     iconName: IconsProps['name'],
-) => {
-    const variantWithIconMap: Record<BannerVariant, IconsProps['name']> = {
-        [BannerVariant.INTERNET_CONNECTIVITY]: 'ic-disconnect',
-        [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
-        [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'ic-info-outline',
-        [BannerVariant.LICENSE]: iconName,
-        [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
-    }
-
-    const VariantWithIconColorMap: Record<BannerVariant, IconBaseColorType | null> = {
-        [BannerVariant.INTERNET_CONNECTIVITY]: null,
-        [BannerVariant.VERSION_UPDATE]: null,
-        [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
-        [BannerVariant.LICENSE]: null,
-        [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[type],
-    }
-
-    return <Icon name={variantWithIconMap[bannerVariant]} color={VariantWithIconColorMap[bannerVariant]} size={16} />
-}
+) => (
+    <Icon
+        name={getVariantWithIconMap(iconName)[bannerVariant]}
+        color={getVariantWithIconColorMap(type)[bannerVariant]}
+        size={16}
+    />
+)
 
 export const getBannerConfig = ({
     bannerVariant,
@@ -205,6 +210,5 @@ export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
 export const shouldShowAnnouncementBanner = (): boolean => {
     const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')
     const loginTime = localStorage.getItem('dashboardLoginTime')
-    if (!expiry) return true
-    return getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
+    return !expiry || getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
 }

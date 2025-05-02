@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { useOnline } from '@Components/common/hooks'
 import { SocketConnectionType } from '../../../../../../ClusterNodes/constants'
-import { useOnline } from '../../../../../../common'
 import { TERMINAL_TEXT } from './constants'
 import TerminalView from './Terminal'
 import { ConnectionStripMessageType, TerminalWrapperProps } from './terminal.type'

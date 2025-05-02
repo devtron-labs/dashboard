@@ -20,24 +20,20 @@ import { BannerVariant } from './constants'
 
 export interface BannerType {
     isDismissible?: boolean
-    showAnnouncementBannerOnly?: boolean
 }
-export interface BannerConfigProps {
+export interface BannerConfigProps extends BannerType {
     bannerVariant: Partial<BannerVariant>
     isOnline: boolean
     licenseType?: InfoBlockProps['variant']
     enterpriseLicenseBarMessage?: string
     hideInternetConnectivityBar?: boolean
-    isDismissible?: boolean
-    showAnnouncementBannerOnly?: boolean
     microservice: 'frontend' | 'backend' | null
 }
 
-export interface BannerConfigType {
+export interface BannerConfigType extends BannerType {
     text: string
     rootClassName: string
     icon?: string
-    isDismissible?: boolean
 }
 
 export interface AnnouncementConfigTypes {

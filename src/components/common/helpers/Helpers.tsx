@@ -51,7 +51,6 @@ import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Compo
 import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
 import { URLS } from '@Config/routes'
 import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
-import { getInternetConnectivity } from '@Services/service'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -391,57 +390,6 @@ export function deepEqual(configA: any, configB: any): boolean {
         showError(err)
         return true
     }
-}
-
-export function useOnline() {
-    const [online, setOnline] = useState(navigator.onLine)
-    const realTimeConnectivityAbortRef = useRef<AbortController | null>(null)
-    const { isAirgapped } = useMainContext()
-
-    useEffect(() => {
-        const handleOnline = () => setOnline(true)
-        const handleOffline = () => setOnline(false)
-
-        const checkRealConnectivity = async () => {
-            // Create a new AbortController for each check
-            const controller = new AbortController()
-            realTimeConnectivityAbortRef.current = controller
-
-            const timeoutId = setTimeout(() => controller.abort(), 5000)
-
-            try {
-                await getInternetConnectivity(controller)
-                setOnline(true)
-            } catch (error) {
-                   showError(error)
-                setOnline(false);
-            } finally {
-                clearTimeout(timeoutId)
-            }
-        }
-
-        if (!isAirgapped) {
-            checkRealConnectivity()
-        }
-
-        const intervalId = setInterval(() => {
-            if (!isAirgapped) {
-                checkRealConnectivity()
-            }
-        }, 30000)
-
-        window.addEventListener('online', handleOnline)
-        window.addEventListener('offline', handleOffline)
-
-        return () => {
-            clearInterval(intervalId)
-            window.removeEventListener('online', handleOnline)
-            window.removeEventListener('offline', handleOffline)
-            realTimeConnectivityAbortRef.current?.abort()
-        }
-    }, [isAirgapped])
-
-    return online
 }
 
 /**

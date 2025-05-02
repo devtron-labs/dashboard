@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { AnimatePresence } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 import {
+    AnimatePresence,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -31,8 +31,9 @@ import {
 
 import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 
-import { importComponentFromFELibrary, useOnline } from '../helpers/Helpers'
+import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
+import { useOnline } from '../hooks'
 import { ANNOUNCEMENT_CONFIG, BannerVariant, ONLINE_BANNER_TIMEOUT } from './constants'
 import { useVersionUpdateReload } from './useVersionUpdateReload'
 import {
@@ -88,7 +89,7 @@ export const Banner = () => {
         return null
     }
 
-    const incompatibleService = useMemo(() => getIncompatibleMicroserviceName(), [currentServerInfo])
+    const incompatibleService = getIncompatibleMicroserviceName()
     const {
         message: enterpriseLicenseBarMessage = '',
         type: licenseType = InfoBlockVariant.HELP,
@@ -130,7 +131,7 @@ export const Banner = () => {
 
     const actionButtons = getButtonConfig(activeBannerVariant, handleOpenLicenseDialog, handleAppUpdate)
     const isOffline = !(isOnline && activeBannerVariant === BannerVariant.INTERNET_CONNECTIVITY)
-    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(activeBannerVariant)} ${config.isDismissible ? 'dc__grid banner-row' : 'flex'} dc__position-abs`
+    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(activeBannerVariant)} ${config.isDismissible ? 'dc__grid banner--row dc__column-gap-16' : 'flex'} dc__position-abs`
 
     const shouldShowActionButton = () => {
         if (activeBannerVariant === BannerVariant.INTERNET_CONNECTIVITY) return isOffline
@@ -163,9 +164,9 @@ export const Banner = () => {
     }
 
     return (
-        <AnimatePresence>
-            {isVisible && activeBannerVariant && (
-                <div className="banner-container dc__position-rel dc__overflow-hidden">
+        <div className="banner dc__position-rel dc__overflow-hidden mh-28 h-28">
+            <AnimatePresence>
+                {isVisible && activeBannerVariant && (
                     <MotionDiv
                         key={`${activeBannerVariant}-${config?.text}`}
                         initial={{ y: -28 }}
@@ -178,7 +179,7 @@ export const Banner = () => {
                         className={baseClassName}
                         onAnimationComplete={handleAnimationComplete}
                     >
-                        {config.isDismissible && <div className="icon-dim-28" />}
+                        {config.isDismissible && <div className="icon-dim-28 dc__no-shrink" />}
                         <div className="py-4 flex dc__gap-12 dc__align-items-center">
                             <div className="flex dc__gap-8">
                                 {isOffline && getBannerIcon(activeBannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
@@ -208,8 +209,8 @@ export const Banner = () => {
                             />
                         )}
                     </MotionDiv>
-                </div>
-            )}
-        </AnimatePresence>
+                )}
+            </AnimatePresence>
+        </div>
     )
 }
