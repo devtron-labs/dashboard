@@ -12,7 +12,7 @@ export const useOnline = () => {
     const checkRealConnectivity = async () => {
         realTimeConnectivityAbortRef.current = new AbortController()
 
-        const timeoutId = setTimeout(() => realTimeConnectivityAbortRef.current.abort(), 2000)
+        const timeoutId = setTimeout(() => realTimeConnectivityAbortRef.current.abort(), 10000)
 
         try {
             await getInternetConnectivity(realTimeConnectivityAbortRef.current)
