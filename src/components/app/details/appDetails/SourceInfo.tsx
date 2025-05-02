@@ -326,7 +326,7 @@ export const SourceInfo = ({
         const paramsId = {
             appId: +params.appId,
             envId: +params.envId,
-            appName: `${appDetails?.helmPackageName || 'helm-package'}`,
+            appName: appDetails?.helmPackageName || 'helm-package',
         }
         if (AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />
