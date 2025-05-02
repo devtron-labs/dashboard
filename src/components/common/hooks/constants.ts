@@ -32,6 +32,5 @@ export const FILE_READING_FAILED_STATUS = {
     status: FileReaderStatus.FAILED,
 }
 
-// TODO: Revert to 3000 and 30000
-export const ONLINE_BANNER_TIMEOUT = 5000
-export const INTERNET_CONNECTIVITY_INTERVAL = 20000
+export const ONLINE_BANNER_TIMEOUT = 3000
+export const INTERNET_CONNECTIVITY_INTERVAL = 30000
