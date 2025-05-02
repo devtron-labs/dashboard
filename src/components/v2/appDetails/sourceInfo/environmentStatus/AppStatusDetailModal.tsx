@@ -28,7 +28,16 @@ import {
     ErrorBar,
     aggregateNodes,
     stopPropagation,
+    Button,
+    Icon,
+    ButtonVariantType,
+    ButtonStyleType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
+import { getAppTypeCategory } from '@Components/app/details/appDetails/utils'
+
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const AppStatusDetailModal = ({
     close,
@@ -40,6 +49,11 @@ const AppStatusDetailModal = ({
     showConfigDriftInfo = false,
 }: AppStatusDetailType) => {
     const _appDetails = IndexStore.getAppDetails()
+
+    const debugNode = _appDetails.resourceTree?.nodes?.find(
+        (node) => node.kind === 'Deployment' || node.kind === 'Rollout',
+    )
+    const debugObject = `${debugNode?.kind}/${debugNode?.name}`
 
     const nodes: AggregatedNodes = useMemo(() => {
         return aggregateNodes(_appDetails.resourceTree?.nodes || [], _appDetails.resourceTree?.podMetadata || [])
@@ -104,9 +118,32 @@ const AppStatusDetailModal = ({
                             {appStatusText || _appDetails.resourceTree?.status?.toUpperCase() || _appDetails.appStatus}
                         </div>
                     </div>
-                    <span className="cursor" onClick={close} data-testid="app-status-details-cross">
-                        <Close className="icon-dim-24" />
-                    </span>
+                    <div className="flex dc__gap-12">
+                        {_appDetails && ExplainWithAIButton && _appDetails.appStatus?.toLowerCase() !== 'healthy' && (
+                            <ExplainWithAIButton
+                                intelligenceConfig={{
+                                    clusterId: _appDetails.clusterId,
+                                    metadata: {
+                                        ...(debugNode ? { object: debugObject } : { message }),
+                                        namespace: _appDetails.namespace,
+                                        status: _appDetails.appStatus,
+                                    },
+                                    prompt: `Debug ${message ?? 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${_appDetails.namespace}`,
+                                    analyticsCategory: `AI_${getAppTypeCategory(_appDetails.appType)}_APP_STATUS`,
+                                }}
+                            />
+                        )}
+                        <Button
+                            dataTestId="app-status-details-cross"
+                            icon={<Icon name="ic-close-small" color={null} />}
+                            ariaLabel="close drawer"
+                            showAriaLabelInTippy={false}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.negativeGrey}
+                            onClick={close}
+                            size={ComponentSizeType.xs}
+                        />
+                    </div>
                 </div>
 
                 <div className="app-status-detail__body">

@@ -32,8 +32,10 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
     const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
     const isStatusHealthy = useMemo(() => status.toLowerCase() === 'healthy', [status])
 
-    const deploymentObject = appDetails.resourceTree?.nodes?.find((node) => node.kind === 'Deployment' || node.kind === 'Rollout')
-    const debugObject = `${deploymentObject?.kind}/${deploymentObject?.name}`
+    const debugNode = appDetails.resourceTree?.nodes?.find(
+        (node) => node.kind === 'Deployment' || node.kind === 'Rollout',
+    )
+    const debugObject = `${debugNode?.kind}/${debugNode?.name}`
 
     const showApplicationDetailedModal = (): void => {
         setDetailed && setDetailed(true)
@@ -54,16 +56,16 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                     </Tippy>
                 )}
                 <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
-                {!isStatusHealthy && (deploymentObject || message) && (
+                {!isStatusHealthy && (debugNode || message) && (
                     <ExplainWithAIButton
                         intelligenceConfig={{
                             clusterId: appDetails.clusterId,
                             metadata: {
-                                ...(deploymentObject ? {debugObject} : {message}),
+                                ...(debugNode ? { object: debugObject } : { message }),
                                 namespace: appDetails.namespace,
                                 status,
                             },
-                            prompt: `Debug ${message ?? 'error'} ${deploymentObject ? `of ${debugObject}`: ''} in ${appDetails.namespace}`,
+                            prompt: `Debug ${message ?? 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${appDetails.namespace}`,
                             analyticsCategory: `AI_${getAppTypeCategory(appDetails.appType)}_APP_STATUS`,
                         }}
                     />
