@@ -65,7 +65,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                                 namespace: appDetails.namespace,
                                 status,
                             },
-                            prompt: `Debug ${message ?? 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${appDetails.namespace}`,
+                            prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${appDetails.namespace}`,
                             analyticsCategory: `AI_${getAppTypeCategory(appDetails.appType)}_APP_STATUS`,
                         }}
                     />

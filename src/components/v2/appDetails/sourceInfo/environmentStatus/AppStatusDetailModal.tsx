@@ -128,7 +128,7 @@ const AppStatusDetailModal = ({
                                         namespace: _appDetails.namespace,
                                         status: _appDetails.appStatus,
                                     },
-                                    prompt: `Debug ${message ?? 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${_appDetails.namespace}`,
+                                    prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${_appDetails.namespace}`,
                                     analyticsCategory: `AI_${getAppTypeCategory(_appDetails.appType)}_APP_STATUS`,
                                 }}
                             />
