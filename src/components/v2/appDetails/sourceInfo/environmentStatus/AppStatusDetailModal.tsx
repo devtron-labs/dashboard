@@ -119,20 +119,23 @@ const AppStatusDetailModal = ({
                         </div>
                     </div>
                     <div className="flex dc__gap-12">
-                        {_appDetails && ExplainWithAIButton && _appDetails.appStatus?.toLowerCase() !== 'healthy' && (
-                            <ExplainWithAIButton
-                                intelligenceConfig={{
-                                    clusterId: _appDetails.clusterId,
-                                    metadata: {
-                                        ...(debugNode ? { object: debugObject } : { message }),
-                                        namespace: _appDetails.namespace,
-                                        status: _appDetails.appStatus,
-                                    },
-                                    prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${_appDetails.namespace}`,
-                                    analyticsCategory: `AI_${getAppTypeCategory(_appDetails.appType)}_APP_STATUS`,
-                                }}
-                            />
-                        )}
+                        {_appDetails &&
+                            ExplainWithAIButton &&
+                            _appDetails.appStatus?.toLowerCase() !== 'healthy' &&
+                            (debugNode || message) && (
+                                <ExplainWithAIButton
+                                    intelligenceConfig={{
+                                        clusterId: _appDetails.clusterId,
+                                        metadata: {
+                                            ...(debugNode ? { object: debugObject } : { message }),
+                                            namespace: _appDetails.namespace,
+                                            status: debugNode?.health?.status ?? _appDetails.appStatus,
+                                        },
+                                        prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${_appDetails.namespace}`,
+                                        analyticsCategory: `AI_${getAppTypeCategory(_appDetails.appType)}_APP_STATUS`,
+                                    }}
+                                />
+                            )}
                         <Button
                             dataTestId="app-status-details-cross"
                             icon={<Icon name="ic-close-small" color={null} />}
