@@ -95,15 +95,26 @@ export interface BulkCDDetailType
     resourceFilters?: FilterConditionsListType[]
 }
 
-export interface ResponseRowType {
+export type TriggerVirtualEnvResponseRowType =
+    | {
+          isVirtual: true
+          helmPackageName: string
+          cdWorkflowType: DeploymentNodeType
+      }
+    | {
+          isVirtual?: never
+          helmPackageName?: never
+          cdWorkflowType?: DeploymentNodeType
+      }
+
+export type ResponseRowType = {
     appId: number
     appName: string
     status: BulkResponseStatus
     statusText: string
     message: string
-    isVirtual?: boolean
     envId?: number
-}
+} & TriggerVirtualEnvResponseRowType
 
 interface BulkRuntimeParamsType {
     runtimeParams: Record<string, RuntimePluginVariables[]>
@@ -182,10 +193,10 @@ export interface TriggerResponseModalBodyProps {
     responseList: ResponseRowType[]
     isLoading: boolean
     isVirtualEnv?: boolean
-    envName?: string
 }
 
-export interface TriggerResponseModalFooterProps extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
+export interface TriggerResponseModalFooterProps
+    extends Pick<TriggerResponseModalBodyProps, 'isLoading' | 'responseList'> {
     onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
     closePopup: (e) => void
 }
@@ -194,7 +205,6 @@ export interface TriggerModalRowType {
     rowData: ResponseRowType
     index: number
     isVirtualEnv?: boolean
-    envName?: string
 }
 
 export interface WorkflowNodeSelectionType {
