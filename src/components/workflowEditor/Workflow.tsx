@@ -684,10 +684,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             }
         }
 
-        // In the SVG, the bottom elements are rendered on top.
-        // By reversing, this prevents the path elements (workflow arrows) from overlapping and covering other elements
-        // like the ApprovalNode button or add node button, which are rendered earlier.
-        return edgeList.reverse()
+        return edgeList
     }
 
     toggleShowDeleteDialog = () => {
