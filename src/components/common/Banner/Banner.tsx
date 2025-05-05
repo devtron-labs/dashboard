@@ -36,7 +36,7 @@ import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
 import { useOnline } from '../hooks'
 import { ONLINE_BANNER_TIMEOUT } from '../hooks/constants'
-import { useVersionUpdateReload } from '../hooks/useVersionUpdate/useVersionUpdateReload'
+import { useVersionUpdateReload } from '../hooks/useVersionUpdate'
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import {
     getBannerConfig,

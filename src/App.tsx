@@ -32,7 +32,7 @@ import {
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate/useVersionUpdateReload'
+import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
