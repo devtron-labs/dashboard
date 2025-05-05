@@ -84,7 +84,10 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         return 3
     })()
 
-    function handleNeedRefresh() {
+    const handleNeedRefresh = () => {
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
         setDoesNeedRefresh(true)
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
