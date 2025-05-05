@@ -785,6 +785,9 @@ export const convertToOptionsList = (
 }
 
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
+    if (componentName === 'ExplainWithAIButton') {
+        return null
+    }
     try {
         let component = defaultComponent || null
         if (!module) {
