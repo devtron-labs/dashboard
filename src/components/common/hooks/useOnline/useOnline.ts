@@ -7,7 +7,7 @@ import { getInternetConnectivity } from '@Services/service'
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 
 export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
-    const [online, setOnline] = useState(navigator.onLine)
+    const [online, setOnline] = useState(structuredClone(navigator.onLine))
     const abortControllerRef = useRef<AbortController>()
     const timeoutRef = useRef<NodeJS.Timeout>()
     const { isAirgapped } = useMainContext()
@@ -17,6 +17,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort()
         }
+
         const controller = new AbortController()
         abortControllerRef.current = controller
 
@@ -35,6 +36,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         }
     }
     const handleOffline = () => setOnline(false)
+
     const handleOnline = async () => {
         // Verify connectivity when browser reports online
         await checkConnectivity()
@@ -42,20 +44,23 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
 
     useEffect(() => {
         if (isAirgapped) return null
-
         window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
-
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        checkConnectivity()
+        // // Only check connectivity initially if browser reports offline
+        // if (!navigator.onLine) {
+        //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        //     checkConnectivity()
+        // }
 
         return () => {
-            clearTimeout(timeoutRef.current)
+            if (timeoutRef.current) {
+                clearTimeout(timeoutRef.current)
+            }
             window.removeEventListener('offline', handleOffline)
             window.removeEventListener('online', handleOnline)
             abortControllerRef.current?.abort()
         }
-    }, [isAirgapped])
+    }, [isAirgapped, handleOnline, handleOffline, checkConnectivity])
 
     return online
 }

@@ -36,9 +36,8 @@ import {
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { BannerConfigProps, BannerConfigType } from './types'
 
-const getVariantWithIconMap = (iconName: IconsProps['name']): Record<BannerVariant, IconsProps['name']> => ({
+const getVariantWithIconMap = (iconName: IconsProps['name']): Partial<Record<BannerVariant, IconsProps['name']>> => ({
     [BannerVariant.OFFLINE]: 'ic-disconnect',
-    [BannerVariant.ONLINE]: 'ic-info-outline',
     [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'ic-info-outline',
     [BannerVariant.LICENSE]: iconName,

@@ -179,9 +179,10 @@ export const Banner = () => {
                     initial="enter"
                     animate="center"
                     exit="exitUp"
+                    custom={!!bannerVariant}
                     transition={{
                         duration: 3,
-                        ease: 'easeIn',
+                        ease: 'easeOut',
                     }}
                     className={baseClassName}
                 >
