@@ -44,6 +44,7 @@ export interface ChartDeploymentDetail {
     deployedBy: string
     status: string
     message?: string
+    helmPackageName?: string
 }
 
 export interface RollbackReleaseRequest {
