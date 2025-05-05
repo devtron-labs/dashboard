@@ -336,7 +336,7 @@ export class Workflow extends Component<WorkflowProps> {
             if (ApprovalNodeEdge) {
                 return (
                     <ApprovalNodeEdge
-                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}-${edgeNode.endNode.id}`}
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
                         onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
