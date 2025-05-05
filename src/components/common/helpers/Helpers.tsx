@@ -1011,10 +1011,6 @@ export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
-export const reloadLocation = () => {
-    window.location.reload()
-}
-
 /**
  * @deprecated
  */

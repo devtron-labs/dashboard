@@ -25,6 +25,7 @@ import {
     Icon,
     InfoBlockVariant,
     MotionDiv,
+    noop,
     setActionWithExpiry,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -35,8 +36,8 @@ import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
 import { useOnline } from '../hooks'
 import { ONLINE_BANNER_TIMEOUT } from '../hooks/constants'
+import { useVersionUpdateReload } from '../hooks/useVersionUpdate/useVersionUpdateReload'
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
-import { useVersionUpdateReload } from './useVersionUpdateReload'
 import {
     getBannerConfig,
     getBannerIcon,
@@ -48,7 +49,7 @@ import {
 import './banner.scss'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
-const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', () => null, 'function')
+const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', noop, 'function')
 
 const bannerVariants = {
     enter: {
@@ -77,7 +78,7 @@ const bannerVariants = {
 
 export const Banner = () => {
     const { isAirgapped, currentServerInfo } = useMainContext()
-    const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
+    const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload({ showToast: false })
     const licenseConfig = useEnterpriseLicenseConfig()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
@@ -179,7 +180,7 @@ export const Banner = () => {
                     animate="center"
                     exit="exitUp"
                     transition={{
-                        duration: 1.5,
+                        duration: 3,
                         ease: 'easeIn',
                     }}
                     className={baseClassName}
