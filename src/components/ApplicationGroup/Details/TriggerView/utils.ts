@@ -14,7 +14,34 @@
  * limitations under the License.
  */
 
-import { BulkCIDetailType } from '../../AppGroup.types'
+import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
+
+import { BulkCDDetailType, BulkCIDetailType } from '../../AppGroup.types'
 
 export const getIsAppUnorthodox = (app: BulkCIDetailType): boolean =>
     app.isLinkedCI || app.isWebhookCI || app.isLinkedCD
+
+export const getIsNonApprovedImageSelected = (appList: BulkCDDetailType[]): boolean =>
+    appList.some((app) => {
+        if (!app.isExceptionUser) {
+            return false
+        }
+
+        return (app.material || []).some(
+            (material) => material.isSelected && !getIsMaterialApproved(material.userApprovalMetadata),
+        )
+    })
+
+export const getIsImageApprovedByDeployerSelected = (appList: BulkCDDetailType[]): boolean =>
+    appList.some((app) => {
+        if (!app.isExceptionUser) {
+            return false
+        }
+
+        return (app.material || []).some(
+            (material) =>
+                material.isSelected &&
+                !material.canApproverDeploy &&
+                material.userApprovalMetadata?.hasCurrentUserApproved,
+        )
+    })
