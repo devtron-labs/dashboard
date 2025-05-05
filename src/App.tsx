@@ -23,16 +23,21 @@ import {
     BreadcrumbStore,
     DevtronProgressing,
     ErrorScreenManager,
+    Icon,
+    refresh,
     showError,
+    ToastManager,
+    ToastVariantType,
     URLS as CommonURLS,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate/useVersionUpdateReload'
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
 import { validateToken } from './services/service'
-import { URLS } from './config'
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
 
 import './css/application.scss'
 
@@ -50,6 +55,36 @@ const App = () => {
 
     const location = useLocation()
     const { push } = useHistory()
+
+    const { bgUpdated, updateToastRef } = useVersionUpdateReload({})
+
+    useEffect(() => {
+        if (!bgUpdated) {
+            return
+        }
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
+
+        updateToastRef.current = ToastManager.showToast(
+            {
+                variant: ToastVariantType.info,
+                title: 'Update available',
+                description: 'This page has been updated. Please save any unsaved changes and refresh.',
+                buttonProps: {
+                    text: 'Reload',
+                    dataTestId: 'reload-btn',
+                    onClick: refresh,
+                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                },
+                icon: <Icon name="ic-sparkle-color" color={null} />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+            },
+            {
+                autoClose: false,
+            },
+        )
+    }, [bgUpdated])
 
     const isDirectApprovalNotification =
         location.pathname &&

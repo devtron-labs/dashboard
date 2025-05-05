@@ -4,17 +4,13 @@ import { useRegisterSW } from 'virtual:pwa-register/react'
 
 import {
     API_STATUS_CODES,
-    Icon,
     logExceptionToSentry,
     noop,
     refresh,
     ToastManager,
-    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
-
-export const useVersionUpdateReload = ({ showToast = true }: { showToast: boolean }) => {
+export const useVersionUpdateReload = ({ showToast = true }: { showToast?: boolean }) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
@@ -44,34 +40,6 @@ export const useVersionUpdateReload = ({ showToast = true }: { showToast: boolea
             }
         }
     }, [])
-
-    useEffect(() => {
-        if (!bgUpdated) {
-            return
-        }
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
-
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'This page has been updated. Please save any unsaved changes and refresh.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: refresh,
-                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
-                },
-                icon: <Icon name="ic-sparkle-color" color={null} />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
-        )
-    }, [bgUpdated])
 
     const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
@@ -171,5 +139,6 @@ export const useVersionUpdateReload = ({ showToast = true }: { showToast: boolea
         doesNeedRefresh,
         updateServiceWorker,
         handleControllerChange,
+        updateToastRef,
     }
 }
