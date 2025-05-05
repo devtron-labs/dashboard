@@ -56,7 +56,8 @@ const App = () => {
     const location = useLocation()
     const { push } = useHistory()
 
-    const { updateToastRef, bgUpdated } = useVersionUpdateReload({})
+    const { bgUpdated, handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, updateToastRef } =
+        useVersionUpdateReload({ showToast: true })
 
     useEffect(() => {
         if (!bgUpdated) {
@@ -154,6 +155,15 @@ const App = () => {
         }
     }, [])
 
+    const reloadConfig = {
+        handleAppUpdate,
+        doesNeedRefresh,
+        updateServiceWorker,
+        handleControllerChange,
+        bgUpdated,
+        updateToastRef,
+    }
+
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
             <div className="full-height-width bg__tertiary">
@@ -172,7 +182,7 @@ const App = () => {
                             <ActivateLicense />
                         </Route>
                         {!window._env_.K8S_CLIENT && <Route path={URLS.LOGIN} component={Login} />}
-                        <Route path="/" render={() => <NavigationRoutes />} />
+                        <Route path="/" render={() => <NavigationRoutes reloadConfig={reloadConfig} />} />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>
                     <div id="visible-modal" />

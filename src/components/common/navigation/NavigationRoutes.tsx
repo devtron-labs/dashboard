@@ -81,7 +81,7 @@ import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
-import { EnvironmentDataStateType } from './types'
+import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 import { Banner } from '../Banner/Banner'
 
 // Monaco Editor worker initialization
@@ -126,7 +126,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 
-export default function NavigationRoutes() {
+export default function NavigationRoutes({ reloadConfig }: NavigationRoutesTypes ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -171,6 +171,8 @@ export default function NavigationRoutes() {
     const handleCloseLicenseInfoDialog = () => {
         setLicenseInfoDialogType(null)
     }
+
+    const { handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, bgUpdated, updateToastRef } = reloadConfig
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -475,6 +477,12 @@ export default function NavigationRoutes() {
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                bgUpdated,
+                handleAppUpdate,
+                doesNeedRefresh,
+                updateServiceWorker,
+                handleControllerChange,
+                updateToastRef,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>

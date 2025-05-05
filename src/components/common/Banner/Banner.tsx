@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import {
     AnimatePresence,
@@ -36,7 +36,6 @@ import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
 import { useOnline } from '../hooks'
 import { ONLINE_BANNER_TIMEOUT } from '../hooks/constants'
-import { useVersionUpdateReload } from '../hooks/useVersionUpdate'
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import {
     getBannerConfig,
@@ -77,8 +76,7 @@ const bannerVariants = {
 }
 
 export const Banner = () => {
-    const { isAirgapped, currentServerInfo } = useMainContext()
-    const { doesNeedRefresh, handleAppUpdate, bgUpdated } = useVersionUpdateReload({ showToast: false })
+    const { isAirgapped, currentServerInfo, doesNeedRefresh, handleAppUpdate, bgUpdated } = useMainContext()
     const licenseConfig = useEnterpriseLicenseConfig()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
@@ -88,10 +86,16 @@ export const Banner = () => {
 
     const onlineTimer = useRef<ReturnType<typeof setTimeout>>(null)
 
-    const onOnline = () => {
+    const onOnline = useCallback(() => {
         setShowOnlineBanner(true)
+
+        // Clear any existing timer before setting a new one
+        if (onlineTimer.current) {
+            clearTimeout(onlineTimer.current)
+        }
+
         onlineTimer.current = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
-    }
+    }, [])
 
     const isOnline = useOnline({ onOnline })
 
@@ -148,7 +152,6 @@ export const Banner = () => {
     })
 
     const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog, handleAppUpdate)
-    const isOffline = bannerVariant === BannerVariant.OFFLINE
     const baseClassName = `w-100 ${config?.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config?.isDismissible ? 'dc__grid banner--row dc__column-gap-16' : 'flex'}`
 
     const shouldShowActionButton = () => {
@@ -189,7 +192,8 @@ export const Banner = () => {
                     {config.isDismissible && <div className="icon-dim-28 dc__no-shrink" />}
                     <div className="py-4 flex dc__gap-12 dc__align-items-center">
                         <div className="flex dc__gap-8">
-                            {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                            {bannerVariant !== BannerVariant.ONLINE &&
+                                getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
                             <InteractiveCellText text={config.text} rootClassName="fw-5" fontSize={12} interactive />
                         </div>
                         {shouldShowActionButton() && (
