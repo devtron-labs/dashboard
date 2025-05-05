@@ -36,7 +36,6 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         }
     }
     const handleOffline = () => setOnline(false)
-
     const handleOnline = async () => {
         // Verify connectivity when browser reports online
         await checkConnectivity()
@@ -46,11 +45,6 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         if (isAirgapped) return null
         window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
-        // // Only check connectivity initially if browser reports offline
-        // if (!navigator.onLine) {
-        //     // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        //     checkConnectivity()
-        // }
 
         return () => {
             if (timeoutRef.current) {
