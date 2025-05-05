@@ -376,16 +376,9 @@ const EphemeralContainerDrawer = ({
                 <CodeEditor
                     mode={MODES.YAML}
                     readOnly={switchManifest === SwitchItemValues.Sample}
-                    codeEditorProps={{
-                        value: codeEditorBody,
-                        onChange: handleManifestAdvanceConfiguration,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: codeEditorBody,
-                        onChange: handleManifestAdvanceConfiguration,
-                        height: 'fitToParent',
-                    }}
+                    value={codeEditorBody}
+                    onChange={handleManifestAdvanceConfiguration}
+                    height="fitToParent"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">

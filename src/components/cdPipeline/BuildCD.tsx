@@ -749,18 +749,11 @@ export default function BuildCD({
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
                                         mode={MODES.YAML}
-                                        codeEditorProps={{
-                                            value: strategy.yamlStr,
-                                            height: 300,
-                                            onChange: (event) =>
-                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
-                                        }}
-                                        codeMirrorProps={{
-                                            value: strategy.yamlStr,
-                                            height: 300,
-                                            onChange: (event) =>
-                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
-                                        }}
+                                        value={strategy.yamlStr}
+                                        height={300}
+                                        onChange={(event) =>
+                                            handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
+                                        }
                                     />
                                 </div>
                             )}

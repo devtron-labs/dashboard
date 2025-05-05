@@ -199,7 +199,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorHeader = () => {
         return (
             <div className="flex bg__primary px-20 py-8 dc__border-bottom dc__content-space">
-                <div className='flexbox dc__gap-12'>
+                <div className="flexbox dc__gap-12">
                     <Button
                         text="Run"
                         onClick={this.handleRunButton}
@@ -216,11 +216,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ></Button>
                 </div>
 
-                    {!this.state.showExamples ? (
-                        <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })}>
-                            See Samples
-                        </div>
-                    ) : null}
+                {!this.state.showExamples ? (
+                    <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })}>
+                        See Samples
+                    </div>
+                ) : null}
             </div>
         )
     }
@@ -253,16 +253,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="code-editor-body dc__grid-half flexbox-col flex-grow-1 mh-0">
                 <CodeEditor
                     mode={MODES.YAML}
-                    codeEditorProps={{
-                        height: '0',
-                        value: this.state.codeEditorPayload,
-                        onChange: this.handleConfigChange,
-                    }}
-                    codeMirrorProps={{
-                        height: 'fitToParent',
-                        value: this.state.codeEditorPayload,
-                        onChange: this.handleConfigChange,
-                    }}
+                    height="fitToParent"
+                    value={this.state.codeEditorPayload}
+                    onChange={this.handleConfigChange}
                 />
                 <div className="bulk-output-drawer bg__primary flexbox-col flex-grow-1 mh-0">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
@@ -279,7 +272,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             name={OutputObjectTabs.IMPACTED_OBJECTS}
                         />
                     </div>
-                    <div className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1 mh-0" data-testid="output-message">
+                    <div
+                        className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1 mh-0"
+                        data-testid="output-message"
+                    >
                         {this.state.showOutputData ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
@@ -508,7 +504,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         )
     }
-
 
     renderBulkEditBody = () => {
         return !this.state.showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()

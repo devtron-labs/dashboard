@@ -252,19 +252,8 @@ export const CiWebhookModal = ({
     const _value = webhookIncomingPayload?.payloadJson ? getFormattedSchema(webhookIncomingPayload.payloadJson) : ''
 
     const renderReceivedPayloadCodeEditor = () => (
-        <CodeEditor.Container flexExpand overflowHidden>
-            <CodeEditor
-                readOnly
-                mode={MODES.YAML}
-                codeEditorProps={{
-                    value: _value,
-                    height: '100%',
-                }}
-                codeMirrorProps={{
-                    value: _value,
-                    height: 'fitToParent',
-                }}
-            >
+        <CodeEditor.Container flexExpand>
+            <CodeEditor readOnly mode={MODES.YAML} value={_value} height="fitToParent">
                 <CodeEditor.Header className="px-16 py-10 flex dc__content-space bg__secondary">
                     <p className="m-0 fw-6">Payload</p>
                     <CodeEditor.Clipboard />

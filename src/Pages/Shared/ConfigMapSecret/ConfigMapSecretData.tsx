@@ -328,30 +328,19 @@ export const ConfigMapSecretData = ({
                 }}
             />
         ) : (
-            <CodeEditor.Container overflowHidden>
+            <CodeEditor.Container>
                 <CodeEditor
                     key={codeEditorRadio}
                     mode={MODES.YAML}
                     readOnly={
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
                     }
-                    codeEditorProps={{
-                        value: getCodeEditorValue(),
-                        // Skip calling onChange if resolvedData exists
-                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
-                        onFocus,
-                        inline: true,
-                        adjustEditorHeightToContent: true,
-                        shebang: sheBangText,
-                    }}
-                    codeMirrorProps={{
-                        value: getCodeEditorValue(),
-                        // Skip calling onChange if resolvedData exists
-                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
-                        onFocus,
-                        height: '100%',
-                        shebang: sheBangText,
-                    }}
+                    value={getCodeEditorValue()}
+                    // Skip calling onChange if resolvedData exists}
+                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
+                    onFocus={onFocus}
+                    height="100%"
+                    shebang={sheBangText}
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">

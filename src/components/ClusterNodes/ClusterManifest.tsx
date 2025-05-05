@@ -140,29 +140,20 @@ export default function ClusterManifest({
                 noParsing
                 readOnly={manifestMode !== EditModeType.EDIT && manifestMode !== EditModeType.REVIEW}
                 diffView={manifestMode === EditModeType.REVIEW}
-                codeEditorProps={{
-                    defaultValue: defaultManifest,
-                    theme: 'vs-dark--dt',
-                    height: '0',
-                    value: manifestValue,
-                    onChange: setManifest,
-                }}
-                codeMirrorProps={{
-                    theme: AppThemeType.dark,
-                    height: '100%',
-                    ...(manifestMode === EditModeType.REVIEW
-                        ? {
-                              diffView: true,
-                              originalValue: defaultManifest,
-                              modifiedValue: manifestValue,
-                              onModifiedValueChange: setManifest,
-                          }
-                        : {
-                              diffView: false,
-                              value: manifestValue,
-                              onChange: setManifest,
-                          }),
-                }}
+                theme={AppThemeType.dark}
+                height={'100%'}
+                {...(manifestMode === EditModeType.REVIEW
+                    ? {
+                          diffView: true,
+                          originalValue: defaultManifest,
+                          modifiedValue: manifestValue,
+                          onModifiedValueChange: setManifest,
+                      }
+                    : {
+                          diffView: false,
+                          value: manifestValue,
+                          onChange: setManifest,
+                      })}
             >
                 {manifestMode === EditModeType.REVIEW && (
                     <CodeEditor.Header
@@ -185,7 +176,7 @@ export default function ClusterManifest({
         )
     }
 
-    return <div className="dc__overflow-hidden flex-grow-1 flexbox-col cluster-manifest">{renderManifest()}</div>
+    return <div className="dc__overflow-hidden flex-grow-1 flexbox-col">{renderManifest()}</div>
 }
 
 export const ManifestPopupMenu = ({ closePopup, podName, namespace, forceDeletePod }: ManifestPopuptype) => {

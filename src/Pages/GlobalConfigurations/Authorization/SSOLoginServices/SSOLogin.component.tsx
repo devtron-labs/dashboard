@@ -685,29 +685,17 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
-        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
             <CodeEditor.Container>
                 <CodeEditor
                     mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    codeEditorProps={{
-                        value: codeEditorBody,
-                        shebang: shebangHtml,
-                        lineDecorationsWidth:
-                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0,
-                        onChange: this.handleConfigChange,
-                        onBlur: this.handleOnBlur,
-                        adjustEditorHeightToContent: true,
-                    }}
-                    codeMirrorProps={{
-                        value: codeEditorBody,
-                        shebang: shebangHtml,
-                        onChange: this.handleConfigChange,
-                        onBlur: this.handleOnBlur,
-                        height: 'auto',
-                    }}
+                    value={codeEditorBody}
+                    shebang={shebangHtml}
+                    onChange={this.handleConfigChange}
+                    onBlur={this.handleOnBlur}
+                    height="auto"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">

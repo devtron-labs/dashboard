@@ -163,13 +163,6 @@
           background-color: var(--bg-primary);
       }
 
-      .monaco-editor {
-          .monaco-editor-background,
-          .margin {
-              background-color: var(--bg-secondary) !important;
-          }
-      }
-
       .radio-group {
           border: 1px solid var(--N200);
           border-radius: 4px;
@@ -188,10 +181,4 @@
 
 .pod-terminal-hidden * {
     height: 0 !important;
-}
-
-.manifest-container {
-    & .react-monaco-editor-container {
-        flex-grow: 1;
-    }
 }

@@ -375,23 +375,15 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                     )}
                     <CodeEditor.Container>
                         <CodeEditor
-                            codeEditorProps={{
-                                value: valuesYaml,
-                                onChange: handleValuesYaml
+                            value={valuesYaml}
+                            height="auto"
+                            onChange={
+                                handleValuesYaml
                                     ? (valuesYaml) => {
                                           handleValuesYaml(index, valuesYaml)
                                       }
-                                    : () => {},
-                            }}
-                            codeMirrorProps={{
-                                value: valuesYaml,
-                                height: 'auto',
-                                onChange: handleValuesYaml
-                                    ? (valuesYaml) => {
-                                          handleValuesYaml(index, valuesYaml)
-                                      }
-                                    : () => {},
-                            }}
+                                    : () => {}
+                            }
                             noParsing
                             loading={loading}
                             readOnly={!handleValuesYaml}
@@ -502,16 +494,9 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                             mode={MODES.YAML}
                             noParsing
                             readOnly={!onChange}
-                            codeEditorProps={{
-                                value: valuesYaml,
-                                height: '100%',
-                                onChange: onChange ? onChange : () => {},
-                            }}
-                            codeMirrorProps={{
-                                value: valuesYaml,
-                                height: '100%',
-                                onChange: onChange ? onChange : () => {},
-                            }}
+                            value={valuesYaml}
+                            height="100%"
+                            onChange={onChange ? onChange : () => {}}
                         />
                     </div>
                 </div>
@@ -656,18 +641,10 @@ const ValuesDiffViewer = ({
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
                         diffView
-                        codeEditorProps={{
-                            value: valuesYaml,
-                            defaultValue: originalValuesYaml,
-                            height: '100%',
-                            onChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
-                        }}
-                        codeMirrorProps={{
-                            modifiedValue: valuesYaml,
-                            originalValue: originalValuesYaml,
-                            height: '100%',
-                            onModifiedValueChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
-                        }}
+                        modifiedValue={valuesYaml}
+                        originalValue={originalValuesYaml}
+                        height="100%"
+                        onModifiedValueChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
                     />
                 </div>
             </div>
