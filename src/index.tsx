@@ -168,6 +168,7 @@ if (!window || !window._env_) {
         FEATURE_CODE_MIRROR_ENABLE: true,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
+        FEATURE_AI_INTEGRATION_ENABLE: true,
     }
 }
 
