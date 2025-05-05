@@ -57,8 +57,7 @@ const App = () => {
     const location = useLocation()
     const { push } = useHistory()
 
-    const { setBGUpdated, updateToastRef } = useVersionUpdateReload({})
-    console.log(bgUpdated, 'bgUpdated')
+    const { updateToastRef } = useVersionUpdateReload({ setBGUpdated })
 
     useEffect(() => {
         if (!bgUpdated) {
