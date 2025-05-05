@@ -38,7 +38,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
         }
-        abortControllerRef.current?.abort()
+        abortControllerRef.current.abort()
         setOnline(false)
     }
 
@@ -58,7 +58,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
             }
             window.removeEventListener('offline', handleOffline)
             window.removeEventListener('online', handleOnline)
-            abortControllerRef.current?.abort()
+            abortControllerRef.current.abort()
         }
     }, [isAirgapped, onOnline])
 
