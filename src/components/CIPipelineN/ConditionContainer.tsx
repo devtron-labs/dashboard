@@ -14,47 +14,21 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useContext, Fragment } from 'react'
-import {
-    RadioGroup,
-    RadioGroupItem,
-    ConditionType,
-    PluginType,
-    CustomInput,
-    PipelineFormType,
-    SelectPicker,
-    SelectPickerVariantType,
-    ComponentSizeType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ChangeEvent, useContext, useEffect, useState } from 'react'
+
+import { ConditionType, PluginType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { ConditionContainerType } from '../ciPipeline/types'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { OptionType } from '../app/types'
-import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { ConditionDataTable } from './ConditionDataTable/ConditionDataTable.component'
+import { CONDITION_DATA_TABLE_OPERATOR_OPTIONS } from './ConditionDataTable/constants'
+import { CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP } from './Constants'
 
 export const ConditionContainer = ({ type }: { type: ConditionContainerType }) => {
-    const {
-        formData,
-        setFormData,
-        selectedTaskIndex,
-        activeStageName,
-        formDataErrorObj,
-        setFormDataErrorObj,
-        validateTask,
-    } = useContext(pipelineContext)
+    const { formData, setFormData, selectedTaskIndex, activeStageName, formDataErrorObj } = useContext(pipelineContext)
 
-    const operatorOptions: OptionType[] = [
-        { value: '==', description: 'equal to' },
-        { value: '!=', description: 'not equal to' },
-        { value: '<', description: 'less than' },
-        { value: '>', description: 'greater than' },
-        { value: '<=', description: 'less than or equal to' },
-        { value: '>=', description: 'greater than or equal to' },
-    ].map((operator) => ({ label: operator.value, value: operator.value, description: operator.description }))
     const [collapsedSection, setCollapsedSection] = useState<boolean>(true)
-    const [selectedOperator, setSelectedOperator] = useState<OptionType>(operatorOptions[0])
     const [conditionType, setConditionType] = useState<ConditionType>(
         type === ConditionContainerType.PASS_FAILURE ? ConditionType.PASS : ConditionType.TRIGGER,
     )
@@ -69,124 +43,56 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
     }, [activeStageName])
 
     useEffect(() => {
-        const { conditionDetails } = formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-        if (conditionDetails?.length) {
-            const errorConditionIndexArr = []
-            for (let i = 0; i < conditionDetails.length; i++) {
-                if (!conditionDetails[i].isValid) {
-                    errorConditionIndexArr.push(i)
+        const { isConditionDetailsValid, conditionDetails: conditionDetailsError } =
+            formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+
+        if (!isConditionDetailsValid) {
+            const { conditionDetails } = formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+
+            const invalidConditionDetailsIds = Object.keys(conditionDetailsError).reduce((acc, key) => {
+                if (
+                    Object.keys(conditionDetailsError[key]).some(
+                        (dataKey) => !conditionDetailsError[key][dataKey].isValid,
+                    )
+                ) {
+                    acc.push(key)
                 }
-            }
-            if (errorConditionIndexArr?.length) {
-                let derivedConditionType
-                for (let index = 0; index < errorConditionIndexArr.length; index++) {
-                    const currentCondition =
-                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[
-                            index
-                        ]
-                    if (
-                        (type === ConditionContainerType.PASS_FAILURE &&
-                            (currentCondition.conditionType === ConditionType.PASS ||
-                                currentCondition.conditionType === ConditionType.FAIL)) ||
-                        (type === ConditionContainerType.TRIGGER_SKIP &&
-                            (currentCondition.conditionType === ConditionType.TRIGGER ||
-                                currentCondition.conditionType === ConditionType.SKIP))
-                    ) {
-                        derivedConditionType = currentCondition.conditionType
-                        break
-                    }
-                }
-                if (derivedConditionType) {
-                    setConditionType(derivedConditionType)
-                    if (collapsedSection) {
-                        setCollapsedSection(false) // expand conditions in case of error
-                    }
+
+                return acc
+            }, [])
+
+            const filteredConditionDetails = conditionDetails.filter(({ conditionType: _conditionType }) =>
+                CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP[type].includes(_conditionType),
+            )
+
+            const derivedConditionType = filteredConditionDetails.length
+                ? invalidConditionDetailsIds.reduce((acc, currId) => {
+                      const currentCondition = filteredConditionDetails.find(({ id }) =>
+                          typeof +currId === 'number' ? id === +currId : id === currId,
+                      )?.conditionType
+
+                      if (currentCondition) {
+                          return currentCondition
+                      }
+
+                      return acc
+                  }, null)
+                : null
+
+            if (derivedConditionType) {
+                setConditionType(derivedConditionType)
+                if (collapsedSection) {
+                    setCollapsedSection(false) // expand conditions in case of error
                 }
             }
         }
     }, [formDataErrorObj])
 
-    const validateCurrentTask = (_formData: PipelineFormType): void => {
-        const _formDataErrorObj = { ...formDataErrorObj }
-        validateTask(
-            _formData[activeStageName].steps[selectedTaskIndex],
-            _formDataErrorObj[activeStageName].steps[selectedTaskIndex],
-        )
-        setFormDataErrorObj(_formDataErrorObj)
-    }
-
-    const addCondition = (): void => {
-        const _formData = { ...formData }
-        let id = 0
-        let conditionTypeToRemove
-        if (type === ConditionContainerType.PASS_FAILURE) {
-            conditionTypeToRemove = conditionType === ConditionType.PASS ? ConditionType.FAIL : ConditionType.PASS
-        } else {
-            conditionTypeToRemove = conditionType === ConditionType.TRIGGER ? ConditionType.SKIP : ConditionType.TRIGGER
-        }
-        let { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-        if (!conditionDetails) {
-            conditionDetails = []
-        }
-        for (let i = 0; i < conditionDetails.length; i++) {
-            if (conditionDetails[i].conditionType === conditionTypeToRemove) {
-                conditionDetails.splice(i, 1)
-                i--
-            } else {
-                id = id < conditionDetails[i].id ? conditionDetails[i].id : id
-            }
-        }
-        const newCondition = {
-            id,
-            conditionOnVariable: '',
-            conditionOperator: operatorOptions[0].label,
-            conditionType,
-            conditionalValue: '',
-        }
-        conditionDetails.push(newCondition)
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails = conditionDetails
-        setFormData(_formData)
-    }
-
-    const deleteCondition = (index: number): void => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails.splice(index, 1)
-        validateCurrentTask(_formData)
-        setFormData(_formData)
-    }
-
-    const handleConditionalValueChange = (e: any, index: number): void => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
-            'conditionalValue'
-        ] = e.target.value
-        validateCurrentTask(_formData)
-        setFormData(_formData)
-    }
-
-    const handleConditionOnVariableChange = (index: number) => (selectedValue: OptionType) => {
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
-            'conditionOnVariable'
-        ] = selectedValue.label
-        validateCurrentTask(_formData)
-        setFormData(_formData)
-    }
-
-    const handleConditionOperatorChange = (index: number) => (selectedValue: OptionType): void => {
-        setSelectedOperator(selectedValue)
-        const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable].conditionDetails[index][
-            'conditionOperator'
-        ] = selectedValue.label
-        setFormData(_formData)
-    }
-
     const handleConditionCollapse = (): void => {
         setCollapsedSection(!collapsedSection)
         if (collapsedSection) {
             const _formData = { ...formData }
-            let conditionType
+            let _conditionType: ConditionType
             let { conditionDetails } = _formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
             let addNewRow = false
             if (!conditionDetails) {
@@ -197,41 +103,41 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                 const passCondition = conditionDetails.some(
                     (conditionDetail) => conditionDetail.conditionType === ConditionType.PASS,
                 )
-                conditionType = ConditionType.PASS
+                _conditionType = ConditionType.PASS
                 if (!passCondition) {
                     const failCondition = conditionDetails.some(
                         (conditionDetail) => conditionDetail.conditionType === ConditionType.FAIL,
                     )
                     if (failCondition) {
-                        conditionType = ConditionType.FAIL
+                        _conditionType = ConditionType.FAIL
                     } else {
                         addNewRow = true
                     }
                 }
-                setConditionType(conditionType)
+                setConditionType(_conditionType)
             } else {
                 const triggerCondition = conditionDetails.some(
                     (conditionDetail) => conditionDetail.conditionType === ConditionType.TRIGGER,
                 )
-                conditionType = ConditionType.TRIGGER
+                _conditionType = ConditionType.TRIGGER
                 if (!triggerCondition) {
                     const skipCondition = conditionDetails.some(
                         (conditionDetail) => conditionDetail.conditionType === ConditionType.SKIP,
                     )
                     if (skipCondition) {
-                        conditionType = ConditionType.SKIP
+                        _conditionType = ConditionType.SKIP
                     } else {
                         addNewRow = true
                     }
                 }
-                setConditionType(conditionType)
+                setConditionType(_conditionType)
             }
             if (addNewRow) {
                 const newCondition = {
                     id: conditionDetails.length,
                     conditionOnVariable: '',
-                    conditionOperator: operatorOptions[0].label,
-                    conditionType,
+                    conditionOperator: CONDITION_DATA_TABLE_OPERATOR_OPTIONS[0].label,
+                    conditionType: _conditionType,
                     conditionalValue: '',
                 }
                 conditionDetails.push(newCondition)
@@ -240,6 +146,10 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                 setFormData(_formData)
             }
         }
+    }
+
+    const handleConditionTypeChange = (event: ChangeEvent<HTMLInputElement>) => {
+        setConditionType(event.target.value as ConditionType)
     }
 
     return (
@@ -252,126 +162,15 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
                 <Dropdown
                     className="pointer"
                     style={{ transform: collapsedSection ? 'rotate(0)' : 'rotate(180deg)' }}
-                    onClick={(event) => {
-                        handleConditionCollapse()
-                    }}
+                    onClick={handleConditionCollapse}
                 />
             </div>
             {!collapsedSection && (
-                <>
-                    <RadioGroup
-                        className="no-border mb-10"
-                        value={conditionType}
-                        name={`${type}-Condition${activeStageName}`}
-                        onChange={(event) => {
-                            setConditionType(event.target.value)
-                        }}
-                    >
-                        <RadioGroupItem
-                            value={
-                                type === ConditionContainerType.PASS_FAILURE
-                                    ? ConditionType.PASS
-                                    : ConditionType.TRIGGER
-                            }
-                        >
-                            Set {type === ConditionContainerType.PASS_FAILURE ? 'pass' : 'trigger'} conditions
-                        </RadioGroupItem>
-                        <RadioGroupItem
-                            value={
-                                type === ConditionContainerType.PASS_FAILURE ? ConditionType.FAIL : ConditionType.SKIP
-                            }
-                        >
-                            Set {type === ConditionContainerType.PASS_FAILURE ? 'failure' : 'skip'} conditions
-                        </RadioGroupItem>
-                    </RadioGroup>
-                    {(
-                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]?.conditionDetails ||
-                        []
-                    ).map((conditionDetail, index) => {
-                        const errorObj =
-                            formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-                                ?.conditionDetails?.[index]
-                        return conditionDetail.conditionType === conditionType ? (
-                            <Fragment key={`condition__${index}`}>
-                                <div className="condition-container dc__gap-8">
-                                    <div className="tp-4 fs-13 lh-32 fw-4 dc__uppercase">
-                                        {conditionDetail.conditionType} If
-                                    </div>
-                                    <div className="flex left">
-                                        <SelectPicker
-                                            inputId="condition-on-variable"
-                                            classNamePrefix="condition-on-variable"
-                                            autoFocus
-                                            value={
-                                                conditionDetail.conditionOnVariable
-                                                    ? {
-                                                          label: conditionDetail.conditionOnVariable,
-                                                          value: conditionDetail.conditionOnVariable,
-                                                      }
-                                                    : null
-                                            }
-                                            placeholder="Select variable"
-                                            onChange={handleConditionOnVariableChange(index)}
-                                            options={formData[activeStageName].steps[selectedTaskIndex][
-                                                currentStepTypeVariable
-                                            ][
-                                                type === ConditionContainerType.PASS_FAILURE
-                                                    ? 'outputVariables'
-                                                    : 'inputVariables'
-                                            ]
-                                                ?.filter((variable) => variable.name)
-                                                .map((variable) => ({ label: variable.name, value: variable.id }))}
-                                            isSearchable={false}
-                                            variant={SelectPickerVariantType.COMPACT}
-                                        />
-                                    </div>
-                                    <SelectPicker
-                                        inputId="condition-operator"
-                                        classNamePrefix="condition-operator"
-                                        value={
-                                            conditionDetail.conditionOperator
-                                                ? {
-                                                      label: conditionDetail.conditionOperator,
-                                                      value: conditionDetail.conditionOperator,
-                                                  }
-                                                : selectedOperator
-                                        }
-                                        onChange={handleConditionOperatorChange(index)}
-                                        options={operatorOptions}
-                                        isSearchable={false}
-                                    />
-                                    <CustomInput
-                                        placeholder="Enter value"
-                                        name="conditionalValue"
-                                        value={conditionDetail.conditionalValue}
-                                        onChange={(e) => {
-                                            handleConditionalValueChange(e, index)
-                                        }}
-                                        size={ComponentSizeType.medium}
-                                    />
-                                    <Close
-                                        className="icon-dim-24 pointer mt-4"
-                                        onClick={() => {
-                                            deleteCondition(index)
-                                        }}
-                                    />
-                                </div>
-                                <div className="flexbox cr-5 mb-8 fw-5 fs-11 flexbox">
-                                    {errorObj && !errorObj.isValid && (
-                                        <>
-                                            <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                                            <span>{errorObj.message}</span>
-                                        </>
-                                    )}
-                                </div>
-                            </Fragment>
-                        ) : null
-                    })}
-                    <div className="pointer cb-5 fw-6 fs-13 flexbox content-fit lh-32" onClick={addCondition}>
-                        <Add className="add-icon mt-6" />
-                        Add condition
-                    </div>
-                </>
+                <ConditionDataTable
+                    conditionType={conditionType}
+                    type={type}
+                    handleConditionTypeChange={handleConditionTypeChange}
+                />
             )}
         </div>
     )

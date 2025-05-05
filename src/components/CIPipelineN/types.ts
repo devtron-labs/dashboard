@@ -16,6 +16,7 @@
 
 import {
     Environment,
+    KeyValueTableProps,
     OptionType,
     ParentPluginType,
     PipelineFormType,
@@ -23,36 +24,20 @@ import {
     StepType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-export enum DockerArgsAction {
-    ADD = 'add_docker_arg',
-    DELETE = 'delete_docker_arg',
-    UPDATE_KEY = 'update_docker_arg_key',
-    UPDATE_VALUE = 'update_docker_arg_value',
-}
-
 export interface DockerArgsActionData {
     index?: number
     value?: string
 }
 
-export interface HandleDockerArgsUpdateType {
-    action: DockerArgsAction
-    argData?: DockerArgsActionData
-}
-
 interface DockerArgsCommonType {
-    handleDockerArgsUpdate: ({ action, argData }: HandleDockerArgsUpdateType) => void
+    handleDockerArgsUpdate: KeyValueTableProps['onChange']
+    handleDockerArgsError: KeyValueTableProps['onError']
     fromBuildPack?: boolean
     readOnly?: boolean
 }
 
 export interface DockerArgsProps extends DockerArgsCommonType {
     args: PipelineFormType['args']
-}
-
-export interface DockerArgsItemProps extends DockerArgsCommonType {
-    arg: PipelineFormType['args'][number]
-    index: number
 }
 
 export interface PluginDetailHeaderProps {

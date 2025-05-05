@@ -114,7 +114,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
             )
         }
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     return (

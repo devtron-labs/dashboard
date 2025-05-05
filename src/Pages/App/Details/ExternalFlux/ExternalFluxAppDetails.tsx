@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
+    abortPreviousRequests,
     AppType,
     DeploymentAppTypes,
     ERROR_STATUS_CODE,
     ErrorScreenManager,
+    getIsRequestAborted,
     IndexStore,
     noop,
     ResponseType,
@@ -46,6 +48,15 @@ const ExternalFluxAppDetails = () => {
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(true)
     const [appDetailsError, setAppDetailsError] = useState(null)
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
+    useEffect(
+        () => () => {
+            abortControllerRef.current.abort()
+        },
+        [],
+    )
+
     const handleUpdateIndexStoreWithDetails = (response: ResponseType<any>) => {
         const genericAppDetail: AppDetails = {
             ...response.result,
@@ -63,13 +74,19 @@ const ExternalFluxAppDetails = () => {
         new Promise<void>((resolve) => {
             setIsReloadResourceTreeInProgress(true)
 
-            getExternalFluxCDAppDetails(clusterId, namespace, appName, isKustomization)
+            abortPreviousRequests(
+                () =>
+                    getExternalFluxCDAppDetails({ clusterId, namespace, appName, isKustomization, abortControllerRef }),
+                abortControllerRef,
+            )
                 .then(handleUpdateIndexStoreWithDetails)
                 .catch((error) => {
-                    if (!initialLoading) {
-                        showError(error)
-                    } else {
-                        setAppDetailsError(error)
+                    if (!getIsRequestAborted(error)) {
+                        if (!initialLoading) {
+                            showError(error)
+                        } else {
+                            setAppDetailsError(error)
+                        }
                     }
                 })
                 .finally(() => {

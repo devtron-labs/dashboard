@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 
 import {
     BulkSelectionEvents,
@@ -50,9 +50,8 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     clusterOptions,
     clusterListLoader,
     filteredList,
+    parentRef,
 }) => {
-    const parentRef = useRef<HTMLDivElement>(null)
-
     const [showKubeConfigModal, setShowKubeConfigModal] = useState(false)
     const [selectedClusterName, setSelectedClusterName] = useState('')
 
@@ -133,17 +132,19 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     }
 
     return (
-        <div ref={parentRef} className="flexbox-col flex-grow-1">
+        <>
             {renderClusterBulkSelection()}
-            {renderClusterList()}
-            {showKubeConfigModal && KubeConfigModal && (
-                <KubeConfigModal
-                    clusterName={selectedClusterName || identifierCount === 0}
-                    handleModalClose={onChangeCloseKubeConfigModal}
-                    isSingleClusterButton={!!selectedClusterName}
-                />
-            )}
-        </div>
+            <div className="flexbox-col flex-grow-1">
+                {renderClusterList()}
+                {showKubeConfigModal && KubeConfigModal && (
+                    <KubeConfigModal
+                        clusterName={selectedClusterName || identifierCount === 0}
+                        handleModalClose={onChangeCloseKubeConfigModal}
+                        isSingleClusterButton={!!selectedClusterName}
+                    />
+                )}
+            </div>
+        </>
     )
 }
 

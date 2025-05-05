@@ -492,7 +492,7 @@ const NodeDetailComponent = ({
         <>
             <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
-                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
+                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />
