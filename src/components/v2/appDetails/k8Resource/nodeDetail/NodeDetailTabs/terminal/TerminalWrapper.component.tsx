@@ -94,7 +94,7 @@ export const RenderConnectionStrip = ({
     socketConnection,
     setSocketConnection,
 }: ConnectionStripMessageType) => {
-    const isOnline = useOnline()
+    const isOnline = useOnline({})
 
     const reconnect = () => {
         setSocketConnection(SocketConnectionType.CONNECTING)

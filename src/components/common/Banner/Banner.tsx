@@ -50,9 +50,32 @@ import './banner.scss'
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 const useEnterpriseLicenseConfig = importComponentFromFELibrary('useEnterpriseLicenseConfig', () => null, 'function')
 
+const bannerVariants = {
+    enter: {
+        y: -40,
+        opacity: 0,
+        height: 0,
+    },
+    center: {
+        y: 0,
+        opacity: 1,
+        height: 'auto',
+    },
+    exitUp: (isBannerReplaced: boolean) =>
+        !isBannerReplaced
+            ? {
+                  y: -40,
+                  opacity: 0,
+                  height: 0,
+              }
+            : {
+                  y: 40,
+                  opacity: 0,
+                  height: 0,
+              },
+}
+
 export const Banner = () => {
-    const didMountRef = useRef(false)
-    const isOnline = useOnline()
     const { isAirgapped, currentServerInfo } = useMainContext()
     const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload()
     const licenseConfig = useEnterpriseLicenseConfig()
@@ -61,25 +84,24 @@ export const Banner = () => {
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
         ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
-    const [activeBannerVariant, setActiveBannerVariant] = useState<BannerVariant | null>(null)
-    const [isVisible, setIsVisible] = useState(true)
-    const prevBannerRef = useRef<BannerVariant | null>(null)
 
-    useEffect(() => {
-        let timer: NodeJS.Timeout
-        if (didMountRef.current) {
-            if (isOnline) {
-                setShowOnlineBanner(true)
-                timer = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
-                setIsVisible(false)
+    const onlineTimer = useRef<ReturnType<typeof setTimeout>>(null)
+
+    const onOnline = () => {
+        setShowOnlineBanner(true)
+        onlineTimer.current = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
+    }
+
+    const isOnline = useOnline({ onOnline })
+
+    useEffect(
+        () => () => {
+            if (onlineTimer.current) {
+                clearTimeout(onlineTimer.current)
             }
-        } else {
-            didMountRef.current = true
-        }
-        return () => {
-            if (timer) clearTimeout(timer)
-        }
-    }, [isOnline])
+        },
+        [],
+    )
 
     const getIncompatibleMicroserviceName = (): 'frontend' | 'backend' | null => {
         const { serverInfo } = currentServerInfo
@@ -99,119 +121,95 @@ export const Banner = () => {
     } = licenseConfig ?? {}
 
     const getCurrentBanner = (): BannerVariant | null => {
-        if ((!isOnline || showOnlineBanner) && !isAirgapped) return BannerVariant.INTERNET_CONNECTIVITY
+        if ((!isOnline || showOnlineBanner) && !isAirgapped) {
+            if (!isOnline) {
+                return BannerVariant.OFFLINE
+            }
+
+            if (showOnlineBanner) {
+                return BannerVariant.ONLINE
+            }
+        }
         if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
         if (incompatibleService) return BannerVariant.INCOMPATIBLE_MICROSERVICES
         if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
         if (licenseConfig?.message) return BannerVariant.LICENSE
         return null
     }
-
     const bannerVariant = getCurrentBanner()
 
-    useEffect(() => {
-        if (bannerVariant !== prevBannerRef.current) {
-            setIsVisible(true)
-            setActiveBannerVariant(bannerVariant)
-            prevBannerRef.current = bannerVariant
-        }
-    }, [bannerVariant])
-
-    if (!activeBannerVariant) return null
-
     const config = getBannerConfig({
-        bannerVariant: activeBannerVariant,
-        isOnline,
+        bannerVariant,
         licenseType,
         enterpriseLicenseBarMessage,
         hideInternetConnectivityBar: isAirgapped,
         microservice: incompatibleService,
     })
 
-    if (!config) return null
-
-    const actionButtons = getButtonConfig(activeBannerVariant, handleOpenLicenseDialog, handleAppUpdate)
-    const isOffline = !(isOnline && activeBannerVariant === BannerVariant.INTERNET_CONNECTIVITY)
-    const baseClassName = `w-100 ${config.rootClassName || ''} ${getBannerTextColor(activeBannerVariant)} ${config.isDismissible ? 'dc__grid banner--row dc__column-gap-16' : 'flex'} dc__position-abs`
+    const actionButtons = getButtonConfig(bannerVariant, handleOpenLicenseDialog, handleAppUpdate)
+    const isOffline = bannerVariant === BannerVariant.OFFLINE
+    const baseClassName = `w-100 ${config?.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config?.isDismissible ? 'dc__grid banner--row dc__column-gap-16' : 'flex'}`
 
     const shouldShowActionButton = () => {
-        if (activeBannerVariant === BannerVariant.INTERNET_CONNECTIVITY) return isOffline
-        if (activeBannerVariant === BannerVariant.ANNOUNCEMENT) return !!ANNOUNCEMENT_CONFIG.buttonLink
+        if (bannerVariant === BannerVariant.OFFLINE) return true
+        if (bannerVariant === BannerVariant.ANNOUNCEMENT) return !!ANNOUNCEMENT_CONFIG.buttonLink
         if (
-            activeBannerVariant === BannerVariant.VERSION_UPDATE ||
-            activeBannerVariant === BannerVariant.INCOMPATIBLE_MICROSERVICES
+            bannerVariant === BannerVariant.VERSION_UPDATE ||
+            bannerVariant === BannerVariant.INCOMPATIBLE_MICROSERVICES
         )
             return true
         return false
     }
 
     const onClickCloseAnnouncementBanner = () => {
-        if (typeof Storage !== 'undefined' && activeBannerVariant === BannerVariant.ANNOUNCEMENT) {
+        if (typeof Storage !== 'undefined' && bannerVariant === BannerVariant.ANNOUNCEMENT) {
             setActionWithExpiry('expiryDateOfHidingAnnouncementBanner', 1)
         }
-        if (licenseConfig?.message) {
-            setActiveBannerVariant(BannerVariant.LICENSE)
-            setIsVisible(true)
-        } else {
-            setIsVisible(false)
-        }
-    }
-
-    const handleAnimationComplete = () => {
-        if (!isVisible && activeBannerVariant === BannerVariant.ANNOUNCEMENT) {
-            setShowAnnouncementBanner(false)
-            setActiveBannerVariant(null)
-        }
+        setShowAnnouncementBanner(false)
     }
 
     return (
-        <div className="banner dc__position-rel dc__overflow-hidden mh-28 h-28">
-            <AnimatePresence>
-                {isVisible && activeBannerVariant && (
-                    <MotionDiv
-                        key={`${activeBannerVariant}-${config?.text}`}
-                        initial={{ y: -28 }}
-                        animate={{ y: isVisible ? 0 : -28 }}
-                        exit={{ y: -28 }}
-                        transition={{
-                            duration: 0.3,
-                            ease: 'easeIn',
-                        }}
-                        className={baseClassName}
-                        onAnimationComplete={handleAnimationComplete}
-                    >
-                        {config.isDismissible && <div className="icon-dim-28 dc__no-shrink" />}
-                        <div className="py-4 flex dc__gap-12 dc__align-items-center">
-                            <div className="flex dc__gap-8">
-                                {isOffline && getBannerIcon(activeBannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
-                                <InteractiveCellText
-                                    text={config.text}
-                                    rootClassName="fw-5"
-                                    fontSize={12}
-                                    interactive
-                                />
-                            </div>
-                            {shouldShowActionButton() && (
-                                <div className="dc__no-shrink">
-                                    <Button {...actionButtons} />
-                                </div>
-                            )}
+        <AnimatePresence custom={!!bannerVariant}>
+            {bannerVariant && config && (
+                <MotionDiv
+                    layout
+                    key={bannerVariant}
+                    variants={bannerVariants}
+                    initial="enter"
+                    animate="center"
+                    exit="exitUp"
+                    transition={{
+                        duration: 1.5,
+                        ease: 'easeIn',
+                    }}
+                    className={baseClassName}
+                >
+                    {config.isDismissible && <div className="icon-dim-28 dc__no-shrink" />}
+                    <div className="py-4 flex dc__gap-12 dc__align-items-center">
+                        <div className="flex dc__gap-8">
+                            {isOffline && getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                            <InteractiveCellText text={config.text} rootClassName="fw-5" fontSize={12} interactive />
                         </div>
-                        {config.isDismissible && (
-                            <Button
-                                icon={<Icon name="ic-close-small" color="N700" />}
-                                variant={ButtonVariantType.borderLess}
-                                style={ButtonStyleType.negativeGrey}
-                                size={ComponentSizeType.small}
-                                onClick={onClickCloseAnnouncementBanner}
-                                dataTestId="banner-dismiss-button"
-                                ariaLabel="Close banner"
-                                showAriaLabelInTippy={false}
-                            />
+                        {shouldShowActionButton() && (
+                            <div className="dc__no-shrink">
+                                <Button {...actionButtons} />
+                            </div>
                         )}
-                    </MotionDiv>
-                )}
-            </AnimatePresence>
-        </div>
+                    </div>
+                    {config.isDismissible && (
+                        <Button
+                            icon={<Icon name="ic-close-small" color="N700" />}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.negativeGrey}
+                            size={ComponentSizeType.small}
+                            onClick={onClickCloseAnnouncementBanner}
+                            dataTestId="banner-dismiss-button"
+                            ariaLabel="Close banner"
+                            showAriaLabelInTippy={false}
+                        />
+                    )}
+                </MotionDiv>
+            )}
+        </AnimatePresence>
     )
 }

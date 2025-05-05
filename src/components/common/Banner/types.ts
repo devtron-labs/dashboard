@@ -23,7 +23,6 @@ export interface BannerType {
 }
 export interface BannerConfigProps extends BannerType {
     bannerVariant: Partial<BannerVariant>
-    isOnline: boolean
     licenseType?: InfoBlockProps['variant']
     enterpriseLicenseBarMessage?: string
     hideInternetConnectivityBar?: boolean

@@ -37,7 +37,8 @@ import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { BannerConfigProps, BannerConfigType } from './types'
 
 const getVariantWithIconMap = (iconName: IconsProps['name']): Record<BannerVariant, IconsProps['name']> => ({
-    [BannerVariant.INTERNET_CONNECTIVITY]: 'ic-disconnect',
+    [BannerVariant.OFFLINE]: 'ic-disconnect',
+    [BannerVariant.ONLINE]: 'ic-info-outline',
     [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'ic-info-outline',
     [BannerVariant.LICENSE]: iconName,
@@ -47,7 +48,8 @@ const getVariantWithIconMap = (iconName: IconsProps['name']): Record<BannerVaria
 const getVariantWithIconColorMap = (
     type: InfoBlockProps['variant'],
 ): Record<BannerVariant, IconBaseColorType | null> => ({
-    [BannerVariant.INTERNET_CONNECTIVITY]: null,
+    [BannerVariant.OFFLINE]: null,
+    [BannerVariant.ONLINE]: null,
     [BannerVariant.VERSION_UPDATE]: null,
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
     [BannerVariant.LICENSE]: null,
@@ -67,7 +69,6 @@ export const getBannerIcon = (
 
 export const getBannerConfig = ({
     bannerVariant,
-    isOnline,
     licenseType,
     enterpriseLicenseBarMessage = '',
     hideInternetConnectivityBar = false,
@@ -76,16 +77,16 @@ export const getBannerConfig = ({
     const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
         ...(!hideInternetConnectivityBar
             ? {
-                  [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
-                      ? {
-                            text: 'You’re back online!',
-                            rootClassName: 'bcg-5',
-                        }
-                      : {
-                            text: 'You’re offline! Please check your internet connection.',
-                            icon: 'ic-disconnected',
-                            rootClassName: 'bcr-5',
-                        },
+                  [BannerVariant.ONLINE]: {
+                      text: 'You’re back online!',
+                      icon: null,
+                      rootClassName: 'bcg-5',
+                  },
+                  [BannerVariant.OFFLINE]: {
+                      text: 'You’re offline! Please check your internet connection.',
+                      icon: 'ic-disconnected',
+                      rootClassName: 'bcr-5',
+                  },
               }
             : {}),
 
@@ -124,7 +125,7 @@ export const getButtonConfig = (
     handleAppUpdate: () => void,
 ): ButtonProps<ButtonComponentType> | null => {
     switch (bannerView) {
-        case BannerVariant.INTERNET_CONNECTIVITY:
+        case BannerVariant.OFFLINE:
             return {
                 text: 'Retry',
                 startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
@@ -188,7 +189,8 @@ export const getButtonConfig = (
 
 export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     switch (bannerVariant) {
-        case BannerVariant.INTERNET_CONNECTIVITY:
+        case BannerVariant.ONLINE:
+        case BannerVariant.OFFLINE:
         case BannerVariant.INCOMPATIBLE_MICROSERVICES:
             return 'cn-0'
         case BannerVariant.VERSION_UPDATE:
