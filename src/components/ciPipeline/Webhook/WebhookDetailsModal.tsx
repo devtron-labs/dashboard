@@ -694,16 +694,9 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 <CodeEditor
                     mode={MODES.JSON}
                     noParsing
-                    codeEditorProps={{
-                        value: modifiedSampleString,
-                        onChange: changePayload,
-                        height: 300,
-                    }}
-                    codeMirrorProps={{
-                        value: modifiedSampleString,
-                        onChange: changePayload,
-                        height: 300,
-                    }}
+                    value={modifiedSampleString}
+                    onChange={changePayload}
+                    height={300}
                 />
             </div>
         )

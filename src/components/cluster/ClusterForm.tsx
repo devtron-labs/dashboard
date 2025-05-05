@@ -961,20 +961,13 @@ export default function ClusterForm({
 
     const codeEditor = () => {
         return (
-            <CodeEditor.Container flexExpand overflowHidden>
+            <CodeEditor.Container flexExpand>
                 <CodeEditor
                     diffView={false}
                     mode={MODES.YAML}
-                    codeEditorProps={{
-                        value: saveYamlData,
-                        onChange: onChangeEditorValue,
-                        height: '0',
-                    }}
-                    codeMirrorProps={{
-                        value: saveYamlData,
-                        onChange: onChangeEditorValue,
-                        height: 'fitToParent',
-                    }}
+                    value={saveYamlData}
+                    onChange={onChangeEditorValue}
+                    height="fitToParent"
                 >
                     <CodeEditor.Header>
                         <div className="user-list__subtitle flex fs-13 lh-20 w-100">
@@ -1008,7 +1001,7 @@ export default function ClusterForm({
 
     const LoadingCluster = (): JSX.Element => {
         return (
-            <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
+            <div className="dc__position-rel h-100 bg__primary flexbox-col">
                 <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary pb-12 pt-12 pl-20 pr-20">
                     <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding">Add Cluster</h2>
                     <button type="button" className="dc__transparent flex icon-dim-24 " onClick={handleCloseButton}>
@@ -1066,7 +1059,7 @@ export default function ClusterForm({
     )
 
     const saveClusterDetails = (): JSX.Element => (
-        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
+        <div className="dc__position-rel h-100 bg__primary flexbox-col">
             <AddClusterHeader />
             <div className="api-token__list en-2 bw-0 bg__primary br-8 flexbox-col flex-grow-1 dc__overflow-auto">
                 <div
@@ -1230,7 +1223,7 @@ export default function ClusterForm({
                 {isKubeConfigFile && (
                     <div
                         data-testid="valid_cluster_infocolor_bar"
-                        className="cluster-form dc__position-rel h-100 bg__primary flexbox-col"
+                        className="dc__position-rel h-100 bg__primary flexbox-col"
                     >
                         <AddClusterHeader />
 
@@ -1241,7 +1234,7 @@ export default function ClusterForm({
                                         top: false,
                                         right: false,
                                         bottom: false,
-                                        left: false
+                                        left: false,
                                     }}
                                     borderRadiusConfig={{ top: false, right: false }}
                                     description={renderKubeConfigClusterCountInfo(validCluster())}
@@ -1503,7 +1496,7 @@ export default function ClusterForm({
     return getClusterVar ? (
         displayClusterDetails()
     ) : (
-        <div className="cluster-form dc__position-rel h-100 bg__primary flexbox-col">
+        <div className="dc__position-rel h-100 bg__primary flexbox-col">
             <AddClusterHeader />
             <div className="flex-grow-1 flexbox-col dc__overflow-auto">
                 {VirtualClusterSelectionTab && (

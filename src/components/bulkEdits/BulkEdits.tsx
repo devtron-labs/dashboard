@@ -253,16 +253,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div className="code-editor-body dc__grid-half flexbox-col flex-grow-1 mh-0">
                 <CodeEditor
                     mode={MODES.YAML}
-                    codeEditorProps={{
-                        height: '0',
-                        value: this.state.codeEditorPayload,
-                        onChange: this.handleConfigChange,
-                    }}
-                    codeMirrorProps={{
-                        height: 'fitToParent',
-                        value: this.state.codeEditorPayload,
-                        onChange: this.handleConfigChange,
-                    }}
+                    height="fitToParent"
+                    value={this.state.codeEditorPayload}
+                    onChange={this.handleConfigChange}
                 />
                 <div className="bulk-output-drawer bg__primary flexbox-col flex-grow-1 mh-0">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">

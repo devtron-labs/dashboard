@@ -34,7 +34,6 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceDetail,
-    CodeEditorThemesKeys,
     noop,
     AppThemeType,
     Icon,
@@ -567,7 +566,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {memoryData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Icon name="ic-memory" color={null}  size={20} />
+                            <Icon name="ic-memory" color={null} size={20} />
                             <div>{memoryData.name || '-'}</div>
                             <div>{memoryData.requestPercentage || '-'}</div>
                             <div>{memoryData.limitPercentage || '-'}</div>
@@ -918,35 +917,26 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container__editor flex-grow-1 flexbox-col">
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     readOnly={!isEdit}
                     diffView={isReviewState}
                     mode={MODES.YAML}
                     noParsing
-                    codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
-                        value: modifiedManifest,
-                        defaultValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                        height: '0',
-                        onChange: handleEditorValueChange,
-                    }}
-                    codeMirrorProps={{
-                        theme: AppThemeType.dark,
-                        ...(isReviewState
-                            ? {
-                                  diffView: true,
-                                  originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                                  modifiedValue: modifiedManifest,
-                                  onModifiedValueChange: handleEditorValueChange,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: modifiedManifest,
-                                  onChange: handleEditorValueChange,
-                              }),
-                        height: 'fitToParent',
-                    }}
+                    theme={AppThemeType.dark}
+                    height="fitToParent"
+                    {...(isReviewState
+                        ? {
+                              diffView: true,
+                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                              modifiedValue: modifiedManifest,
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: modifiedManifest,
+                              onChange: handleEditorValueChange,
+                          })}
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning

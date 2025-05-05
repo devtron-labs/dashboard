@@ -478,20 +478,12 @@ const ChartDeploymentHistory = ({
                 noParsing
                 mode={MODES.YAML}
                 readOnly
-                codeEditorProps={{
-                    value:
-                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
-                    height: '100%',
-                }}
-                codeMirrorProps={{
-                    value:
-                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
-                    height: 'fitToParent',
-                }}
+                value={
+                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                        ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                        : getEditorValue(selectedDeploymentManifestDetail.manifest)
+                }
+                height="fitToParent"
             />
         )
     }

@@ -246,20 +246,12 @@ export const WebhookConfigModal = ({
 
                 <div className="flexbox-col dc__gap-6">
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
-                    <CodeEditor.Container overflowHidden>
+                    <CodeEditor.Container>
                         <CodeEditor
                             mode={MODES.JSON}
-                            codeEditorProps={{
-                                value: form.payload,
-                                onChange: handleIncomingPayloadChange,
-                                inline: true,
-                                adjustEditorHeightToContent: true,
-                            }}
-                            codeMirrorProps={{
-                                value: form.payload,
-                                onChange: handleIncomingPayloadChange,
-                                height: '100%',
-                            }}
+                            value={form.payload}
+                            onChange={handleIncomingPayloadChange}
+                            height="100%"
                         />
                     </CodeEditor.Container>
                     {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (

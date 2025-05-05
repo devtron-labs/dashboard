@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.12.0-pre-5",
+        "@devtron-labs/devtron-fe-common-lib": "1.12.0-pre-6",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -23,8 +23,6 @@
         "flexsearch": "^0.6.32",
         "jsonpath-plus": "^10.3.0",
         "moment": "^2.29.4",
-        "monaco-editor": "0.44.0",
-        "monaco-yaml": "5.1.1",
         "query-string": "^7.1.1",
         "react": "^17.0.2",
         "react-csv": "^2.2.2",
@@ -33,7 +31,6 @@
         "react-ga4": "^1.4.1",
         "react-gtm-module": "^2.0.11",
         "react-mde": "^11.5.0",
-        "react-monaco-editor": "^0.55.0",
         "react-router-dom": "^5.3.4",
         "react-select": "5.8.0",
         "react-virtualized": "^9.22.5",
@@ -147,11 +144,7 @@
         ],
         "setupFilesAfterEnv": [
             "jest-extended"
-        ],
-        "moduleNameMapper": {
-            "monaco-editor": "<rootDir>/node_modules/react-monaco-editor",
-            "monaco-yaml": "<rootDir>/node_modules/react-monaco-editor"
-        }
+        ]
     },
     "resolutions": {
         "nanoid": "^3.3.8",

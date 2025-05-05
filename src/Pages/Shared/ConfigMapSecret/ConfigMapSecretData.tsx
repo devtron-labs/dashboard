@@ -27,7 +27,6 @@ import {
     configMapSecretMountDataMap,
     convertKeyValuePairToYAML,
     convertYAMLToKeyValuePair,
-    isCodeMirrorEnabled,
     KeyValueTable,
     KeyValueTableData,
     MODES,
@@ -40,7 +39,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -330,30 +328,19 @@ export const ConfigMapSecretData = ({
                 }}
             />
         ) : (
-            <CodeEditor.Container overflowHidden>
+            <CodeEditor.Container>
                 <CodeEditor
                     key={codeEditorRadio}
                     mode={MODES.YAML}
                     readOnly={
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
                     }
-                    codeEditorProps={{
-                        value: getCodeEditorValue(),
-                        // Skip calling onChange if resolvedData exists
-                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
-                        onFocus,
-                        inline: true,
-                        adjustEditorHeightToContent: true,
-                        shebang: sheBangText,
-                    }}
-                    codeMirrorProps={{
-                        value: getCodeEditorValue(),
-                        // Skip calling onChange if resolvedData exists
-                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
-                        onFocus,
-                        height: '100%',
-                        shebang: sheBangText,
-                    }}
+                    value={getCodeEditorValue()}
+                    // Skip calling onChange if resolvedData exists}
+                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
+                    onFocus={onFocus}
+                    height="100%"
+                    shebang={sheBangText}
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">
@@ -379,14 +366,6 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {!isCodeMirrorEnabled() &&
-                        codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA &&
-                        errors[codeEditorFormKey] && (
-                            <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
-                                <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
-                                <p className="m-0">{errors[codeEditorFormKey]}</p>
-                            </div>
-                        )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
             </CodeEditor.Container>
