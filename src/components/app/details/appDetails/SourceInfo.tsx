@@ -196,6 +196,7 @@ export const SourceInfo = ({
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
                                 appId={appDetails.appId}
                                 envId={envId}
+                                isAppView={isAppView}
                             />
                         </div>
                     )}

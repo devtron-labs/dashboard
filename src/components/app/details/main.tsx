@@ -29,6 +29,7 @@ import {
     DeleteConfirmationModal,
     API_STATUS_CODES,
     useUserPreferences,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -61,6 +62,7 @@ const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 export default function AppDetailsPage() {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
+    const { setIntelligenceConfig } = useMainContext()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -133,6 +135,7 @@ export default function AppDetailsPage() {
             setSelectedAppList([])
             setSelectedGroupFilter([])
             setAppListOptions([])
+            setIntelligenceConfig(null)
         }
     }, [appId])
 

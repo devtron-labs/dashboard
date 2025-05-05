@@ -42,6 +42,7 @@ import {
     DevtronLicenseInfo,
     useUserPreferences,
     AboutDevtronDialog,
+    IntelligenceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -126,11 +127,13 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const EnterpriseLicenseBar = importComponentFromFELibrary('EnterpriseLicenseBar', null, 'function')
+const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
+    const navRouteRef = useRef<HTMLDivElement>()
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -158,6 +161,8 @@ export default function NavigationRoutes() {
 
     const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
+    const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
+
     const {
         userPreferences,
         userPreferencesError,
@@ -494,6 +499,8 @@ export default function NavigationRoutes() {
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                intelligenceConfig,
+                setIntelligenceConfig,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -522,6 +529,7 @@ export default function NavigationRoutes() {
                 {serverMode && (
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
+                        ref={navRouteRef}
                     >
                         {/* To be replaced with Announcement Banner */}
                         {EnterpriseLicenseBar && <EnterpriseLicenseBar />}
@@ -645,6 +653,9 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
                                     </Switch>
+                                    {AIResponseWidget && intelligenceConfig && (
+                                        <AIResponseWidget parentRef={navRouteRef} />
+                                    )}
                                 </ErrorBoundary>
                             </Suspense>
                         </div>
