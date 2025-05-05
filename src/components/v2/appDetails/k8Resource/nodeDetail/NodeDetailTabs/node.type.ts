@@ -51,9 +51,10 @@ export interface TerminalViewProps {
 export interface EventTableType {
     loading: boolean
     eventsList: any[]
-    isResourceBrowserView?: boolean
     reconnect?: () => void
     errorValue?: PodEventsType
+    clusterId: number
+    aiWidgetAnalyticsEvent: string
 }
 
 export interface PodEventsType {

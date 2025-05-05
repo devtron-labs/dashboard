@@ -127,7 +127,6 @@ const ClusterUpgradeCompatibilityInfo = ({
                 setSelectedNamespace={noop}
                 renderRefreshBar={noop}
                 updateK8sResourceTab={noop}
-                setWidgetEventDetails={noop}
                 nodeType={null}
                 group={null}
                 showGenericNullState

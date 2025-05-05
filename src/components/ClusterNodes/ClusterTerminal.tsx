@@ -704,7 +704,11 @@ const ClusterTerminal = ({
             </div>
             {selectedTabIndex === 1 && (
                 <div className="flex-grow-1 flexbox-col dc__overflow-auto">
-                    <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
+                    <ClusterEvents
+                        terminalAccessId={terminalAccessIdRef.current}
+                        reconnectStart={reconnectStart}
+                        clusterId={clusterId}
+                    />
                 </div>
             )}
             {selectedTabIndex === 2 && (

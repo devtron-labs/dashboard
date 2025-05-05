@@ -216,7 +216,7 @@ export interface ClusterImageList {
     imageList: ImageList[]
 }
 
-export interface ClusterEventsType {
+export interface ClusterEventsType extends Pick<ClusterTerminalType, 'clusterId'> {
     terminalAccessId: number
     reconnectStart?: () => void
 }

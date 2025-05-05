@@ -16,6 +16,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     capitalizeFirstLetter,
@@ -565,6 +566,11 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
+                            aiWidgetEventDetails={getAIAnalyticsEvents(
+                                isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
+                                isResourceBrowserView ? null : appDetails.appType,
+                            )}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
