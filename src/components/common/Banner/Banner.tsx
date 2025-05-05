@@ -181,7 +181,7 @@ export const Banner = () => {
                     exit="exitUp"
                     custom={!!bannerVariant}
                     transition={{
-                        duration: 3,
+                        duration: 0.3,
                         ease: 'easeOut',
                     }}
                     className={baseClassName}
