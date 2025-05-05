@@ -72,50 +72,65 @@ export const getBannerConfig = ({
     enterpriseLicenseBarMessage = '',
     hideInternetConnectivityBar = false,
     microservice,
-}: BannerConfigProps): BannerConfigType => {
-    const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
-        ...(!hideInternetConnectivityBar
-            ? {
-                  [BannerVariant.ONLINE]: {
-                      text: 'You’re back online!',
-                      icon: null,
-                      rootClassName: 'bcg-5',
-                  },
-                  [BannerVariant.OFFLINE]: {
-                      text: 'You’re offline! Please check your internet connection.',
-                      icon: 'ic-disconnected',
-                      rootClassName: 'bcr-5',
-                  },
-              }
-            : {}),
+}: BannerConfigProps): BannerConfigType | null => {
+    switch (bannerVariant) {
+        case BannerVariant.ONLINE:
+            if (!hideInternetConnectivityBar) {
+                return {
+                    text: 'You’re back online!',
+                    icon: null,
+                    rootClassName: 'bcg-5',
+                }
+            }
+            break
 
-        [BannerVariant.VERSION_UPDATE]: {
-            text: 'A new version is available.',
-            icon: 'ic-sparkle-color',
-            rootClassName: 'banner__version-update',
-        },
+        case BannerVariant.OFFLINE:
+            if (!hideInternetConnectivityBar) {
+                return {
+                    text: 'You’re offline! Please check your internet connection.',
+                    icon: 'ic-disconnected',
+                    rootClassName: 'bcr-5',
+                }
+            }
+            break
 
-        [BannerVariant.INCOMPATIBLE_MICROSERVICES]: {
-            text: `Incompatible ${microservice} service detected.`,
-            icon: 'ic-info-outline',
-            rootClassName: 'bcr-5',
-        },
+        case BannerVariant.VERSION_UPDATE:
+            return {
+                text: 'A new version is available.',
+                icon: 'ic-sparkle-color',
+                rootClassName: 'banner__version-update',
+            }
 
-        [BannerVariant.ANNOUNCEMENT]: {
-            text: ANNOUNCEMENT_CONFIG.message,
-            icon: 'ic-megaphone-left',
-            rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
-            isDismissible: true,
-        },
+        case BannerVariant.INCOMPATIBLE_MICROSERVICES:
+            return {
+                text: `Incompatible ${microservice} service detected.`,
+                icon: 'ic-info-outline',
+                rootClassName: 'bcr-5',
+            }
 
-        [BannerVariant.LICENSE]: {
-            text: enterpriseLicenseBarMessage,
-            icon: licenseType,
-            rootClassName: VARIANT_TO_BG_MAP[licenseType],
-        },
+        case BannerVariant.ANNOUNCEMENT:
+            return {
+                text: ANNOUNCEMENT_CONFIG.message,
+                icon: 'ic-megaphone-left',
+                rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
+                isDismissible: true,
+            }
+
+        case BannerVariant.LICENSE:
+            return {
+                text: enterpriseLicenseBarMessage,
+                icon: licenseType,
+                rootClassName: VARIANT_TO_BG_MAP[licenseType],
+            }
+
+        default:
+            return null
     }
-
-    return bannerConfigMap[bannerVariant]
+    return {
+        text: '',
+        icon: null,
+        rootClassName: '',
+    }
 }
 
 export const getButtonConfig = (

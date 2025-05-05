@@ -12,8 +12,9 @@ import {
 
 import { VersionUpdateProps } from './types'
 
-export const useVersionUpdateReload = ({ showToast = true, setBGUpdated }: VersionUpdateProps) => {
+export const useVersionUpdateReload = ({ showToast = true }: VersionUpdateProps) => {
     const refreshing = useRef(false)
+    const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
     const location = useLocation()
 
@@ -136,6 +137,7 @@ export const useVersionUpdateReload = ({ showToast = true, setBGUpdated }: Versi
     }, [location])
 
     return {
+        bgUpdated,
         handleAppUpdate,
         doesNeedRefresh,
         updateServiceWorker,

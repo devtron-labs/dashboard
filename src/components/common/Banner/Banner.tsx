@@ -78,7 +78,7 @@ const bannerVariants = {
 
 export const Banner = () => {
     const { isAirgapped, currentServerInfo } = useMainContext()
-    const { bgUpdated, doesNeedRefresh, handleAppUpdate } = useVersionUpdateReload({ showToast: false })
+    const { doesNeedRefresh, handleAppUpdate, bgUpdated } = useVersionUpdateReload({ showToast: false })
     const licenseConfig = useEnterpriseLicenseConfig()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
