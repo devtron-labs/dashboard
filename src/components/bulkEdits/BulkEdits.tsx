@@ -199,7 +199,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorHeader = () => {
         return (
             <div className="flex bg__primary px-20 py-8 dc__border-bottom dc__content-space">
-                <div className='flexbox dc__gap-12'>
+                <div className="flexbox dc__gap-12">
                     <Button
                         text="Run"
                         onClick={this.handleRunButton}
@@ -216,11 +216,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     ></Button>
                 </div>
 
-                    {!this.state.showExamples ? (
-                        <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })}>
-                            See Samples
-                        </div>
-                    ) : null}
+                {!this.state.showExamples ? (
+                    <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })}>
+                        See Samples
+                    </div>
+                ) : null}
             </div>
         )
     }
@@ -279,7 +279,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                             name={OutputObjectTabs.IMPACTED_OBJECTS}
                         />
                     </div>
-                    <div className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1 mh-0" data-testid="output-message">
+                    <div
+                        className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1 mh-0"
+                        data-testid="output-message"
+                    >
                         {this.state.showOutputData ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
@@ -345,7 +348,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>
                 <div>
                     *DEPLOYMENT TEMPLATE: <br /> <br />
-                    {this.state.impactedObjects.deploymentTemplate.length === 0 ? (
+                    {!this.state.impactedObjects.deploymentTemplate?.length ? (
                         <>No Result Found</>
                     ) : (
                         <>
@@ -372,7 +375,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>
                 <div>
                     *SECRETS: <br /> <br />
-                    {this.state.impactedObjects.secret.length === 0 ? (
+                    {!this.state.impactedObjects.secret?.length ? (
                         <>No Result Found</>
                     ) : (
                         <>
@@ -508,7 +511,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             </div>
         )
     }
-
 
     renderBulkEditBody = () => {
         return !this.state.showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()

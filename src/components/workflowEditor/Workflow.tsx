@@ -46,7 +46,7 @@ import {
     ChangeCIPayloadType,
     CIPipelineNodeType,
     URLS as CommonURLS,
-    AppConfigProps
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -64,7 +64,8 @@ const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
 )
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number
     name: string
@@ -535,7 +536,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-
     getEdges({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
         return nodesWithBufferHeight.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
@@ -683,7 +683,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 )
             }
         }
-        return edgeList
+
+        // In the SVG, the bottom elements are rendered on top.
+        // By reversing, this prevents the path elements (workflow arrows) from overlapping and covering other elements
+        // like the ApprovalNode button or add node button, which are rendered earlier.
+        return edgeList.reverse()
     }
 
     toggleShowDeleteDialog = () => {
@@ -787,7 +791,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
         return (
             <ConditionalWrap
-                condition={!this.props.isOffendingPipelineView && !this.props.isTemplateView && this.props.showWebhookTippy}
+                condition={
+                    !this.props.isOffendingPipelineView && !this.props.isTemplateView && this.props.showWebhookTippy
+                }
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"
