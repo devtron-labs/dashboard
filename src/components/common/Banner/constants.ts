@@ -20,10 +20,12 @@ import { AnnouncementConfigTypes } from './types'
 import { getValidAnnouncementType } from './utils'
 
 export enum BannerVariant {
-    INTERNET_CONNECTIVITY = 'INTERNET_CONNECTIVITY',
     VERSION_UPDATE = 'VERSION_UPDATE',
     ANNOUNCEMENT = 'ANNOUNCEMENT',
     LICENSE = 'LICENSE',
+    INCOMPATIBLE_MICROSERVICES = 'INCOMPATIBLE_MICROSERVICES',
+    OFFLINE = 'OFFLINE',
+    ONLINE = 'ONLINE',
 }
 
 export const ANNOUNCEMENT_CONFIG: AnnouncementConfigTypes = {
@@ -34,5 +36,3 @@ export const ANNOUNCEMENT_CONFIG: AnnouncementConfigTypes = {
     buttonText: window._env_.ANNOUNCEMENT_BANNER_BUTTON_TEXT,
     buttonLink: window._env_.ANNOUNCEMENT_BANNER_BUTTON_LINK,
 }
-
-export const ONLINE_BANNER_TIMEOUT = 3000 // online banner timeout

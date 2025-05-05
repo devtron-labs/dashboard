@@ -392,27 +392,6 @@ export function deepEqual(configA: any, configB: any): boolean {
     }
 }
 
-export function useOnline() {
-    const [online, setOnline] = useState(navigator.onLine)
-    useEffect(() => {
-        function handleOnline(e) {
-            setOnline(true)
-        }
-
-        function handleOffline(e) {
-            setOnline(false)
-        }
-        window.addEventListener('online', handleOnline)
-        window.addEventListener('offline', handleOffline)
-        return () => {
-            window.removeEventListener('online', handleOnline)
-            window.removeEventListener('offline', handleOffline)
-        }
-    }, [])
-
-    return online
-}
-
 /**
  * @deprecated
  */
@@ -1030,10 +1009,6 @@ export const handleOnBlur = (e): void => {
 
 export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
-}
-
-export const reloadLocation = () => {
-    window.location.reload()
 }
 
 /**

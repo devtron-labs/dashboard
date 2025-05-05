@@ -124,7 +124,6 @@ import { URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
-import { Banner } from '@Components/common/Banner/Banner'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')

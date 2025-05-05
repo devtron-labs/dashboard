@@ -2,13 +2,27 @@ import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
-import { API_STATUS_CODES, logExceptionToSentry, noop, refresh } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    API_STATUS_CODES,
+    Icon,
+    logExceptionToSentry,
+    noop,
+    refresh,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-export const useVersionUpdateReload = () => {
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
+
+import { VersionUpdateProps } from './types'
+
+export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdateProps) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
     const location = useLocation()
+
+    const updateToastRef = useRef(null)
 
     const handleControllerChange = () => {
         if (refreshing.current) {
@@ -18,9 +32,38 @@ export const useVersionUpdateReload = () => {
             refresh()
             refreshing.current = true
         } else {
+            if (typeof setBGUpdated !== 'function') return
             setBGUpdated(true)
         }
     }
+
+    useEffect(() => {
+        if (!bgUpdated) {
+            return
+        }
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
+
+        updateToastRef.current = ToastManager.showToast(
+            {
+                variant: ToastVariantType.info,
+                title: 'Update available',
+                description: 'This page has been updated. Please save any unsaved changes and refresh.',
+                buttonProps: {
+                    text: 'Reload',
+                    dataTestId: 'reload-btn',
+                    onClick: refresh,
+                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                },
+                icon: <Icon name="ic-sparkle-color" color={null} />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+            },
+            {
+                autoClose: false,
+            },
+        )
+    }, [bgUpdated])
 
     useEffect(() => {
         if (navigator.serviceWorker) {
@@ -41,7 +84,10 @@ export const useVersionUpdateReload = () => {
         return 3
     })()
 
-    function handleNeedRefresh() {
+    const handleNeedRefresh = () => {
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
         setDoesNeedRefresh(true)
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
@@ -103,6 +149,9 @@ export const useVersionUpdateReload = () => {
     }, [needRefresh])
 
     const handleAppUpdate = () => {
+        if (ToastManager.isToastActive(updateToastRef.current) && showVersionUpdateToast) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
     }
@@ -116,6 +165,8 @@ export const useVersionUpdateReload = () => {
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh) {
                 handleNeedRefresh()
+            } else if (ToastManager.isToastActive(updateToastRef.current) && showVersionUpdateToast) {
+                ToastManager.dismissToast(updateToastRef.current)
             }
         }
     }, [location])
@@ -126,5 +177,6 @@ export const useVersionUpdateReload = () => {
         doesNeedRefresh,
         updateServiceWorker,
         handleControllerChange,
+        updateToastRef,
     }
 }

@@ -18,6 +18,7 @@ import {
     customEnv,
     EnvironmentDataValuesDTO,
     IconsProps,
+    ReloadVersionConfigTypes,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -41,4 +42,9 @@ export interface NavigationListItemType {
 
 export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'> {
     isAirgapped: boolean
+}
+
+export interface NavigationRoutesTypes {
+    reloadVersionConfig: ReloadVersionConfigTypes
+    hideVersionUpdateToast: () => void
 }

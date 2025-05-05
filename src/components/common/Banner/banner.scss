@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
- .banner-row {
-    grid-template-columns: 28px 1fr 28px;
-}
 
-.banner__version-update {
-    background: linear-gradient(92deg, #4C40BF 0%, #4084BF 72.45%, #8529A3 96.63%);
+.banner {
+    &--row {
+        grid-template-columns: 28px 1fr 28px;
+    }
+
+    &__version-update {
+        background: linear-gradient(92deg, #4C40BF 0%, #4084BF 72.45%, #8529A3 96.63%);
+    }
 }

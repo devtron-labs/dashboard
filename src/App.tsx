@@ -28,6 +28,7 @@ import {
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
@@ -45,11 +46,17 @@ const App = () => {
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
+    const [showVersionUpdateToast, setShowVersionUpdateToast] = useState(true)
 
     const { setEmail } = useUserEmail()
 
     const location = useLocation()
     const { push } = useHistory()
+
+    const { bgUpdated, handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, updateToastRef } =
+        useVersionUpdateReload({
+            showVersionUpdateToast,
+        })
 
     const isDirectApprovalNotification =
         location.pathname &&
@@ -76,6 +83,10 @@ const App = () => {
         if (token) {
             setApprovalToken(token)
         }
+    }
+
+    const hideVersionUpdateToast = () => {
+        setShowVersionUpdateToast(false)
     }
 
     async function validation() {
@@ -119,6 +130,15 @@ const App = () => {
         }
     }, [])
 
+    const reloadVersionConfig = {
+        handleAppUpdate,
+        doesNeedRefresh,
+        updateServiceWorker,
+        handleControllerChange,
+        bgUpdated,
+        updateToastRef,
+    }
+
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
             <div className="full-height-width bg__tertiary">
@@ -137,7 +157,15 @@ const App = () => {
                             <ActivateLicense />
                         </Route>
                         {!window._env_.K8S_CLIENT && <Route path={URLS.LOGIN} component={Login} />}
-                        <Route path="/" render={() => <NavigationRoutes />} />
+                        <Route
+                            path="/"
+                            render={() => (
+                                <NavigationRoutes
+                                    reloadVersionConfig={reloadVersionConfig}
+                                    hideVersionUpdateToast={hideVersionUpdateToast}
+                                />
+                            )}
+                        />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>
                     <div id="visible-modal" />

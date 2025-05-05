@@ -81,7 +81,7 @@ import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
-import { EnvironmentDataStateType } from './types'
+import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 import { Banner } from '../Banner/Banner'
 
 // Monaco Editor worker initialization
@@ -125,9 +125,8 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
     handleUpdatePipelineRBACViewSelectedTab: (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => void
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
-const EnterpriseLicenseBar = importComponentFromFELibrary('EnterpriseLicenseBar', null, 'function')
 
-export default function NavigationRoutes() {
+export default function NavigationRoutes({ reloadVersionConfig, hideVersionUpdateToast }: NavigationRoutesTypes ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -172,6 +171,7 @@ export default function NavigationRoutes() {
     const handleCloseLicenseInfoDialog = () => {
         setLicenseInfoDialogType(null)
     }
+
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -476,6 +476,7 @@ export default function NavigationRoutes() {
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                reloadVersionConfig,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -511,7 +512,7 @@ export default function NavigationRoutes() {
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
                     >
-                        <Banner />
+                        <Banner hideVersionUpdateToast={hideVersionUpdateToast} />
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <Suspense
                                 fallback={

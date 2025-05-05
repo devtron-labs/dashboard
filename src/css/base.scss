@@ -4577,21 +4577,6 @@ textarea::placeholder {
     font-size: 13px !important;
 }
 
-// Start: accouncement banner
-.announcement-banner-container {
-    &.page-header-banner {
-        width: fit-content;
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        text-align: center;
-    }
-}
-
-// End: accouncement banner
-
 .bulk-selection-widget {
     border: 1px solid var(--B500);
     background: var(--bg-bulk-selection-widget);

@@ -20,10 +20,11 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    CONTACT_SUPPORT_LINK,
     getDateInMilliseconds,
     Icon,
+    IconBaseColorType,
     IconsProps,
-    InfoBlockProps,
     InfoBlockVariant,
     InfoBlockVariantType,
     refresh,
@@ -34,71 +35,90 @@ import {
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { BannerConfigProps, BannerConfigType } from './types'
 
-export const getBannerIcon = (
-    bannerVariant: BannerVariant,
-    type: InfoBlockProps['variant'],
-    iconName: IconsProps['name'],
-) => {
-    const variantWithIconMap: Record<BannerVariant, IconsProps['name'] | null> = {
-        [BannerVariant.INTERNET_CONNECTIVITY]: 'ic-disconnect',
-        [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
-        [BannerVariant.LICENSE]: iconName,
-        [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
-    }
+export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
+    Object.values(InfoBlockVariant).includes(type)
 
-    return (
-        <Icon
-            name={variantWithIconMap[bannerVariant]}
-            color={bannerVariant === BannerVariant.ANNOUNCEMENT ? VARIANT_TO_ICON_COLOR_MAP[type] : null}
-            size={16}
-        />
-    )
-}
+export const AnnouncementBannerType = getValidAnnouncementType(window._env_.ANNOUNCEMENT_BANNER_TYPE)
+    ? window._env_.ANNOUNCEMENT_BANNER_TYPE
+    : InfoBlockVariant.HELP
+
+const getVariantWithIconMap = (iconName: IconsProps['name']): Partial<Record<BannerVariant, IconsProps['name']>> => ({
+    [BannerVariant.OFFLINE]: 'ic-disconnect',
+    [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
+    [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'ic-info-outline',
+    [BannerVariant.LICENSE]: iconName,
+    [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
+})
+
+const getVariantWithIconColorMap = (): Record<BannerVariant, IconBaseColorType | null> => ({
+    [BannerVariant.OFFLINE]: null,
+    [BannerVariant.ONLINE]: null,
+    [BannerVariant.VERSION_UPDATE]: null,
+    [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
+    [BannerVariant.LICENSE]: null,
+    [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[AnnouncementBannerType],
+})
+export const getBannerIcon = (bannerVariant: BannerVariant, iconName: IconsProps['name']) => (
+    <Icon
+        name={getVariantWithIconMap(iconName)[bannerVariant]}
+        color={getVariantWithIconColorMap()[bannerVariant]}
+        size={16}
+    />
+)
 
 export const getBannerConfig = ({
     bannerVariant,
-    isOnline,
     licenseType,
     enterpriseLicenseBarMessage = '',
-    hideInternetConnectivityBar = false,
-}: BannerConfigProps): BannerConfigType => {
-    const bannerConfigMap: Partial<Record<BannerVariant, BannerConfigType>> = {
-        ...(!hideInternetConnectivityBar
-            ? {
-                  [BannerVariant.INTERNET_CONNECTIVITY]: isOnline
-                      ? {
-                            text: 'You’re back online!',
-                            rootClassName: 'bcg-5',
-                        }
-                      : {
-                            text: 'You’re offline! Please check your internet connection.',
-                            icon: 'ic-disconnected',
-                            rootClassName: 'bcr-5',
-                        },
-              }
-            : {}),
+    microservice,
+}: BannerConfigProps): BannerConfigType | null => {
+    switch (bannerVariant) {
+        case BannerVariant.ONLINE:
+            return {
+                text: 'You’re back online!',
+                icon: null,
+                rootClassName: 'bcg-5',
+            }
 
-        [BannerVariant.VERSION_UPDATE]: {
-            text: 'A new version is available. Please refresh the page to get the latest features.',
-            icon: 'ic-sparkle-color',
-            rootClassName: 'banner__version-update',
-        },
+        case BannerVariant.OFFLINE:
+            return {
+                text: 'You’re offline! Please check your internet connection.',
+                icon: 'ic-disconnected',
+                rootClassName: 'bcr-5',
+            }
 
-        [BannerVariant.ANNOUNCEMENT]: {
-            text: ANNOUNCEMENT_CONFIG.message,
-            icon: 'ic-megaphone-left',
-            rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
-            isDismissible: true,
-        },
+        case BannerVariant.VERSION_UPDATE:
+            return {
+                text: 'A new version is available.',
+                icon: 'ic-sparkle-color',
+                rootClassName: 'banner__version-update',
+            }
 
-        [BannerVariant.LICENSE]: {
-            text: enterpriseLicenseBarMessage,
-            icon: licenseType,
-            rootClassName: VARIANT_TO_BG_MAP[licenseType],
-        },
+        case BannerVariant.INCOMPATIBLE_MICROSERVICES:
+            return {
+                text: `Incompatible ${microservice} service detected.`,
+                icon: 'ic-info-outline',
+                rootClassName: 'bcr-5',
+            }
+
+        case BannerVariant.ANNOUNCEMENT:
+            return {
+                text: ANNOUNCEMENT_CONFIG.message,
+                icon: 'ic-megaphone-left',
+                rootClassName: VARIANT_TO_BG_MAP[ANNOUNCEMENT_CONFIG.type],
+                isDismissible: true,
+            }
+
+        case BannerVariant.LICENSE:
+            return {
+                text: enterpriseLicenseBarMessage,
+                icon: licenseType,
+                rootClassName: VARIANT_TO_BG_MAP[licenseType],
+            }
+
+        default:
+            return null
     }
-
-    return bannerConfigMap[bannerVariant]
 }
 
 export const getButtonConfig = (
@@ -107,7 +127,7 @@ export const getButtonConfig = (
     handleAppUpdate: () => void,
 ): ButtonProps<ButtonComponentType> | null => {
     switch (bannerView) {
-        case BannerVariant.INTERNET_CONNECTIVITY:
+        case BannerVariant.OFFLINE:
             return {
                 text: 'Retry',
                 startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
@@ -126,6 +146,21 @@ export const getButtonConfig = (
                 size: ComponentSizeType.xxs,
                 dataTestId: 'banner-version-update-reload-button',
                 style: ButtonStyleType.neutralWhite,
+            }
+        case BannerVariant.INCOMPATIBLE_MICROSERVICES:
+            return {
+                startIcon: <Icon name="ic-chat-circle-dots" color={null} />,
+                text: 'Contact Support',
+                variant: ButtonVariantType.text,
+                size: ComponentSizeType.xxs,
+                dataTestId: 'banner-incompatible-reload-button',
+                style: ButtonStyleType.neutralN0,
+                component: ButtonComponentType.anchor,
+                anchorProps: {
+                    href: CONTACT_SUPPORT_LINK,
+                    target: '_blank',
+                    rel: 'noreferrer noopener',
+                },
             }
         case BannerVariant.ANNOUNCEMENT:
             return {
@@ -156,7 +191,9 @@ export const getButtonConfig = (
 
 export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     switch (bannerVariant) {
-        case BannerVariant.INTERNET_CONNECTIVITY:
+        case BannerVariant.ONLINE:
+        case BannerVariant.OFFLINE:
+        case BannerVariant.INCOMPATIBLE_MICROSERVICES:
             return 'cn-0'
         case BannerVariant.VERSION_UPDATE:
             return 'text__white'
@@ -165,18 +202,8 @@ export const getBannerTextColor = (bannerVariant: BannerVariant) => {
     }
 }
 
-export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
-    [
-        InfoBlockVariant.SUCCESS,
-        InfoBlockVariant.WARNING,
-        InfoBlockVariant.ERROR,
-        InfoBlockVariant.INFORMATION,
-        InfoBlockVariant.HELP,
-    ].includes(type)
-
 export const shouldShowAnnouncementBanner = (): boolean => {
     const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')
     const loginTime = localStorage.getItem('dashboardLoginTime')
-    if (!expiry) return true
-    return getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
+    return !expiry || getDateInMilliseconds(loginTime) > getDateInMilliseconds(expiry)
 }
