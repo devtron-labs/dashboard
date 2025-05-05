@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -23,6 +23,8 @@ import {
     Checkbox,
     DeploymentAppTypes,
     TabGroup,
+    getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Info } from '../../../../../assets/icons/ic-info-filled.svg'
 import { ReactComponent as Close } from '../../../../../assets/icons/ic-close.svg'
@@ -66,8 +68,14 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const isHelmApp =
         appDetails.appType === AppType.DEVTRON_HELM_CHART || appDetails.appType === AppType.EXTERNAL_HELM_CHART
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     useEffect(() => {
         _getAndSetAppDetail()
+
+        return () => {
+            abortControllerRef.current.abort()
+        }
     }, [])
 
     useEffect(() => {
@@ -119,14 +127,22 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
     const _getAndSetAppDetail = async () => {
         try {
             if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp) {
-                const response = await getInstalledChartDetailWithResourceTree(
-                    +appDetails.installedAppId,
-                    +appDetails.environmentId,
+                const response = await abortPreviousRequests(
+                    () =>
+                        getInstalledChartDetailWithResourceTree(
+                            +appDetails.installedAppId,
+                            +appDetails.environmentId,
+                            abortControllerRef,
+                        ),
+                    abortControllerRef,
                 )
+
                 IndexStore.publishAppDetails(response.result, AppType.DEVTRON_HELM_CHART)
             }
         } catch (e) {
-            showError(e)
+            if (!getIsRequestAborted(e)) {
+                showError(e)
+            }
         } finally {
             setfetchingDetails(false)
         }
@@ -228,7 +244,6 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                             'data-testid': `scale-workloads-tab-${index}`,
                         },
                     }))}
-                    alignActiveBorderWithContainer
                 />
             </div>
         )
@@ -388,7 +403,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
                                         </div>
                                     </Checkbox>
                                 </div>
-                                <div  className="h-192 dc__overflow-auto">
+                                <div className="h-192 dc__overflow-auto">
                                     {Array.from(_workloadsList.values()).map((item) => (
                                         <div key={`${item.kind}/${item.name}`} className="check-single-workload">
                                             <Checkbox

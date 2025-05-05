@@ -165,6 +165,7 @@ export type CDMaterialProps = {
      */
     selectedAppName?: string
     isTriggerBlockedDueToPlugin?: boolean
+    handleSuccess?: () => void
 } & CDMaterialBulkRuntimeParams &
     CDMaterialPluginWarningProps
 
@@ -617,9 +618,6 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     savingRegexValue: boolean
-}
-export interface AppDetailsProps {
-    isV2: boolean
 }
 
 export interface TriggerViewDeploymentConfigType {

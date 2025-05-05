@@ -41,6 +41,7 @@ import {
     LicenseInfoDialogType,
     DevtronLicenseInfo,
     useUserPreferences,
+    AboutDevtronDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -84,7 +85,7 @@ const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
 const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
-const V2Details = lazy(() => import('../../v2/index'))
+const DevtronChartRouter = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -336,7 +337,8 @@ export default function NavigationRoutes() {
                     result.canOnlyViewPermittedEnvOrgLevel ??
                     ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
+                canFetchHelmAppStatus:
+                    result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ??
                     ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
@@ -424,6 +426,23 @@ export default function NavigationRoutes() {
 
     const showStackManager = !devtronManagedLicensingEnabled
 
+    const renderAboutDevtronDialog = () => {
+        if (!licenseInfoDialogType) {
+            return null
+        }
+        return licenseData && LicenseInfoDialog ? (
+            <LicenseInfoDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                initialDialogType={licenseInfoDialogType}
+            />
+        ) : (
+            <AboutDevtronDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                isFELibAvailable={!!LicenseInfoDialog}
+            />
+        )
+    }
+
     return (
         <MainContextProvider
             value={{
@@ -471,13 +490,7 @@ export default function NavigationRoutes() {
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
-                {licenseInfoDialogType && LicenseInfoDialog && (
-                    <LicenseInfoDialog
-                        handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
-                        currentVersion={currentServerInfo.serverInfo?.currentVersion}
-                        initialDialogType={licenseInfoDialogType}
-                    />
-                )}
+                {renderAboutDevtronDialog()}
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
@@ -659,10 +672,9 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={(props) => <V2Details envType={EnvType.CHART} />}
+                        render={(props) => <DevtronChartRouter envType={EnvType.CHART} />}
                     />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
-                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
 
                     <Route exact path="">
                         <RedirectToAppList />

@@ -341,7 +341,6 @@ const EphemeralContainerDrawer = ({
                         },
                     ]}
                     hideTopPadding
-                    alignActiveBorderWithContainer
                 />
             </div>
         )
