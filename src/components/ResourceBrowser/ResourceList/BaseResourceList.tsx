@@ -17,6 +17,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import DOMPurify from 'dompurify'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -565,7 +566,7 @@ const BaseResourceListContent = ({
                                                 status: resourceData.status ?? '',
                                             },
                                             prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
-                                            analyticsCategory: 'AI_RB_RESOURCE',
+                                            analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
                                         }}
                                     />
                                 </div>

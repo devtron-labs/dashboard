@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { formatDurationFromNow } from 'src/Shared'
-
-import { AppThemeType, getComponentSpecificThemeClass, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppThemeType,
+    getComponentSpecificThemeClass,
+    getTimeDifference,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -32,8 +35,8 @@ const EVENTS_TABLE_HEADERS = [
     'Reason',
     'Message',
     'Count',
-    'Last Seen',
     'Age',
+    'Last Seen',
     ...(ExplainWithAIButton ? [''] : []),
 ]
 
@@ -83,8 +86,11 @@ export const EventsTable = ({
                     </div>
                     {eventsList.map((event, index) => {
                         const { type, reason, message, count, firstTimestamp, lastTimestamp } = event
-                        const lastSeen = formatDurationFromNow(lastTimestamp)
-                        const age = formatDurationFromNow(firstTimestamp)
+
+                        const currentTimeStamp = new Date().toISOString()
+                        const lastSeen = getTimeDifference({ startTime: lastTimestamp, endTime: currentTimeStamp })
+                        const age = getTimeDifference({ startTime: firstTimestamp, endTime: currentTimeStamp })
+
                         const isNormalEventType = type === 'Normal'
                         return (
                             <div

@@ -16,6 +16,7 @@
 
 /* eslint-disable react/no-danger */
 import DOMPurify from 'dompurify'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 import { highlightSearchText, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -160,7 +161,7 @@ export const EventList = ({ listRef, filteredData, handleResourceClick, searchTe
                                     clusterId,
                                     metadata: eventDetails,
                                     prompt: JSON.stringify(eventDetails),
-                                    analyticsCategory: 'AI_RB_RESOURCE',
+                                    analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
                                 }}
                             />
                         ) : (

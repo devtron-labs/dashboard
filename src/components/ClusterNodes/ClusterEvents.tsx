@@ -22,6 +22,7 @@ import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetail
 import MessageUI from '../v2/common/message.ui'
 import { getClusterEvents } from './clusterNodes.service'
 import { ClusterEventsType } from './types'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 export default function ClusterEvents({ terminalAccessId, reconnectStart, clusterId }: ClusterEventsType) {
     const [events, setEvents] = useState([])
@@ -81,7 +82,7 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart, cluste
             errorValue={errorValue}
             reconnect={reconnectStart}
             clusterId={clusterId}
-            aiWidgetAnalyticsEvent='AI_RB_EVENT'
+            aiWidgetAnalyticsEvent={getAIAnalyticsEvents('RB_EVENT')}
         />
     )
 }

@@ -16,6 +16,7 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     abortPreviousRequests,
@@ -133,7 +134,10 @@ export const K8SResourceList = ({
             handleResourceClick={handleResourceClick}
         >
             {PodRestart && (
-                <PodRestart aiWidgetAnalyticsEvent="AI_RB_POD_RESTART" rbacPayload={getPodRestartRBACPayload()} />
+                <PodRestart
+                    aiWidgetAnalyticsEvent={getAIAnalyticsEvents('RB_POD_RESTART')}
+                    rbacPayload={getPodRestartRBACPayload()}
+                />
             )}
         </BaseResourceList>
     )

@@ -56,7 +56,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                     </Tippy>
                 )}
                 <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
-                {!isStatusHealthy && (debugNode || message) && (
+                {ExplainWithAIButton && !isStatusHealthy && (debugNode || message) && (
                     <ExplainWithAIButton
                         intelligenceConfig={{
                             clusterId: appDetails.clusterId,
