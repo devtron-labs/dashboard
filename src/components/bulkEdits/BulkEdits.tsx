@@ -341,7 +341,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>
                 <div>
                     *DEPLOYMENT TEMPLATE: <br /> <br />
-                    {this.state.impactedObjects.deploymentTemplate.length === 0 ? (
+                    {!this.state.impactedObjects.deploymentTemplate?.length ? (
                         <>No Result Found</>
                     ) : (
                         <>
@@ -368,7 +368,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             <div>
                 <div>
                     *SECRETS: <br /> <br />
-                    {this.state.impactedObjects.secret.length === 0 ? (
+                    {!this.state.impactedObjects.secret?.length ? (
                         <>No Result Found</>
                     ) : (
                         <>
