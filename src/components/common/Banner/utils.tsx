@@ -25,7 +25,6 @@ import {
     Icon,
     IconBaseColorType,
     IconsProps,
-    InfoBlockProps,
     InfoBlockVariant,
     InfoBlockVariantType,
     refresh,
@@ -36,6 +35,19 @@ import {
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { BannerConfigProps, BannerConfigType } from './types'
 
+export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
+    [
+        InfoBlockVariant.SUCCESS,
+        InfoBlockVariant.WARNING,
+        InfoBlockVariant.ERROR,
+        InfoBlockVariant.INFORMATION,
+        InfoBlockVariant.HELP,
+    ].includes(type)
+
+export const AnnouncementBannerType = getValidAnnouncementType(window._env_.ANNOUNCEMENT_BANNER_TYPE)
+    ? window._env_.ANNOUNCEMENT_BANNER_TYPE
+    : InfoBlockVariant.HELP
+
 const getVariantWithIconMap = (iconName: IconsProps['name']): Partial<Record<BannerVariant, IconsProps['name']>> => ({
     [BannerVariant.OFFLINE]: 'ic-disconnect',
     [BannerVariant.VERSION_UPDATE]: 'ic-sparkle-color',
@@ -44,24 +56,18 @@ const getVariantWithIconMap = (iconName: IconsProps['name']): Partial<Record<Ban
     [BannerVariant.ANNOUNCEMENT]: 'ic-megaphone-left',
 })
 
-const getVariantWithIconColorMap = (
-    type: InfoBlockProps['variant'],
-): Record<BannerVariant, IconBaseColorType | null> => ({
+const getVariantWithIconColorMap = (): Record<BannerVariant, IconBaseColorType | null> => ({
     [BannerVariant.OFFLINE]: null,
     [BannerVariant.ONLINE]: null,
     [BannerVariant.VERSION_UPDATE]: null,
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
     [BannerVariant.LICENSE]: null,
-    [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[type],
+    [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[AnnouncementBannerType],
 })
-export const getBannerIcon = (
-    bannerVariant: BannerVariant,
-    type: InfoBlockProps['variant'],
-    iconName: IconsProps['name'],
-) => (
+export const getBannerIcon = (bannerVariant: BannerVariant, iconName: IconsProps['name']) => (
     <Icon
         name={getVariantWithIconMap(iconName)[bannerVariant]}
-        color={getVariantWithIconColorMap(type)[bannerVariant]}
+        color={getVariantWithIconColorMap()[bannerVariant]}
         size={16}
     />
 )
@@ -70,29 +76,22 @@ export const getBannerConfig = ({
     bannerVariant,
     licenseType,
     enterpriseLicenseBarMessage = '',
-    hideInternetConnectivityBar = false,
     microservice,
 }: BannerConfigProps): BannerConfigType | null => {
     switch (bannerVariant) {
         case BannerVariant.ONLINE:
-            if (!hideInternetConnectivityBar) {
-                return {
-                    text: 'You’re back online!',
-                    icon: null,
-                    rootClassName: 'bcg-5',
-                }
+            return {
+                text: 'You’re back online!',
+                icon: null,
+                rootClassName: 'bcg-5',
             }
-            break
 
         case BannerVariant.OFFLINE:
-            if (!hideInternetConnectivityBar) {
-                return {
-                    text: 'You’re offline! Please check your internet connection.',
-                    icon: 'ic-disconnected',
-                    rootClassName: 'bcr-5',
-                }
+            return {
+                text: 'You’re offline! Please check your internet connection.',
+                icon: 'ic-disconnected',
+                rootClassName: 'bcr-5',
             }
-            break
 
         case BannerVariant.VERSION_UPDATE:
             return {
@@ -125,11 +124,6 @@ export const getBannerConfig = ({
 
         default:
             return null
-    }
-    return {
-        text: '',
-        icon: null,
-        rootClassName: '',
     }
 }
 
@@ -213,15 +207,6 @@ export const getBannerTextColor = (bannerVariant: BannerVariant) => {
             return 'cn-9'
     }
 }
-
-export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
-    [
-        InfoBlockVariant.SUCCESS,
-        InfoBlockVariant.WARNING,
-        InfoBlockVariant.ERROR,
-        InfoBlockVariant.INFORMATION,
-        InfoBlockVariant.HELP,
-    ].includes(type)
 
 export const shouldShowAnnouncementBanner = (): boolean => {
     const expiry = localStorage.getItem('expiryDateOfHidingAnnouncementBanner')

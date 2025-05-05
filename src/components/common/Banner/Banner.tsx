@@ -147,7 +147,6 @@ export const Banner = () => {
         bannerVariant,
         licenseType,
         enterpriseLicenseBarMessage,
-        hideInternetConnectivityBar: isAirgapped,
         microservice: incompatibleService,
     })
 
@@ -192,8 +191,7 @@ export const Banner = () => {
                     {config.isDismissible && <div className="icon-dim-28 dc__no-shrink" />}
                     <div className="py-4 flex dc__gap-12 dc__align-items-center">
                         <div className="flex dc__gap-8">
-                            {bannerVariant !== BannerVariant.ONLINE &&
-                                getBannerIcon(bannerVariant, ANNOUNCEMENT_CONFIG.type, iconName)}
+                            {bannerVariant !== BannerVariant.ONLINE && getBannerIcon(bannerVariant, iconName)}
                             <InteractiveCellText text={config.text} rootClassName="fw-5" fontSize={12} interactive />
                         </div>
                         {shouldShowActionButton() && (
