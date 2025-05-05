@@ -9,7 +9,7 @@ import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const [online, setOnline] = useState(structuredClone(navigator.onLine))
     const abortControllerRef = useRef<AbortController>(new AbortController())
-    const timeoutRef = useRef<NodeJS.Timeout>()
+    const timeoutRef = useRef<NodeJS.Timeout>(null)
     const { isAirgapped } = useMainContext()
 
     const checkConnectivity = async () => {

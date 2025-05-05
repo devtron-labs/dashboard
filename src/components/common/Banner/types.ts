@@ -16,20 +16,19 @@
 
 import { InfoBlockProps } from '@devtron-labs/devtron-fe-common-lib'
 
+import { NavigationRoutesTypes } from '../navigation/types'
 import { BannerVariant } from './constants'
 
-export interface BannerType {
-    isDismissible?: boolean
-}
-export interface BannerConfigProps extends BannerType {
+export interface BannerConfigProps {
     bannerVariant: Partial<BannerVariant>
     licenseType?: InfoBlockProps['variant']
     enterpriseLicenseBarMessage?: string
     hideInternetConnectivityBar?: boolean
     microservice: 'frontend' | 'backend' | null
+    isDismissible?: boolean
 }
 
-export interface BannerConfigType extends BannerType {
+export interface BannerConfigType extends Pick<BannerConfigProps, 'isDismissible'> {
     text: string
     rootClassName: string
     icon?: string
@@ -41,3 +40,5 @@ export interface AnnouncementConfigTypes {
     buttonText?: string
     buttonLink?: string
 }
+
+export interface BannerTypes extends Pick<NavigationRoutesTypes, 'hideVersionUpdateToast'> {}

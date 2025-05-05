@@ -126,7 +126,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 
-export default function NavigationRoutes({ reloadConfig }: Readonly<NavigationRoutesTypes> ) {
+export default function NavigationRoutes({ reloadVersionConfig, hideVersionUpdateToast }: NavigationRoutesTypes ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -172,7 +172,6 @@ export default function NavigationRoutes({ reloadConfig }: Readonly<NavigationRo
         setLicenseInfoDialogType(null)
     }
 
-    const { handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, bgUpdated, updateToastRef } = reloadConfig
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -477,12 +476,7 @@ export default function NavigationRoutes({ reloadConfig }: Readonly<NavigationRo
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
-                bgUpdated,
-                handleAppUpdate,
-                doesNeedRefresh,
-                updateServiceWorker,
-                handleControllerChange,
-                updateToastRef,
+                reloadVersionConfig,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -518,7 +512,7 @@ export default function NavigationRoutes({ reloadConfig }: Readonly<NavigationRo
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
                     >
-                        <Banner />
+                        <Banner hideVersionUpdateToast={hideVersionUpdateToast} />
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <Suspense
                                 fallback={

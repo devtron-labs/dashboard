@@ -1,3 +1,3 @@
 export interface VersionUpdateProps {
-    showToast?: boolean
+    showVersionUpdateToast: boolean
 }

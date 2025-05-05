@@ -4,15 +4,19 @@ import { useRegisterSW } from 'virtual:pwa-register/react'
 
 import {
     API_STATUS_CODES,
+    Icon,
     logExceptionToSentry,
     noop,
     refresh,
     ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 import { VersionUpdateProps } from './types'
 
-export const useVersionUpdateReload = ({ showToast = true }: VersionUpdateProps) => {
+export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdateProps) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
@@ -32,6 +36,34 @@ export const useVersionUpdateReload = ({ showToast = true }: VersionUpdateProps)
             setBGUpdated(true)
         }
     }
+
+    useEffect(() => {
+        if (!bgUpdated) {
+            return
+        }
+        if (ToastManager.isToastActive(updateToastRef.current)) {
+            ToastManager.dismissToast(updateToastRef.current)
+        }
+
+        updateToastRef.current = ToastManager.showToast(
+            {
+                variant: ToastVariantType.info,
+                title: 'Update available',
+                description: 'This page has been updated. Please save any unsaved changes and refresh.',
+                buttonProps: {
+                    text: 'Reload',
+                    dataTestId: 'reload-btn',
+                    onClick: refresh,
+                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                },
+                icon: <Icon name="ic-sparkle-color" color={null} />,
+                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+            },
+            {
+                autoClose: false,
+            },
+        )
+    }, [bgUpdated])
 
     useEffect(() => {
         if (navigator.serviceWorker) {
@@ -114,7 +146,7 @@ export const useVersionUpdateReload = ({ showToast = true }: VersionUpdateProps)
     }, [needRefresh])
 
     const handleAppUpdate = () => {
-        if (ToastManager.isToastActive(updateToastRef.current) && showToast) {
+        if (ToastManager.isToastActive(updateToastRef.current) && showVersionUpdateToast) {
             ToastManager.dismissToast(updateToastRef.current)
         }
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -130,7 +162,7 @@ export const useVersionUpdateReload = ({ showToast = true }: VersionUpdateProps)
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh) {
                 handleNeedRefresh()
-            } else if (ToastManager.isToastActive(updateToastRef.current) && showToast) {
+            } else if (ToastManager.isToastActive(updateToastRef.current) && showVersionUpdateToast) {
                 ToastManager.dismissToast(updateToastRef.current)
             }
         }

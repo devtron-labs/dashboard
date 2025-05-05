@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { MutableRefObject } from 'react'
-
 import {
     customEnv,
     EnvironmentDataValuesDTO,
     IconsProps,
-    ToastManager,
+    ReloadVersionConfigTypes,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -46,15 +44,7 @@ export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO,
     isAirgapped: boolean
 }
 
-export interface ReloadConfigTypes {
-    bgUpdated: boolean
-    handleAppUpdate: () => void
-    doesNeedRefresh: boolean
-    updateServiceWorker: () => Promise<void>
-    handleControllerChange: () => void
-    updateToastRef: MutableRefObject<ReturnType<typeof ToastManager.showToast>> | null
-}
-
 export interface NavigationRoutesTypes {
-    reloadConfig: ReloadConfigTypes
+    reloadVersionConfig: ReloadVersionConfigTypes
+    hideVersionUpdateToast: () => void
 }

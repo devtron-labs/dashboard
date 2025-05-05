@@ -23,11 +23,7 @@ import {
     BreadcrumbStore,
     DevtronProgressing,
     ErrorScreenManager,
-    Icon,
-    refresh,
     showError,
-    ToastManager,
-    ToastVariantType,
     URLS as CommonURLS,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -37,7 +33,7 @@ import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
 import { validateToken } from './services/service'
-import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
+import { URLS } from './config'
 
 import './css/application.scss'
 
@@ -50,6 +46,7 @@ const App = () => {
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
+    const [showVersionUpdateToast, setShowVersionUpdateToast] = useState(true)
 
     const { setEmail } = useUserEmail()
 
@@ -57,35 +54,9 @@ const App = () => {
     const { push } = useHistory()
 
     const { bgUpdated, handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, updateToastRef } =
-        useVersionUpdateReload({ showToast: true })
-
-    useEffect(() => {
-        if (!bgUpdated) {
-            return
-        }
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
-
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'This page has been updated. Please save any unsaved changes and refresh.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: refresh,
-                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
-                },
-                icon: <Icon name="ic-sparkle-color" color={null} />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
-        )
-    }, [bgUpdated])
+        useVersionUpdateReload({
+            showVersionUpdateToast,
+        })
 
     const isDirectApprovalNotification =
         location.pathname &&
@@ -112,6 +83,10 @@ const App = () => {
         if (token) {
             setApprovalToken(token)
         }
+    }
+
+    const hideVersionUpdateToast = () => {
+        setShowVersionUpdateToast(false)
     }
 
     async function validation() {
@@ -155,7 +130,7 @@ const App = () => {
         }
     }, [])
 
-    const reloadConfig = {
+    const reloadVersionConfig = {
         handleAppUpdate,
         doesNeedRefresh,
         updateServiceWorker,
@@ -182,7 +157,15 @@ const App = () => {
                             <ActivateLicense />
                         </Route>
                         {!window._env_.K8S_CLIENT && <Route path={URLS.LOGIN} component={Login} />}
-                        <Route path="/" render={() => <NavigationRoutes reloadConfig={reloadConfig} />} />
+                        <Route
+                            path="/"
+                            render={() => (
+                                <NavigationRoutes
+                                    reloadVersionConfig={reloadVersionConfig}
+                                    hideVersionUpdateToast={hideVersionUpdateToast}
+                                />
+                            )}
+                        />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>
                     <div id="visible-modal" />
