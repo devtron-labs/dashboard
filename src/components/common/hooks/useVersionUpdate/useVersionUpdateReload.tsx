@@ -10,9 +10,10 @@ import {
     ToastManager,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-export const useVersionUpdateReload = ({ showToast = true }: { showToast?: boolean }) => {
+import { VersionUpdateProps } from './types'
+
+export const useVersionUpdateReload = ({ showToast = true, setBGUpdated }: VersionUpdateProps) => {
     const refreshing = useRef(false)
-    const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
     const location = useLocation()
 
@@ -26,6 +27,7 @@ export const useVersionUpdateReload = ({ showToast = true }: { showToast?: boole
             refresh()
             refreshing.current = true
         } else {
+            if (typeof setBGUpdated !== 'function') return
             setBGUpdated(true)
         }
     }
@@ -134,7 +136,6 @@ export const useVersionUpdateReload = ({ showToast = true }: { showToast?: boole
     }, [location])
 
     return {
-        bgUpdated,
         handleAppUpdate,
         doesNeedRefresh,
         updateServiceWorker,

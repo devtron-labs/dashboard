@@ -47,6 +47,7 @@ const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectAp
 
 const App = () => {
     const [errorPage, setErrorPage] = useState<boolean>(false)
+    const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
@@ -56,7 +57,8 @@ const App = () => {
     const location = useLocation()
     const { push } = useHistory()
 
-    const { bgUpdated, updateToastRef } = useVersionUpdateReload({})
+    const { setBGUpdated, updateToastRef } = useVersionUpdateReload({})
+    console.log(bgUpdated, 'bgUpdated')
 
     useEffect(() => {
         if (!bgUpdated) {
