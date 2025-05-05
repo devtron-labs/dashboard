@@ -36,13 +36,7 @@ import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
 import { BannerConfigProps, BannerConfigType } from './types'
 
 export const getValidAnnouncementType = (type): type is InfoBlockVariantType =>
-    [
-        InfoBlockVariant.SUCCESS,
-        InfoBlockVariant.WARNING,
-        InfoBlockVariant.ERROR,
-        InfoBlockVariant.INFORMATION,
-        InfoBlockVariant.HELP,
-    ].includes(type)
+    Object.values(InfoBlockVariant).includes(type)
 
 export const AnnouncementBannerType = getValidAnnouncementType(window._env_.ANNOUNCEMENT_BANNER_TYPE)
     ? window._env_.ANNOUNCEMENT_BANNER_TYPE
