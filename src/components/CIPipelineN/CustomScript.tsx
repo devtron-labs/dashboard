@@ -50,17 +50,9 @@ const CustomScript = ({ handleScriptChange }: CustomScriptType) => {
                     <CodeEditor
                         mode={MODES.SHELL}
                         noParsing
-                        codeEditorProps={{
-                            value: editorValue,
-                            onChange: (value) => handleScriptChange({ target: { value } }),
-                            height: 300,
-                            inline: true,
-                        }}
-                        codeMirrorProps={{
-                            value: editorValue,
-                            onChange: (value) => handleScriptChange({ target: { value } }),
-                            height: 300,
-                        }}
+                        value={editorValue}
+                        onChange={(value) => handleScriptChange({ target: { value } })}
+                        height={300}
                     />
                 </div>
             </div>

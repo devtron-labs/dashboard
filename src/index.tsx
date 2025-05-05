@@ -165,9 +165,9 @@ if (!window || !window._env_) {
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
-        FEATURE_CODE_MIRROR_ENABLE: true,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
+        FEATURE_AI_INTEGRATION_ENABLE: false,
     }
 }
 

@@ -495,7 +495,6 @@ export const Details = ({
                                       ]
                                     : []),
                             ]}
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 </>

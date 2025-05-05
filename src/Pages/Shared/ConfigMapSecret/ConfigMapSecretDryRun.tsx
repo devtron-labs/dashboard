@@ -250,18 +250,7 @@ export const ConfigMapSecretDryRun = ({
                     reload: reloadConfigMapSecretManifest,
                 }}
             >
-                <CodeEditor
-                    mode={MODES.YAML}
-                    readOnly
-                    codeEditorProps={{
-                        value: configMapSecretManifest?.manifest,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: configMapSecretManifest?.manifest,
-                        height: 'fitToParent',
-                    }}
-                />
+                <CodeEditor mode={MODES.YAML} readOnly value={configMapSecretManifest?.manifest} height="fitToParent" />
             </APIResponseHandler>
         </div>
     )

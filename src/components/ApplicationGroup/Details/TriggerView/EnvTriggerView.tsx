@@ -922,7 +922,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     // TODO: Ig not using this, can remove it
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    if (node.type === WorkflowNodeType.CD) {
+                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    }
                     _selectedNode = node
                     _workflowId = workflow.id
                     _appID = workflow.appId
@@ -1403,6 +1405,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
                 wf.appReleaseTags = _materialData?.appReleaseTagNames
                 wf.tagsEditable = _materialData?.tagsEditable
+                wf.canApproverDeploy = _materialData?.canApproverDeploy ?? false
+                wf.isExceptionUser = _materialData?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
             }
 
             return wf
@@ -1796,6 +1800,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 ? `${stageText} is blocked`
                                 : '',
                         triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
+                        isExceptionUser: wf.isExceptionUser,
                     })
                 } else {
                     let warningMessage = ''

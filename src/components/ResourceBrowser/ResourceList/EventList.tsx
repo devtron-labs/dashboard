@@ -16,27 +16,22 @@
 
 /* eslint-disable react/no-danger */
 import DOMPurify from 'dompurify'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
-import { highlightSearchText, Tooltip, WidgetEventDetails } from '@devtron-labs/devtron-fe-common-lib'
+import { highlightSearchText, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { EVENT_LIST } from '../Constants'
 import { EventListType } from '../Types'
 
-const ExplainEventButton = importComponentFromFELibrary('ExplainEventButton', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
-export const EventList = ({
-    listRef,
-    filteredData,
-    handleResourceClick,
-    searchText,
-    setWidgetEventDetails,
-}: EventListType) => (
+export const EventList = ({ listRef, filteredData, handleResourceClick, searchText, clusterId }: EventListType) => (
     <div className="dc__overflow-auto">
         <div ref={listRef} className="scrollable-event-list dc__min-width-fit-content flexbox-col">
             <div
-                className={`event-list-row${ExplainEventButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bg__primary dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
+                className={`event-list-row${ExplainWithAIButton ? '__explain' : ''} dc__zi-1 dc__min-width-fit-content dc__position-sticky bg__primary dc__top-0 fw-6 cn-7 fs-13 dc__border-bottom px-20 py-8 dc__uppercase h-36`}
             >
                 {Object.values(EVENT_LIST.headerKeys).map((title) => (
                     <div>
@@ -47,22 +42,19 @@ export const EventList = ({
                 ))}
             </div>
             {filteredData?.map((eventData) => {
-                const eventDetails: WidgetEventDetails = {
+                const eventDetails = {
                     message: eventData.message as string,
                     namespace: eventData.namespace as string,
                     object: eventData[EVENT_LIST.dataKeys.involvedObject] as string,
                     source: eventData.source as string,
-                    age: eventData.age as string,
                     count: eventData.count as number,
+                    age: eventData.age as string,
                     lastSeen: eventData[EVENT_LIST.dataKeys.lastSeen] as string,
-                }
-                const handleExplainEventClick = () => {
-                    setWidgetEventDetails(eventDetails)
                 }
                 return (
                     <div
                         key={Object.values(eventData).join('-')}
-                        className={`event-list-row${ExplainEventButton ? '__explain' : ''} cn-9 fs-13 dc__border-bottom-n1 px-20 py-12 hover-class`}
+                        className={`event-list-row${ExplainWithAIButton ? '__explain' : ''} cn-9 fs-13 dc__border-bottom-n1 px-20 py-12 hover-class`}
                     >
                         <div
                             className={`app-summary__status-name dc__highlight-text f-${(eventData.type as string)?.toLowerCase()}`}
@@ -163,8 +155,15 @@ export const EventList = ({
                             />
                         </div>
                         <div>{eventData[EVENT_LIST.dataKeys.lastSeen]}</div>
-                        {ExplainEventButton && eventData.type === 'Warning' ? (
-                            <ExplainEventButton handleExplainEventClick={handleExplainEventClick} />
+                        {ExplainWithAIButton && eventData.type === 'Warning' ? (
+                            <ExplainWithAIButton
+                                intelligenceConfig={{
+                                    clusterId,
+                                    metadata: eventDetails,
+                                    prompt: JSON.stringify(eventDetails),
+                                    analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
+                                }}
+                            />
                         ) : (
                             <span />
                         )}

@@ -16,6 +16,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     capitalizeFirstLetter,
@@ -492,7 +493,7 @@ const NodeDetailComponent = ({
         <>
             <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
-                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
+                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />
@@ -565,6 +566,11 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
+                            aiWidgetEventDetails={getAIAnalyticsEvents(
+                                isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
+                                isResourceBrowserView ? null : appDetails.appType,
+                            )}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>

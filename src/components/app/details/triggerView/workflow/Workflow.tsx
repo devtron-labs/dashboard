@@ -329,11 +329,14 @@ export class Workflow extends Component<WorkflowProps> {
 
     renderEdgeList() {
         const edges = this.getEdges()
-        return edges.map((edgeNode) => {
+        // In the SVG, the bottom elements are rendered on top.
+        // By reversing, this prevents the path elements (workflow arrows) from overlapping and covering other elements
+        // like the ApprovalNode button or add node button, which are rendered earlier.
+        return edges.reverse().map((edgeNode) => {
             if (ApprovalNodeEdge) {
                 return (
                     <ApprovalNodeEdge
-                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
                         onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}

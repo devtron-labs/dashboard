@@ -163,11 +163,12 @@
                         visibility: visible;
                     }
                 }
-            }
-        }
 
-        .explain-ai-button {
-            visibility: hidden;
+                .explain-ai-button {
+                    visibility: hidden;
+                }
+
+            }
         }
 
         .node-actions-menu-icon {
@@ -205,9 +206,5 @@
                 background-color: var(--bg-secondary);
             }
         }
-    }
-
-    & .react-monaco-editor-container {
-        flex-grow: 1;
     }
 }
