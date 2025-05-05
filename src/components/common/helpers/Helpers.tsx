@@ -785,7 +785,9 @@ export const convertToOptionsList = (
 }
 
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
-    if (componentName === 'ExplainWithAIButton') {
+    // Adding this check as we do not want to import the component if flag is off
+    // Using this as a hack, to be removed soon
+    if (!window._env_.FEATURE_AI_INTEGRATION_ENABLE && componentName === 'ExplainWithAIButton') {
         return null
     }
     try {
