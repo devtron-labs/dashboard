@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import moment from 'moment'
+import { formatDurationFromNow } from 'src/Shared'
 
 import { AppThemeType, getComponentSpecificThemeClass, Icon } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -27,7 +27,15 @@ import { EventTableType } from './node.type'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
-const EVENTS_TABLE_HEADERS = ['', 'Reason', 'Message', 'Count', 'Last Seen', ...(ExplainWithAIButton ? [''] : [])]
+const EVENTS_TABLE_HEADERS = [
+    '',
+    'Reason',
+    'Message',
+    'Count',
+    'Last Seen',
+    'Age',
+    ...(ExplainWithAIButton ? [''] : []),
+]
 
 export const EventsTable = ({
     loading,
@@ -74,10 +82,9 @@ export const EventsTable = ({
                         ))}
                     </div>
                     {eventsList.map((event, index) => {
-                        const { type, reason, message, count, lastTimestamp } = event
-                        const lastSeen = lastTimestamp
-                            ? moment.utc(event.lastTimestamp).local().format('YYYY-MM-DD HH:mm:ss')
-                            : ''
+                        const { type, reason, message, count, firstTimestamp, lastTimestamp } = event
+                        const lastSeen = formatDurationFromNow(lastTimestamp)
+                        const age = formatDurationFromNow(firstTimestamp)
                         const isNormalEventType = type === 'Normal'
                         return (
                             <div
@@ -92,11 +99,12 @@ export const EventsTable = ({
                                 <span>{reason}</span>
                                 <span>{message}</span>
                                 <span>{count}</span>
+                                <span>{age}</span>
                                 <span>{lastSeen}</span>
                                 {clusterId && ExplainWithAIButton && !isNormalEventType ? (
                                     <ExplainWithAIButton
                                         intelligenceConfig={{
-                                            metadata: { reason, message, count, lastSeen },
+                                            metadata: { reason, message, count, lastSeen, age },
                                             clusterId,
                                             prompt: JSON.stringify(event),
                                             analyticsCategory: aiWidgetAnalyticsEvent,

@@ -17,20 +17,20 @@
 import React, { useMemo } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { AppStatus, AppType, DeploymentAppTypes } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, AppType, StatusType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
 import './appDetails.scss'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getAppTypeCategory } from './utils'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
     const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
-    const isStatusHealthy = useMemo(() => status.toLowerCase() === 'healthy', [status])
+    const isStatusHealthy = useMemo(() => status.toLowerCase() === StatusType.HEALTHY.toLowerCase(), [status])
 
     const debugNode = appDetails.resourceTree?.nodes?.find(
         (node) => node.kind === 'Deployment' || node.kind === 'Rollout',
@@ -66,7 +66,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                                 status: debugNode?.health?.status ?? appDetails.appStatus,
                             },
                             prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${appDetails.namespace}`,
-                            analyticsCategory: `AI_${getAppTypeCategory(appDetails.appType)}_APP_STATUS`,
+                            analyticsCategory: getAIAnalyticsEvents('APP_STATUS', appDetails.appType),
                         }}
                     />
                 )}

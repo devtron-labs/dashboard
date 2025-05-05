@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { StatusType } from '@devtron-labs/devtron-fe-common-lib/'
+
 export enum ApplicationsGAEvents {
     REFRESH_DEVTRON_APP_RESOURCE_TREE = 'REFRESH_DEVTRON_APP_RESOURCE_TREE',
     REFRESH_HELM_APP_RESOURCE_TREE = 'REFRESH_HELM_APP_RESOURCE_TREE',
@@ -21,4 +23,4 @@ export enum ApplicationsGAEvents {
     REFRESH_FLUX_APP_RESOURCE_TREE = 'REFRESH_FLUX_APP_RESOURCE_TREE',
 }
 
-export const EXPLAIN_AI_EXCLUDED_STATUS = new Set(['healthy', 'running', 'completed', 'ready'])
+export const EXPLAIN_AI_EXCLUDED_STATUS = new Set([StatusType.HEALTHY.toLowerCase(), 'running', 'completed', 'ready'])

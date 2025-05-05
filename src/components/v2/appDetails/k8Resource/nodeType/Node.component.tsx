@@ -16,6 +16,7 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
 import { followCursor } from 'tippy.js'
 
 import {
@@ -30,7 +31,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
-import { getAppTypeCategory } from '@Components/app/details/appDetails/utils'
 
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
@@ -514,7 +514,7 @@ const NodeComponent = ({
                                     },
                                     clusterId,
                                     prompt: `Debug what’s wrong with ${node?.name}/${node.kind} of ${node?.namespace}`,
-                                    analyticsCategory: `AI_${getAppTypeCategory(appDetails.appType)}_RESOURCE`,
+                                    analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
                                 }}
                             />
                         )}
@@ -595,7 +595,7 @@ const NodeComponent = ({
             )}
             {PodRestart && (
                 <PodRestart
-                    aiWidgetAnalyticsEvent={`AI_${getAppTypeCategory(appDetails.appType)}_POD_RESTART`}
+                    aiWidgetAnalyticsEvent={getAIAnalyticsEvents('POD_RESTART', appDetails.appType)}
                     rbacPayload={getPodRestartRBACPayload(appDetails)}
                 />
             )}

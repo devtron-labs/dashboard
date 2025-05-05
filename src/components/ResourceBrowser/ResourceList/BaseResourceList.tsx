@@ -412,9 +412,7 @@ const BaseResourceListContent = ({
                     const aiButtonConfig = AI_BUTTON_CONFIG_MAP[gvkString]
                     const showAIButton =
                         !!ExplainWithAIButton &&
-                        aiButtonConfig &&
-                        columnName === aiButtonConfig.column &&
-                        getShowAIButton(aiButtonConfig, resourceData[columnName] as string)
+                        getShowAIButton(aiButtonConfig, columnName, resourceData[columnName] as string)
 
                     return columnName === 'name' ? (
                         <div
@@ -562,11 +560,11 @@ const BaseResourceListContent = ({
                                         intelligenceConfig={{
                                             clusterId,
                                             metadata: {
-                                                object: `${selectedResource?.gvk?.Kind}/${resourceData.name as string}`,
+                                                object: `${selectedResource?.gvk?.Kind}/${resourceData.name}`,
                                                 namespace: resourceData.namespace,
                                                 status: resourceData.status ?? '',
                                             },
-                                            prompt: `Debug what's wrong with ${resourceData.name as string}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
+                                            prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
                                             analyticsCategory: 'AI_RB_RESOURCE',
                                         }}
                                     />

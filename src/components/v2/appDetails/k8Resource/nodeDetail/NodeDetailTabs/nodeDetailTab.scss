@@ -103,10 +103,10 @@
 .event-row {
     background: var(--terminal-bg);
 
-    grid-template-columns: 20px 200px 1fr repeat(2, 80px);
+    grid-template-columns: 20px 200px 1fr repeat(3, 80px);
 
     &.ai-widget {
-        grid-template-columns: 20px 200px 1fr repeat(2, 80px) 70px;
+        grid-template-columns: 20px 200px 1fr repeat(3, 80px) 70px;
     }
 
     &.alternate-row {

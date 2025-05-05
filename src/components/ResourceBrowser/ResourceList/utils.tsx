@@ -89,7 +89,10 @@ export const getFirstResourceFromKindResourceMap = (
     )
 }
 
-export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, value: string) => {
+export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: string, value: string) => {
+    if (!aiButtonConfig || columnName !== aiButtonConfig.column) {
+        return false
+    }
     if (aiButtonConfig.includeValues) {
         return aiButtonConfig.includeValues.has(value)
     }

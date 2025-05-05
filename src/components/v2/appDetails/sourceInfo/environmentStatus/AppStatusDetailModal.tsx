@@ -33,9 +33,11 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    StatusType,
+    AppType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getAppTypeCategory } from '@Components/app/details/appDetails/utils'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
@@ -121,7 +123,7 @@ const AppStatusDetailModal = ({
                     <div className="flex dc__gap-12">
                         {_appDetails &&
                             ExplainWithAIButton &&
-                            _appDetails.appStatus?.toLowerCase() !== 'healthy' &&
+                            _appDetails.appStatus?.toLowerCase() !== StatusType.HEALTHY.toLowerCase() &&
                             (debugNode || message) && (
                                 <ExplainWithAIButton
                                     intelligenceConfig={{
@@ -132,7 +134,7 @@ const AppStatusDetailModal = ({
                                             status: debugNode?.health?.status ?? _appDetails.appStatus,
                                         },
                                         prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${_appDetails.namespace}`,
-                                        analyticsCategory: `AI_${getAppTypeCategory(_appDetails.appType)}_APP_STATUS`,
+                                        analyticsCategory: getAIAnalyticsEvents('APP_STATUS', _appDetails.appStatus as AppType),
                                     }}
                                 />
                             )}

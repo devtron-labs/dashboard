@@ -16,6 +16,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     capitalizeFirstLetter,
@@ -39,7 +40,6 @@ import {
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
-import { getAppTypeCategory } from '@Components/app/details/appDetails/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import { EDITOR_VIEW } from '@Config/constants'
@@ -567,11 +567,10 @@ const NodeDetailComponent = ({
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                             clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
-                            aiWidgetEventDetails={
-                                isResourceBrowserView
-                                    ? 'AI_RB_EVENT'
-                                    : `AI_${getAppTypeCategory(appDetails.appType)}_EVENT`
-                            }
+                            aiWidgetEventDetails={getAIAnalyticsEvents(
+                                isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
+                                isResourceBrowserView ? null : appDetails.appType,
+                            )}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>
