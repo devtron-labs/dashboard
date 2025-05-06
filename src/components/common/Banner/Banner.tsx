@@ -37,7 +37,6 @@ import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveC
 import { useOnline } from '../hooks'
 import { ONLINE_BANNER_TIMEOUT } from '../hooks/constants'
 import { ANNOUNCEMENT_CONFIG, BannerVariant } from './constants'
-import { BannerTypes } from './types'
 import {
     getBannerConfig,
     getBannerIcon,
@@ -76,7 +75,7 @@ const bannerVariants = {
               },
 }
 
-export const Banner = ({ hideVersionUpdateToast }: BannerTypes) => {
+export const Banner = () => {
     const { isAirgapped, currentServerInfo, reloadVersionConfig } = useMainContext()
     const { doesNeedRefresh, handleAppUpdate, bgUpdated } = reloadVersionConfig
     const licenseConfig = useEnterpriseLicenseConfig()
@@ -101,14 +100,14 @@ export const Banner = ({ hideVersionUpdateToast }: BannerTypes) => {
 
     const isOnline = useOnline({ onOnline })
 
-    useEffect(() => {
-        hideVersionUpdateToast()
-        return () => {
+    useEffect(
+        () => () => {
             if (onlineTimer.current) {
                 clearTimeout(onlineTimer.current)
             }
-        }
-    }, [])
+        },
+        [],
+    )
 
     const getIncompatibleMicroserviceName = (): 'frontend' | 'backend' | null => {
         const { serverInfo } = currentServerInfo

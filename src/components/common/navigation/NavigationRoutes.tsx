@@ -396,6 +396,7 @@ export default function NavigationRoutes({ reloadVersionConfig, hideVersionUpdat
         } else {
             handleFetchInitialData()
         }
+        hideVersionUpdateToast()
     }, [])
 
     useEffect(() => {
@@ -512,7 +513,7 @@ export default function NavigationRoutes({ reloadVersionConfig, hideVersionUpdat
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
                     >
-                        <Banner hideVersionUpdateToast={hideVersionUpdateToast} />
+                        <Banner />
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <Suspense
                                 fallback={
@@ -718,6 +719,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { pathname } = useLocation()
     const { serverMode } = useMainContext()
     useEffect(() => {
+
         if (pathname && pathname !== '/') {
             Sentry.captureMessage(
                 `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
