@@ -194,7 +194,7 @@ export const Banner = ({ hideVersionUpdateToast }: BannerTypes) => {
                     <div className="py-4 flex dc__gap-12 dc__align-items-center">
                         <div className="flex dc__gap-8">
                             {bannerVariant !== BannerVariant.ONLINE &&
-                                getBannerIcon(bannerVariant, iconName, licenseConfig.type)}
+                                getBannerIcon(bannerVariant, iconName, licenseConfig?.type)}
                             <InteractiveCellText text={config.text} rootClassName="fw-5" fontSize={12} interactive />
                         </div>
                         {shouldShowActionButton() && (

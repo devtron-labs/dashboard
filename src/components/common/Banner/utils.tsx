@@ -51,19 +51,19 @@ const getVariantWithIconMap = (iconName: IconsProps['name']): Partial<Record<Ban
 })
 
 const getVariantWithIconColorMap = (
-    licenseType: InfoBlockVariantType,
+    licenseType?: InfoBlockVariantType,
 ): Record<BannerVariant, IconBaseColorType | null> => ({
     [BannerVariant.OFFLINE]: null,
     [BannerVariant.ONLINE]: null,
     [BannerVariant.VERSION_UPDATE]: null,
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
-    [BannerVariant.LICENSE]: VARIANT_TO_ICON_COLOR_MAP[licenseType],
+    [BannerVariant.LICENSE]: VARIANT_TO_ICON_COLOR_MAP[licenseType] || null,
     [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[AnnouncementBannerType],
 })
 export const getBannerIcon = (
     bannerVariant: BannerVariant,
     iconName: IconsProps['name'],
-    licenseType: InfoBlockVariantType,
+    licenseType?: InfoBlockVariantType,
 ) => (
     <Icon
         name={getVariantWithIconMap(iconName)[bannerVariant]}
