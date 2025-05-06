@@ -53,18 +53,6 @@ const App = () => {
     const location = useLocation()
     const { push } = useHistory()
 
-    const {
-        bgUpdated,
-        handleAppUpdate,
-        doesNeedRefresh,
-        updateServiceWorker,
-        handleControllerChange,
-        updateToastRef,
-        isRefreshing,
-    } = useVersionUpdateReload({
-        showVersionUpdateToast,
-    })
-
     const isDirectApprovalNotification =
         location.pathname &&
         location.pathname.includes('approve') &&
@@ -80,6 +68,21 @@ const App = () => {
             push(newLocation)
         }
     }
+
+    const toastEligibleRoutes = [`/${approvalType?.toLowerCase()}/approve`, CommonURLS.LICENSE_AUTH, URLS.LOGIN]
+
+    const {
+        bgUpdated,
+        handleAppUpdate,
+        doesNeedRefresh,
+        updateServiceWorker,
+        handleControllerChange,
+        updateToastRef,
+        isRefreshing,
+    } = useVersionUpdateReload({
+        showVersionUpdateToast,
+        toastEligibleRoutes,
+    })
 
     const redirectToDirectApprovalNotification = (): void => {
         setValidating(false)
@@ -156,15 +159,28 @@ const App = () => {
             <ErrorBoundary>
                 <BreadcrumbStore>
                     <Switch>
-                        {isDirectApprovalNotification && GenericDirectApprovalModal && (
-                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />
-                            </Route>
-                        )}
-                        <Route path={CommonURLS.LICENSE_AUTH}>
-                            <ActivateLicense />
-                        </Route>
-                        {!window._env_.K8S_CLIENT && <Route path={URLS.LOGIN} component={Login} />}
+                        {toastEligibleRoutes.map((path) => {
+                            const render = () => {
+                                if (path === `/${approvalType?.toLowerCase()}/approve`) {
+                                    return isDirectApprovalNotification && GenericDirectApprovalModal ? (
+                                        <GenericDirectApprovalModal
+                                            approvalType={approvalType}
+                                            approvalToken={approvalToken}
+                                        />
+                                    ) : null
+                                }
+                                if (path === CommonURLS.LICENSE_AUTH) {
+                                    return <ActivateLicense />
+                                }
+                                if (path === URLS.LOGIN) {
+                                    return <Login />
+                                }
+                                return null
+                            }
+
+                            return <Route key={path} path={path} exact render={render} />
+                        })}
+
                         <Route
                             path="/"
                             render={() => (

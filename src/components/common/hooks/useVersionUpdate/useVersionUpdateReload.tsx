@@ -15,13 +15,13 @@ import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 import { VersionUpdateProps } from './types'
 
-const dismissToast = ({ updateToastRef }: { updateToastRef: React.MutableRefObject<null> }) => {
+export const dismissToast = ({ updateToastRef }: { updateToastRef: React.MutableRefObject<null> }) => {
     if (ToastManager.isToastActive(updateToastRef.current)) {
         ToastManager.dismissToast(updateToastRef.current)
     }
 }
 
-export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdateProps) => {
+export const useVersionUpdateReload = ({ showVersionUpdateToast, toastEligibleRoutes }: VersionUpdateProps) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
@@ -50,7 +50,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             localStorage.removeItem('serverInfo')
         }
         dismissToast({ updateToastRef })
-        if (showVersionUpdateToast) {
+        if (toastEligibleRoutes.includes(location.pathname)) {
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,
@@ -146,8 +146,8 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             return
         }
         dismissToast({ updateToastRef })
-        console.log(showVersionUpdateToast, 'toast inside use effect')
-        if (showVersionUpdateToast) {
+        console.log(toastEligibleRoutes.includes(location.pathname), 'toast inside use effect')
+        if (toastEligibleRoutes.includes(location.pathname)) {
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,
