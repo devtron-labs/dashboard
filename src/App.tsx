@@ -53,10 +53,17 @@ const App = () => {
     const location = useLocation()
     const { push } = useHistory()
 
-    const { bgUpdated, handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, updateToastRef } =
-        useVersionUpdateReload({
-            showVersionUpdateToast,
-        })
+    const {
+        bgUpdated,
+        handleAppUpdate,
+        doesNeedRefresh,
+        updateServiceWorker,
+        handleControllerChange,
+        updateToastRef,
+        isRefreshing,
+    } = useVersionUpdateReload({
+        showVersionUpdateToast,
+    })
 
     const isDirectApprovalNotification =
         location.pathname &&
@@ -137,6 +144,7 @@ const App = () => {
         handleControllerChange,
         bgUpdated,
         updateToastRef,
+        isRefreshing,
     }
 
     const renderRoutesWithErrorBoundary = () =>
