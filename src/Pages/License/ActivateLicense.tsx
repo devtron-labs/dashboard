@@ -1,25 +1,27 @@
+import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
-    useTheme,
-    LicensingErrorCodes,
+    ActivateLicenseDialog,
+    API_STATUS_CODES,
     Button,
     ButtonVariantType,
+    CONTACT_SUPPORT_LINK,
     DevtronLicenseCard,
     DevtronProgressing,
     ENTERPRISE_SUPPORT_LINK,
     ErrorScreenManager,
+    getHandleOpenURL,
+    ICDevtronWithBorder,
     Icon,
     InfoBlock,
+    LicensingErrorCodes,
     LoginBanner,
     URLS,
     useAsync,
-    getHandleOpenURL,
-    CONTACT_SUPPORT_LINK,
-    ActivateLicenseDialog,
-    ICDevtronWithBorder,
-    API_STATUS_CODES,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+
 import { getDevtronLicenseInfo } from './service'
 
 const ActivateLicense = () => {

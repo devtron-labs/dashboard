@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
-    showError,
-    getTeamListMin as getProjectListMin,
+    ComponentSizeType,
     CustomInput,
+    getTeamListMin as getProjectListMin,
+    OptionType,
+    SelectPicker,
+    showError,
     ToastManager,
     ToastVariantType,
-    SelectPicker,
-    ComponentSizeType,
-    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
-import { saveSlackConfiguration, getSlackConfiguration } from './notifications.service'
-import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
+
+import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import {
     ConfigurationFieldKeys,
     ConfigurationsTabTypes,
@@ -35,8 +36,9 @@ import {
     DefaultSlackValidations,
     SlackIncomingWebhookUrl,
 } from './constants'
-import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { getSlackConfiguration, saveSlackConfiguration } from './notifications.service'
 import { getValidationFormConfig, renderErrorToast, validateKeyValueConfig } from './notifications.util'
+import { ProjectListTypes, SlackConfigModalProps, SlackFormType } from './types'
 
 export const SlackConfigModal: React.FC<SlackConfigModalProps> = ({
     slackConfigId,

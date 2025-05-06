@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
+import { DC_DELETE_SUBTITLES, DeleteConfirmationModal, ERROR_STATUS_CODE } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { DeleteConfirmationModal, ERROR_STATUS_CODE, DC_DELETE_SUBTITLES } from '@devtron-labs/devtron-fe-common-lib'
+
 import { EnvironmentDeleteComponentProps } from './ClusterEnvironmentDrawer/types'
 
 export const EnvironmentDeleteComponent = ({

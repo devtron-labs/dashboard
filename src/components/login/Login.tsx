@@ -15,33 +15,37 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Switch, Redirect, Route, useLocation, useHistory } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+
 import {
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     getCookie,
     Host,
-    URLS as CommonURL,
-    ToastVariantType,
-    ToastManager,
-    Button,
-    ComponentSizeType,
-    ButtonComponentType,
-    ButtonVariantType,
-    ButtonStyleType,
-    useSearchString,
-    useAsync,
-    SSOProviderIcon,
     Icon,
     LoginBanner,
     SnowConfetti,
+    SSOProviderIcon,
+    ToastManager,
+    ToastVariantType,
+    URLS as CommonURL,
+    useAsync,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS, TOKEN_COOKIE_NAME } from '../../config'
-import { dashboardAccessed } from '../../services/service'
-import './login.scss'
+
+import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
-import { SSOConfigLoginList } from './login.types'
+import { dashboardAccessed } from '../../services/service'
 import { SSOProvider } from './constants'
+import { SSOConfigLoginList } from './login.types'
 import { LoginForm } from './LoginForm'
+
+import './login.scss'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 

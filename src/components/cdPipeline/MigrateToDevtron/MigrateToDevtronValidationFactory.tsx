@@ -15,22 +15,23 @@
  */
 
 import { ComponentProps } from 'react'
+import { Link } from 'react-router-dom'
+
 import {
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    Tooltip,
-    ButtonComponentType,
-    URLS as COMMON_URLS,
-    isNullOrUndefined,
-    GenericSectionErrorState,
     DeploymentAppTypes,
+    GenericSectionErrorState,
     ImageWithFallback,
     InfoBlock,
+    isNullOrUndefined,
+    Tooltip,
+    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
-import { URLS } from '@Config/routes'
+
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
@@ -39,16 +40,19 @@ import {
     ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
     ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
 } from '@Components/cluster/constants'
+import { URLS } from '@Config/routes'
+
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
-import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowProps } from './types'
 import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS, TARGET_ENVIRONMENT_INFO_LIST } from './constants'
-import './MigrateToDevtronValidationFactory.scss'
+import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowProps } from './types'
 import {
     getDeploymentAppTypeLabel,
     getTargetClusterTooltipInfo,
     getTargetNamespaceTooltipInfo,
     renderGitOpsNotConfiguredDescription,
 } from './utils'
+
+import './MigrateToDevtronValidationFactory.scss'
 
 const renderContentTooltip = (title: string, infoList: string[]) => (
     <div className="flexbox-col dc__gap-2">

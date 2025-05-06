@@ -26,55 +26,56 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component, createRef } from 'react'
 import ReactGA from 'react-ga4'
+import yamlJsParser from 'yaml'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    CustomInput,
-    noop,
-    YAMLStringify,
-    DEFAULT_SECRET_PLACEHOLDER,
-    CodeEditor,
-    FeatureTitleWithInfo,
-    InfoColourBar,
-    ToastManager,
-    ToastVariantType,
     Button,
     ButtonVariantType,
+    CodeEditor,
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    MODES,
+    CustomInput,
+    DEFAULT_SECRET_PLACEHOLDER,
+    ErrorScreenManager,
+    FeatureTitleWithInfo,
+    InfoColourBar,
     isCodeMirrorEnabled,
+    MODES,
+    noop,
+    Progressing,
+    showError,
     SSOProviderIcon,
+    ToastManager,
+    ToastVariantType,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import yamlJsParser from 'yaml'
-import Check from '@Icons/ic-selected-corner.png'
+
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
-import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
+import Check from '@Icons/ic-selected-corner.png'
+import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
 import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     importComponentFromFELibrary,
 } from '@Components/common'
-import { OIDCType, SSOLoginProps, SSOLoginState, SSOConfigType, SSOLoginTabType } from './ssoConfig.types'
-import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
-import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
 
-import '@Components/login/login.scss'
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-
-import sample from './sampleSSOConfig.json'
-
+import { DOCUMENTATION, HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
 import {
     AUTHORIZATION_CONFIG_TYPES,
-    SSOProvider,
     autoAssignPermissionsFlowActiveProviders,
     ssoDocumentationMap,
+    SSOProvider,
     ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
 } from './constants'
+import sample from './sampleSSOConfig.json'
+import { createSSOList, getSSOConfig, getSSOConfigList, updateSSOList } from './service'
+import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+
+import '@Components/login/login.scss'
 import './ssoLogin.scss'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')

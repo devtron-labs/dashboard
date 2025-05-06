@@ -16,10 +16,11 @@
 
 import { useMemo, useState } from 'react'
 import dayjs from 'dayjs'
-import { noop, InitTabType, DynamicTabType } from '@devtron-labs/devtron-fe-common-lib'
-import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
+
+import { DynamicTabType, InitTabType, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
-import { convertV1TabsDataToV2 } from './utils'
+import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
 
 export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB): UseTabsReturnType {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
@@ -105,7 +106,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         } else {
             const persistedTabsData = getTabDataFromLocalStorage()
             try {
-                _parsedTabsData = convertV1TabsDataToV2(JSON.parse(persistedTabsData))
+                _parsedTabsData = JSON.parse(persistedTabsData)
             } catch {
                 noop()
             }
@@ -175,7 +176,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
             if (!reInit) {
                 const persistedTabsData = getTabDataFromLocalStorage()
                 try {
-                    parsedTabsData = convertV1TabsDataToV2(JSON.parse(persistedTabsData))
+                    parsedTabsData = JSON.parse(persistedTabsData)
                     _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
                 } catch {
                     _tabs = prevTabs

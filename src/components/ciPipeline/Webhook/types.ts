@@ -15,6 +15,7 @@
  */
 
 import { AppConfigProps, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TokenListType } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
 
 export interface WebhookDetailType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {

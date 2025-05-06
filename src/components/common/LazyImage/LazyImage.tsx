@@ -15,6 +15,7 @@
  */
 
 import React, { useRef } from 'react'
+
 import { useIntersection } from '../helpers/Helpers'
 
 const LazyImage: React.FC<React.ComponentProps<'img'>> = (props) => {

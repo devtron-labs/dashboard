@@ -16,11 +16,13 @@
 
 import React, { useState } from 'react'
 import { NavLink } from 'react-router-dom'
+
 import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
-import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 
 export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clusterId, closeModal }) => {
     const [showModal, setShowModal] = useState(false)

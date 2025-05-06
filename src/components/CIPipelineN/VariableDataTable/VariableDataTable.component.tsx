@@ -32,9 +32,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { importComponentFromFELibrary } from '@Components/common'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 import {
     FILE_MOUNT_DIR,
@@ -65,9 +65,8 @@ import {
     getVariableDataTableRowEmptyValidationState,
     validateVariableDataTableVariableKeys,
 } from './validations'
-
-import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
+import { VariableConfigOverlay } from './VariableConfigOverlay'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 

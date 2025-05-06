@@ -22,8 +22,8 @@ import {
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import { PluginVariableType } from '@Components/ciPipeline/types'
+import { importComponentFromFELibrary } from '@Components/common'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 

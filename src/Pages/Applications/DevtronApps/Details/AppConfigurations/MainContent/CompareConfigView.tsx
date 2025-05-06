@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
 import { DeploymentHistoryDiffView, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as ICFileEdit } from '@Icons/ic-file-edit.svg'
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { CompareConfigViewProps } from './types'
 import { getCompareViewHistoryDiffConfigProps } from './utils'
 

@@ -16,11 +16,13 @@
 
 import {
     ClusterDetail,
+    ClusterFiltersType,
     numberComparatorBySortOrder,
     SortingOrder,
     stringComparatorBySortOrder,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CLUSTER_PROD_TYPE, ClusterMapListSortableKeys } from './constants'
 
 export const getSortedClusterList = (
@@ -83,3 +85,7 @@ export const getSortedClusterList = (
             break
     }
 }
+
+export const parseSearchParams = (searchParams: URLSearchParams) => ({
+    clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) ?? ClusterFiltersType.ALL_CLUSTERS,
+})

@@ -16,7 +16,9 @@
 
 import { ReactElement } from 'react'
 import { Dayjs } from 'dayjs'
+
 import { DynamicTabType, InitTabType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { TAB_DATA_VERSION } from './constants'
 
 export enum DynamicTabsVariantType {
@@ -71,12 +73,6 @@ export interface TimerType {
     transition?: () => JSX.Element
     transpose?: (output: string) => JSX.Element
     format?: (start: Dayjs, now: Dayjs) => string
-}
-
-export type ParsedTabsDataV1 = {
-    key: string
-    data: DynamicTabType[]
-    version: 'v1'
 }
 
 export type ParsedTabsData = {

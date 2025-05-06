@@ -14,30 +14,32 @@
  * limitations under the License.
  */
 
+import { RouteComponentProps } from 'react-router-dom'
+
 import {
+    AppConfigProps,
+    ChangeCIPayloadType,
+    CiPipeline,
+    CIPipelineNodeType,
     CommonNodeAttr,
     DeploymentAppTypes,
+    MandatoryPluginDataType,
     OptionType,
+    PipelineFormType,
+    PluginDataStoreType,
+    SelectedNode,
     StepType,
     TaskErrorObj,
-    VariableType,
-    SelectedNode,
-    PluginDataStoreType,
-    PipelineFormType,
-    MandatoryPluginDataType,
-    CiPipeline,
     UploadFileDTO,
     UploadFileProps,
-    ChangeCIPayloadType,
-    CIPipelineNodeType,
-    AppConfigProps,
+    VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps } from 'react-router-dom'
+
 import { HostURLConfig } from '../../services/service.types'
 import { CdPipelineResult } from '../app/details/triggerView/types'
 import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
-import { LoadingState } from '../ciConfig/types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
+import { LoadingState } from '../ciConfig/types'
 import { WorkflowProps } from './Workflow'
 
 export interface BlackListedCI {
@@ -202,6 +204,7 @@ export interface WebhookNodeProps extends Required<Pick<AppConfigProps, 'isTempl
      * @default false
      */
     isReadonlyView?: boolean
+    addImageButtonClick?: (webhookId: number) => void
 }
 
 export interface WebhookTippyType {

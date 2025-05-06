@@ -15,8 +15,9 @@
  */
 
 import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { useFileReader } from '../common'
-import { FileReaderStatusType, FileDataType } from '../common/hooks/types'
+import { FileDataType, FileReaderStatusType } from '../common/hooks/types'
 import { parseIntoYAMLString } from './utils'
 
 export enum VariableCategories {
