@@ -37,13 +37,14 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         return 3
     })()
 
-    const handleUpdateServiceWorker = (updatedServiceWorker: typeof updateServiceWorker) => {
+    const handleUpdateServiceWorker = (updatedServiceWorker: (reloadPage?: boolean) => Promise<void>) => {
         dismissToast({ updateToastRef })
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updatedServiceWorker(true)
     }
 
-    const handleNeedRefresh = (updateServiceWorker) => {
+    const handleNeedRefresh = (updateServiceWorker: (reloadPage?: boolean) => Promise<void>) => {
+        if (doesNeedRefresh) return
         setDoesNeedRefresh(true)
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
@@ -193,7 +194,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             navigator.serviceWorker
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
-            if (doesNeedRefresh) {
+            if (doesNeedRefresh && !refreshing.current) {
                 handleNeedRefresh(updateServiceWorker)
             } else if (showVersionUpdateToast) {
                 dismissToast({ updateToastRef })
