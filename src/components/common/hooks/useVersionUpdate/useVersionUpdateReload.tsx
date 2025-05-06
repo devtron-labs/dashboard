@@ -44,32 +44,35 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
     }
 
     useEffect(() => {
-        if (!bgUpdated && !showVersionUpdateToast) {
+        if (!bgUpdated) {
             return
         }
         dismissToast({ updateToastRef })
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'This page has been updated. Please save any unsaved changes and refresh.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: refresh,
-                    startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+        if (showVersionUpdateToast) {
+            updateToastRef.current = ToastManager.showToast(
+                {
+                    variant: ToastVariantType.info,
+                    title: 'Update available',
+                    description: 'This page has been updated. Please save any unsaved changes and refresh.',
+                    buttonProps: {
+                        text: 'Reload',
+                        dataTestId: 'reload-btn',
+                        onClick: refresh,
+                        startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                    },
+                    icon: <Icon name="ic-sparkle-color" color={null} />,
+                    progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
                 },
-                icon: <Icon name="ic-sparkle-color" color={null} />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
-        )
+                {
+                    autoClose: false,
+                },
+            )
+        }
     }, [bgUpdated])
 
     useEffect(() => {
-        console.log('TODO: Remove later, Testing reload purpose')
+        console.log('TODO: Remove later, Testing reload purpose', showVersionUpdateToast)
+
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
