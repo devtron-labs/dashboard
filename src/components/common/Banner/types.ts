@@ -16,7 +16,6 @@
 
 import { InfoBlockProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { NavigationRoutesTypes } from '../navigation/types'
 import { BannerVariant } from './constants'
 
 export interface BannerConfigProps {
@@ -40,5 +39,3 @@ export interface AnnouncementConfigTypes {
     buttonText?: string
     buttonLink?: string
 }
-
-export interface BannerTypes extends Pick<NavigationRoutesTypes, 'hideVersionUpdateToast'> {}

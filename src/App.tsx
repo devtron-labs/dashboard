@@ -53,6 +53,8 @@ const App = () => {
     const location = useLocation()
     const { push } = useHistory()
 
+    console.log('TODOremove testing inside app', showVersionUpdateToast)
+
     const { bgUpdated, handleAppUpdate, doesNeedRefresh, updateServiceWorker, handleControllerChange, updateToastRef } =
         useVersionUpdateReload({
             showVersionUpdateToast,
