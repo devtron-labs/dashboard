@@ -46,7 +46,6 @@ const App = () => {
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
-    const [showVersionUpdateToast, setShowVersionUpdateToast] = useState(true)
 
     const { setEmail } = useUserEmail()
 
@@ -80,7 +79,6 @@ const App = () => {
         updateToastRef,
         isRefreshing,
     } = useVersionUpdateReload({
-        showVersionUpdateToast,
         toastEligibleRoutes,
     })
 
@@ -93,10 +91,6 @@ const App = () => {
         if (token) {
             setApprovalToken(token)
         }
-    }
-
-    const hideVersionUpdateToast = () => {
-        setShowVersionUpdateToast(false)
     }
 
     async function validation() {
@@ -181,15 +175,7 @@ const App = () => {
                             return <Route key={path} path={path} exact render={render} />
                         })}
 
-                        <Route
-                            path="/"
-                            render={() => (
-                                <NavigationRoutes
-                                    reloadVersionConfig={reloadVersionConfig}
-                                    hideVersionUpdateToast={hideVersionUpdateToast}
-                                />
-                            )}
-                        />
+                        <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>
                     <div id="visible-modal" />

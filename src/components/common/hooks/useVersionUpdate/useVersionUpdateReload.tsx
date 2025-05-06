@@ -21,7 +21,7 @@ export const dismissToast = ({ updateToastRef }: { updateToastRef: React.Mutable
     }
 }
 
-export const useVersionUpdateReload = ({ showVersionUpdateToast, toastEligibleRoutes }: VersionUpdateProps) => {
+export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdateProps) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
@@ -120,9 +120,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast, toastEligibleRo
     })
 
     const handleAppUpdate = () => {
-        if (showVersionUpdateToast) {
-            dismissToast({ updateToastRef })
-        }
+        dismissToast({ updateToastRef })
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
@@ -196,7 +194,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast, toastEligibleRo
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh && !refreshing.current) {
                 handleNeedRefresh(updateServiceWorker)
-            } else if (showVersionUpdateToast) {
+            } else if (bgUpdated) {
                 dismissToast({ updateToastRef })
             }
         }
