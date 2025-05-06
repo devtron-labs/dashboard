@@ -29,6 +29,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
+import { VersionUpdateProps } from '@Components/common/hooks/useVersionUpdate/types'
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
@@ -46,24 +47,11 @@ const App = () => {
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
-    const [showVersionUpdateToast, setShowVersionUpdateToast] = useState(true)
 
     const { setEmail } = useUserEmail()
 
     const location = useLocation()
     const { push } = useHistory()
-
-    const {
-        bgUpdated,
-        handleAppUpdate,
-        doesNeedRefresh,
-        updateServiceWorker,
-        handleControllerChange,
-        updateToastRef,
-        isRefreshing,
-    } = useVersionUpdateReload({
-        showVersionUpdateToast,
-    })
 
     const isDirectApprovalNotification =
         location.pathname &&
@@ -81,6 +69,31 @@ const App = () => {
         }
     }
 
+    const toastEligibleRoutes: VersionUpdateProps['toastEligibleRoutes'] = [
+        {
+            path: `/${approvalType?.toLowerCase()}/approve`,
+            exact: true,
+            condition: isDirectApprovalNotification && GenericDirectApprovalModal,
+            component: <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />,
+        },
+        {
+            path: CommonURLS.LICENSE_AUTH,
+            exact: false,
+            condition: true,
+            component: <ActivateLicense />,
+        },
+        {
+            path: URLS.LOGIN,
+            exact: false,
+            condition: !window._env_.K8S_CLIENT,
+            component: <Login />,
+        },
+    ]
+
+    const reloadVersionConfig = useVersionUpdateReload({
+        toastEligibleRoutes,
+    })
+
     const redirectToDirectApprovalNotification = (): void => {
         setValidating(false)
         setApprovalType(getApprovalModalTypeFromURL(location.pathname))
@@ -90,10 +103,6 @@ const App = () => {
         if (token) {
             setApprovalToken(token)
         }
-    }
-
-    const hideVersionUpdateToast = () => {
-        setShowVersionUpdateToast(false)
     }
 
     async function validation() {
@@ -137,16 +146,6 @@ const App = () => {
         }
     }, [])
 
-    const reloadVersionConfig = {
-        handleAppUpdate,
-        doesNeedRefresh,
-        updateServiceWorker,
-        handleControllerChange,
-        bgUpdated,
-        updateToastRef,
-        isRefreshing,
-    }
-
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
             <div className="full-height-width bg__tertiary">
@@ -156,24 +155,14 @@ const App = () => {
             <ErrorBoundary>
                 <BreadcrumbStore>
                     <Switch>
-                        {isDirectApprovalNotification && GenericDirectApprovalModal && (
-                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />
-                            </Route>
+                        {toastEligibleRoutes.map(({ exact, path, condition, component }) =>
+                            condition ? (
+                                <Route key={path} path={path} exact={exact}>
+                                    {component}
+                                </Route>
+                            ) : null,
                         )}
-                        <Route path={CommonURLS.LICENSE_AUTH}>
-                            <ActivateLicense />
-                        </Route>
-                        {!window._env_.K8S_CLIENT && <Route path={URLS.LOGIN} component={Login} />}
-                        <Route
-                            path="/"
-                            render={() => (
-                                <NavigationRoutes
-                                    reloadVersionConfig={reloadVersionConfig}
-                                    hideVersionUpdateToast={hideVersionUpdateToast}
-                                />
-                            )}
-                        />
+                        <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>
                     <div id="visible-modal" />

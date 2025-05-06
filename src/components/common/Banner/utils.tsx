@@ -57,7 +57,7 @@ const getVariantWithIconColorMap = (
     [BannerVariant.ONLINE]: null,
     [BannerVariant.VERSION_UPDATE]: null,
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
-    [BannerVariant.LICENSE]: VARIANT_TO_ICON_COLOR_MAP[licenseType] || null,
+    [BannerVariant.LICENSE]: VARIANT_TO_ICON_COLOR_MAP[licenseType] ?? null,
     [BannerVariant.ANNOUNCEMENT]: VARIANT_TO_ICON_COLOR_MAP[AnnouncementBannerType],
 })
 export const getBannerIcon = (

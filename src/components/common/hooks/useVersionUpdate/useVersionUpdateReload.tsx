@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+// eslint-disable-next-line import/no-unresolved
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 import {
@@ -15,19 +16,24 @@ import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 import { VersionUpdateProps } from './types'
 
-const dismissToast = ({ updateToastRef }: { updateToastRef: React.MutableRefObject<null> }) => {
+export const dismissToast = ({ updateToastRef }: { updateToastRef: React.MutableRefObject<null> }) => {
     if (ToastManager.isToastActive(updateToastRef.current)) {
         ToastManager.dismissToast(updateToastRef.current)
     }
 }
 
-export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdateProps) => {
+export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdateProps) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
     const [doesNeedRefresh, setDoesNeedRefresh] = useState(false)
     const location = useLocation()
 
     const updateToastRef = useRef(null)
+
+    const toastEligibleRoutesMap = toastEligibleRoutes.reduce((acc, { path }) => {
+        acc[path] = true
+        return acc
+    }, {})
 
     const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
@@ -50,7 +56,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             localStorage.removeItem('serverInfo')
         }
         dismissToast({ updateToastRef })
-        if (showVersionUpdateToast) {
+        if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,
@@ -120,9 +126,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
     })
 
     const handleAppUpdate = () => {
-        if (showVersionUpdateToast) {
-            dismissToast({ updateToastRef })
-        }
+        dismissToast({ updateToastRef })
 
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
@@ -146,8 +150,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             return
         }
         dismissToast({ updateToastRef })
-        console.log(showVersionUpdateToast, 'toast inside use effect')
-        if (showVersionUpdateToast) {
+        if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,
@@ -196,7 +199,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh && !refreshing.current) {
                 handleNeedRefresh(updateServiceWorker)
-            } else if (showVersionUpdateToast) {
+            } else if (bgUpdated) {
                 dismissToast({ updateToastRef })
             }
         }

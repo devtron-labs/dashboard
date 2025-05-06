@@ -126,7 +126,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 
-export default function NavigationRoutes({ reloadVersionConfig, hideVersionUpdateToast }: NavigationRoutesTypes ) {
+export default function NavigationRoutes({ reloadVersionConfig }: Readonly<NavigationRoutesTypes> ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -396,7 +396,6 @@ export default function NavigationRoutes({ reloadVersionConfig, hideVersionUpdat
         } else {
             handleFetchInitialData()
         }
-        hideVersionUpdateToast()
     }, [])
 
     useEffect(() => {
