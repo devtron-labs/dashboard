@@ -392,7 +392,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
 
         const URL = getUrlWithSearchParams(
-            getURLBasedOnSidebarGVK(SIDEBAR_KEYS.upgradeClusterGVK.Kind, clusterId, namespace),
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/cluster-upgrade`,
             { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
         )
 

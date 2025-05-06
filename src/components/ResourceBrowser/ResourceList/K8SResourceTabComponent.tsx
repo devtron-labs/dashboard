@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { abortPreviousRequests, ErrorScreenManager, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
+import { K8S_EMPTY_GROUP, ResourceBrowserTabsId } from '../Constants'
 import { getResourceGroupList } from '../ResourceBrowser.service'
-import { K8SResourceTabComponentProps, URLParams } from '../Types'
+import { K8SResourceTabComponentProps } from '../Types'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { K8SResourceList } from './K8SResourceList'
 import Sidebar from './Sidebar'
+import { ResourceListURLParams } from './types'
 
 const K8SResourceTabComponent = ({
-    selectedResource,
-    setSelectedResource,
+    markTabActiveById,
     selectedCluster,
     renderRefreshBar,
     addTab,
@@ -35,13 +36,21 @@ const K8SResourceTabComponent = ({
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     setWidgetEventDetails,
-    handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId, kind, group } = useParams<ResourceListURLParams>()
 
     const abortControllerRef = useRef(new AbortController())
+
+    useEffect(() => {
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
+    }, [])
+
+    const selectedResource = useMemo(
+        () => lowercaseKindToResourceGroupMap?.[`${group === K8S_EMPTY_GROUP ? '' : group}-${kind}`.toLowerCase()],
+        [lowercaseKindToResourceGroupMap, kind, group],
+    )
 
     const [loading, k8SObjectMap, error, reload] = useAsync(
         () =>
@@ -75,7 +84,6 @@ const K8SResourceTabComponent = ({
             <Sidebar
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
-                setSelectedResource={setSelectedResource}
                 isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
@@ -89,7 +97,6 @@ const K8SResourceTabComponent = ({
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
                 setWidgetEventDetails={setWidgetEventDetails}
-                handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             />
         </div>

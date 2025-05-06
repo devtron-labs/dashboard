@@ -41,6 +41,7 @@ import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
+import { ResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 import { EDITOR_VIEW } from '@Config/constants'
 
 import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
@@ -91,13 +92,14 @@ const NodeDetailComponent = ({
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<ParamsType>()
+    const params = useParams<ParamsType & ResourceDetailURLParams>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState<OptionsBase[]>([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
     const [hideManagedFields, setHideManagedFields] = useState(true)
+    params.nodeType = params.kind ? params.kind : params.nodeType
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
@@ -128,7 +130,7 @@ const NodeDetailComponent = ({
         [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
     )
 
-    const resourceName = isResourceBrowserView ? params.node : params.podName
+    const resourceName = isResourceBrowserView ? params.name : params.podName
 
     const selectedResource = {
         clusterId: +params.clusterId,

@@ -23,7 +23,6 @@ import DOMPurify from 'dompurify'
 import {
     ApiResourceGroupType,
     highlightSearchText,
-    Nodes,
     ReactSelectInputAction,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -32,18 +31,18 @@ import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
 import { URLS } from '../../../config'
 import { AggregationKeys } from '../../app/types'
 import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
-import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType, URLParams } from '../Types'
+import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
 import {
     convertK8sObjectMapToOptionsList,
     convertResourceGroupListToK8sObjectList,
     getK8SObjectMapAfterGroupHeadingClick,
 } from '../Utils'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
+import { ResourceListURLParams } from './types'
 
 const Sidebar = ({
     apiResources,
     selectedResource,
-    setSelectedResource,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     isOpen,
@@ -51,10 +50,10 @@ const Sidebar = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
-    const { clusterId, namespace, nodeType } = useParams<URLParams>()
+    const { clusterId, kind } = useParams<ResourceListURLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
-    const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, nodeType))
+    const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, kind))
     const preventScrollRef = useRef(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
     const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
@@ -114,18 +113,8 @@ const Sidebar = ({
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
-        const _selectedResource = {
-            namespaced: e.currentTarget.dataset.namespaced === 'true',
-            gvk: {
-                Group: e.currentTarget.dataset.group,
-                Version: e.currentTarget.dataset.version,
-                Kind: e.currentTarget.dataset.kind as Nodes,
-            },
-            isGrouped: e.currentTarget.dataset.grouped === 'true',
-        }
-        setSelectedResource(_selectedResource)
         updateK8sResourceTabLastSyncMoment()
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}/v1${location.search}`
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
         if (shouldPushUrl) {
             push(_url)
@@ -153,13 +142,12 @@ const Sidebar = ({
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (!isOpen || nodeType === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
+        if (!isOpen || kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */
         const match =
-            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === nodeType) ??
-            k8sObjectOptionsList[0]
+            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === kind) ?? k8sObjectOptionsList[0]
         /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
         selectNode(
             {
@@ -171,7 +159,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [nodeType, k8sObjectOptionsList, isOpen])
+    }, [kind, k8sObjectOptionsList, isOpen])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
@@ -351,7 +339,7 @@ const Sidebar = ({
                             version={SIDEBAR_KEYS.nodeGVK.Version}
                             kind={SIDEBAR_KEYS.nodeGVK.Kind}
                             namespaced={false}
-                            isSelected={nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
+                            isSelected={kind === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         />
                     )}
@@ -363,7 +351,7 @@ const Sidebar = ({
                             version={SIDEBAR_KEYS.eventGVK.Version}
                             kind={SIDEBAR_KEYS.eventGVK.Kind}
                             namespaced
-                            isSelected={nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
+                            isSelected={kind === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         />
                     )}
@@ -375,7 +363,7 @@ const Sidebar = ({
                             version={SIDEBAR_KEYS.namespaceGVK.Version}
                             kind={SIDEBAR_KEYS.namespaceGVK.Kind}
                             namespaced={false}
-                            isSelected={nodeType === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
+                            isSelected={kind === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase()}
                             onClick={selectNode}
                         />
                     )}

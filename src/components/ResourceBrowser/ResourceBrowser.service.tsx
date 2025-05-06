@@ -31,7 +31,7 @@ import {
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import { SIDEBAR_KEYS } from './Constants'
-import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
+import { GetResourceDataType, NodeRowDetail, ResourceBrowserDetailBaseParams } from './Types'
 import { parseNodeList } from './Utils'
 
 export const getClusterList = async (): Promise<ClusterListResponse> => {
@@ -61,9 +61,14 @@ export const getNodeList = (
     clusterId: string,
     abortControllerRef: RefObject<AbortController>,
 ): Promise<ResponseType<NodeRowDetail[]>> =>
-    get(getUrlWithSearchParams<keyof URLParams>(Routes.NODE_LIST, { clusterId: Number(clusterId) }), {
-        abortControllerRef,
-    })
+    get(
+        getUrlWithSearchParams<keyof ResourceBrowserDetailBaseParams>(Routes.NODE_LIST, {
+            clusterId: Number(clusterId),
+        }),
+        {
+            abortControllerRef,
+        },
+    )
 
 export const getResourceData = async ({
     selectedResource,

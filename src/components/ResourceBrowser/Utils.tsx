@@ -272,55 +272,43 @@ export const updateQueryString = (
 export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
     `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
 
-export const getTabsBasedOnRole = ({
-    selectedCluster,
-    namespace,
-    dynamicTabData,
-    isTerminalSelected = false,
-    isOverviewSelected = false,
-    isMonitoringDashBoardSelected = false,
-}: GetTabsBasedOnRoleParamsType): InitTabType[] => {
+export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
     const tabs: InitTabType[] = [
         {
             id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
-            isSelected: isOverviewSelected,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/overview`,
+            isSelected: false,
             showNameOnSelect: false,
             type: 'fixed',
         },
         {
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
-            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/node/${K8S_EMPTY_GROUP}/v1`,
+            isSelected: true,
             type: 'fixed',
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
             shouldRemainMounted: true,
         },
-        ...(getMonitoringDashboardTabConfig
-            ? [
-                  getMonitoringDashboardTabConfig(
-                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
-                      isMonitoringDashBoardSelected,
-                      MONITORING_DASHBOARD_TAB_ID,
-                  ),
-              ]
-            : []),
+        getMonitoringDashboardTabConfig(
+            `${URLS.RESOURCE_BROWSER}/${clusterId}/monitoring-dashboard`,
+            false,
+            MONITORING_DASHBOARD_TAB_ID,
+        ),
         {
             id: ResourceBrowserTabsId.terminal,
             name: AppDetailsTabs.terminal,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-            isSelected: isTerminalSelected,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/terminal`,
+            isSelected: false,
             type: 'fixed',
             showNameOnSelect: true,
-            isAlive: isTerminalSelected,
+            isAlive: false,
             dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
         },
-        ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 
     return tabs

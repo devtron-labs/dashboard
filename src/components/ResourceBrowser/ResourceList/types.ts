@@ -25,13 +25,14 @@ import {
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import {
     K8SResourceListType,
     ResourceBrowserActionMenuType,
+    ResourceBrowserDetailBaseParams,
     ResourceFilterOptionsProps,
     SidebarType,
-    URLParams,
 } from '../Types'
 
 export interface BaseResourceListProps
@@ -46,11 +47,9 @@ export interface BaseResourceListProps
             | 'selectedResource'
             | 'clusterName'
             | 'setWidgetEventDetails'
-            | 'handleResourceClick'
             | 'lowercaseKindToResourceGroupMap'
         >,
-        Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<URLParams, 'nodeType' | 'group'> {
+        Pick<SidebarType, 'updateK8sResourceTab'> {
     isLoading: boolean
     resourceListError: ServerErrors
     resourceList: K8sResourceDetailType
@@ -61,6 +60,9 @@ export interface BaseResourceListProps
     children?: ReactNode
     showGenericNullState?: boolean
     hideBulkSelection?: boolean
+    handleResourceClick?: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
+    nodeType: string
+    group: string
     /**
      * If true, the kind from the API is used instead of the selected resource
      *
@@ -82,3 +84,23 @@ export interface ResourceListUrlFiltersType {
 }
 
 export type BulkOperationsModalState = RBBulkOperationType | 'closed'
+
+export interface ResourceListURLParams extends ResourceBrowserDetailBaseParams {
+    version: string
+    kind: string
+    group: string
+}
+
+export interface ResourceDetailURLParams extends ResourceListURLParams {
+    name: string
+    namespace: string
+}
+
+export interface NodeDetailComponentWrapperProps
+    extends Pick<
+            UseTabsReturnType,
+            'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId' | 'markTabActiveById' | 'addTab'
+        >,
+        Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
+    clusterName: string
+}

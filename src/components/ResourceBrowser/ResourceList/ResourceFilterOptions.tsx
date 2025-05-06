@@ -33,7 +33,8 @@ import { convertToOptionsList, importComponentFromFELibrary } from '../../common
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
-import { ResourceFilterOptionsProps, URLParams } from '../Types'
+import { ResourceFilterOptionsProps } from '../Types'
+import { ResourceDetailURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
@@ -54,7 +55,7 @@ const ResourceFilterOptions = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, namespace, group } = useParams<URLParams>()
+    const { clusterId, namespace, group } = useParams<ResourceDetailURLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)

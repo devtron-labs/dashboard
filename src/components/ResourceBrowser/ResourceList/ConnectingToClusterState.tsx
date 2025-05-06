@@ -21,7 +21,7 @@ import CouldNotConnectImg from '../../../assets/img/app-not-deployed.svg'
 import { URLS } from '../../../config'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { CONNECTION_TIMEOUT_TIME, TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
-import { ConnectingToClusterStateProps, URLParams } from '../Types'
+import { ConnectingToClusterStateProps, ResourceBrowserDetailBaseParams } from '../Types'
 
 const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     loader,
@@ -31,7 +31,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     requestAbortController,
 }) => {
     const { replace } = useHistory()
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ResourceBrowserDetailBaseParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)

@@ -360,7 +360,13 @@ const BaseResourceListContent = ({
         return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
     }
 
-    const handleResourceClick = (e) => onResourceClick(e, shouldOverrideSelectedResourceKind)
+    const handleResourceClick =
+        onResourceClick ??
+        ((e) => {
+            const { name, namespace, kind, group: _group } = e.currentTarget.dataset
+
+            push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind}/${_group}/v1/${name}`)
+        })
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
@@ -422,8 +428,9 @@ const BaseResourceListContent = ({
                                         type="button"
                                         className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldShowRedirectionAndActions ? 'cursor-default' : ''}`}
                                         data-name={resourceData.name}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
+                                        data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
+                                        data-kind={selectedResource.gvk.Kind}
+                                        data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
                                         onClick={shouldShowRedirectionAndActions ? handleResourceClick : null}
                                         aria-label={`Select ${resourceData.name}`}
                                     >

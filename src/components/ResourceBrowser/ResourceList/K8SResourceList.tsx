@@ -30,9 +30,10 @@ import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/n
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
-import { K8SResourceListType, URLParams } from '../Types'
+import { K8SResourceListType } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
+import { ResourceListURLParams } from './types'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -49,13 +50,12 @@ export const K8SResourceList = ({
     isOpen,
     updateK8sResourceTab,
     setWidgetEventDetails,
-    handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
-    const { clusterId, nodeType, group } = useParams<URLParams>()
+    const { clusterId, kind, group } = useParams<ResourceListURLParams>()
 
     // STATES
     const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
@@ -126,13 +126,12 @@ export const K8SResourceList = ({
             isOpen={isOpen}
             renderRefreshBar={renderRefreshBar}
             updateK8sResourceTab={updateK8sResourceTab}
-            nodeType={nodeType}
+            nodeType={kind}
             group={group}
             addTab={addTab}
             hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
             setWidgetEventDetails={setWidgetEventDetails}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-            handleResourceClick={handleResourceClick}
         >
             {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
         </BaseResourceList>

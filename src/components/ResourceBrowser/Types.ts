@@ -20,7 +20,6 @@ import {
     ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     GVKType,
-    InitTabType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
@@ -50,12 +49,8 @@ export interface K8SObjectMapType extends K8SObjectBaseType {
     child: Map<string, K8SObjectChildMapType>
 }
 
-export interface URLParams {
+export interface ResourceBrowserDetailBaseParams {
     clusterId: string
-    namespace: string
-    nodeType: string
-    group?: string
-    node?: string
 }
 
 export interface CreateResourcePayload {
@@ -85,7 +80,6 @@ export interface SidebarType {
     isClusterError?: boolean
     updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -119,7 +113,6 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
     addTab: UseTabsReturnType['addTab']
     setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
 }
@@ -191,11 +184,9 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends Pick<SidebarType, 'selectedResource' | 'setSelectedResource' | 'updateK8sResourceTab'>,
-        Pick<
-            K8SResourceListType,
-            'setWidgetEventDetails' | 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'
-        > {
+    extends Pick<SidebarType, 'updateK8sResourceTab'>,
+        Pick<K8SResourceListType, 'setWidgetEventDetails' | 'clusterName' | 'lowercaseKindToResourceGroupMap'>,
+        Pick<UseTabsReturnType, 'markTabActiveById'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']
@@ -243,20 +234,6 @@ export interface RBSidebarKeysType {
 
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
-    namespace: string
-    dynamicTabData: InitTabType
-    /**
-     * @default false
-     */
-    isTerminalSelected?: boolean
-    /**
-     * @default false
-     */
-    isOverviewSelected?: boolean
-    /**
-     * @default false
-     */
-    isMonitoringDashBoardSelected?: boolean
 }
 
 export interface NodeRowDetail {

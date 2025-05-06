@@ -31,7 +31,7 @@ import {
     NODE_SEARCH_KEY_OPTIONS,
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
-import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
+import { NODE_SEARCH_KEYS, NodeListSearchFilterType, ResourceBrowserDetailBaseParams } from '../Types'
 import ColumnSelector from './ColumnSelector'
 
 const NodeListSearchFilter = ({
@@ -40,7 +40,7 @@ const NodeListSearchFilter = ({
     isOpen,
     searchParams,
 }: NodeListSearchFilterType) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ResourceBrowserDetailBaseParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
         if (searchParams[key]) {
