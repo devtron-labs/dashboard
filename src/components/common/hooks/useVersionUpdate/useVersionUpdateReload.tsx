@@ -144,7 +144,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return
         }
         dismissToast({ updateToastRef })
-        console.log(toastEligibleRoutes.includes(location.pathname), 'toast inside use effect')
         if (toastEligibleRoutes.includes(location.pathname)) {
             updateToastRef.current = ToastManager.showToast(
                 {

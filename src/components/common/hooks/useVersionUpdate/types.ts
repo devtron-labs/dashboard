@@ -1,3 +1,3 @@
 export interface VersionUpdateProps {
-    toastEligibleRoutes: string[]
+    toastEligibleRoutes?: string[]
 }

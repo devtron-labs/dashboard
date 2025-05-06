@@ -153,27 +153,23 @@ const App = () => {
             <ErrorBoundary>
                 <BreadcrumbStore>
                     <Switch>
-                        {toastEligibleRoutes.map((path) => {
-                            const render = () => {
-                                if (path === `/${approvalType?.toLowerCase()}/approve`) {
-                                    return isDirectApprovalNotification && GenericDirectApprovalModal ? (
-                                        <GenericDirectApprovalModal
-                                            approvalType={approvalType}
-                                            approvalToken={approvalToken}
-                                        />
-                                    ) : null
-                                }
-                                if (path === CommonURLS.LICENSE_AUTH) {
-                                    return <ActivateLicense />
-                                }
-                                if (path === URLS.LOGIN) {
-                                    return <Login />
-                                }
-                                return null
-                            }
-
-                            return <Route key={path} path={path} exact render={render} />
-                        })}
+                        {toastEligibleRoutes.map((path) => (
+                            <Route key={path} path={path} exact>
+                                {() => {
+                                    if (isDirectApprovalNotification && GenericDirectApprovalModal) {
+                                        return (
+                                            <GenericDirectApprovalModal
+                                                approvalType={approvalType}
+                                                approvalToken={approvalToken}
+                                            />
+                                        )
+                                    }
+                                    if (path === CommonURLS.LICENSE_AUTH) return <ActivateLicense />
+                                    if (path === URLS.LOGIN) return <Login />
+                                    return null
+                                }}
+                            </Route>
+                        ))}
 
                         <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
