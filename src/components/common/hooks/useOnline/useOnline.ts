@@ -6,7 +6,7 @@ import { getInternetConnectivity } from '@Services/service'
 
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 
-export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
+export const useOnline = ({ onOnline = noop, onOffline = noop }: { onOnline?: () => void; onOffline?: () => void }) => {
     const [online, setOnline] = useState(structuredClone(navigator.onLine))
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const timeoutRef = useRef<NodeJS.Timeout>(null)
@@ -40,6 +40,9 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         }
         abortControllerRef.current.abort()
         setOnline(false)
+        if (onOffline) {
+            onOffline()
+        }
     }
 
     const handleOnline = async () => {
@@ -60,7 +63,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
             window.removeEventListener('online', handleOnline)
             abortControllerRef.current.abort()
         }
-    }, [isAirgapped, onOnline])
+    }, [isAirgapped])
 
     return online
 }
