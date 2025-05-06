@@ -24,14 +24,11 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     CodeEditor,
-    CodeEditorThemesKeys,
     ConditionalWrap,
     ConfigurationType,
     DeploymentAppTypes,
     FormProps,
-    getComponentSpecificThemeClass,
     InfoBlock,
-    isCodeMirrorEnabled,
     logExceptionToSentry,
     noop,
     ServerErrors,
@@ -692,11 +689,7 @@ const ManifestComponent = ({
         }
 
         return (
-            <div
-                className={`flex-grow-1 flexbox-col ${
-                    !isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''
-                }`}
-            >
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     cleanData={showManifestCompareView}
                     diffView={showManifestCompareView}
@@ -704,31 +697,21 @@ const ManifestComponent = ({
                     readOnly={isReadOnlyView}
                     loading={loading}
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
-                    codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
-                        value: getCodeEditorValue(),
-                        defaultValue: showManifestCompareView ? desiredManifest : '',
-                        onChange: handleEditorValueChange,
-                        focus: isEditMode,
-                        height: '0',
-                    }}
-                    codeMirrorProps={{
-                        theme: AppThemeType.dark,
-                        height: 'fitToParent',
-                        ...(showManifestCompareView
-                            ? {
-                                  diffView: true,
-                                  originalValue: desiredManifest,
-                                  modifiedValue: getCodeEditorValue(),
-                                  onModifiedValueChange: handleEditorValueChange,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: getCodeEditorValue(),
-                                  onChange: handleEditorValueChange,
-                                  autoFocus: isEditMode,
-                              }),
-                    }}
+                    theme={AppThemeType.dark}
+                    height="fitToParent"
+                    {...(showManifestCompareView
+                        ? {
+                              diffView: true,
+                              originalValue: desiredManifest,
+                              modifiedValue: getCodeEditorValue(),
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: getCodeEditorValue(),
+                              onChange: handleEditorValueChange,
+                              autoFocus: isEditMode,
+                          })}
                 >
                     {renderEditorInfo(true)}
 
@@ -769,7 +752,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className="manifest-container flexbox-col flex-grow-1 dc__overflow-auto"
+            className="flexbox-col flex-grow-1 dc__overflow-auto"
             data-testid="app-manifest-container"
             style={{
                 background: 'var(--terminal-bg)',

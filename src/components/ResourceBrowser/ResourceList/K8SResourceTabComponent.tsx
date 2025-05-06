@@ -34,7 +34,6 @@ const K8SResourceTabComponent = ({
     isOpen,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
-    setWidgetEventDetails,
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
@@ -88,7 +87,6 @@ const K8SResourceTabComponent = ({
                 isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
-                setWidgetEventDetails={setWidgetEventDetails}
                 handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             />

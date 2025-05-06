@@ -41,6 +41,8 @@ import {
     LicenseInfoDialogType,
     DevtronLicenseInfo,
     useUserPreferences,
+    AboutDevtronDialog,
+    IntelligenceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -72,10 +74,6 @@ import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.u
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
-// Monaco Editor worker dependency
-import 'monaco-editor'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
@@ -84,22 +82,12 @@ import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 import { Banner } from '../Banner/Banner'
 
-// Monaco Editor worker initialization
-self.MonacoEnvironment = {
-    getWorker(_, label) {
-        if (label === MODES.YAML) {
-            return new YamlWorker()
-        }
-        return new editorWorker()
-    },
-}
-
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
 const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
-const V2Details = lazy(() => import('../../v2/index'))
+const DevtronChartRouter = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -125,11 +113,14 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
     handleUpdatePipelineRBACViewSelectedTab: (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => void
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
+const EnterpriseLicenseBar = importComponentFromFELibrary('EnterpriseLicenseBar', null, 'function')
+const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 
 export default function NavigationRoutes({ reloadVersionConfig }: Readonly<NavigationRoutesTypes> ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
+    const navRouteRef = useRef<HTMLDivElement>()
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -157,6 +148,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
 
     const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
+    const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
+
     const {
         userPreferences,
         userPreferencesError,
@@ -351,7 +344,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                     result.canOnlyViewPermittedEnvOrgLevel ??
                     ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
+                canFetchHelmAppStatus:
+                    result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ??
                     ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
@@ -439,6 +433,23 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
 
     const showStackManager = !devtronManagedLicensingEnabled
 
+    const renderAboutDevtronDialog = () => {
+        if (!licenseInfoDialogType) {
+            return null
+        }
+        return licenseData && LicenseInfoDialog ? (
+            <LicenseInfoDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                initialDialogType={licenseInfoDialogType}
+            />
+        ) : (
+            <AboutDevtronDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                isFELibAvailable={!!LicenseInfoDialog}
+            />
+        )
+    }
+
     return (
         <MainContextProvider
             value={{
@@ -477,6 +488,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
                 reloadVersionConfig,
+                intelligenceConfig,
+                setIntelligenceConfig,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -487,13 +500,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
-                {licenseInfoDialogType && LicenseInfoDialog && (
-                    <LicenseInfoDialog
-                        handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
-                        currentVersion={currentServerInfo.serverInfo?.currentVersion}
-                        initialDialogType={licenseInfoDialogType}
-                    />
-                )}
+                {renderAboutDevtronDialog()}
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
@@ -511,6 +518,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 {serverMode && (
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
+                        ref={navRouteRef}
                     >
                         <Banner />
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
@@ -633,6 +641,9 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                                             />
                                         </Route>
                                     </Switch>
+                                    {AIResponseWidget && intelligenceConfig && (
+                                        <AIResponseWidget parentRef={navRouteRef} />
+                                    )}
                                 </ErrorBoundary>
                             </Suspense>
                         </div>
@@ -674,10 +685,9 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={(props) => <V2Details envType={EnvType.CHART} />}
+                        render={(props) => <DevtronChartRouter envType={EnvType.CHART} />}
                     />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
-                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
 
                     <Route exact path="">
                         <RedirectToAppList />

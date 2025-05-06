@@ -27,13 +27,11 @@ import {
     configMapSecretMountDataMap,
     convertKeyValuePairToYAML,
     convertYAMLToKeyValuePair,
-    isCodeMirrorEnabled,
-    KeyValueConfig,
     KeyValueTable,
+    KeyValueTableData,
     MODES,
     noop,
     OverrideMergeStrategyType,
-    PATTERNS,
     SelectPickerOptionType,
     StyledRadioGroup,
     ToastManager,
@@ -41,7 +39,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { importComponentFromFELibrary } from '@Components/common'
@@ -57,6 +54,8 @@ import { externalTypeSecretCodeEditorDataHeaders, renderYamlInfoText } from './h
 import { ConfigMapSecretDataProps } from './types'
 import {
     getCMCSExpressEditComparisonDataDiffConfig,
+    getConfigMapSecretKeyValueTableRows,
+    getConfigMapSecretKeyValueTableValidationSchema,
     getExpressEditComparisonViewLHS,
     getLockedYamlString,
 } from './utils'
@@ -99,81 +98,16 @@ export const ConfigMapSecretData = ({
     const isSelectedTypeVolume =
         data.externalType === '' && data.selectedType === configMapSecretMountDataMap.volume.value
 
-    // METHODS & CONFIGURATIONS
-    const config: KeyValueConfig<'k' | 'v'> = {
-        headers: [
-            {
-                label: isSelectedTypeVolume ? 'File Name' : 'Key',
-                key: 'k',
-            },
-            {
-                label: isSelectedTypeVolume ? 'File Content' : 'Value',
-                key: 'v',
-            },
-        ],
-        rows: data.currentData.map(({ k, v, id }) => ({
-            data: {
-                k: {
-                    value: k,
-                },
-                v: {
-                    value: typeof v === 'object' ? YAMLStringify(v) : v.toString(),
-                },
-            },
-            id,
-        })),
-    }
-
+    // METHODS
     const onMergeStrategySelect = (newValue: SelectPickerOptionType) => {
         handleMergeStrategyChange(newValue.value as OverrideMergeStrategyType)
     }
 
-    const keyValueTableHandleChange =
-        (onChange: (value: unknown) => void) => (rowId: string | number, headerKey: string, value: string) => {
-            // - When data is changed from the YAML editor to the GUI, IDs are mapped to indices (numbers).
-            // - When data is added via the GUI, IDs are created internally by the GUI editor as strings.
-            const _currentData = data.currentData.reduce(
-                (acc, currentData) => {
-                    if (currentData.id === rowId) {
-                        // If the item is found, update it with the new value and reset errors.
-                        acc.found = true
-                        acc.updatedData.push({
-                            ...currentData,
-                            [headerKey]: value,
-                        })
-                    } else {
-                        // If the item is not the one we're looking for, just add it as is.
-                        acc.updatedData.push(currentData)
-                    }
-                    return acc
-                },
-                { updatedData: [], found: false },
-            )
-
-            // If the item is not found, it means it's a new entry added via the GUI editor.
-            // Create a new data object and add it to the current data state.
-            if (!_currentData.found) {
-                _currentData.updatedData.push({
-                    k: '',
-                    v: '',
-                    [headerKey]: value,
-                    id: rowId,
-                })
-            }
-
-            // call useForm register 'onChange' method to update the form data value
-            onChange(_currentData.updatedData)
-            // Convert the current key-value data to YAML format and set it in the 'yaml' field.
-            setValue('yaml', convertKeyValuePairToYAML(_currentData.updatedData), { shouldDirty: true })
-        }
-
-    const keyValueHandleDelete = (onChange: (e: unknown) => void) => (rowId: string | number) => {
-        // Create a new array by filtering out the item with the matching rowId.
-        const _currentData = data.currentData.filter(({ id }) => id !== rowId)
+    const keyValueTableHandleChange = (onChange: (value: unknown) => void) => (keyValueData: KeyValueTableData[]) => {
         // call useForm register 'onChange' method to update the form data value
-        onChange(_currentData)
+        onChange(keyValueData)
         // Convert the current key-value data to YAML format and set it in the 'yaml' field.
-        setValue('yaml', convertKeyValuePairToYAML(_currentData), { shouldDirty: true })
+        setValue('yaml', convertKeyValuePairToYAML(keyValueData), { shouldDirty: true })
     }
 
     const keyValueHandleError = (err: boolean) => {
@@ -394,30 +328,19 @@ export const ConfigMapSecretData = ({
                 }}
             />
         ) : (
-            <CodeEditor.Container overflowHidden>
+            <CodeEditor.Container>
                 <CodeEditor
                     key={codeEditorRadio}
                     mode={MODES.YAML}
                     readOnly={
                         readOnly || isHashiOrAWS || isLocked || codeEditorRadio === CODE_EDITOR_RADIO_STATE.SAMPLE
                     }
-                    codeEditorProps={{
-                        value: getCodeEditorValue(),
-                        // Skip calling onChange if resolvedData exists
-                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
-                        onFocus,
-                        inline: true,
-                        adjustEditorHeightToContent: true,
-                        shebang: sheBangText,
-                    }}
-                    codeMirrorProps={{
-                        value: getCodeEditorValue(),
-                        // Skip calling onChange if resolvedData exists
-                        onChange: !isLocked && !data.isResolvedData ? onChange : noop,
-                        onFocus,
-                        height: '100%',
-                        shebang: sheBangText,
-                    }}
+                    value={getCodeEditorValue()}
+                    // Skip calling onChange if resolvedData exists}
+                    onChange={!isLocked && !data.isResolvedData ? onChange : noop}
+                    onFocus={onFocus}
+                    height="100%"
+                    shebang={sheBangText}
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">
@@ -443,14 +366,6 @@ export const ConfigMapSecretData = ({
                             </div>
                         </div>
                     </CodeEditor.Header>
-                    {!isCodeMirrorEnabled() &&
-                        codeEditorRadio === CODE_EDITOR_RADIO_STATE.DATA &&
-                        errors[codeEditorFormKey] && (
-                            <div className="flex left px-16 py-8 dc__gap-8 bcr-1 cr-5 fs-12 lh-20">
-                                <ICErrorExclamation className="icon-dim-16 dc__no-shrink" />
-                                <p className="m-0">{errors[codeEditorFormKey]}</p>
-                            </div>
-                        )}
                 </CodeEditor>
                 {!data.external && data.yamlMode && renderYamlInfoText()}
             </CodeEditor.Container>
@@ -467,28 +382,21 @@ export const ConfigMapSecretData = ({
                     isAdditionNotAllowed={secretMode || data.yamlMode || data.external}
                     readOnly={readOnly || secretMode}
                     isSortable
-                    config={config}
+                    headerLabel={{
+                        key: isSelectedTypeVolume ? 'File Name' : 'Key',
+                        value: isSelectedTypeVolume ? 'File Content' : 'Value',
+                    }}
+                    rows={getConfigMapSecretKeyValueTableRows(data.currentData)}
                     placeholder={{
-                        k: 'Enter Key',
-                        v: 'Enter Value',
+                        key: 'Enter Key',
+                        value: 'Enter Value',
                     }}
                     onChange={keyValueTableHandleChange(onChange)}
                     maskValue={{
-                        v: isLocked,
+                        value: isLocked,
                     }}
-                    onDelete={keyValueHandleDelete(onChange)}
                     showError
-                    validationSchema={(value, key) => {
-                        if (key === 'k' && value) {
-                            const isValid = new RegExp(PATTERNS.CONFIG_MAP_AND_SECRET_KEY).test(value)
-                            return isValid
-                        }
-                        return true
-                    }}
-                    errorMessages={[
-                        'Can only contain alphanumeric chars and ( - ), ( _ ), ( . )',
-                        'Spaces not allowed',
-                    ]}
+                    validationSchema={getConfigMapSecretKeyValueTableValidationSchema}
                     onError={keyValueHandleError}
                     headerComponent={renderSecretShowHide(false)}
                     validateEmptyKeys

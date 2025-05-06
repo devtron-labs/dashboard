@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useState } from 'react'
-import { CIBuildConfigType, CIBuildType, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { useContext, useEffect, useState } from 'react'
+import { CIBuildConfigType, CIBuildType, KeyValueTableProps, noop } from '@devtron-labs/devtron-fe-common-lib'
 import CIConfig from '../ciConfig/CIConfig'
 import DockerArgs from './DockerArgs'
 import CustomImageTags from './CustomImageTags'
@@ -24,7 +24,6 @@ import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/Environm
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { OptionType } from '../app/types'
-import { DockerArgsAction, HandleDockerArgsUpdateType } from './types'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'
@@ -83,29 +82,19 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
     }
 
     // All updates to docker args will be handled here, which will will be further merged into formData on introduction of reducer
-    const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdateType) => {
+    const handleDockerArgsUpdate: KeyValueTableProps['onChange'] = (args) => {
         setFormData((prevFormData) => {
             const _form = structuredClone(prevFormData)
-
-            switch (action) {
-                case DockerArgsAction.ADD:
-                    _form.args.unshift({ key: '', value: '' })
-                    break
-
-                case DockerArgsAction.UPDATE_KEY:
-                    _form.args[argData.index]['key'] = argData.value
-                    break
-
-                case DockerArgsAction.UPDATE_VALUE:
-                    _form.args[argData.index]['value'] = argData.value
-                    break
-
-                case DockerArgsAction.DELETE:
-                    _form.args = _form.args.filter((_, index) => index !== argData.index)
-                    break
-            }
+            _form.args = args
 
             return _form
+        })
+    }
+
+    const handleDockerArgsError: KeyValueTableProps['onError'] = (errorState) => {
+        setFormDataErrorObj({
+            ...formDataErrorObj,
+            dockerArgsError: { isValid: !errorState, message: 'Invalid docker build arguments' },
         })
     }
 
@@ -238,7 +227,11 @@ export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateVie
                 )}
 
                 {showNonBuildpackOptions && (
-                    <DockerArgs args={formData.args} handleDockerArgsUpdate={handleDockerArgsUpdate} />
+                    <DockerArgs
+                        args={formData.args}
+                        handleDockerArgsUpdate={handleDockerArgsUpdate}
+                        handleDockerArgsError={handleDockerArgsError}
+                    />
                 )}
             </div>
         </div>

@@ -61,16 +61,9 @@ export const CIBuildConfigDiff = ({
                             readOnly
                             diffView
                             noParsing
-                            codeEditorProps={{
-                                value: overridenValue,
-                                defaultValue: baseValue,
-                                height: 300,
-                            }}
-                            codeMirrorProps={{
-                                modifiedValue: overridenValue,
-                                originalValue: baseValue,
-                                height: 300,
-                            }}
+                            modifiedValue={overridenValue}
+                            originalValue={baseValue}
+                            height={300}
                         />
                     </td>
                 ) : (
