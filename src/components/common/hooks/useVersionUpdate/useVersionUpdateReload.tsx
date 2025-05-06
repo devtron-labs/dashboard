@@ -210,5 +210,6 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         updateServiceWorker,
         handleControllerChange,
         updateToastRef,
+        isRefreshing: refreshing.current,
     }
 }

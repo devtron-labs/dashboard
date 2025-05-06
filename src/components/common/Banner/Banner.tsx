@@ -77,7 +77,7 @@ const bannerVariants = {
 
 export const Banner = () => {
     const { isAirgapped, currentServerInfo, reloadVersionConfig } = useMainContext()
-    const { doesNeedRefresh, handleAppUpdate, bgUpdated } = reloadVersionConfig
+    const { doesNeedRefresh, handleAppUpdate, bgUpdated, isRefreshing } = reloadVersionConfig
     const licenseConfig = useEnterpriseLicenseConfig()
 
     const [showOnlineBanner, setShowOnlineBanner] = useState(false)
@@ -145,7 +145,7 @@ export const Banner = () => {
                 return BannerVariant.ONLINE
             }
         }
-        if (doesNeedRefresh || bgUpdated) return BannerVariant.VERSION_UPDATE
+        if ((doesNeedRefresh || bgUpdated) && !isRefreshing) return BannerVariant.VERSION_UPDATE
         if (incompatibleService) return BannerVariant.INCOMPATIBLE_MICROSERVICES
         if (showAnnouncementBanner) return BannerVariant.ANNOUNCEMENT
         if (licenseConfig?.message) return BannerVariant.LICENSE
