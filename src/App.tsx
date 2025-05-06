@@ -165,7 +165,7 @@ const App = () => {
                                         )
                                     }
                                     if (path === CommonURLS.LICENSE_AUTH) return <ActivateLicense />
-                                    if (path === URLS.LOGIN) return <Login />
+                                    if (!window._env_.K8S_CLIENT && path === URLS.LOGIN) return <Login />
                                     return null
                                 }}
                             </Route>
