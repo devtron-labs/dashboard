@@ -7,7 +7,6 @@ import {
     Icon,
     logExceptionToSentry,
     noop,
-    refresh,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -29,59 +28,6 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
     const location = useLocation()
 
     const updateToastRef = useRef(null)
-
-    const handleControllerChange = () => {
-        if (refreshing.current) {
-            return
-        }
-        if (document.visibilityState === 'visible') {
-            refresh()
-            refreshing.current = true
-        } else {
-            if (typeof setBGUpdated !== 'function') return
-            setBGUpdated(true)
-        }
-    }
-
-    useEffect(() => {
-        if (!bgUpdated) {
-            return
-        }
-        dismissToast({ updateToastRef })
-        if (showVersionUpdateToast) {
-            updateToastRef.current = ToastManager.showToast(
-                {
-                    variant: ToastVariantType.info,
-                    title: 'Update available',
-                    description: 'This page has been updated. Please save any unsaved changes and refresh.',
-                    buttonProps: {
-                        text: 'Reload',
-                        dataTestId: 'reload-btn',
-                        onClick: refresh,
-                        startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
-                    },
-                    icon: <Icon name="ic-sparkle-color" color={null} />,
-                    progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-                },
-                {
-                    autoClose: false,
-                },
-            )
-        }
-    }, [bgUpdated])
-
-    useEffect(() => {
-        console.log('TODO: Remove later, Testing reload purpose', showVersionUpdateToast)
-
-        if (navigator.serviceWorker) {
-            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
-        }
-        return () => {
-            if (navigator.serviceWorker) {
-                navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
-            }
-        }
-    }, [])
 
     const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
@@ -181,12 +127,64 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         updateServiceWorker(true)
     }
 
+    const handleControllerChange = () => {
+        if (refreshing.current) {
+            return
+        }
+        if (document.visibilityState === 'visible') {
+            handleAppUpdate()
+            refreshing.current = true
+        } else {
+            if (typeof setBGUpdated !== 'function') return
+            setBGUpdated(true)
+        }
+    }
+
+    useEffect(() => {
+        if (!bgUpdated) {
+            return
+        }
+        dismissToast({ updateToastRef })
+        console.log(showVersionUpdateToast, 'toast inside use effect')
+        if (showVersionUpdateToast) {
+            updateToastRef.current = ToastManager.showToast(
+                {
+                    variant: ToastVariantType.info,
+                    title: 'Update available',
+                    description: 'This page has been updated. Please save any unsaved changes and refresh.',
+                    buttonProps: {
+                        text: 'Reload',
+                        dataTestId: 'reload-btn',
+                        onClick: handleAppUpdate,
+                        startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                    },
+                    icon: <Icon name="ic-sparkle-color" color={null} />,
+                    progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+                },
+                {
+                    autoClose: false,
+                },
+            )
+        }
+    }, [bgUpdated])
+
     // Sync local state with the service worker's needRefresh state
     useEffect(() => {
         if (needRefresh) {
             setDoesNeedRefresh(true)
         }
     }, [needRefresh])
+
+    useEffect(() => {
+        if (navigator.serviceWorker) {
+            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
+        }
+        return () => {
+            if (navigator.serviceWorker) {
+                navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
+            }
+        }
+    }, [])
 
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
