@@ -15,17 +15,18 @@
  */
 
 import React, { useState, useEffect } from 'react'
-import { not, Progressing, ToastManager, ToastVariantType, useAsync, useTheme } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    not,
+    Progressing,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+    useTheme,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, Link, NavLink } from 'react-router-dom'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'
-import {
-    getIframeSrc,
-    ThroughputSelect,
-    getCalendarValue,
-    isK8sVersionValid,
-    LatencySelect,
-} from './utils'
+import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect, AppInfo } from './utils'
 import {
     ChartTypes,
     AppMetricsTab,
@@ -38,7 +39,7 @@ import {
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
-import { DatePickerType2 as DateRangePicker } from '../../../common'
+import { DatePickerType2 as DateRangePicker, InValidHostUrlWarningBlock } from '../../../common'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
@@ -50,7 +51,7 @@ import {
     ModuleNameMap,
     URLS,
 } from '../../../../config'
-import { isDatasourceConfigured, isDatasourceHealthy } from './appDetails.service'
+import { getDataSourceDetailsFromEnvironment, isDatasourceHealthy } from './appDetails.service'
 import { getHostURLConfiguration } from '../../../../services/service'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
 import HostErrorImage from '../../../../assets/img/ic-error-hosturl.png'
@@ -65,9 +66,9 @@ export const AppMetrics: React.FC<{
     podMap: Map<string, any>
     k8sVersion
     addExtraSpace: boolean
-}> = ({ appName, environment, podMap, k8sVersion, addExtraSpace }) => {
+}> = ({ appName, podMap, k8sVersion, addExtraSpace, environment }) => {
     const { appTheme } = useTheme()
-    const { appMetrics, environmentName, infraMetrics } = environment
+    const { appMetrics, infraMetrics, environmentName } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
@@ -76,10 +77,16 @@ export const AppMetrics: React.FC<{
         startDate: 'now-5m',
         endDate: 'now',
     })
-    const [datasource, setDatasource] = useState({
+    const [datasource, setDatasource] = useState<{
+        isLoading: boolean
+        isConfigured: boolean
+        isHealthy: boolean
+        dataSourceName: string
+    }>({
         isLoading: true,
         isConfigured: false,
         isHealthy: false,
+        dataSourceName: '',
     })
     const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate)
@@ -96,6 +103,8 @@ export const AppMetrics: React.FC<{
         throughput: '',
         latency: '',
     })
+
+    const { dataSourceName } = datasource
     const addSpace: string = addExtraSpace ? 'mb-16' : ''
     const pod = podMap?.values().next().value
     const newPodHash = pod?.networkingInfo?.labels?.['rollouts-pod-template-hash']
@@ -135,20 +144,28 @@ export const AppMetrics: React.FC<{
 
     async function checkDatasource() {
         try {
-            let datasourceConfiguredRes
-            let datasourceHealthyRes
-            let hostUrlRes
-            hostUrlRes = await getHostURLConfiguration()
+            const hostUrlRes = await getHostURLConfiguration()
             setHostURLConfig(hostUrlRes.result)
-            datasourceConfiguredRes = await isDatasourceConfigured(environmentName)
-            if (datasourceConfiguredRes.id) {
-                datasourceHealthyRes = await isDatasourceHealthy(datasourceConfiguredRes.id)
+
+            const { dataSourceName, dataSourceId } = await getDataSourceDetailsFromEnvironment(environmentName)
+
+            if (dataSourceId) {
+                const datasourceHealthyRes = await isDatasourceHealthy(dataSourceId)
+
+                setDatasource({
+                    isLoading: false,
+                    isConfigured: true,
+                    isHealthy: datasourceHealthyRes?.status.toLowerCase() === 'success',
+                    dataSourceName,
+                })
+            } else {
+                setDatasource({
+                    isLoading: false,
+                    isConfigured: false,
+                    isHealthy: false,
+                    dataSourceName: '',
+                })
             }
-            setDatasource({
-                isLoading: false,
-                isConfigured: !!datasourceConfiguredRes.id,
-                isHealthy: datasourceHealthyRes.status.toLowerCase() === 'success',
-            })
         } catch (error) {
             setDatasource({
                 ...datasource,
@@ -170,19 +187,20 @@ export const AppMetrics: React.FC<{
         setCalendarValue(str)
     }
 
-    const getIframeSrcWrapper: GraphModalProps['getIframeSrcWrapper'] = (params) => getIframeSrc({
-        ...params,
-        grafanaTheme: appTheme,
-    })
+    const getIframeSrcWrapper: GraphModalProps['getIframeSrcWrapper'] = (params) =>
+        getIframeSrc({
+            ...params,
+            grafanaTheme: appTheme,
+        })
 
     function handleStatusChange(selected): void {
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId,
             envId,
-            environmentName,
+            dataSourceName,
             newPodHash,
             k8sVersion,
         }
@@ -192,7 +210,7 @@ export const AppMetrics: React.FC<{
             calendarInputs,
             tab,
             isLegendRequired: true,
-            statusCode: selected.value
+            statusCode: selected.value,
         })
         setStatusCode(selected.value)
         setGraphs({
@@ -205,15 +223,21 @@ export const AppMetrics: React.FC<{
         if (!isK8sVersionValid(k8sVersion)) {
             k8sVersion = DEFAULTK8SVERSION
         }
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId,
             envId,
-            environmentName,
+            dataSourceName,
             newPodHash,
             k8sVersion,
         }
         const latency = getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Latency, calendarInputs, tab, isLegendRequired: true, statusCode: undefined, latency: selected.value
+            appInfo,
+            chartName: ChartType.Latency,
+            calendarInputs,
+            tab,
+            isLegendRequired: true,
+            statusCode: undefined,
+            latency: selected.value,
         })
         setLatency(selected.value)
         setGraphs({
@@ -237,18 +261,26 @@ export const AppMetrics: React.FC<{
             })
         }
 
-        const appInfo = {
+        const appInfo: AppInfo = {
             appId,
             envId,
-            environmentName,
+            dataSourceName,
             newPodHash,
             k8sVersion,
         }
         const cpu = getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Cpu, calendarInputs, tab: newTab, isLegendRequired: true
+            appInfo,
+            chartName: ChartType.Cpu,
+            calendarInputs,
+            tab: newTab,
+            isLegendRequired: true,
         })
         const ram = getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Ram, calendarInputs, tab: newTab, isLegendRequired: true
+            appInfo,
+            chartName: ChartType.Ram,
+            calendarInputs,
+            tab: newTab,
+            isLegendRequired: true,
         })
         const latency = getIframeSrcWrapper({
             appInfo,
@@ -265,7 +297,7 @@ export const AppMetrics: React.FC<{
             calendarInputs,
             tab: newTab,
             isLegendRequired: true,
-            statusCode: StatusType.Throughput
+            statusCode: StatusType.Throughput,
         })
         setGraphs({
             cpu,
@@ -295,6 +327,7 @@ export const AppMetrics: React.FC<{
     if (
         !datasource.isConfigured ||
         !datasource.isHealthy ||
+        !datasource.dataSourceName ||
         !hostURLConfig ||
         hostURLConfig.value !== window.location.origin
     ) {
@@ -309,10 +342,7 @@ export const AppMetrics: React.FC<{
     }
 
     return (
-        <section
-            data-testid="app-metrices-wrapper"
-            className="app-summary bg__primary pl-24 pr-24 pb-20 w-100"
-        >
+        <section data-testid="app-metrices-wrapper" className="app-summary bg__primary pl-24 pr-24 pb-20 w-100">
             {(appMetrics || infraMetrics) && (
                 <div className="flex" style={{ justifyContent: 'space-between', height: '68px' }}>
                     <span className="fs-14 fw-6 cn-7 flex left mr-9">
@@ -348,7 +378,7 @@ export const AppMetrics: React.FC<{
                                     appName={appName}
                                     infraMetrics={environment.infraMetrics}
                                     appMetrics={environment.appMetrics}
-                                    environmentName={environmentName}
+                                    dataSourceName={dataSourceName}
                                     chartName={chartName}
                                     newPodHash={newPodHash}
                                     calendar={calendar}
@@ -514,10 +544,7 @@ const EnableAppMetrics = () => {
 
 const MonitoringModuleNotInstalled = ({ addSpace }: { addSpace: string }) => {
     return (
-        <div
-            data-testid="app-metrices-wrapper"
-            className={`bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}
-        >
+        <div data-testid="app-metrices-wrapper" className={`bcv-1 w-100 pt-18 pb-18 pl-20 pr-20 ${addSpace}`}>
             <div className="flex left w-100 lh-20">
                 <span className="fs-14 fw-6 cv-5 flex left mr-16">
                     <GraphIcon className="mr-8 fcv-5 icon-dim-20" />
@@ -584,21 +611,8 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                             <p className="fw-6 fs-14 cn-9">
                                 Unable to show metrics due to insufficient/incorrect configurations
                             </p>
-                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) && (
-                                <>
-                                    <p className="fw-4 fs-12 cn-7 mt-16 mb-0">
-                                        Host url is not configured or is incorrect. Reach out to your DevOps team
-                                        (super-admin) to configure host url.
-                                    </p>
-                                    <Link
-                                        to={URLS.GLOBAL_CONFIG_HOST_URL}
-                                        className="cta small text"
-                                        style={{ paddingLeft: '0' }}
-                                    >
-                                        Review and update
-                                    </Link>
-                                </>
-                            )}
+                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
+                                <InValidHostUrlWarningBlock />}
                             {(!isConfigured || !isHealthy) && (
                                 <>
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>

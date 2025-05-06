@@ -15,23 +15,26 @@
  */
 
 import { useEffect, useState } from 'react'
+
 import {
+    AppThemeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    updateUserPreferences,
-    AppThemeType,
     getComponentSpecificThemeClass,
-    useTheme,
     getThemePreferenceText,
     Icon,
     THEME_PREFERENCE_STORAGE_KEY,
+    updateUserPreferences,
+    useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     BaseLabelFigureProps,
     SwitchThemeDialogProps,
     ThemePreferenceLabelFigureProps,
     ThemePreferenceOptionProps,
 } from './types'
+
 import './SwitchThemeDialog.scss'
 
 const THEME_PREFERENCE_OPTION_MAP: Record<ThemePreferenceOptionProps['value'], null> = {
@@ -124,7 +127,6 @@ const ThemePreferenceOption = ({
 const SwitchThemeDialog = ({
     initialThemePreference,
     handleClose,
-    currentUserPreferences,
     handleUpdateUserThemePreference,
     disableAPICalls = false,
 }: SwitchThemeDialogProps) => {
@@ -166,7 +168,11 @@ const SwitchThemeDialog = ({
         setIsSaving(true)
 
         if (!disableAPICalls) {
-            const isSuccessful = await updateUserPreferences({ ...currentUserPreferences, themePreference, appTheme })
+            const isSuccessful = await updateUserPreferences({
+                path: 'themePreference',
+                value: { themePreference, appTheme },
+            })
+
             if (isSuccessful) {
                 handleSuccess()
             }
@@ -203,7 +209,6 @@ const SwitchThemeDialog = ({
                 },
             }}
             isLandscapeView
-            showConfetti={!initialThemePreference}
         >
             <div className="dc__grid dc__column-gap-16 theme-preference-option__container">
                 {THEME_PREFERENCE_OPTION_LIST.map((value) => (

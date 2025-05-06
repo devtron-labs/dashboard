@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -27,6 +27,9 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    API_STATUS_CODES,
+    useUserPreferences,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -39,8 +42,6 @@ import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
-import { EnvType } from '../../v2/appDetails/appDetails.type'
-import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
 import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
@@ -56,13 +57,12 @@ const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
 const AppDetails = lazy(() => import('./appDetails/AppDetails'))
-const IndexComponent = lazy(() => import('../../v2/index'))
-
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
-export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
+export default function AppDetailsPage() {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
+    const { setIntelligenceConfig } = useMainContext()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -81,9 +81,39 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
+    const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
+
+    const getAppMetaInfoRes = async (shouldResetAppName: boolean = false): Promise<AppMetaInfo> => {
+        try {
+            if (shouldResetAppName) {
+                setAppName('')
+            }
+            setApiError(null)
+            const { result } = await getAppMetaInfo(Number(appId))
+            if (result) {
+                setAppName(result.appName)
+                setAppMetaInfo(result)
+                setReloadMandatoryProjects(!reloadMandatoryProjects)
+                return result
+            }
+        } catch (err) {
+            if (err.code === API_STATUS_CODES.NOT_FOUND || err.code === API_STATUS_CODES.PERMISSION_DENIED) {
+                try {
+                    await fetchRecentlyVisitedParsedApps({ appId, appName: '' })
+                } catch {
+                    // Do nothing
+                }
+            }
+            setApiError(err)
+            showError(err)
+        }
+    }
+
+    const getAppMetaInfoAndResetAppName = () => getAppMetaInfoRes(true)
+
     useEffect(() => {
         setInitLoading(true)
-        getAppMetaInfoRes()
+        getAppMetaInfoAndResetAppName()
         Promise.all([getSavedFilterData(), getAppListData()])
             .then((response) => {
                 const groupFilterOptionsList = response[0]
@@ -105,6 +135,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             setSelectedAppList([])
             setSelectedGroupFilter([])
             setAppListOptions([])
+            setIntelligenceConfig(null)
         }
     }, [appId])
 
@@ -173,22 +204,6 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
         setAppListOptions(appListOptionsList)
         setAppListLoading(false)
         return appListOptionsList
-    }
-
-    const getAppMetaInfoRes = async (): Promise<AppMetaInfo> => {
-        try {
-            setApiError(null)
-            const { result } = await getAppMetaInfo(Number(appId))
-            if (result) {
-                setAppName(result.appName)
-                setAppMetaInfo(result)
-                setReloadMandatoryProjects(!reloadMandatoryProjects)
-                return result
-            }
-        } catch (err) {
-            setApiError(err)
-            showError(err)
-        }
     }
 
     const handleToast = (action: string) =>
@@ -299,12 +314,12 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     async function handleDelete() {
-            await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
-            getSavedFilterData(
-                selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
-                    ? +selectedGroupFilter[0].value
-                    : null,
-            )
+        await deleteEnvGroup(appId, clickedGroup.value, FilterParentType.app)
+        getSavedFilterData(
+            selectedGroupFilter[0] && clickedGroup.value !== selectedGroupFilter[0].value
+                ? +selectedGroupFilter[0].value
+                : null,
+        )
     }
 
     const closeDeleteGroup = () => {
@@ -323,30 +338,29 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     if (apiError) {
-        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoRes} />
+        return <ErrorScreenManager code={apiError.code} reload={getAppMetaInfoAndResetAppName} />
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
+
     return (
         <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
-            {!isV2 && (
-                <AppHeader
-                    appName={appName}
-                    appMetaInfo={appMetaInfo}
-                    reloadMandatoryProjects={reloadMandatoryProjects}
-                    appListOptions={appListOptions}
-                    selectedAppList={selectedAppList}
-                    setSelectedAppList={setSelectedAppList}
-                    selectedFilterTab={selectedFilterTab}
-                    setSelectedFilterTab={setSelectedFilterTab}
-                    groupFilterOptions={groupFilterOptions}
-                    selectedGroupFilter={selectedGroupFilter}
-                    setSelectedGroupFilter={setSelectedGroupFilter}
-                    openCreateGroup={openCreateGroup}
-                    openDeleteGroup={openDeleteGroup}
-                    isSuperAdmin
-                />
-            )}
+            <AppHeader
+                appName={appName}
+                appMetaInfo={appMetaInfo}
+                reloadMandatoryProjects={reloadMandatoryProjects}
+                appListOptions={appListOptions}
+                selectedAppList={selectedAppList}
+                setSelectedAppList={setSelectedAppList}
+                selectedFilterTab={selectedFilterTab}
+                setSelectedFilterTab={setSelectedFilterTab}
+                groupFilterOptions={groupFilterOptions}
+                selectedGroupFilter={selectedGroupFilter}
+                setSelectedGroupFilter={setSelectedGroupFilter}
+                openCreateGroup={openCreateGroup}
+                openDeleteGroup={openDeleteGroup}
+                isSuperAdmin
+            />
             {showCreateGroup && (
                 <CreateAppGroup
                     unAuthorizedApps={mapUnauthorizedApp}
@@ -369,17 +383,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
-                        {isV2 ? (
-                            <Route
-                                path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <IndexComponent envType={EnvType.APPLICATION} />}
-                            />
-                        ) : (
-                            <Route
-                                path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
-                            />
-                        )}
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
+                            render={() => <AppDetails detailsType="app" filteredResourceIds={_filteredEnvIds} />}
+                        />
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
                                 appType={APP_TYPE.DEVTRON_APPS}
@@ -418,7 +425,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
                 </Suspense>
             </ErrorBoundary>
 
-            <div className='dc__no-shrink' id="cluster-meta-data-bar__container" />
+            <div className="dc__no-shrink" id="cluster-meta-data-bar__container" />
         </div>
     )
 }

@@ -28,11 +28,13 @@ import {
     DynamicDataTableRowType,
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
+    BaseAppMetaData,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentStatusDetailsBreakdownDataType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
+import { DeploymentStatusDetailsBreakdownDataType, DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
+import { CDMaterialProps } from './details/triggerView/types'
 
 export interface AddNewAppProps extends RouteComponentProps<{}> {
     close: (e) => void
@@ -81,7 +83,7 @@ export interface AddNewAppState {
     createAppLoader: boolean
 }
 
-export interface CDModalProps {
+interface CDModalProps {
     cdPipelineId?: number
     triggerType?: string
     parentEnvironmentName: string
@@ -151,7 +153,7 @@ interface GitMaterial {
     redirectionUrl: string
 }
 
-export interface AppMetaInfo extends Partial<Pick<CreateAppFormStateType, 'templateConfig'>> {
+export interface AppMetaInfo extends BaseAppMetaData, Partial<Pick<CreateAppFormStateType, 'templateConfig'>> {
     appId: number
     appName: string
     createdBy: string
@@ -564,7 +566,7 @@ export interface TagChipsContainerType {
      */
     whiteBackground?: boolean
 }
-export interface SourceInfoType {
+export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<Pick<DetailsType, 'applications'>> {
     appDetails: AppDetails
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
@@ -592,9 +594,11 @@ export interface AppDetailsCDButtonType
             AppDetails,
             'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
-        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails'> {
+        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails' | 'isAppView'> {
     isRedirectedFromAppDetails?: boolean
     cdModal: CDModalProps
+    isForEmptyState?: boolean
+    handleSuccess?: CDMaterialProps['handleSuccess']
 }
 
 export interface EnvironmentListMinType {

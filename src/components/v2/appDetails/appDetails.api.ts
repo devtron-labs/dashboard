@@ -14,31 +14,46 @@
  * limitations under the License.
  */
 
-import { get, post, ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import { APIOptions, get, post, ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config/constants'
 import { AppType } from './appDetails.type'
 import { getAppId, generateDevtronAppIdentiferForK8sRequest } from './k8Resource/nodeDetail/nodeDetail.api'
 import { getDeploymentType, getK8sResourcePayloadAppType } from './k8Resource/nodeDetail/nodeDetail.util'
 
-export const getInstalledChartDetail = (_appId: number, _envId: number) => {
-    return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`)
-}
+export const getInstalledChartDetail = (
+    _appId: number,
+    _envId: number,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+) =>
+    get(`${Routes.APP_STORE_INSTALLED_APP}/detail/v2?installed-app-id=${_appId}&env-id=${_envId}`, {
+        abortControllerRef,
+    })
 
-export const getInstalledChartResourceTree = (_appId: number, _envId: number) => {
-    return get(`${Routes.APP_STORE_INSTALLED_APP}/detail/resource-tree?installed-app-id=${_appId}&env-id=${_envId}`)
-}
+export const getInstalledChartResourceTree = (
+    _appId: number,
+    _envId: number,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+) =>
+    get(`${Routes.APP_STORE_INSTALLED_APP}/detail/resource-tree?installed-app-id=${_appId}&env-id=${_envId}`, {
+        abortControllerRef,
+    })
 
 export const getInstalledChartNotesDetail = (_appId: number, _envId: number) => {
     if (isNaN(Number(_appId)) || isNaN(Number(_envId))) {
         return null
     }
-    
+
     return get(`${Routes.APP_STORE_INSTALLED_APP}/notes?installed-app-id=${_appId}&env-id=${_envId}`)
 }
 
-export const getInstalledChartDetailWithResourceTree = (_appId: number, _envId: number) => {
-    return get(`${Routes.APP_STORE_INSTALLED_APP}/resource/hibernate?installed-app-id=${_appId}&env-id=${_envId}`)
-}
+export const getInstalledChartDetailWithResourceTree = (
+    _appId: number,
+    _envId: number,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+) =>
+    get(`${Routes.APP_STORE_INSTALLED_APP}/resource/hibernate?installed-app-id=${_appId}&env-id=${_envId}`, {
+        abortControllerRef,
+    })
 
 export const getInstalledAppDetail = (_appId: number, _envId: number) => {
     return get(`app/detail?app-id=${_appId}&env-id=${_envId}`)

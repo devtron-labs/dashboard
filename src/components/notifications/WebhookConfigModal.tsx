@@ -13,29 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
-    showError,
-    CustomInput,
     ClipboardButton,
     CodeEditor,
-    ToastVariantType,
-    ToastManager,
+    CustomInput,
     MODES,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
+
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning.svg'
+
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
+import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
 import {
     ConfigurationFieldKeys,
     ConfigurationsTabTypes,
     DefaultWebhookConfig,
     DefaultWebhookValidations,
 } from './constants'
-import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
-import { WebhookConfigModalProps, WebhookDataRowType, WebhookFormTypes, WebhookValidations } from './types'
-import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
+import { getWebhookAttributes, getWebhookConfiguration, saveUpdateWebhookConfiguration } from './notifications.service'
 import {
     getEmptyVariableDataRow,
     getInitialWebhookKeyRow,
@@ -44,6 +45,8 @@ import {
     validateKeyValueConfig,
     validatePayloadField,
 } from './notifications.util'
+import { WebhookConfigModalProps, WebhookDataRowType, WebhookFormTypes, WebhookValidations } from './types'
+import { WebhookConfigDynamicDataTable } from './WebhookConfigDynamicDataTable'
 
 export const WebhookConfigModal = ({
     webhookConfigId,
@@ -243,20 +246,12 @@ export const WebhookConfigModal = ({
 
                 <div className="flexbox-col dc__gap-6">
                     <div className="fs-13 cn-7 lh-20 dc__required-field">Data to be shared through webhook</div>
-                    <CodeEditor.Container overflowHidden>
+                    <CodeEditor.Container>
                         <CodeEditor
                             mode={MODES.JSON}
-                            codeEditorProps={{
-                                value: form.payload,
-                                onChange: handleIncomingPayloadChange,
-                                inline: true,
-                                adjustEditorHeightToContent: true,
-                            }}
-                            codeMirrorProps={{
-                                value: form.payload,
-                                onChange: handleIncomingPayloadChange,
-                                height: '100%',
-                            }}
+                            value={form.payload}
+                            onChange={handleIncomingPayloadChange}
+                            height="100%"
                         />
                     </CodeEditor.Container>
                     {isFormValid[ConfigurationFieldKeys.PAYLOAD].message && (

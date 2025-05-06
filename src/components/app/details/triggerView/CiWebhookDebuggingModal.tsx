@@ -16,29 +16,33 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import moment from 'moment'
+
 import {
-    showError,
-    Progressing,
-    sortCallback,
-    CodeEditor,
-    getFormattedSchema,
     Button,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
+    CodeEditor,
     ComponentSizeType,
-    useSearchString,
+    getFormattedSchema,
     getUrlWithSearchParams,
-    Tooltip,
     Icon,
     MODES,
+    Progressing,
+    showError,
+    sortCallback,
+    Tooltip,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
+
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { getCIWebhookPayload } from './ciWebhook.service'
-import { getCIPipelineURL } from '../../../common'
+
 import { Moment12HourFormat, URLS } from '../../../../config'
-import './triggerView.scss'
+import { getCIPipelineURL } from '../../../common'
+import { getCIWebhookPayload } from './ciWebhook.service'
 import { CiWebhookModalProps, CIWebhookPayload, WebhookPayload, WebhookReceivedFiltersType } from './types'
+
+import './triggerView.scss'
 
 export const CiWebhookModal = ({
     webhookPayloads,
@@ -248,19 +252,8 @@ export const CiWebhookModal = ({
     const _value = webhookIncomingPayload?.payloadJson ? getFormattedSchema(webhookIncomingPayload.payloadJson) : ''
 
     const renderReceivedPayloadCodeEditor = () => (
-        <CodeEditor.Container flexExpand overflowHidden>
-            <CodeEditor
-                readOnly
-                mode={MODES.YAML}
-                codeEditorProps={{
-                    value: _value,
-                    height: '100%',
-                }}
-                codeMirrorProps={{
-                    value: _value,
-                    height: 'fitToParent',
-                }}
-            >
+        <CodeEditor.Container flexExpand>
+            <CodeEditor readOnly mode={MODES.YAML} value={_value} height="fitToParent">
                 <CodeEditor.Header className="px-16 py-10 flex dc__content-space bg__secondary">
                     <p className="m-0 fw-6">Payload</p>
                     <CodeEditor.Clipboard />

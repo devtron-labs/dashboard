@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
+import { Link, useParams } from 'react-router-dom'
+
 import {
-    ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
+    ErrorScreenNotAuthorized,
     GenericEmptyState,
     Progressing,
     Reload,
     TOAST_ACCESS_DENIED,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useParams } from 'react-router-dom'
+
+import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES, URLS } from '../../../../../config'
 import { getUserById } from '../../authorization.service'
-import UserForm from './UserForm'
-import { getIsAdminOrSystemUser } from '../utils'
 import { PermissionConfigurationFormProvider } from '../../Shared/components/PermissionConfigurationForm'
-import { importComponentFromFELibrary } from '../../../../../components/common'
+import { getIsAdminOrSystemUser } from '../utils'
+import UserForm from './UserForm'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 

@@ -16,12 +16,14 @@
 
 import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAsync, abortPreviousRequests, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import { K8SResourceTabComponentProps, URLParams } from '../Types'
+
+import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getResourceGroupList } from '../ResourceBrowser.service'
-import Sidebar from './Sidebar'
-import { K8SResourceList } from './K8SResourceList'
+import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import ConnectingToClusterState from './ConnectingToClusterState'
+import { K8SResourceList } from './K8SResourceList'
+import Sidebar from './Sidebar'
 
 const K8SResourceTabComponent = ({
     selectedResource,
@@ -32,7 +34,6 @@ const K8SResourceTabComponent = ({
     isOpen,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
-    setWidgetEventDetails,
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
@@ -86,7 +87,6 @@ const K8SResourceTabComponent = ({
                 isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
-                setWidgetEventDetails={setWidgetEventDetails}
                 handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             />

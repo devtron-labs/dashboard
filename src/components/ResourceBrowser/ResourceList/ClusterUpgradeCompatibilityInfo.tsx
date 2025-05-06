@@ -15,6 +15,7 @@
  */
 
 import {
+    ALL_NAMESPACE_OPTION,
     CollapsibleList,
     ErrorScreenManager,
     GenericEmptyState,
@@ -22,13 +23,14 @@ import {
     noop,
     Progressing,
     useSearchString,
-    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
+
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
-import BaseResourceList from './BaseResourceList'
+
 import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
+import BaseResourceList from './BaseResourceList'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
@@ -102,8 +104,8 @@ const ClusterUpgradeCompatibilityInfo = ({
     }
 
     return (
-        <div className="resource-browser">
-            <div className="dc__overflow-auto p-8">
+        <div className="flexbox h-100 dc__overflow-auto">
+            <div className="dc__overflow-auto p-8 w-220 dc__no-shrink">
                 <CollapsibleList tabType="navLink" config={sidebarConfig} onCollapseBtnClick={onCollapseBtnClick} />
             </div>
             <BaseResourceList
@@ -125,7 +127,6 @@ const ClusterUpgradeCompatibilityInfo = ({
                 setSelectedNamespace={noop}
                 renderRefreshBar={noop}
                 updateK8sResourceTab={noop}
-                setWidgetEventDetails={noop}
                 nodeType={null}
                 group={null}
                 showGenericNullState

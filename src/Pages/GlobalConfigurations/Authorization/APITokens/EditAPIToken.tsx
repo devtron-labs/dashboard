@@ -16,42 +16,45 @@
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useState } from 'react'
-import {
-    showError,
-    Progressing,
-    InfoColourBar,
-    CustomInput,
-    noop,
-    ClipboardButton,
-    useMainContext,
-    ButtonWithLoader,
-    ToastVariantType,
-    ToastManager,
-    Textarea,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory, useRouteMatch, useParams } from 'react-router-dom'
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import RegeneratedModal from './RegenerateModal'
-import { EditDataType, EditTokenType } from './apiToken.type'
-import { isTokenExpired } from './apiToken.utils'
+
+import {
+    ButtonStyleType,
+    ButtonVariantType,
+    ButtonWithLoader,
+    ClipboardButton,
+    CustomInput,
+    InfoBlock,
+    noop,
+    Progressing,
+    showError,
+    Textarea,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
-import GenerateActionButton from './GenerateActionButton'
-import { MomentDateFormat } from '../../../../config'
 import { importComponentFromFELibrary } from '../../../../components/common'
-import { updateGeneratedAPIToken } from './service'
-import DeleteAPITokenModal from './DeleteAPITokenModal'
+import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
-import { renderQuestionwithTippy } from './CreateAPIToken'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
-import { User } from '../types'
+import { getDefaultUserStatusAndTimeout } from '../libUtils'
 import {
     PermissionConfigurationForm,
     PermissionConfigurationFormProvider,
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
+import { User } from '../types'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
-import { getDefaultUserStatusAndTimeout } from '../libUtils'
+import { EditDataType, EditTokenType } from './apiToken.type'
+import { isTokenExpired } from './apiToken.utils'
+import { renderQuestionwithTippy } from './CreateAPIToken'
+import DeleteAPITokenModal from './DeleteAPITokenModal'
+import GenerateActionButton from './GenerateActionButton'
+import RegeneratedModal from './RegenerateModal'
+import { updateGeneratedAPIToken } from './service'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 
@@ -88,21 +91,9 @@ const EditAPIToken = ({
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
-    const renderActionButton = () => (
-        <span className="cr-5 cursor flexbox top fw-6" onClick={() => setShowRegeneratedModal(true)}>
-            Regenerate token
-        </span>
-    )
-
-    const renderRegenerateInfoBar = () => (
-        <InfoColourBar
-            message="To set a new expiration date, you can regenerate this token. Any scripts or applications using this token will need to be updated."
-            classname="info_bar"
-            Icon={InfoIcon}
-            iconClass="icon-dim-20"
-            renderActionButton={renderActionButton}
-        />
-    )
+    const onClickShowRegenerateModal = () => {
+        setShowRegeneratedModal(true)
+    }
 
     const redirectToTokenList = () => {
         history.push(`${match.path.split('edit')[0]}list`)
@@ -179,23 +170,37 @@ const EditAPIToken = ({
     const getExpirationText = () => {
         if (isTokenExpired(editData.expireAtInMs)) {
             return (
-                <span className="cr-5">
+                <span className="cr-5 fw-6">
                     This token expired on&nbsp;
                     {moment(editData.expireAtInMs).format(MomentDateFormat)}.
                 </span>
             )
         }
         if (editData.expireAtInMs === 0) {
-            return <span>This token has no expiration date.</span>
+            return <span className="fw-6">This token has no expiration date.</span>
         }
 
         return (
-            <span>
+            <span className="fw-6">
                 This token expires on&nbsp;
                 {moment(editData.expireAtInMs).format(MomentDateFormat)}.
             </span>
         )
     }
+
+    const renderRegenerateInfoBar = () => (
+        <InfoBlock
+            heading={getExpirationText()}
+            description="Regenerate this token to set a new expiration date. Any scripts or applications using this token will need to be updated."
+            buttonProps={{
+                dataTestId: 'regenerate-token-button',
+                text: 'Regenerate token',
+                onClick: onClickShowRegenerateModal,
+                variant: ButtonVariantType.text,
+                style: ButtonStyleType.negative,
+            }}
+        />
+    )
 
     if (isLoading || !editData) {
         return <Progressing pageLoader />
@@ -255,17 +260,6 @@ const EditAPIToken = ({
                             <div className="icon-dim-16 ml-8">
                                 <ClipboardButton content={editData.token} />
                             </div>
-                        </div>
-                    </label>
-                    <label className="form__row">
-                        <span className="form__label">Expiration</span>
-                        <div className="dc__align-left">
-                            {getExpirationText()}
-                            &nbsp;
-                            <span className="fw-4">To set a new expiration date you must</span>&nbsp;
-                            <span className="cb-5 cursor" onClick={() => setShowRegeneratedModal(true)}>
-                                regenerate the token.
-                            </span>
                         </div>
                     </label>
                     <div className="dc__border-top" />

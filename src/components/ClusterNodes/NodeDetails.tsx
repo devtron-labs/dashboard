@@ -34,9 +34,9 @@ import {
     ToastManager,
     ToastVariantType,
     ResourceDetail,
-    CodeEditorThemesKeys,
     noop,
     AppThemeType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -45,8 +45,6 @@ import { applyPatch } from 'fast-json-patch'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
-import { ReactComponent as Cpu } from '@Icons/ic-cpu.svg'
-import { ReactComponent as Memory } from '@Icons/ic-memory.svg'
 import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
@@ -239,7 +237,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
         return (
             <div className="pl-20 dc__border-bottom flex dc__gap-16">
-                <TabGroup tabs={tabs} alignActiveBorderWithContainer size={ComponentSizeType.medium} />
+                <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
                 {nodeControls()}
             </div>
         )
@@ -396,7 +394,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             <div>
                 <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
                     <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
-                        <TabGroup tabs={tabs} alignActiveBorderWithContainer />
+                        <TabGroup tabs={tabs} />
                     </div>
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
@@ -543,7 +541,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
         return (
             <div>
-                <div className='dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary'>
+                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
                     <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
                         <div />
                         <div>Resource</div>
@@ -554,10 +552,10 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         <div>Capacity</div>
                     </div>
                 </div>
-                <div className='en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20'>
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     {cpuData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Cpu className="mt-2 mb-2 icon-dim-18" />
+                            <Icon name="ic-cpu" color={null} size={20} />
                             <div>{cpuData.name || '-'}</div>
                             <div>{cpuData.requestPercentage || '-'}</div>
                             <div>{cpuData.limitPercentage || '-'}</div>
@@ -568,7 +566,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {memoryData && (
                         <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
-                            <Memory className="mt-2 mb-2 icon-dim-18" />
+                            <Icon name="ic-memory" color={null} size={20} />
                             <div>{memoryData.name || '-'}</div>
                             <div>{memoryData.requestPercentage || '-'}</div>
                             <div>{memoryData.limitPercentage || '-'}</div>
@@ -582,7 +580,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             key={resource.name}
                             className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
                         >
-                            <Storage className="mt-2 mb-2 icon-dim-18" />
+                            <Storage className="mt-2 mb-2 icon-dim-20" />
                             <div>{resource.name || '-'}</div>
                             <div>{resource.requestPercentage || '-'}</div>
                             <div>{resource.limitPercentage || '-'}</div>
@@ -833,7 +831,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                         {renderProbableIssuesOverviewCard()}
                         {renderNodeOverviewCard()}
                     </div>
-                    <div className='dc__overflow-auto pr-20'>
+                    <div className="dc__overflow-auto pr-20">
                         {renderResourceList()}
                         {renderLabelAnnotationTaint()}
                         {renderPodList()}
@@ -919,35 +917,26 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const renderYAMLEditor = (): JSX.Element => {
         return (
-            <div className="node-details-container__editor flex-grow-1 flexbox-col">
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     readOnly={!isEdit}
                     diffView={isReviewState}
                     mode={MODES.YAML}
                     noParsing
-                    codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
-                        value: modifiedManifest,
-                        defaultValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                        height: '0',
-                        onChange: handleEditorValueChange,
-                    }}
-                    codeMirrorProps={{
-                        theme: AppThemeType.dark,
-                        ...(isReviewState
-                            ? {
-                                  diffView: true,
-                                  originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                                  modifiedValue: modifiedManifest,
-                                  onModifiedValueChange: handleEditorValueChange,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: modifiedManifest,
-                                  onChange: handleEditorValueChange,
-                              }),
-                        height: 'fitToParent',
-                    }}
+                    theme={AppThemeType.dark}
+                    height="fitToParent"
+                    {...(isReviewState
+                        ? {
+                              diffView: true,
+                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                              modifiedValue: modifiedManifest,
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: modifiedManifest,
+                              onChange: handleEditorValueChange,
+                          })}
                 >
                     {isReviewState && isShowWarning && (
                         <CodeEditor.Warning
@@ -1055,9 +1044,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         return (
             <ErrorScreenManager
                 code={errorResponseCode}
-                subtitle={
-                    errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''
-                }
+                subtitle={errorResponseCode == 403 ? unauthorizedInfoText(SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) : ''}
             />
         )
     }

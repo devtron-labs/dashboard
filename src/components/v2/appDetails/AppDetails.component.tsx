@@ -15,32 +15,36 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import './appDetails.scss'
 import { useLocation, useParams } from 'react-router-dom'
+
 import {
     DeploymentAppTypes,
-    Progressing,
     noop,
     processDeploymentStatusDetailsData,
+    Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ClusterMetaDataBar } from '@Components/common/ClusterMetaDataBar/ClusterMetaDataBar'
-import { AppDetailsComponentType, AppType } from './appDetails.type'
-import IndexStore from './index.store'
-import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
-import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
-import { importComponentFromFELibrary } from '../../common'
-import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
-import NodeTreeDetailTab from './NodeTreeDetailTab'
-import { getSaveTelemetry } from './appDetails.api'
-import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
+
 import { DEFAULT_STATUS, DEFAULT_STATUS_TEXT, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
-import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
+import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
 import {
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
 } from '../../app/details/appDetails/appDetails.type'
+import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
+import { importComponentFromFELibrary } from '../../common'
+import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import { useSharedState } from '../utils/useSharedState'
+import EnvironmentSelectorComponent from './sourceInfo/EnvironmentSelector.component'
+import EnvironmentStatusComponent from './sourceInfo/environmentStatus/EnvironmentStatus.component'
+import { getSaveTelemetry } from './appDetails.api'
+import { AppDetailsComponentType, AppType } from './appDetails.type'
+import IndexStore from './index.store'
+import NodeTreeDetailTab from './NodeTreeDetailTab'
 import ReleaseStatusEmptyState from './ReleaseStatusEmptyState'
+
+import './appDetails.scss'
 
 let deploymentStatusTimer = null
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')

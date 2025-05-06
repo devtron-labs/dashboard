@@ -22,34 +22,33 @@ import {
     APIResponseHandler,
     BaseURLParams,
     Button,
+    checkIfPathIsMatching,
+    CM_SECRET_STATE,
     CodeEditor,
     ComponentSizeType,
+    ConfigMapSecretReadyOnly,
     DraftAction,
     DraftState,
     DryRunEditorMode,
     GenericEmptyState,
     hasHashiOrAWS,
     MODES,
-    useAsync,
-    checkIfPathIsMatching,
-    usePrompt,
-    CM_SECRET_STATE,
-    ConfigMapSecretReadyOnly,
     ToggleResolveScopedVariables,
+    useAsync,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
+import { ReactComponent as ICFilePlay } from '@Icons/ic-file-play.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { NoPublishedVersionEmptyState, SelectMergeStrategy } from '@Pages/Applications'
-
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
-import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
-import { ConfigMapSecretDryRunProps } from './types'
-import { renderExternalInfo } from './helpers'
-import { getDryRunConfigMapSecretData } from './utils'
 
+import { getConfigMapSecretManifest } from './ConfigMapSecret.service'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { renderExternalInfo } from './helpers'
+import { ConfigMapSecretDryRunProps } from './types'
+import { getDryRunConfigMapSecretData } from './utils'
 
 const DryRunEditorModeSelect = importComponentFromFELibrary('DryRunEditorModeSelect', null, 'function')
 const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
@@ -251,18 +250,7 @@ export const ConfigMapSecretDryRun = ({
                     reload: reloadConfigMapSecretManifest,
                 }}
             >
-                <CodeEditor
-                    mode={MODES.YAML}
-                    readOnly
-                    codeEditorProps={{
-                        value: configMapSecretManifest?.manifest,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: configMapSecretManifest?.manifest,
-                        height: 'fitToParent',
-                    }}
-                />
+                <CodeEditor mode={MODES.YAML} readOnly value={configMapSecretManifest?.manifest} height="fitToParent" />
             </APIResponseHandler>
         </div>
     )

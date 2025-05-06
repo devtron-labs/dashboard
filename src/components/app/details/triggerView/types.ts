@@ -14,44 +14,47 @@
  * limitations under the License.
  */
 
+import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
+
 import {
+    AppConfigProps,
+    ArtifactPromotionMetadata,
+    CDMaterialResponseType,
+    CDMaterialSidebarType,
     CDMaterialType,
     CDModalTabType,
-    CommonNodeAttr,
-    DeploymentNodeType,
-    CIBuildConfigType,
-    ReleaseTag,
-    ImageComment,
-    DeploymentAppTypes,
-    TaskErrorObj,
-    FilterConditionsListType,
-    CDMaterialResponseType,
-    PipelineType,
-    WorkflowType,
-    Material,
-    CIMaterialSidebarType,
-    ArtifactPromotionMetadata,
-    DeploymentWithConfigType,
-    CIMaterialType,
-    CDMaterialSidebarType,
-    CiPipeline,
     CdPipeline,
+    CIBuildConfigType,
+    CIMaterialSidebarType,
+    CIMaterialType,
+    CiPipeline,
+    CommonNodeAttr,
     ConsequenceType,
+    DeploymentAppTypes,
+    DeploymentNodeType,
+    DeploymentWithConfigType,
+    DynamicDataTableCellValidationState,
+    FilterConditionsListType,
+    ImageComment,
+    Material,
+    PipelineType,
     PolicyKindType,
+    ReleaseTag,
     RuntimePluginVariables,
+    TaskErrorObj,
     UploadFileDTO,
     UploadFileProps,
-    DynamicDataTableCellValidationState,
-    AppConfigProps,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { AppContextType } from '@Components/common'
+
 import { HostURLConfig } from '../../../../services/service.types'
 import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
-import { TIME_STAMP_ORDER } from './Constants'
 import { Offset, WorkflowDimensions } from './config'
+import { TIME_STAMP_ORDER } from './Constants'
 
 export interface RuntimeParamsErrorState {
     isValid: boolean
@@ -162,6 +165,7 @@ export type CDMaterialProps = {
      */
     selectedAppName?: string
     isTriggerBlockedDueToPlugin?: boolean
+    handleSuccess?: () => void
 } & CDMaterialBulkRuntimeParams &
     CDMaterialPluginWarningProps
 
@@ -614,9 +618,6 @@ export interface BranchRegexModalProps {
     regexValue
     onCloseBranchRegexModal
     savingRegexValue: boolean
-}
-export interface AppDetailsProps {
-    isV2: boolean
 }
 
 export interface TriggerViewDeploymentConfigType {

@@ -15,18 +15,21 @@
  */
 
 import {
+    ComponentSizeType,
+    DOCUMENTATION_HOME_PAGE,
+    getSelectPickerOptionByValue,
     InfoIconTippy,
+    noop,
     OverrideMergeStrategyType,
     OverrideStrategyTippyContent,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
-    DOCUMENTATION_HOME_PAGE,
-    ComponentSizeType,
-    noop,
-    getSelectPickerOptionByValue,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
+
 import { MERGE_STRATEGY_OPTIONS } from './constants'
 import { SelectMergeStrategyProps } from './types'
 
@@ -67,10 +70,15 @@ const SelectMergeStrategy = ({
 
         return (
             <>
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`m-0 ${MERGE_STRATEGY_LABEL_CLASS}`} htmlFor="config-toolbar-select-strategy">
-                    Merge strategy
-                </label>
+                <Tooltip content="Merge strategy">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label
+                        className={`m-0 dc__ellipsis-right ${MERGE_STRATEGY_LABEL_CLASS}`}
+                        htmlFor="config-toolbar-select-strategy"
+                    >
+                        Merge strategy
+                    </label>
+                </Tooltip>
 
                 <SelectPicker
                     inputId="config-toolbar-select-strategy"
@@ -78,7 +86,7 @@ const SelectMergeStrategy = ({
                     value={selectedOption}
                     options={options}
                     isDisabled={isDisabled}
-                    variant={SelectPickerVariantType.BORDER_LESS}
+                    variant={SelectPickerVariantType.COMPACT}
                     isSearchable={false}
                     size={ComponentSizeType.small}
                     isOptionDisabled={getIsOptionDisabled}

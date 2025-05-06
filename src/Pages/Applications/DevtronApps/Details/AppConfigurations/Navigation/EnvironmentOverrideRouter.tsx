@@ -14,34 +14,36 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, Fragment } from 'react'
-import { useParams, useLocation, useRouteMatch, NavLink, Link } from 'react-router-dom'
+import { Fragment, useEffect, useState } from 'react'
+import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
     ConfirmationDialog,
-    InfoColourBar,
-    PopupMenu,
-    Progressing,
-    getEnvironmentListMinPublic,
-    ToastVariantType,
-    ToastManager,
-    SelectPicker,
     DeleteConfirmationModal,
     EnvResourceType,
+    getEnvironmentListMinPublic,
+    InfoBlock,
+    PopupMenu,
+    Progressing,
+    SelectPicker,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
-import { URLS, DOCUMENTATION } from '../../../../../../config'
-import { usePrevious, createClusterEnvGroup } from '../../../../../../components/common'
-import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
-import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
+
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
-import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
+import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
-import { renderNavItem } from './Navigation.helper'
+import { DOCUMENTATION, URLS } from '../../../../../../config'
+import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
+import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
+import { renderNavItem } from './Navigation.helper'
 
 const EnvOverridesHelpNote = () => (
     <div className="fs-12 fw-4 lh-18">
@@ -333,15 +335,7 @@ const EnvironmentOverrideRouter = ({
             )
         }
         if (!isJobView) {
-            return (
-                <InfoColourBar
-                    classname="question-bar no-env-overrides"
-                    message={<EnvOverridesHelpNote />}
-                    Icon={Help}
-                    iconClass="fcv-5"
-                    iconSize={16}
-                />
-            )
+            return <InfoBlock variant="help" description={<EnvOverridesHelpNote />} />
         }
         return null
     }

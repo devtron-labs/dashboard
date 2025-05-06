@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import {
-    useAsync,
-    abortPreviousRequests,
-    Nodes,
-    getIsRequestAborted,
-    ALL_NAMESPACE_OPTION,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo, useRef, useState } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
+
+import {
+    abortPreviousRequests,
+    ALL_NAMESPACE_OPTION,
+    getIsRequestAborted,
+    Nodes,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
-import { K8SResourceListType, URLParams } from '../Types'
-import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
-import BaseResourceList from './BaseResourceList'
 import { getResourceData } from '../ResourceBrowser.service'
+import { K8SResourceListType, URLParams } from '../Types'
+import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
+import BaseResourceList from './BaseResourceList'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -45,7 +49,6 @@ export const K8SResourceList = ({
     renderRefreshBar,
     isOpen,
     updateK8sResourceTab,
-    setWidgetEventDetails,
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
@@ -127,11 +130,15 @@ export const K8SResourceList = ({
             group={group}
             addTab={addTab}
             hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
-            setWidgetEventDetails={setWidgetEventDetails}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             handleResourceClick={handleResourceClick}
         >
-            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
+            {PodRestart && (
+                <PodRestart
+                    aiWidgetAnalyticsEvent={getAIAnalyticsEvents('RB_POD_RESTART')}
+                    rbacPayload={getPodRestartRBACPayload()}
+                />
+            )}
         </BaseResourceList>
     )
 }

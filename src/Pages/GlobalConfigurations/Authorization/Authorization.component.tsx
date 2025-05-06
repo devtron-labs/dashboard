@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { lazy } from 'react'
+import { lazy, useRef } from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+
 import { Routes } from '../../../config'
+
 import './authorization.scss'
 
 const UserAndGroupPermissions = lazy(() => import('./UserAndGroupPermissions'))
@@ -24,6 +26,7 @@ const SSOLogin = lazy(() => import('./SSOLoginServices'))
 
 const Authorization = () => {
     const { path } = useRouteMatch()
+    const authorizationContainerRef = useRef<HTMLDivElement>(null)
 
     return (
         <Switch>
@@ -31,8 +34,13 @@ const Authorization = () => {
             <Route
                 path={path}
                 render={() => (
-                    <div className="authorization-container flexbox-col flex-grow-1 min-h-100 bg__primary flex-align-center dc__content-center pt-16">
-                        <UserAndGroupPermissions />
+                    <div
+                        ref={authorizationContainerRef}
+                        className="authorization-container flexbox-col flex-grow-1 h-100 bg__primary dc__overflow-hidden"
+                    >
+                        <div className="flex-grow-1 flexbox-col dc__overflow-auto">
+                            <UserAndGroupPermissions authorizationContainerRef={authorizationContainerRef} />
+                        </div>
                     </div>
                 )}
             />

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@use './mixins.scss' as *;
+
 .bg {
     &__primary {
         background: var(--bg-primary);
@@ -129,57 +131,12 @@
 }
 
 .border {
-    &__primary {
-        border: 1px solid var(--border-primary);
-
-        &--top {
-            border-top: 1px solid var(--border-primary);
-        }
-
-        &--left {
-            border-left: 1px solid var(--border-primary);
-        }
-
-        &--bottom {
-            border-bottom: 1px solid var(--border-primary);
-        }
-    }
-
-    &__primary-translucent {
-        border: 1px solid var(--border-primary-translucent);
-    }
-
-    &__secondary {
-        border: 1px solid var(--border-secondary);
-
-        &--top {
-            border-top: 1px solid var(--border-secondary);
-        }
-
-        &--bottom {
-            border-bottom: 1px solid var(--border-secondary);
-        }
-
-        &--left {
-            border-left: 1px solid var(--border-secondary);
-        }
-    }
-
-    &__secondary-translucent {
-        border: 1px solid var(--border-secondary-translucent);
-
-        &--bottom {
-            border-bottom: 1px solid var(--border-secondary-translucent);
-        }
-    }
-
-    &__white {
-        border: 1px solid var(--white);
-
-        &--top {
-            border-top: 1px solid var(--white);
-        }
-    }
+    @include border("primary", "--border-primary");
+    @include border("primary-translucent", "--border-primary-translucent");
+    @include border("secondary", "--border-secondary");
+    @include border("secondary-translucent", "--border-secondary-translucent");
+    @include border("white", "--white");
+    @include border("primary-warning", "--Y200");
 }
 
 .divider {

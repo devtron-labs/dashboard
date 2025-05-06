@@ -16,24 +16,25 @@
 
 import {
     DEFAULT_BASE_PAGE_SIZE,
-    ErrorScreenNotAuthorized,
     ERROR_EMPTY_SCREEN,
+    ErrorScreenNotAuthorized,
+    GenericFilterEmptyState,
     noop,
     Reload,
     TOAST_ACCESS_DENIED,
-    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRef } from 'react'
+
+import { importComponentFromFELibrary } from '../../../../../components/common'
 import { API_STATUS_CODES } from '../../../../../config'
+import { useAuthorizationContext } from '../../AuthorizationProvider'
+import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
+import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
+import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
+import { BulkSelectionEntityTypes } from '../../Shared/components/BulkSelection/constants'
 import NoUsers from './NoUsers'
 import { UserPermissionContainerProps } from './types'
 import UserPermissionListHeader from './UserPermissionListHeader'
-import BulkSelectionActionWidget from '../../Shared/components/BulkSelection/BulkSelectionActionWidget'
-import BulkSelectionModal from '../../Shared/components/BulkSelection/BulkSelectionModal'
 import UserPermissionTable from './UserPermissionTable'
-import { BulkSelectionModalTypes, useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
-import { BulkSelectionEntityTypes } from '../../Shared/components/BulkSelection/constants'
-import { importComponentFromFELibrary } from '../../../../../components/common'
 
 const UserListFilterToolbar = importComponentFromFELibrary('UserListFilterToolbar', null, 'function')
 
@@ -53,10 +54,10 @@ const UserPermissionContainer = ({
 
     const { searchKey, handleSearch: _handleSearch, clearFilters, status, updateStatusFilter } = urlFilters
 
-    const draggableRef = useRef<HTMLDivElement>()
     const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
     const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()
+    const { authorizationContainerRef } = useAuthorizationContext()
 
     if (!showLoadingState) {
         if (error) {
@@ -119,7 +120,7 @@ const UserPermissionContainer = ({
 
     return (
         <>
-            <div className="flexbox-col flex-grow-1" ref={draggableRef}>
+            <div className="flexbox-col flex-grow-1">
                 <div className="flexbox-col dc__gap-8 flex-grow-1">
                     <UserPermissionListHeader
                         disabled={isActionsDisabled}
@@ -153,24 +154,25 @@ const UserPermissionContainer = ({
                     ) : (
                         <GenericFilterEmptyState handleClearFilters={clearFilters} classname="flex-grow-1" />
                     )}
-                    {isSomeRowChecked && selectedUsersCount > 0 && (
-                        <BulkSelectionActionWidget
-                            count={selectedUsersCount}
-                            parentRef={draggableRef}
-                            showStatus={showStatus}
-                            areActionsDisabled={showLoadingState || isClearBulkSelectionModalOpen}
-                            setBulkSelectionModalConfig={setBulkSelectionModalConfig}
-                            refetchList={refetchUserPermissionList}
-                            filterConfig={{
-                                searchKey: urlFilters.searchKey,
-                                status: urlFilters.status,
-                            }}
-                            selectedIdentifiersCount={selectedUsersCount}
-                            isCountApproximate={isBulkSelectionApplied}
-                            entityType={BulkSelectionEntityTypes.users}
-                        />
-                    )}
                 </div>
+
+                {isSomeRowChecked && selectedUsersCount > 0 && (
+                    <BulkSelectionActionWidget
+                        count={selectedUsersCount}
+                        parentRef={authorizationContainerRef}
+                        showStatus={showStatus}
+                        areActionsDisabled={showLoadingState || isClearBulkSelectionModalOpen}
+                        setBulkSelectionModalConfig={setBulkSelectionModalConfig}
+                        refetchList={refetchUserPermissionList}
+                        filterConfig={{
+                            searchKey: urlFilters.searchKey,
+                            status: urlFilters.status,
+                        }}
+                        selectedIdentifiersCount={selectedUsersCount}
+                        isCountApproximate={isBulkSelectionApplied}
+                        entityType={BulkSelectionEntityTypes.users}
+                    />
+                )}
             </div>
 
             {isClearBulkSelectionModalOpen && (

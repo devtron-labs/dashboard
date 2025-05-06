@@ -15,17 +15,19 @@
  */
 
 import { useState } from 'react'
+
 import {
     Button,
     ButtonVariantType,
     ClipboardButton,
     ComponentSizeType,
-    VisibleModal,
     copyToClipboard,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Success } from '../../../../assets/icons/ic-success-outline.svg'
+
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
+import { ReactComponent as Success } from '../../../../assets/icons/ic-success-outline.svg'
 import { GenerateTokenModalType } from './apiToken.type'
 
 const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) => {

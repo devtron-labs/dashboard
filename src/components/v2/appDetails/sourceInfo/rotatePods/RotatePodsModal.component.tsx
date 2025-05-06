@@ -25,6 +25,7 @@ import {
     MODAL_TYPE,
     ToastManager,
     ToastVariantType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     RotatePodsModalProps,
@@ -37,7 +38,6 @@ import '../scaleWorkloads/scaleWorkloadsModal.scss'
 import { useSharedState } from '../../../utils/useSharedState'
 import IndexStore from '../../index.store'
 import { ReactComponent as ICHelpOutline } from '../../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Help } from '../../../../../assets/icons/ic-help.svg'
 import { GetDeploymentStrategy, RotatePods } from './rotatePodsModal.service'
 import RotateResponseModal from './RotateResponseModal'
 import { POD_ROTATION_INITIATED, RequiredKinds } from '../../../../../config'
@@ -342,12 +342,12 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
             <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                 {renderRestartModalHeader()}
                 {showHelp && (
-                    <InfoColourBar
-                        message={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
+                    <InfoBlock
+                        variant="help"
+                        description={`Pods for selected workloads will be restarted. Configured deployment strategy "${strategy}" will be used
                 to restart selected workloads.`}
-                        classname="restart-desciription-bg-v100 flex left pt-10 pb-10 pl-20 pr-20 cn-9"
-                        Icon={Help}
-                        iconClass="icon-dim-16 mr-12 fcv-5"
+                        borderConfig={{ top: false, left: false }}
+                        borderRadiusConfig={{ top: false, left: false, right: false }}
                     />
                 )}
                 {renderRestartWorkloadsList()}
@@ -361,7 +361,9 @@ export default function RotatePodsModal({ onClose, callAppDetailsAPI, isDeployme
 
     return (
         <Drawer position="right" width="1024px">
-            <div className="bg__modal--primary flexbox-col dc__overflow-hidden h-100 rotate-pods-container">{renderRotateModal()}</div>
+            <div className="bg__modal--primary flexbox-col dc__overflow-hidden h-100 rotate-pods-container">
+                {renderRotateModal()}
+            </div>
         </Drawer>
     )
 }

@@ -14,36 +14,42 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
+
 import {
-    showError,
+    capitalizeFirstLetter,
     Checkbox,
     CHECKBOX_VALUE,
-    OptionType,
+    ComponentSizeType,
+    ConfigurationType,
     DeploymentAppTypes,
+    FormProps,
+    noop,
+    OptionsBase,
+    OptionType,
+    SegmentedControlProps,
+    showError,
     TabGroup,
     TabProps,
-    ComponentSizeType,
-    capitalizeFirstLetter,
-    ConfigurationType,
-    FormProps,
     ToastManager,
     ToastVariantType,
-    OptionsBase,
-    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
-import { EDITOR_VIEW } from '@Config/constants'
+import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
-import EventsComponent from './NodeDetailTabs/Events.component'
-import LogsComponent from './NodeDetailTabs/Logs.component'
-import ManifestComponent from './NodeDetailTabs/Manifest.component'
-import TerminalComponent from './NodeDetailTabs/Terminal.component'
-import { NodeDetailTab, ParamsType } from './nodeDetail.type'
+import { EDITOR_VIEW } from '@Config/constants'
+
+import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
+import { Nodes } from '../../../../app/types'
+import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
+import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
+import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import {
     AppType,
     ManifestActionPropsType,
@@ -55,16 +61,16 @@ import {
     Options,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
-import { getManifestResource } from './nodeDetail.api'
-import MessageUI, { MsgUIType } from '../../../common/message.ui'
-import { Nodes } from '../../../../app/types'
-import './nodeDetail.css'
-import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
+import EventsComponent from './NodeDetailTabs/Events.component'
+import LogsComponent from './NodeDetailTabs/Logs.component'
+import ManifestComponent from './NodeDetailTabs/Manifest.component'
+import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
-import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
-import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
-import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
+import { getManifestResource } from './nodeDetail.api'
+import { NodeDetailTab, ParamsType } from './nodeDetail.type'
+import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
+
+import './nodeDetail.css'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
@@ -386,8 +392,8 @@ const NodeDetailComponent = ({
         )
     }
 
-    const handleToggleManifestConfigurationMode = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setManifestFormConfigurationType(e.target.value as ConfigurationType)
+    const handleToggleManifestConfigurationMode: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        setManifestFormConfigurationType(selectedSegment.value as ConfigurationType)
     }
 
     const handleSwitchToYAMLMode = () => {
@@ -487,7 +493,7 @@ const NodeDetailComponent = ({
         <>
             <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
-                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
+                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />
@@ -560,6 +566,11 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
+                            aiWidgetEventDetails={getAIAnalyticsEvents(
+                                isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
+                                isResourceBrowserView ? null : appDetails.appType,
+                            )}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>

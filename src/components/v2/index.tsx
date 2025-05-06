@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-import React, { Suspense, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
-import { ErrorScreenManager, DetailsProgressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
+import {
+    abortPreviousRequests,
+    DetailsProgressing,
+    ErrorScreenManager,
+    getIsRequestAborted,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import ValuesComponent from './values/ChartValues.component'
-import AppHeaderComponent from './headers/AppHeader.component'
-import ChartHeaderComponent from './headers/ChartHeader.component'
+import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
+import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import {
     getInstalledAppDetail,
     getInstalledChartDetail,
@@ -30,13 +40,11 @@ import {
 import AppDetailsComponent from './appDetails/AppDetails.component'
 import { AppDetails, AppType, EnvType } from './appDetails/appDetails.type'
 import IndexStore from './appDetails/index.store'
-import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
-import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import AppHeaderComponent from './headers/AppHeader.component'
+import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
+import ValuesComponent from './values/ChartValues.component'
 
 let initTimer = null
 
@@ -45,6 +53,8 @@ const RouterComponent = ({ envType }) => {
     const { path } = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
@@ -77,33 +87,42 @@ const RouterComponent = ({ envType }) => {
         }
     }, [params.appId, params.envId])
 
+    useEffect(
+        () => () => {
+            abortControllerRef.current.abort()
+        },
+        [],
+    )
+
     // clearing the timer on component unmount
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             if (initTimer) {
                 clearTimeout(initTimer)
             }
             IndexStore.clearAppDetails() // Cleared out the data on unmount
-        }
-    }, [])
+        },
+        [],
+    )
 
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
             setTimeout(() => {
-                _getAndSetAppDetail(true)
+                abortPreviousRequests(() => _getAndSetAppDetail(true), abortControllerRef)
                 deleteRefetchDataFromUrl(history, location)
             }, 5000)
         }
     }, [location.search])
 
     const _init = (fetchExternalLinks?: boolean) => {
-        _getAndSetAppDetail(fetchExternalLinks)
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks, true), abortControllerRef)
     }
 
     const handleAppDetailsCallError = (e: any) => {
+        if (getIsRequestAborted(e)) {
+            return
+        }
+
         setErrorResponseCode(e.code)
         if (e.code === 404 && initTimer) {
             clearTimeout(initTimer)
@@ -120,29 +139,49 @@ const RouterComponent = ({ envType }) => {
         setErrorResponseCode(undefined)
     }
 
-    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
-        if (envType === EnvType.CHART) {
-            // Get App Details
-            getInstalledChartDetail(+params.appId, +params.envId)
-                .then((response) => {
-                    handlePublishAppDetails(response)
-                    isVirtualRef.current = response.result?.isVirtualEnvironment
-                    if (fetchExternalLinks) {
-                        getExternalLinksAndTools(response.result?.clusterId)
-                    }
-                })
-                .catch(handleAppDetailsCallError)
-                .finally(() => {
-                    setLoadingDetails(false)
-                })
+    const handleInitiatePolling = () => {
+        initTimer = setTimeout(() => {
+            _init()
+        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+    }
 
-            // Get App Resource Tree
-            getInstalledChartResourceTree(+params.appId, +params.envId)
-                .then(handlePublishAppDetails)
-                .catch(handleAppDetailsCallError)
-                .finally(() => {
-                    setLoadingResourceTree(false)
-                })
+    const handleFetchAppDetails = async (fetchExternalLinks: boolean) => {
+        try {
+            const response = await getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
+            handlePublishAppDetails(response)
+            isVirtualRef.current = response.result?.isVirtualEnvironment
+            if (fetchExternalLinks) {
+                getExternalLinksAndTools(response.result?.clusterId)
+            }
+        } catch (error) {
+            handleAppDetailsCallError(error)
+        } finally {
+            setLoadingDetails(false)
+        }
+    }
+
+    const handleFetchResourceTree = async () => {
+        try {
+            const response = await getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
+            handlePublishAppDetails(response)
+        } catch (error) {
+            handleAppDetailsCallError(error)
+        } finally {
+            setLoadingResourceTree(false)
+        }
+    }
+
+    const _getAndSetAppDetail = async (fetchExternalLinks: boolean, shouldTriggerPolling: boolean = false) => {
+        if (envType === EnvType.CHART) {
+            // Intentionally not setting await since it was not awaited earlier when in thens as well
+            Promise.allSettled([
+                handleFetchAppDetails(fetchExternalLinks),
+                handleFetchResourceTree(),
+            ]).finally(() => {
+                if (shouldTriggerPolling) {
+                    handleInitiatePolling()
+                }
+            })
         } else {
             try {
                 // Revisit this flow
@@ -153,6 +192,10 @@ const RouterComponent = ({ envType }) => {
                 if (e.code) {
                     setErrorResponseCode(e.code)
                 }
+            } finally {
+                if (shouldTriggerPolling) {
+                    handleInitiatePolling()
+                }
             }
         }
     }
@@ -160,10 +203,15 @@ const RouterComponent = ({ envType }) => {
     const handleReloadResourceTree = () => {
         if (envType === EnvType.CHART) {
             setIsReloadResourceTreeInProgress(true)
-            getInstalledChartResourceTree(+params.appId, +params.envId)
+            abortPreviousRequests(
+                () => getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef),
+                abortControllerRef,
+            )
                 .then(handlePublishAppDetails)
                 .catch((err) => {
-                    showError(err)
+                    if (!getIsRequestAborted(err)) {
+                        showError(err)
+                    }
                 })
                 .finally(() => {
                     setLoadingResourceTree(false)

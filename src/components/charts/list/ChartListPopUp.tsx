@@ -18,13 +18,13 @@ import React, { useState } from 'react'
 import {
     showError,
     Progressing,
-    InfoColourBar,
     GenericEmptyState,
     ImageType,
     stopPropagation,
     SearchBar,
     ToastManager,
     ToastVariantType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { NavLink } from 'react-router-dom'
@@ -32,7 +32,6 @@ import { ChartListPopUpType } from '../charts.types'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
 import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
-import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { URLS } from '../../../config'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import EmptyFolder from '../../../assets/img/empty-folder.webp'
@@ -179,12 +178,9 @@ const ChartListPopUp = ({
                         )
                     )
                 })}
-                <InfoColourBar
-                    message={renderInfoText()}
-                    classname="question-bar m-16"
-                    Icon={Help}
-                    iconClass="icon-dim-20 fcv-5"
-                />
+                <div className="m-16">
+                    <InfoBlock variant="help" description={renderInfoText()} />
+                </div>
             </div>
         )
     }

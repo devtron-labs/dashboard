@@ -15,38 +15,45 @@
  */
 
 import { Fragment, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, useHistory, useLocation } from 'react-router-dom'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { getAIAnalyticsEvents } from 'src/Shared'
+import { followCursor } from 'tippy.js'
+
 import {
-    TippyCustomized,
-    TippyTheme,
     ClipboardButton,
-    SortableTableHeaderCell,
-    Tooltip,
-    TabGroup,
     ComponentSizeType,
     noop,
+    SortableTableHeaderCell,
+    TabGroup,
+    TippyCustomized,
+    TippyTheme,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
-import { followCursor } from 'tippy.js'
-import IndexStore from '../../index.store'
+
 import { getElapsedTime, importComponentFromFELibrary, Pod as PodIcon } from '../../../../common'
-import PodHeaderComponent from './PodHeader.component'
-import { Node, iNode, NodeComponentProps, NodeType } from '../../appDetails.type'
-import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
-import NodeDeleteComponent from './NodeDelete.component'
-import { getNodeStatus, nodeRowClassModifierMap } from './nodeType.util'
-import { useSharedState } from '../../../utils/useSharedState'
 import { getExternalLinkIcon, NodeLevelExternalLinks } from '../../../../externalLinks/ExternalLinks.component'
 import { OptionTypeWithIcon } from '../../../../externalLinks/ExternalLinks.type'
 import { getMonitoringToolIcon } from '../../../../externalLinks/ExternalLinks.utils'
-import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import { useSharedState } from '../../../utils/useSharedState'
 import { AppDetailsTabs } from '../../appDetails.store'
+import { iNode, Node, NodeComponentProps, NodeType } from '../../appDetails.type'
+import { EXPLAIN_AI_EXCLUDED_STATUS } from '../../constants'
+import IndexStore from '../../index.store'
+import { getPodRestartRBACPayload } from '../nodeDetail/nodeDetail.api'
+import { getNodeDetailTabs } from '../nodeDetail/nodeDetail.util'
+import NodeDeleteComponent from './NodeDelete.component'
+import { getNodeStatus, nodeRowClassModifierMap } from './nodeType.util'
+import PodHeaderComponent from './PodHeader.component'
 import { NoPodProps } from './types'
+
 import './nodeType.scss'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const renderConfigDriftDetectedText = importComponentFromFELibrary('renderConfigDriftDetectedText', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const NoPod = ({ selectMessage = 'Select a pod to view events', style = {} }: NoPodProps) => (
     <div data-testid="no-pod" className="no-pod no-pod-list no-pod--pod" style={{ ...style }}>
@@ -138,7 +145,8 @@ const NodeComponent = ({
 
             setTableHeader(tableHeaders)
 
-            let [, _selectedResource] = url.split('group/')
+            // splitting with /group as group is present in application-group url as well
+            let [, _selectedResource] = url.split('/group/')
             let _selectedNodes: Array<iNode>
             if (_selectedResource) {
                 _selectedResource = _selectedResource.replace(/\/$/, '')
@@ -161,7 +169,6 @@ const NodeComponent = ({
                     podMetaData?.some((f) => f.name === el.name && !!f.isNew === podType),
                 )
             }
-
             setSelectedNodes(isPodAvailable ? [...podsType] : [..._selectedNodes])
 
             setSelectedHealthyNodeCount(_healthyNodeCount)
@@ -299,6 +306,8 @@ const NodeComponent = ({
             // Only render node kind header when it's the first node or it's a different kind header
             _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
             const nodeStatus = getNodeStatus(node)
+            const showAIButton =
+                ExplainWithAIButton && nodeStatus && !EXPLAIN_AI_EXCLUDED_STATUS.has(nodeStatus.toLowerCase())
 
             const onClickNodeDetailsTab = (e) => {
                 const _kind = e.target.dataset.name
@@ -339,7 +348,7 @@ const NodeComponent = ({
                         </div>
                     )}
                     <div
-                        className={`node-row resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier}`}
+                        className={`node-row dc__align-items-center resource-row dc__hover-icon py-8 pr-16 ${node.childNodes?.length ? 'pl-8' : 'pl-18'} ${nodeRowClassModifier} ${showAIButton ? 'explain-ai-button' : ''}`}
                     >
                         <div
                             className="flex left dc__gap-8"
@@ -494,6 +503,21 @@ const NodeComponent = ({
                                 )}
                             </div>
                         )}
+                        {showAIButton && (
+                            <ExplainWithAIButton
+                                isIconButton
+                                intelligenceConfig={{
+                                    metadata: {
+                                        object: `${node.kind}/${node?.name}`,
+                                        namespace: node?.namespace,
+                                        status: nodeStatus,
+                                    },
+                                    clusterId,
+                                    prompt: `Debug what’s wrong with ${node?.name}/${node.kind} of ${node?.namespace}`,
+                                    analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
+                                }}
+                            />
+                        )}
                         {!appDetails.isVirtualEnvironment &&
                             node?.kind !== NodeType.Containers &&
                             node?.kind !== 'Endpoints' &&
@@ -539,7 +563,6 @@ const NodeComponent = ({
                                         },
                                     ]}
                                     size={ComponentSizeType.xl}
-                                    alignActiveBorderWithContainer
                                 />
                             </div>
                         )}
@@ -570,7 +593,12 @@ const NodeComponent = ({
                     )}
                 </div>
             )}
-            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload(appDetails)} />}
+            {PodRestart && (
+                <PodRestart
+                    aiWidgetAnalyticsEvent={getAIAnalyticsEvents('POD_RESTART', appDetails.appType)}
+                    rbacPayload={getPodRestartRBACPayload(appDetails)}
+                />
+            )}
         </>
     )
 }

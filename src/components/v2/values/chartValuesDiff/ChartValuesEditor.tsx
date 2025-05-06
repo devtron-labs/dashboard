@@ -101,7 +101,7 @@ const CompareWithDropdown = ({
         <SelectPicker
             inputId="compare-values-select"
             classNamePrefix="compare-values-select"
-            variant={SelectPickerVariantType.BORDER_LESS}
+            variant={SelectPickerVariantType.COMPACT}
             options={groupedOptions}
             isSearchable={false}
             value={selectedVersionForDiff}
@@ -344,42 +344,32 @@ export default function ChartValuesEditor({
             mode={MODES.YAML}
             loading={loading || valuesForDiffState.loadingValuesForDiff}
             customLoader={
-                <DetailsProgressing size={32}>
-                    {manifestView && !comparisonView && (
-                        <span className="fs-13 fw-4 cn-7 mt-8">
-                            Generating the manifest. <br /> Please wait...
-                        </span>
-                    )}
-                </DetailsProgressing>
+                <div className="flex h-100">
+                    <DetailsProgressing size={32}>
+                        {manifestView && !comparisonView && (
+                            <span className="fs-13 fw-4 cn-7 mt-8">
+                                Generating the manifest. <br /> Please wait...
+                            </span>
+                        )}
+                    </DetailsProgressing>
+                </div>
             }
             readOnly={manifestView}
-            codeEditorProps={{
-                height: '0',
-                defaultValue: comparisonView
-                    ? manifestView
-                        ? valuesForDiffState.selectedManifestForDiff
-                        : valuesForDiffState.selectedValuesForDiff
-                    : '',
-                value: manifestView ? generatedManifest : valuesText,
-                onChange: onChange,
-            }}
-            codeMirrorProps={{
-                height: 'fitToParent',
-                ...(comparisonView
-                    ? {
-                          diffView: true,
-                          originalValue: manifestView
-                              ? valuesForDiffState.selectedManifestForDiff
-                              : valuesForDiffState.selectedValuesForDiff,
-                          modifiedValue: manifestView ? generatedManifest : valuesText,
-                          onModifiedValueChange: onChange,
-                      }
-                    : {
-                          diffView: false,
-                          value: manifestView ? generatedManifest : valuesText,
-                          onChange,
-                      }),
-            }}
+            height="fitToParent"
+            {...(comparisonView
+                ? {
+                      diffView: true,
+                      originalValue: manifestView
+                          ? valuesForDiffState.selectedManifestForDiff
+                          : valuesForDiffState.selectedValuesForDiff,
+                      modifiedValue: manifestView ? generatedManifest : valuesText,
+                      onModifiedValueChange: onChange,
+                  }
+                : {
+                      diffView: false,
+                      value: manifestView ? generatedManifest : valuesText,
+                      onChange,
+                  })}
         >
             {showEditorHeader && (
                 <CodeEditor.Header>

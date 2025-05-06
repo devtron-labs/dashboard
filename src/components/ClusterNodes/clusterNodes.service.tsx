@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { get, post, put, ResponseType, APIOptions, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import { APIOptions, get, post, put, ResponseType, ROUTES as COMMON_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 import {
-    ClusterCapacityResponse,
-    ClusterListResponse,
-    NodeDetailResponse,
-    UpdateNodeRequestBody,
-    EditTaintsRequest,
-    TerminalDataType,
     ClusteNotePatchRequest,
+    ClusterCapacityResponse,
     ClusterDescriptionResponse,
-    ClusterNoteResponse,
     ClusterEditManifestType,
+    ClusterListResponse,
+    ClusterNoteResponse,
     ClusterShortDescriptionPatchRequest,
+    EditTaintsRequest,
+    NodeDetailResponse,
+    TerminalDataType,
+    UpdateNodeRequestBody,
 } from './types'
 
 export const getClusterDetails = (clusterId: string, signal?): Promise<ClusterDescriptionResponse> =>

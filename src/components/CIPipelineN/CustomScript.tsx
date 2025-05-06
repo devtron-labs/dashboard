@@ -15,11 +15,13 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react'
-import { ScriptType, CodeEditor, MODES } from '@devtron-labs/devtron-fe-common-lib'
-import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
-import TaskFieldTippyDescription from './TaskFieldTippyDescription'
+
+import { CodeEditor, MODES, ScriptType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
+import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 
 interface CustomScriptType {
     handleScriptChange: React.Dispatch<React.SetStateAction<unknown>>
@@ -48,17 +50,9 @@ const CustomScript = ({ handleScriptChange }: CustomScriptType) => {
                     <CodeEditor
                         mode={MODES.SHELL}
                         noParsing
-                        codeEditorProps={{
-                            value: editorValue,
-                            onChange: (value) => handleScriptChange({ target: { value } }),
-                            height: 300,
-                            inline: true,
-                        }}
-                        codeMirrorProps={{
-                            value: editorValue,
-                            onChange: (value) => handleScriptChange({ target: { value } }),
-                            height: 300,
-                        }}
+                        value={editorValue}
+                        onChange={(value) => handleScriptChange({ target: { value } })}
+                        height={300}
                     />
                 </div>
             </div>

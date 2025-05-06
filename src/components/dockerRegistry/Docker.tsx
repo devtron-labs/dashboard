@@ -18,8 +18,6 @@ import { KeyboardEventHandler, useEffect, useState } from 'react'
 import {
     showError,
     Progressing,
-    TippyCustomized,
-    TippyTheme,
     sortCallback,
     ErrorScreenNotAuthorized,
     Reload,
@@ -29,7 +27,6 @@ import {
     CHECKBOX_VALUE,
     Checkbox,
     REGISTRY_TYPE_MAP,
-    InfoColourBar,
     ConditionalWrap,
     RepositoryAction,
     ServerErrors,
@@ -53,10 +50,10 @@ import {
     RegistryIcon,
     ComponentSizeType,
     PasswordField,
-    OtherRegistryAuthenticationType,
+    RegistryCredentialsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import { useForm, handleOnBlur, handleOnFocus, parsePassword, importComponentFromFELibrary, Trash } from '../common'
 import {
     getClusterListMinWithoutAuth,
@@ -95,7 +92,6 @@ import {
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
@@ -261,7 +257,7 @@ const CollapsedList = ({
     repositoryList = [],
     disabledFields = [],
     ociRegistryConfig,
-    credentialsType,
+    registryCredentialsType,
     ...rest
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
@@ -341,7 +337,7 @@ const CollapsedList = ({
                         isPublic,
                         disabledFields,
                         ociRegistryConfig,
-                        credentialsType,
+                        registryCredentialsType,
                     }}
                 />
             )}
@@ -381,7 +377,7 @@ const DockerForm = ({
         : {
               CONTAINER: OCIRegistryConfigConstants.PULL_PUSH,
           },
-    credentialsType: authCredentialsType,
+    registryCredentialsType,
     ...rest
 }) => {
     const re = PATTERNS.APP_NAME
@@ -439,7 +435,7 @@ const DockerForm = ({
         registryUrl: { value: registryUrl, error: '' },
         username: { value: username, error: '' },
         password: {
-            value: id && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
+            value: id && username && !password ? DEFAULT_SECRET_PLACEHOLDER : regPass,
             error: '',
         },
         repositoryList: {
@@ -544,8 +540,8 @@ const DockerForm = ({
     const [registryStorageType, setRegistryStorageType] = useState<string>(
         isPublic ? RegistryStorageType.OCI_PUBLIC : RegistryStorageType.OCI_PRIVATE,
     )
-    const [authenticationType, setAuthenticationType] = useState<OtherRegistryAuthenticationType>(
-        id && authCredentialsType ? authCredentialsType : OtherRegistryAuthenticationType.USERNAME_PASSWORD,
+    const [authenticationType, setAuthenticationType] = useState<RegistryCredentialsType>(
+        id && registryCredentialsType ? registryCredentialsType : RegistryCredentialsType.USERNAME_PASSWORD,
     )
 
     const InitialValueOfIsContainerStore: boolean =
@@ -721,7 +717,7 @@ const DockerForm = ({
     }
 
     const handleChangeOtherRegistryAuthType = (e) => {
-        const updatedAuthType = e.target.value as OtherRegistryAuthenticationType
+        const updatedAuthType = e.target.value as RegistryCredentialsType
         setAuthenticationType(updatedAuthType)
     }
 
@@ -802,8 +798,8 @@ const DockerForm = ({
                       username: trimmedUsername,
                       password:
                           customState.password.value === DEFAULT_SECRET_PLACEHOLDER
-                              ? parsePassword(customState.password.value)
-                              : `'${parsePassword(customState.password.value)}'`,
+                              ? ''
+                              : `'${JSON.stringify(JSON.parse(customState.password.value))}'`,
                   }
                 : {}),
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
@@ -818,7 +814,7 @@ const DockerForm = ({
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
             selectedDockerRegistryType.value === RegistryType.OTHER
                 ? {
-                      ...(authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD
+                      ...(authenticationType === RegistryCredentialsType.USERNAME_PASSWORD
                           ? {
                                 username: trimmedUsername,
                                 password: parsePassword(customState.password.value),
@@ -857,7 +853,7 @@ const DockerForm = ({
                 sshConnectionType,
             ),
             ...(AuthenticationTypeRadio && selectedDockerRegistryType.value === RegistryType.OTHER
-                ? { credentialsType: authenticationType }
+                ? { registryCredentialsType: authenticationType }
                 : {}),
         }
     }
@@ -1023,13 +1019,13 @@ const DockerForm = ({
                 let error = false
                 if (
                     registryStorageType === RegistryStorageType.OCI_PRIVATE &&
-                    authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD &&
-                    (!customState.username.value || !(customState.password.value || id))
+                    authenticationType === RegistryCredentialsType.USERNAME_PASSWORD &&
+                    (!customState.username.value || !(customState.password.value || (id && username)))
                 ) {
                     setCustomState((st) => ({
                         ...st,
                         username: { ...st.username, error: st.username.value ? '' : 'Mandatory' },
-                        password: { ...st.password, error: id || st.password.value ? '' : 'Mandatory' },
+                        password: { ...st.password, error: (id && username) || st.password.value ? '' : 'Mandatory' },
                     }))
                     error = true
                 }
@@ -1490,45 +1486,44 @@ const DockerForm = ({
         }
     }
 
+    const renderPrivateDockerInfoContent = () => {
+        return (
+            <div className="flex">
+                Helm charts from provided repositories will be shown in the
+                <Link to={ChartStoreRedirectionUrl}>&nbsp;Chart Store</Link>
+            </div>
+        )
+    }
+
     const renderRepositoryList = () => {
         if (selectedDockerRegistryType.value === RegistryType.GCR) {
             return
         }
         return (
-            <>
-                <div className="mb-12">
-                    <SelectPicker
-                        required
-                        label="List of repositories"
-                        isMulti
-                        options={[]}
-                        autoFocus
-                        isClearable
-                        placeholder="Enter repository name and press enter"
-                        inputValue={customState.repositoryList.inputValue}
-                        value={customState.repositoryList.value}
-                        onBlur={setRepoListValue}
-                        onInputChange={handleCreatableInputChange}
-                        onKeyDown={handleCreatableKeyDown}
-                        onChange={handleCreatableChange}
-                        inputId="repository-list"
-                        error={repositoryError || customState.repositoryList?.error}
-                        shouldHideMenu
-                        size={ComponentSizeType.large}
-                    />
-                </div>
-                {registryStorageType === RegistryStorageType.OCI_PUBLIC && (
-                    <InfoColourBar
-                        message="Helm charts from provided repositories will be shown in the"
-                        classname="info_bar mb-16"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
-                        linkText="Chart store"
-                        redirectLink={ChartStoreRedirectionUrl}
-                        internalLink
-                    />
-                )}
-            </>
+            <div className="mb-12">
+                <SelectPicker
+                    required
+                    label="List of repositories"
+                    isMulti
+                    options={[]}
+                    autoFocus
+                    isClearable
+                    placeholder="Enter repository name and press enter"
+                    inputValue={customState.repositoryList.inputValue}
+                    value={customState.repositoryList.value}
+                    onBlur={setRepoListValue}
+                    onInputChange={handleCreatableInputChange}
+                    onKeyDown={handleCreatableKeyDown}
+                    onChange={handleCreatableChange}
+                    inputId="repository-list"
+                    error={repositoryError || customState.repositoryList?.error}
+                    shouldHideMenu
+                    size={ComponentSizeType.large}
+                    helperText={
+                        registryStorageType === RegistryStorageType.OCI_PUBLIC && renderPrivateDockerInfoContent()
+                    }
+                />
+            </div>
         )
     }
 
@@ -1629,7 +1624,7 @@ const DockerForm = ({
 
             const isUserNamePasswordRequired =
                 selectedDockerRegistryType.value === RegistryType.OTHER
-                    ? authenticationType === OtherRegistryAuthenticationType.USERNAME_PASSWORD
+                    ? authenticationType === RegistryCredentialsType.USERNAME_PASSWORD
                     : true
 
             return (
@@ -1664,7 +1659,7 @@ const DockerForm = ({
                                     selectedDockerRegistryType.value === RegistryType.QUAY ||
                                     selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                     <PasswordField
-                                        shouldShowDefaultPlaceholderOnBlur={!!id}
+                                        shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
                                         name="password"
                                         required
                                         value={customState.password.value}

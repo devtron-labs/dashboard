@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-import { ACTION_STATE, ResponseType, ScanResultDTO, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ACTION_STATE,
+    AppEnvironment,
+    EnvAppsMetaDTO,
+    ResponseType,
+    ScanResultDTO,
+    SelectPickerProps,
+    ServerErrors,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { fetchAppDetailsInTime } from '@Components/app/service'
+
+import { AppDetails, SyncErrorType } from '../../../v2/appDetails/appDetails.type'
 import { AggregatedNodes, OptionType } from '../../types'
-import { SyncErrorType, AppDetails } from '../../../v2/appDetails/appDetails.type'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -132,6 +142,20 @@ export interface ModuleConfigResponse extends ResponseType {
     }
 }
 
+export interface DataSourceDetailsDTO {
+    id: number
+    name: string
+}
+
+export interface DataSourceDetailsQueryParams {
+    environmentName: string
+}
+
+export interface DataSourceDetailsType {
+    dataSourceName: string
+    dataSourceId: number
+}
+
 export interface ClusterConnectionResponse extends ResponseType {
     result?: {
         clusterReachable: boolean
@@ -183,7 +207,7 @@ export interface DetailsType {
     appDetailsAPI: typeof fetchAppDetailsInTime
     setAppDetailResultInParent?: (appDetails) => void
     isAppDeployment?: boolean
-    environments: any
+    environments: AppEnvironment[]
     isPollingRequired?: boolean
     setIsAppDeleted?: any
     commitInfo?: boolean
@@ -196,6 +220,8 @@ export interface DetailsType {
     onCloseHideDeploymentWindowConfirmationModal?: () => void
     appDetails: any
     setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
+    isAppView: boolean
+    applications: EnvAppsMetaDTO['apps']
 }
 
 export interface DeletedAppComponentType extends SyncErrorType {
@@ -278,3 +304,24 @@ export enum HibernationModalTypes {
     RESUME = 'resume',
     CONFIGURE_PATCH = 'configurePatch',
 }
+
+type AppEnvDetailsType = 'app' | 'app-group'
+
+export interface AppDetailProps {
+    detailsType: AppEnvDetailsType
+    filteredResourceIds: string
+}
+
+export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppView?: boolean }
+
+export type AppEnvSelectorProps =
+    | {
+          isAppView: true
+          environments: AppEnvironment[]
+          applications?: never
+      }
+    | {
+          isAppView: false
+          applications: EnvAppsMetaDTO['apps']
+          environments?: never
+      }

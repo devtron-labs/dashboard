@@ -15,23 +15,24 @@
  */
 
 import React, { RefObject } from 'react'
+
 import {
-    K8SObjectBaseType,
-    OptionType,
+    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     GVKType,
-    WidgetEventDetails,
     InitTabType,
-    K8sResourceDetailType,
+    K8SObjectBaseType,
     K8sResourceDetailDataType,
-    ALL_NAMESPACE_OPTION,
-    ClusterDetail,
+    K8sResourceDetailType,
+    OptionType,
     ResourceDetail,
     SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
+
 import { ClusterListType } from '../ClusterNodes/types'
+import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
 import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
@@ -69,13 +70,6 @@ export enum CreateResourceStatus {
 
 export interface ResourceDetailsPropType extends LogSearchTermType {
     selectedResource: SelectedResourceType
-}
-
-export interface ClusterSelectionType {
-    clusterOptions: ClusterDetail[]
-    clusterListLoader: boolean
-    initialLoading: boolean
-    refreshData: () => void
 }
 
 export interface CreateResourceType {
@@ -123,7 +117,6 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
     addTab: UseTabsReturnType['addTab']
-    setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
@@ -166,11 +159,12 @@ export interface ResourceListEmptyStateType {
     actionHandler?: () => void
 }
 
-export interface EventListType extends Pick<K8SResourceListType, 'setWidgetEventDetails'> {
+export interface EventListType {
     listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: K8sResourceDetailType['data']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     searchText: string
+    clusterId: string
 }
 
 export interface ConnectingToClusterStateProps {
@@ -197,10 +191,7 @@ export interface K8sObjectOptionType extends OptionType {
 
 export interface K8SResourceTabComponentProps
     extends Pick<SidebarType, 'selectedResource' | 'setSelectedResource' | 'updateK8sResourceTab'>,
-        Pick<
-            K8SResourceListType,
-            'setWidgetEventDetails' | 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'
-        > {
+        Pick<K8SResourceListType, 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']
@@ -305,3 +296,11 @@ export interface GetResourceDataType {
     filters: Record<string, unknown>
     abortControllerRef: RefObject<AbortController>
 }
+
+export type ShowAIButtonConfig = { column: string } & (
+    | {
+          includeValues: Set<string>
+          excludeValues?: never
+      }
+    | { excludeValues: Set<string>; includeValues?: never }
+)

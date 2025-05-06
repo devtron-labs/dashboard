@@ -16,32 +16,35 @@
 
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
+
 import { InfoIconTippy, SelectPicker, SelectPickerVariantType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
-import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
-import { ReactComponent as ExitScreen } from '../../../../../../../assets/icons/ic-exit-fullscreen-2.svg'
-import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-connected.svg'
-import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play-filled.svg'
+
 import { ReactComponent as Abort } from '../../../../../../../assets/icons/ic-abort.svg'
 import { ReactComponent as Check } from '../../../../../../../assets/icons/ic-check.svg'
+import { ReactComponent as Connect } from '../../../../../../../assets/icons/ic-connected.svg'
+import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-cross.svg'
+import { ReactComponent as Disconnect } from '../../../../../../../assets/icons/ic-disconnected.svg'
+import { ReactComponent as ExitScreen } from '../../../../../../../assets/icons/ic-exit-fullscreen-2.svg'
+import { ReactComponent as FullScreen } from '../../../../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as Pencil } from '../../../../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
+import { ReactComponent as Play } from '../../../../../../../assets/icons/ic-play-filled.svg'
 import { ReactComponent as Stop } from '../../../../../../../assets/icons/ic-stop-filled.svg'
-import {
-    SelectWrapperType,
-    ReactSelectType,
-    WrapperTitleType,
-    ConnectionButtonType,
-    CloseExpandView,
-    ConnectionSwitchType,
-    ClearTerminalType,
-    EditManifestType,
-    DebugModeType,
-} from './terminal.type'
-import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
+import { ReactComponent as Edit } from '../../../../../../../assets/icons/ic-visibility-on.svg'
 import { CLUSTER_TERMINAL_MESSAGING } from '../../../../../../ClusterNodes/constants'
+import { EditModeType, MANIFEST_SELECTION_MESSAGE, TerminalWrapperType } from './constants'
+import {
+    ClearTerminalType,
+    CloseExpandView,
+    ConnectionButtonType,
+    ConnectionSwitchType,
+    DebugModeType,
+    EditManifestType,
+    ReactSelectType,
+    SelectWrapperType,
+    WrapperTitleType,
+} from './terminal.type'
 
 const DownloadFileFolderButton = importComponentFromFELibrary('DownloadFileFolderButton', null, 'function')
 
@@ -93,7 +96,7 @@ const reactSelect = (selectData: ReactSelectType) => {
                 options={selectData.options}
                 value={selectData.value}
                 onChange={selectData.onChange}
-                variant={SelectPickerVariantType.BORDER_LESS}
+                variant={SelectPickerVariantType.COMPACT}
                 showSelectedOptionIcon={false}
             />
         </>

@@ -15,28 +15,30 @@
  */
 
 import { useEffect, useMemo } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    AppType,
+    ALL_RESOURCE_KIND_FILTER,
     getPodsRootParentNameAndStatus,
     Node,
     StatusFilterButtonComponent,
     useSearchString,
-    ALL_RESOURCE_KIND_FILTER,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
+
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
-import { useSharedState } from '@Components/v2/utils/useSharedState'
-import { URLS } from '@Config/routes'
+import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
 import { DynamicTabs, useTabs } from '@Components/common/DynamicTabs'
 import { DynamicTabsVariantType } from '@Components/common/DynamicTabs/types'
-import IndexStore from '../index.store'
+import { useSharedState } from '@Components/v2/utils/useSharedState'
+
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from '../appDetails.store'
 import { K8ResourceComponentProps } from '../appDetails.type'
-import NodeTreeComponent from './nodeType/NodeTree.component'
+import IndexStore from '../index.store'
 import NodeComponent from './nodeType/Node.component'
-import './k8resources.scss'
+import NodeTreeComponent from './nodeType/NodeTree.component'
 import { doesNodeSatisfiesFilter } from './utils'
+
+import './k8resources.scss'
 
 export const K8ResourceComponent = ({
     clickedNodes,
@@ -54,7 +56,8 @@ export const K8ResourceComponent = ({
 }: K8ResourceComponentProps) => {
     const history = useHistory()
     const location = useLocation()
-    const currentNode = useParams<{ nodeType: string }>().nodeType
+    const { path } = useRouteMatch()
+    const { nodeType: currentNode, ...restParams } = useParams<{ nodeType: string }>()
     const currentFilter = useSearchString().searchParams.filterType || ALL_RESOURCE_KIND_FILTER
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
     useEffect(() => {
@@ -95,21 +98,9 @@ export const K8ResourceComponent = ({
     }
 
     const getRedirectPathname = (newNode: Node, selectedFilter: string) => {
-        const appDetails = IndexStore.getAppDetails()
         const nodeKind = newNode.kind.toLowerCase()
         const newKind = nodeKind === 'pod' ? `pod/group/${getPodNameForSelectedFilter(selectedFilter)}` : nodeKind
-        switch (appDetails.appType) {
-            case AppType.DEVTRON_HELM_CHART:
-                return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${appDetails.installedAppId}/env/${appDetails.environmentId}/details/${URLS.APP_DETAILS_K8}/${newKind}`
-            case AppType.EXTERNAL_HELM_CHART:
-                return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${appDetails.appId}/${appDetails.appName}/details/${URLS.APP_DETAILS_K8}/${newKind}`
-            case AppType.EXTERNAL_ARGO_APP:
-                return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${appDetails.clusterId}/${appDetails.appName}/${appDetails.namespace}/details/${URLS.APP_DETAILS_K8}/${newKind}`
-            case AppType.EXTERNAL_FLUX_APP:
-                return `${URLS.APP}/${URLS.EXTERNAL_FLUX_APP}/${appDetails.clusterId}/${appDetails.appName}/${appDetails.namespace}/${appDetails.fluxTemplateType}/details/${URLS.APP_DETAILS_K8}/${newKind}`
-            default:
-                return `${URLS.APP}/${appDetails.appId}/details/${appDetails.environmentId}/${URLS.APP_DETAILS_K8}/${nodeKind}`
-        }
+        return generatePath(path, { ...restParams, nodeType: newKind })
     }
 
     const handleFilterClick = (selectedFilter: string) => {

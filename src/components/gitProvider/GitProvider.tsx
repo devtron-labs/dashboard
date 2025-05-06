@@ -20,7 +20,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    InfoColourBar,
     VisibleModal,
     useEffectAfterMount,
     stopPropagation,
@@ -40,6 +39,8 @@ import {
     DeleteConfirmationModal,
     Textarea,
     PasswordField,
+    Icon,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -66,7 +67,6 @@ import { ReactComponent as Warn } from '@Icons/ic-info-warn.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
 
@@ -628,17 +628,6 @@ const GitForm = ({
         toggleCollapse(false)
     }
 
-    const renderGitHostBottom = () => {
-        return (
-            <button
-                className="flex left dc__gap-8 px-10 py-8 cb-5 cursor bg__primary dc__react-select__bottom dc__border-top dc__transparent fw-6"
-                onClick={onClickAddGitAccountHandler}
-            >
-                <Add className="icon-dim-20 fcb-5 dc__vertical-align-bottom" /> <span>Add Git Host</span>
-            </button>
-        )
-    }
-
     const TippyMessage = {
         authMessage: 'Authentication type cannot be switched from HTTPS to SSH or vice versa.',
     }
@@ -833,7 +822,16 @@ const GitForm = ({
                         isSearchable
                         isClearable={false}
                         options={hostListOption}
-                        renderMenuListFooter={renderGitHostBottom}
+                        menuListFooterConfig={{
+                            type: 'button',
+                            buttonProps: {
+                                text: 'Add Git Host',
+                                onClick: onClickAddGitAccountHandler,
+                                variant: ButtonVariantType.borderLess,
+                                dataTestId: 'add-git-host',
+                                startIcon: <Icon name="ic-add" color={null} />
+                            },
+                        }}
                         onChange={(e) => handleGithostChange(e)}
                         isDisabled={gitHostId}
                         size={ComponentSizeType.large}
@@ -882,11 +880,8 @@ const GitForm = ({
                 versa.
             </div>
             {state.auth.value === AuthenticationType.ANONYMOUS && (
-                <InfoColourBar
-                    message="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
-                    classname="info_bar cn-9 mb-16 lh-20"
-                    Icon={Info}
-                    iconClass="icon-dim-20"
+                <InfoBlock
+                    description="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
                 />
             )}
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}

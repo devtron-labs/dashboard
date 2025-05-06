@@ -279,6 +279,8 @@ export default function CDPipeline({
 
     const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
+    const areMandatoryPluginPossible = !!processPluginData && !isTemplateView
+
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
     ) => {
@@ -312,7 +314,7 @@ export default function CDPipeline({
         const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
         const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
 
-        if (processPluginData) {
+        if (areMandatoryPluginPossible) {
             await getMandatoryPluginData(form, uniquePluginIds)
             return
         }
@@ -448,7 +450,7 @@ export default function CDPipeline({
     }
 
     const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
-        if (!processPluginData || isTemplateView) {
+        if (!areMandatoryPluginPossible) {
             return
         }
 
@@ -696,7 +698,10 @@ export default function CDPipeline({
         }
 
         // Have to enforce type like this otherwise pipeline variable would have taken type from MigrateArgoAppToCDPipelineRequiredPayloadType and would throw error in case of virtual env.
-        const migrateToDevtronRequiredPayload: Omit<MigrateArgoAppToCDPipelineRequiredPayloadType, 'deploymentAppType'> & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
+        const migrateToDevtronRequiredPayload: Omit<
+            MigrateArgoAppToCDPipelineRequiredPayloadType,
+            'deploymentAppType'
+        > & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
             ? getMigrateToDevtronRequiredPayload(migrateToDevtronFormState)
             : null
 
@@ -954,7 +959,7 @@ export default function CDPipeline({
                     buttonProps: getConfigureGitOpsCredentialsButtonProps({
                         size: ComponentSizeType.small,
                         style: ButtonStyleType.neutral,
-                    })
+                    }),
                 })
 
                 return
@@ -999,9 +1004,12 @@ export default function CDPipeline({
         try {
             const promiseArr = cdPipelineId
                 ? [updateCDPipeline(request, isTemplateView), null]
-                : [saveCDPipeline(request, {
-                        isTemplateView
-                    }), isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null]
+                : [
+                      saveCDPipeline(request, {
+                          isTemplateView,
+                      }),
+                      isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null,
+                  ]
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
@@ -1299,7 +1307,6 @@ export default function CDPipeline({
                                 getNavLink(`post-build`, BuildStageVariable.PostBuild),
                             ]}
                             hideTopPadding
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}
@@ -1369,7 +1376,10 @@ export default function CDPipeline({
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
             if (isMigratingFromExternalApp) {
-                const isLinkable = migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
+                const isLinkable =
+                    migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM
+                        ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable
+                        : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
                 if (!isLinkable) {
                     return 'Please resolve errors before proceeding'
                 }
@@ -1415,18 +1425,19 @@ export default function CDPipeline({
                                         'data-testid': 'new-deployment-tab',
                                     },
                                 },
-                                {
-                                    tabType: 'button',
-                                    active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
-                                    label: 'Migrate to Devtron',
-                                    id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
-                                    props: {
-                                        onClick: handleSelectMigrateToDevtron,
-                                        'data-testid': 'migrate-to-devtron-tab',
-                                    },
-                                },
+                                ...(isTemplateView
+                                    ? []
+                                    : [{
+                                          tabType: 'button' as const,
+                                          active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                          label: 'Migrate to Devtron',
+                                          id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                          props: {
+                                              onClick: handleSelectMigrateToDevtron,
+                                              'data-testid': 'migrate-to-devtron-tab',
+                                          },
+                                      }]),
                             ]}
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}

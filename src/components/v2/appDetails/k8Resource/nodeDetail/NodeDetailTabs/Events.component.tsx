@@ -16,20 +16,24 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
+
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
-import IndexStore from '../../../index.store'
-import { NodeDetailTab } from '../nodeDetail.type'
-import { getEvent } from '../nodeDetail.api'
-import { ResourceInfoActionPropsType } from '../../../appDetails.type'
-import MessageUI from '../../../../common/message.ui'
-import { EventsTable } from './EventsTable'
+
 import { MESSAGING_UI } from '../../../../../../config/constants'
+import MessageUI from '../../../../common/message.ui'
+import { ResourceInfoActionPropsType } from '../../../appDetails.type'
+import IndexStore from '../../../index.store'
+import { getEvent } from '../nodeDetail.api'
+import { NodeDetailTab } from '../nodeDetail.type'
+import { EventsTable } from './EventsTable'
 
 const EventsComponent = ({
     selectedTab,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
+    clusterId,
+    aiWidgetEventDetails,
 }: ResourceInfoActionPropsType) => {
     const params = useParams<{
         actionName: string
@@ -87,7 +91,14 @@ const EventsComponent = ({
         }
 
         if (events.length) {
-            return <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
+            return (
+                <EventsTable
+                    loading={loading}
+                    eventsList={events}
+                    clusterId={clusterId}
+                    aiWidgetAnalyticsEvent={aiWidgetEventDetails}
+                />
+            )
         }
 
         return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />

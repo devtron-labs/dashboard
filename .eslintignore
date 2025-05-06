@@ -36,7 +36,6 @@ src/components/ApplicationGroup/SearchBar.tsx
 src/components/CIPipelineN/AdvancedConfigOptions.tsx
 src/components/CIPipelineN/Build.tsx
 src/components/CIPipelineN/CIPipeline.tsx
-src/components/CIPipelineN/ConditionContainer.tsx
 src/components/CIPipelineN/CustomImageTags.tsx
 src/components/CIPipelineN/CustomInputOutputVariables.tsx
 src/components/CIPipelineN/CustomInputVariableSelect.tsx
@@ -86,7 +85,6 @@ src/components/app/create/CreateApp.tsx
 src/components/app/create/validationRules.ts
 src/components/app/details/AboutAppInfoModal.tsx
 src/components/app/details/AboutTagEditModal.tsx
-src/components/app/details/AppHeader.tsx
 src/components/app/details/appDetails/AppMetrics.tsx
 src/components/app/details/appDetails/AppStatusCard.tsx
 src/components/app/details/appDetails/DeploymentStatusDetailModal.tsx
@@ -385,7 +383,6 @@ src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
 src/components/v2/values/common/chartValues.api.ts
 src/components/workflowEditor/CDSuccessModal.tsx
 src/components/workflowEditor/CreateWorkflow.tsx
-src/components/workflowEditor/DeprecatedPipelineWarning.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx

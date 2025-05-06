@@ -15,9 +15,17 @@
  */
 
 import { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar, ToastManager, ToastVariantType, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    ToastManager,
+    ToastVariantType,
+    SelectPicker,
+    ComponentSizeType,
+    InfoBlock,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as Error } from '../../assets/icons/ic-errorInfo.svg'
 import { NumberOptionType } from '../../../app/types'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
@@ -136,12 +144,7 @@ export default function ProjectUpdateModal({
                 <div className="cn-7 p-20">
                     {renderProjectSelect()}
                     {selectedProject && appMetaInfo && selectedProject.label !== appMetaInfo.projectName && (
-                        <InfoColourBar
-                            classname="warn cn-9 lh-20 pt-8 pr-12"
-                            Icon={Error}
-                            message={projectChangeMessage()}
-                            iconClass="warning-icon"
-                        />
+                        <InfoBlock variant="warning" description={projectChangeMessage()} />
                     )}
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">

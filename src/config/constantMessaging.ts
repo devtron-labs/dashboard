@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { NO_MATCHING_RESULT } from '@devtron-labs/devtron-fe-common-lib'
+
 export const EA_MANIFEST_SECRET_INFO_TEXT = 'The values for all keys in the data field are base64-encoded strings.'
 export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
     'The values for all keys in the data field have to be base64-encoded strings.'
@@ -113,7 +115,7 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     subTitle: 'Add users and assign group or direct permissions',
     notConfigured: 'SSO Login not configured:',
     infoText:
-        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.Go to SSO login services',
+        ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.',
     linkText: 'Go to SSO login services',
     redirectLink: '/global-config/auth/login-service',
 }
@@ -232,7 +234,7 @@ export const API_COMPONENTS = {
 export const EMPTY_STATE_STATUS = {
     DATA_NOT_AVAILABLE: 'Data not available',
     API_TOKEN: {
-        TITLE: 'No matching results',
+        TITLE: NO_MATCHING_RESULT,
         SUBTITLE: "We couldn't find any matching token",
     },
     ARTIFACTS_EMPTY_STATE_TEXTS: {
@@ -437,3 +439,8 @@ export const FEATURE_DISABLED = 'This feature is disabled'
 
 export const DUPLICATE_PIPELINE_NAME_VALIDATION = 'You cannot use same name for pipeline within an app.'
 export const GENERATE_TOKEN_NAME_VALIDATION = 'Token name is required to generate token'
+
+export const HOST_ERROR_MESSAGE = {
+    NotConfigured: 'Host URL is missing or incorrect. Please contact a super admin.',
+    Review: 'Review & update',
+}

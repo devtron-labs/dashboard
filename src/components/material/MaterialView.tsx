@@ -35,8 +35,10 @@ import {
     DeleteConfirmationModal,
     Textarea,
     ERROR_STATUS_CODE,
+    ButtonComponentType,
+    Icon,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { NavLink } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
 import { URLS } from '../../config'
@@ -612,16 +614,6 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         this.props.handleProviderChange(selected, this.props.material.url)
     }
 
-    renderGitProviderOptionsFooter = () => (
-        <NavLink
-            to={URLS.GLOBAL_CONFIG_GIT}
-            className="flex left dc__gap-8 dc__border-top bg__primary px-8 py-10 cb-5 dc__block fw-6 fs-13 lh-20 anchor cursor dc__no-decor dc__hover-n50"
-        >
-            <Add className="icon-dim-20 dc__no-shrink fcb-5" data-testid="add-git-account-option" />
-            <span>Add Git Account</span>
-        </NavLink>
-    )
-
     onDelete = async () => {
         const deletePayload = {
             appId: this.props.appId,
@@ -636,7 +628,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
         await deleteMaterial({
             request: deletePayload,
-            isTemplateView: this.props.isTemplateView
+            isTemplateView: this.props.isTemplateView,
         })
         this.props.reload()
     }
@@ -653,11 +645,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         return (
             <form
                 key={`${this.props.material.id}`}
-                className={this.props.isCreateAppView ? '' : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'}
+                className={
+                    this.props.isCreateAppView
+                        ? ''
+                        : 'br-8 py-16 px-20 bg__primary border__secondary mb-16 flexbox-col dc__gap-16'
+                }
             >
                 {!this.props.isCreateAppView && (
                     <div
-                        className="mb-20 cn-9 fs-16 fw-6 white-card__header--form"
+                        className="flexbox cn-9 fs-16 fw-6 white-card__header--form"
                         data-testid={`${this.props.material.id ? 'edit' : 'add'}-git-repository-heading`}
                     >
                         {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
@@ -676,7 +672,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         ) : null}
                     </div>
                 )}
-                <div className="flexbox dc__gap-16 mb-16" data-testid="add-git-repository-form">
+                <div className="flexbox dc__gap-16" data-testid="add-git-repository-form">
                     <div className="w-250 dc__no-shrink">
                         <SelectPicker
                             classNamePrefix="material-view__select-project"
@@ -686,7 +682,19 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                             value={selectedGitProviderOption}
                             required
                             error={this.props.isError.gitProvider}
-                            renderMenuListFooter={this.renderGitProviderOptionsFooter}
+                            menuListFooterConfig={{
+                                type: 'button',
+                                buttonProps: {
+                                    component: ButtonComponentType.link,
+                                    variant: ButtonVariantType.borderLess,
+                                    linkProps: {
+                                        to: URLS.GLOBAL_CONFIG_GIT,
+                                    },
+                                    text: 'Add Git Account',
+                                    startIcon: <Icon name="ic-add" color={null} />,
+                                    dataTestId: 'add-git-account-option',
+                                },
+                            }}
                             onChange={this.handleGitProviderChange}
                             name="material-view__select-project"
                             size={ComponentSizeType.large}
@@ -706,12 +714,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 {!this.props.isCreateAppView && (
                     <>
                         {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
-                            <InfoColourBar
-                                message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
-                                classname="info_bar cn-9 mb-20 lh-20"
-                                Icon={Info}
-                                iconClass="icon-dim-20"
-                            />
+                            <InfoBlock description="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication." />
                         )}
                         {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
                             <>
@@ -721,7 +724,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         value={CHECKBOX_VALUE.CHECKED}
                                         tabIndex={3}
                                         onChange={this.props.handleExcludeRepoCheckbox}
-                                        rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
+                                        rootClassName="fs-14 cn-9 m-0 flex top dc_max-width__max-content"
                                     >
                                         <div className="ml-12">
                                             <span data-testid="exclude-include-checkbox" className="mt-1 flex left">
@@ -861,8 +864,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 )}
                             </>
                         )}
-                        <label>
-                            <div className="pt-16">
+                        <label className="m-0 flexbox-col dc__gap-16">
+                            <div>
                                 <Checkbox
                                     isChecked={this.props.isChecked}
                                     value={CHECKBOX_VALUE.CHECKED}
@@ -915,7 +918,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     </div>
                                 )}
                             </div>
-                            <div className="pt-16 ">
+                            <div>
                                 <Checkbox
                                     isChecked={this.props.material.fetchSubmodules}
                                     value={CHECKBOX_VALUE.CHECKED}

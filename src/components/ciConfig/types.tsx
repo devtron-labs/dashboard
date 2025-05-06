@@ -15,26 +15,30 @@
  */
 
 import React from 'react'
+
 import {
-    ServerError,
+    AppConfigProps,
     CIBuildConfigType,
     CIBuildType,
-    DockerConfigOverrideType,
-    VariableType,
+    CiPipeline,
     CommonNodeAttr,
-    WorkflowType,
+    DockerConfigOverrideType,
+    KeyValueTableData,
     Material,
     SelectPickerOptionType,
-    CiPipeline,
-    AppConfigProps,
+    ServerError,
+    VariableType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
+
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
+import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type'
+
+import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipelineResult } from '../app/details/triggerView/types'
 import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
-import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 
 export interface ArgsFieldSetProps {
     args: { key: string; value: string }[]
@@ -252,12 +256,7 @@ export interface CIContainerRegistryConfigProps extends Required<Pick<AppConfigP
     isCreateAppView?: boolean
 }
 
-export interface CIBuildArgType {
-    k: string
-    v: string
-    keyError: string
-    valueError: string
-}
+export interface CIBuildArgType extends KeyValueTableData {}
 
 export interface FrameworkOptionType extends OptionType {
     templateUrl: string
@@ -286,6 +285,7 @@ export interface CIDockerFileConfigProps {
     setArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
     buildEnvArgs: CIBuildArgType[]
     setBuildEnvArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
+    setArgsError: React.Dispatch<React.SetStateAction<{ args: boolean; buildEnvArgs: boolean }>>
     handleOnChangeConfig: (e) => void
     selectedTargetPlatforms: any
     setSelectedTargetPlatforms: any
@@ -337,11 +337,9 @@ export interface CIBuildpackBuildOptionsProps {
     readOnly?: boolean
 }
 
-export interface CIAdvancedConfigProps {
+export interface CIAdvancedConfigProps extends Pick<CIDockerFileConfigProps, 'args' | 'setArgs' | 'setArgsError'> {
     configOverrideView: boolean
     allowOverride: boolean
-    args: CIBuildArgType[]
-    setArgs: React.Dispatch<React.SetStateAction<CIBuildArgType[]>>
     isBuildpackType: boolean
     selectedTargetPlatforms: any
     setSelectedTargetPlatforms: any

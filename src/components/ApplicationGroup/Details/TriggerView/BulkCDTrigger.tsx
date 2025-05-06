@@ -19,7 +19,6 @@ import {
     CDMaterialResponseType,
     DeploymentNodeType,
     Drawer,
-    Progressing,
     ReleaseTag,
     ImageComment,
     showError,
@@ -48,9 +47,13 @@ import {
     Button,
     ComponentSizeType,
     AnimatedDeployButton,
+    Icon,
+    getIsApprovalPolicyConfigured,
+    ButtonVariantType,
+    ButtonStyleType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useLocation } from 'react-router-dom'
-import { ReactComponent as Close } from '@Icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '@Icons/ic-nav-rocket.svg'
 import { ReactComponent as PlayIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
@@ -59,6 +62,7 @@ import { ReactComponent as Tag } from '@Icons/ic-tag.svg'
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.webp'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
+import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
 import { BulkSelectionEvents, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
@@ -66,6 +70,7 @@ import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerR
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BULK_ERROR_MESSAGES } from './constants'
+import { getIsNonApprovedImageSelected, getIsImageApprovedByDeployerSelected } from './utils'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
@@ -89,6 +94,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
+const SkipHibernatedCheckbox = importComponentFromFELibrary('SkipHibernatedCheckbox', null, 'function')
 
 // TODO: Fix release tags selection
 export default function BulkCDTrigger({
@@ -109,6 +115,7 @@ export default function BulkCDTrigger({
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
 }: BulkCDTriggerType) {
+    const { canFetchHelmAppStatus } = useMainContext()
     const [selectedApp, setSelectedApp] = useState<BulkCDDetailType>(
         appList.find((app) => !app.warningMessage) || appList[0],
     )
@@ -125,6 +132,7 @@ export default function BulkCDTrigger({
     const [isPartialActionAllowed, setIsPartialActionAllowed] = useState(false)
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
+    const [skipHibernatedApps, setSkipHibernatedApps] = useState<boolean>(false)
 
     const location = useLocation()
     const history = useHistory()
@@ -351,15 +359,18 @@ export default function BulkCDTrigger({
     const renderHeaderSection = (): JSX.Element => {
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
-                <h2 className="fs-16 fw-6 lh-1-43 m-0">Deploy to {appList[0].envName}</h2>
-                <button
-                    type="button"
-                    className="dc__transparent flex icon-dim-24"
+                <h2 className="fs-16 fw-6 lh-1-5 m-0 dc__truncate">Deploy to {appList[0].envName}</h2>
+                <Button
+                    dataTestId="bulk-cd-modal-close"
                     disabled={isLoading}
                     onClick={closeBulkCDModal}
-                >
-                    <Close className="icon-dim-24" />
-                </button>
+                    size={ComponentSizeType.xs}
+                    icon={<Icon name="ic-close-small" size={null} color={null} />}
+                    ariaLabel="close bulk cd trigger modal"
+                    showAriaLabelInTippy={false}
+                    style={ButtonStyleType.negativeGrey}
+                    variant={ButtonVariantType.borderLess}
+                />
             </div>
         )
     }
@@ -428,6 +439,25 @@ export default function BulkCDTrigger({
         )
     }
 
+    const renderDeploymentWithoutApprovalWarning = (app: BulkCDDetailType) => {
+        if (!app.isExceptionUser) {
+            return null
+        }
+
+        const selectedMaterial: CDMaterialType = app.material?.find((mat: CDMaterialType) => mat.isSelected)
+
+        if (!selectedMaterial || getIsMaterialApproved(selectedMaterial?.userApprovalMetadata)) {
+            return null
+        }
+
+        return (
+            <div className="flex left dc__gap-4 mb-4">
+                <Icon name="ic-warning" color={null} size={14} />
+                <p className="m-0 fs-12 lh-16 fw-4 cy-7">Non-approved image selected</p>
+            </div>
+        )
+    }
+
     const renderAppWarningAndErrors = (app: BulkCDDetailType) => {
         const commonNodeAttrType: CommonNodeAttr['type'] =
             app.stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
@@ -438,7 +468,7 @@ export default function BulkCDTrigger({
 
         if (unauthorizedAppList[app.appId]) {
             return (
-                <div className="flex left top dc__gap-4">
+                <div className="flex left dc__gap-4">
                     <UnAuthorized className="icon-dim-12 warning-icon-y7 mr-4 dc__no-shrink" />
                     <span className="cy-7 fw-4 fs-12 dc__truncate">{BULK_CD_MESSAGING.unauthorized.title}</span>
                 </div>
@@ -473,7 +503,7 @@ export default function BulkCDTrigger({
         if (!!warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Error className="icon-dim-12 dc__no-shrink mt-5 warning-icon-y7" />
+                    <Icon name="ic-warning" color={null} size={14} />
                     <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
                 </div>
             )
@@ -767,6 +797,7 @@ export default function BulkCDTrigger({
                             onClick={changeApp}
                         >
                             {app.name}
+                            {renderDeploymentWithoutApprovalWarning(app)}
                             {renderAppWarningAndErrors(app)}
                         </div>
                     ))}
@@ -835,7 +866,7 @@ export default function BulkCDTrigger({
         } else {
             isBulkDeploymentTriggered.current = true
             stopPropagation(e)
-            onClickTriggerBulkCD()
+            onClickTriggerBulkCD(skipHibernatedApps)
             setShowResistanceBox(false)
         }
     }
@@ -848,11 +879,35 @@ export default function BulkCDTrigger({
 
     const renderFooterSection = (): JSX.Element => {
         const isDeployButtonDisabled: boolean = isDeployDisabled()
+        const canDeployWithoutApproval = getIsNonApprovedImageSelected(appList)
+        const canImageApproverDeploy = getIsImageApprovedByDeployerSelected(appList)
+        const showSkipHibernatedCheckbox = !!SkipHibernatedCheckbox && canFetchHelmAppStatus
+
         return (
-            <div className="dc__border-top flex right bg__primary px-20 py-16">
+            <div
+                className={`dc__border-top flex ${showSkipHibernatedCheckbox ? 'dc__content-space' : 'right'} bg__primary px-20 py-16`}
+            >
+                {showSkipHibernatedCheckbox && (
+                    <SkipHibernatedCheckbox
+                        isDeploymentLoading={isLoading}
+                        envId={appList[0].envId}
+                        envName={appList[0].envName}
+                        appIds={appList.map((app) => app.appId)}
+                        skipHibernated={skipHibernatedApps}
+                        setSkipHibernated={setSkipHibernatedApps}
+                    />
+                )}
                 <div className="dc__position-rel tippy-over">
                     {!isDeployButtonDisabled && stage === DeploymentNodeType.CD && !isLoading ? (
-                        <AnimatedDeployButton onButtonClick={onClickStartDeploy} isVirtualEnvironment={false} />
+                        <AnimatedDeployButton
+                            onButtonClick={onClickStartDeploy}
+                            isVirtualEnvironment={false}
+                            exceptionUserConfig={{
+                                canDeploy: canDeployWithoutApproval,
+                                isImageApprover: canImageApproverDeploy,
+                            }}
+                            isBulkCDTrigger
+                        />
                     ) : (
                         <Button
                             dataTestId="deploy-button"
@@ -891,7 +946,8 @@ export default function BulkCDTrigger({
                         closePopup={closeBulkCDModal}
                         responseList={responseList}
                         isLoading={isLoading}
-                        onClickRetryBuild={onClickTriggerBulkCD}
+                        onClickRetryDeploy={onClickTriggerBulkCD}
+                        skipHibernatedApps={skipHibernatedApps}
                     />
                 ) : (
                     renderFooterSection()

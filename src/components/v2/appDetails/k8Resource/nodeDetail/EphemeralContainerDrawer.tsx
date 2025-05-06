@@ -29,7 +29,6 @@ import {
     SelectPicker,
     ComponentSizeType,
     MODES,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -275,11 +274,10 @@ const EphemeralContainerDrawer = ({
                             content: EPHEMERAL_CONTAINER.IMAGE,
                         }}
                         required
-                        renderMenuListFooter={() => (
-                            <div className="fw-4 lh-20 pl-8 pr-8 pt-6 pb-6 cn-7 fs-13 dc__italic-font-style">
-                                {CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH}
-                            </div>
-                        )}
+                        menuListFooterConfig={{
+                            type: 'text',
+                            value: CLUSTER_TERMINAL_MESSAGING.CUSTOM_PATH,
+                        }}
                         isCreatable
                         size={ComponentSizeType.large}
                         layout="row"
@@ -343,7 +341,6 @@ const EphemeralContainerDrawer = ({
                         },
                     ]}
                     hideTopPadding
-                    alignActiveBorderWithContainer
                 />
             </div>
         )
@@ -379,16 +376,9 @@ const EphemeralContainerDrawer = ({
                 <CodeEditor
                     mode={MODES.YAML}
                     readOnly={switchManifest === SwitchItemValues.Sample}
-                    codeEditorProps={{
-                        value: codeEditorBody,
-                        onChange: handleManifestAdvanceConfiguration,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: codeEditorBody,
-                        onChange: handleManifestAdvanceConfiguration,
-                        height: 'fitToParent',
-                    }}
+                    value={codeEditorBody}
+                    onChange={handleManifestAdvanceConfiguration}
+                    height="fitToParent"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">
@@ -396,11 +386,6 @@ const EphemeralContainerDrawer = ({
                                 <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                                 <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                             </Switch>
-                            {!isCodeMirrorEnabled() && (
-                                <div style={{ flex: '0 0 60%' }}>
-                                    <CodeEditor.ValidationError />
-                                </div>
-                            )}
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>

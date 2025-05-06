@@ -19,22 +19,22 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
-    getAppEnvDeploymentConfig,
-    getAppEnvDeploymentConfigList,
-    getDefaultVersionAndPreviousDeploymentOptions,
-    SelectPickerOptionType,
-    getSelectPickerOptionByValue,
-    SelectPickerVariantType,
-    useAsync,
-    useUrlFilters,
+    ComponentSizeType,
+    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    DeploymentConfigDiffState,
     DeploymentWithConfigType,
     EnvResourceType,
-    DeploymentConfigDiffState,
-    ComponentSizeType,
-    showError,
+    getAppEnvDeploymentConfig,
+    getAppEnvDeploymentConfigList,
     getCompareSecretsData,
+    getDefaultVersionAndPreviousDeploymentOptions,
+    getSelectPickerOptionByValue,
+    SelectPickerOptionType,
+    SelectPickerVariantType,
+    showError,
+    useAsync,
     useMainContext,
-    DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -327,7 +327,7 @@ export const usePipelineDeploymentConfig = ({
         classNamePrefix: 'deployment-config-selector',
         inputId: 'deployment-config-selector',
         name: 'deployment-config-selector',
-        variant: SelectPickerVariantType.BORDER_LESS,
+        variant: SelectPickerVariantType.COMPACT,
         isSearchable: false,
         disableDescriptionEllipsis: true,
         value: getSelectPickerOptionByValue(

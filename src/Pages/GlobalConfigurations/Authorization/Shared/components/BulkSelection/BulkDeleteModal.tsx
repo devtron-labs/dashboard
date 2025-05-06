@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useState } from 'react'
+
 import {
     BulkSelectionEvents,
     ConfirmationModal,
@@ -22,9 +24,9 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useState } from 'react'
+
 import { deletePermissionGroupInBulk, deleteUserInBulk } from '../../../authorization.service'
-import { UserBulkDeletePayload, PermissionGroupBulkDeletePayload } from '../../../types'
+import { PermissionGroupBulkDeletePayload, UserBulkDeletePayload } from '../../../types'
 import { BulkSelectionEntityTypes } from './constants'
 import { BulkDeleteModalProps } from './types'
 import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'

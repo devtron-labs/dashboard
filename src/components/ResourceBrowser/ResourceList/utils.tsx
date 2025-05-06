@@ -15,14 +15,15 @@
  */
 
 import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
-    TARGET_K8S_VERSION_SEARCH_KEY,
     LOCAL_STORAGE_EXISTS,
     LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
     OPTIONAL_NODE_LIST_HEADERS,
+    TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
+import { K8SResourceListType, ShowAIButtonConfig } from '../Types'
 import { ResourceListUrlFiltersType } from './types'
-import { K8SResourceListType } from '../Types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
@@ -86,4 +87,14 @@ export const getFirstResourceFromKindResourceMap = (
     return Object.values(lowercaseKindToResourceGroupMap).find(
         (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
+}
+
+export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: string, value: string) => {
+    if (!aiButtonConfig || columnName !== aiButtonConfig.column) {
+        return false
+    }
+    if (aiButtonConfig.includeValues) {
+        return aiButtonConfig.includeValues.has(value)
+    }
+    return !aiButtonConfig.excludeValues.has(value)
 }

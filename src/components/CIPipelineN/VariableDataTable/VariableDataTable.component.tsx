@@ -32,14 +32,15 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { PluginVariableType } from '@Components/ciPipeline/types'
 import { importComponentFromFELibrary } from '@Components/common'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 
 import {
     FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     getVariableDataTableHeaders,
+    VARIABLE_DATA_TABLE_ADD_BUTTON_TIPPY_MAP,
     VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
     VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE,
 } from './constants'
@@ -65,9 +66,8 @@ import {
     getVariableDataTableRowEmptyValidationState,
     validateVariableDataTableVariableKeys,
 } from './validations'
-
-import { VariableConfigOverlay } from './VariableConfigOverlay'
 import { ValueConfigOverlay } from './ValueConfigOverlay'
+import { VariableConfigOverlay } from './VariableConfigOverlay'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
@@ -567,6 +567,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     onRowEdit={handleRowEdit}
                     onRowDelete={handleRowDelete}
                     onRowAdd={handleRowAdd}
+                    addBtnTooltip={VARIABLE_DATA_TABLE_ADD_BUTTON_TIPPY_MAP[type]}
                     {...(isFELibAvailable && isInputPluginVariable
                         ? {
                               actionButtonConfig: {

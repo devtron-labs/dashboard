@@ -16,22 +16,24 @@
 
 /* eslint-disable no-param-reassign */
 import { useEffect, useMemo, useState } from 'react'
-import { Switch, Route, Redirect, useLocation, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+
 import {
+    ACCESS_TYPE_MAP,
+    ActionTypes,
+    DEFAULT_ENV,
+    EntityTypes,
     GenericSectionErrorState,
+    logExceptionToSentry,
+    mapByKey,
     ReactSelectInputAction,
     showError,
+    stringComparatorBySortOrder,
     TabGroup,
     useAsync,
     useMainContext,
-    ACCESS_TYPE_MAP,
-    EntityTypes,
-    mapByKey,
-    DEFAULT_ENV,
-    stringComparatorBySortOrder,
-    ActionTypes,
-    logExceptionToSentry,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
     getUserAccessAllWorkflows,
     getUserAccessChartGroups,
@@ -41,12 +43,20 @@ import {
     getUserAccessProjectFilteredApps,
     getUserAccessProjectList,
 } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import { DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
+
+import { JobList } from '../../../../../../components/Jobs/Types'
 import { HELM_APP_UNASSIGNED_PROJECT, SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
+import { useAuthorizationContext } from '../../../AuthorizationProvider'
+import { DEFAULT_ACCESS_TYPE_TO_ERROR_MAP } from '../../../constants'
+import { getDefaultStatusAndTimeout } from '../../../libUtils'
+import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
+import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
+import { ChartPermission } from '../ChartPermission'
 import K8sPermissions from '../K8sObjectPermissions/K8sPermissions.component'
 import { apiGroupAll } from '../K8sObjectPermissions/utils'
-import { useAuthorizationContext } from '../../../AuthorizationProvider'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { AccessTypeToErrorMapType } from '../PermissionConfigurationForm/types'
+import AppPermissionDetail from './AppPermissionDetail'
 import {
     ALL_EXISTING_AND_FUTURE_ENVIRONMENTS_VALUE,
     DirectPermissionFieldName,
@@ -55,8 +65,7 @@ import {
     emptyDirectPermissionJobs,
     SELECT_ALL_OPTION,
 } from './constants'
-import AppPermissionDetail from './AppPermissionDetail'
-import { ChartPermission } from '../ChartPermission'
+import { AppPermissionsDetailType, DirectPermissionRowProps, EnvironmentsListType, ProjectsListType } from './types'
 import {
     getAppPermissionDetailConfig,
     getEnvironmentClusterOptions,
@@ -64,12 +73,6 @@ import {
     getNavLinksConfig,
     getRoleConfigForRoleFilter,
 } from './utils'
-import { getWorkflowOptions, validateDirectPermissionForm } from '../../../utils'
-import { AppPermissionsDetailType, DirectPermissionRowProps, EnvironmentsListType, ProjectsListType } from './types'
-import { APIRoleFilter, ChartGroupPermissionsFilter, DirectPermissionsRoleFilter } from '../../../types'
-import { getDefaultStatusAndTimeout } from '../../../libUtils'
-import { JobList } from '../../../../../../components/Jobs/Types'
-import { AccessTypeToErrorMapType } from '../PermissionConfigurationForm/types'
 
 const AppPermissions = () => {
     const { serverMode } = useMainContext()
@@ -993,7 +996,6 @@ const AppPermissions = () => {
                               }
                             : [],
                     )}
-                    alignActiveBorderWithContainer
                 />
             </div>
             <div>

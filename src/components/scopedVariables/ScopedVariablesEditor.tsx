@@ -209,29 +209,20 @@ export default function ScopedVariablesEditor({
                         mode={MODES.YAML}
                         noParsing
                         diffView={showSaveView}
-                        codeEditorProps={{
-                            value: editorData,
-                            defaultValue: savedScopedVariables || '',
-                            height: '100%',
-                            onChange: handleEditorChange,
-                            validatorSchema: jsonSchema,
-                        }}
-                        codeMirrorProps={{
-                            height: 'fitToParent',
-                            ...(showSaveView
-                                ? {
-                                      diffView: true,
-                                      originalValue: savedScopedVariables || '',
-                                      modifiedValue: editorData,
-                                      onModifiedValueChange: handleEditorChange,
-                                  }
-                                : {
-                                      diffView: false,
-                                      value: editorData,
-                                      onChange: handleEditorChange,
-                                      validatorSchema: jsonSchema,
-                                  }),
-                        }}
+                        height="fitToParent"
+                        {...(showSaveView
+                            ? {
+                                  diffView: true,
+                                  originalValue: savedScopedVariables || '',
+                                  modifiedValue: editorData,
+                                  onModifiedValueChange: handleEditorChange,
+                              }
+                            : {
+                                  diffView: false,
+                                  value: editorData,
+                                  onChange: handleEditorChange,
+                                  validatorSchema: jsonSchema,
+                              })}
                     >
                         {showSaveView && (
                             <CodeEditor.Header hideDefaultSplitHeader>

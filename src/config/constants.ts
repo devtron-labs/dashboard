@@ -21,7 +21,7 @@ import {
     ToastManager,
     ROUTES as COMMON_ROUTES,
     EnvResourceType,
-    OtherRegistryAuthenticationType,
+    RegistryCredentialsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
@@ -266,6 +266,7 @@ export const Routes = {
     CONFIG_MANIFEST: 'config/manifest',
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
+    ENV_DATA_SOURCE_NAME: 'env/data-source-name',
 }
 
 export enum ViewType {
@@ -543,7 +544,7 @@ export interface RegistryPayloadType {
             sshAuthKey: string
         }
     }
-    credentialsType?: OtherRegistryAuthenticationType
+    registryCredentialsType?: RegistryCredentialsType
 }
 
 export interface RegistryPayloadWithSelectType extends RegistryPayloadType, SelectPickerOptionType {}

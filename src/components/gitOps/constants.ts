@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION } from '@Config/constants'
 import { GitProvider } from '@Components/common/GitTabs/constants'
+import { DOCUMENTATION } from '@Config/constants'
+
 import { DefaultShortGitOpsType, GitOpsFormErrorType } from './gitops.type'
 
 export const GitHost = {

@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ReactComponent as PluginIcon } from '../../assets/icons/ic-plugin.svg'
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
 import { CIAdvancedConfigProps } from './types'
 import TargetPlatformSelector from './TargetPlatformSelector'
 import DockerArgs from '../CIPipelineN/DockerArgs'
-import { DockerArgsAction, HandleDockerArgsUpdateType } from '../CIPipelineN/types'
+import { KeyValueTableProps } from '@devtron-labs/devtron-fe-common-lib'
 
 export default function CIAdvancedConfig({
     configOverrideView,
     allowOverride,
     args,
     setArgs,
+    setArgsError,
     isBuildpackType,
     selectedTargetPlatforms,
     setSelectedTargetPlatforms,
@@ -41,43 +42,13 @@ export default function CIAdvancedConfig({
         setIsCollapsed(!isCollapsed)
     }
 
-    const handleDockerArgsUpdate = ({ action, argData }: HandleDockerArgsUpdateType) => {
-        if (updateNotAllowed) {
-            return
-        }
-
-        let _args = [...args]
-
-        switch (action) {
-            case DockerArgsAction.ADD:
-                _args.unshift({ k: '', v: '', valueError: '', keyError: '' })
-                break
-
-            case DockerArgsAction.UPDATE_KEY:
-                _args[argData.index].k = argData.value
-                _args[argData.index].keyError = ''
-                _args[argData.index].valueError = ''
-                break
-
-            case DockerArgsAction.UPDATE_VALUE:
-                _args[argData.index].v = argData.value
-                _args[argData.index].keyError = ''
-                _args[argData.index].valueError = ''
-                break
-
-            case DockerArgsAction.DELETE:
-                _args = _args.filter((_, index) => index !== argData.index)
-                break
-        }
-
+    const handleDockerArgsUpdate: KeyValueTableProps['onChange'] = (_args) => {
         setArgs(_args)
     }
 
-    const mapArgsToDockerArgs = () =>
-        args.map((arg) => ({
-            key: arg.k,
-            value: arg.v,
-        }))
+    const handleDockerArgsError: KeyValueTableProps['onError'] = (errorState) => {
+        setArgsError((prev) => ({ ...prev, [isBuildpackType ? 'buildEnvArgs' : 'args']: errorState }))
+    }
 
     const renderTargetPlatform = () => {
         return (
@@ -100,8 +71,9 @@ export default function CIAdvancedConfig({
 
     return isBuildpackType ? (
         <DockerArgs
-            args={mapArgsToDockerArgs()}
+            args={args}
             handleDockerArgsUpdate={handleDockerArgsUpdate}
+            handleDockerArgsError={handleDockerArgsError}
             fromBuildPack
             readOnly={updateNotAllowed}
         />
@@ -131,10 +103,11 @@ export default function CIAdvancedConfig({
             {isCollapsed && (
                 <>
                     {renderTargetPlatform()}
-
+                    <div className="border__secondary--top mt-16 mb-16" />
                     <DockerArgs
-                        args={mapArgsToDockerArgs()}
+                        args={args}
                         handleDockerArgsUpdate={handleDockerArgsUpdate}
+                        handleDockerArgsError={handleDockerArgsError}
                         readOnly={updateNotAllowed}
                     />
                 </>

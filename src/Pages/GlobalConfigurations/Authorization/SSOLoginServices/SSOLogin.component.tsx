@@ -26,55 +26,54 @@
 /* eslint-disable react/destructuring-assignment */
 import React, { Component, createRef } from 'react'
 import ReactGA from 'react-ga4'
+import yamlJsParser from 'yaml'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    CustomInput,
-    noop,
-    YAMLStringify,
-    DEFAULT_SECRET_PLACEHOLDER,
-    CodeEditor,
-    FeatureTitleWithInfo,
-    InfoColourBar,
-    ToastManager,
-    ToastVariantType,
     Button,
     ButtonVariantType,
+    CodeEditor,
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    CustomInput,
+    DEFAULT_SECRET_PLACEHOLDER,
+    ErrorScreenManager,
+    FeatureTitleWithInfo,
+    InfoBlock,
     MODES,
-    isCodeMirrorEnabled,
+    noop,
+    Progressing,
+    showError,
     SSOProviderIcon,
+    ToastManager,
+    ToastVariantType,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
-import yamlJsParser from 'yaml'
-import Check from '@Icons/ic-selected-corner.png'
-import { ReactComponent as Help } from '@Icons/ic-help.svg'
-import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
+
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
+import Check from '@Icons/ic-selected-corner.png'
+import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
 import {
     DevtronSwitch as Switch,
     DevtronSwitchItem as SwitchItem,
     importComponentFromFELibrary,
 } from '@Components/common'
-import { OIDCType, SSOLoginProps, SSOLoginState, SSOConfigType, SSOLoginTabType } from './ssoConfig.types'
-import { getSSOConfig, createSSOList, updateSSOList, getSSOConfigList } from './service'
-import { ViewType, URLS, SwitchItemValues, HEADER_TEXT, DOCUMENTATION } from '../../../../config'
 
-import '@Components/login/login.scss'
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-
-import sample from './sampleSSOConfig.json'
-
+import { DOCUMENTATION, HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
 import {
     AUTHORIZATION_CONFIG_TYPES,
-    SSOProvider,
     autoAssignPermissionsFlowActiveProviders,
     ssoDocumentationMap,
+    SSOProvider,
     ssoProviderToDisplayNameMap,
     SsoSecretsToHide,
 } from './constants'
+import sample from './sampleSSOConfig.json'
+import { createSSOList, getSSOConfig, getSSOConfigList, updateSSOList } from './service'
+import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType } from './ssoConfig.types'
+
+import '@Components/login/login.scss'
 import './ssoLogin.scss'
 
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
@@ -666,9 +665,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div
-                className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
-            >
+            <div className="w-100 code-editor__text">
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -679,9 +676,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div
-                    className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
-                >
+                <div className="w-100 code-editor__text">
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -690,33 +685,20 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
-        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
             <CodeEditor.Container>
                 <CodeEditor
                     mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    codeEditorProps={{
-                        value: codeEditorBody,
-                        shebang: shebangHtml,
-                        lineDecorationsWidth:
-                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0,
-                        onChange: this.handleConfigChange,
-                        onBlur: this.handleOnBlur,
-                        adjustEditorHeightToContent: true,
-                    }}
-                    codeMirrorProps={{
-                        value: codeEditorBody,
-                        shebang: shebangHtml,
-                        onChange: this.handleConfigChange,
-                        onBlur: this.handleOnBlur,
-                        height: 'auto',
-                    }}
+                    value={codeEditorBody}
+                    shebang={shebangHtml}
+                    onChange={this.handleConfigChange}
+                    onBlur={this.handleOnBlur}
+                    height="auto"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
-                            <CodeEditor.ValidationError />
                             <div className="dc__no-shrink ml-auto">
                                 <Switch
                                     value={this.state.configMap}
@@ -808,14 +790,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         />
                     ))}
                 </div>
-                <div className="flex-grow-1 w-100">
-                    <InfoColourBar
-                        message={renderInfoText()}
-                        classname="question-bar w-100 dc__mw-600"
-                        iconClass="icon-dim-20 fcv-5"
-                        Icon={Help}
-                    />
-                </div>
+                <InfoBlock variant="help" description={renderInfoText()} />
                 <div className="flex-grow-1 w-100">
                     <CustomInput
                         value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}

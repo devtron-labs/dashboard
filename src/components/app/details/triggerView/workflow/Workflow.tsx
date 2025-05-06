@@ -33,7 +33,6 @@ import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
 import { WorkflowProps, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
-import DeprecatedPipelineWarning from '../../../../workflowEditor/DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 import { TriggerViewContext } from '../config'
 
@@ -124,7 +123,7 @@ export class Workflow extends Component<WorkflowProps> {
                 key={`webhook-${node.id}`}
                 id={node.id}
                 isTemplateView={false}
-                addImageButtonConfig={{ show: true, onClick: this.props.handleWebhookAddImageClick }}
+                addImageButtonClick={this.props.handleWebhookAddImageClick}
             />
         )
     }
@@ -330,11 +329,14 @@ export class Workflow extends Component<WorkflowProps> {
 
     renderEdgeList() {
         const edges = this.getEdges()
-        return edges.map((edgeNode) => {
+        // In the SVG, the bottom elements are rendered on top.
+        // By reversing, this prevents the path elements (workflow arrows) from overlapping and covering other elements
+        // like the ApprovalNode button or add node button, which are rendered earlier.
+        return edges.reverse().map((edgeNode) => {
             if (ApprovalNodeEdge) {
                 return (
                     <ApprovalNodeEdge
-                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
+                        key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
                         onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
@@ -361,10 +363,6 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     render() {
-        const isExternalCiWorkflow = this.props.nodes.some(
-            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
-        )
-
         const numberOfCDNodes = this.props.nodes.reduce((acc, node) => acc + (node.type === 'CD' ? 1 : 0), 0)
 
         return (
@@ -402,7 +400,6 @@ export class Workflow extends Component<WorkflowProps> {
                         </>
                     )}
                 </div>
-                {isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                 <div
                     className={`workflow__body bg__secondary dc__overflow-auto dc__border-n1 br-4 ${this.props.isSelected ? 'eb-2' : ''}`}
                 >

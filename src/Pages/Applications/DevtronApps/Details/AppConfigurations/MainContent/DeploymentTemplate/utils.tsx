@@ -14,19 +14,25 @@
  * limitations under the License.
  */
 
+import YAML from 'yaml'
+
 import {
     applyCompareDiffOnUneditedDocument,
+    CONFIG_HEADER_TAB_VALUES,
+    ConfigHeaderTabType,
+    DeploymentTemplateConfigState,
     DryRunEditorMode,
     getGuiSchemaFromChartName,
+    OverrideMergeStrategyType,
     ResponseType,
     YAMLStringify,
-    DeploymentTemplateConfigState,
-    OverrideMergeStrategyType,
-    ConfigHeaderTabType,
-    CONFIG_HEADER_TAB_VALUES,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
-import YAML from 'yaml'
+
+import { DEFAULT_MERGE_STRATEGY } from '../constants'
+import { CompareConfigViewProps, EnvOverrideEditorCommonStateType } from '../types'
+import { CHART_NAME_TO_DOC_SEGMENT, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
 import {
     BaseDeploymentTemplateParsedDraftDTO,
     ConfigEditorStatesType,
@@ -44,9 +50,6 @@ import {
     UpdateBaseDTPayloadType,
     UpdateEnvironmentDTPayloadType,
 } from './types'
-import { CHART_NAME_TO_DOC_SEGMENT, PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO } from './constants'
-import { DEFAULT_MERGE_STRATEGY } from '../constants'
-import { CompareConfigViewProps, EnvOverrideEditorCommonStateType } from '../types'
 
 const removeLockedKeysFromYaml = importComponentFromFELibrary('removeLockedKeysFromYaml', null, 'function')
 const reapplyRemovedLockedKeysToYaml = importComponentFromFELibrary('reapplyRemovedLockedKeysToYaml', null, 'function')
@@ -484,11 +487,19 @@ export const handleInitializeDraftData = ({
     return response
 }
 
-export const getUpdateBaseDeploymentTemplatePayload = (
-    state: DeploymentTemplateStateType,
-    appId: number,
-    skipReadmeAndSchema: boolean,
-): UpdateBaseDTPayloadType => {
+export const getUpdateBaseDeploymentTemplatePayload = ({
+    state,
+    appId,
+    skipReadmeAndSchema,
+    isExpressEdit,
+    resourceName,
+}: {
+    state: DeploymentTemplateStateType
+    appId: number
+    skipReadmeAndSchema: boolean
+    isExpressEdit: boolean
+    resourceName: string
+}): UpdateBaseDTPayloadType => {
     const {
         currentEditorTemplateData,
         wasGuiOrHideLockedKeysEdited,
@@ -521,6 +532,9 @@ export const getUpdateBaseDeploymentTemplatePayload = (
                   schema: currentEditorTemplateData.schema,
               }
             : {}),
+
+        isExpressEdit,
+        resourceName,
     }
 }
 
@@ -528,6 +542,7 @@ export const getDeleteProtectedOverridePayload = (
     state: DeploymentTemplateStateType,
     envId: number,
     skipReadmeAndSchema: boolean,
+    resourceName: string,
 ): UpdateEnvironmentDTPayloadType => {
     const { baseDeploymentTemplateData, chartDetails, currentEditorTemplateData } = state
 
@@ -557,6 +572,7 @@ export const getDeleteProtectedOverridePayload = (
                   schema: baseDeploymentTemplateData.schema,
               }
             : {}),
+        resourceName,
     }
 }
 
@@ -564,6 +580,8 @@ export const getUpdateEnvironmentDTPayload = (
     state: DeploymentTemplateStateType,
     envId: number,
     skipReadmeAndSchema: boolean,
+    isExpressEdit: boolean,
+    resourceName: string,
 ): UpdateEnvironmentDTPayloadType => {
     const {
         currentEditorTemplateData,
@@ -609,6 +627,8 @@ export const getUpdateEnvironmentDTPayload = (
 
         mergeStrategy: currentEditorTemplateData.mergeStrategy,
         envOverrideValues: editorTemplateObject,
+        isExpressEdit,
+        resourceName,
     }
 }
 

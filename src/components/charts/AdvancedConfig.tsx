@@ -24,7 +24,6 @@ import {
     CodeEditor,
     MarkDown,
     MODES,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
 import { Select, mapByKey, useKeyDown, Info, Pencil } from '../common'
@@ -376,23 +375,15 @@ const AdvancedConfig: React.FC<AdvancedConfigProps> = ({
                     )}
                     <CodeEditor.Container>
                         <CodeEditor
-                            codeEditorProps={{
-                                value: valuesYaml,
-                                onChange: handleValuesYaml
+                            value={valuesYaml}
+                            height="auto"
+                            onChange={
+                                handleValuesYaml
                                     ? (valuesYaml) => {
                                           handleValuesYaml(index, valuesYaml)
                                       }
-                                    : () => {},
-                            }}
-                            codeMirrorProps={{
-                                value: valuesYaml,
-                                height: 'auto',
-                                onChange: handleValuesYaml
-                                    ? (valuesYaml) => {
-                                          handleValuesYaml(index, valuesYaml)
-                                      }
-                                    : () => {},
-                            }}
+                                    : () => {}
+                            }
                             noParsing
                             loading={loading}
                             readOnly={!handleValuesYaml}
@@ -503,16 +494,9 @@ const ReadmeCharts = ({ readme, valuesYaml, onChange, handleClose, chart }) => {
                             mode={MODES.YAML}
                             noParsing
                             readOnly={!onChange}
-                            codeEditorProps={{
-                                value: valuesYaml,
-                                height: '100%',
-                                onChange: onChange ? onChange : () => {},
-                            }}
-                            codeMirrorProps={{
-                                value: valuesYaml,
-                                height: '100%',
-                                onChange: onChange ? onChange : () => {},
-                            }}
+                            value={valuesYaml}
+                            height="100%"
+                            onChange={onChange ? onChange : () => {}}
                         />
                     </div>
                 </div>
@@ -650,34 +634,17 @@ const ValuesDiffViewer = ({
                         <Pencil style={{ marginLeft: 'auto' }} />
                     </h5>
                 </div>
-                <div
-                    {...(isCodeMirrorEnabled()
-                        ? {
-                              className: 'mw-none mh-0',
-                          }
-                        : {
-                              className: 'readme-config--body',
-                              style: { gridTemplateColumns: '1fr' },
-                          })}
-                >
+                <div className="mw-none mh-0">
                     <CodeEditor
                         mode={MODES.YAML}
                         noParsing
                         loading={loading && !originalValuesYaml}
                         readOnly={!onChange}
                         diffView
-                        codeEditorProps={{
-                            value: valuesYaml,
-                            defaultValue: originalValuesYaml,
-                            height: '100%',
-                            onChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
-                        }}
-                        codeMirrorProps={{
-                            modifiedValue: valuesYaml,
-                            originalValue: originalValuesYaml,
-                            height: '100%',
-                            onModifiedValueChange: onChange ? (valuesYaml) => onChange(valuesYaml) : () => {},
-                        }}
+                        modifiedValue={valuesYaml}
+                        originalValue={originalValuesYaml}
+                        height="100%"
+                        onModifiedValueChange={onChange ? (valuesYaml) => onChange(valuesYaml) : () => {}}
                     />
                 </div>
             </div>

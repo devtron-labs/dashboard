@@ -14,6 +14,7 @@ import {
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import  { SwitchThemeDialog } from '../src/Pages/Shared'
+import './storybook.css'
 
 const SwitchThemeDialogWrapper = () => {
     const { showThemeSwitcherDialog, themePreference, handleThemeSwitcherDialogVisibilityChange } = useTheme()
@@ -22,7 +23,7 @@ const SwitchThemeDialogWrapper = () => {
     }
 
     return (
-        showThemeSwitcherDialog ? <SwitchThemeDialog initialThemePreference={themePreference} handleClose={handleClose} disableAPICalls /> : null
+        showThemeSwitcherDialog ? <SwitchThemeDialog initialThemePreference={themePreference} handleClose={handleClose} disableAPICalls handleUpdateUserThemePreference={noop} /> : null
     )
 }
 
@@ -37,9 +38,7 @@ const preview: Preview = {
     },
     decorators: (Story) => {
         if (!window._env_) {
-            window._env_ = {
-                FEATURE_EXPERIMENTAL_THEMING_ENABLE: true,
-            } as customEnv
+            window._env_ = {} as customEnv
         }
 
         return (
@@ -58,6 +57,7 @@ const preview: Preview = {
                     <SwitchThemeDialogWrapper />
 
                     <div id="animated-dialog-backdrop" />
+                    <div id="visible-modal" />
 
                     <BaseConfirmationModal />
                 </ConfirmationModalProvider>
