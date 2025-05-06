@@ -47,7 +47,6 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         if (!bgUpdated && !showVersionUpdateToast) {
             return
         }
-
         dismissToast({ updateToastRef })
         updateToastRef.current = ToastManager.showToast(
             {
@@ -70,7 +69,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
     }, [bgUpdated])
 
     useEffect(() => {
-        console.log('inside versiion update reload use effect')
+        console.log('TODO: Remove later, Testing reload purpose')
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
@@ -89,19 +88,13 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         return 3
     })()
 
-    const handleUpdateServiceWorker = (updatedServiceWorker) => {
+    const handleUpdateServiceWorker = (updatedServiceWorker: typeof updateServiceWorker) => {
+        dismissToast({ updateToastRef })
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updatedServiceWorker(true)
     }
 
-    const handleAppUpdate = (updatedServiceWorker) => {
-        if (showVersionUpdateToast) {
-            dismissToast({ updateToastRef })
-        }
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        handleUpdateServiceWorker(updatedServiceWorker)
-    }
-
-    const handleNeedRefresh = (updatedServiceWorker) => {
+    const handleNeedRefresh = (updateServiceWorker) => {
         setDoesNeedRefresh(true)
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
@@ -117,7 +110,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
                     buttonProps: {
                         text: 'Reload',
                         dataTestId: 'reload-btn',
-                        onClick: () => handleAppUpdate(updatedServiceWorker),
+                        onClick: () => handleUpdateServiceWorker(updateServiceWorker),
                         startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
                     },
                     icon: <Icon name="ic-sparkle-color" color={null} />,
@@ -176,6 +169,15 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             handleNeedRefresh(updateServiceWorker)
         },
     })
+
+    const handleAppUpdate = () => {
+        if (showVersionUpdateToast) {
+            dismissToast({ updateToastRef })
+        }
+
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        updateServiceWorker(true)
+    }
 
     // Sync local state with the service worker's needRefresh state
     useEffect(() => {
