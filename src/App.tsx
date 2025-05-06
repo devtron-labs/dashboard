@@ -154,7 +154,7 @@ const App = () => {
                 <BreadcrumbStore>
                     <Switch>
                         {toastEligibleRoutes.map((path) => (
-                            <Route key={path} path={path} exact>
+                            <Route key={path} path={path}>
                                 {() => {
                                     if (isDirectApprovalNotification && GenericDirectApprovalModal) {
                                         return (
