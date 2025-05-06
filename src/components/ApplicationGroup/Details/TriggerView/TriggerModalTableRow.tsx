@@ -30,7 +30,7 @@ const DownloadManifestForVirtualEnvironmentButton = importComponentFromFELibrary
     'function',
 )
 
-export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: TriggerModalRowType) => {
+export const TriggerModalRow = ({ rowData, index, isVirtualEnv }: TriggerModalRowType) => {
     const { handleDownload } = useDownload()
 
     const renderStatusIcon = (responseRowData: ResponseRowType): JSX.Element => {
@@ -58,7 +58,8 @@ export const TriggerModalRow = ({ rowData, index, isVirtualEnv, envName }: Trigg
                 <DownloadManifestForVirtualEnvironmentButton
                     appId={rowData.appId}
                     envId={rowData.envId}
-                    appName={`${rowData.appName}-${envName}`}
+                    helmPackageName={rowData.helmPackageName}
+                    cdWorkflowType={rowData.cdWorkflowType}
                     handleDownload={handleDownload}
                     showSuccessfulToast={false}
                 />
