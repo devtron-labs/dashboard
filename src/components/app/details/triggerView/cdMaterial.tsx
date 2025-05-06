@@ -87,6 +87,8 @@ import {
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     SortingOrder,
     SegmentedControlProps,
+    Icon,
+    isNullOrUndefined,
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -120,7 +122,13 @@ import {
 } from './TriggerView.utils'
 import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
-import { getInitialState, getWfrId } from './cdMaterials.utils'
+import {
+    getCanDeployWithoutApproval,
+    getCanImageApproverDeploy,
+    getInitialState,
+    getIsMaterialApproved,
+    getWfrId,
+} from './cdMaterials.utils'
 import { URLS } from '../../../../config'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
 import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
@@ -315,6 +323,7 @@ const CDMaterial = ({
     )
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
+    const isExceptionUser = materialsResult?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
 
     const {
         pipelineDeploymentConfigLoading,
@@ -672,6 +681,14 @@ const CDMaterial = ({
     }
 
     const getConsumedAndAvailableMaterialList = (isApprovalConfigured: boolean) => {
+        if (isExceptionUser) {
+            return {
+                consumedImage: [],
+                materialList: material,
+                eligibleImagesCount: material.filter((mat) => mat.filterState === FilterStates.ALLOWED).length,
+            }
+        }
+
         let _consumedImage = []
         let materialList: CDMaterialType[] = []
 
@@ -1134,7 +1151,7 @@ const CDMaterial = ({
             )
         }
 
-        if (isApprovalConfigured && ApprovalEmptyState) {
+        if (ApprovalEmptyState && isApprovalConfigured && !isExceptionUser) {
             return (
                 <ApprovalEmptyState
                     className="dc__skip-align-reload-center"
@@ -1190,6 +1207,7 @@ const CDMaterial = ({
                 ) {
                     return (
                         <CDMaterialInfo
+                            key={index}
                             commitTimestamp={handleUTCTime(materialData.createdTime)}
                             appliedFiltersTimestamp={handleUTCTime(materialData.appliedFiltersTimestamp)}
                             envName={envName}
@@ -1227,7 +1245,7 @@ const CDMaterial = ({
                         _gitCommit.Message ||
                         _gitCommit.Date ||
                         _gitCommit.Commit) && (
-                        <div className="bg__primary br-4 en-2 bw-1 m-12">
+                        <div key={index} className="bg__primary br-4 en-2 bw-1 m-12">
                             <GitCommitInfoGeneric
                                 index={index}
                                 materialUrl={mat.url}
@@ -1268,7 +1286,7 @@ const CDMaterial = ({
                 </span>
             )
         }
-        if (disableSelection || (!canApproverDeploy && isImageApprover)) {
+        if (disableSelection || (!isExceptionUser && !canApproverDeploy && isImageApprover)) {
             return (
                 <Tippy
                     className="default-tt w-200"
@@ -1287,12 +1305,7 @@ const CDMaterial = ({
             )
         }
         if (mat.isSelected) {
-            return (
-                <Check
-                    className={`${shouldRenderExpireApproval ? '' : 'dc__align-right'} icon-dim-24 cursor`}
-                    data-testid={`cd-artifact-selected-check-${mat.index}`}
-                />
-            )
+            return <Icon name="ic-selected" color="B500" size={24} />
         }
         const cursorClass = mat.isSelected ? 'cursor-default' : 'cursor'
         const selectClassName = mat.vulnerable ? 'cursor-not-allowed' : cursorClass
@@ -1314,8 +1327,15 @@ const CDMaterial = ({
     const renderCTA = ({ mat, disableSelection }: RenderCTAType) => {
         const isApprovalRequester = getIsApprovalRequester(mat.userApprovalMetadata)
         const isImageApprover = getIsImageApprover(mat.userApprovalMetadata)
+        const isMaterialApproved = getIsMaterialApproved(mat.userApprovalMetadata)
+
         const shouldRenderExpireApproval =
-            materialType !== MATERIAL_TYPE.none && isApprovalRequester && !isImageApprover && !disableSelection
+            materialType !== MATERIAL_TYPE.none &&
+            isApprovalRequester &&
+            !isImageApprover &&
+            !disableSelection &&
+            isMaterialApproved &&
+            mat.userApprovalMetadata?.canCurrentUserApprove
 
         return (
             <>
@@ -1360,6 +1380,7 @@ const CDMaterial = ({
                 requestedUserId={requestedUserId}
                 userApprovalMetadata={mat.userApprovalMetadata}
                 reloadMaterials={reloadMaterials}
+                isExceptionUser={isExceptionUser}
             />
         ) : null,
     })
@@ -1419,7 +1440,8 @@ const CDMaterial = ({
                 !disableSelection &&
                 (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
                 isApprovalConfigured &&
-                ApprovalInfoTippy
+                ApprovalInfoTippy &&
+                !isNullOrUndefined(mat.userApprovalMetadata.approvalRuntimeState)
             const imageCardRootClassName =
                 mat.isSelected && !disableSelection && !isImageApprover ? 'material-history-selected' : ''
 
@@ -1509,7 +1531,7 @@ const CDMaterial = ({
         const { consumedImage, materialList, eligibleImagesCount } =
             getConsumedAndAvailableMaterialList(isApprovalConfigured)
         const selectImageTitle = state.isRollbackTrigger ? 'Select from previously deployed images' : 'Select Image'
-        const titleText = isApprovalConfigured ? 'Approved images' : selectImageTitle
+        const titleText = isApprovalConfigured && !isExceptionUser ? 'Approved images' : selectImageTitle
         const showActionBar =
             FilterActionBar && !state.searchApplied && !!resourceFilters?.length && !state.showConfiguredFilters
 
@@ -1594,7 +1616,8 @@ const CDMaterial = ({
             case STAGE_TYPE.CD:
                 return (
                     <>
-                        Deploy to <span className="fw-6">{envName}</span>
+                        Deploy to &nbsp;
+                        <span className="fw-6">{`${envName}${isVirtualEnvironment ? ' (Isolated)' : ''}`}</span>
                     </>
                 )
             case STAGE_TYPE.POSTCD:
@@ -1676,13 +1699,26 @@ const CDMaterial = ({
 
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
         const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
-        if (
+        const canDeployWithoutApproval = getCanDeployWithoutApproval(state, isExceptionUser)
+        const canImageApproverDeploy = getCanImageApproverDeploy(state, canApproverDeploy, isExceptionUser)
+
+        const showAnimatedDeployButton =
             stageType === DeploymentNodeType.CD &&
             !disableDeployButton &&
-            (userActionState ? userActionState === ACTION_STATE.ALLOWED : true) &&
-            !(deploymentLoading || isSaveLoading)
-        ) {
-            return <AnimatedDeployButton onButtonClick={onClickDeploy} isVirtualEnvironment={isVirtualEnvironment} />
+            (!userActionState || userActionState === ACTION_STATE.ALLOWED)
+
+        if (showAnimatedDeployButton) {
+            return (
+                <AnimatedDeployButton
+                    isLoading={deploymentLoading || isSaveLoading}
+                    onButtonClick={onClickDeploy}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                    exceptionUserConfig={{
+                        canDeploy: canDeployWithoutApproval,
+                        isImageApprover: canImageApproverDeploy,
+                    }}
+                />
+            )
         }
         return (
             <Button
@@ -1704,7 +1740,10 @@ const CDMaterial = ({
     const renderTriggerModalCTA = (isApprovalConfigured: boolean) => {
         const disableDeployButton =
             isDeployButtonDisabled() ||
-            (material.length > 0 && getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
+            (!isExceptionUser &&
+                material.length > 0 &&
+                !canApproverDeploy &&
+                getIsImageApprover(state.selectedMaterial?.userApprovalMetadata))
         const hideConfigDiffSelector = isApprovalConfigured && disableDeployButton
 
         return (
@@ -1838,6 +1877,7 @@ const CDMaterial = ({
 
             {/* FIXME: This material.length>1 needs to be optimised */}
             {isApprovalConfigured &&
+                !isExceptionUser &&
                 ApprovedImagesMessage &&
                 (state.isRollbackTrigger || material.length - Number(isConsumedImageAvailable) > 0) && (
                     <InfoBlock

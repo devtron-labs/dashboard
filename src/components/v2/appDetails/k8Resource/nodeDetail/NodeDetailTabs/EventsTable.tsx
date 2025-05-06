@@ -14,16 +14,40 @@
  * limitations under the License.
  */
 
-import moment from 'moment'
+import {
+    AppThemeType,
+    getComponentSpecificThemeClass,
+    getTimeDifference,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { AppThemeType, getComponentSpecificThemeClass } from '@devtron-labs/devtron-fe-common-lib'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
 import { EventTableType } from './node.type'
 
-export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorValue, reconnect }: EventTableType) => {
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
+
+const EVENTS_TABLE_HEADERS = [
+    '',
+    'Reason',
+    'Message',
+    'Count',
+    'Age',
+    'Last Seen',
+    ...(ExplainWithAIButton ? [''] : []),
+]
+
+export const EventsTable = ({
+    loading,
+    eventsList,
+    errorValue,
+    reconnect,
+    clusterId,
+    aiWidgetAnalyticsEvent,
+}: EventTableType) => {
     const renderEventsTable = () => {
         if (loading) {
             return (
@@ -50,45 +74,54 @@ export const EventsTable = ({ loading, eventsList, isResourceBrowserView, errorV
                             </u>
                         </div>
                     )}
-                    <table className="table pl-20">
-                        <thead
-                            className="dc__position-sticky dc__top-0"
-                            style={{
-                                minHeight: isResourceBrowserView ? '200px' : '600px',
-                                background: 'var(--terminal-bg)',
-                            }}
-                        >
-                            <tr className="no-events-border pl-20 event-row">
-                                {['reason', 'message', 'count', 'last timestamp'].map((head, idx) => (
-                                    <th
-                                        // eslint-disable-next-line react/no-array-index-key
-                                        key={`eh_${idx}`}
-                                        className={`cell-style dc__uppercase ${head}${idx === 0 && ' pad-left-20'}`}
-                                        data-testid={head}
-                                    >
-                                        {head}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {eventsList.map((event, index) => (
-                                <tr
-                                    className={`no-events-border pl-20 event-row ${index % 2 === 0 && 'alternate-row'}`}
-                                    // eslint-disable-next-line react/no-array-index-key
-                                    key={`eb_${index}`}
-                                >
-                                    <td className="cell-style reason pad-left-20">{event.reason}</td>
-                                    <td className="cell-style message">{event.message}</td>
-                                    <td className="cell-style count">{event.count}</td>
-                                    <td className="cell-style timestamp">
-                                        {event.lastTimestamp &&
-                                            moment.utc(event.lastTimestamp).local().format('YYYY-MM-DD HH:mm:ss')}
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                    <div
+                        className={`dc__position-sticky dc__top-0 px-16 py-8 dc__grid dc__gap-16 event-row ${ExplainWithAIButton ? 'ai-widget' : ''}`}
+                    >
+                        {EVENTS_TABLE_HEADERS.map((header, idx) => (
+                            // eslint-disable-next-line react/no-array-index-key
+                            <span className="fs-12 lh-1-5 fw-6 dc__uppercase" key={`${header}-${idx}`}>
+                                {header}
+                            </span>
+                        ))}
+                    </div>
+                    {eventsList.map((event, index) => {
+                        const { type, reason, message, count, firstTimestamp, lastTimestamp } = event
+
+                        const currentTimeStamp = new Date().toISOString()
+                        const lastSeen = getTimeDifference({ startTime: lastTimestamp, endTime: currentTimeStamp })
+                        const age = getTimeDifference({ startTime: firstTimestamp, endTime: currentTimeStamp })
+
+                        const isNormalEventType = type === 'Normal'
+                        return (
+                            <div
+                                key={`${reason}-${message}`}
+                                className={`px-16 py-12 fs-14 fw-4 lh-1-5 dc__grid dc__gap-16 event-row ${ExplainWithAIButton ? 'ai-widget' : ''} ${index % 2 === 0 && 'alternate-row'}`}
+                            >
+                                <Icon
+                                    name={isNormalEventType ? 'ic-info-filled' : 'ic-warning'}
+                                    size={20}
+                                    color={isNormalEventType ? 'B500' : null}
+                                />
+                                <span>{reason}</span>
+                                <span>{message}</span>
+                                <span>{count}</span>
+                                <span>{age}</span>
+                                <span>{lastSeen}</span>
+                                {clusterId && ExplainWithAIButton && !isNormalEventType ? (
+                                    <ExplainWithAIButton
+                                        intelligenceConfig={{
+                                            metadata: { reason, message, count, lastSeen, age },
+                                            clusterId,
+                                            prompt: JSON.stringify(event),
+                                            analyticsCategory: aiWidgetAnalyticsEvent,
+                                        }}
+                                    />
+                                ) : (
+                                    <span />
+                                )}
+                            </div>
+                        )
+                    })}
                 </div>
             )
         }

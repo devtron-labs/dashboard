@@ -46,7 +46,6 @@ export interface BaseResourceListProps
             | 'selectedCluster'
             | 'selectedResource'
             | 'clusterName'
-            | 'setWidgetEventDetails'
             | 'lowercaseKindToResourceGroupMap'
         >,
         Pick<SidebarType, 'updateK8sResourceTab'> {

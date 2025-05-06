@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import {
     showError,
@@ -22,6 +22,8 @@ import {
     ErrorScreenManager,
     ServerErrors,
     DeploymentAppTypes,
+    getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
@@ -40,10 +42,14 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     let initTimer = null
     let isAPICallInProgress = false
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     // component load
     useEffect(() => {
         _init()
         return (): void => {
+            abortControllerRef.current.abort()
+
             if (initTimer) {
                 clearTimeout(initTimer)
             }
@@ -62,17 +68,18 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
 
     const _init = () => {
         if (!isAPICallInProgress) {
-            _getAndSetAppDetail()
+            _getAndSetAppDetail(true)
         }
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
-    const _getAndSetAppDetail = async () => {
+    const _getAndSetAppDetail = async (shouldTriggerPolling: boolean = false) => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getArgoAppDetail(appName, clusterId, namespace)
+
+        abortPreviousRequests(
+            () => getArgoAppDetail({ appName, clusterId, namespace, abortControllerRef }),
+            abortControllerRef,
+        )
             .then((appDetailResponse) => {
                 const genericAppDetail: AppDetails = {
                     ...appDetailResponse.result,
@@ -82,13 +89,21 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 setErrorResponseCode(undefined)
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
             })
             .finally(() => {
                 setIsLoading(false)
                 isAPICallInProgress = false
                 setIsReloadResourceTreeInProgress(false)
+
+                if (shouldTriggerPolling) {
+                    initTimer = setTimeout(() => {
+                        _init()
+                    }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+                }
             })
     }
 

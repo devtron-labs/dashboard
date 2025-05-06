@@ -35,7 +35,6 @@ const K8SResourceTabComponent = ({
     isOpen,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
-    setWidgetEventDetails,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
@@ -96,7 +95,6 @@ const K8SResourceTabComponent = ({
                 isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
-                setWidgetEventDetails={setWidgetEventDetails}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             />
         </div>

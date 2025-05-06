@@ -41,6 +41,8 @@ import {
     LicenseInfoDialogType,
     DevtronLicenseInfo,
     useUserPreferences,
+    AboutDevtronDialog,
+    IntelligenceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -72,26 +74,12 @@ import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.u
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
-// Monaco Editor worker dependency
-import 'monaco-editor'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 import { EnvironmentDataStateType } from './types'
-
-// Monaco Editor worker initialization
-self.MonacoEnvironment = {
-    getWorker(_, label) {
-        if (label === MODES.YAML) {
-            return new YamlWorker()
-        }
-        return new editorWorker()
-    },
-}
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -125,11 +113,13 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const EnterpriseLicenseBar = importComponentFromFELibrary('EnterpriseLicenseBar', null, 'function')
+const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 
 export default function NavigationRoutes() {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
+    const navRouteRef = useRef<HTMLDivElement>()
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -157,6 +147,8 @@ export default function NavigationRoutes() {
 
     const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
+    const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
+
     const {
         userPreferences,
         userPreferencesError,
@@ -350,7 +342,8 @@ export default function NavigationRoutes() {
                     result.canOnlyViewPermittedEnvOrgLevel ??
                     ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
+                canFetchHelmAppStatus:
+                    result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ??
                     ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
@@ -438,6 +431,23 @@ export default function NavigationRoutes() {
 
     const showStackManager = !devtronManagedLicensingEnabled
 
+    const renderAboutDevtronDialog = () => {
+        if (!licenseInfoDialogType) {
+            return null
+        }
+        return licenseData && LicenseInfoDialog ? (
+            <LicenseInfoDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                initialDialogType={licenseInfoDialogType}
+            />
+        ) : (
+            <AboutDevtronDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                isFELibAvailable={!!LicenseInfoDialog}
+            />
+        )
+    }
+
     return (
         <MainContextProvider
             value={{
@@ -475,6 +485,8 @@ export default function NavigationRoutes() {
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                intelligenceConfig,
+                setIntelligenceConfig,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -485,13 +497,7 @@ export default function NavigationRoutes() {
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
-                {licenseInfoDialogType && LicenseInfoDialog && (
-                    <LicenseInfoDialog
-                        handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
-                        currentVersion={currentServerInfo.serverInfo?.currentVersion}
-                        initialDialogType={licenseInfoDialogType}
-                    />
-                )}
+                {renderAboutDevtronDialog()}
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
@@ -509,6 +515,7 @@ export default function NavigationRoutes() {
                 {serverMode && (
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
+                        ref={navRouteRef}
                     >
                         {/* To be replaced with Announcement Banner */}
                         {EnterpriseLicenseBar && <EnterpriseLicenseBar />}
@@ -632,6 +639,9 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
                                     </Switch>
+                                    {AIResponseWidget && intelligenceConfig && (
+                                        <AIResponseWidget parentRef={navRouteRef} />
+                                    )}
                                 </ErrorBoundary>
                             </Suspense>
                         </div>

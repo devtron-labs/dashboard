@@ -28,7 +28,7 @@ import {
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
-    WidgetEventDetails,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
@@ -70,7 +70,6 @@ import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import { getFirstResourceFromKindResourceMap } from './utils'
 
-const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
@@ -136,8 +135,8 @@ const ResourceList = () => {
         getTabById,
     } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
-    const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
+    const { setIntelligenceConfig } = useMainContext()
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
         () => getResourceGroupListRaw(clusterId),
@@ -196,7 +195,13 @@ const ResourceList = () => {
         initTabs(_tabs, reInit, null)
     }
 
-    useEffect(() => initTabsBasedOnRole(false), [])
+    useEffect(() => {
+        initTabsBasedOnRole(false)
+
+        return () => {
+            setIntelligenceConfig(null)
+        }
+    }, [])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffect(() => {
@@ -219,8 +224,7 @@ const ResourceList = () => {
             return
         }
 
-        // Close holmesGPT Response Widget on cluster change
-        setWidgetEventDetails(null)
+        setIntelligenceConfig(null)
 
         /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
@@ -463,20 +467,10 @@ const ResourceList = () => {
                         isOpen
                         updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
                         updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-                        setWidgetEventDetails={setWidgetEventDetails}
                         clusterName={selectedCluster.label}
                         lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                     />
                 </Route>
-
-                {EventsAIResponseWidget && widgetEventDetails && (
-                    <EventsAIResponseWidget
-                        parentRef={resourceBrowserRef}
-                        handleResourceClick={handleResourceClick}
-                        widgetEventDetails={widgetEventDetails}
-                        setWidgetEventDetails={setWidgetEventDetails}
-                    />
-                )}
             </>
         )
     }

@@ -255,26 +255,11 @@ const DeploymentTemplateForm = ({
                     mode={MODES.YAML}
                     readOnly={readOnly}
                     noParsing
-                    codeEditorProps={{
-                        value: editedDocument,
-                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
-                            selectedChart?.name,
-                            selectedChart?.version,
-                        ),
-                        onChange: readOnly ? noop : editorOnChange,
-                        validatorSchema: schema,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: editedDocument,
-                        schemaURI: getEditorSchemaURIFromChartNameAndVersion(
-                            selectedChart?.name,
-                            selectedChart?.version,
-                        ),
-                        onChange: readOnly ? noop : editorOnChange,
-                        validatorSchema: schema,
-                        height: '100%',
-                    }}
+                    value={editedDocument}
+                    schemaURI={getEditorSchemaURIFromChartNameAndVersion(selectedChart?.name, selectedChart?.version)}
+                    onChange={readOnly ? noop : editorOnChange}
+                    validatorSchema={schema}
+                    height="100%"
                 >
                     {renderEditorHeader()}
                 </CodeEditor>

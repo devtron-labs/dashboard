@@ -26,7 +26,6 @@ import {
     OptionType,
     ResourceDetail,
     SelectedResourceType,
-    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
@@ -112,7 +111,6 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
     addTab: UseTabsReturnType['addTab']
-    setWidgetEventDetails: React.Dispatch<WidgetEventDetails>
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
 }
@@ -154,11 +152,12 @@ export interface ResourceListEmptyStateType {
     actionHandler?: () => void
 }
 
-export interface EventListType extends Pick<K8SResourceListType, 'setWidgetEventDetails'> {
+export interface EventListType {
     listRef: React.MutableRefObject<HTMLDivElement>
     filteredData: K8sResourceDetailType['data']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
     searchText: string
+    clusterId: string
 }
 
 export interface ConnectingToClusterStateProps {
@@ -185,7 +184,7 @@ export interface K8sObjectOptionType extends OptionType {
 
 export interface K8SResourceTabComponentProps
     extends Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<K8SResourceListType, 'setWidgetEventDetails' | 'clusterName' | 'lowercaseKindToResourceGroupMap'>,
+        Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'>,
         Pick<UseTabsReturnType, 'markTabActiveById'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
@@ -277,3 +276,11 @@ export interface GetResourceDataType {
     filters: Record<string, unknown>
     abortControllerRef: RefObject<AbortController>
 }
+
+export type ShowAIButtonConfig = { column: string } & (
+    | {
+          includeValues: Set<string>
+          excludeValues?: never
+      }
+    | { excludeValues: Set<string>; includeValues?: never }
+)

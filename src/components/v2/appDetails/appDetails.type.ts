@@ -384,7 +384,8 @@ export interface NodeDetailPropsType
     isExternalApp?: boolean
 }
 
-export interface LogsComponentProps extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
+export interface LogsComponentProps
+    extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
     selectedTab: (_tabName: string, _url?: string) => void
     isDeleted: boolean
     ephemeralContainerType?: string
@@ -447,6 +448,8 @@ export interface ResourceInfoActionPropsType {
     isDeleted: boolean
     isResourceBrowserView?: boolean
     selectedResource?: SelectedResourceType
+    clusterId: number
+    aiWidgetEventDetails: string
 }
 
 export interface ManifestViewRefType {
@@ -474,7 +477,7 @@ export enum ManifestCodeEditorMode {
     CANCEL = 'cancel',
 }
 
-export interface ManifestActionPropsType extends ResourceInfoActionPropsType {
+export interface ManifestActionPropsType extends Omit<ResourceInfoActionPropsType, 'clusterId' | 'aiWidgetEventDetails'> {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>
@@ -503,7 +506,9 @@ export interface NodeTreeDetailTabProps {
     isVirtualEnvironment: boolean
 }
 
-export interface NodeComponentProps extends Pick<UseTabsReturnType, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
+export interface NodeComponentProps
+    extends Pick<UseTabsReturnType, 'addTab'>,
+        Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
     externalLinks: ExternalLink[]
     monitoringTools: OptionTypeWithIcon[]
     isDevtronApp?: boolean
@@ -511,7 +516,9 @@ export interface NodeComponentProps extends Pick<UseTabsReturnType, 'addTab'>, P
     isDeploymentBlocked?: boolean
 }
 
-export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addTab'>, Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'>  {
+export interface K8ResourceComponentProps
+    extends Pick<NodeComponentProps, 'addTab'>,
+        Pick<NodeDeleteComponentType, 'removeTabByIdentifier' | 'tabs'> {
     clickedNodes: Map<string, string>
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
     externalLinks: ExternalLink[]
@@ -523,8 +530,8 @@ export interface K8ResourceComponentProps extends Pick<NodeComponentProps, 'addT
     handleUpdateK8sResourceTabUrl: (props: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 
-export interface AppDetailsComponentType extends
-    Pick<NodeTreeDetailTabProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
+export interface AppDetailsComponentType
+    extends Pick<NodeTreeDetailTabProps, 'handleReloadResourceTree' | 'isReloadResourceTreeInProgress'> {
     externalLinks?: ExternalLink[]
     monitoringTools?: OptionTypeWithIcon[]
     isExternalApp: boolean
@@ -539,6 +546,7 @@ export interface NodeDeleteComponentType extends Pick<UseTabsReturnType, 'tabs' 
     isDeploymentBlocked: boolean
 }
 
-export interface NodeDetailComponentWrapperProps extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId' | 'updateTabUrl'> {
+export interface NodeDetailComponentWrapperProps
+    extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId' | 'updateTabUrl'> {
     nodeDetailComponentProps: Omit<NodeDetailPropsType, 'updateTabUrl'>
 }
