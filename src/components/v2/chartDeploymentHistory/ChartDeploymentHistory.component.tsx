@@ -85,14 +85,12 @@ const ChartDeploymentHistory = ({
     isExternal,
     isVirtualEnvironment,
     isLoadingDetails,
-    helmAppPackageName,
 }: {
     appId: string
     appName?: string
     isExternal: boolean
     isVirtualEnvironment?: boolean
     isLoadingDetails?: boolean
-    helmAppPackageName?: string
 }) => {
     const params = useParams<{ envId: string }>()
     const [isLoading, setIsLoading] = useState(true)
@@ -503,7 +501,7 @@ const ChartDeploymentHistory = ({
         const paramsData = {
             appId,
             envId: params.envId,
-            appName: helmAppPackageName,
+            appName: deployment.helmPackageName,
             workflowId: deployment.version,
             isHelmApp: true,
         }
@@ -603,7 +601,7 @@ const ChartDeploymentHistory = ({
                     renderCodeEditor()}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && VirtualHistoryArtifact && (
                     <VirtualHistoryArtifact
-                        titleName={`${helmAppPackageName}.tgz`}
+                        titleName={deployment.helmPackageName}
                         params={paramsData}
                         status={deployment.status}
                     />

@@ -874,14 +874,13 @@ export default function BulkCDTrigger({
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bg__primary bulk-ci-trigger-container">
-                <div className='flexbox-col flex-grow-1 dc__overflow-hidden'>
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                     {renderHeaderSection()}
                     {responseListLength ? (
                         <TriggerResponseModalBody
                             responseList={responseList}
                             isLoading={isLoading}
                             isVirtualEnv={isVirtualEnv}
-                            envName={selectedApp.envName}
                         />
                     ) : (
                         renderBodySection()

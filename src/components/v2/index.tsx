@@ -52,7 +52,6 @@ const RouterComponent = ({ envType }) => {
     })
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [loadingResourceTree, setLoadingResourceTree] = useState(false)
-    const [helmAppPackageName, setHelmAppPackageName] = useState('')
     // NOTE: this might seem like a duplicate of loadingResourceTree
     // but its not since loadingResourceTree runs a loader on the whole page
     // maybe we can rename loadingResourceTree
@@ -128,7 +127,6 @@ const RouterComponent = ({ envType }) => {
                 .then((response) => {
                     handlePublishAppDetails(response)
                     isVirtualRef.current = response.result?.isVirtualEnvironment
-                    setHelmAppPackageName(response.result?.helmPackageName)
                     if (fetchExternalLinks) {
                         getExternalLinksAndTools(response.result?.clusterId)
                     }
@@ -253,7 +251,6 @@ const RouterComponent = ({ envType }) => {
                                     isExternal={false}
                                     isLoadingDetails={loadingDetails}
                                     isVirtualEnvironment={isVirtualRef.current}
-                                    helmAppPackageName={helmAppPackageName}
                                 />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />

@@ -109,6 +109,7 @@ import {
     BulkCIDetailType,
     ProcessWorkFlowStatusType,
     ResponseRowType,
+    TriggerVirtualEnvResponseRowType,
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
@@ -1537,6 +1538,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.PASS],
                             BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
                         )
+
+                        const virtualEnvResponseRowType: TriggerVirtualEnvResponseRowType =
+                            [DeploymentNodeType.CD, DeploymentNodeType.POSTCD, DeploymentNodeType.PRECD].includes(
+                                bulkTriggerType,
+                            ) && isVirtualEnv
+                                ? {
+                                      isVirtual: true,
+                                      helmPackageName: response.value?.result?.helmPackageName,
+                                      cdWorkflowType: bulkTriggerType,
+                                  }
+                                : {}
+
                         _responseList.push({
                             appId: triggeredAppList[index].appId,
                             appName: triggeredAppList[index].appName,
@@ -1544,6 +1557,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             status: BulkResponseStatus.PASS,
                             envId: triggeredAppList[index].envId,
                             message: '',
+                            ...virtualEnvResponseRowType,
                         })
                     } else {
                         const errorReason = response.reason
