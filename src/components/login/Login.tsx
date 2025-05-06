@@ -181,7 +181,16 @@ const Login = () => {
     return (
         <div className="full-height-width login dc__grid-half bg__secondary">
             <div className="flexbox p-12">
-                <LoginBanner />
+                {window._env_.LOGIN_PAGE_IMAGE ? (
+                    <div
+                        style={{
+                            backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})`,
+                        }}
+                        className="login-image-container flex br-12 border__primary bg__primary h-100 w-100"
+                    />
+                ) : (
+                    <LoginBanner />
+                )}
             </div>
             <div className="flex">
                 <div className="login-card__wrapper dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
