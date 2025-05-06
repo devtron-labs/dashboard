@@ -46,5 +46,4 @@ export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO,
 
 export interface NavigationRoutesTypes {
     reloadVersionConfig: ReloadVersionConfigTypes
-    hideVersionUpdateToast: () => void
 }
