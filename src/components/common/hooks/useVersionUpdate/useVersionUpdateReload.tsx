@@ -102,9 +102,8 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
         }
-
+        dismissToast({ updateToastRef })
         if (showVersionUpdateToast) {
-            dismissToast({ updateToastRef })
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,
