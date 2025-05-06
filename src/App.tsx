@@ -29,6 +29,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
+import { VersionUpdateProps } from '@Components/common/hooks/useVersionUpdate/types'
 import ActivateLicense from '@Pages/License/ActivateLicense'
 
 import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
@@ -68,17 +69,28 @@ const App = () => {
         }
     }
 
-    const toastEligibleRoutes = [`/${approvalType?.toLowerCase()}/approve`, CommonURLS.LICENSE_AUTH, URLS.LOGIN]
+    const toastEligibleRoutes: VersionUpdateProps['toastEligibleRoutes'] = [
+        {
+            path: `/${approvalType?.toLowerCase()}/approve`,
+            exact: true,
+            condition: isDirectApprovalNotification && GenericDirectApprovalModal,
+            component: <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />,
+        },
+        {
+            path: CommonURLS.LICENSE_AUTH,
+            exact: false,
+            condition: true,
+            component: <ActivateLicense />,
+        },
+        {
+            path: URLS.LOGIN,
+            exact: false,
+            condition: !window._env_.K8S_CLIENT,
+            component: <Login />,
+        },
+    ]
 
-    const {
-        bgUpdated,
-        handleAppUpdate,
-        doesNeedRefresh,
-        updateServiceWorker,
-        handleControllerChange,
-        updateToastRef,
-        isRefreshing,
-    } = useVersionUpdateReload({
+    const reloadVersionConfig = useVersionUpdateReload({
         toastEligibleRoutes,
     })
 
@@ -134,16 +146,6 @@ const App = () => {
         }
     }, [])
 
-    const reloadVersionConfig = {
-        handleAppUpdate,
-        doesNeedRefresh,
-        updateServiceWorker,
-        handleControllerChange,
-        bgUpdated,
-        updateToastRef,
-        isRefreshing,
-    }
-
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
             <div className="full-height-width bg__tertiary">
@@ -153,24 +155,13 @@ const App = () => {
             <ErrorBoundary>
                 <BreadcrumbStore>
                     <Switch>
-                        {toastEligibleRoutes.map((path) => (
-                            <Route key={path} path={path}>
-                                {() => {
-                                    if (isDirectApprovalNotification && GenericDirectApprovalModal) {
-                                        return (
-                                            <GenericDirectApprovalModal
-                                                approvalType={approvalType}
-                                                approvalToken={approvalToken}
-                                            />
-                                        )
-                                    }
-                                    if (path === CommonURLS.LICENSE_AUTH) return <ActivateLicense />
-                                    if (!window._env_.K8S_CLIENT && path === URLS.LOGIN) return <Login />
-                                    return null
-                                }}
-                            </Route>
-                        ))}
-
+                        {toastEligibleRoutes.map(({ exact, path, condition, component }) =>
+                            condition ? (
+                                <Route key={path} path={path} exact={exact}>
+                                    {component}
+                                </Route>
+                            ) : null,
+                        )}
                         <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+// eslint-disable-next-line import/no-unresolved
 import { useRegisterSW } from 'virtual:pwa-register/react'
 
 import {
@@ -29,6 +30,11 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
 
     const updateToastRef = useRef(null)
 
+    const toastEligibleRoutesMap = toastEligibleRoutes.reduce((acc, { path }) => {
+        acc[path] = true
+        return acc
+    }, {})
+
     const serviceWorkerTimeout = (() => {
         const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
         if (parsedTimeout) {
@@ -50,7 +56,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             localStorage.removeItem('serverInfo')
         }
         dismissToast({ updateToastRef })
-        if (toastEligibleRoutes.includes(location.pathname)) {
+        if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,
@@ -144,7 +150,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return
         }
         dismissToast({ updateToastRef })
-        if (toastEligibleRoutes.includes(location.pathname)) {
+        if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
                     variant: ToastVariantType.info,

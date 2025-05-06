@@ -1,3 +1,8 @@
 export interface VersionUpdateProps {
-    toastEligibleRoutes?: string[]
+    toastEligibleRoutes: {
+        path: string
+        exact: boolean
+        condition: boolean
+        component: JSX.Element
+    }[]
 }
