@@ -16,6 +16,12 @@ import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 import { VersionUpdateProps } from './types'
 
+const dismissToast = ({ updateToastRef }: { updateToastRef: React.MutableRefObject<null> }) => {
+    if (ToastManager.isToastActive(updateToastRef.current)) {
+        ToastManager.dismissToast(updateToastRef.current)
+    }
+}
+
 export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdateProps) => {
     const refreshing = useRef(false)
     const [bgUpdated, setBGUpdated] = useState(false)
@@ -38,13 +44,11 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
     }
 
     useEffect(() => {
-        if (!bgUpdated) {
+        if (!bgUpdated && !showVersionUpdateToast) {
             return
         }
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
 
+        dismissToast({ updateToastRef })
         updateToastRef.current = ToastManager.showToast(
             {
                 variant: ToastVariantType.info,
@@ -66,6 +70,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
     }, [bgUpdated])
 
     useEffect(() => {
+        console.log('inside versiion update reload use effect')
         if (navigator.serviceWorker) {
             navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
         }
@@ -84,13 +89,44 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         return 3
     })()
 
-    const handleNeedRefresh = () => {
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
+    const handleUpdateServiceWorker = (updatedServiceWorker) => {
+        updatedServiceWorker(true)
+    }
+
+    const handleAppUpdate = (updatedServiceWorker) => {
+        if (showVersionUpdateToast) {
+            dismissToast({ updateToastRef })
         }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        handleUpdateServiceWorker(updatedServiceWorker)
+    }
+
+    const handleNeedRefresh = (updatedServiceWorker) => {
         setDoesNeedRefresh(true)
         if (typeof Storage !== 'undefined') {
             localStorage.removeItem('serverInfo')
+        }
+
+        if (showVersionUpdateToast) {
+            dismissToast({ updateToastRef })
+            updateToastRef.current = ToastManager.showToast(
+                {
+                    variant: ToastVariantType.info,
+                    title: 'Update available',
+                    description: 'You are viewing an outdated version of Devtron UI.',
+                    buttonProps: {
+                        text: 'Reload',
+                        dataTestId: 'reload-btn',
+                        onClick: () => handleAppUpdate(updatedServiceWorker),
+                        startIcon: <Icon name="ic-arrow-clockwise" color={null} />,
+                    },
+                    icon: <Icon name="ic-sparkle-color" color={null} />,
+                    progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+                },
+                {
+                    autoClose: false,
+                },
+            )
         }
     }
 
@@ -137,7 +173,7 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
             logExceptionToSentry(error)
         },
         onNeedRefresh() {
-            handleNeedRefresh()
+            handleNeedRefresh(updateServiceWorker)
         },
     })
 
@@ -148,14 +184,6 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
         }
     }, [needRefresh])
 
-    const handleAppUpdate = () => {
-        if (ToastManager.isToastActive(updateToastRef.current) && showVersionUpdateToast) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        updateServiceWorker(true)
-    }
-
     useEffect(() => {
         if (window.isSecureContext && navigator.serviceWorker) {
             // check for sw updates on page change
@@ -164,9 +192,9 @@ export const useVersionUpdateReload = ({ showVersionUpdateToast }: VersionUpdate
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh) {
-                handleNeedRefresh()
-            } else if (ToastManager.isToastActive(updateToastRef.current) && showVersionUpdateToast) {
-                ToastManager.dismissToast(updateToastRef.current)
+                handleNeedRefresh(updateServiceWorker)
+            } else if (showVersionUpdateToast) {
+                dismissToast({ updateToastRef })
             }
         }
     }, [location])
