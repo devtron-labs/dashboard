@@ -34,12 +34,7 @@ import {
 import { NODE_SEARCH_KEYS, NodeListSearchFilterType, ResourceBrowserDetailBaseParams } from '../Types'
 import ColumnSelector from './ColumnSelector'
 
-const NodeListSearchFilter = ({
-    visibleColumns,
-    setVisibleColumns,
-    isOpen,
-    searchParams,
-}: NodeListSearchFilterType) => {
+const NodeListSearchFilter = ({ visibleColumns, setVisibleColumns, searchParams }: NodeListSearchFilterType) => {
     const { clusterId } = useParams<ResourceBrowserDetailBaseParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
@@ -106,7 +101,7 @@ const NodeListSearchFilter = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
+        if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleFocusInput })
             registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
         }
@@ -115,7 +110,7 @@ const NodeListSearchFilter = ({
             unregisterShortcut(['R'])
             unregisterShortcut(['Escape'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {

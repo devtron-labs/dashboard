@@ -14,14 +14,9 @@
  * limitations under the License.
  */
 
-import { Dispatch, ReactNode, SetStateAction } from 'react'
+import { ReactNode } from 'react'
 
-import {
-    ALL_NAMESPACE_OPTION,
-    K8sResourceDetailType,
-    RBBulkOperationType,
-    ServerErrors,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { K8sResourceDetailType, RBBulkOperationType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
@@ -41,7 +36,6 @@ export interface BaseResourceListProps
         Pick<
             K8SResourceListType,
             | 'addTab'
-            | 'isOpen'
             | 'renderRefreshBar'
             | 'selectedCluster'
             | 'selectedResource'
@@ -54,8 +48,7 @@ export interface BaseResourceListProps
     resourceList: K8sResourceDetailType
     clusterId: string
     reloadResourceListData: () => void
-    selectedNamespace: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
+    selectedNamespace: string
     children?: ReactNode
     showGenericNullState?: boolean
     hideBulkSelection?: boolean

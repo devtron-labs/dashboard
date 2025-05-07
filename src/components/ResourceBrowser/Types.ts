@@ -17,7 +17,6 @@
 import React, { RefObject } from 'react'
 
 import {
-    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     GVKType,
     K8SObjectBaseType,
@@ -75,7 +74,6 @@ export interface CreateResourceType {
 export interface SidebarType {
     apiResources: ApiResourceGroupType[]
     updateK8sResourceTabLastSyncMoment: () => void
-    isOpen: boolean
     isClusterError?: boolean
     updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
@@ -90,10 +88,8 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
-    selectedNamespace?: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
+    selectedNamespace?: string
     searchText?: string
-    isOpen: boolean
     setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
     renderRefreshBar?: () => JSX.Element
@@ -248,7 +244,7 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
+export interface NodeListSearchFilterType {
     visibleColumns: string[]
     setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
     searchParams: Record<string, string>

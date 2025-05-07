@@ -95,9 +95,7 @@ const BaseResourceListContent = ({
     selectedResource,
     reloadResourceListData,
     selectedNamespace,
-    setSelectedNamespace,
     selectedCluster,
-    isOpen,
     renderRefreshBar,
     updateK8sResourceTab,
     children,
@@ -277,10 +275,6 @@ const BaseResourceListContent = ({
     }, [nodeType])
 
     useEffect(() => {
-        if (!isOpen) {
-            return
-        }
-
         if (!resourceList) {
             setFilteredResourceList(null)
             return
@@ -288,7 +282,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
+    }, [resourceList, sortBy, sortOrder, location.search])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
@@ -348,12 +342,11 @@ const BaseResourceListContent = ({
     }
 
     const emptyStateActionHandler = () => {
-        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
+        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1`
         updateK8sResourceTab({ url: pathname, dynamicTitle: '', retainSearchParams: false })
         push(pathname)
         setFilteredResourceList(resourceList?.data ?? null)
         setResourceListOffset(0)
-        setSelectedNamespace(ALL_NAMESPACE_OPTION)
         setLastTimeStringSinceClearAllFilters(new Date().toISOString())
     }
 
@@ -595,8 +588,7 @@ const BaseResourceListContent = ({
                 return <GenericFilterEmptyState />
             }
 
-            const isFilterApplied =
-                searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
+            const isFilterApplied = searchText || location.search || selectedNamespace !== ALL_NAMESPACE_OPTION.value
 
             return isFilterApplied ? (
                 <ResourceListEmptyState
@@ -683,17 +675,14 @@ const BaseResourceListContent = ({
                     visibleColumns={visibleColumns}
                     setVisibleColumns={setVisibleColumns}
                     searchParams={searchParams}
-                    isOpen={isOpen}
                 />
             ) : (
                 <ResourceFilterOptions
                     key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}
                     selectedNamespace={selectedNamespace}
-                    setSelectedNamespace={setSelectedNamespace}
                     selectedCluster={selectedCluster}
                     searchText={searchText}
-                    isOpen={isOpen}
                     resourceList={resourceList}
                     setSearchText={setSearchText}
                     isSearchInputDisabled={isLoading}

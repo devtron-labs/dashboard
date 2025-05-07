@@ -70,6 +70,30 @@ export const getNodeList = (
         },
     )
 
+const cacheRepository: Record<string, Cache> = {}
+
+const getCacheObject = async (name: string) => {
+    if (cacheRepository[name]) {
+        return cacheRepository[name]
+    }
+    const cache = await window.caches.open(name)
+    cacheRepository[name] = cache
+    return cache
+}
+
+export const cacheResult = async (name: string, promise: Promise<any>) => {
+    const cache = await getCacheObject(name)
+    const cachedResponse = await cache.match(name)
+    console.log('Caching result for:', name, cachedResponse)
+    if (cachedResponse !== undefined) {
+        return cachedResponse
+    }
+    const response = await promise
+    console.log('Caching response:', name, response)
+    await cache.put(name, response)
+    return response
+}
+
 export const getResourceData = async ({
     selectedResource,
     selectedNamespace,
@@ -85,7 +109,7 @@ export const getResourceData = async ({
         }
 
         return await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            getK8sResourceListPayload(clusterId, selectedNamespace.toLowerCase(), selectedResource, filters),
             abortControllerRef.current.signal,
         )
     } catch (err) {

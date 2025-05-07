@@ -45,7 +45,6 @@ const Sidebar = ({
     selectedResource,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
-    isOpen,
 }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -89,14 +88,12 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (isOpen) {
-            registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
-        }
+        registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
 
         return () => {
             unregisterShortcut(['K'])
         }
-    }, [isOpen])
+    }, [])
 
     const getGroupHeadingClickHandler =
         (preventCollapse = false, preventScroll = false) =>
@@ -142,7 +139,7 @@ const Sidebar = ({
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (!isOpen || kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
+        if (kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */
@@ -159,7 +156,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [kind, k8sObjectOptionsList, isOpen])
+    }, [kind, k8sObjectOptionsList])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**
