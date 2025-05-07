@@ -41,6 +41,7 @@ import {
     URLS as CommonURLS,
     DeleteConfirmationModal,
     useMainContext,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -78,7 +79,7 @@ import {
     FilterParentType,
     GroupOptionType,
 } from './AppGroup.types'
-import { EditDescRequest, OptionType } from '../app/types'
+import { EditDescRequest } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'

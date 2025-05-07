@@ -52,10 +52,6 @@ export function getChartVersionDetailsV2(versionId) {
     return get(`app-store/deployment/application/version/${versionId}`)
 }
 
-export function getInstalledAppDetail(installedAppId, envId) {
-    return get(`app-store/installed-app/detail?installed-app-id=${installedAppId}&env-id=${envId}`)
-}
-
 export function installChart(request, abortSignal?: AbortSignal) {
     const options = getAPIOptionsWithTriggerTimeout()
     options.signal = abortSignal

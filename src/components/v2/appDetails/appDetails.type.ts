@@ -15,21 +15,24 @@
  */
 
 import React, { Dispatch, MutableRefObject, SetStateAction } from 'react'
+
 import {
-    OptionType,
     AppDetails as CommonAppDetails,
-    Node as CommonNode,
-    iNode as CommoniNode,
     ConfigurationType,
     FormProps,
+    iNode as CommoniNode,
+    Node as CommonNode,
     OptionsBase,
+    OptionType,
     SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ClusterListType } from '@Components/ClusterNodes/types'
+import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+
 import { ExternalLink, OptionTypeWithIcon } from '../../externalLinks/ExternalLinks.type'
 import { iLink } from '../utils/tabUtils/link.type'
 import { EphemeralForm, EphemeralFormAdvancedType } from './k8Resource/nodeDetail/nodeDetail.type'
-import { ClusterListType } from '@Components/ClusterNodes/types'
-import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 export interface ApplicationObject extends iLink {
     selectedNode: string
@@ -192,24 +195,6 @@ export function getAggregator(nodeType: NodeType): AggregationKeys {
 }
 
 export type AppDetails = CommonAppDetails
-
-interface MaterialInfo {
-    author: string
-    branch: string
-    message: string
-    modifiedTime: string
-    revision: string
-    url: string
-    webhookData: string
-}
-
-interface OtherEnvironment {
-    environmentId: number
-    environmentName: string
-    appMetrics: boolean
-    infraMetrics: boolean
-    prod: boolean
-}
 
 export interface ResourceTree {
     conditions: any
@@ -477,7 +462,8 @@ export enum ManifestCodeEditorMode {
     CANCEL = 'cancel',
 }
 
-export interface ManifestActionPropsType extends Omit<ResourceInfoActionPropsType, 'clusterId' | 'aiWidgetEventDetails'> {
+export interface ManifestActionPropsType
+    extends Omit<ResourceInfoActionPropsType, 'clusterId' | 'aiWidgetEventDetails'> {
     hideManagedFields: boolean
     toggleManagedFields: (managedFieldsExist: boolean) => void
     manifestViewRef: MutableRefObject<ManifestViewRefType>

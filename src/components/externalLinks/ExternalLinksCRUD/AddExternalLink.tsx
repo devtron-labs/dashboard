@@ -27,9 +27,9 @@ import {
     ButtonStyleType,
     ComponentSizeType,
     getHandleOpenURL,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION } from '@Config/constants'
-import { OptionType } from '../../app/types'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'

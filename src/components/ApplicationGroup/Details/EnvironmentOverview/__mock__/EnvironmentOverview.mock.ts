@@ -16,7 +16,8 @@
 
 import { MultiValue } from 'react-select'
 
-import { OptionType } from '../../../../app/types'
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppGroupListType, EnvDeploymentStatus, EnvDeploymentStatusType } from '../../../AppGroup.types'
 
 const result = (): EnvDeploymentStatus[] => [

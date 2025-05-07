@@ -15,7 +15,6 @@
  */
 
 import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
 import notFound from '../../assets/img/page-not-found.png'
 import { ERROR_EMPTY_SCREEN } from '../../config/constantMessaging'
 import { EnvType } from '../v2/appDetails/appDetails.type'

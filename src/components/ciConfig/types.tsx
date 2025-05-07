@@ -25,6 +25,7 @@ import {
     DockerConfigOverrideType,
     KeyValueTableData,
     Material,
+    OptionType,
     SelectPickerOptionType,
     ServerError,
     VariableType,
@@ -37,7 +38,6 @@ import { OptionTypeWithIcon } from '@Components/externalLinks/ExternalLinks.type
 import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { ConfigOverrideWorkflowDetails } from '../../services/service.types'
 import { CiPipelineResult } from '../app/details/triggerView/types'
-import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 
 export interface ArgsFieldSetProps {

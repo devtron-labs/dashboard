@@ -32,7 +32,7 @@ export default function CustomAppDeploy({ parentClassName, imageClassName }: Cus
             <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
                 <div className="cn-9"> Create, build and deploy a custom application.</div>
                 <NavLink
-                    to={`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_DEVTRON}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    to={`${URLS.DEVTRON_APP_LIST}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     className="dc__no-decor cb-5 fw-6"
                 >
                     Create Custom App

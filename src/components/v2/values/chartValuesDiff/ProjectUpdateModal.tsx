@@ -26,10 +26,10 @@ import {
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { NumberOptionType } from '../../../app/types'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
 import { ProjectChangeMessageList } from './constant'
+import { NumberOptionType } from '@Components/app/types'
 
 export default function ProjectUpdateModal({
     appId,
