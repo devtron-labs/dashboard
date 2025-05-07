@@ -37,24 +37,25 @@ import {
     ClusterDescriptionResponse,
     ClusterCapacityResponse,
 } from './types'
-import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
 import { getClusterCapacity, getClusterDetails, updateClusterShortDescription } from './clusterNodes.service'
 import GenericDescription from '../common/Description/GenericDescription'
 import { defaultClusterNote, defaultClusterShortDescription } from './constants'
 import { Moment12HourFormat, URLS } from '../../config'
 import {
+    DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
+    RESOURCE_BROWSER_ROUTES,
     SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../ResourceBrowser/Constants'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
-import { ReactComponent as ClusterOverviewIcon } from '../../assets/icons/cluster-overview.svg'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import ConnectingToClusterState from '../ResourceBrowser/ResourceList/ConnectingToClusterState'
 import { importComponentFromFELibrary } from '../common'
 import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
+import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
 
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
 const MigrateClusterVersionInfoBar = importComponentFromFELibrary('MigrateClusterVersionInfoBar', null, 'function')
@@ -92,10 +93,7 @@ const tippyForMetricsApi = () => {
 }
 
 function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
-    const { clusterId, namespace } = useParams<{
-        clusterId: string
-        namespace: string
-    }>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const [errorMsg, setErrorMsg] = useState('')
 
     const [descriptionData, setDescriptionData] = useState<DescriptionDataType>({
@@ -258,11 +256,11 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
         const newUrl =
-            `${generatePath(path, {
+            `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
                 clusterId,
-                namespace,
-                nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+                kind: 'node',
                 group: K8S_EMPTY_GROUP,
+                version: DUMMY_RESOURCE_GVK_VERSION,
             })}?` + `${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
     }
@@ -392,7 +390,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
 
         const URL = getUrlWithSearchParams(
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/cluster-upgrade`,
+            generatePath(RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE, { clusterId }),
             { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
         )
 

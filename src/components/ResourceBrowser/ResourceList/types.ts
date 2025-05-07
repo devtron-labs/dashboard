@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-import { Dispatch, ReactNode, SetStateAction } from 'react'
+import { ReactNode } from 'react'
 
-import {
-    ALL_NAMESPACE_OPTION,
-    K8sResourceDetailType,
-    RBBulkOperationType,
-    ServerErrors,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { K8sResourceDetailType, RBBulkOperationType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import {
+    ClusterDetailBaseParams,
     K8SResourceListType,
     ResourceBrowserActionMenuType,
-    ResourceBrowserDetailBaseParams,
     ResourceFilterOptionsProps,
     SidebarType,
 } from '../Types'
@@ -41,7 +36,6 @@ export interface BaseResourceListProps
         Pick<
             K8SResourceListType,
             | 'addTab'
-            | 'isOpen'
             | 'renderRefreshBar'
             | 'selectedCluster'
             | 'selectedResource'
@@ -54,8 +48,7 @@ export interface BaseResourceListProps
     resourceList: K8sResourceDetailType
     clusterId: string
     reloadResourceListData: () => void
-    selectedNamespace: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
+    selectedNamespace: string
     children?: ReactNode
     showGenericNullState?: boolean
     hideBulkSelection?: boolean
@@ -84,13 +77,13 @@ export interface ResourceListUrlFiltersType {
 
 export type BulkOperationsModalState = RBBulkOperationType | 'closed'
 
-export interface ResourceListURLParams extends ResourceBrowserDetailBaseParams {
+export interface K8sResourceListURLParams extends ClusterDetailBaseParams {
     version: string
     kind: string
     group: string
 }
 
-export interface ResourceDetailURLParams extends ResourceListURLParams {
+export interface K8sResourceDetailURLParams extends K8sResourceListURLParams {
     name: string
     namespace: string
 }
@@ -102,4 +95,7 @@ export interface NodeDetailComponentWrapperProps
         >,
         Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
     clusterName: string
+}
+export interface NodeDetailURLParams {
+    name: string
 }

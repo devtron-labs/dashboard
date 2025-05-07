@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { generatePath, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import queryString from 'query-string'
 
@@ -29,15 +29,17 @@ import {
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { LAST_SEEN, URLS } from '../../config'
+import { LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
+    DUMMY_RESOURCE_GVK_VERSION,
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
+    RESOURCE_BROWSER_ROUTES,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -269,9 +271,6 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
-    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-
 export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
@@ -279,7 +278,7 @@ export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParams
         {
             id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/overview`,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.OVERVIEW, { clusterId }),
             isSelected: false,
             showNameOnSelect: false,
             type: 'fixed',
@@ -287,7 +286,12 @@ export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParams
         {
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/node/${K8S_EMPTY_GROUP}/v1`,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+                clusterId,
+                kind: 'node',
+                group: K8S_EMPTY_GROUP,
+                version: DUMMY_RESOURCE_GVK_VERSION,
+            }),
             isSelected: true,
             type: 'fixed',
             showNameOnSelect: false,
@@ -295,14 +299,18 @@ export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParams
             shouldRemainMounted: true,
         },
         getMonitoringDashboardTabConfig(
-            `${URLS.RESOURCE_BROWSER}/${clusterId}/monitoring-dashboard`,
+            generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
+                clusterId,
+            }),
             false,
             MONITORING_DASHBOARD_TAB_ID,
         ),
         {
             id: ResourceBrowserTabsId.terminal,
             name: AppDetailsTabs.terminal,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/terminal`,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
+                clusterId,
+            }),
             isSelected: false,
             type: 'fixed',
             showNameOnSelect: true,

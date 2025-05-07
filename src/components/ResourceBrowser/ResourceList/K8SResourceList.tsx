@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useRef } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     abortPreviousRequests,
-    ALL_NAMESPACE_OPTION,
     getIsRequestAborted,
     Nodes,
     useAsync,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
-import { getResourceData } from '../ResourceBrowser.service'
+import { cacheResult, getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
-import { ResourceListURLParams } from './types'
+import { K8sResourceListURLParams } from './types'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -43,22 +43,33 @@ const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     'function',
 )
 
+interface K8sResourceListFilterType {
+    selectedNamespace: string
+}
+
+const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
+    const namespace = searchParams.get('namespace')
+    const selectedNamespace = namespace ?? 'all'
+    return { selectedNamespace }
+}
+
 export const K8SResourceList = ({
     selectedResource,
     selectedCluster,
     addTab,
     renderRefreshBar,
-    isOpen,
     updateK8sResourceTab,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
-    const { clusterId, kind, group } = useParams<ResourceListURLParams>()
+    const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
 
     // STATES
-    const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
+    const { selectedNamespace } = useUrlFilters<string, K8sResourceListFilterType>({
+        parseSearchParams: parseK8sResourceListSearchParams,
+    })
 
     // REFS
     const abortControllerRef = useRef(new AbortController())
@@ -71,13 +82,15 @@ export const K8SResourceList = ({
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
-                    return getResourceData({
-                        selectedResource,
-                        selectedNamespace,
-                        clusterId,
-                        filters,
-                        abortControllerRef,
-                    })
+                    return cacheResult(location.pathname, () =>
+                        getResourceData({
+                            selectedResource,
+                            selectedNamespace,
+                            clusterId,
+                            filters,
+                            abortControllerRef,
+                        }),
+                    )
                 }
 
                 return null
@@ -121,9 +134,7 @@ export const K8SResourceList = ({
             selectedResource={selectedResource}
             reloadResourceListData={reloadResourceListData}
             selectedNamespace={selectedNamespace}
-            setSelectedNamespace={setSelectedNamespace}
             selectedCluster={selectedCluster}
-            isOpen={isOpen}
             renderRefreshBar={renderRefreshBar}
             updateK8sResourceTab={updateK8sResourceTab}
             nodeType={kind}

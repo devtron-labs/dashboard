@@ -32,9 +32,9 @@ import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
-import { namespaceListByClusterId } from '../ResourceBrowser.service'
+import { cacheResult, namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps } from '../Types'
-import { ResourceDetailURLParams } from './types'
+import { K8sResourceListURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
@@ -42,9 +42,7 @@ const ResourceFilterOptions = ({
     selectedResource,
     selectedNamespace,
     selectedCluster,
-    setSelectedNamespace,
     searchText,
-    isOpen,
     setSearchText,
     isSearchInputDisabled,
     renderRefreshBar,
@@ -55,19 +53,29 @@ const ResourceFilterOptions = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, namespace, group } = useParams<ResourceDetailURLParams>()
+    const { clusterId, group } = useParams<K8sResourceListURLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
 
     const showShortcutKey = !isInputFocused && !searchText
 
-    const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
+    const [, namespaceByClusterIdList] = useAsync(
+        () => cacheResult(`${clusterId}/namespaces`, () => namespaceListByClusterId(clusterId)),
+        [clusterId],
+    )
 
     const namespaceOptions = useMemo(
         () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result?.sort() || [])],
         [namespaceByClusterIdList],
     )
+
+    const selectedNamespaceOption = useMemo(() => {
+        if (selectedResource?.namespaced) {
+            return namespaceOptions.find((option) => option.value === selectedNamespace)
+        }
+        return NAMESPACE_NOT_APPLICABLE_OPTION
+    }, [selectedNamespace, selectedResource?.namespaced, namespaceOptions])
 
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
@@ -78,7 +86,7 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
+        if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleInputShortcut })
             registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
         }
@@ -86,7 +94,7 @@ const ResourceFilterOptions = ({
             unregisterShortcut(['F'])
             unregisterShortcut(['R'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleFilterKeyUp = (e: KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
@@ -102,22 +110,15 @@ const ResourceFilterOptions = ({
     }
 
     const handleNamespaceChange = (selected: OptionType): void => {
-        if (selected.value === selectedNamespace?.value) {
+        if (selected.value === selectedNamespace) {
             return
         }
-        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
+        const parsedUrlSearchParams = new URLSearchParams(location.search)
+        parsedUrlSearchParams.set('namespace', selected.value)
+        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1?${parsedUrlSearchParams.toString()}`
         updateK8sResourceTab({ url })
         replace(url)
-        setSelectedNamespace(selected)
     }
-
-    useEffect(() => {
-        if (!isOpen || namespace === selectedNamespace.value || namespaceOptions.length === 1) {
-            return
-        }
-        const matchedOption = namespaceOptions.find((option) => option.value === namespace)
-        handleNamespaceChange(!matchedOption ? (ALL_NAMESPACE_OPTION as any) : matchedOption)
-    }, [namespace, namespaceOptions])
 
     const handleInputBlur = () => setIsInputFocused(false)
 
@@ -162,7 +163,7 @@ const ResourceFilterOptions = ({
                             inputId="resource-filter-select"
                             placeholder="Select Namespace"
                             options={namespaceOptions}
-                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
+                            value={selectedNamespaceOption}
                             onChange={handleNamespaceChange}
                             isDisabled={!selectedResource?.namespaced}
                             icon={<NamespaceIcon className="fcn-6" />}

@@ -33,7 +33,7 @@ import {
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ResourceListURLParams } from '@Components/ResourceBrowser/ResourceList/types'
+import { K8sResourceListURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import { getClusterTerminalParamsData } from '../cluster/cluster.util'
@@ -84,7 +84,7 @@ const ClusterTerminal = ({
     taints,
     updateTerminalTabUrl,
 }: ClusterTerminalType) => {
-    const { kind } = useParams<ResourceListURLParams>()
+    const { kind } = useParams<K8sResourceListURLParams>()
     const { replace } = useHistory()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)

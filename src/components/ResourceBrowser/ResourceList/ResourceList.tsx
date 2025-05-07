@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, useHistory, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -37,89 +37,42 @@ import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
 import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
 import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
 import { ClusterListType } from '@Components/ClusterNodes/types'
-import {
-    DynamicTabsProps,
-    DynamicTabsVariantType,
-    UpdateTabUrlParamsType,
-    UseTabsReturnType,
-} from '@Components/common/DynamicTabs/types'
+import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 
 import { URLS } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
-import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import {
+    DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
+    RESOURCE_BROWSER_ROUTES,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
-import { ClusterOptionType, K8SResourceListType, ResourceBrowserDetailBaseParams } from '../Types'
+import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
 import { getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
+import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import { getFirstResourceFromKindResourceMap } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
-interface NodeDetailParams {
-    name: string
-}
-
-const NodeDetailWrapper = ({
-    addTab,
-    markTabActiveById,
-    getTabId,
-    updateTabUrl,
-    lowercaseKindToResourceGroupMap,
-}: Omit<ClusterListType, 'updateTabUrl'> &
-    Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId' | 'updateTabUrl'>) => {
-    const { url } = useRouteMatch()
-    const { name } = useParams<NodeDetailParams>()
-
-    const id = getTabId(K8S_EMPTY_GROUP, name, 'node')
-
-    const updateTabUrlHandler: ClusterListType['updateTabUrl'] = (props) => updateTabUrl({ id, ...props })
-
-    useEffect(() => {
-        markTabActiveById(id)
-            .then((wasFound) => {
-                if (!wasFound) {
-                    addTab({
-                        idPrefix: K8S_EMPTY_GROUP,
-                        kind: 'node',
-                        name,
-                        url,
-                    }).catch(noop)
-                }
-            })
-            .catch(noop)
-    }, [])
-
-    return (
-        <NodeDetails
-            updateTabUrl={updateTabUrlHandler}
-            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-            addTab={addTab}
-        />
-    )
-}
-
 const ResourceList = () => {
-    const { clusterId } = useParams<ResourceBrowserDetailBaseParams>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const { replace, push } = useHistory()
-    const { path } = useRouteMatch()
     const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
         tabs,
@@ -234,10 +187,12 @@ const ResourceList = () => {
             return
         }
 
-        // TODO: change this to use the new URL builder
-        const redirectUrl = `${URLS.RESOURCE_BROWSER}/${selected.value}/${
-            ALL_NAMESPACE_OPTION.value
-        }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+        const redirectUrl = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+            clusterId: selected.value,
+            group: K8S_EMPTY_GROUP,
+            kind: 'node',
+            version: DUMMY_RESOURCE_GVK_VERSION,
+        })
 
         replace({
             pathname: redirectUrl,
@@ -405,16 +360,16 @@ const ResourceList = () => {
                         [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
                     }}
                 />
-                <Route path={`${path}/overview`} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
                     <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
                 </Route>
-                <Route path={`${path}/monitoring-dashboard`} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD} exact>
                     <MonitoringDashboard />
                 </Route>
-                <Route path={`${path}/terminal`} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
                     <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
                 </Route>
-                <Route path={`${path}/cluster-upgrade`} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE} exact>
                     <ClusterUpgradeCompatibilityInfo
                         clusterId={clusterId}
                         clusterName={selectedCluster.label}
@@ -431,7 +386,7 @@ const ResourceList = () => {
                         handleResourceClick={handleResourceClick}
                     />
                 </Route>
-                <Route path={`${path}/node/:name`} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL} exact>
                     <NodeDetailWrapper
                         addTab={addTab}
                         markTabActiveById={markTabActiveById}
@@ -440,7 +395,7 @@ const ResourceList = () => {
                         updateTabUrl={updateTabUrl}
                     />
                 </Route>
-                <Route path={`${path}/:namespace/:kind/:group/:version/:name`}>
+                <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL}>
                     <NodeDetailComponentWrapper
                         clusterName={selectedCluster.label}
                         getTabId={getTabId}
@@ -454,7 +409,7 @@ const ResourceList = () => {
                         addTab={addTab}
                     />
                 </Route>
-                <Route path={`${path}/:kind/:group/:version`} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST} exact>
                     <K8SResourceTabComponent
                         markTabActiveById={markTabActiveById}
                         selectedCluster={selectedCluster}
@@ -464,7 +419,6 @@ const ResourceList = () => {
                             getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
                             refreshData,
                         )}
-                        isOpen
                         updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
                         updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
                         clusterName={selectedCluster.label}

@@ -120,11 +120,9 @@ const ClusterUpgradeCompatibilityInfo = ({
                     gvk: SIDEBAR_KEYS.upgradeClusterGVK,
                     namespaced: false,
                 }}
-                selectedNamespace={ALL_NAMESPACE_OPTION}
+                selectedNamespace={ALL_NAMESPACE_OPTION.value}
                 selectedCluster={selectedCluster}
-                isOpen
                 reloadResourceListData={refetchCompatibilityList}
-                setSelectedNamespace={noop}
                 renderRefreshBar={noop}
                 updateK8sResourceTab={noop}
                 nodeType={null}

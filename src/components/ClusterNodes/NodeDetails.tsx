@@ -80,7 +80,7 @@ import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 
 const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
-    const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
+    const { clusterId, name } = useParams<{ clusterId: string; nodeType: string; name: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -112,7 +112,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
         setErrorResponseCode(null)
-        getNodeCapacity(clusterId, node)
+        getNodeCapacity(clusterId, name)
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
                     setSortedPodList(response.result.pods?.sort((a, b) => a['name'].localeCompare(b['name'])))
@@ -150,7 +150,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     useEffect(() => {
         getData(patchData)
-    }, [node])
+    }, [name])
 
     useEffect(() => {
         if (queryParams.has('tab')) {
@@ -181,7 +181,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
-        if (node !== AUTO_SELECT.value) {
+        if (name !== AUTO_SELECT.value) {
             let _searchParam = '?tab='
             if (_tabIndex === 0) {
                 _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
@@ -863,13 +863,13 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             const parsedManifest = YAML.parse(modifiedManifest)
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
-                name: node,
+                name: name,
                 manifestPatch: JSON.stringify(parsedManifest),
                 version: nodeDetail.version,
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            updateNodeManifest(clusterId, node, requestData)
+            updateNodeManifest(clusterId, name, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
@@ -1059,7 +1059,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     {renderTabs()}
                     {showCordonNodeDialog && (
                         <CordonNodeModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             unschedulable={nodeDetail.unschedulable}
@@ -1068,7 +1068,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {showDrainNodeDialog && (
                         <DrainNodeModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             closePopup={hideDrainNodeModal}
@@ -1076,7 +1076,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {showDeleteNodeDialog && (
                         <DeleteNodeModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             closePopup={hideDeleteNodeModal}
@@ -1085,7 +1085,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {showEditTaints && (
                         <EditTaintsModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             taints={nodeDetail.taints}

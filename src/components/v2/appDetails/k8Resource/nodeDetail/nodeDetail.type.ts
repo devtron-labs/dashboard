@@ -42,7 +42,7 @@ export interface ParamsType {
     actionName: string
     podName: string
     nodeType: string
-    node: string
+    name: string
     appId?: string
     envId?: string
     namespace?: string

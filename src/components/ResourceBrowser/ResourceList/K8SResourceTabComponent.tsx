@@ -20,25 +20,24 @@ import { useParams } from 'react-router-dom'
 import { abortPreviousRequests, ErrorScreenManager, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { K8S_EMPTY_GROUP, ResourceBrowserTabsId } from '../Constants'
-import { getResourceGroupList } from '../ResourceBrowser.service'
+import { cacheResult, getResourceGroupList } from '../ResourceBrowser.service'
 import { K8SResourceTabComponentProps } from '../Types'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { K8SResourceList } from './K8SResourceList'
 import Sidebar from './Sidebar'
-import { ResourceListURLParams } from './types'
+import { K8sResourceListURLParams } from './types'
 
 const K8SResourceTabComponent = ({
     markTabActiveById,
     selectedCluster,
     renderRefreshBar,
     addTab,
-    isOpen,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId, kind, group } = useParams<ResourceListURLParams>()
+    const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
 
     const abortControllerRef = useRef(new AbortController())
 
@@ -54,7 +53,10 @@ const K8SResourceTabComponent = ({
     const [loading, k8SObjectMap, error, reload] = useAsync(
         () =>
             abortPreviousRequests(
-                () => getResourceGroupList(clusterId, abortControllerRef.current?.signal),
+                () =>
+                    cacheResult(`${clusterId}/k8s-object-map`, () =>
+                        getResourceGroupList(clusterId, abortControllerRef.current?.signal),
+                    ),
                 abortControllerRef,
             ),
         [clusterId],
@@ -83,7 +85,6 @@ const K8SResourceTabComponent = ({
             <Sidebar
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
-                isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             />
@@ -92,7 +93,6 @@ const K8SResourceTabComponent = ({
                 selectedResource={selectedResource}
                 selectedCluster={selectedCluster}
                 addTab={addTab}
-                isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}

@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, useHistory, useLocation } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 import { getAIAnalyticsEvents } from 'src/Shared'
 
@@ -60,12 +60,14 @@ import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import {
     AI_BUTTON_CONFIG_MAP,
     DEFAULT_K8SLIST_PAGE_SIZE,
+    DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     MANDATORY_NODE_LIST_HEADERS,
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_LIST_HEADERS,
     NODE_LIST_HEADERS_TO_KEY_MAP,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
+    RESOURCE_BROWSER_ROUTES,
     RESOURCE_EMPTY_PAGE_STATE,
     RESOURCE_LIST_EMPTY_STATE,
     RESOURCE_PAGE_SIZE_OPTIONS,
@@ -95,9 +97,7 @@ const BaseResourceListContent = ({
     selectedResource,
     reloadResourceListData,
     selectedNamespace,
-    setSelectedNamespace,
     selectedCluster,
-    isOpen,
     renderRefreshBar,
     updateK8sResourceTab,
     children,
@@ -130,7 +130,6 @@ const BaseResourceListContent = ({
 
     const location = useLocation()
     const { replace, push } = useHistory()
-    const { url } = useRouteMatch()
 
     const { searchParams } = useSearchString()
 
@@ -277,10 +276,6 @@ const BaseResourceListContent = ({
     }, [nodeType])
 
     useEffect(() => {
-        if (!isOpen) {
-            return
-        }
-
         if (!resourceList) {
             setFilteredResourceList(null)
             return
@@ -288,7 +283,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
+    }, [resourceList, sortBy, sortOrder, location.search])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
@@ -348,12 +343,11 @@ const BaseResourceListContent = ({
     }
 
     const emptyStateActionHandler = () => {
-        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${ALL_NAMESPACE_OPTION.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}`
+        const pathname = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1`
         updateK8sResourceTab({ url: pathname, dynamicTitle: '', retainSearchParams: false })
         push(pathname)
         setFilteredResourceList(resourceList?.data ?? null)
         setResourceListOffset(0)
-        setSelectedNamespace(ALL_NAMESPACE_OPTION)
         setLastTimeStringSinceClearAllFilters(new Date().toISOString())
     }
 
@@ -375,12 +369,20 @@ const BaseResourceListContent = ({
         ((e) => {
             const { name, namespace, kind, group: _group } = e.currentTarget.dataset
 
-            push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind}/${_group}/v1/${name}`)
+            const path = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
+                clusterId,
+                namespace,
+                kind: kind.toLowerCase(),
+                group: _group,
+                version: DUMMY_RESOURCE_GVK_VERSION,
+                name,
+            })
+            push(path)
         })
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
-        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${name}`
+        const _url = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
         addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => push(_url))
             .catch(noop)
@@ -407,6 +409,8 @@ const BaseResourceListContent = ({
         const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
         const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
         const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
+
+        const nameFieldCallback = isNodeListing ? handleNodeClick : handleResourceClick
 
         return (
             <div
@@ -446,7 +450,7 @@ const BaseResourceListContent = ({
                                         data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
                                         data-kind={selectedResource.gvk.Kind}
                                         data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
-                                        onClick={shouldShowRedirectionAndActions ? handleResourceClick : null}
+                                        onClick={shouldShowRedirectionAndActions ? nameFieldCallback : null}
                                         aria-label={`Select ${resourceData.name}`}
                                     >
                                         <span
@@ -595,8 +599,7 @@ const BaseResourceListContent = ({
                 return <GenericFilterEmptyState />
             }
 
-            const isFilterApplied =
-                searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
+            const isFilterApplied = searchText || location.search || selectedNamespace !== ALL_NAMESPACE_OPTION.value
 
             return isFilterApplied ? (
                 <ResourceListEmptyState
@@ -683,17 +686,14 @@ const BaseResourceListContent = ({
                     visibleColumns={visibleColumns}
                     setVisibleColumns={setVisibleColumns}
                     searchParams={searchParams}
-                    isOpen={isOpen}
                 />
             ) : (
                 <ResourceFilterOptions
                     key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}
                     selectedNamespace={selectedNamespace}
-                    setSelectedNamespace={setSelectedNamespace}
                     selectedCluster={selectedCluster}
                     searchText={searchText}
-                    isOpen={isOpen}
                     resourceList={resourceList}
                     setSearchText={setSearchText}
                     isSearchInputDisabled={isLoading}

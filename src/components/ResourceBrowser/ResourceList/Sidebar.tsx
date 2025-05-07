@@ -15,7 +15,7 @@
  */
 
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import DOMPurify from 'dompurify'
@@ -28,9 +28,14 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
-import { URLS } from '../../../config'
 import { AggregationKeys } from '../../app/types'
-import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
+import {
+    DUMMY_RESOURCE_GVK_VERSION,
+    K8S_EMPTY_GROUP,
+    KIND_SEARCH_COMMON_STYLES,
+    RESOURCE_BROWSER_ROUTES,
+    SIDEBAR_KEYS,
+} from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
 import {
     convertK8sObjectMapToOptionsList,
@@ -38,19 +43,18 @@ import {
     getK8SObjectMapAfterGroupHeadingClick,
 } from '../Utils'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
-import { ResourceListURLParams } from './types'
+import { K8sResourceListURLParams } from './types'
 
 const Sidebar = ({
     apiResources,
     selectedResource,
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
-    isOpen,
 }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
-    const { clusterId, kind } = useParams<ResourceListURLParams>()
+    const { clusterId, kind } = useParams<K8sResourceListURLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, kind))
@@ -89,14 +93,12 @@ const Sidebar = ({
     }
 
     useEffect(() => {
-        if (isOpen) {
-            registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
-        }
+        registerShortcut({ callback: handleInputShortcut, keys: ['K'] })
 
         return () => {
             unregisterShortcut(['K'])
         }
-    }, [isOpen])
+    }, [])
 
     const getGroupHeadingClickHandler =
         (preventCollapse = false, preventScroll = false) =>
@@ -114,8 +116,15 @@ const Sidebar = ({
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
         updateK8sResourceTabLastSyncMoment()
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}/v1${location.search}`
+        const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+            clusterId,
+            kind: _selectedKind,
+            group: _selectedGroup || K8S_EMPTY_GROUP,
+            version: DUMMY_RESOURCE_GVK_VERSION,
+        })}${location.search}`
+
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
+
         if (shouldPushUrl) {
             push(_url)
         }
@@ -142,7 +151,7 @@ const Sidebar = ({
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (!isOpen || kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
+        if (kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */
@@ -159,7 +168,7 @@ const Sidebar = ({
             /* NOTE: if we push here the history will be lost */
             !selectedResource,
         )
-    }, [kind, k8sObjectOptionsList, isOpen])
+    }, [kind, k8sObjectOptionsList])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**

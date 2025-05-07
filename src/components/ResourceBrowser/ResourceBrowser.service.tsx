@@ -31,7 +31,7 @@ import {
 import { Routes } from '../../config'
 import { ClusterListResponse } from '../../services/service.types'
 import { SIDEBAR_KEYS } from './Constants'
-import { GetResourceDataType, NodeRowDetail, ResourceBrowserDetailBaseParams } from './Types'
+import { ClusterDetailBaseParams, GetResourceDataType, NodeRowDetail } from './Types'
 import { parseNodeList } from './Utils'
 
 export const getClusterList = async (): Promise<ClusterListResponse> => {
@@ -62,13 +62,24 @@ export const getNodeList = (
     abortControllerRef: RefObject<AbortController>,
 ): Promise<ResponseType<NodeRowDetail[]>> =>
     get(
-        getUrlWithSearchParams<keyof ResourceBrowserDetailBaseParams>(Routes.NODE_LIST, {
+        getUrlWithSearchParams<keyof ClusterDetailBaseParams>(Routes.NODE_LIST, {
             clusterId: Number(clusterId),
         }),
         {
             abortControllerRef,
         },
     )
+
+const cacheRepository: Record<string, any> = {}
+
+export const cacheResult = async <T = any,>(name: string, promiseCallback: () => Promise<T>) => {
+    if (cacheRepository[name]) {
+        return cacheRepository[name] as T
+    }
+    const response = await promiseCallback()
+    cacheRepository[name] = response
+    return response
+}
 
 export const getResourceData = async ({
     selectedResource,
@@ -85,7 +96,7 @@ export const getResourceData = async ({
         }
 
         return await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+            getK8sResourceListPayload(clusterId, selectedNamespace.toLowerCase(), selectedResource, filters),
             abortControllerRef.current.signal,
         )
     } catch (err) {
