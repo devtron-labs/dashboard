@@ -24,12 +24,12 @@ import {
     SelectPicker,
     ComponentSizeType,
     InfoBlock,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ProjectSelectorTypes } from './ChartValuesView.type'
 import { updateHelmAppProject } from '../../../charts/charts.service'
 import { ProjectChangeMessageList } from './constant'
-import { NumberOptionType } from '@Components/app/types'
 
 export default function ProjectUpdateModal({
     appId,
@@ -39,8 +39,8 @@ export default function ProjectUpdateModal({
     projectList,
     getAppMetaInfoRes,
 }: ProjectSelectorTypes) {
-    const [projectOptions, setProjectOptions] = useState<NumberOptionType[]>([])
-    const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
+    const [projectOptions, setProjectOptions] = useState<OptionType<number, string>[]>([])
+    const [selectedProject, setSelectedProject] = useState<OptionType<number, string>>()
     const [isSubmitting, setSubmitting] = useState(false)
 
     useEffect(() => {
@@ -64,7 +64,7 @@ export default function ProjectUpdateModal({
         )
     }
 
-    const handleProjectSelection = (selected: NumberOptionType): void => {
+    const handleProjectSelection = (selected: OptionType<number, string>): void => {
         setSelectedProject(selected)
     }
 

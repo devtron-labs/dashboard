@@ -24,9 +24,10 @@ import {
     ToastVariantType,
     ComponentSizeType,
     InfoBlock,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { AboutAppInfoModalProps, NumberOptionType } from '../types'
+import { AboutAppInfoModalProps } from '../types'
 import { editApp } from '../service'
 import { projectChangeMessage } from './utils'
 
@@ -40,8 +41,8 @@ export default function AboutAppInfoModal({
     projectsList,
     appType,
 }: AboutAppInfoModalProps) {
-    const [projectsOptions, setProjectsOption] = useState<NumberOptionType[]>([])
-    const [selectedProject, setSelectedProject] = useState<NumberOptionType>()
+    const [projectsOptions, setProjectsOption] = useState<OptionType<number, string>[]>([])
+    const [selectedProject, setSelectedProject] = useState<OptionType<number, string>>()
     const [submitting, setSubmitting] = useState(false)
     const isJobOverview = appType === 'job'
 
@@ -67,7 +68,7 @@ export default function AboutAppInfoModal({
         )
     }
 
-    const handleProjectSelection = (selected: NumberOptionType): void => {
+    const handleProjectSelection = (selected: OptionType<number, string>): void => {
         setSelectedProject(selected)
     }
 

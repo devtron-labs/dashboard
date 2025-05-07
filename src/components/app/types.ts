@@ -32,11 +32,6 @@ import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
 import { CDMaterialProps } from './details/triggerView/types'
 
-export interface NumberOptionType {
-    label: string
-    value: number
-}
-
 interface CDModalProps {
     cdPipelineId?: number
     triggerType?: string
