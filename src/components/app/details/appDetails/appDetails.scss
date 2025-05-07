@@ -1365,65 +1365,6 @@ table.resource-tree {
     }
 }
 
-.deployment-status-breakdown-container,
-.deployment-approval-container {
-    .vertical-connector {
-        border-left: 1px solid var(--N300);
-        height: 15px;
-        position: relative;
-        left: 18px;
-        width: 5px;
-    }
-    .deployment-status-breakdown-row {
-        display: flex;
-        align-items: center;
-        justify-content: left;
-
-        &.border-collapse {
-            border-radius: 4px 4px 0 0;
-        }
-    }
-
-    .pulse-highlight {
-        width: 12px;
-        height: 12px;
-        border: solid 4px var(--O200);
-        background-color: var(--O500);
-        position: relative;
-        top: 5px;
-        right: -5px;
-        border-radius: 50%;
-        animation-name: pulse;
-        animation-duration: 2s;
-        animation-iteration-count: infinite;
-        animation-timing-function: linear;
-    }
-
-    .green-tick {
-        path {
-            stroke: var(--G500);
-        }
-    }
-
-    .app-status-row {
-        display: grid;
-        grid-template-columns: 150px 200px 150px auto;
-        grid-column-gap: 16px;
-    }
-    .resource-list {
-        .app-status-row {
-            &:hover {
-                background-color: var(--bg-secondary);
-            }
-        }
-    }
-
-    .detail-tab_border {
-        border-radius: 0 0 4px 4px;
-        border-top: 0;
-    }
-}
-
 .deployment-approval-container + .deployment-status-breakdown-container {
     padding-top: 0px;
 }

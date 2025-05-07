@@ -183,7 +183,7 @@ export const SourceInfo = ({
                     >
                         <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
                             {/* TODO: verify what appType needs to be passed */}
-                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} appType={null} />
+                            <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} appType={null} />
                         </div>
                     </Tooltip>
                 )}

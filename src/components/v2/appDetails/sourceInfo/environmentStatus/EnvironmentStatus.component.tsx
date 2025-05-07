@@ -17,7 +17,7 @@
 import { useMemo, useState } from 'react'
 import './environmentStatus.scss'
 import IndexStore from '../../index.store'
-import { URLS } from '../../../../../config'
+import { DEPLOYMENT_STATUS_QUERY_PARAM, URLS } from '../../../../../config'
 import { AppType } from '../../appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
@@ -26,6 +26,7 @@ import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
 import {
     AppStatusModal,
+    AppStatusModalTabType,
     DeploymentAppTypes,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -198,15 +199,18 @@ const EnvironmentStatusComponent = ({
             )}
             {showAppStatusDetail && (
                 <AppStatusModal
+                    type="other-apps"
                     titleSegments={[
                         appDetails?.appName,
                         appDetails?.environmentName || appDetails?.namespace,
                     ]}
                     handleClose={handleCloseAppStatusModal}
-                    type="other-apps"
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}
                     configDriftModal={null}
+                    // TODO: Confirm
+                    deploymentStatusDetailsBreakdownData={null}
+                    initialTab={AppStatusModalTabType.APP_STATUS}
                 />
             )}
             {showIssuesModal && (

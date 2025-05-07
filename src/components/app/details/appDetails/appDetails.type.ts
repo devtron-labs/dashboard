@@ -125,17 +125,6 @@ export interface DeploymentStatusDetailsBreakdownDataType {
     }
 }
 
-export interface DeploymentStatusDetailModalType {
-    appName: string
-    environmentName: string
-    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    isVirtualEnvironment: boolean
-    /**
-     * Loading state for the timeline data
-     */
-    isLoading: boolean
-}
-
 export interface ModuleConfigResponse extends ResponseType {
     result?: {
         enabled: boolean

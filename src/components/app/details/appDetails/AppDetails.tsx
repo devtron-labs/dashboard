@@ -21,6 +21,7 @@ import {
     ACTION_STATE,
     aggregateNodes,
     AppStatusModal,
+    AppStatusModalTabType,
     ArtifactInfoModal,
     Button,
     ButtonComponentType,
@@ -91,7 +92,6 @@ import {
 } from './appDetails.type'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { AppMetrics } from './AppMetrics'
-import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
@@ -245,6 +245,7 @@ const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
+    const { replace } = useHistory()
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
@@ -591,7 +592,15 @@ const Details: React.FC<DetailsType> = ({
     }
 
     const hideAppDetailsStatus = (): void => {
-        toggleDetailedStatus(false)
+        if (detailedStatus) {
+            toggleDetailedStatus(false)
+        }
+
+        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
+            replace({
+                search: '',
+            })
+        }
     }
 
     const showApplicationDetailedModal = (): void => {
@@ -778,7 +787,7 @@ const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {detailedStatus && (
+            {(detailedStatus || location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) && (
                 <AppStatusModal
                     titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
                     handleClose={hideAppDetailsStatus}
@@ -786,14 +795,10 @@ const Details: React.FC<DetailsType> = ({
                     appDetails={appDetailsFromIndexStore}
                     isConfigDriftEnabled={isConfigDriftEnabled}
                     configDriftModal={ConfigDriftModal}
-                />
-            )}
-            {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
-                <DeploymentStatusDetailModal
-                    appName={appDetails?.appName}
-                    environmentName={appDetails?.environmentName}
+                    initialTab={
+                        detailedStatus ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
+                    }
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isVirtualEnvironment={isVirtualEnvRef.current}
                     isLoading={isInitialTimelineDataLoading}
                 />
             )}
