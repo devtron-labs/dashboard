@@ -173,14 +173,6 @@ export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | nu
     return `${_url}/${URLS.APP_GIT_CONFIG}`
 }
 
-export function getAppDetailsURL(appId: number | string, envId?: number | string): string {
-    let url = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}`
-    if (envId) {
-        url = `${url}/${envId}`
-    }
-    return url
-}
-
 export function getAppTriggerURL(appId: number | string): string {
     return `${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`
 }
