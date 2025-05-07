@@ -208,8 +208,8 @@ const EditAPIToken = ({
 
     return (
         <div className="fs-13 fw-4 w-100 flexbox-col flex-grow-1 dc__content-space pb-16">
-            <div className="pl-20 pr-20 pb-20">
-                <div className="flex dc__content-space pb-16 dc__gap-8">
+            <div className="px-20 pb-20">
+                <div className="flex dc__content-space py-16 dc__gap-8">
                     <div className="flex row ml-0">
                         <div className="cn-9 fw-6 fs-16">
                             <span className="cb-5 cursor" onClick={redirectToTokenList}>
