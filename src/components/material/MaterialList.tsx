@@ -217,7 +217,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             return <ErrorScreenManager code={this.state.statusCode} />
         }
         return (
-            <div className={!this.props.isCreateAppView ? 'form__app-compose' : ''}>
+            <div className={!this.props.isCreateAppView ? 'form__app-compose' : 'flexbox-col dc__gap-16'}>
                 {!this.props.isCreateAppView && (
                     <>
                         {this.renderPageHeader()}
@@ -255,8 +255,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             isTemplateView={this.props.isTemplateView}
                             isCreateAppView={this.props.isCreateAppView}
                             handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
-                        />
-                    )
+                        />                    )
                 })}
             </div>
         )
