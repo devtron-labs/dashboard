@@ -30,8 +30,8 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
 
     const updateToastRef = useRef(null)
 
-    const toastEligibleRoutesMap = toastEligibleRoutes.reduce((acc, { path }) => {
-        acc[path] = true
+    const toastEligibleRoutesMap = toastEligibleRoutes.reduce((acc, { eligibleLocation }) => {
+        acc[eligibleLocation] = true
         return acc
     }, {})
 

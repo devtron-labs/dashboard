@@ -4,5 +4,6 @@ export interface VersionUpdateProps {
         exact: boolean
         condition: boolean
         component: JSX.Element
+        eligibleLocation: string
     }[]
 }
