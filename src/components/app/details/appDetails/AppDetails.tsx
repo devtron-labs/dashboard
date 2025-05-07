@@ -591,7 +591,7 @@ const Details: React.FC<DetailsType> = ({
         }
     }
 
-    const hideAppDetailsStatus = (): void => {
+    const handleCloseAppStatusModal = (): void => {
         if (detailedStatus) {
             toggleDetailedStatus(false)
         }
@@ -790,7 +790,7 @@ const Details: React.FC<DetailsType> = ({
             {(detailedStatus || location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) && (
                 <AppStatusModal
                     titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
-                    handleClose={hideAppDetailsStatus}
+                    handleClose={handleCloseAppStatusModal}
                     type="devtron-app"
                     appDetails={appDetailsFromIndexStore}
                     isConfigDriftEnabled={isConfigDriftEnabled}
@@ -799,7 +799,7 @@ const Details: React.FC<DetailsType> = ({
                         detailedStatus ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
                     }
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isLoading={isInitialTimelineDataLoading}
+                    isDeploymentTimelineLoading={isInitialTimelineDataLoading}
                 />
             )}
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (

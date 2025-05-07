@@ -247,7 +247,7 @@ const AppDetailsComponent = ({
                             configDriftModal={null}
                             // TODO: Test virtual environment deployment data
                             deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            isLoading={isInitialTimelineDataLoading}
+                            isDeploymentTimelineLoading={isInitialTimelineDataLoading}
                             initialTab={AppStatusModalTabType.DEPLOYMENT_STATUS}
                         />
                     )}
