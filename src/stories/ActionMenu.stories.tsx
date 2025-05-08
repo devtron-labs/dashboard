@@ -19,8 +19,28 @@ import type { Meta, StoryObj } from '@storybook/react'
 
 import { ActionMenu, ActionMenuProps, Button, Icon } from '@devtron-labs/devtron-fe-common-lib'
 
+const Component = (props: ActionMenuProps) => (
+    <div className="flex w-100 h-500">
+        <ActionMenu {...props} />
+    </div>
+)
+
 const meta = {
-    component: ActionMenu,
+    component: Component,
+    argTypes: {
+        position: {
+            control: 'radio',
+            options: ['bottom', 'top', 'left', 'right'],
+        },
+        alignment: {
+            control: 'radio',
+            options: ['start', 'middle', 'end'],
+        },
+        disableDescriptionEllipsis: {
+            control: 'boolean',
+            type: 'boolean',
+        },
+    },
 } satisfies Meta<ActionMenuProps>
 
 export default meta
@@ -31,7 +51,10 @@ const options: ActionMenuProps['options'] = [
     {
         label: 'Label 1',
         value: 'value-1',
-        startIcon: <Icon name="ic-cube" color="N800" />,
+        startIcon: {
+            name: 'ic-cube',
+            color: 'N800',
+        },
     },
     {
         label: 'Group label 1',
@@ -39,7 +62,10 @@ const options: ActionMenuProps['options'] = [
             {
                 label: 'Group Label 1',
                 value: 'group-value-1',
-                startIcon: <Icon name="ic-cube" color="N800" />,
+                startIcon: {
+                    name: 'ic-cube',
+                    color: 'N800',
+                },
                 isDisabled: true,
             },
             {
@@ -60,8 +86,14 @@ const options: ActionMenuProps['options'] = [
                 value: 'group-value-4',
             },
             {
-                startIcon: <Icon name="ic-cube" color="N800" />,
-                endIcon: <Icon name="ic-cube" color="N800" />,
+                startIcon: {
+                    name: 'ic-cube',
+                    color: 'N800',
+                },
+                endIcon: {
+                    name: 'ic-cube',
+                    color: 'N800',
+                },
                 value: 'group-value-5',
                 tooltipProps: {
                     content: 'Tooltip content for value 5',
@@ -89,8 +121,14 @@ const options: ActionMenuProps['options'] = [
         value: 'value-4',
     },
     {
-        startIcon: <Icon name="ic-cube" color="N800" />,
-        endIcon: <Icon name="ic-cube" color="N800" />,
+        startIcon: {
+            name: 'ic-cube',
+            color: 'N800',
+        },
+        endIcon: {
+            name: 'ic-cube',
+            color: 'N800',
+        },
         value: 'value-5',
         tooltipProps: {
             content: 'Tooltip content for value 5',
@@ -104,6 +142,8 @@ const options: ActionMenuProps['options'] = [
 export const WithButtonElement: Story = {
     args: {
         options,
+        position: 'bottom',
+        alignment: 'start',
         disableDescriptionEllipsis: false,
         children: <Button text="Open Action Menu" dataTestId="action-menu" />,
         onClick: action('option clicked'),
@@ -113,6 +153,8 @@ export const WithButtonElement: Story = {
 export const WithIconButtonElement: Story = {
     args: {
         options,
+        position: 'bottom',
+        alignment: 'start',
         disableDescriptionEllipsis: false,
         children: (
             <Button
