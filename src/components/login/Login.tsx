@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
 
 import {
+    AnimatePresence,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -27,6 +28,7 @@ import {
     Host,
     Icon,
     LoginBanner,
+    MotionDiv,
     SSOProviderIcon,
     ToastManager,
     ToastVariantType,
@@ -40,7 +42,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { dashboardAccessed } from '../../services/service'
-import { SSOProvider } from './constants'
+import { ANIMATION_VARIANTS, SSOProvider } from './constants'
 import { SSOConfigLoginList } from './login.types'
 import { LoginForm } from './LoginForm'
 
@@ -171,7 +173,7 @@ const Login = () => {
     )
 
     const renderLoginContent = () => (
-        <Switch>
+        <Switch location={location}>
             <Route path={URLS.LOGIN_SSO} component={renderSSOLoginPage} />
             <Route path={URLS.LOGIN_ADMIN} component={renderAdminLoginPage} />
             <Redirect to={URLS.LOGIN_SSO} />
@@ -187,7 +189,20 @@ const Login = () => {
                 <div className="login-card__wrapper dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
-                        {renderLoginContent()}
+                        {/* do we need initial */}
+                        <AnimatePresence initial={false}>
+                            <MotionDiv
+                                key={location.pathname}
+                                variants={ANIMATION_VARIANTS}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.25, ease: 'easeInOut' }}
+                                style={{ overflow: 'hidden' }}
+                            >
+                                {renderLoginContent()}
+                            </MotionDiv>
+                        </AnimatePresence>
                     </div>
                     {getTermsAndConditions && getTermsAndConditions()}
                 </div>
