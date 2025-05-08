@@ -160,6 +160,7 @@ export type JobList = ResponseType<{
         ciPipelines: JobCIPipeline[]
         description: {
             description: string
+            updatedBy: string
         }
         projectId: number
     }[]

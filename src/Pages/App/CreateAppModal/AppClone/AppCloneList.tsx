@@ -7,16 +7,19 @@ import {
 
 import { GenericInfoCardListing } from './GenericInfoCardListing'
 import { AppCloneListProps } from './types'
-import { useDevtronAppList } from './useDevtronAppList'
+import { useDevtronCloneList } from './useDevtronCloneList'
 
-export const AppCloneList = ({ handleCloneAppClick }: AppCloneListProps) => {
+export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListProps) => {
     const { searchKey, handleSearch, clearFilters } = useStateFilters()
-    const { isAppListLoading, appList, AppListError, reloadAppList } = useDevtronAppList({ handleCloneAppClick })
+    const { isListLoading, list, listError, reloadList } = useDevtronCloneList({
+        handleCloneAppClick,
+        isJobView,
+    })
 
     return (
         <div className="flex-grow-1 flexbox-col dc__overflow-auto">
             <div className="flexbox-col dc__gap-12 pt-20 px-20">
-                <h2 className="m-0 fs-15 lh-1-5 fw-6 cn-9">Choose an application to clone</h2>
+                <h2 className="m-0 fs-15 lh-1-5 fw-6 cn-9">Choose {isJobView ? 'a job' : 'an application'} to clone</h2>
 
                 <SearchBar
                     dataTestId="template-list-search"
@@ -28,11 +31,11 @@ export const AppCloneList = ({ handleCloneAppClick }: AppCloneListProps) => {
             <div className="flex-grow-1 flexbox-col dc__gap-12 p-20 dc__overflow-auto">
                 <GenericInfoCardListing
                     borderVariant={GenericInfoCardBorderVariant.ROUNDED}
-                    list={appList}
+                    list={list}
                     searchKey={searchKey}
-                    isLoading={isAppListLoading}
-                    error={AppListError}
-                    reloadList={reloadAppList}
+                    isLoading={isListLoading}
+                    error={listError}
+                    reloadList={reloadList}
                     handleClearFilters={clearFilters}
                     emptyStateConfig={{
                         title: 'Add your first app template',

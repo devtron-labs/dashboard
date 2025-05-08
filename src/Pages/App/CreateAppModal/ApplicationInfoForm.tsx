@@ -22,6 +22,7 @@ import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.s
 import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
+import { getAppIconWithBackground } from '@Config/utils'
 
 import ProjectSelector from './ProjectSelector'
 import {
@@ -72,7 +73,7 @@ const ApplicationInfoForm = ({
     return (
         // key is required for ensuring autoFocus on name on creation method change
         <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary" key={selectedCreationMethod}>
-            <ICDevtronApp className="icon-dim-48 dc__no-shrink" />
+            {getAppIconWithBackground(isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS, 48)}
             <div className="flexbox dc__gap-8">
                 <ProjectSelector
                     selectedProjectId={formState.projectId}

@@ -15,4 +15,5 @@ export interface GenericInfoCardListingProps
 
 export interface AppCloneListProps {
     handleCloneAppClick: ({ appId, appName }: BaseAppMetaData) => void
+    isJobView?: boolean
 }

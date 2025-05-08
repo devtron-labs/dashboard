@@ -36,10 +36,11 @@ import {
 import { ReactComponent as ICAppTemplate } from '@Icons/ic-app-template.svg'
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICAppDevtron } from '@Icons/ic-devtron-app.svg'
+import { getAppConfig } from '@Components/app/Overview/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
-import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
+import { APP_TYPE, REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
 import { getHostURLConfiguration } from '@Services/service'
 
@@ -445,11 +446,12 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         <Button
                             dataTestId="clone-list-breadcrumb"
                             variant={ButtonVariantType.text}
-                            text="Clone Application"
+                            text={isJobView ? 'Clone Job' : 'Clone Application'}
                             onClick={goBackToAppCloneList}
                         />
                         <span>/</span>
                         <p className="m-0 flex left dc__gap-6">
+                            {getAppConfig(APP_TYPE.JOB, 20).icon}
                             <ICAppDevtron className="icon-dim-20 p-1 dc__no-shrink" />
                             <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">
                                 {formState.cloneAppConfig.appName}
@@ -477,7 +479,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 </div>
             </>
         ) : (
-            <AppCloneList handleCloneAppClick={handleCloneAppClick} />
+            <AppCloneList handleCloneAppClick={handleCloneAppClick} isJobView={isJobView} />
         )
 
     const getSelectedMethodContent = () => {
