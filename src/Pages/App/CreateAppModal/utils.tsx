@@ -60,14 +60,6 @@ export const validateProject = (projectId: CreateAppFormStateType['projectId']):
     return { isValid: false, message: 'Please select a project' }
 }
 
-export const validateCloneApp = (cloneAppId: CreateAppFormStateType['cloneAppId']): ValidationResponseType => {
-    if (cloneAppId) {
-        return { isValid: true, message: '' }
-    }
-
-    return { isValid: false, message: 'Please select an application to clone' }
-}
-
 export const getCreateMethodConfig = (
     isJobView: CreateAppModalProps['isJobView'],
     selectedCreationMethod: CreationMethodType,

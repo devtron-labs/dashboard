@@ -23,13 +23,11 @@ import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
 
-import AppToCloneSelector from './AppToCloneSelector'
 import ProjectSelector from './ProjectSelector'
 import {
     ApplicationInfoFormProps,
     CreateAppFormStateActionType,
     CreateAppFormStateType,
-    CreationMethodType,
     HandleFormStateChangeParamsType,
     ProjectSelectorProps,
 } from './types'
@@ -68,13 +66,6 @@ const ApplicationInfoForm = ({
         handleFormStateChange({
             action: CreateAppFormStateActionType.updateTags,
             value: tags,
-        })
-    }
-
-    const handleCloneIdChange = (cloneId) => {
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateCloneAppId,
-            value: cloneId,
         })
     }
 
@@ -147,13 +138,6 @@ const ApplicationInfoForm = ({
                     )}
                 </div>
             </div>
-            {selectedCreationMethod === CreationMethodType.clone && (
-                <AppToCloneSelector
-                    error={formErrorState.cloneAppId}
-                    isJobView={isJobView}
-                    handleCloneIdChange={handleCloneIdChange}
-                />
-            )}
         </div>
     )
 }

@@ -17,6 +17,7 @@
 import { SyntheticEvent } from 'react'
 
 import {
+    BaseAppMetaData,
     ButtonProps,
     DynamicDataTableCellErrorType,
     DynamicDataTableRowType,
@@ -56,6 +57,7 @@ export interface CreateAppFormStateType {
     gitMaterials: CreateAppGitMaterialType[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
     workflowConfig: CreateAppWorkflowConfigType
+    cloneAppConfig: BaseAppMetaData
 }
 
 export interface CreateAppFormErrorStateType {
@@ -63,7 +65,6 @@ export interface CreateAppFormErrorStateType {
     name: string
     description: string
     tags: DynamicDataTableCellErrorType<TagsTableColumnsType>
-    cloneAppId: string | null
     gitMaterials: boolean
     // Map of workflow id to error message
     workflowConfig: Record<string, string>
@@ -85,6 +86,7 @@ export enum CreateAppFormStateActionType {
     updateBuildConfiguration = 'updateBuildConfiguration',
     updateWorkflowConfig = 'updateWorkflowConfig',
     updateTemplateConfig = 'updateTemplateConfig',
+    updateCloneAppConfig = 'updateCloneAppConfig',
 }
 
 type BaseHandleFormStateChangeParamsType<Action extends CreateAppFormStateActionType, Value> = {
@@ -128,6 +130,10 @@ export type HandleFormStateChangeParamsType =
     | BaseHandleFormStateChangeParamsType<
           CreateAppFormStateActionType.updateTemplateConfig,
           CreateAppFormStateType['templateConfig']
+      >
+    | BaseHandleFormStateChangeParamsType<
+          CreateAppFormStateActionType.updateCloneAppConfig,
+          CreateAppFormStateType['cloneAppConfig']
       >
 
 export interface CreateAppModalProps {
