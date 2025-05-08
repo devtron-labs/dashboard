@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import { useEffect } from 'react'
 import {
     Drawer,
     GenericEmptyState,
     ImageType,
-    InfoColourBar,
     Progressing,
     usePrompt,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Prompt } from 'react-router-dom'
 import { HibernateStatusRow } from './HibernateStatusRow'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 
 export default function HibernateStatusListDrawer({
@@ -78,13 +77,7 @@ export default function HibernateStatusListDrawer({
                         SvgImage={MechanicalOperation}
                         imageType={ImageType.Large}
                     >
-                        <InfoColourBar
-                            message={DEFAULT_ROUTE_PROMPT_MESSAGE}
-                            classname="warn cn-9 lh-2 w-100 dc__align-left"
-                            Icon={Error}
-                            iconClass="warning-icon icon-dim-20-imp"
-                            iconSize={20}
-                        />
+                        <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                     </GenericEmptyState>
 
                     <Prompt when message={DEFAULT_ROUTE_PROMPT_MESSAGE} />

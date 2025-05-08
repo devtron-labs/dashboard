@@ -44,7 +44,6 @@ import { useAppContext } from '@Components/common'
 import { getAppOtherEnvironmentMin, getCDConfig as getCDPipelines } from '../../../../services/service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import './cdDetail.scss'
-import { DeploymentTemplateList } from './cd.type'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import {

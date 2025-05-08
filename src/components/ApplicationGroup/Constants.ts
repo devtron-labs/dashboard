@@ -161,6 +161,10 @@ export const ENV_APP_GROUP_GA_EVENTS = {
         category: 'Environment',
         action: 'Overview Clicked',
     },
+    EnvDetailsClicked: {
+        category: 'Environment',
+        action: 'App group App Details Clicked',
+    },
     BuildDeployClicked: {
         category: 'Environment',
         action: 'Build & Deploy Clicked',

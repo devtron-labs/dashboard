@@ -28,6 +28,9 @@ import {
     SelectPickerProps,
     SelectPickerVariantType,
     prefixZeroIfSingleDigit,
+    AppEnvironment,
+    SelectPickerOptionType,
+    IconsProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
@@ -307,7 +310,10 @@ const getTimestampFromDateIfAvailable = (dateString: string): string => {
     try {
         const [day, month, yearAndTime] = dateString.split('-')
         const [year, time] = yearAndTime.split(' ')
-        const updatedTime = time.split(':').map((item) => ['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))).join(':')
+        const updatedTime = time
+            .split(':')
+            .map((item) => (['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))))
+            .join(':')
         const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
         const parsedDate = new Date(formattedDate).getTime()
 
@@ -372,56 +378,24 @@ export const validateMomentDate = (date: string, format: string): string => {
     return moment(date, format).fromNow()
 }
 
-class EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        throw new Error('This method should be overridden by concrete classes.')
+export const getDeployButtonConfig = (
+    actionState: ACTION_STATE,
+    isForEmptyState: boolean,
+): { buttonStyle: ButtonStyleType; iconName: IconsProps['name'] } => {
+    if (isForEmptyState) {
+        return { buttonStyle: ButtonStyleType.default, iconName: 'ic-hand-pointing' }
     }
-}
-
-export class NoParamsNoEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        return _envList[0].environmentId
-    }
-}
-
-export class NoParamsWithEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (environmentId && _envList.map((env) => env.environmentId).includes(environmentId)) {
-            return environmentId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export class ParamsNoEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
-            return +params.envId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export class ParamsAndEnvContext extends EnvironmentSelection {
-    resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId) {
-        if (params.envId && _envList.map((env) => env.environmentId).includes(+params.envId)) {
-            // If environmentId is present and different from params.envContext, set environmentId
-            if (environmentId && +environmentId !== +params.envId) {
-                setEnvironmentId(+params.envId)
-            }
-            return +params.envId
-        }
-        return _envList[0].environmentId
-    }
-}
-
-export const getDeployButtonStyle = (actionState: ACTION_STATE): ButtonStyleType => {
     switch (actionState) {
         case ACTION_STATE.BLOCKED:
-            return ButtonStyleType.negative
+            return { buttonStyle: ButtonStyleType.negative, iconName: 'ic-info-outline' }
         case ACTION_STATE.PARTIAL:
-            return ButtonStyleType.warning
+            return { buttonStyle: ButtonStyleType.warning, iconName: 'ic-rocket-launch' }
         default:
-            return ButtonStyleType.default
+            return { buttonStyle: ButtonStyleType.default, iconName: 'ic-rocket-launch' }
     }
 }
+
+export const getEnvOptions = (env: AppEnvironment): SelectPickerOptionType<number> => ({
+    label: env.environmentName,
+    value: env.environmentId,
+})

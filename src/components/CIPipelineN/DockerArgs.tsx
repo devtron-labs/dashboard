@@ -14,139 +14,64 @@
  * limitations under the License.
  */
 
-import React, { FunctionComponent } from 'react'
+import { InfoIconTippy, KeyValueTable, KeyValueTableProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CustomInput, InfoIconTippy, Textarea } from '@devtron-labs/devtron-fe-common-lib'
+import { DockerArgsProps } from './types'
 
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { DockerArgsAction, DockerArgsItemProps, DockerArgsProps } from './types'
-
-const DockerArgsItem: FunctionComponent<DockerArgsItemProps> = ({
-    arg,
-    index,
+const DockerArgs = ({
+    args,
     handleDockerArgsUpdate,
-    fromBuildPack,
+    handleDockerArgsError,
+    fromBuildPack = false,
     readOnly,
-}) => {
-    const handleDockerArgKeyUpdate = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const argData = {
-            index,
-            value: event.target.value,
-        }
-        handleDockerArgsUpdate({ action: DockerArgsAction.UPDATE_KEY, argData })
-    }
-
-    const handleDockerArgValueUpdate = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-        const argData = {
-            index,
-            value: event.target.value,
-        }
-        handleDockerArgsUpdate({ action: DockerArgsAction.UPDATE_VALUE, argData })
-    }
-
-    const handleRemoveDockerArg = () => {
-        const argData = {
-            index,
-        }
-        handleDockerArgsUpdate({ action: DockerArgsAction.DELETE, argData })
-    }
-
-    return (
-        <div className="flexbox justify-space">
-            <div className="mt-8 w-100">
-                <CustomInput
-                    name="arg-key"
-                    data-testid={fromBuildPack ? `build-pack-build-env-key${index}` : `docker-arg-key-${index}`}
-                    placeholder="Key"
-                    type="text"
-                    value={arg.key}
-                    disabled={readOnly}
-                    onChange={handleDockerArgKeyUpdate}
-                    borderRadiusConfig={{
-                        bottom: false,
-                    }}
-                />
-                <Textarea
-                    name={fromBuildPack ? `build-pack-build-env-value${index}` : `docker-arg-value-${index}`}
-                    value={arg.value}
-                    placeholder="Value"
-                    onChange={handleDockerArgValueUpdate}
-                    disabled={readOnly}
-                    borderRadiusConfig={{
-                        top: false,
-                    }}
-                />
-            </div>
-
-            {!readOnly && (
-                <button
-                    className="dc__no-background flexbox dc__align-start dc__no-border dc__outline-none-imp"
-                    onClick={handleRemoveDockerArg}
-                    type="button"
-                    aria-label="remove-docker-args"
-                >
-                    <Close className="icon-dim-24 mt-6 ml-6" />
-                </button>
-            )}
-        </div>
-    )
-}
-
-const DockerArgs: FunctionComponent<DockerArgsProps> = ({ args, handleDockerArgsUpdate, fromBuildPack, readOnly }) => {
-    const handleAddDockerArgs = () => {
-        handleDockerArgsUpdate({ action: DockerArgsAction.ADD })
-    }
-
+}: DockerArgsProps) => {
     const heading = fromBuildPack ? 'Build Env Arguments' : 'Docker Build Arguments'
 
+    const validationSchema: KeyValueTableProps['validationSchema'] = (value, key, row) => {
+        if (key === 'value' && row.data.key.value && !value) {
+            return { isValid: false, errorMessages: ['This field is required'] }
+        }
+
+        return { isValid: true }
+    }
+
     return (
-        <div>
-            <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
-                {heading}
-                <InfoIconTippy
-                    heading={heading}
-                    infoText={`Key/value pair will be appended as
-                            ${
-                                fromBuildPack
-                                    ? ' buildpack env arguments (--env).'
-                                    : ' docker build arguments (--build-args).'
-                            }`}
-                    iconClassName="icon-dim-16 fcn-6 ml-4"
-                />
-            </h3>
-
-            {!fromBuildPack && (
-                <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
-            )}
-
-            {!readOnly && (
-                <button
-                    className="p-0 cb-5 fw-6 fs-13 flex content-fit lh-32 mt-8 dc__no-background dc__no-border dc__outline-none-imp"
-                    onClick={handleAddDockerArgs}
-                    data-testid={
-                        fromBuildPack
-                            ? 'create-build-pipeline-docker-args-add-argument-button'
-                            : 'create-build-pipeline-docker-args-add-parameter-button'
-                    }
-                    type="button"
-                >
-                    <span className="fa fa-plus mr-8" />
-                    Add {fromBuildPack ? 'argument' : 'parameter'}
-                </button>
-            )}
-
-            {args.length > 0 &&
-                args.map((arg, index) => (
-                    <DockerArgsItem
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={`build-${index}`}
-                        index={index}
-                        arg={arg}
-                        handleDockerArgsUpdate={handleDockerArgsUpdate}
-                        fromBuildPack={fromBuildPack}
-                        readOnly={readOnly}
+        <div className="flexbox-col dc__gap-8">
+            <div>
+                <h3 className="flex left fs-13 fw-6 cn-9 lh-20 m-0">
+                    {heading}
+                    <InfoIconTippy
+                        heading={heading}
+                        infoText={`Key/value pair will be appended as
+                        ${
+                            fromBuildPack
+                                ? ' buildpack env arguments (--env).'
+                                : ' docker build arguments (--build-args).'
+                        }`}
+                        iconClassName="icon-dim-16 fcn-6 ml-4"
                     />
-                ))}
+                </h3>
+
+                {!fromBuildPack && (
+                    <p className="fs-13 fw-4 cn-7 lh-20 m-0">Override docker build configurations for this pipeline.</p>
+                )}
+            </div>
+
+            <KeyValueTable
+                headerLabel={{ key: 'Key', value: 'Value' }}
+                placeholder={{ key: 'Enter key', value: 'Enter value' }}
+                rows={args.map(({ key, value, id }) => ({
+                    data: { key: { value: key }, value: { value } },
+                    id,
+                }))}
+                readOnly={readOnly}
+                onChange={handleDockerArgsUpdate}
+                onError={handleDockerArgsError}
+                showError
+                validateEmptyKeys
+                validateDuplicateKeys
+                validationSchema={validationSchema}
+            />
         </div>
     )
 }

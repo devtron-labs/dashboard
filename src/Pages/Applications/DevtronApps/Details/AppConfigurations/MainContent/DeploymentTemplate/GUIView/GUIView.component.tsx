@@ -24,7 +24,6 @@ import {
     GenericEmptyState,
     GUIViewError,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    InfoColourBar,
     joinObjects,
     OverrideMergeStrategyType,
     RJSFForm,
@@ -33,14 +32,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArrow } from '@Icons/ic-arrow-forward.svg'
-import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as ICWarningY5 } from '@Icons/ic-warning-y5.svg'
 import EmptyFolderImage from '@Images/empty-folder.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { DEPLOYMENT_TEMPLATE_LABELS_KEYS, GUI_VIEW_TEXTS } from '../constants'
 import { GUIViewProps, GUIViewState } from './types'
-import { getRenderActionButton } from './utils'
+import { GUIInfoBlock } from './utils'
 
 const makeObjectFromJsonPathArray = importComponentFromFELibrary('makeObjectFromJsonPathArray', null, 'function')
 const ConfigurableGUIViewPanel = importComponentFromFELibrary('ConfigurableGUIViewPanel', null, 'function')
@@ -234,15 +232,7 @@ const GUIView = ({
                 )}
             </div>
 
-            {!state.error && (
-                <InfoColourBar
-                    message="To modify additional configurations"
-                    classname="dc__content-start ev-2 bw-1 dc__no-border-radius dc__no-bottom-border dc__no-left-border dc__no-right-border bcv-1 bcv-1 w-100 lh-20"
-                    Icon={Help}
-                    iconClass="fcv-5 icon-dim-20 dc__no-shrink"
-                    renderActionButton={getRenderActionButton({ handleChangeToYAMLMode })}
-                />
-            )}
+            {!state.error && <GUIInfoBlock handleChangeToYAMLMode={handleChangeToYAMLMode} />}
         </>
     )
 }

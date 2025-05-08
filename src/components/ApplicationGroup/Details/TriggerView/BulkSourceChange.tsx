@@ -22,11 +22,10 @@ import {
     ButtonVariantType,
     CustomInput,
     Drawer,
-    InfoColourBar,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import SourceUpdateResponseModal from './SourceUpdateResponseModal'
 import { BulkSourceChangeProps } from './types'
 
@@ -106,11 +105,11 @@ const BulkSourceChange = ({
     )
 
     const renderInfoBar = (): JSX.Element => (
-        <InfoColourBar
-            message="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’ or ‘Branch Regex’."
-            classname="warn dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border"
-            Icon={Warn}
-            iconClass="warning-icon"
+        <InfoBlock
+            variant="warning"
+            borderRadiusConfig={{ top: false, right: false, bottom: false, left: false }}
+            borderConfig={{ top: false, left: false, right: false }}
+            description="Branch will be changed only for build pipelines with source type as ‘Branch Fixed’ or ‘Branch Regex’."
         />
     )
 

@@ -133,13 +133,10 @@ export default defineConfig(({ mode }) => {
                         if (id.includes('node_modules/react-mde')) {
                             return '@react-mde'
                         }
-
                         if (
-                            id.includes('node_modules/monaco-editor') ||
-                            id.includes('node_modules/react-monaco-editor') ||
-                            id.includes('dist/@monaco-editor')
+                            id.includes('dist/@code-editor')
                         ) {
-                            return '@monaco-editor'
+                            return '@code-editor'
                         }
 
                         if (id.includes('node_modules/@rxjs')) {

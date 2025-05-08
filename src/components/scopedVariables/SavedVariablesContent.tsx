@@ -151,19 +151,7 @@ const SavedVariablesContent = ({
                     </PopupMenu>
                 </div>
 
-                <CodeEditor
-                    mode={MODES.YAML}
-                    readOnly
-                    noParsing
-                    codeEditorProps={{
-                        value: scopedVariablesYAML,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: scopedVariablesYAML,
-                        height: 'fitToParent',
-                    }}
-                />
+                <CodeEditor mode={MODES.YAML} readOnly noParsing value={scopedVariablesYAML} height="fitToParent" />
             </div>
         </div>
     )

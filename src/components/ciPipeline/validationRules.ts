@@ -25,6 +25,7 @@ import {
     REPO_NAME_VALIDATION,
 } from '../../config/constantMessaging'
 import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
+import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
 import { ValidationRulesType } from './types'
 
 export class ValidationRules {
@@ -81,21 +82,7 @@ export class ValidationRules {
 
     validateInputOutputVariableCell = validateInputOutputVariableCell
 
-    conditionDetail = (value: object): { message: string | null; isValid: boolean } => {
-        if (!value['conditionOnVariable'] && !value['conditionalValue']) {
-            return { message: 'Please complete or remove this condition', isValid: false }
-        }
-        if (!value['conditionOnVariable']) {
-            return { message: 'Condition on variable is required', isValid: false }
-        }
-        if (!value['conditionOperator']) {
-            return { message: 'Condition operator is required', isValid: false }
-        }
-        if (!value['conditionalValue']) {
-            return { message: 'Conditional value is required', isValid: false }
-        }
-        return { message: null, isValid: true }
-    }
+    validateConditionDataCell = validateConditionDataCell
 
     sourceValue: ValidationRulesType['sourceValue'] = (value, doRegexValidation) => {
         if (!value) {

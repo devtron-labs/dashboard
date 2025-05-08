@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ConditionContainerType, ConditionType } from '@Components/ciPipeline/types'
+
 export const TIPPY_VAR_MSG = 'This is a variable. It will be replaced with the value during execution.'
 
 export const excludeVariables = ['DOCKER_IMAGE_TAG', 'DOCKER_IMAGE']
@@ -21,4 +23,9 @@ export const excludeVariables = ['DOCKER_IMAGE_TAG', 'DOCKER_IMAGE']
 export const INLINE_PLUGIN_TEXT = {
     TITLE: 'Execute custom task',
     DESCRIPTION: 'Write a script to perform custom task or create custom plugin',
+}
+
+export const CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP = {
+    [ConditionContainerType.TRIGGER_SKIP]: [ConditionType.TRIGGER, ConditionType.SKIP],
+    [ConditionContainerType.PASS_FAILURE]: [ConditionType.PASS, ConditionType.FAIL],
 }

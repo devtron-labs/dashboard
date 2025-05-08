@@ -18,15 +18,15 @@ import { useState } from 'react'
 
 import {
     ACTION_STATE,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DEPLOYMENT_WINDOW_TYPE,
     GenericEmptyState,
-    InfoColourBar,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as Failed } from '../../../../assets/icons/ic-error.svg'
 import { ReactComponent as ArrowRight } from '../../../../assets/icons/ic-expand.svg'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import { BulkRotatePodsMap, ResourcesMetaDataMap, RestartStatusListDrawerProps } from '../../AppGroup.types'
@@ -234,13 +234,7 @@ export const RestartStatusListDrawer = ({
                     subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                     SvgImage={MechanicalIcon}
                 >
-                    <InfoColourBar
-                        message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
-                        classname="warn cn-9 lh-2 w-100"
-                        Icon={Warn}
-                        iconClass="warning-icon h-100-imp"
-                        iconSize={24}
-                    />
+                    <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </GenericEmptyState>
             </div>
         )

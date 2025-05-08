@@ -22,7 +22,7 @@ import {
     DeleteConfirmationModal,
     EnvResourceType,
     getEnvironmentListMinPublic,
-    InfoColourBar,
+    InfoBlock,
     PopupMenu,
     Progressing,
     SelectPicker,
@@ -35,7 +35,6 @@ import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as Help } from '../../../../../../assets/icons/ic-help.svg'
 import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
 import warn from '../../../../../../assets/icons/ic-warning.svg'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
@@ -336,15 +335,7 @@ const EnvironmentOverrideRouter = ({
             )
         }
         if (!isJobView) {
-            return (
-                <InfoColourBar
-                    classname="question-bar no-env-overrides"
-                    message={<EnvOverridesHelpNote />}
-                    Icon={Help}
-                    iconClass="fcv-5"
-                    iconSize={16}
-                />
-            )
+            return <InfoBlock variant="help" description={<EnvOverridesHelpNote />} />
         }
         return null
     }

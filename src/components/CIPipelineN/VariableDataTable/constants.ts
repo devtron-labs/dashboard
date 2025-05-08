@@ -122,3 +122,8 @@ export const VARIABLE_DATA_TABLE_CELL_ERROR_MSGS = {
 }
 
 export const VARIABLE_DATA_TABLE_CELL_BOOL_VALUES = ['True', 'False', 'true', 'false']
+
+export const VARIABLE_DATA_TABLE_ADD_BUTTON_TIPPY_MAP: Record<PluginVariableType, string> = {
+    [PluginVariableType.INPUT]: 'Add input variable',
+    [PluginVariableType.OUTPUT]: 'Add output variable',
+}

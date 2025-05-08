@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import { showError, Progressing, VisibleModal, InfoColourBar, SelectPicker, ToastManager, ToastVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { useEffect, useState } from 'react'
+import {
+    showError,
+    Progressing,
+    VisibleModal,
+    SelectPicker,
+    ToastManager,
+    ToastVariantType,
+    ComponentSizeType,
+    InfoBlock,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
 import { AboutAppInfoModalProps, NumberOptionType } from '../types'
 import { editApp } from '../service'
+import { projectChangeMessage } from './utils'
 
 export default function AboutAppInfoModal({
     isLoading,
@@ -91,10 +100,10 @@ export default function AboutAppInfoModal({
 
         try {
             await editApp(payload)
-             ToastManager.showToast({
-                 variant: ToastVariantType.success,
-                 description: `Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`,
-             })
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: `Application '${appMetaInfo.appName}' is moved to project '${selectedProject.label}'`,
+            })
 
             // Fetch the latest project & labels details
             await getAppMetaInfoRes()
@@ -113,21 +122,6 @@ export default function AboutAppInfoModal({
         }
     }
 
-    const projectChangeMessage = (): JSX.Element => {
-        return (
-            <>
-                <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
-                <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4 m-0">
-                    <li>Current users losing access to this application.</li>
-                    <li>
-                        Users getting an access to the application automatically, if they have an access to the selected
-                        project.
-                    </li>
-                </ol>
-            </>
-        )
-    }
-
     const renderAboutModalInfo = (): JSX.Element => {
         return (
             <>
@@ -136,17 +130,7 @@ export default function AboutAppInfoModal({
                     {selectedProject &&
                         appMetaInfo &&
                         selectedProject.label !== appMetaInfo.projectName &&
-                        !isJobOverview && (
-                            <InfoColourBar
-                                classname="warn cn-9 lh-20"
-                                Icon={Error}
-                                message={projectChangeMessage()}
-                                iconClass="warning-icon"
-                                styles={{
-                                    padding: '8px 12px',
-                                }}
-                            />
-                        )}
+                        !isJobOverview && <InfoBlock variant="warning" description={projectChangeMessage()} />}
                 </div>
                 <div className="form__buttons dc__border-top pt-16 pb-16 pl-20 pr-20">
                     <button

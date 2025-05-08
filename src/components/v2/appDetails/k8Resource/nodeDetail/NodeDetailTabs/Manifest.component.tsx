@@ -24,14 +24,11 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     CodeEditor,
-    CodeEditorThemesKeys,
     ConditionalWrap,
     ConfigurationType,
     DeploymentAppTypes,
     FormProps,
-    getComponentSpecificThemeClass,
-    InfoColourBar,
-    isCodeMirrorEnabled,
+    InfoBlock,
     logExceptionToSentry,
     noop,
     ServerErrors,
@@ -45,8 +42,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
-import { ReactComponent as ICInfoFilled } from '@Icons/ic-info-filled.svg'
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -78,7 +73,7 @@ import {
     updateManifestResourceHelmApps,
 } from '../nodeDetail.api'
 import { NodeDetailTab } from '../nodeDetail.type'
-import { getDecodedEncodedSecretManifestData, getTrimmedManifestData } from '../nodeDetail.util'
+import { getDecodedEncodedSecretManifestData, getTrimmedManifestData, manifestBorderConfig } from '../nodeDetail.util'
 
 const renderOutOfSyncWarning = importComponentFromFELibrary('renderOutOfSyncWarning', null, 'function')
 const getManifestGUISchema = importComponentFromFELibrary('getManifestGUISchema', null, 'function')
@@ -660,15 +655,7 @@ const ManifestComponent = ({
             )
         }
 
-        return (
-            <InfoColourBar
-                message={message}
-                classname="w-100 m-0 fs-12 fw-4 lh-16 cn-9 py-8 px-16 bcb-1 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
-                Icon={ICInfoFilled}
-                iconClass="icon-dim-16"
-                linkClass="dc__truncate--clamp-6"
-            />
-        )
+        return <InfoBlock description={message} {...manifestBorderConfig} />
     }
 
     const renderErrorBar = (isCodeEditorView: boolean = false) => {
@@ -680,15 +667,7 @@ const ManifestComponent = ({
             return <CodeEditor.ErrorBar text={errorText} />
         }
 
-        return (
-            <InfoColourBar
-                message={errorText}
-                classname="w-100 m-0 fs-12 fw-4 lh-16 py-8 px-16 bco-1 co-5 dc__border-bottom dc__no-border-radius dc__no-top-border dc__no-left-border dc__no-right-border dc__word-break"
-                Icon={ICErrorExclamation}
-                iconClass="icon-dim-16"
-                linkClass="dc__truncate--clamp-6"
-            />
-        )
+        return <InfoBlock variant="error" description={errorText} {...manifestBorderConfig} />
     }
 
     const renderContent = () => {
@@ -710,11 +689,7 @@ const ManifestComponent = ({
         }
 
         return (
-            <div
-                className={`flex-grow-1 flexbox-col ${
-                    !isCodeMirrorEnabled() ? getComponentSpecificThemeClass(AppThemeType.dark) : ''
-                }`}
-            >
+            <div className="flex-grow-1 flexbox-col">
                 <CodeEditor
                     cleanData={showManifestCompareView}
                     diffView={showManifestCompareView}
@@ -722,31 +697,21 @@ const ManifestComponent = ({
                     readOnly={isReadOnlyView}
                     loading={loading}
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
-                    codeEditorProps={{
-                        theme: CodeEditorThemesKeys.vsDarkDT,
-                        value: getCodeEditorValue(),
-                        defaultValue: showManifestCompareView ? desiredManifest : '',
-                        onChange: handleEditorValueChange,
-                        focus: isEditMode,
-                        height: '0',
-                    }}
-                    codeMirrorProps={{
-                        theme: AppThemeType.dark,
-                        height: 'fitToParent',
-                        ...(showManifestCompareView
-                            ? {
-                                  diffView: true,
-                                  originalValue: desiredManifest,
-                                  modifiedValue: getCodeEditorValue(),
-                                  onModifiedValueChange: handleEditorValueChange,
-                              }
-                            : {
-                                  diffView: false,
-                                  value: getCodeEditorValue(),
-                                  onChange: handleEditorValueChange,
-                                  autoFocus: isEditMode,
-                              }),
-                    }}
+                    theme={AppThemeType.dark}
+                    height="fitToParent"
+                    {...(showManifestCompareView
+                        ? {
+                              diffView: true,
+                              originalValue: desiredManifest,
+                              modifiedValue: getCodeEditorValue(),
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: getCodeEditorValue(),
+                              onChange: handleEditorValueChange,
+                              autoFocus: isEditMode,
+                          })}
                 >
                     {renderEditorInfo(true)}
 
@@ -787,7 +752,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className="manifest-container flexbox-col flex-grow-1 dc__overflow-auto"
+            className="flexbox-col flex-grow-1 dc__overflow-auto"
             data-testid="app-manifest-container"
             style={{
                 background: 'var(--terminal-bg)',

@@ -65,11 +65,6 @@ export const TIME_STAMP_ORDER = {
     ASCENDING: 'ASC',
 }
 
-export const HOST_ERROR_MESSAGE = {
-    NotConfigured: 'Host url is not configured or is incorrect. Reach out to your DevOps team (super-admin) to',
-    Review: 'Review and update',
-}
-
 export const TRIGGER_VIEW_GA_EVENTS = {
     MaterialClicked: {
         category: 'Trigger View',

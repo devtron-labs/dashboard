@@ -40,6 +40,7 @@ import {
     FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     getVariableDataTableHeaders,
+    VARIABLE_DATA_TABLE_ADD_BUTTON_TIPPY_MAP,
     VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
     VARIABLE_DATA_TABLE_EMPTY_ROW_MESSAGE,
 } from './constants'
@@ -566,6 +567,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     onRowEdit={handleRowEdit}
                     onRowDelete={handleRowDelete}
                     onRowAdd={handleRowAdd}
+                    addBtnTooltip={VARIABLE_DATA_TABLE_ADD_BUTTON_TIPPY_MAP[type]}
                     {...(isFELibAvailable && isInputPluginVariable
                         ? {
                               actionButtonConfig: {

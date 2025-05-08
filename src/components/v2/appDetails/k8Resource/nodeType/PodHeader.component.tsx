@@ -93,7 +93,7 @@ const PodHeaderComponent = ({ callBack }: { callBack: (isNewPod: boolean) => voi
 
     return (
         <div className="dc__border-bottom px-16">
-            <TabGroup tabs={tabs} size={ComponentSizeType.xl} alignActiveBorderWithContainer />
+            <TabGroup tabs={tabs} size={ComponentSizeType.xl} />
         </div>
     )
 }

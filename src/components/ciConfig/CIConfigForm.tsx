@@ -38,7 +38,6 @@ import {
     SelectedGitMaterialType,
     SourceConfigType,
 } from './types'
-import warningIconSrc from '../../assets/icons/ic-warning-y6.svg'
 import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
 import CIConfigDiffView from './CIConfigDiffView'
@@ -129,6 +128,10 @@ export default function CIConfigForm({
     )
     const [args, setArgs] = useState<CIBuildArgType[]>([])
     const [buildEnvArgs, setBuildEnvArgs] = useState<CIBuildArgType[]>([])
+    const [argsError, setArgsError] = useState<{ args: boolean; buildEnvArgs: boolean }>({
+        args: false,
+        buildEnvArgs: false,
+    })
     const [loadingDataState, setLoadingDataState] = useState<LoadingState>({
         loading: false,
         failed: false,
@@ -188,21 +191,16 @@ export default function CIConfigForm({
         }
     }
 
-    async function onValidation(state) {
-        const args2 = args.map(({ k, v, keyError, valueError }, idx) => {
-            if (v && !k) {
-                keyError = 'This field is required'
-            } else if (k && !v) {
-                valueError = 'This field is required'
-            }
-            const arg = { k, v, keyError, valueError }
-            return arg
-        })
-        const areArgsWrong = args2.some((arg) => arg.keyError || arg.valueError)
-        if (areArgsWrong) {
-            setArgs([...args2])
+    async function onValidation() {
+        const isBuildpackType = currentCIBuildConfig.ciBuildType === CIBuildType.BUILDPACK_BUILD_TYPE
+        if (isBuildpackType ? argsError.buildEnvArgs : argsError.args) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please ensure build arguments are valid',
+            })
             return
         }
+
         let targetPlatforms = ''
         const targetPlatformsSet = new Set()
         for (let index = 0; index < selectedTargetPlatforms.length; index++) {
@@ -226,9 +224,9 @@ export default function CIConfigForm({
                 language: _ciBuildConfig.buildPackConfig.language,
                 languageVersion: _ciBuildConfig.buildPackConfig.languageVersion,
                 projectPath: projectPath.value || './',
-                args: buildEnvArgs.reduce((agg, { k, v }) => {
-                    if (k && v) {
-                        agg[k] = v
+                args: buildEnvArgs.reduce((agg, { key, value }) => {
+                    if (key && value) {
+                        agg[key] = value
                     }
                     return agg
                 }, {}),
@@ -238,9 +236,9 @@ export default function CIConfigForm({
                 ..._ciBuildConfig.dockerBuildConfig,
                 dockerfileRelativePath: dockerfile.value.replace(/^\//, ''),
                 dockerfilePath: `${selectedMaterial?.checkoutPath}/${dockerfile.value}`.replace('//', '/'),
-                args: args.reduce((agg, { k, v }) => {
-                    if (k && v) {
-                        agg[k] = v
+                args: args.reduce((agg, { key, value }) => {
+                    if (key && value) {
+                        agg[key] = value
                     }
                     return agg
                 }, {}),
@@ -290,7 +288,9 @@ export default function CIConfigForm({
                     <span className="fs-14 cn-7 dc__block">Custom target platform(s):</span>
                     {selectedTargetPlatforms.map((targetPlatform) =>
                         targetPlatformMap.get(targetPlatform.value) ? null : (
-                            <span key={targetPlatform.value} className="fs-13 cn-7 dc__block">{targetPlatform.value}</span>
+                            <span key={targetPlatform.value} className="fs-13 cn-7 dc__block">
+                                {targetPlatform.value}
+                            </span>
                         ),
                     )}
                 </div>
@@ -403,6 +403,7 @@ export default function CIConfigForm({
                             setArgs={setArgs}
                             buildEnvArgs={buildEnvArgs}
                             setBuildEnvArgs={setBuildEnvArgs}
+                            setArgsError={setArgsError}
                             handleOnChangeConfig={handleOnChangeConfig}
                             selectedTargetPlatforms={selectedTargetPlatforms}
                             setSelectedTargetPlatforms={setSelectedTargetPlatforms}

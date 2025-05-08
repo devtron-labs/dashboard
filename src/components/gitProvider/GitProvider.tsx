@@ -20,7 +20,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    InfoColourBar,
     VisibleModal,
     useEffectAfterMount,
     stopPropagation,
@@ -41,6 +40,7 @@ import {
     Textarea,
     PasswordField,
     Icon,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -67,7 +67,6 @@ import { ReactComponent as Warn } from '@Icons/ic-info-warn.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
 import { AuthenticationType } from '../cluster/cluster.type'
-import { ReactComponent as Info } from '@Icons/info-filled.svg'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
 
@@ -881,11 +880,8 @@ const GitForm = ({
                 versa.
             </div>
             {state.auth.value === AuthenticationType.ANONYMOUS && (
-                <InfoColourBar
-                    message="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
-                    classname="info_bar cn-9 mb-16 lh-20"
-                    Icon={Info}
-                    iconClass="icon-dim-20"
+                <InfoBlock
+                    description="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
                 />
             )}
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}

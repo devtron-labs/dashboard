@@ -26,7 +26,7 @@ import {
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
-    InfoColourBar,
+    InfoBlock,
     MODAL_TYPE,
     stopPropagation,
     usePrompt,
@@ -37,8 +37,6 @@ import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clock
 import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import {
@@ -450,23 +448,17 @@ export const RestartWorkloadModal = ({
                     subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                     SvgImage={MechanicalIcon}
                 >
-                    <InfoColourBar
-                        message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
-                        classname="warn cn-9 lh-2 w-100"
-                        Icon={Warn}
-                        iconClass="warning-icon h-100-imp"
-                        iconSize={20}
-                    />
+                    <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </GenericEmptyState>
             )
         }
 
         return (
             <div className="flexbox-col dc__overflow-auto">
-                <InfoColourBar
-                    message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
-                    classname="info_bar dc__no-border-radius dc__no-top-border"
-                    Icon={InfoIcon}
+                <InfoBlock
+                    borderConfig={{ top: false, right: false, left: false }}
+                    borderRadiusConfig={{ top: false, right: false, bottom: false, left: false }}
+                    description={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
                 />
                 {renderWorkloadTableHeader()}
                 {renderRestartWorkloadModalListItems()}

@@ -29,6 +29,7 @@ import {
     DeleteConfirmationModal,
     API_STATUS_CODES,
     useUserPreferences,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
 import {
@@ -41,8 +42,6 @@ import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getAppMetaInfo } from '../service'
 import { AppMetaInfo } from '../types'
-import { EnvType } from '../../v2/appDetails/appDetails.type'
-import { AppDetailsProps } from './triggerView/types'
 import Overview from '../Overview/Overview'
 import { AppHeader } from './AppHeader'
 import './appDetails/appDetails.scss'
@@ -58,13 +57,12 @@ const TriggerView = lazy(() => import('./triggerView/TriggerView'))
 const DeploymentMetrics = lazy(() => import('./metrics/DeploymentMetrics'))
 const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
 const AppDetails = lazy(() => import('./appDetails/AppDetails'))
-const IndexComponent = lazy(() => import('../../v2/index'))
-
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
-export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
+export default function AppDetailsPage() {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
+    const { setIntelligenceConfig } = useMainContext()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -137,6 +135,7 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             setSelectedAppList([])
             setSelectedGroupFilter([])
             setAppListOptions([])
+            setIntelligenceConfig(null)
         }
     }, [appId])
 
@@ -343,26 +342,25 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
     }
 
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
+
     return (
         <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
-            {!isV2 && (
-                <AppHeader
-                    appName={appName}
-                    appMetaInfo={appMetaInfo}
-                    reloadMandatoryProjects={reloadMandatoryProjects}
-                    appListOptions={appListOptions}
-                    selectedAppList={selectedAppList}
-                    setSelectedAppList={setSelectedAppList}
-                    selectedFilterTab={selectedFilterTab}
-                    setSelectedFilterTab={setSelectedFilterTab}
-                    groupFilterOptions={groupFilterOptions}
-                    selectedGroupFilter={selectedGroupFilter}
-                    setSelectedGroupFilter={setSelectedGroupFilter}
-                    openCreateGroup={openCreateGroup}
-                    openDeleteGroup={openDeleteGroup}
-                    isSuperAdmin
-                />
-            )}
+            <AppHeader
+                appName={appName}
+                appMetaInfo={appMetaInfo}
+                reloadMandatoryProjects={reloadMandatoryProjects}
+                appListOptions={appListOptions}
+                selectedAppList={selectedAppList}
+                setSelectedAppList={setSelectedAppList}
+                selectedFilterTab={selectedFilterTab}
+                setSelectedFilterTab={setSelectedFilterTab}
+                groupFilterOptions={groupFilterOptions}
+                selectedGroupFilter={selectedGroupFilter}
+                setSelectedGroupFilter={setSelectedGroupFilter}
+                openCreateGroup={openCreateGroup}
+                openDeleteGroup={openDeleteGroup}
+                isSuperAdmin
+            />
             {showCreateGroup && (
                 <CreateAppGroup
                     unAuthorizedApps={mapUnauthorizedApp}
@@ -385,17 +383,10 @@ export default function AppDetailsPage({ isV2 }: AppDetailsProps) {
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
-                        {isV2 ? (
-                            <Route
-                                path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <IndexComponent envType={EnvType.APPLICATION} />}
-                            />
-                        ) : (
-                            <Route
-                                path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
-                                render={(props) => <AppDetails filteredEnvIds={_filteredEnvIds} />}
-                            />
-                        )}
+                        <Route
+                            path={`${path}/${URLS.APP_DETAILS}/:envId(\\d+)?`}
+                            render={() => <AppDetails detailsType="app" filteredResourceIds={_filteredEnvIds} />}
+                        />
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <Overview
                                 appType={APP_TYPE.DEVTRON_APPS}

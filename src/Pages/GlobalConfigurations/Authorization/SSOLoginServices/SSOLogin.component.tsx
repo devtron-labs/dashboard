@@ -39,8 +39,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     ErrorScreenManager,
     FeatureTitleWithInfo,
-    InfoColourBar,
-    isCodeMirrorEnabled,
+    InfoBlock,
     MODES,
     noop,
     Progressing,
@@ -51,7 +50,6 @@ import {
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import Check from '@Icons/ic-selected-corner.png'
 import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
@@ -667,9 +665,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             this.state.configMap === SwitchItemValues.Configuration ? ssoConfig : YAMLStringify(sample[this.state.sso])
 
         let presetConfig = (
-            <div
-                className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
-            >
+            <div className="w-100 code-editor__text">
                 <p className="m-0">config:</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;name: {this.state.ssoConfig.config.name}</p>
@@ -680,9 +676,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         if (this.state.configMap === SwitchItemValues.Configuration && this.state.sso === OIDCType) {
             presetConfig = (
-                <div
-                    className={`w-100 code-editor__text ${!isCodeMirrorEnabled() ? 'code-editor__text--monaco-editor' : ''}`}
-                >
+                <div className="w-100 code-editor__text">
                     <p className="m-0">config:</p>
                     <p className="m-0">&nbsp;&nbsp;&nbsp;&nbsp;type: {this.state.ssoConfig.config.type}</p>
                 </div>
@@ -691,33 +685,20 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
 
         const shebangHtml = this.state.configMap === SwitchItemValues.Configuration ? presetConfig : null
 
-        const decorationWidth = this.state.sso !== OIDCType ? 50 : 25
         return (
             <CodeEditor.Container>
                 <CodeEditor
                     mode={MODES.YAML}
                     noParsing={this.state.sso === OIDCType}
                     readOnly={this.state.configMap !== SwitchItemValues.Configuration}
-                    codeEditorProps={{
-                        value: codeEditorBody,
-                        shebang: shebangHtml,
-                        lineDecorationsWidth:
-                            this.state.configMap === SwitchItemValues.Configuration ? decorationWidth : 0,
-                        onChange: this.handleConfigChange,
-                        onBlur: this.handleOnBlur,
-                        adjustEditorHeightToContent: true,
-                    }}
-                    codeMirrorProps={{
-                        value: codeEditorBody,
-                        shebang: shebangHtml,
-                        onChange: this.handleConfigChange,
-                        onBlur: this.handleOnBlur,
-                        height: 'auto',
-                    }}
+                    value={codeEditorBody}
+                    shebang={shebangHtml}
+                    onChange={this.handleConfigChange}
+                    onBlur={this.handleOnBlur}
+                    height="auto"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
-                            <CodeEditor.ValidationError />
                             <div className="dc__no-shrink ml-auto">
                                 <Switch
                                     value={this.state.configMap}
@@ -809,14 +790,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         />
                     ))}
                 </div>
-                <div className="flex-grow-1 w-100">
-                    <InfoColourBar
-                        message={renderInfoText()}
-                        classname="question-bar w-100 dc__mw-600"
-                        iconClass="icon-dim-20 fcv-5"
-                        Icon={Help}
-                    />
-                </div>
+                <InfoBlock variant="help" description={renderInfoText()} />
                 <div className="flex-grow-1 w-100">
                     <CustomInput
                         value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}

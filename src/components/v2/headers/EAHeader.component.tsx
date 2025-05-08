@@ -90,7 +90,7 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
             )
         }
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     return (

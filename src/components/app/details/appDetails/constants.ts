@@ -36,3 +36,14 @@ export const DA_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.
         action: 'DA_APP_DETAIL_METRICS_PRESET_TIME_RANGE',
     },
 }
+
+export const AG_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.event>[0]> = {
+    DeployButtonClicked: {
+        category: 'App Details',
+        action: 'AG_APP_DETAIL_DEPLOY',
+    },
+    GoToEnvironmentConfiguration: {
+        category: 'App Details',
+        action: 'AG_APP_DETAIL_GO_TO_ENV_CONFIG',
+    },
+}

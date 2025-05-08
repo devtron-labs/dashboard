@@ -44,3 +44,16 @@ const parseLabels = (currentLabelTags: TagType[]): DynamicDataTableRowType<TagsT
 
 export const getLabelTags = (currentLabelTags: TagType[]) =>
     currentLabelTags?.length ? parseLabels(currentLabelTags) : [getEmptyTagTableRow()]
+
+export const projectChangeMessage = (): JSX.Element => (
+    <>
+        <span className="fs-13 fw-4 lh-20 cn-9">Project change may lead to:</span>
+        <ol className="fs-13 fw-4 lh-20 cn-9 pl-20 pr-4 m-0">
+            <li>Current users losing access to this application.</li>
+            <li>
+                Users getting an access to the application automatically, if they have an access to the selected
+                project.
+            </li>
+        </ol>
+    </>
+)

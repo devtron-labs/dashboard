@@ -253,17 +253,17 @@ export default function BuildCD({
 
     const renderWebhookInfo = () => {
         return (
-            <InfoColourBar
-                message={
-                    <div>
-                        <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample JSON
-                        will be generated after the pipeline is created.
-                    </div>
-                }
-                classname="bw-1 bcv-1 ev-2 bcv-1 fs-12 mt-20"
-                Icon={Help}
-                iconClass="fcv-5 h-20"
-            />
+            <div className="mt-16">
+                <InfoBlock
+                    variant="help"
+                    description={
+                        <div>
+                            <span className="fw-6">Connecting to external CI service: </span>A webhook url and sample
+                            JSON will be generated after the pipeline is created.
+                        </div>
+                    }
+                />
+            </div>
         )
     }
 
@@ -303,20 +303,21 @@ export default function BuildCD({
             })
     }
 
-    const gitOpsRepoConfigInfoBar = (content: string) => isTemplateView ? null : (
-        <InfoBlock
-            description={content}
-            variant="warning"
-            buttonProps={{
-                dataTestId: 'configure-gitops-repo-button',
-                variant: ButtonVariantType.text,
-                text: 'Configure',
-                endIcon: <ICArrowRight />,
-                onClick: checkGitOpsRepoConflict,
-                isLoading: gitopsConflictLoading,
-            }}
-        />
-    )
+    const gitOpsRepoConfigInfoBar = (content: string) =>
+        isTemplateView ? null : (
+            <InfoBlock
+                description={content}
+                variant="warning"
+                buttonProps={{
+                    dataTestId: 'configure-gitops-repo-button',
+                    variant: ButtonVariantType.text,
+                    text: 'Configure',
+                    endIcon: <ICArrowRight />,
+                    onClick: checkGitOpsRepoConflict,
+                    isLoading: gitopsConflictLoading,
+                }}
+            />
+        )
 
     const renderTriggerType = () => (
         <TriggerTypeRadio
@@ -748,18 +749,11 @@ export default function BuildCD({
                                 <div className="deployment-strategy__info-body">
                                     <CodeEditor
                                         mode={MODES.YAML}
-                                        codeEditorProps={{
-                                            value: strategy.yamlStr,
-                                            height: 300,
-                                            onChange: (event) =>
-                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
-                                        }}
-                                        codeMirrorProps={{
-                                            value: strategy.yamlStr,
-                                            height: 300,
-                                            onChange: (event) =>
-                                                handleStrategyChange(event, strategy.deploymentTemplate, 'yaml'),
-                                        }}
+                                        value={strategy.yamlStr}
+                                        height={300}
+                                        onChange={(event) =>
+                                            handleStrategyChange(event, strategy.deploymentTemplate, 'yaml')
+                                        }
                                     />
                                 </div>
                             )}

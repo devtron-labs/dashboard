@@ -16,7 +16,7 @@
 
 import { useState } from 'react'
 
-import { InfoColourBar, Progressing, showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoBlock, Progressing, showError, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
@@ -122,11 +122,9 @@ const RegeneratedModal = ({
             <div className="modal__body w-600 flex column pt-0 pr-0 pl-0 pb-16">
                 {renderModalHeader()}
                 <div className="p-20 w-100">
-                    <InfoColourBar
-                        message="Submitting this form will generate a new token. Be aware that any scripts or applications using the current token will need to be updated."
-                        classname="warn"
-                        Icon={Warn}
-                        iconClass="warning-icon"
+                    <InfoBlock
+                        variant="warning"
+                        description="Submitting this form will generate a new token. Be aware that any scripts or applications using the current token will need to be updated."
                     />
                     <div className="mt-20 mb-20">
                         <ExpirationDate

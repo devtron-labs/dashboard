@@ -26,7 +26,7 @@ import {
     ComponentSizeType,
     EntityTypes,
     GVKType,
-    InfoColourBar,
+    InfoBlock,
     OptionType,
     ResourceListPayloadType,
     SelectPicker,
@@ -44,7 +44,6 @@ import {
 
 import { ReactComponent as Clone } from '../../../../../../assets/icons/ic-copy.svg'
 import { ReactComponent as Delete } from '../../../../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as InfoIcon } from '../../../../../../assets/icons/info-filled.svg'
 import {
     convertToOptionsList,
     importComponentFromFELibrary,
@@ -497,12 +496,7 @@ const K8sListItemCard = ({
                         size={ComponentSizeType.large}
                     />
                     {K8S_PERMISSION_INFO_MESSAGE[k8sPermission?.kind?.label] && (
-                        <InfoColourBar
-                            message={K8S_PERMISSION_INFO_MESSAGE[k8sPermission.kind.label]}
-                            classname="info_bar mb-12"
-                            Icon={InfoIcon}
-                            iconClass="icon-dim-20"
-                        />
+                        <InfoBlock description={K8S_PERMISSION_INFO_MESSAGE[k8sPermission.kind.label]} />
                     )}
                     <div className="w-300">
                         <SelectPicker

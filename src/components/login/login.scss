@@ -26,6 +26,12 @@
             color: var(--N900)
         }
     }
+
+    .login-image-container {
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
 }
 
 // SSO login & GitOps configuration css
