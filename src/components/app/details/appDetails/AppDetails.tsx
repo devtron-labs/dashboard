@@ -840,8 +840,6 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                 replace(newUrl)
                 return
             }
-            setEnvironmentId(null)
-            return
         }
 
         const selectedAppId =
@@ -857,7 +855,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
         if (!params.envId || !params.appId) {
             return
         }
-        // Setting environmentId in app context only in cse of app details and not env details
+        // Setting environmentId in app context only in case of app details and not env details
         if (isAppView) {
             setEnvironmentId(Number(params.envId))
         }

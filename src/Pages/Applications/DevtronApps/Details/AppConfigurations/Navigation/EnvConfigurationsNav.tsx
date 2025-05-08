@@ -42,6 +42,7 @@ import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
 import { ReactComponent as ICFileCode } from '@Icons/ic-file-code.svg'
 import { ReactComponent as ICLocked } from '@Icons/ic-locked.svg'
+import { useAppContext } from '@Components/common'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { URLS } from '@Config/routes'
 import { ResourceConfigState } from '@Pages/Applications/DevtronApps/service.types'
@@ -306,14 +307,22 @@ export const EnvConfigurationsNav = ({
     compareWithURL,
     appOrEnvIdToResourceApprovalConfigurationMap,
     isTemplateView,
+    shouldSetEnvInContext = false,
 }: EnvConfigurationsNavProps) => {
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
+    const { setEnvironmentId } = useAppContext()
     const { pathname } = useLocation()
     const { path, params } = useRouteMatch<EnvConfigRouteParams>()
 
     const { envId, resourceType } = params
     const parsedResourceId = +params[paramToCheck]
+
+    useEffect(() => {
+        if (envId && !Number.isNaN(+envId) && shouldSetEnvInContext) {
+            setEnvironmentId(+envId)
+        }
+    }, [envId])
 
     const { isLoading } = envConfig
     const resourceData =

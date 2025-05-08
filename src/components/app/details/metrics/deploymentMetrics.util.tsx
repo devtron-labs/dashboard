@@ -216,3 +216,16 @@ export function getTimeperiod(timeInDays: number) {
     const timeInMinutes = 24 * 60 * (1 / timeInDays)
     return createTimestamp(timeInMinutes)
 }
+
+export const getGALabel = (statusFilter) => {
+    switch (Number(statusFilter)) {
+        case -1:
+            return 'All'
+        case 0:
+            return 'Success'
+        case 1:
+            return 'Failed'
+        default:
+            return ''
+    }
+}
