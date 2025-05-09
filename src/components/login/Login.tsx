@@ -42,7 +42,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { dashboardAccessed } from '../../services/service'
-import { ANIMATION_VARIANTS, SSOProvider } from './constants'
+import { LOGIN_CARD_ANIMATION_VARIANTS, SSOProvider } from './constants'
 import { SSOConfigLoginList } from './login.types'
 import { LoginForm } from './LoginForm'
 
@@ -189,16 +189,14 @@ const Login = () => {
                 <div className="login-card__wrapper dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
-                        {/* do we need initial */}
                         <AnimatePresence initial={false}>
                             <MotionDiv
                                 key={location.pathname}
-                                variants={ANIMATION_VARIANTS}
+                                variants={LOGIN_CARD_ANIMATION_VARIANTS}
                                 initial="initial"
                                 animate="animate"
                                 exit="exit"
-                                transition={{ duration: 0.25, ease: 'easeInOut' }}
-                                style={{ overflow: 'hidden' }}
+                                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
                             >
                                 {renderLoginContent()}
                             </MotionDiv>
