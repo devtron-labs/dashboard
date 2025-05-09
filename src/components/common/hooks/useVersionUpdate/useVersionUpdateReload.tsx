@@ -137,7 +137,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return
         }
         if (document.visibilityState === 'visible') {
-            handleAppUpdate()
             refreshing.current = true
         } else {
             if (typeof setBGUpdated !== 'function') return
