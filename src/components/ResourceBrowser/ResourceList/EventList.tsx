@@ -16,9 +16,8 @@
 
 /* eslint-disable react/no-danger */
 import DOMPurify from 'dompurify'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
-import { highlightSearchText, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { getAIAnalyticsEvents, highlightSearchText, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 

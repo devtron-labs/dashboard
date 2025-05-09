@@ -63,6 +63,16 @@
         }
     }
 
+    &__hover {
+        &:hover {
+            background: var(--bg-hover);
+        }
+
+        &--opaque:hover {
+            background: var(--bg-hover-opaque);
+        }
+    }
+
     &__white {
         background: var(--white);
     }

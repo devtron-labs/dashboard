@@ -15,7 +15,6 @@
  */
 
 import { useMemo, useState } from 'react'
-import AppStatusDetailModal from './AppStatusDetailModal'
 import './environmentStatus.scss'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
@@ -25,7 +24,11 @@ import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
 import NotesDrawer from './NotesDrawer'
 import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
-import { DeploymentAppTypes, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatusModal,
+    DeploymentAppTypes,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
 import HelmAppConfigApplyStatusCard from './HelmAppConfigApplyStatusCard'
 import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
@@ -39,6 +42,7 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 import SecurityVulnerabilityCard from '../../../../app/details/appDetails/SecurityVulnerabilityCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 
 const EnvironmentStatusComponent = ({
@@ -52,8 +56,6 @@ const EnvironmentStatusComponent = ({
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
     const [showNotes, setShowNotes] = useState(false)
     const status = appDetails.resourceTree?.status || appDetails?.appStatus || ''
-    const showHibernationStatusMessage =
-        status.toLowerCase() === 'hibernated' || status.toLowerCase() === 'partially hibernated'
     const { url } = useRouteMatch()
     const history = useHistory()
     const params = useParams<{ appId: string; envId: string }>()
@@ -172,6 +174,10 @@ const EnvironmentStatusComponent = ({
         )
     }
 
+    const handleCloseAppStatusModal = () => {
+        setShowAppStatusDetail(false)
+    }
+
     return (
         <div>
             {loadingDetails ? (
@@ -192,11 +198,17 @@ const EnvironmentStatusComponent = ({
                 </div>
             )}
             {showAppStatusDetail && (
-                <AppStatusDetailModal
-                    close={() => {
-                        setShowAppStatusDetail(false)
-                    }}
-                    showAppStatusMessage={showHibernationStatusMessage}
+                <AppStatusModal
+                    titleSegments={[
+                        appDetails?.appName,
+                        appDetails?.environmentName || appDetails?.namespace,
+                    ]}
+                    handleClose={handleCloseAppStatusModal}
+                    type="other-apps"
+                    appDetails={appDetails}
+                    isConfigDriftEnabled={false}
+                    configDriftModal={null}
+                    debugWithAIButton={ExplainWithAIButton}
                 />
             )}
             {showIssuesModal && (

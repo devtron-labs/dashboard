@@ -16,12 +16,12 @@
 
 import { Fragment, useEffect, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import { getAIAnalyticsEvents } from 'src/Shared'
 import { followCursor } from 'tippy.js'
 
 import {
     ClipboardButton,
     ComponentSizeType,
+    getAIAnalyticsEvents,
     noop,
     SortableTableHeaderCell,
     TabGroup,
