@@ -96,5 +96,4 @@ export interface DeploymentMetricsState {
         endDate: undefined | Moment
     }
     deploymentTableView: string
-    filteredEnvironment: Array<Environment>
 }

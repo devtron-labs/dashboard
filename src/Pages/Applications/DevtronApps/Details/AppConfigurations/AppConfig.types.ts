@@ -218,6 +218,7 @@ export interface EnvConfigurationsNavProps extends Required<Pick<AppConfigProps,
     isCMSecretLocked?: boolean
     hideEnvSelector?: boolean
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
+    shouldSetEnvInContext?: boolean
 }
 
 export interface EnvConfigRouteParams {

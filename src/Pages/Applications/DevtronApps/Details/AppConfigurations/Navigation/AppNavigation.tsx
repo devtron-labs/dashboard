@@ -172,6 +172,7 @@ export const AppNavigation = () => {
                         isCMSecretLocked={!isUnlocked.workflowEditor}
                         appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                         isTemplateView={isTemplateView}
+                        shouldSetEnvInContext={!isTemplateView && !isJobView}
                     />
                 )}
             </Route>

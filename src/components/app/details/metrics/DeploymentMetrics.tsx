@@ -14,50 +14,55 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import React, { Component, useEffect } from 'react'
+import ReactGA from 'react-ga4'
+import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+import moment from 'moment'
+import { Bar, BarChart, Label, Legend, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+
 import {
-    showError,
-    Progressing,
+    EMPTY_STATE_STATUS,
     ErrorScreenManager,
     GenericEmptyState,
+    Progressing,
     SelectPicker,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { generatePath } from 'react-router-dom'
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, Label, ReferenceLine } from 'recharts'
-import moment from 'moment'
-import Tippy from '@tippyjs/react'
-import ReactGA from 'react-ga4'
-import { getDeploymentMetrics } from './deploymentMetrics.service'
-import { DatePicker } from '../../../common'
-import { ViewType } from '../../../../config'
-import { DeploymentTable } from './DeploymentTable'
-import { getAppOtherEnvironmentMin } from '../../../../services/service'
-import { DeploymentTableModal } from './DeploymentTableModal'
-import { BenchmarkModal } from './BenchmarkModal'
-import {
-    BenchmarkLine,
-    frequencyXAxisLabel,
-    leadTimeXAxisLabel,
-    recoveryTimeLabel,
-    ReferenceLineLegend,
-    renderCategoryTag,
-    FrequencyTooltip,
-    RecoveryTimeTooltip,
-    LeadTimeTooltip,
-    EliteCategoryMessage,
-    FailureLegendEmptyState,
-} from './deploymentMetrics.util'
-import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
-import SelectEnvImage from '../../../../assets/img/ic-empty-dep-metrics@2x.png'
-import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
-import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
+
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { ReactComponent as Fail } from '@Icons/ic-error-exclamation.svg'
-import './deploymentMetrics.scss'
-import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types'
-import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
 
-export default class DeploymentMetrics extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
+import AppNotDeployed from '@Images/app-not-deployed.svg'
+import SelectEnvImage from '@Images/ic-empty-dep-metrics@2x.png'
+import { ViewType } from '../../../../config'
+import { getAppOtherEnvironmentMin } from '../../../../services/service'
+import { DatePicker, useAppContext } from '../../../common'
+import { BenchmarkModal } from './BenchmarkModal'
+import { getDeploymentMetrics } from './deploymentMetrics.service'
+import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types'
+import {
+    BenchmarkLine,
+    EliteCategoryMessage,
+    FailureLegendEmptyState,
+    FrequencyTooltip,
+    frequencyXAxisLabel,
+    getGALabel,
+    LeadTimeTooltip,
+    leadTimeXAxisLabel,
+    recoveryTimeLabel,
+    RecoveryTimeTooltip,
+    ReferenceLineLegend,
+    renderCategoryTag,
+} from './deploymentMetrics.util'
+import { DeploymentTable } from './DeploymentTable'
+import { DeploymentTableModal } from './DeploymentTableModal'
+
+import './deploymentMetrics.scss'
+
+class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
     constructor(props) {
         super(props)
 
@@ -93,7 +98,6 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                 endDate: undefined,
             },
             deploymentTableView: ViewType.FORM,
-            filteredEnvironment: [],
         }
         this.handleDatesChange = this.handleDatesChange.bind(this)
         this.handleFocusChange = this.handleFocusChange.bind(this)
@@ -181,7 +185,6 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                     allEnv.length && prevEnvId && (prevEnvId !== this.props.match.params.envId || !isEnvExist)
                 this.setState({
                     environments: allEnv,
-                    filteredEnvironment: allEnv,
                     view: this.props.match.params.envId || redirectToNewUrl ? ViewType.LOADING : ViewType.FORM,
                 })
                 if (redirectToNewUrl) {
@@ -234,26 +237,13 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         ReactGA.event({
             category: 'Deployment Metrics',
             action: 'Deployment Status Filter Clicked',
-            label: this.getGALabel(event.target.value),
+            label: getGALabel(event.target.value),
         })
         this.setState({ statusFilter: Number(event.target.value), deploymentTableView: ViewType.LOADING }, () => {
             setTimeout(() => {
                 this.setState({ deploymentTableView: ViewType.FORM })
             }, 500)
         })
-    }
-
-    getGALabel(statusFilter) {
-        switch (Number(statusFilter)) {
-            case -1:
-                return 'All'
-            case 0:
-                return 'Success'
-            case 1:
-                return 'Failed'
-            default:
-                return ''
-        }
     }
 
     renderInputs() {
@@ -269,11 +259,11 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
                         onChange={(selected) => {
                             this.handleEnvironmentChange(selected)
                         }}
-                        options={this.state.filteredEnvironment.sort((a, b) => (a.label > b.label ? 1 : -1))}
+                        options={this.state.environments}
                     />
                 </div>
                 <div className="dc__align-right ">
-                    {this.props.match.params.envId ? (
+                    {this.state.selectedEnvironment ? (
                         <DatePicker
                             startDate={this.state.startDate}
                             endDate={this.state.endDate}
@@ -631,21 +621,22 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
         if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
             return this.renderNoEnvironmentView()
         }
-        if (this.state.view === ViewType.FORM && !this.props.match.params.envId) {
+        if (this.state.view === ViewType.FORM && (!this.props.match.params.envId || !(this.state.environments ?? []).find((env) => env.value === +this.props.match.params.envId))) {
             return this.renderSelectEnvironmentView()
         }
         if (this.state.view === ViewType.FORM && this.state.frequencyAndLeadTimeGraph.length === 0) {
             return this.renderEmptyState()
         }
 
-        let deploymentTableRows = this.state.rows
-        if (this.state.statusFilter > -1) {
-            deploymentTableRows = deploymentTableRows.filter((row) => {
-                if (row.releaseStatus === this.state.statusFilter) {
-                    return row
-                }
-            })
-        }
+        const deploymentTableRows =
+            this.state.statusFilter > -1
+                ? this.state.rows.filter((row) => {
+                      if (row.releaseStatus === this.state.statusFilter) {
+                          return row
+                      }
+                  })
+                : this.state.rows
+
         return (
             <div>
                 {this.renderGraphs()}
@@ -703,7 +694,27 @@ export default class DeploymentMetrics extends Component<DeploymentMetricsProps,
     }
 }
 
-export interface FrequencyGraphLegendProps {
+const DeploymentMetrics = (props: DeploymentMetricsProps) => {
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
+    const { environmentId, setEnvironmentId } = useAppContext()
+    const { path } = useRouteMatch()
+    const { replace } = useHistory()
+
+    useEffect(() => {
+        if (envId && +envId !== environmentId) {
+            setEnvironmentId(+envId)
+        }
+        if (!envId && environmentId) {
+            replace(generatePath(path, { appId, envId: environmentId }))
+        }
+    }, [envId])
+
+    return <DeploymentMetricsComponent {...props} />
+}
+
+export default DeploymentMetrics
+
+interface FrequencyGraphLegendProps {
     noFailures: boolean
     label: string
     frequency: string
@@ -713,7 +724,7 @@ export interface FrequencyGraphLegendProps {
     setFrequencyMetric: (...args) => void
     setFailureMetric: (...args) => void
 }
-export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendProps, {}> {
+class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendProps, {}> {
     render() {
         return (
             <div className="graph-legend">
@@ -789,7 +800,7 @@ export class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendPr
     }
 }
 
-export interface RecoveryAndLeadTimeGraphLegendProps {
+interface RecoveryAndLeadTimeGraphLegendProps {
     noFailures: boolean
     valueLabel: string
     label: string
@@ -797,7 +808,7 @@ export interface RecoveryAndLeadTimeGraphLegendProps {
     benchmark: undefined | any
     setMetric: (...args) => void
 }
-export class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndLeadTimeGraphLegendProps, {}> {
+class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndLeadTimeGraphLegendProps, {}> {
     render() {
         if (this.props.noFailures) {
             return (
