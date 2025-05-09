@@ -319,10 +319,10 @@ export const EnvConfigurationsNav = ({
     const parsedResourceId = +params[paramToCheck]
 
     useEffect(() => {
-        if (envId && !Number.isNaN(+envId) && shouldSetEnvInContext) {
+        if (shouldSetEnvInContext && envId && !Number.isNaN(+envId)) {
             setEnvironmentId(+envId)
         }
-    }, [envId])
+    }, [envId, shouldSetEnvInContext])
 
     const { isLoading } = envConfig
     const resourceData =

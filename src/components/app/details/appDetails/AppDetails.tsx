@@ -840,6 +840,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                 replace(newUrl)
                 return
             }
+            return
         }
 
         const selectedAppId =
