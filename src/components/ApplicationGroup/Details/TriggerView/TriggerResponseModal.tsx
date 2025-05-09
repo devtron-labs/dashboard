@@ -77,12 +77,7 @@ export const TriggerResponseModalFooter = ({
     )
 }
 
-const TriggerResponseModalBody = ({
-    responseList,
-    isLoading,
-    isVirtualEnv,
-    envName,
-}: TriggerResponseModalBodyProps) => {
+const TriggerResponseModalBody = ({ responseList, isLoading, isVirtualEnv }: TriggerResponseModalBodyProps) => {
     if (isLoading) {
         return <Progressing pageLoader />
     }
@@ -104,7 +99,6 @@ const TriggerResponseModalBody = ({
                         rowData={response}
                         index={index}
                         isVirtualEnv={isVirtualEnv}
-                        envName={envName}
                     />
                 ))}
         </div>

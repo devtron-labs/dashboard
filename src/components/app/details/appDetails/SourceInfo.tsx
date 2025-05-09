@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import moment from 'moment'
 import {
@@ -27,6 +27,7 @@ import {
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     handleUTCTime,
+    logExceptionToSentry,
     Icon,
     Progressing,
     ReleaseMode,
@@ -351,10 +352,14 @@ export const SourceInfo = ({
     const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        if (!appDetails?.helmPackageName) {
+            logExceptionToSentry(new Error('Cannot find helm package name in appDetails while downloading'))
+        }
+
         const paramsId = {
             appId: +params.appId,
             envId: +params.envId,
-            appName: `${appDetails?.appName}-${appDetails?.environmentName}-${appDetails?.imageTag}`,
+            appName: appDetails?.helmPackageName || 'helm-package',
         }
         if (AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />
