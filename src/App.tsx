@@ -14,54 +14,45 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useRef, useState, useEffect } from 'react'
-import { Route, Switch, Redirect, useHistory, useLocation } from 'react-router-dom'
-import './css/application.scss'
+import { lazy, Suspense, useEffect, useState } from 'react'
+import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+
 import {
-    showError,
-    BreadcrumbStore,
-    Reload,
-    DevtronProgressing,
-    APPROVAL_MODAL_TYPE,
-    useUserEmail,
-    URLS as CommonURLS,
-    ToastManager,
-    ToastVariantType,
     API_STATUS_CODES,
-    logExceptionToSentry,
+    APPROVAL_MODAL_TYPE,
+    BreadcrumbStore,
+    DevtronProgressing,
+    ErrorScreenManager,
+    showError,
+    URLS as CommonURLS,
+    useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
-import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { useRegisterSW } from 'virtual:pwa-register/react'
-import {
-    useOnline,
-    ErrorBoundary,
-    importComponentFromFELibrary,
-    getApprovalModalTypeFromURL,
-    reloadLocation,
-} from './components/common'
-import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG, URLS } from './config'
-import { validateToken } from './services/service'
+
+import { useVersionUpdateReload } from '@Components/common/hooks/useVersionUpdate'
+import { VersionUpdateProps } from '@Components/common/hooks/useVersionUpdate/types'
 import ActivateLicense from '@Pages/License/ActivateLicense'
+
+import { ErrorBoundary, getApprovalModalTypeFromURL, importComponentFromFELibrary } from './components/common'
+import { validateToken } from './services/service'
+import { URLS } from './config'
+
+import './css/application.scss'
 
 const NavigationRoutes = lazy(() => import('./components/common/navigation/NavigationRoutes'))
 const Login = lazy(() => import('./components/login/Login'))
 const GenericDirectApprovalModal = importComponentFromFELibrary('GenericDirectApprovalModal')
 
-export default function App() {
-    const onlineToastRef = useRef(null)
-    const updateToastRef = useRef(null)
+const App = () => {
     const [errorPage, setErrorPage] = useState<boolean>(false)
-    const isOnline = useOnline()
-    const refreshing = useRef(false)
-    const { setEmail } = useUserEmail()
-    const [bgUpdated, setBGUpdated] = useState(false)
     const [validating, setValidating] = useState(true)
     const [approvalToken, setApprovalToken] = useState<string>('')
     const [approvalType, setApprovalType] = useState<APPROVAL_MODAL_TYPE>(APPROVAL_MODAL_TYPE.CONFIG)
+
+    const { setEmail } = useUserEmail()
+
     const location = useLocation()
     const { push } = useHistory()
-    const didMountRef = useRef(false)
+
     const isDirectApprovalNotification =
         location.pathname &&
         location.pathname.includes('approve') &&
@@ -71,46 +62,40 @@ export default function App() {
         ? 'custom-theme-override'
         : ''
 
-    function onlineToast(...showToastParams: Parameters<typeof ToastManager.showToast>) {
-        if (onlineToastRef.current && ToastManager.isToastActive(onlineToastRef.current)) {
-            ToastManager.dismissToast(onlineToastRef.current)
-        }
-        onlineToastRef.current = ToastManager.showToast(...showToastParams)
-    }
-
-    useEffect(() => {
-        if (didMountRef.current) {
-            if (!isOnline) {
-                onlineToast(
-                    {
-                        variant: ToastVariantType.error,
-                        title: 'You are offline!',
-                        description: 'You are not seeing real-time data and any changes you make will not be saved.',
-                    },
-                    {
-                        autoClose: false,
-                    },
-                )
-            } else {
-                onlineToast({
-                    variant: ToastVariantType.success,
-                    title: 'Connected!',
-                    description: "You're back online.",
-                })
-            }
-        } else {
-            didMountRef.current = true
-            // Removing any toast explicitly due to race condition of offline toast for some users
-            ToastManager.dismissToast(onlineToastRef.current)
-        }
-    }, [isOnline])
-
     const defaultRedirection = (): void => {
         if (location.search && location.search.includes('?continue=')) {
             const newLocation = location.search.replace('?continue=', '')
             push(newLocation)
         }
     }
+
+    const toastEligibleRoutes: VersionUpdateProps['toastEligibleRoutes'] = [
+        {
+            path: `/${approvalType?.toLowerCase()}/approve`,
+            exact: true,
+            condition: isDirectApprovalNotification && GenericDirectApprovalModal,
+            component: <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />,
+            eligibleLocation: `/${approvalType?.toLowerCase()}/approve`,
+        },
+        {
+            path: CommonURLS.LICENSE_AUTH,
+            exact: false,
+            condition: true,
+            component: <ActivateLicense />,
+            eligibleLocation: CommonURLS.LICENSE_AUTH,
+        },
+        {
+            path: URLS.LOGIN,
+            exact: false,
+            condition: !window._env_.K8S_CLIENT,
+            component: <Login />,
+            eligibleLocation: URLS.LOGIN_SSO || URLS.LOGIN_ADMIN,
+        },
+    ]
+
+    const reloadVersionConfig = useVersionUpdateReload({
+        toastEligibleRoutes,
+    })
 
     const redirectToDirectApprovalNotification = (): void => {
         setValidating(false)
@@ -132,7 +117,7 @@ export default function App() {
             defaultRedirection()
         } catch (err: any) {
             // push to login without breaking search
-            if (err?.code === 401) {
+            if (err?.code === API_STATUS_CODES.UNAUTHORIZED) {
                 const loginPath = URLS.LOGIN_SSO
                 const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
                     ? location.search
@@ -147,22 +132,7 @@ export default function App() {
         }
     }
 
-    function handleControllerChange() {
-        if (refreshing.current) {
-            return
-        }
-        if (document.visibilityState === 'visible') {
-            window.location.reload()
-            refreshing.current = true
-        } else {
-            setBGUpdated(true)
-        }
-    }
-
     useEffect(() => {
-        if (navigator.serviceWorker) {
-            navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange)
-        }
         // If not K8S_CLIENT then validateToken otherwise directly redirect
         //  No need to validate token if on license auth page
         if (!window._env_.K8S_CLIENT && location.pathname !== CommonURLS.LICENSE_AUTH) {
@@ -170,149 +140,40 @@ export default function App() {
             if (isDirectApprovalNotification) {
                 redirectToDirectApprovalNotification()
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 validation()
             }
         } else {
             setValidating(false)
             defaultRedirection()
         }
-
-        return () => {
-            navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange)
-        }
     }, [])
 
-    const serviceWorkerTimeout = (() => {
-        const parsedTimeout = parseInt(window._env_.SERVICE_WORKER_TIMEOUT, 10)
-
-        if (parsedTimeout) {
-            return parsedTimeout
-        }
-
-        return 3
-    })()
-
-    const {
-        needRefresh: [doesNeedRefresh],
-        updateServiceWorker,
-    } = useRegisterSW({
-        onRegisteredSW(swUrl, swRegistration) {
-            console.log(`Service Worker at: ${swUrl}`)
-            swRegistration &&
-                setInterval(
-                    async () => {
-                        if (
-                            swRegistration.installing ||
-                            !navigator ||
-                            ('connection' in navigator && !navigator.onLine)
-                        ) {
-                            return
-                        }
-
-                        try {
-                            const resp = await fetch(swUrl, {
-                                cache: 'no-store',
-                                headers: {
-                                    cache: 'no-store',
-                                    'cache-control': 'no-cache',
-                                },
-                            })
-                            if (resp?.status === API_STATUS_CODES.OK) {
-                                await swRegistration.update()
-                            }
-                        } catch {
-                            // Do nothing
-                        }
-                    },
-                    serviceWorkerTimeout * 1000 * 60,
-                )
-        },
-        onRegisterError(error) {
-            console.error('SW registration error', error)
-            logExceptionToSentry(error)
-        },
-        onNeedRefresh() {
-            handleNeedRefresh()
-        },
-    })
-
-    function handleAppUpdate() {
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
-
-        updateServiceWorker(true)
-    }
-
-    function handleNeedRefresh() {
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
-
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'You are viewing an outdated version of Devtron UI.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: handleAppUpdate,
-                    startIcon: <ICArrowClockwise />,
-                },
-                icon: <ICSparkles />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
+    const renderRoutesWithErrorBoundary = () =>
+        errorPage ? (
+            <div className="full-height-width bg__tertiary">
+                <ErrorScreenManager />
+            </div>
+        ) : (
+            <ErrorBoundary>
+                <BreadcrumbStore>
+                    <Switch>
+                        {toastEligibleRoutes.map(({ exact, path, condition, component }) =>
+                            condition ? (
+                                <Route key={path} path={path} exact={exact}>
+                                    {component}
+                                </Route>
+                            ) : null,
+                        )}
+                        <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
+                        <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
+                    </Switch>
+                    <div id="visible-modal" />
+                    <div id="visible-modal-2" />
+                    <div id="animated-dialog-backdrop" />
+                </BreadcrumbStore>
+            </ErrorBoundary>
         )
-        if (typeof Storage !== 'undefined') {
-            localStorage.removeItem('serverInfo')
-        }
-    }
-
-    useEffect(() => {
-        if (window.isSecureContext && navigator.serviceWorker) {
-            // check for sw updates on page change
-            navigator.serviceWorker
-                .getRegistrations()
-                .then((registrations) => registrations.forEach((reg) => reg.update()))
-            if (doesNeedRefresh) {
-                handleAppUpdate()
-            } else if (ToastManager.isToastActive(updateToastRef.current)) {
-                ToastManager.dismissToast(updateToastRef.current)
-            }
-        }
-    }, [location])
-
-    useEffect(() => {
-        if (!bgUpdated) {
-            return
-        }
-        if (ToastManager.isToastActive(updateToastRef.current)) {
-            ToastManager.dismissToast(updateToastRef.current)
-        }
-
-        updateToastRef.current = ToastManager.showToast(
-            {
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'This page has been updated. Please save any unsaved changes and refresh.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-btn',
-                    onClick: reloadLocation,
-                    startIcon: <ICArrowClockwise />,
-                },
-                icon: <ICSparkles />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            },
-            {
-                autoClose: false,
-            },
-        )
-    }, [bgUpdated])
 
     return (
         <div className={customThemeClassName}>
@@ -322,41 +183,11 @@ export default function App() {
                         <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
                     </div>
                 ) : (
-                    <>
-                        {errorPage ? (
-                            <div className="full-height-width bg__tertiary">
-                                <Reload />
-                            </div>
-                        ) : (
-                            <ErrorBoundary>
-                                <BreadcrumbStore>
-                                    <Switch>
-                                        {isDirectApprovalNotification && GenericDirectApprovalModal && (
-                                            <Route exact path={`/${approvalType?.toLocaleLowerCase()}/approve`}>
-                                                <GenericDirectApprovalModal
-                                                    approvalType={approvalType}
-                                                    approvalToken={approvalToken}
-                                                />
-                                            </Route>
-                                        )}
-                                        <Route path={CommonURLS.LICENSE_AUTH}>
-                                            <ActivateLicense />
-                                        </Route>
-                                        {!window._env_.K8S_CLIENT && <Route path="/login" component={Login} />}
-                                        <Route path="/" render={() => <NavigationRoutes />} />
-                                        <Redirect
-                                            to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`}
-                                        />
-                                    </Switch>
-                                    <div id="visible-modal" />
-                                    <div id="visible-modal-2" />
-                                    <div id="animated-dialog-backdrop" />
-                                </BreadcrumbStore>
-                            </ErrorBoundary>
-                        )}
-                    </>
+                    renderRoutesWithErrorBoundary()
                 )}
             </Suspense>
         </div>
     )
 }
+
+export default App

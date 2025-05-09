@@ -124,7 +124,6 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
-                showAnnouncementHeader
             />
         </div>
     )
