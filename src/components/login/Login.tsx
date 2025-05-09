@@ -127,10 +127,22 @@ const Login = () => {
 
     const renderSSOLoginPage = () => (
         <div className="flexbox-col dc__gap-12 p-36">
+            {initLoading && !loginList.length && (
+                <Button
+                    variant={ButtonVariantType.secondary}
+                    text="Checking SSO"
+                    dataTestId="checking-sso"
+                    style={ButtonStyleType.neutral}
+                    startIcon={<Icon name="ic-circle-loader" color={null} />}
+                    fullWidth
+                    size={ComponentSizeType.xl}
+                    disabled
+                />
+            )}
             {loginList
                 .filter((sso) => sso.active)
                 .map((item) => (
-                    <div className="login-button" key={item.name}>
+                    <div key={item.name}>
                         <Button
                             variant={ButtonVariantType.secondary}
                             text={`Login with ${item.name}`}
@@ -181,15 +193,15 @@ const Login = () => {
     )
 
     return (
-        <div className="full-height-width login dc__grid-half bg__secondary">
+        <div className="full-height-width dc__grid-half bg__secondary">
             <div className="flexbox p-12">
                 <LoginBanner />
             </div>
             <div className="flex">
-                <div className="login-card__wrapper dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
+                <div className="shadow__overlay dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
-                        <AnimatePresence initial={false}>
+                        <AnimatePresence>
                             <MotionDiv
                                 key={location.pathname}
                                 variants={LOGIN_CARD_ANIMATION_VARIANTS}
@@ -197,6 +209,7 @@ const Login = () => {
                                 animate="animate"
                                 exit="exit"
                                 transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                                className="dc__overflow-hidden"
                             >
                                 {renderLoginContent()}
                             </MotionDiv>
