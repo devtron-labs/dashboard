@@ -47,7 +47,7 @@ const UserPermissionListHeader = ({
     const { isSuperAdmin } = useMainContext()
 
     return (
-        <div className="flex dc__content-space px-20 dc__zi-2">
+        <div className="flex dc__content-space px-20 dc__zi-2 pt-16">
             <div className="flex dc__gap-8">
                 <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">User Permissions</h2>
                 <InfoIconTippy

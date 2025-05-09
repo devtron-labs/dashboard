@@ -397,8 +397,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         )
 
         return (
-            <div className="app-tabs-wrapper px-20">
-                <TabGroup tabs={tabs} rightComponent={rightComponent} alignActiveBorderWithContainer />
+            <div className="px-20 border__primary--bottom">
+                <TabGroup tabs={tabs} rightComponent={rightComponent} />
             </div>
         )
     }

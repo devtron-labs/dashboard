@@ -31,10 +31,18 @@
 
     &--col-6 {
         grid-template-columns: 1fr 50px 100px 60px 80px 20px;
+
+        &.explain-ai-button {
+            grid-template-columns: 1fr 50px 100px 60px 80px 32px 20px !important;
+        }
     }
 
     &--col-3 {
         grid-template-columns: 1fr 1fr 20px;
+
+        &.explain-ai-button {
+            grid-template-columns: 1fr 1fr 32px 20px !important;
+        }
     }
 }
 

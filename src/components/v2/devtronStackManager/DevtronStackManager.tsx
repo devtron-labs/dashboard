@@ -25,7 +25,7 @@ import {
     AppStatusModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
-import { ErrorBoundary, useInterval } from '../../common'
+import { ErrorBoundary, importComponentFromFELibrary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -49,6 +49,8 @@ import {
 import './devtronStackManager.scss'
 import { isGitopsConfigured } from '../../../services/service'
 import { getAppDetailsFromResourceStatusData } from './DevtronStackManager.utils'
+
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 export default function DevtronStackManager({
     serverInfo,
@@ -94,7 +96,11 @@ export default function DevtronStackManager({
     }, [])
 
     const appDetails = useMemo(
-        () => getAppDetailsFromResourceStatusData(selectedModule?.moduleResourcesStatus, selectedModule?.installationStatus),
+        () =>
+            getAppDetailsFromResourceStatusData(
+                selectedModule?.moduleResourcesStatus,
+                selectedModule?.installationStatus,
+            ),
         [selectedModule],
     )
 
@@ -579,12 +585,13 @@ export default function DevtronStackManager({
                                 <Body />
                                 {showResourceStatusModal && selectedModule && (
                                     <AppStatusModal
-                                        titleSegments={["Integration installation status"]}
+                                        titleSegments={['Integration installation status']}
                                         handleClose={closeCheckResourceStatusModal}
                                         type="stack-manager"
                                         appDetails={appDetails}
                                         isConfigDriftEnabled={false}
                                         configDriftModal={null}
+                                        debugWithAIButton={ExplainWithAIButton}
                                     />
                                 )}
                             </ErrorBoundary>

@@ -355,33 +355,21 @@ export default function ChartValuesEditor({
                 </div>
             }
             readOnly={manifestView}
-            codeEditorProps={{
-                height: '0',
-                defaultValue: comparisonView
-                    ? manifestView
-                        ? valuesForDiffState.selectedManifestForDiff
-                        : valuesForDiffState.selectedValuesForDiff
-                    : '',
-                value: manifestView ? generatedManifest : valuesText,
-                onChange: onChange,
-            }}
-            codeMirrorProps={{
-                height: 'fitToParent',
-                ...(comparisonView
-                    ? {
-                          diffView: true,
-                          originalValue: manifestView
-                              ? valuesForDiffState.selectedManifestForDiff
-                              : valuesForDiffState.selectedValuesForDiff,
-                          modifiedValue: manifestView ? generatedManifest : valuesText,
-                          onModifiedValueChange: onChange,
-                      }
-                    : {
-                          diffView: false,
-                          value: manifestView ? generatedManifest : valuesText,
-                          onChange,
-                      }),
-            }}
+            height="fitToParent"
+            {...(comparisonView
+                ? {
+                      diffView: true,
+                      originalValue: manifestView
+                          ? valuesForDiffState.selectedManifestForDiff
+                          : valuesForDiffState.selectedValuesForDiff,
+                      modifiedValue: manifestView ? generatedManifest : valuesText,
+                      onModifiedValueChange: onChange,
+                  }
+                : {
+                      diffView: false,
+                      value: manifestView ? generatedManifest : valuesText,
+                      onChange,
+                  })}
         >
             {showEditorHeader && (
                 <CodeEditor.Header>

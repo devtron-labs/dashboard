@@ -42,6 +42,7 @@ import IssuesListingModal from '../../../../app/details/appDetails/IssuesListing
 import SecurityVulnerabilityCard from '../../../../app/details/appDetails/SecurityVulnerabilityCard'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 
 const EnvironmentStatusComponent = ({
@@ -127,7 +128,7 @@ const EnvironmentStatusComponent = ({
             const deploymentManifestParams = {
                 appId: +params.appId,
                 envId: +params.envId,
-                appName: appDetails?.helmPackageName,
+                appName: appDetails?.helmPackageName || 'helm-package',
                 isHelmApp: true,
             }
             return <AppDetailsDownloadCard params={deploymentManifestParams} />
@@ -207,6 +208,7 @@ const EnvironmentStatusComponent = ({
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}
                     configDriftModal={null}
+                    debugWithAIButton={ExplainWithAIButton}
                 />
             )}
             {showIssuesModal && (

@@ -40,6 +40,7 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -98,6 +99,7 @@ export function useAppGroupAppFilterContext() {
 
 export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
+    const { setIntelligenceConfig } = useMainContext()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState<string>('')
     const [showEmpty, setShowEmpty] = useState<boolean>(false)
@@ -160,6 +162,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setAppListOptions([])
             setAppGroupListData(null)
             setDescription('')
+            setIntelligenceConfig(null)
         }
     }, [envId])
 
@@ -685,7 +688,7 @@ export const EnvHeader = ({
             },
         ]
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     const renderBreadcrumbs = () => {

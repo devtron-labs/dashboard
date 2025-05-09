@@ -113,6 +113,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 
 const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 export const AppNotConfigured = ({
     image,
@@ -786,6 +787,7 @@ const Details: React.FC<DetailsType> = ({
                     appDetails={appDetailsFromIndexStore}
                     isConfigDriftEnabled={isConfigDriftEnabled}
                     configDriftModal={ConfigDriftModal}
+                    debugWithAIButton={ExplainWithAIButton}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (

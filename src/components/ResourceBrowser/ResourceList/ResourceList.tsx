@@ -31,8 +31,8 @@ import {
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
+    useMainContext,
     useUrlFilters,
-    WidgetEventDetails,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArrowUpCircle } from '@Icons/ic-arrow-up-circle.svg'
@@ -70,7 +70,6 @@ import { renderRefreshBar } from './ResourceList.component'
 import { ResourceListUrlFiltersType } from './types'
 import { getFirstResourceFromKindResourceMap, getUpgradeCompatibilityTippyConfig, parseSearchParams } from './utils'
 
-const EventsAIResponseWidget = importComponentFromFELibrary('EventsAIResponseWidget', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -95,10 +94,10 @@ const ResourceList = () => {
         getTabById,
     } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
-    const [widgetEventDetails, setWidgetEventDetails] = useState<WidgetEventDetails>(null)
     const [isDataStale, setIsDataStale] = useState(false)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
+    const { setIntelligenceConfig } = useMainContext()
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
         () => getResourceGroupListRaw(clusterId),
@@ -216,7 +215,14 @@ const ResourceList = () => {
         initTabs(_tabs, reInit, null, true)
     }
 
-    useEffect(() => initTabsBasedOnRole(false), [])
+    useEffect(() => {
+        initTabsBasedOnRole(false)
+
+        return () => {
+            setIntelligenceConfig(null)
+        }
+    }, [])
+
     useEffect(() => {
         const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
         const newLabel = `Terminal '${selectedCluster.label}'`
@@ -288,8 +294,7 @@ const ResourceList = () => {
             return
         }
 
-        // Close holmesGPT Response Widget on cluster change
-        setWidgetEventDetails(null)
+        setIntelligenceConfig(null)
 
         /* if user manually tries default cluster url redirect */
         if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
@@ -487,7 +492,6 @@ const ResourceList = () => {
             isOpen={!!getTabById(ResourceBrowserTabsId.k8s_Resources)?.isSelected}
             updateK8sResourceTab={getUpdateTabUrlForId(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)}
             updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-            setWidgetEventDetails={setWidgetEventDetails}
             handleResourceClick={handleResourceClick}
             clusterName={selectedCluster.label}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
@@ -573,14 +577,6 @@ const ResourceList = () => {
 
                         return null
                     })}
-                {EventsAIResponseWidget && widgetEventDetails && (
-                    <EventsAIResponseWidget
-                        parentRef={resourceBrowserRef}
-                        handleResourceClick={handleResourceClick}
-                        widgetEventDetails={widgetEventDetails}
-                        setWidgetEventDetails={setWidgetEventDetails}
-                    />
-                )}
             </>
         )
     }

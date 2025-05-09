@@ -255,6 +255,7 @@ export type PermissionGroupBulkDeletePayload =
 export interface AuthorizationContextProps {
     customRoles: CustomRoleAndMeta
     isAutoAssignFlowEnabled: boolean
+    authorizationContainerRef: React.RefObject<HTMLDivElement>
 }
 
 export interface AuthorizationProviderProps {
