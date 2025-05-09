@@ -83,6 +83,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
+            // eslint-disable-next-line no-console
             console.log(`Service Worker at: ${swUrl}`)
             if (swRegistration) {
                 const intervalId = setInterval(
@@ -117,6 +118,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return noop
         },
         onRegisterError(error) {
+            // eslint-disable-next-line no-console
             console.error('SW registration error', error)
             logExceptionToSentry(error)
         },
