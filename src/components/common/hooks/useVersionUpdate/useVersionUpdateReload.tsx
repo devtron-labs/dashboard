@@ -140,7 +140,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             handleAppUpdate()
             refreshing.current = true
         } else {
-            if (typeof setBGUpdated !== 'function') return
             setBGUpdated(true)
         }
     }
