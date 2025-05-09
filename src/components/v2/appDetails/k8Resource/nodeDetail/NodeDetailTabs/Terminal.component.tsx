@@ -54,10 +54,12 @@ const TerminalComponent = ({
         actionName: string
         podName: string
         nodeType: string
-        node: string
+        name: string
         clusterId?: string
         namespace: string
+        kind?: string
     }>()
+    params.nodeType = params.kind ?? params.nodeType
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
@@ -70,7 +72,7 @@ const TerminalComponent = ({
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
-    const nodeName = isResourceBrowserView ? params.node : params.podName
+    const nodeName = isResourceBrowserView ? params.name : params.podName
     const selectedNamespace = appDetails.resourceTree?.nodes?.find(
         (nd) => nd.name === params.podName || nd.name === params.podName,
     )?.namespace
@@ -135,7 +137,7 @@ const TerminalComponent = ({
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url)
         handleAbort()
-    }, [params.podName, params.node, params.namespace])
+    }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (showTerminal) {
@@ -158,7 +160,7 @@ const TerminalComponent = ({
         } else if (selectedContainerName.value) {
             setSocketConnection(SocketConnectionType.CONNECTING)
         }
-    }, [selectedTerminalType, selectedContainerName.value, params.podName, params.node, params.namespace])
+    }, [selectedTerminalType, selectedContainerName.value, params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.CONNECTING) {
@@ -220,7 +222,7 @@ const TerminalComponent = ({
                     setContainers,
                     isResourceBrowserView ? selectedResource.namespace : selectedNamespace,
                     isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-                    isResourceBrowserView ? params.node : params.podName,
+                    isResourceBrowserView ? params.name : params.podName,
                     switchSelectedContainer,
                     params,
                 ),

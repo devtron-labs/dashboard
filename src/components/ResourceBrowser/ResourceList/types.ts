@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-import { Dispatch, ReactNode, SetStateAction } from 'react'
+import { ReactNode } from 'react'
 
-import {
-    ALL_NAMESPACE_OPTION,
-    K8sResourceDetailType,
-    RBBulkOperationType,
-    ServerErrors,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { K8sResourceDetailType, RBBulkOperationType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import {
+    ClusterDetailBaseParams,
     K8SResourceListType,
     ResourceBrowserActionMenuType,
     ResourceFilterOptionsProps,
     SidebarType,
-    URLParams,
 } from '../Types'
 
 export interface BaseResourceListProps
@@ -40,26 +36,25 @@ export interface BaseResourceListProps
         Pick<
             K8SResourceListType,
             | 'addTab'
-            | 'isOpen'
             | 'renderRefreshBar'
             | 'selectedCluster'
             | 'selectedResource'
             | 'clusterName'
-            | 'handleResourceClick'
             | 'lowercaseKindToResourceGroupMap'
         >,
-        Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<URLParams, 'nodeType' | 'group'> {
+        Pick<SidebarType, 'updateK8sResourceTab'> {
     isLoading: boolean
     resourceListError: ServerErrors
     resourceList: K8sResourceDetailType
     clusterId: string
     reloadResourceListData: () => void
-    selectedNamespace: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
+    selectedNamespace: string
     children?: ReactNode
     showGenericNullState?: boolean
     hideBulkSelection?: boolean
+    handleResourceClick?: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
+    nodeType: string
+    group: string
     /**
      * If true, the kind from the API is used instead of the selected resource
      *
@@ -81,3 +76,26 @@ export interface ResourceListUrlFiltersType {
 }
 
 export type BulkOperationsModalState = RBBulkOperationType | 'closed'
+
+export interface K8sResourceListURLParams extends ClusterDetailBaseParams {
+    version: string
+    kind: string
+    group: string
+}
+
+export interface K8sResourceDetailURLParams extends K8sResourceListURLParams {
+    name: string
+    namespace: string
+}
+
+export interface NodeDetailComponentWrapperProps
+    extends Pick<
+            UseTabsReturnType,
+            'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId' | 'markTabActiveById' | 'addTab'
+        >,
+        Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
+    clusterName: string
+}
+export interface NodeDetailURLParams {
+    name: string
+}

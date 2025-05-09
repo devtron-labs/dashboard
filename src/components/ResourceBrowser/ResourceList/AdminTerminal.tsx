@@ -24,10 +24,10 @@ import { createTaintsList } from '../../cluster/cluster.util'
 import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
 import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
 import { createGroupSelectList, filterImageList } from '../../common'
-import { AdminTerminalProps, URLParams } from '../Types'
+import { AdminTerminalProps, ClusterDetailBaseParams } from '../Types'
 
 const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: AdminTerminalProps) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const [loading, data, error] = useAsync(
         () =>
