@@ -125,6 +125,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                             type="button"
                             className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
                             onClick={handleOpenDeleteModal}
+                            data-testid="delete_cluster_button"
                         >
                             <Icon name="ic-delete" color="R500" />
                             <span className="fs-14 lh-1-5 cr-5">Delete</span>
