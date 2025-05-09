@@ -59,3 +59,9 @@ export const ssoProviderToDisplayNameMap: Record<SSOProvider, string> = {
     [SSOProvider.oidc]: 'OIDC',
     [SSOProvider.openshift]: 'OpenShift',
 } as const
+
+export const LOGIN_CARD_ANIMATION_VARIANTS = {
+    initial: { opacity: 0, y: 40, height: 0 },
+    animate: { opacity: 1, y: 0, height: 'auto' },
+    exit: { opacity: 0, y: -40, height: 0 },
+}
