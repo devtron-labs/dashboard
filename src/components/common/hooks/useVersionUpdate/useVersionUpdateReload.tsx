@@ -170,7 +170,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
                 },
             )
         }
-    }, [bgUpdated])
+    }, [bgUpdated, location])
 
     // Sync local state with the service worker's needRefresh state
     useEffect(() => {
