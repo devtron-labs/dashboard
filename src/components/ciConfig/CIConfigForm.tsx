@@ -24,9 +24,9 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     Button,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
-import { OptionType } from '../app/types'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'

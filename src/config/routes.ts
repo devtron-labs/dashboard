@@ -17,13 +17,6 @@
 import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-export interface NavItem {
-    title: string
-    href: string
-    stage: number
-    isLocked: boolean
-}
-
 export const URLS = {
     CHARTS: '/chart-store',
     CHARTS_DISCOVER: '/chart-store/discover',
@@ -37,13 +30,7 @@ export const URLS = {
     EXTERNAL_ARGO_APP: 'eaa',
     EXTERNAL_FLUX_APP: 'external-flux',
     APP_LIST: 'list',
-    APP_LIST_DEVTRON: 'd',
-    APP_LIST_HELM: 'h',
-    APP_LIST_ARGO: 'a',
-    APP_LIST_FLUX: 'f',
-    APPS: '/devtron-apps', // for V2 router
-    HELM_CHARTS: 'helm-apps', // for V2 router
-    APP_VALUES: 'values', // for V2 router
+    APP_VALUES: 'values',
     APP_DETAILS: 'details',
     APP_DEPLOYMNENT_HISTORY: 'deployments',
     APP_DETAILS_K8: 'k8s-resources', // for V2
@@ -179,39 +166,4 @@ export function getAppDetailsURL(appId: number | string, envId?: number | string
         url = `${url}/${envId}`
     }
     return url
-}
-
-export function getAppTriggerURL(appId: number | string): string {
-    return `${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`
-}
-export function getAppCIURL(appId: number | string, ciPipelineId: number | string, buildId: number | string): string {
-    let url = `${URLS.APP}/${appId}/${URLS.APP_CI_DETAILS}`
-    if (ciPipelineId) {
-        url = `${url}/${ciPipelineId}`
-        if (buildId) {
-            url = `${url}/${buildId}`
-        }
-    }
-    return url
-}
-export function getAppCDURL(
-    appId: number | string,
-    envId?: number | string,
-    cdPipelineId?: number | string,
-    triggerId?: number | string,
-): string {
-    let url = `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}`
-    if (envId) {
-        url = `${url}/${envId}`
-        if (cdPipelineId) {
-            url = `${url}/${cdPipelineId}`
-            if (triggerId) {
-                url = `${url}/${triggerId}`
-            }
-        }
-    }
-    return url
-}
-export function getAppDeploymentMetricsURL(appId: number | string): string {
-    return `${URLS.APP}/${appId}/${URLS.APP_DEPLOYMENT_METRICS}`
 }

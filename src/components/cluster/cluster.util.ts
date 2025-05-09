@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { NodeTaintType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-import { OptionType } from '../app/types'
+import { NodeTaintType, SelectPickerOptionType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ClusterComponentType,
     ClusterComponentStatusType,

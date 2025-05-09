@@ -20,13 +20,14 @@ import {
     K8sResourceDetailDataType,
     NodeActionRequest,
     NodeTaintType,
+    OptionType,
     ResourceDetail,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
-import { LabelTag, OptionType } from '../app/types'
+import { LabelTag } from '../app/types'
 import { ClusterOptionType, K8SResourceListType, ResourceBrowserActionMenuType } from '../ResourceBrowser/Types'
 import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
 import { CLUSTER_PAGE_TAB } from './constants'

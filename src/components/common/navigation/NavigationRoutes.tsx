@@ -683,7 +683,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={(props) => <DevtronChartRouter envType={EnvType.CHART} />}
+                        render={(props) => <DevtronChartRouter />}
                     />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
 

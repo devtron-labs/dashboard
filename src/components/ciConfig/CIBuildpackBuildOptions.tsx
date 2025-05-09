@@ -16,7 +16,16 @@
 
 import { useEffect, useState } from 'react'
 import { components } from 'react-select'
-import { CIBuildType, ComponentSizeType, CustomInput, getUniqueId, InfoIconTippy, SelectPicker, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildType,
+    ComponentSizeType,
+    CustomInput,
+    getUniqueId,
+    InfoIconTippy,
+    SelectPicker,
+    stopPropagation,
+    OptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -28,7 +37,6 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { getAbsoluteProjectPath } from './CIConfig.utils'
-import { OptionType } from '../app/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
     BuilderIdOptionType,
@@ -76,7 +84,6 @@ const menuListComponent = (props): JSX.Element => {
         </components.MenuList>
     )
 }
-
 
 export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -184,7 +191,6 @@ export default function CIBuildpackBuildOptions({
             initBuilderData()
         }
     }, [buildersAndFrameworks.builders])
-
 
     const initBuilderData = () => {
         const _supportedLanguagesList: LanguageOptionType[] = []
@@ -578,7 +584,6 @@ export default function CIBuildpackBuildOptions({
 
         return _versionOptions
     }
-
 
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">

@@ -22,7 +22,6 @@ import {
     TippyCustomized,
     TippyTheme,
     stopPropagation,
-    InfoColourBar,
     SelectPicker,
     ToastVariantType,
     ToastManager,
@@ -32,15 +31,14 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     InfoBlock,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
-import { OptionType } from '../../app/types'
 import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
 import { ValidationRules } from './validationRules'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'

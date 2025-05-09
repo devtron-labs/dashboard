@@ -330,7 +330,6 @@ src/components/v2/appDetails/ReleaseStatusEmptyState.tsx
 src/components/v2/appDetails/SyncError.component.tsx
 src/components/v2/appDetails/__tests__/index.store.test.ts
 src/components/v2/appDetails/appDetails.api.ts
-src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
@@ -367,7 +366,6 @@ src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
 src/components/v2/devtronStackManager/SuccessModalComponent.tsx
-src/components/v2/headers/AppHeader.component.tsx
 src/components/v2/headers/ChartHeader.component.tsx
 src/components/v2/headers/EAHeader.component.tsx
 src/components/v2/index.tsx

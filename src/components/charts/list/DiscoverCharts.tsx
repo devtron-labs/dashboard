@@ -248,8 +248,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 description: 'Deployment initiated',
             })
             setInstalling(false)
-            const url = `${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`
-            history.push(url)
+            history.push(URLS.HELM_APP_LIST)
         } catch (err) {
             showError(err)
         } finally {

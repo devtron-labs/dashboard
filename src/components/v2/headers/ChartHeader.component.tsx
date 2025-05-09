@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import ReactGA from 'react-ga4'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { AppListConstants, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
