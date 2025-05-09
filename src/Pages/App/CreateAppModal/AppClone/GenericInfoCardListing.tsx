@@ -11,6 +11,8 @@ import {
     GenericInfoCard,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import emptyList from '@Images/empty-list.png'
+
 import { GenericInfoCardListingProps } from './types'
 
 export const GenericInfoCardListing = ({
@@ -51,7 +53,7 @@ export const GenericInfoCardListing = ({
             return <GenericFilterEmptyState handleClearFilters={handleClearFilters} />
         }
 
-        return <GenericEmptyState {...emptyStateConfig} />
+        return <GenericEmptyState image={emptyStateConfig.image ?? emptyList} {...emptyStateConfig} />
     }
 
     return (

@@ -6,7 +6,7 @@ export interface GenericInfoCardListingProps
         Pick<GenericFilterEmptyStateProps, 'handleClearFilters'> {
     list: (Pick<GenericInfoCardProps, 'Icon' | 'author' | 'description' | 'linkProps' | 'onClick' | 'title'> &
         Record<'id', string>)[]
-    emptyStateConfig: Pick<GenericEmptyStateType, 'title' | 'subTitle'>
+    emptyStateConfig: Pick<GenericEmptyStateType, 'title' | 'subTitle' | 'image'>
     searchKey?: string
     reloadList?: () => void
     error?: Record<string, unknown>

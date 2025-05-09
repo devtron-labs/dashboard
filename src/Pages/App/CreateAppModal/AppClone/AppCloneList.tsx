@@ -38,8 +38,8 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListPro
                     reloadList={reloadList}
                     handleClearFilters={clearFilters}
                     emptyStateConfig={{
-                        title: 'Add your first app template',
-                        subTitle: 'test',
+                        title: 'Nothing to Clone… Yet!',
+                        subTitle: `Looks like you haven’t created any ${isJobView ? 'job' : 'application'} to clone. Go ahead and start fresh — your first app awaits!`,
                     }}
                 />
             </div>
