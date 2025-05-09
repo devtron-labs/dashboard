@@ -8,7 +8,6 @@ import {
     Icon,
     logExceptionToSentry,
     noop,
-    refresh,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -138,7 +137,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return
         }
         if (document.visibilityState === 'visible') {
-            refresh()
+            handleAppUpdate()
             refreshing.current = true
         } else {
             if (typeof setBGUpdated !== 'function') return
