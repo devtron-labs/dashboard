@@ -127,7 +127,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
 
     const handleAppUpdate = () => {
         dismissToast({ updateToastRef })
-
+        refreshing.current = true
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
     }
@@ -149,7 +149,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
         if (!bgUpdated) {
             return
         }
-        dismissToast({ updateToastRef })
         if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
@@ -170,7 +169,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
                 },
             )
         }
-    }, [bgUpdated, location])
+    }, [bgUpdated])
 
     // Sync local state with the service worker's needRefresh state
     useEffect(() => {
@@ -198,9 +197,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh && !refreshing.current) {
-                handleNeedRefresh(updateServiceWorker)
-            } else if (bgUpdated) {
-                dismissToast({ updateToastRef })
+                handleAppUpdate()
             }
         }
     }, [location])
