@@ -30,8 +30,8 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
 
     const updateToastRef = useRef(null)
 
-    const toastEligibleRoutesMap = toastEligibleRoutes.reduce((acc, { path }) => {
-        acc[path] = true
+    const toastEligibleRoutesMap = toastEligibleRoutes.reduce((acc, { eligibleLocation }) => {
+        acc[eligibleLocation] = true
         return acc
     }, {})
 
@@ -127,7 +127,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
 
     const handleAppUpdate = () => {
         dismissToast({ updateToastRef })
-
+        refreshing.current = true
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
     }
@@ -140,7 +140,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             handleAppUpdate()
             refreshing.current = true
         } else {
-            if (typeof setBGUpdated !== 'function') return
             setBGUpdated(true)
         }
     }
@@ -149,7 +148,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
         if (!bgUpdated) {
             return
         }
-        dismissToast({ updateToastRef })
         if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
@@ -198,9 +196,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh && !refreshing.current) {
-                handleNeedRefresh(updateServiceWorker)
-            } else if (bgUpdated) {
-                dismissToast({ updateToastRef })
+                handleAppUpdate()
             }
         }
     }, [location])

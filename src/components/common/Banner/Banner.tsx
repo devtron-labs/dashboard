@@ -164,14 +164,9 @@ export const Banner = () => {
     const baseClassName = `w-100 ${config?.rootClassName || ''} ${getBannerTextColor(bannerVariant)} ${config?.isDismissible ? 'dc__grid banner--row dc__column-gap-16' : 'flex'}`
 
     const shouldShowActionButton = () => {
-        if (bannerVariant === BannerVariant.OFFLINE) return true
         if (bannerVariant === BannerVariant.ANNOUNCEMENT) return !!ANNOUNCEMENT_CONFIG.buttonLink
-        if (
-            bannerVariant === BannerVariant.VERSION_UPDATE ||
-            bannerVariant === BannerVariant.INCOMPATIBLE_MICROSERVICES
-        )
-            return true
-        return false
+        if (bannerVariant === BannerVariant.ONLINE) return false
+        return true
     }
 
     const onClickCloseAnnouncementBanner = () => {

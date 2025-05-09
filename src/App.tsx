@@ -75,18 +75,21 @@ const App = () => {
             exact: true,
             condition: isDirectApprovalNotification && GenericDirectApprovalModal,
             component: <GenericDirectApprovalModal approvalType={approvalType} approvalToken={approvalToken} />,
+            eligibleLocation: `/${approvalType?.toLowerCase()}/approve`,
         },
         {
             path: CommonURLS.LICENSE_AUTH,
             exact: false,
             condition: true,
             component: <ActivateLicense />,
+            eligibleLocation: CommonURLS.LICENSE_AUTH,
         },
         {
             path: URLS.LOGIN,
             exact: false,
             condition: !window._env_.K8S_CLIENT,
             component: <Login />,
+            eligibleLocation: URLS.LOGIN_SSO || URLS.LOGIN_ADMIN,
         },
     ]
 

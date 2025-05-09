@@ -1126,10 +1126,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.13.0-pre-0":
-  version "1.13.0-pre-0"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.13.0-pre-0.tgz#38089a2a7ed4e19d9135a9e83b694908e70aaf8c"
-  integrity sha512-+2VLsrsxLLIu4iCeCFixif3rC8+xUvhSdPSb13vez15OT5k7XBAkUYAyHnDqBVh3uTQ3XyQwUONIRv4ffdAg5w==
+"@devtron-labs/devtron-fe-common-lib@1.13.0-pre-1":
+  version "1.13.0-pre-1"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.13.0-pre-1.tgz#f84a94fdea17cc4054073d744a176bf63029015f"
+  integrity sha512-LZCcvTpp4knJBL4LhET1XD+eOK8u6etiUooxaTt7GcI8cQLU68dMuAKKqi6wXVVoJ0QSywq5AUadIycRE075XQ==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
