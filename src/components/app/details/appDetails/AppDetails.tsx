@@ -26,6 +26,8 @@ import {
     Button,
     ButtonComponentType,
     DeploymentAppTypes,
+    DeploymentStatusDetailsBreakdownDataType,
+    DeploymentStatusDetailsType,
     GenericEmptyState,
     getAppDetailsURL,
     getAppsInfoForEnv,
@@ -51,12 +53,10 @@ import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
 
 import {
     DEFAULT_STATUS,
-    DEFAULT_STATUS_TEXT,
     DEPLOYMENT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
     DOCUMENTATION,
     getAppTriggerURL,
-    HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
@@ -84,8 +84,6 @@ import { getDeploymentStatusDetail } from './appDetails.service'
 import {
     AppDetailProps,
     DeletedAppComponentType,
-    DeploymentStatusDetailsBreakdownDataType,
-    DeploymentStatusDetailsType,
     DetailsType,
     ErrorItem,
     HibernationModalTypes,
@@ -288,7 +286,6 @@ const Details: React.FC<DetailsType> = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
     const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
@@ -487,10 +484,7 @@ const Details: React.FC<DetailsType> = ({
                             ...deploymentStatusDetailsBreakdownData,
                             deploymentStatus:
                                 DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
-                            deploymentStatusText:
-                                deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
-                                    ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
-                                    : deploymentStatusDetailRes.result.wfrStatus,
+                            // TODO: Need to confirm while review why we parse progressing to in progress?
                             deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
                             deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
                             triggeredBy: deploymentStatusDetailRes.result.triggeredBy,

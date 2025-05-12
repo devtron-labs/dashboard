@@ -29,8 +29,9 @@ import {
     TagsTableColumnsType,
     DynamicDataTableCellErrorType,
     BaseAppMetaData,
+    DeploymentStatusDetailsBreakdownDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentStatusDetailsBreakdownDataType, DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
+import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'

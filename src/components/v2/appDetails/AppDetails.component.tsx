@@ -21,6 +21,8 @@ import {
     AppStatusModal,
     AppStatusModalTabType,
     DeploymentAppTypes,
+    DeploymentStatusDetailsBreakdownDataType,
+    DeploymentStatusDetailsType,
     noop,
     processDeploymentStatusDetailsData,
     Progressing,
@@ -28,12 +30,8 @@ import {
 
 import { ClusterMetaDataBar } from '@Components/common/ClusterMetaDataBar/ClusterMetaDataBar'
 
-import { DEFAULT_STATUS, DEFAULT_STATUS_TEXT, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
+import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import {
-    DeploymentStatusDetailsBreakdownDataType,
-    DeploymentStatusDetailsType,
-} from '../../app/details/appDetails/appDetails.type'
 import { importComponentFromFELibrary } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import { useSharedState } from '../utils/useSharedState'
@@ -84,7 +82,6 @@ const AppDetailsComponent = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
 
     useEffect(() => {

@@ -16,9 +16,11 @@
 
 import React from 'react'
 
-import { AppEnvironment as BaseAppEnvironmentType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppEnvironment as BaseAppEnvironmentType,
+    DeploymentStatusDetailsBreakdownDataType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeploymentStatusDetailsBreakdownDataType } from '../../../app/details/appDetails/appDetails.type'
 import { HelmReleaseStatus } from '../../../external-apps/ExternalAppService'
 import { AppDetails } from '../appDetails.type'
 

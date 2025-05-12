@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentStatusDetailsResponse,
+    get,
+    getUrlWithSearchParams,
+    ResponseType,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
@@ -24,7 +30,6 @@ import {
     DataSourceDetailsDTO,
     DataSourceDetailsQueryParams,
     DataSourceDetailsType,
-    DeploymentStatusDetailsResponse,
     ModuleConfigResponse,
 } from './appDetails.type'
 
