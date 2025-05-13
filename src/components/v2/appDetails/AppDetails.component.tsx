@@ -225,7 +225,7 @@ const AppDetailsComponent = ({
                         renderHelmAppDetails()
                     )}
 
-                    {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
+                    {appDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                         <AppStatusModal
                             type="other-apps"
                             titleSegments={[appDetails?.appName, appDetails?.environmentName || appDetails?.namespace]}

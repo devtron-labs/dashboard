@@ -751,7 +751,7 @@ const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {(detailedStatus || location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) && (
+            {(detailedStatus || (appDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM))) && (
                 <AppStatusModal
                     titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
                     handleClose={handleCloseAppStatusModal}
