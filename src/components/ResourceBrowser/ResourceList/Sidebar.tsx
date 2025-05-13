@@ -45,12 +45,7 @@ import {
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
 import { K8sResourceListURLParams } from './types'
 
-const Sidebar = ({
-    apiResources,
-    selectedResource,
-    updateK8sResourceTab,
-    updateK8sResourceTabLastSyncMoment,
-}: SidebarType) => {
+const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
@@ -115,13 +110,14 @@ const Sidebar = ({
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
-        updateK8sResourceTabLastSyncMoment()
+        const params = new URLSearchParams(location.search)
+        params.delete('pageNumber')
         const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
             kind: _selectedKind,
             group: _selectedGroup || K8S_EMPTY_GROUP,
             version: DUMMY_RESOURCE_GVK_VERSION,
-        })}${location.search}`
+        })}?${params.toString()}`
 
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
 

@@ -14,52 +14,27 @@
  * limitations under the License.
  */
 
-import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import {
-    LOCAL_STORAGE_EXISTS,
-    LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
-    OPTIONAL_NODE_LIST_HEADERS,
+    NODE_K8S_VERSION_FILTER_KEY,
+    NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { K8SResourceListType, ShowAIButtonConfig } from '../Types'
-import { ResourceListUrlFiltersType } from './types'
+import { K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
+import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
+
+const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
+    'getFilterOptionsFromSearchParams',
+    null,
+    'function',
+)
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
 })
-
-export const getAppliedColumnsFromLocalStorage = () => {
-    if (!LOCAL_STORAGE_EXISTS) {
-        // NOTE: show all headers by default
-        return [...OPTIONAL_NODE_LIST_HEADERS]
-    }
-
-    try {
-        const appliedColumns = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS))
-
-        if (!Array.isArray(appliedColumns) || !appliedColumns.every((column) => typeof column === 'string')) {
-            throw new Error()
-        }
-
-        return appliedColumns
-    } catch {
-        // NOTE: show all headers by default
-        return [...OPTIONAL_NODE_LIST_HEADERS]
-    }
-}
-
-export const saveAppliedColumnsInLocalStorage = (appliedColumns: string[]) => {
-    if (!LOCAL_STORAGE_EXISTS || !Array.isArray(appliedColumns)) {
-        return
-    }
-
-    try {
-        localStorage.setItem(LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS, JSON.stringify(appliedColumns))
-    } catch {
-        noop()
-    }
-}
 
 export const getUpgradeCompatibilityTippyConfig = ({
     targetK8sVersion,
@@ -97,4 +72,155 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
         return aiButtonConfig.includeValues.has(value)
     }
     return !aiButtonConfig.excludeValues.has(value)
+}
+
+export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
+    const namespace = searchParams.get('namespace')
+
+    return {
+        ...(namespace ? { selectedNamespace: namespace } : {}),
+        ...(getFilterOptionsFromSearchParams ? getFilterOptionsFromSearchParams(searchParams) : {}),
+        ...Object.values(NODE_SEARCH_KEYS).reduce((acc, key) => {
+            const value = searchParams.get(key)
+            if (value) {
+                acc[key] = value
+            }
+            return acc
+        }, {}),
+        ...(searchParams.get(NODE_K8S_VERSION_FILTER_KEY)
+            ? { [NODE_K8S_VERSION_FILTER_KEY]: searchParams.get(NODE_K8S_VERSION_FILTER_KEY) }
+            : {}),
+    }
+}
+
+const stringComparatorBySortOrder = (a: string, b: string) => a.localeCompare(b)
+
+const numberComparatorBySortOrder = (a: number, b: number) => a - b
+
+const numberInStringComparator = <T extends string>(a: T, b: T) =>
+    numberComparatorBySortOrder(a ? parseInt(a.match(/^\d+/)[0], 10) : 0, b ? parseInt(b.match(/^\d+/)[0], 10) : 0)
+
+const k8sStyledAgeToSeconds = (duration: string) => {
+    let totalTimeInSec: number = 0
+    if (!duration || duration === '<none>') {
+        return totalTimeInSec
+    }
+    // Parses time(format:- ex. 4h20m) in second
+    const matchesNumber = duration.match(/[-+]?\d*\.?\d+/g)
+    const matchesChar = duration.match(/[dhms]/g)
+    for (let i = 0; i < matchesNumber.length; i++) {
+        const _unit = matchesChar[i]
+        const _unitVal = +matchesNumber[i]
+        switch (_unit) {
+            case 'd':
+                totalTimeInSec += _unitVal * 24 * 60 * 60
+                break
+            case 'h':
+                totalTimeInSec += _unitVal * 60 * 60
+                break
+            case 'm':
+                totalTimeInSec += _unitVal * 60
+                break
+            default:
+                totalTimeInSec += _unitVal
+                break
+        }
+    }
+    return totalTimeInSec
+}
+
+const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
+
+const versionComparatorBySortOrder = (a: string, b: string) => a?.localeCompare(b, undefined, { numeric: true }) ?? 1
+
+const propertyComparatorMap = {
+    age: durationComparator,
+    duration: durationComparator,
+    'last schedule': durationComparator,
+    capacity: numberInStringComparator,
+    cpu: numberInStringComparator,
+    memory: numberInStringComparator,
+    window: durationComparator,
+    errors: numberInStringComparator,
+    'k8s version': versionComparatorBySortOrder,
+    taints: numberInStringComparator,
+    'cpu usage (%)': numberInStringComparator,
+    'cpu allocatable': numberInStringComparator,
+    'mem usage (%)': numberInStringComparator,
+    'mem allocatable': numberInStringComparator,
+    'cpu usage (absolute)': numberInStringComparator,
+}
+
+/**
+ * Dynamically sorts an array of objects based on a specified property and sorting order.
+ * @param  property - The property by which to sort the objects.
+ * @param  sortOrder - The sorting order ('ASC' for ascending, 'DESC' for descending).
+ * @returns A sorting function.
+ */
+export const dynamicSort = (property: string) => (valueA: unknown, valueB: unknown) => {
+    // Special cases handling where the property is not in sortable format.
+    if (Object.keys(propertyComparatorMap).includes(property)) {
+        return propertyComparatorMap[property](valueA, valueB)
+    }
+
+    // Handling of numbers and if one property is number and the other is string.
+    if (typeof valueA === 'number' || typeof valueB === 'number') {
+        return numberComparatorBySortOrder(
+            typeof valueA === 'number' ? valueA : 0,
+            typeof valueB === 'number' ? valueB : 0,
+        )
+    }
+
+    // Handling of strings and numbers in string type.
+    if (typeof valueA === 'string' && typeof valueB === 'string') {
+        if (!Number.isNaN(Number(valueA)) && !Number.isNaN(Number(valueB))) {
+            return numberComparatorBySortOrder(Number(valueA), Number(valueB))
+        }
+        return stringComparatorBySortOrder(valueA, valueB)
+    }
+
+    return 0
+}
+
+export const isItemASearchMatchForNodeListing = (item: Record<string, any>, searchParams: Record<string, any>) => {
+    const isK8sVersionFilterAppliedAndMatchFound =
+        !searchParams[NODE_K8S_VERSION_FILTER_KEY] ||
+        item[NODE_K8S_VERSION_FILTER_KEY] === searchParams[NODE_K8S_VERSION_FILTER_KEY]
+
+    if (!isK8sVersionFilterAppliedAndMatchFound) {
+        return false
+    }
+
+    const doesAnyNodeSearchKeyExists = Object.values(NODE_SEARCH_KEYS).some((key) => Object.hasOwn(searchParams, key))
+
+    const doesItemHaveAnyMatchingSearchKey =
+        !doesAnyNodeSearchKeyExists ||
+        Object.values(NODE_SEARCH_KEYS).reduce((isFound, searchKey) => {
+            if (!searchParams[searchKey]) {
+                return isFound
+            }
+
+            const searchTextFromSearchKey = searchParams[searchKey]
+
+            return !!searchTextFromSearchKey?.split(',').some((text) => {
+                const trimmedText = text.trim()
+                const objectKey = NODE_SEARCH_KEYS_TO_OBJECT_KEYS[searchKey]
+
+                // NOTE: if corresponding value in data is anything other than primitives like string, or number
+                // handle it appropriately likewise
+                if (searchKey === NODE_SEARCH_KEYS.LABEL) {
+                    const [searchKeyFromLabelText, searchValueFromLabelText] = trimmedText.split('=')
+
+                    return (
+                        !!item[objectKey]?.some(
+                            ({ key, value }) => key === searchKeyFromLabelText && value === searchValueFromLabelText,
+                        ) && isFound
+                    )
+                }
+
+                return String(item[objectKey] ?? '').includes(trimmedText) && isFound
+            })
+        }, true)
+
+    return isK8sVersionFilterAppliedAndMatchFound && doesItemHaveAnyMatchingSearchKey
 }

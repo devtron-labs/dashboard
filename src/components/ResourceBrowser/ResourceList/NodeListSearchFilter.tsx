@@ -34,7 +34,12 @@ import {
 import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
 import ColumnSelector from './ColumnSelector'
 
-const NodeListSearchFilter = ({ visibleColumns, setVisibleColumns, searchParams }: NodeListSearchFilterType) => {
+const NodeListSearchFilter = ({
+    visibleColumns,
+    setVisibleColumns,
+    searchParams,
+    allColumns,
+}: NodeListSearchFilterType) => {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
@@ -311,6 +316,7 @@ const NodeListSearchFilter = ({ visibleColumns, setVisibleColumns, searchParams 
                 {...{
                     setVisibleColumns,
                     visibleColumns,
+                    allColumns,
                 }}
             />
         </div>

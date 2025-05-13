@@ -351,8 +351,6 @@ export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
 
 export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
 
-export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
-
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'

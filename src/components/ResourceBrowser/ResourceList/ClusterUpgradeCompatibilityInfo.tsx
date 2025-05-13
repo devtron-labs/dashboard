@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
+import { useParams } from 'react-router-dom'
+
 import {
-    ALL_NAMESPACE_OPTION,
     CollapsibleList,
     ErrorScreenManager,
     GenericEmptyState,
     ImageType,
-    noop,
     Progressing,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -29,8 +29,8 @@ import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipe
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
-import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
-import BaseResourceList from './BaseResourceList'
+import { TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
+import { ClusterDetailBaseParams } from '../Types'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
@@ -39,15 +39,8 @@ const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
     'function',
 )
 
-const ClusterUpgradeCompatibilityInfo = ({
-    clusterId,
-    clusterName,
-    selectedCluster,
-    updateTabUrl,
-    addTab,
-    lowercaseKindToResourceGroupMap,
-    handleResourceClick,
-}: ClusterUpgradeCompatibilityInfoProps) => {
+const ClusterUpgradeCompatibilityInfo = ({ updateTabUrl, clusterName }: ClusterUpgradeCompatibilityInfoProps) => {
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
 
     const {
@@ -55,7 +48,6 @@ const ClusterUpgradeCompatibilityInfo = ({
         compatibilityInfoData,
         compatibilityError,
         refetchCompatibilityList,
-        resourceListForCurrentData,
         sidebarConfig,
         onCollapseBtnClick,
     } = useClusterUpgradeCompatibilityInfo({
@@ -108,33 +100,7 @@ const ClusterUpgradeCompatibilityInfo = ({
             <div className="dc__overflow-auto p-8 w-220 dc__no-shrink">
                 <CollapsibleList tabType="navLink" config={sidebarConfig} onCollapseBtnClick={onCollapseBtnClick} />
             </div>
-            <BaseResourceList
-                searchPlaceholder="Search"
-                areFiltersHidden
-                isLoading={false}
-                resourceListError={null}
-                resourceList={resourceListForCurrentData}
-                clusterId={clusterId}
-                clusterName={clusterName}
-                selectedResource={{
-                    gvk: SIDEBAR_KEYS.upgradeClusterGVK,
-                    namespaced: false,
-                }}
-                selectedNamespace={ALL_NAMESPACE_OPTION.value}
-                selectedCluster={selectedCluster}
-                reloadResourceListData={refetchCompatibilityList}
-                renderRefreshBar={noop}
-                updateK8sResourceTab={noop}
-                nodeType={null}
-                group={null}
-                showGenericNullState
-                addTab={addTab}
-                hideDeleteResource
-                hideBulkSelection
-                shouldOverrideSelectedResourceKind
-                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                handleResourceClick={handleResourceClick}
-            />
+            {/* TODO: use table here */}
         </div>
     )
 }

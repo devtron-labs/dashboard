@@ -1,0 +1,287 @@
+import { useEffect, useMemo, useRef } from 'react'
+import { generatePath, useHistory, useParams } from 'react-router-dom'
+import DOMPurify from 'dompurify'
+import { getAIAnalyticsEvents } from 'src/Shared'
+
+import {
+    ALL_NAMESPACE_OPTION,
+    ClipboardButton,
+    ConditionalWrap,
+    highlightSearchText,
+    K8sResourceDetailDataType,
+    Nodes,
+    noop,
+    TableSignalEnum,
+    Tooltip,
+    URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import { importComponentFromFELibrary } from '@Components/common'
+
+import {
+    AI_BUTTON_CONFIG_MAP,
+    DUMMY_RESOURCE_GVK_VERSION,
+    K8S_EMPTY_GROUP,
+    NODE_LIST_HEADERS_TO_KEY_MAP,
+    RESOURCE_BROWSER_ROUTES,
+} from '../Constants'
+import { ClusterDetailBaseParams } from '../Types'
+import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
+import NodeActionsMenu from './NodeActionsMenu'
+import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
+import { K8sResourceListTableCellComponentProps } from './types'
+import { getFirstResourceFromKindResourceMap, getShowAIButton } from './utils'
+
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
+const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
+
+const K8sResourceListTableCellComponent = ({
+    field: columnName,
+    row: { id, data: resourceData },
+    filterData: { searchKey: searchText },
+    signals,
+    selectedResource,
+    reloadResourceListData,
+    addTab,
+    isEventListing,
+    lowercaseKindToResourceGroupMap,
+}: K8sResourceListTableCellComponentProps) => {
+    const { push } = useHistory()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
+    const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
+    const isNodeListingAndNodeHasErrors = false
+    const isNodeUnschedulable = false
+    const nameButtonRef = useRef<HTMLButtonElement>(null)
+    const contextMenuRef = useRef<HTMLButtonElement>(null)
+
+    const handleResourceClick = (e) => {
+        const { name, namespace, kind, group: _group } = e.currentTarget.dataset
+
+        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind}/${_group}/v1/${name}`)
+    }
+
+    const handleNodeClick = (e) => {
+        const { name } = e.currentTarget.dataset
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/node/${name}`
+        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
+            .then(() => push(_url))
+            .catch(noop)
+    }
+
+    const getStatusClass = (status: string) => {
+        let statusPostfix = status?.toLowerCase()
+
+        if (
+            statusPostfix &&
+            (statusPostfix.includes(':') || statusPostfix.includes('/') || statusPostfix.includes(' '))
+        ) {
+            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
+        }
+
+        return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
+    }
+
+    useEffect(() => {
+        const callback = ({ detail: { activeRowData } }) => {
+            if (activeRowData.id === id) {
+                nameButtonRef.current?.click()
+            }
+        }
+
+        const c = ({ detail: { activeRowData } }) => {
+            if (activeRowData.id === id) {
+                contextMenuRef.current?.click()
+            }
+        }
+
+        if (columnName === 'name') {
+            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, callback)
+            signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, c)
+        }
+
+        return () => {
+            if (columnName === 'name') {
+                signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, callback)
+                signals.removeEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, c)
+            }
+        }
+    }, [])
+
+    const gvkString = useMemo(
+        () =>
+            Object.values(selectedResource?.gvk ?? {})
+                .filter((value) => !!value)
+                .join('/'),
+        [selectedResource],
+    )
+
+    const aiButtonConfig = AI_BUTTON_CONFIG_MAP[gvkString]
+    const showAIButton =
+        !!ExplainWithAIButton && getShowAIButton(aiButtonConfig, columnName, resourceData[columnName] as string)
+
+    const getClassNameForColumn = (name: string) => {
+        if (name === 'message') {
+            return 'dc__word-break'
+        }
+
+        return name === 'status' && isNodeUnschedulable ? 'dc__no-shrink' : 'dc__truncate'
+    }
+
+    const handleEventInvolvedObjectClick = () => {
+        const [kind, name] = (resourceData[columnName] as string).split('/')
+        const group =
+            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, kind)?.gvk?.Group || K8S_EMPTY_GROUP
+
+        push(
+            generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
+                clusterId,
+                namespace: resourceData.namespace as string,
+                name,
+                group,
+                kind,
+                version: DUMMY_RESOURCE_GVK_VERSION,
+            }),
+        )
+    }
+
+    return columnName === 'name' ? (
+        <div
+            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10"
+            data-testid="created-resource-name"
+        >
+            <div className="flex left dc__gap-4">
+                <Tooltip content={resourceData.name}>
+                    <button
+                        type="button"
+                        className="dc__unset-button-styles dc__align-left dc__truncate"
+                        data-name={resourceData.name}
+                        data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
+                        data-kind={selectedResource.gvk.Kind}
+                        data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
+                        onClick={isNodeListing ? handleNodeClick : handleResourceClick}
+                        aria-label={`Select ${resourceData.name}`}
+                        ref={nameButtonRef}
+                    >
+                        <span
+                            className="dc__link cursor"
+                            // eslint-disable-next-line react/no-danger
+                            dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                    highlightSearchText({
+                                        searchText,
+                                        text: String(resourceData.name),
+                                        highlightClasses: 'p-0 fw-6 bcy-2',
+                                    }),
+                                ),
+                            }}
+                        />
+                    </button>
+                </Tooltip>
+                <ClipboardButton content={String(resourceData.name)} rootClassName="p-4 dc__visible-hover--child" />
+            </div>
+            {!isNodeListing ? (
+                <ResourceBrowserActionMenu
+                    ref={contextMenuRef}
+                    clusterId={clusterId}
+                    resourceData={resourceData as K8sResourceDetailDataType}
+                    getResourceListData={reloadResourceListData as () => Promise<void>}
+                    selectedResource={selectedResource}
+                    handleResourceClick={handleResourceClick}
+                    handleClearBulkSelection={noop}
+                />
+            ) : (
+                <NodeActionsMenu
+                    getNodeListData={reloadResourceListData as () => Promise<void>}
+                    addTab={addTab}
+                    nodeData={resourceData as K8sResourceDetailDataType}
+                    handleClearBulkSelection={noop}
+                />
+            )}
+        </div>
+    ) : (
+        <div
+            className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-self-start'} py-10 ${
+                columnName === 'status' || columnName === 'type'
+                    ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
+                    : ''
+            } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
+        >
+            <ConditionalWrap
+                condition={columnName === 'node' || columnName === 'involved object'}
+                wrap={
+                    columnName === 'node'
+                        ? getRenderNodeButton(resourceData as K8sResourceDetailDataType, columnName, handleNodeClick)
+                        : getRenderInvolvedObjectButton(
+                              resourceData[columnName] as string,
+                              handleEventInvolvedObjectClick,
+                          )
+                }
+            >
+                {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
+                    <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
+                )}
+                <Tooltip
+                    content={renderResourceValue(
+                        resourceData[isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName]?.toString(),
+                    )}
+                >
+                    <span
+                        className={getClassNameForColumn(columnName)}
+                        data-testid={`${columnName}-count`}
+                        // eslint-disable-next-line react/no-danger
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                highlightSearchText({
+                                    searchText,
+                                    text: renderResourceValue(
+                                        resourceData[
+                                            isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
+                                        ]?.toString(),
+                                    ),
+                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                }),
+                            ),
+                        }}
+                    />
+                </Tooltip>
+                {columnName === 'status' && isNodeUnschedulable && (
+                    <>
+                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
+                        <Tooltip content="Scheduling disabled">
+                            <span className="cr-5 dc__truncate">SchedulingDisabled</span>
+                        </Tooltip>
+                    </>
+                )}
+                <span>
+                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
+                        <PodRestartIcon
+                            clusterId={clusterId}
+                            name={resourceData.name}
+                            namespace={resourceData.namespace}
+                        />
+                    )}
+                </span>
+            </ConditionalWrap>
+            {showAIButton && (
+                <div className="ml-4">
+                    <ExplainWithAIButton
+                        isIconButton
+                        intelligenceConfig={{
+                            clusterId,
+                            metadata: {
+                                object: `${selectedResource?.gvk?.Kind}/${resourceData.name}`,
+                                namespace: resourceData.namespace,
+                                status: resourceData.status ?? '',
+                            },
+                            prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
+                            analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
+                        }}
+                    />
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default K8sResourceListTableCellComponent

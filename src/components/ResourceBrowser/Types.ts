@@ -25,13 +25,13 @@ import {
     OptionType,
     ResourceDetail,
     SelectedResourceType,
+    TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import { ClusterListType } from '../ClusterNodes/types'
 import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
-import { BaseResourceListProps } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -73,7 +73,6 @@ export interface CreateResourceType {
 
 export interface SidebarType {
     apiResources: ApiResourceGroupType[]
-    updateK8sResourceTabLastSyncMoment: () => void
     isClusterError?: boolean
     updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
@@ -185,7 +184,6 @@ export interface K8SResourceTabComponentProps
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']
-    updateK8sResourceTabLastSyncMoment: () => void
 }
 
 export interface AdminTerminalProps {
@@ -243,9 +241,8 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListSearchFilterType {
-    visibleColumns: string[]
-    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
+export interface NodeListSearchFilterType
+    extends Pick<TableViewWrapperProps, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {
     searchParams: Record<string, string>
 }
 
@@ -255,7 +252,8 @@ export enum NODE_SEARCH_KEYS {
     NODE_GROUP = 'nodeGroup',
 }
 
-export interface ColumnSelectorType extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns'> {}
+export interface ColumnSelectorType
+    extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {}
 
 export interface NodeActionsMenuProps {
     addTab: UseTabsReturnType['addTab']
@@ -266,7 +264,7 @@ export interface NodeActionsMenuProps {
 
 export interface GetResourceDataType {
     selectedResource: ApiResourceGroupType
-    selectedNamespace: BaseResourceListProps['selectedNamespace']
+    selectedNamespace: string
     clusterId: string
     filters: Record<string, unknown>
     abortControllerRef: RefObject<AbortController>
