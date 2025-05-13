@@ -83,6 +83,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
         updateServiceWorker,
     } = useRegisterSW({
         onRegisteredSW(swUrl, swRegistration) {
+            // eslint-disable-next-line no-console
             console.log(`Service Worker at: ${swUrl}`)
             if (swRegistration) {
                 const intervalId = setInterval(
@@ -117,6 +118,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             return noop
         },
         onRegisterError(error) {
+            // eslint-disable-next-line no-console
             console.error('SW registration error', error)
             logExceptionToSentry(error)
         },
@@ -127,7 +129,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
 
     const handleAppUpdate = () => {
         dismissToast({ updateToastRef })
-
+        refreshing.current = true
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         updateServiceWorker(true)
     }
@@ -140,7 +142,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
             handleAppUpdate()
             refreshing.current = true
         } else {
-            if (typeof setBGUpdated !== 'function') return
             setBGUpdated(true)
         }
     }
@@ -149,7 +150,6 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
         if (!bgUpdated) {
             return
         }
-        dismissToast({ updateToastRef })
         if (toastEligibleRoutesMap[location.pathname]) {
             updateToastRef.current = ToastManager.showToast(
                 {
@@ -198,9 +198,7 @@ export const useVersionUpdateReload = ({ toastEligibleRoutes }: VersionUpdatePro
                 .getRegistrations()
                 .then((registrations) => registrations.forEach((reg) => reg.update()))
             if (doesNeedRefresh && !refreshing.current) {
-                handleNeedRefresh(updateServiceWorker)
-            } else if (bgUpdated) {
-                dismissToast({ updateToastRef })
+                handleAppUpdate()
             }
         }
     }, [location])
