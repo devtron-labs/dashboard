@@ -100,7 +100,6 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
                 showTabs
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
-                showAnnouncementHeader
             />
         </div>
     )
