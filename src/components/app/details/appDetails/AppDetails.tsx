@@ -210,8 +210,7 @@ const Details: React.FC<DetailsType> = ({
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
-    // fixme: the state is not being set anywhere and just being drilled down
-    const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
+    const [showAppStatusModal, setShowAppStatusModal] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<HibernationModalTypes>(null)
@@ -293,7 +292,6 @@ const Details: React.FC<DetailsType> = ({
         ],
     )
 
-    // This method is called in case of gitops based deployment for polling
     const getDeploymentDetailStepsData = useCallback((): void => {
         // Deployments status details for Devtron apps
         getDeploymentStatusDetail(params.appId, params.envId)
@@ -513,8 +511,8 @@ const Details: React.FC<DetailsType> = ({
     }
 
     const handleCloseAppStatusModal = (): void => {
-        if (detailedStatus) {
-            toggleDetailedStatus(false)
+        if (showAppStatusModal) {
+            setShowAppStatusModal(false)
         }
 
         if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
@@ -525,7 +523,7 @@ const Details: React.FC<DetailsType> = ({
     }
 
     const showApplicationDetailedModal = (): void => {
-        toggleDetailedStatus(true)
+        setShowAppStatusModal(true)
     }
 
     const renderAppDetailsCDButton = () =>
@@ -666,7 +664,7 @@ const Details: React.FC<DetailsType> = ({
             >
                 <SourceInfo
                     appDetails={appDetails}
-                    setDetailed={toggleDetailedStatus}
+                    setDetailed={setShowAppStatusModal}
                     environment={environment}
                     isAppView={isAppView}
                     environments={environments}
@@ -714,7 +712,7 @@ const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {(detailedStatus || (appDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM))) && (
+            {(showAppStatusModal || (appDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM))) && (
                 <AppStatusModal
                     titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
                     handleClose={handleCloseAppStatusModal}
@@ -723,7 +721,7 @@ const Details: React.FC<DetailsType> = ({
                     isConfigDriftEnabled={isConfigDriftEnabled}
                     configDriftModal={ConfigDriftModal}
                     initialTab={
-                        detailedStatus ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
+                        showAppStatusModal ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
                     }
                     processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     handleUpdateDeploymentStatusDetailsBreakdownData={handleUpdateDeploymentStatusDetailsBreakdownData}

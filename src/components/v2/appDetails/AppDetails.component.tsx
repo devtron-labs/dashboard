@@ -226,12 +226,11 @@ const AppDetailsComponent = ({
                         renderHelmAppDetails()
                     )}
 
-                    {appDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
+                    {!loadingDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
                         <AppStatusModal
                             type="other-apps"
                             titleSegments={[appDetails?.appName, appDetails?.environmentName || appDetails?.namespace]}
                             handleClose={handleCloseDeploymentStatusModal}
-                            // TODO: Check appDetails.deploymentAppDeleteRequest
                             appDetails={appDetails}
                             isConfigDriftEnabled={false}
                             configDriftModal={null}
