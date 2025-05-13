@@ -6,20 +6,16 @@ import { useEffect, useMemo, useRef } from 'react'
 import { abortPreviousRequests, GenericInfoCardListingProps, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getJobs } from '@Components/Jobs/Service'
-import { JobList } from '@Components/Jobs/Types'
 import { APP_TYPE } from '@Config/constants'
 import { getAppIconWithBackground } from '@Config/utils'
 import { getAppListMin } from '@Services/service'
-import { AppListMin } from '@Services/service.types'
 
-import { AppCloneListProps } from './types'
+import { AppCloneListProps, DevtronListResponse } from './types'
 
-type DevtronlistResponse = { type: 'job'; data: JobList } | { type: 'app'; data: AppListMin }
-
-export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListProps) => {
+export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, updatedList }: AppCloneListProps) => {
     const cloneListAbortControllerRef = useRef(new AbortController())
 
-    const [isListLoading, listResponse, listError, reloadList] = useAsync<DevtronlistResponse>(() =>
+    const [isListLoading, listResponse, listError, reloadList] = useAsync<DevtronListResponse>(() =>
         abortPreviousRequests(
             () =>
                 isJobView
@@ -51,14 +47,18 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
         },
         [],
     )
+    let totalCount = 0
 
     const list = useMemo(() => {
         if (isListLoading || !listResponse) return []
 
         if (listResponse.type === APP_TYPE.JOB) {
             const jobContainers = listResponse.data.result?.jobContainers || []
+            const updatedJobList = [...jobContainers, ...updatedList]
 
-            return jobContainers.map<GenericInfoCardListingProps['list'][number]>((job) => {
+            totalCount = listResponse.data.result.jobCount
+
+            return updatedJobList.map<GenericInfoCardListingProps['list'][number]>((job) => {
                 const { jobId, jobName, description } = job
 
                 return {
@@ -85,12 +85,13 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
                 description,
             }
         })
-    }, [isListLoading, listResponse])
+    }, [isListLoading, listResponse, updatedList])
 
     return {
         isListLoading,
         list,
         listError,
         reloadList,
+        totalCount,
     }
 }
