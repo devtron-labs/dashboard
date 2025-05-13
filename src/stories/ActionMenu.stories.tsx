@@ -55,7 +55,6 @@ const options: ActionMenuProps['options'] = [
                 label: 'Label 1',
                 startIcon: {
                     name: 'ic-cube',
-                    color: 'N800',
                 },
             },
         ],
@@ -68,7 +67,6 @@ const options: ActionMenuProps['options'] = [
                 label: 'Group Label 1',
                 startIcon: {
                     name: 'ic-cube',
-                    color: 'N800',
                 },
                 isDisabled: true,
             },
@@ -93,11 +91,9 @@ const options: ActionMenuProps['options'] = [
                 id: 'group-value-5',
                 startIcon: {
                     name: 'ic-cube',
-                    color: 'N800',
                 },
                 endIcon: {
                     name: 'ic-cube',
-                    color: 'N800',
                 },
                 tooltipProps: {
                     content: 'Tooltip content for value 5',
@@ -130,11 +126,9 @@ const options: ActionMenuProps['options'] = [
                 id: 'value-5',
                 startIcon: {
                     name: 'ic-cube',
-                    color: 'N800',
                 },
                 endIcon: {
                     name: 'ic-cube',
-                    color: 'N800',
                 },
                 tooltipProps: {
                     content: 'Tooltip content for value 5',
@@ -176,6 +170,26 @@ export const WithIconButtonElement: Story = {
             ariaLabel: 'action-menu',
             showAriaLabelInTippy: false,
             dataTestId: 'action-menu',
+        },
+    },
+}
+
+export const WithFooterConfig: Story = {
+    args: {
+        id: 'action-menu-with-button',
+        options,
+        position: 'bottom',
+        alignment: 'start',
+        disableDescriptionEllipsis: false,
+        onClick: action('option clicked'),
+        isSearchable: true,
+        buttonProps: {
+            text: 'Open Action Menu',
+            dataTestId: 'action-menu',
+        },
+        footerConfig: {
+            type: 'text',
+            value: 'This is footer',
         },
     },
 }
