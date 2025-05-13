@@ -3,7 +3,7 @@
  */
 import { useEffect, useMemo, useRef } from 'react'
 
-import { abortPreviousRequests, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { abortPreviousRequests, GenericInfoCardListingProps, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getJobs } from '@Components/Jobs/Service'
 import { JobList } from '@Components/Jobs/Types'
@@ -12,7 +12,7 @@ import { getAppIconWithBackground } from '@Config/utils'
 import { getAppListMin } from '@Services/service'
 import { AppListMin } from '@Services/service.types'
 
-import { AppCloneListProps, GenericInfoCardListingProps } from './types'
+import { AppCloneListProps } from './types'
 
 type DevtronlistResponse = { type: 'job'; data: JobList } | { type: 'app'; data: AppListMin }
 

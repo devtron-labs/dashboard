@@ -1,11 +1,11 @@
 import {
     ComponentSizeType,
     GenericInfoCardBorderVariant,
+    GenericInfoCardListing,
     SearchBar,
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GenericInfoCardListing } from './GenericInfoCardListing'
 import { AppCloneListProps } from './types'
 import { useDevtronCloneList } from './useDevtronCloneList'
 
