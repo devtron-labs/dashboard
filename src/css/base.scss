@@ -483,6 +483,10 @@ a:focus {
     cursor: default;
 }
 
+.cursor-wait {
+    cursor: wait;
+}
+
 // block
 .dc__block {
     display: block;
@@ -4596,21 +4600,6 @@ textarea::placeholder {
     font-size: 13px !important;
 }
 
-// Start: accouncement banner
-.announcement-banner-container {
-    &.page-header-banner {
-        width: fit-content;
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        text-align: center;
-    }
-}
-
-// End: accouncement banner
-
 .bulk-selection-widget {
     border: 1px solid var(--B500);
     background: var(--bg-bulk-selection-widget);
@@ -5143,7 +5132,7 @@ details[open] {
 
     &:has(.deployment-config__comments-view) {
         grid-template-columns: 0 1fr !important;
-        
+
         .collapsible-sidebar {
             overflow: hidden;
         }
@@ -5189,6 +5178,7 @@ details[open] {
         .image-tags-container {
             background-color: var(--bg-secondary);
         }
+
         .image-tags-container-edit__icon {
             display: block;
         }

@@ -19,6 +19,7 @@ import {
     AppEnvironment,
     DeploymentStatusDetailsBreakdownDataType,
     EnvAppsMetaDTO,
+    OptionType,
     ResponseType,
     ScanResultDTO,
     SelectPickerProps,
@@ -28,7 +29,7 @@ import {
 import { fetchAppDetailsInTime } from '@Components/app/service'
 
 import { AppDetails, SyncErrorType } from '../../../v2/appDetails/appDetails.type'
-import { AggregatedNodes, OptionType } from '../../types'
+import { AggregatedNodes } from '../../types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',

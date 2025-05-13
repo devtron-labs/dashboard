@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { useState, useEffect } from 'react'
+import { showError, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
 import { MESSAGING_UI } from '../../config'
 import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable'
 import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
@@ -23,7 +23,7 @@ import MessageUI from '../v2/common/message.ui'
 import { getClusterEvents } from './clusterNodes.service'
 import { ClusterEventsType } from './types'
 
-export default function ClusterEvents({ terminalAccessId, reconnectStart }: ClusterEventsType) {
+export default function ClusterEvents({ terminalAccessId, reconnectStart, clusterId }: ClusterEventsType) {
     const [events, setEvents] = useState([])
     const [errorValue, setErrorValue] = useState<PodEventsType>()
     const [loading, setLoading] = useState<boolean>(true)
@@ -75,6 +75,13 @@ export default function ClusterEvents({ terminalAccessId, reconnectStart }: Clus
     return isResourceMissing ? (
         <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />
     ) : (
-        <EventsTable loading={loading} eventsList={events} errorValue={errorValue} reconnect={reconnectStart} />
+        <EventsTable
+            loading={loading}
+            eventsList={events}
+            errorValue={errorValue}
+            reconnect={reconnectStart}
+            clusterId={clusterId}
+            aiWidgetAnalyticsEvent={getAIAnalyticsEvents('RB_EVENT')}
+        />
     )
 }

@@ -211,7 +211,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
             },
         ]
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     const renderBreadcrumbs = () => {

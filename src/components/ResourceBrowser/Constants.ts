@@ -20,7 +20,7 @@ import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { NODE_SEARCH_KEYS, RBSidebarKeysType } from './Types'
+import { NODE_SEARCH_KEYS, RBSidebarKeysType, ShowAIButtonConfig } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -365,3 +365,30 @@ export enum ResourceBrowserTabsId {
     terminal = 'cluster_terminal',
     cluster_overview = 'overview',
 }
+
+export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.freeze({
+    'v1/Node': {
+        column: 'status',
+        excludeValues: new Set(['Ready']),
+    },
+    'v1/Namespace': {
+        column: 'status',
+        excludeValues: new Set(['Active']),
+    },
+    'v1/Pod': {
+        column: 'status',
+        excludeValues: new Set(['Running', 'Completed']),
+    },
+    'v1/PersistentVolumeClaim': {
+        column: 'status',
+        excludeValues: new Set(['Bound']),
+    },
+    'v1/PersistentVolume': {
+        column: 'status',
+        excludeValues: new Set(['Bound']),
+    },
+    'certificates.k8s.io/v1/CertificateSigningRequest': {
+        column: 'condition',
+        excludeValues: new Set(['Approved,Issued']),
+    },
+})

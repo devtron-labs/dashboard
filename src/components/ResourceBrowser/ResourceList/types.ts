@@ -45,7 +45,6 @@ export interface BaseResourceListProps
             | 'selectedCluster'
             | 'selectedResource'
             | 'clusterName'
-            | 'setWidgetEventDetails'
             | 'handleResourceClick'
             | 'lowercaseKindToResourceGroupMap'
         >,

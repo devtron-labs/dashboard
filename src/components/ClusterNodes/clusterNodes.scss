@@ -36,10 +36,6 @@
         width: 51%;
     }
 
-    .react-monaco-editor-container {
-        flex-grow: 1;
-    }
-
     .code-editor__header {
         height: 32px;
     }
@@ -176,12 +172,6 @@
         grid-template-columns: 200px 280px auto;
         column-gap: 16px;
     }
-
-    &__editor {
-        & .react-monaco-editor-container {
-            flex-grow: 1;
-        }
-    }
 }
 
 .cluster-list-main-container,
@@ -201,12 +191,6 @@
                 background-color: var(--bg-hover-opaque);
             }
         }
-    }
-}
-
-.cluster-manifest {
-    & .react-monaco-editor-container {
-        flex-grow: 1;
     }
 }
 

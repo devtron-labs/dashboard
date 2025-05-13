@@ -20,6 +20,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import {
     abortPreviousRequests,
     ALL_NAMESPACE_OPTION,
+    getAIAnalyticsEvents,
     getIsRequestAborted,
     Nodes,
     useAsync,
@@ -48,7 +49,6 @@ export const K8SResourceList = ({
     renderRefreshBar,
     isOpen,
     updateK8sResourceTab,
-    setWidgetEventDetails,
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
@@ -130,11 +130,15 @@ export const K8SResourceList = ({
             group={group}
             addTab={addTab}
             hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
-            setWidgetEventDetails={setWidgetEventDetails}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             handleResourceClick={handleResourceClick}
         >
-            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
+            {PodRestart && (
+                <PodRestart
+                    aiWidgetAnalyticsEvent={getAIAnalyticsEvents('RB_POD_RESTART')}
+                    rbacPayload={getPodRestartRBACPayload()}
+                />
+            )}
         </BaseResourceList>
     )
 }

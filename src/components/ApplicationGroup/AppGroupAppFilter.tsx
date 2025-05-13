@@ -53,10 +53,10 @@ export default function AppGroupAppFilter() {
         setSelectedFilterTab(_filterTab)
     }
 
-    const handleFilterGAEvent = (isItemClick?: boolean) => {
+    const handleFilterGAEvent = (filterType?: string) => {
         ReactGA.event({
             category: 'Group filter',
-            action: `${filterParentType} filter ${isItemClick ? 'item' : ''} clicked`,
+            action: `${filterParentType === FilterParentType.app ? 'DA_ENV' : 'AG_APP'}_FILTER${filterType ? `_${filterType}` : ''}_CLICKED`,
         })
     }
 
@@ -118,7 +118,7 @@ export default function AppGroupAppFilter() {
                 })
             }
         }
-        handleFilterGAEvent(true)
+        handleFilterGAEvent(selectedFilterTab === AppFilterTabs.APP_FILTER ? 'ITEM' : 'SAVED_ITEM')
     }
 
     const getPlaceHolder = (): string => {

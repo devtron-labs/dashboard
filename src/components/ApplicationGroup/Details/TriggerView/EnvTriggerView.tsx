@@ -110,6 +110,7 @@ import {
     BulkCIDetailType,
     ProcessWorkFlowStatusType,
     ResponseRowType,
+    TriggerVirtualEnvResponseRowType,
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
@@ -922,7 +923,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     // TODO: Ig not using this, can remove it
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    if (node.type === WorkflowNodeType.CD) {
+                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    }
                     _selectedNode = node
                     _workflowId = workflow.id
                     _appID = workflow.appId
@@ -1403,6 +1406,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
                 wf.appReleaseTags = _materialData?.appReleaseTagNames
                 wf.tagsEditable = _materialData?.tagsEditable
+                wf.canApproverDeploy = _materialData?.canApproverDeploy ?? false
+                wf.isExceptionUser = _materialData?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
             }
 
             return wf
@@ -1540,6 +1545,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.PASS],
                             BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
                         )
+
+                        const virtualEnvResponseRowType: TriggerVirtualEnvResponseRowType =
+                            [DeploymentNodeType.CD, DeploymentNodeType.POSTCD, DeploymentNodeType.PRECD].includes(
+                                bulkTriggerType,
+                            ) && isVirtualEnv
+                                ? {
+                                      isVirtual: true,
+                                      helmPackageName: response.value?.result?.helmPackageName,
+                                      cdWorkflowType: bulkTriggerType,
+                                  }
+                                : {}
+
                         _responseList.push({
                             appId: triggeredAppList[index].appId,
                             appName: triggeredAppList[index].appName,
@@ -1547,6 +1564,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             status: BulkResponseStatus.PASS,
                             envId: triggeredAppList[index].envId,
                             message: '',
+                            ...virtualEnvResponseRowType,
                         })
                     } else {
                         const errorReason = response.reason
@@ -1796,6 +1814,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 ? `${stageText} is blocked`
                                 : '',
                         triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
+                        isExceptionUser: wf.isExceptionUser,
                     })
                 } else {
                     let warningMessage = ''

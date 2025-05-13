@@ -52,6 +52,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     null,
     'function',
 )
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const AppDetailsComponent = ({
     externalLinks = [],
@@ -239,6 +240,7 @@ const AppDetailsComponent = ({
                             handleUpdateDeploymentStatusDetailsBreakdownData={
                                 handleUpdateDeploymentStatusDetailsBreakdownData
                             }
+                            debugWithAIButton={ExplainWithAIButton}
                         />
                     )}
                 </div>

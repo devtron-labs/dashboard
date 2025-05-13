@@ -113,6 +113,7 @@ export const K8ResourceComponent = ({
             history.push({ search: `${searchParams}` })
             return
         }
+
         // current selected node exist in new selected filter or not
         const nextFilterNodes = nodes.filter((node) => doesNodeSatisfiesFilter(node, selectedFilter))
         const selectedNodeExists = nextFilterNodes.some((node) => node.kind.toLowerCase() === currentNode)

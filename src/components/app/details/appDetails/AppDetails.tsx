@@ -24,7 +24,6 @@ import {
     AppStatusModalTabType,
     ArtifactInfoModal,
     Button,
-    ButtonComponentType,
     DeploymentAppTypes,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
@@ -48,7 +47,6 @@ import {
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
-import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
 
 import {
@@ -56,7 +54,6 @@ import {
     DEPLOYMENT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
     DOCUMENTATION,
-    getAppTriggerURL,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
@@ -111,6 +108,7 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 
 const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 export const AppNotConfigured = ({
     image,
@@ -167,41 +165,6 @@ export const AppNotConfigured = ({
             }
             isButtonAvailable
             renderButton={renderCustomButton ?? renderButton}
-        />
-    )
-}
-
-const EnvironmentNotConfigured = ({ environments }: Record<string, any>) => {
-    const environmentsMap = Array.isArray(environments)
-        ? environments.reduce((agg, curr) => {
-              // eslint-disable-next-line no-param-reassign
-              agg[curr.environmentId] = curr.environmentName
-              return agg
-          }, {})
-        : {}
-    const { envId, appId } = useParams<{ appId; envId }>()
-
-    const renderButton = () => (
-        <Button
-            dataTestId="go-to-trigger"
-            component={ButtonComponentType.link}
-            text="Go to Trigger"
-            linkProps={{
-                to: getAppTriggerURL(appId),
-            }}
-        />
-    )
-
-    return (
-        <GenericEmptyState
-            image={environmentsMap[+envId] ? AppNotDeployedIcon : AppNotConfiguredIcon}
-            title={
-                environmentsMap[+envId]
-                    ? `This app is not deployed on ${environmentsMap[+envId]}`
-                    : `Please select an environment to view app details`
-            }
-            isButtonAvailable={environmentsMap[+envId]}
-            renderButton={renderButton}
         />
     )
 }
@@ -764,6 +727,7 @@ const Details: React.FC<DetailsType> = ({
                     }
                     processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     handleUpdateDeploymentStatusDetailsBreakdownData={handleUpdateDeploymentStatusDetailsBreakdownData}
+                    debugWithAIButton={ExplainWithAIButton}
                 />
             )}
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (
@@ -852,7 +816,6 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                 replace(newUrl)
                 return
             }
-            setEnvironmentId(null)
             return
         }
 
@@ -869,7 +832,7 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
         if (!params.envId || !params.appId) {
             return
         }
-        // Setting environmentId in app context only in cse of app details and not env details
+        // Setting environmentId in app context only in case of app details and not env details
         if (isAppView) {
             setEnvironmentId(Number(params.envId))
         }
@@ -889,7 +852,12 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
     const renderAppNotConfigured = () => (
         <>
             {envList.length === 0 && !isAppDeleted && <AppNotConfigured />}
-            {!params.envId && envList.length > 0 && <EnvironmentNotConfigured environments={envList} />}
+            {!params.envId && envList.length > 0 && (
+                <GenericEmptyState
+                    image={AppNotConfiguredIcon}
+                    title="Please select an environment to view app details"
+                />
+            )}
         </>
     )
 

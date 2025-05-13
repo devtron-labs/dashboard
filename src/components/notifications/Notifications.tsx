@@ -60,7 +60,6 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                                 },
                             },
                         ]}
-                        alignActiveBorderWithContainer
                     />
                 </div>
                 <ErrorBoundary>

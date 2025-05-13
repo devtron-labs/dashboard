@@ -136,6 +136,9 @@ if (!window || !window._env_) {
         ENABLE_SCOPED_VARIABLES: true,
         DEFAULT_CI_TRIGGER_TYPE_MANUAL: false,
         ANNOUNCEMENT_BANNER_MSG: '',
+        ANNOUNCEMENT_BANNER_TYPE: 'help',
+        ANNOUNCEMENT_BANNER_BUTTON_TEXT: 'Learn more',
+        ANNOUNCEMENT_BANNER_BUTTON_LINK: '',
         HIDE_DEFAULT_CLUSTER: false,
         GLOBAL_API_TIMEOUT: 60000,
         TRIGGER_API_TIMEOUT: 60000,
@@ -165,9 +168,10 @@ if (!window || !window._env_) {
         FEATURE_CLUSTER_MAP_ENABLE: true,
         FEATURE_ACTION_AUDIOS_ENABLE: true,
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
-        FEATURE_CODE_MIRROR_ENABLE: true,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
+        FEATURE_AI_INTEGRATION_ENABLE: false,
+        LOGIN_PAGE_IMAGE: '',
     }
 }
 
