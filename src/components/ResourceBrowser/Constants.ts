@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { NO_MATCHING_RESULT, Nodes, URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
@@ -392,3 +392,15 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
         excludeValues: new Set(['Approved,Issued']),
     },
 })
+
+export const RESOURCE_BROWSER_ROUTES = {
+    OVERVIEW: `${URLS.RESOURCE_BROWSER}/:clusterId/overview`,
+    MONITORING_DASHBOARD: `${URLS.RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`,
+    TERMINAL: `${URLS.RESOURCE_BROWSER}/:clusterId/terminal`,
+    CLUSTER_UPGRADE: `${URLS.RESOURCE_BROWSER}/:clusterId/cluster-upgrade`,
+    NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
+    K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
+    K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
+} as const
+
+export const DUMMY_RESOURCE_GVK_VERSION = 'v1'

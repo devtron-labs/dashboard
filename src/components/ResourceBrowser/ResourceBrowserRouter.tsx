@@ -33,7 +33,7 @@ const ResourceBrowserRouter: React.FC = () => {
 
     return (
         <Switch>
-            <Route path={`${path}/:clusterId/:namespace/:nodeType/:group/:node?`}>
+            <Route path={`${path}/:clusterId`}>
                 <ResourceList />
             </Route>
 
