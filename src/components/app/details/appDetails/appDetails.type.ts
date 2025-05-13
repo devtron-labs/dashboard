@@ -190,7 +190,6 @@ export interface DeploymentStatusCardType {
     hideDetails?: boolean
     triggeredBy?: string
     isVirtualEnvironment?: boolean
-    refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 
 export interface IssuesCardType {

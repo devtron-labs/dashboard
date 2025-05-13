@@ -84,7 +84,6 @@ export function deleteArgoCDAppWithNonCascade(
 export function getDeploymentStatusDetail(
     appId: string,
     envId: string,
-    showTimeline: boolean,
     triggerId?: string,
     isHelmApps?: boolean,
     installedAppVersionHistoryId?: number,
@@ -96,7 +95,7 @@ export function getDeploymentStatusDetail(
         appendUrl = Routes.DEPLOYMENT_STATUS
     }
     return get(
-        `${appendUrl}/${appId}/${envId}${`?showTimeline=${showTimeline}`}${triggerId ? `&wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `&installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`,
+        `${appendUrl}/${appId}/${envId}${`?showTimeline=${false}`}${triggerId ? `&wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `&installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`,
     )
 }
 

@@ -75,7 +75,6 @@ export const SourceInfo = ({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
-    refetchDeploymentStatus,
     toggleIssuesModal,
     envId,
     ciArtifactId,
@@ -407,7 +406,6 @@ export const SourceInfo = ({
                                           appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
-                                      refetchDeploymentStatus={refetchDeploymentStatus}
                                   />
                                   {appDetails?.dataSource !== 'EXTERNAL' && (
                                       <DeployedCommitCard

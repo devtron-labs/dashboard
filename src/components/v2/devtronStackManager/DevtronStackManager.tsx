@@ -24,6 +24,7 @@ import {
     useMainContext,
     AppStatusModal,
     AppStatusModalTabType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, useInterval } from '../../common'
@@ -586,8 +587,9 @@ export default function DevtronStackManager({
                                         appDetails={appDetails}
                                         isConfigDriftEnabled={false}
                                         configDriftModal={null}
-                                        deploymentStatusDetailsBreakdownData={null}
                                         initialTab={AppStatusModalTabType.APP_STATUS}
+                                        processVirtualEnvironmentDeploymentData={noop}
+                                        handleUpdateDeploymentStatusDetailsBreakdownData={noop}
                                     />
                                 )}
                             </ErrorBoundary>

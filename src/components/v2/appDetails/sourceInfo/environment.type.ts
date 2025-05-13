@@ -29,7 +29,7 @@ export interface EnvironmentStatusComponentType {
     loadingResourceTree: boolean
     deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
     isVirtualEnvironment?: boolean
-    refetchDeploymentStatus: (showTimeline?: boolean) => void
+    handleUpdateDeploymentStatusDetailsBreakdownData: (data: DeploymentStatusDetailsBreakdownDataType) => void
 }
 export interface AppEnvironment extends BaseAppEnvironmentType {
     isSelected?: boolean

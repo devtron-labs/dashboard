@@ -70,9 +70,6 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
     const history = useHistory()
-    // State to track the loading state for the timeline data when the detailed status modal opens
-    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
-    const shouldFetchTimelineRef = useRef(false)
     const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
@@ -89,15 +86,6 @@ const AppDetailsComponent = ({
             getSaveTelemetry(params.appId).catch(noop)
         }
     }, [])
-    useEffect(() => {
-        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
-        // Reset the loading state when the modal is closed
-        if (shouldFetchTimelineRef.current && !isModalOpen) {
-            setIsInitialTimelineDataLoading(true)
-        }
-        // The timeline should be fetched by default if the modal is open
-        shouldFetchTimelineRef.current = isModalOpen
-    }, [location.search])
 
     const clearDeploymentStatusTimer = (): void => {
         if (deploymentStatusTimer) {
@@ -105,17 +93,13 @@ const AppDetailsComponent = ({
         }
     }
 
-    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
-        const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
-
+    const getDeploymentDetailStepsData = (): void => {
+        // TODO: Ask why are we not sending wfrId in the request in case of virtual environment?
         // Deployments status details for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true)
+        getDeploymentStatusDetail(params.appId, params.envId, '', true)
             .then((deploymentStatusDetailRes) => {
                 // eslint-disable-next-line @typescript-eslint/no-use-before-define
                 processDeploymentStatusData(deploymentStatusDetailRes.result)
-                if (shouldFetchTimeline) {
-                    setIsInitialTimelineDataLoading(false)
-                }
             })
             .catch(noop)
     }
@@ -155,6 +139,12 @@ const AppDetailsComponent = ({
         history.replace({
             search: '',
         })
+    }
+
+    const handleUpdateDeploymentStatusDetailsBreakdownData = (
+        updatedTimelineData: typeof deploymentStatusDetailsBreakdownData,
+    ) => {
+        setDeploymentStatusDetailsBreakdownData(updatedTimelineData)
     }
 
     const renderHelmAppDetails = (): JSX.Element => {
@@ -213,7 +203,9 @@ const AppDetailsComponent = ({
                                 loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 isVirtualEnvironment={isVirtualEnv.current}
-                                refetchDeploymentStatus={getDeploymentDetailStepsData}
+                                handleUpdateDeploymentStatusDetailsBreakdownData={
+                                    handleUpdateDeploymentStatusDetailsBreakdownData
+                                }
                             />
                         )}
                     </div>
@@ -242,10 +234,11 @@ const AppDetailsComponent = ({
                             appDetails={appDetails}
                             isConfigDriftEnabled={false}
                             configDriftModal={null}
-                            // TODO: Test virtual environment deployment data
-                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            isDeploymentTimelineLoading={isInitialTimelineDataLoading}
                             initialTab={AppStatusModalTabType.DEPLOYMENT_STATUS}
+                            processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                            handleUpdateDeploymentStatusDetailsBreakdownData={
+                                handleUpdateDeploymentStatusDetailsBreakdownData
+                            }
                         />
                     )}
                 </div>

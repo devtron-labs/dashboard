@@ -17,7 +17,7 @@
 import { useMemo, useState } from 'react'
 import './environmentStatus.scss'
 import IndexStore from '../../index.store'
-import { DEPLOYMENT_STATUS_QUERY_PARAM, URLS } from '../../../../../config'
+import { URLS } from '../../../../../config'
 import { AppType } from '../../appDetails.type'
 import { useSharedState } from '../../../utils/useSharedState'
 import { useRouteMatch, useHistory, useParams } from 'react-router-dom'
@@ -44,13 +44,18 @@ import SecurityVulnerabilityCard from '../../../../app/details/appDetails/Securi
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
+    'processVirtualEnvironmentDeploymentData',
+    null,
+    'function',
+)
 
 const EnvironmentStatusComponent = ({
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
-    refetchDeploymentStatus,
+    handleUpdateDeploymentStatusDetailsBreakdownData,
 }: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -151,7 +156,6 @@ const EnvironmentStatusComponent = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     cardLoading={cardLoading}
                     hideDetails={false}
-                    refetchDeploymentStatus={refetchDeploymentStatus}
                     isVirtualEnvironment={isVirtualEnvironment}
                 />
             )
@@ -208,9 +212,10 @@ const EnvironmentStatusComponent = ({
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}
                     configDriftModal={null}
-                    // TODO: Confirm
-                    deploymentStatusDetailsBreakdownData={null}
                     initialTab={AppStatusModalTabType.APP_STATUS}
+                    handleUpdateDeploymentStatusDetailsBreakdownData={handleUpdateDeploymentStatusDetailsBreakdownData}
+                    processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                    
                 />
             )}
             {showIssuesModal && (

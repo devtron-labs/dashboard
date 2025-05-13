@@ -271,14 +271,11 @@ const Details: React.FC<DetailsType> = ({
 
     const [loadingDetails, setLoadingDetails] = useState(true)
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
-    // State to track the loading state for the timeline data when the detailed status modal opens
-    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef<AbortController>(null)
-    const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -297,16 +294,6 @@ const Details: React.FC<DetailsType> = ({
         () => aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []),
         [appDetails],
     )
-
-    useEffect(() => {
-        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
-        // Reset the loading state when the modal is closed
-        if (shouldFetchTimelineRef.current && !isModalOpen) {
-            setIsInitialTimelineDataLoading(true)
-        }
-        // The timeline should be fetched by default if the modal is open
-        shouldFetchTimelineRef.current = isModalOpen
-    }, [location.search])
 
     const clearDeploymentStatusTimer = useCallback((): void => {
         if (deploymentStatusTimer) {
@@ -343,30 +330,15 @@ const Details: React.FC<DetailsType> = ({
         ],
     )
 
-    // This is called only when timeline modal is open
-    const getDeploymentDetailStepsData = useCallback(
-        (showTimeline?: boolean): void => {
-            const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
-
-            // Deployments status details for Devtron apps
-            getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
-                .then((deploymentStatusDetailRes) => {
-                    processDeploymentStatusData(deploymentStatusDetailRes.result)
-                    // Update the loading status if the modal is open
-                    if (shouldFetchTimeline) {
-                        setIsInitialTimelineDataLoading(false)
-                    }
-                })
-                .catch(noop)
-        },
-        [
-            params.appId,
-            params.envId,
-            shouldFetchTimelineRef.current,
-            getDeploymentStatusDetail,
-            processDeploymentStatusData,
-        ],
-    )
+    // This method is called in case of gitops based deployment for polling
+    const getDeploymentDetailStepsData = useCallback((): void => {
+        // Deployments status details for Devtron apps
+        getDeploymentStatusDetail(params.appId, params.envId)
+            .then((deploymentStatusDetailRes) => {
+                processDeploymentStatusData(deploymentStatusDetailRes.result)
+            })
+            .catch(noop)
+    }, [params.appId, params.envId, getDeploymentStatusDetail, processDeploymentStatusData])
 
     function clearPollingInterval() {
         if (appDetailsIntervalID) {
@@ -472,28 +444,20 @@ const Details: React.FC<DetailsType> = ({
         isIsolatedEnv: boolean,
         triggerIdToFetch?: number,
     ) {
-        const shouldFetchTimeline = shouldFetchTimelineRef.current
-
         // triggerIdToFetch represents the wfrId to fetch for any specific deployment
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, triggerIdToFetch?.toString())
+        getDeploymentStatusDetail(params.appId, params.envId, triggerIdToFetch?.toString())
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     // Timelines are not applicable for helm deployments and air gapped envs
                     if (deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv) {
-                        setDeploymentStatusDetailsBreakdownData({
-                            ...deploymentStatusDetailsBreakdownData,
-                            deploymentStatus:
-                                DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
-                            // TODO: Need to confirm while review why we parse progressing to in progress?
-                            deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
-                            deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
-                            triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
-                        })
+                        const processedDeploymentStatusData =
+                            isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
+                                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes.result)
+                                : processDeploymentStatusDetailsData(deploymentStatusDetailRes.result)
+
+                        setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusData)
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
-                    }
-                    if (shouldFetchTimeline) {
-                        setIsInitialTimelineDataLoading(false)
                     }
                 }
             })
@@ -724,6 +688,13 @@ const Details: React.FC<DetailsType> = ({
             isDeploymentBlocked={isDeploymentBlocked}
         />
     )
+
+    const handleUpdateDeploymentStatusDetailsBreakdownData = (
+        updatedTimelines: DeploymentStatusDetailsBreakdownDataType,
+    ) => {
+        setDeploymentStatusDetailsBreakdownData(updatedTimelines)
+    }
+
     const isDeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     return (
         <>
@@ -744,7 +715,6 @@ const Details: React.FC<DetailsType> = ({
                     setRotateModal={setRotateModal}
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
-                    refetchDeploymentStatus={getDeploymentDetailStepsData}
                     toggleIssuesModal={toggleIssuesModal}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
@@ -792,8 +762,8 @@ const Details: React.FC<DetailsType> = ({
                     initialTab={
                         detailedStatus ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
                     }
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isDeploymentTimelineLoading={isInitialTimelineDataLoading}
+                    processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                    handleUpdateDeploymentStatusDetailsBreakdownData={handleUpdateDeploymentStatusDetailsBreakdownData}
                 />
             )}
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (
@@ -941,7 +911,6 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                                 appDetails={null}
                                 environments={envList}
                                 environment={environment}
-                                refetchDeploymentStatus={noop}
                                 isAppView={isAppView}
                             />
                         </div>

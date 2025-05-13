@@ -580,7 +580,6 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     loadingResourceTree?: boolean
     isVirtualEnvironment?: boolean
     setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
-    refetchDeploymentStatus: (showTimeline?: boolean) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number

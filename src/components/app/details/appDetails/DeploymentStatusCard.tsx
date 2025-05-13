@@ -33,7 +33,6 @@ const DeploymentStatusCard = ({
     cardLoading,
     hideDetails,
     isVirtualEnvironment,
-    refetchDeploymentStatus,
 }: DeploymentStatusCardType) => {
     const history = useHistory()
 
@@ -105,7 +104,6 @@ const DeploymentStatusCard = ({
     const onClickLastDeploymentStatus = (e) => {
         if (!hideDetails) {
             showDeploymentDetailedStatus(e)
-            refetchDeploymentStatus(true)
         }
     }
 
