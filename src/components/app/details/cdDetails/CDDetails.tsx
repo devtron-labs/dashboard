@@ -224,7 +224,10 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                     }
                 })
 
-            if (envOptions.length && ((!envId && !isEnvDeleted) || (envId && !_selectedEnvironment))) {
+            if (
+                (envOptions.length === 1 && !envId && !isEnvDeleted) ||
+                (envId && envOptions.length && !_selectedEnvironment)
+            ) {
                 setEnvironmentId(+envOptions[0].value)
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
             } else if (envId && !pipelineId && _selectedEnvironment) {
