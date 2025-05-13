@@ -1211,7 +1211,7 @@ const ClusterForm = ({
                 {isKubeConfigFile && (
                     <div data-testid="valid_cluster_infocolor_bar">
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
-                            <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16">
+                            <div className="api-token__list en-2 bw-1 bg__primary br-4 mr-20 ml-20 mt-16 mb-16">
                                 <InfoBlock
                                     borderConfig={{
                                         top: false,
