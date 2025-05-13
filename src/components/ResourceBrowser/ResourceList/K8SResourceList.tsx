@@ -16,11 +16,11 @@
 
 import { useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     abortPreviousRequests,
     ALL_NAMESPACE_OPTION,
+    getAIAnalyticsEvents,
     getIsRequestAborted,
     Nodes,
     useAsync,

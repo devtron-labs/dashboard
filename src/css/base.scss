@@ -763,7 +763,8 @@ button.anchor {
     &.f-active,
     &.f-ready,
     &.f-created,
-    &.f-scalingreplicasetdown {
+    &.f-scalingreplicasetdown,
+    &.f-deployed {
         color: var(--G500);
     }
 
@@ -774,6 +775,10 @@ button.anchor {
     &.f-containercreating,
     &.f-pending,
     &.f-podinitializing,
+    &.f-uninstalling,
+    &.f-pending-install,
+    &.f-pending-upgrade,
+    &.f-pending-rollback,
     &[class*='f-init__']:not(.f-init__crashloopbackoff) {
         color: var(--O500);
     }
@@ -792,7 +797,9 @@ button.anchor {
     &.f-createcontainerconfigerror,
     &.f-deleted,
     &.f-not__ready,
-    &.f-evicted {
+    &.f-evicted,
+    &.f-disconnect,
+    &.f-superseded {
         color: var(--R500);
     }
 
@@ -802,12 +809,15 @@ button.anchor {
         color: var(--O500);
     }
 
-    &.f-unknown {
-        color: var(--Y500);
+    &.f-updated,
+    &.f-waiting {
+        color: var(--Y700);
     }
 
-    &.f-updated {
-        color: var(--Y700);
+    &.f-queued,
+    &.f-missing,
+    &.f-unknown {
+        color: var(--N700);
     }
 }
 
@@ -2346,6 +2356,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-6 {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
 .dc__bottom-radius-8 {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -3234,6 +3249,10 @@ button.anchor {
 
 .h-0 {
     height: 0px;
+}
+
+.h-2 {
+    height: 2px;
 }
 
 .h-8 {
