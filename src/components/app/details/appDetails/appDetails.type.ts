@@ -65,26 +65,6 @@ export interface AppDetailsPathParams {
     envId?: string
 }
 
-export interface SyncStageResourceDetail {
-    id: number
-    cdWorkflowRunnerId: number
-    resourceGroup: string
-    resourceKind: string
-    resourceName: string
-    resourcePhase: string
-    resourceStatus: string
-    statusMessage: string
-}
-
-export interface DeploymentStatusDetailsTimelineType {
-    id: number
-    cdWorkflowRunnerId: number
-    status: string
-    statusDetail: string
-    statusTime: string
-    resourceDetails?: SyncStageResourceDetail[]
-}
-
 export interface ModuleConfigResponse extends ResponseType {
     result?: {
         enabled: boolean
