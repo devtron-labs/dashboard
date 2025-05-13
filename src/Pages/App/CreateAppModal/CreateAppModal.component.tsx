@@ -35,7 +35,6 @@ import {
 
 import { ReactComponent as ICAppTemplate } from '@Icons/ic-app-template.svg'
 import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
-import { ReactComponent as ICAppDevtron } from '@Icons/ic-devtron-app.svg'
 import { getAppConfig } from '@Components/app/Overview/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
@@ -451,8 +450,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         />
                         <span>/</span>
                         <p className="m-0 flex left dc__gap-6">
-                            {getAppConfig(APP_TYPE.JOB, 20).icon}
-                            <ICAppDevtron className="icon-dim-20 p-1 dc__no-shrink" />
+                            {getAppConfig(isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS, 20).icon}
                             <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">
                                 {formState.cloneAppConfig.appName}
                             </span>
