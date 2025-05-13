@@ -17,7 +17,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import DOMPurify from 'dompurify'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -29,6 +28,7 @@ import {
     ClipboardButton,
     ConditionalWrap,
     GenericFilterEmptyState,
+    getAIAnalyticsEvents,
     GVKType,
     highlightSearchText,
     K8sResourceDetailDataType,
