@@ -197,7 +197,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     }
 
     const refreshImmediateAndStartPolling = (clusterName: string) => {
-        fetchClusterConfig(clusterCapacityData.name).catch(noop)
+        fetchClusterConfig(clusterName).catch(noop)
         pollClusterConfig(clusterName)
     }
 

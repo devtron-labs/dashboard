@@ -335,7 +335,7 @@ export enum CLUSTER_PROD_TYPE {
 
 }
 
-export const CLUSTER_CONFIG_POLLING_INTERVAL = 10000 // 10 seconds
+export const CLUSTER_CONFIG_POLLING_INTERVAL = 1000 * 30 // half a minute
 
 export const CLUSTER_DESCRIPTION_DUMMY_DATA: DescriptionDataType = {
     descriptionId: 0,
