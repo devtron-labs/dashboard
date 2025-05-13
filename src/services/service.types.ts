@@ -63,7 +63,7 @@ export interface CDPipeline {
 }
 
 export interface AppListMin extends ResponseType {
-    result?: { id: number; name: string }[]
+    result?: { id: number; name: string; createdBy: string; description: string }[]
 }
 
 export interface ProjectFilteredApps extends ResponseType {
