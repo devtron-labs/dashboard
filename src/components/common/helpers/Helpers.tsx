@@ -392,27 +392,6 @@ export function deepEqual(configA: any, configB: any): boolean {
     }
 }
 
-export function useOnline() {
-    const [online, setOnline] = useState(navigator.onLine)
-    useEffect(() => {
-        function handleOnline(e) {
-            setOnline(true)
-        }
-
-        function handleOffline(e) {
-            setOnline(false)
-        }
-        window.addEventListener('online', handleOnline)
-        window.addEventListener('offline', handleOffline)
-        return () => {
-            window.removeEventListener('online', handleOnline)
-            window.removeEventListener('offline', handleOffline)
-        }
-    }, [])
-
-    return online
-}
-
 /**
  * @deprecated
  */
@@ -785,6 +764,11 @@ export const convertToOptionsList = (
 }
 
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
+    // Adding this check as we do not want to import the component if flag is off
+    // Using this as a hack, to be removed soon
+    if (!window._env_?.FEATURE_AI_INTEGRATION_ENABLE && componentName === 'ExplainWithAIButton') {
+        return null
+    }
     try {
         let component = defaultComponent || null
         if (!module) {
@@ -1030,10 +1014,6 @@ export const handleOnBlur = (e): void => {
 
 export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
-}
-
-export const reloadLocation = () => {
-    window.location.reload()
 }
 
 /**

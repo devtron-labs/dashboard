@@ -20,6 +20,7 @@ import { generatePath, Route, useHistory, useLocation, useParams, useRouteMatch 
 import {
     ACTION_STATE,
     aggregateNodes,
+    AppStatusModal,
     ArtifactInfoModal,
     Button,
     DeploymentAppTypes,
@@ -68,7 +69,6 @@ import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
 import IndexStore from '../../../v2/appDetails/index.store'
 import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
 import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
-import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
 import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
@@ -96,7 +96,6 @@ import { SourceInfo } from './SourceInfo'
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -109,6 +108,9 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 export const AppNotConfigured = ({
     image,
@@ -205,8 +207,10 @@ const Details: React.FC<DetailsType> = ({
     applications,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
-    const { path } = useRouteMatch()
     const location = useLocation()
+
+    const appDetailsFromIndexStore = IndexStore.getAppDetails()
+
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
@@ -248,7 +252,7 @@ const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModalRoute
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -738,10 +742,14 @@ const Details: React.FC<DetailsType> = ({
                 renderAppDetails()
             )}
             {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled}
+                <AppStatusModal
+                    titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
+                    handleClose={hideAppDetailsStatus}
+                    type="devtron-app"
+                    appDetails={appDetailsFromIndexStore}
+                    isConfigDriftEnabled={isConfigDriftEnabled}
+                    configDriftModal={ConfigDriftModal}
+                    debugWithAIButton={ExplainWithAIButton}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
@@ -777,7 +785,6 @@ const Details: React.FC<DetailsType> = ({
             )}
             {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
-            {isConfigDriftEnabled && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
