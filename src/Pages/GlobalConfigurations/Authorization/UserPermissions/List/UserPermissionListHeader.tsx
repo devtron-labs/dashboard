@@ -20,6 +20,7 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
+    getDocumentationUrl,
     InfoIconTippy,
     SearchBar,
     useMainContext,
@@ -56,7 +57,7 @@ const UserPermissionListHeader = ({
                     additionalContent={
                         <div className="pl-12 pb-12">
                             <a
-                                href={DOCUMENTATION.GLOBAL_CONFIG_USER}
+                                href={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_USER)}
                                 target="_blank"
                                 rel="noreferrer noreferrer"
                                 className="anchor flexbox flex-align-center fs-13 dc__gap-4"

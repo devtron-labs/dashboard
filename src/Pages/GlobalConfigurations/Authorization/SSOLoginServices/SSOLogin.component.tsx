@@ -39,6 +39,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     ErrorScreenManager,
     FeatureTitleWithInfo,
+    getDocumentationUrl,
     InfoBlock,
     MODES,
     noop,
@@ -833,7 +834,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <FeatureTitleWithInfo
                             title={HEADER_TEXT.SSO_LOGIN.title}
                             renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
-                            docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
+                            docLink={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_SSO)}
                             showInfoIconTippy
                             dataTestId="sso-login-heading"
                         />

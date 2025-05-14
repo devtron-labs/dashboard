@@ -34,6 +34,7 @@ import {
     MarkDown,
     Button,
     RAISE_ISSUE,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1160,7 +1161,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                                 Please refer&nbsp;
                                 <a
                                     className="cb-5 fw-6"
-                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
+                                    href={getDocumentationUrl(DOCUMENTATION.DEVTRON_UPGRADE)}
                                     target="_blank"
                                     rel="noreferrer"
                                 >

@@ -16,7 +16,7 @@
 
 import { Component } from 'react'
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
-import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, getDocumentationUrl, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
@@ -35,7 +35,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                     <FeatureTitleWithInfo
                         title={HEADER_TEXT.NOTIFICATIONS.title}
                         renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
-                        docLink={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION}
+                        docLink={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION)}
                         showInfoIconTippy
                         dataTestId="notifications-feature-title"
                     />

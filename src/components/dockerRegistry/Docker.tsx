@@ -51,6 +51,7 @@ import {
     ComponentSizeType,
     PasswordField,
     RegistryCredentialsType,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -208,7 +209,7 @@ export default function Docker({ ...props }) {
                             ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
-                    documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                    documentationLink={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_DOCKER)}
                     iconClassName="icon-dim-20 ml-4"
                 />
             </div>

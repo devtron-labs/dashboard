@@ -16,7 +16,7 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { copyToClipboard, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
 import 'tippy.js/themes/light.css'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import './cluster.scss'
@@ -104,9 +104,11 @@ export default function ClusterInfoStepsModal({ subTitle, command, clusterName }
             {subTitle && <p className="bcn-1 pt-8 pb-8 pl-12 pr-12 m-0">{subTitle}</p>}
             <ClusterInfoSteps subTitle={subTitle} command={command} clusterName={clusterName} />
             <div className="p-12">
-                <a href={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER} target="_blank" rel="noreferrer">
-                    View documentation
-                </a>
+                <DocLink
+                    docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                    docLinkText="View documentation"
+                    dataTestId="cluster-info-step-view-documentation"
+                />
             </div>
         </div>
     )

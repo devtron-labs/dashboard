@@ -26,6 +26,7 @@ import {
     PageHeader,
     SearchBar,
     DeleteConfirmationModal,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -167,26 +168,12 @@ export default function SavedValuesList() {
         )
     }
 
-    const renderLearnMoreLink = (): JSX.Element => {
-        return (
-            <a
-                className="dc__no-decor"
-                href={DOCUMENTATION.CUSTOM_VALUES}
-                target="_blank"
-                rel="noreferrer noopener"
-                data-testid="preset-values-learn-more-link"
-            >
-                Learn more
-            </a>
-        )
-    }
-
     const renderSubtitleAndNewButton = (subtitleText: string): JSX.Element => {
         return (
             <>
                 <p className="fs-13 fw-4">
                     {subtitleText}&nbsp;
-                    {renderLearnMoreLink()}
+                    <DocLink docLink={DOCUMENTATION.CUSTOM_VALUES} dataTestId="preset-values-learn-more-link" />
                 </p>
                 <div className="flexbox dc__content-space">
                     {renderUploadButton()}

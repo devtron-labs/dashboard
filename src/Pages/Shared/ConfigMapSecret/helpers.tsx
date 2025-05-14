@@ -44,14 +44,7 @@ export const renderESOInfo = (isESO: boolean) =>
                         External Secrets Operator
                     </Link>
                     &nbsp;<span>should be installed in the target cluster.</span>&nbsp;
-                    <a
-                        className="anchor"
-                        href={DOCUMENTATION.EXTERNAL_SECRET}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
+                    <DocLink docLink={DOCUMENTATION.EXTERNAL_SECRET} dataTestId="learn-more-about-external-secrets" />
                 </p>
             }
         />

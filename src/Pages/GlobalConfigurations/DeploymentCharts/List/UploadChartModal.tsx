@@ -19,6 +19,7 @@ import { useRef, useState } from 'react'
 import {
     ButtonWithLoader,
     CustomInput,
+    getDocumentationUrl,
     noop,
     showError,
     Textarea,
@@ -203,7 +204,7 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                     📙 Need help?&nbsp;
                     <a
                         className="dc__link fw-6"
-                        href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
+                        href={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES)}
                         target="_blank"
                         rel="noreferrer noopener"
                     >

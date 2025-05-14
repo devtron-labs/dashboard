@@ -34,6 +34,7 @@ import {
     ComponentSizeType,
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, useHistory, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
@@ -243,7 +244,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                     <FeatureTitleWithInfo
                         title={moduleBasedTitle}
                         renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
-                        docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        docLink={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_CLUSTER)}
                         showInfoIconTippy
                         additionalContainerClasses="mb-20"
                     />

@@ -20,6 +20,7 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
+    getDocumentationUrl,
     InfoIconTippy,
     SearchBar,
     useMainContext,
@@ -50,7 +51,7 @@ const PermissionGroupListHeader = ({
                     additionalContent={
                         <div className="pl-12 pb-12">
                             <a
-                                href={DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
+                                href={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_GROUPS)}
                                 target="_blank"
                                 rel="noreferrer noreferrer"
                                 className="anchor flexbox flex-align-center fs-13 dc__gap-4"

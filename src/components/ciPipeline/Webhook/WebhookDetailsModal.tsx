@@ -37,6 +37,8 @@ import {
     ButtonVariantType,
     ActionTypes,
     InfoBlock,
+    getDocumentationUrl,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -472,14 +474,12 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderTokenSection = (): JSX.Element | null => {
         if (!isSuperAdmin) {
             return (
-                <a
-                    className="dc__link dc__no-decor fs-13 fw-4"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
-                    How to generate API tokens?
-                </a>
+                <DocLink
+                    docLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
+                    docLinkText="How to generate API tokens?"
+                    dataTestId="learn-more-about-generating-api-tokens"
+                />
+              
             )
         }
         return !showTokenSection ? (

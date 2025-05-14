@@ -17,7 +17,11 @@
 import React, { useRef } from 'react'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
-import { APP_SELECTOR_STYLES, AppSelectorDropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    APP_SELECTOR_STYLES,
+    AppSelectorDropdownIndicator,
+    getDocumentationUrl,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { DOCUMENTATION } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
@@ -72,7 +76,7 @@ export default ClusterSelector
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {
         text: ERROR_SCREEN_SUBTITLE,
-        link: DOCUMENTATION.K8S_RESOURCES_PERMISSIONS,
+        link: getDocumentationUrl(DOCUMENTATION.K8S_RESOURCES_PERMISSIONS),
         linkText: ERROR_SCREEN_LEARN_MORE,
     }
 
