@@ -17,6 +17,7 @@
 import {
     ClusterCapacityType,
     ClusterDetail,
+    DynamicDataTableProps,
     K8sResourceDetailDataType,
     NodeActionRequest,
     NodeTaintType,
@@ -162,19 +163,6 @@ export const TEXT_COLOR_CLASS = {
     'Not ready': 'cr-5',
 }
 
-interface ErrorObj {
-    isValid: boolean
-    message: string | null
-}
-
-export interface TaintErrorObj {
-    isValid: boolean
-    taintErrorList: {
-        key: ErrorObj
-        value: ErrorObj
-    }[]
-}
-
 export interface NodeActionModalPropType extends NodeActionRequest {
     closePopup: (refreshData?: boolean) => void
 }
@@ -294,3 +282,11 @@ export interface ClusterOverviewProps {
 export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
 }
+
+export enum TaintsTableHeaderKeys {
+    KEY = 'key',
+    VALUE = 'value',
+    EFFECT = 'effect',
+}
+
+export type TaintsTableType = DynamicDataTableProps<TaintsTableHeaderKeys>

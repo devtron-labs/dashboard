@@ -14,137 +14,131 @@
  * limitations under the License.
  */
 
-import { ReactNode, useState } from 'react'
+import { useState } from 'react'
+import { useParams } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     Drawer,
+    DynamicDataTable,
+    Icon,
+    InfoBlock,
+    showError,
+    stopPropagation,
     TippyCustomized,
     TippyTheme,
-    stopPropagation,
-    SelectPicker,
-    ToastVariantType,
     ToastManager,
-    CustomInput,
-    ComponentSizeType,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    InfoBlock,
-    OptionType,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
+
 import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { updateTaints } from '../clusterNodes.service'
-import { EditTaintsModalType, EditTaintsRequest, EFFECT_TYPE, TaintErrorObj, TaintType } from '../types'
-import { ValidationRules } from './validationRules'
-import { EDIT_TAINTS_MODAL_MESSAGING, TAINT_OPTIONS } from '../constants'
+import { EDIT_TAINTS_MODAL_MESSAGING, TAINTS_TABLE_HEADERS } from '../constants'
+import { EditTaintsModalType, EditTaintsRequest, TaintsTableHeaderKeys, TaintsTableType } from '../types'
+import {
+    getTaintsPayload,
+    getTaintsRowCellError,
+    getTaintsTableCellError,
+    getTaintsTableCellValidateState,
+    getTaintsTableEmptyRow,
+    getTaintsTableRows,
+    getTaintTableValidateState,
+    validateUniqueTaintKey,
+} from './utils'
 
-const TaintInfoMessage = ({ tippyContent }: { tippyContent: () => ReactNode }) => {
-    return (
-        <div className="fs-13 fw-4 lh-20">
-            <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;
-            <TippyCustomized
-                theme={TippyTheme.white}
-                className="w-400"
-                placement="top"
-                Icon={HelpIcon}
-                iconClass="fcv-5"
-                heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
-                infoText=""
-                showCloseButton
-                trigger="click"
-                interactive
-                additionalContent={tippyContent()}
-            >
-                <span className="cb-5 cursor" onClick={stopPropagation}>
-                    {EDIT_TAINTS_MODAL_MESSAGING.infoLinkText}
-                </span>
-            </TippyCustomized>
-        </div>
-    )
-}
-
-export default function EditTaintsModal({ name, version, kind, taints, closePopup }: EditTaintsModalType) {
-    const { clusterId } = useParams<{ clusterId: string }>()
-    const [apiCallInProgress, setAPICallInProgress] = useState(false)
-    const [taintList, setTaintList] = useState<TaintType[]>(
-        taints || [{ key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }],
-    )
-    const [errorObj, setErrorObj] = useState<TaintErrorObj>(null)
-    const validationRules = new ValidationRules()
-
-    const onClose = (): void => {
-        !apiCallInProgress && closePopup()
-    }
-
-    const deleteTaint = (e): void => {
-        const { index } = e.currentTarget.dataset
-        const _taintList = [...taintList]
-        _taintList.splice(index, 1)
-        setTaintList(_taintList)
-        validateTaintList(_taintList)
-    }
-
-    const addNewTaint = (): void => {
-        const _taintList = [...taintList, { key: '', value: '', effect: EFFECT_TYPE.PreferNoSchedule }]
-        setTaintList(_taintList)
-        validateTaintList(_taintList, true)
-    }
-
-    const handleInputChange = (e): void => {
-        const _taintList = [...taintList]
-        const { index } = e.currentTarget.dataset
-        _taintList[index][e.target.name] = e.target.value
-        setTaintList(_taintList)
-        validateTaintList(_taintList)
-    }
-
-    const onEffectChange = (selectedValue: OptionType, index: number): void => {
-        const _taintList = [...taintList]
-        _taintList[index].effect = EFFECT_TYPE[selectedValue.label]
-        setTaintList(_taintList)
-        validateTaintList(_taintList)
-    }
-
-    const validateTaintList = (_taintList: TaintType[], ignoreNewlyAdded?: boolean): TaintErrorObj => {
-        const _errorObj = { isValid: true, taintErrorList: [] }
-        const uniqueTaintMap = new Map<string, boolean>()
-        for (let index = 0; index < _taintList.length; index++) {
-            const element = _taintList[index]
-            const uniqueKey = `${element.key}-${element.effect}`
-            const validateTaintValue = validationRules.taintValue(element.value)
-            let validateTaintKey = validationRules.taintKey(element.key)
-            if (uniqueTaintMap.get(uniqueKey)) {
-                if (validateTaintKey.isValid) {
-                    validateTaintKey = { isValid: false, message: 'Key and effect must be a unique combination.' }
-                }
-            } else {
-                uniqueTaintMap.set(uniqueKey, true)
+const TaintInfoMessage = () => (
+    <div className="fs-13 fw-4 lh-20">
+        <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;
+        <TippyCustomized
+            theme={TippyTheme.white}
+            className="w-400"
+            placement="top"
+            Icon={HelpIcon}
+            iconClass="fcv-5"
+            heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
+            infoText=""
+            showCloseButton
+            trigger="click"
+            interactive
+            additionalContent={
+                <div className="p-12 fs-13">
+                    <div>{EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.message}</div>
+                    <ul className="p-0" style={{ listStyleType: 'none' }}>
+                        {EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.messageList.map((message) => (
+                            <li key={`msg-${message}`}>{message}</li>
+                        ))}
+                    </ul>
+                </div>
             }
-            _errorObj.taintErrorList.push({
-                key: validateTaintKey,
-                value: validateTaintValue,
-            })
-            _errorObj.isValid = _errorObj.isValid && validateTaintKey.isValid && validateTaintValue.isValid
+        >
+            <span className="cb-5 cursor" onClick={stopPropagation}>
+                {EDIT_TAINTS_MODAL_MESSAGING.infoLinkText}
+            </span>
+        </TippyCustomized>
+    </div>
+)
+
+const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaintsModalType) => {
+    // STATES
+    const [apiCallInProgress, setAPICallInProgress] = useState(false)
+    const [taintList, setTaintList] = useState<TaintsTableType['rows']>(getTaintsTableRows(taints))
+    const [taintCellError, setTaintCellError] = useState<TaintsTableType['cellError']>(
+        getTaintsTableCellError(taintList),
+    )
+
+    // HOOKS
+    const { clusterId } = useParams<{ clusterId: string }>()
+
+    // HANDLERS
+    const onClose = () => {
+        if (!apiCallInProgress) {
+            closePopup()
         }
-        if (ignoreNewlyAdded) {
-            _errorObj.taintErrorList.splice(-1, 1, {
-                key: { isValid: true, message: null },
-                value: { isValid: true, message: null },
-            })
-        }
-        setErrorObj(_errorObj)
-        return _errorObj
     }
 
-    const onSave = async (): Promise<void> => {
-        if (!validateTaintList(taintList).isValid) {
+    const handleAddTaint: TaintsTableType['onRowAdd'] = () => {
+        const updatedTaintList: typeof taintList = [getTaintsTableEmptyRow(), ...taintList]
+        const updatedTaintCellError = taintCellError
+        updatedTaintCellError[updatedTaintList[0].id] = getTaintsRowCellError()
+
+        setTaintList(updatedTaintList)
+        setTaintCellError(updatedTaintCellError)
+    }
+
+    const handleDeleteTaint: TaintsTableType['onRowDelete'] = (row) => {
+        const filteredTaintList = taintList.filter(({ id }) => id !== row.id)
+        setTaintList(filteredTaintList)
+    }
+
+    const handleEditTaint: TaintsTableType['onRowEdit'] = (row, headerKey, value) => {
+        const updatedTaintList = taintList.map((taint) =>
+            taint.id === row.id
+                ? { ...taint, data: { ...taint.data, [headerKey]: { ...taint.data[headerKey], value } } }
+                : taint,
+        )
+        const updatedTaintCellError = {
+            ...taintCellError,
+            [row.id]: {
+                ...taintCellError[row.id],
+                [headerKey]: getTaintsTableCellValidateState(headerKey, value),
+            },
+        }
+        validateUniqueTaintKey({ taintCellError: updatedTaintCellError, taintList: updatedTaintList })
+
+        setTaintList(updatedTaintList)
+        setTaintCellError(updatedTaintCellError)
+    }
+
+    const onSave = async () => {
+        const { isValid, taintCellError: updatedTaintCellError } = getTaintTableValidateState({ taintList })
+        setTaintCellError(updatedTaintCellError)
+        if (!isValid) {
             return
         }
+
         try {
             setAPICallInProgress(true)
             const payload: EditTaintsRequest = {
@@ -152,7 +146,7 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
                 name,
                 version,
                 kind,
-                taints: taintList,
+                taints: getTaintsPayload(taintList),
             }
             await updateTaints(payload)
             ToastManager.showToast({
@@ -167,105 +161,67 @@ export default function EditTaintsModal({ name, version, kind, taints, closePopu
         }
     }
 
-    const tippyContent = () => {
-        return (
-            <div className="p-12 fs-13">
-                <div>{EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.message}</div>
-                <ul className="p-0" style={{ listStyleType: 'none' }}>
-                    {EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.messageList.map((message, index) => (
-                        <li key={`msg-${index}`}>{message}</li>
-                    ))}
-                </ul>
-            </div>
-        )
-    }
-
     return (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={onClose}>
             <div className="flexbox-col bg__primary h-100 flex-grow-1 mh-0">
                 <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={onClose}>
-                        <Close className="icon-dim-24" />
-                    </button>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 cn-9">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
+                    <Button
+                        dataTestId="edit-taints-modal-close"
+                        ariaLabel="edit-taints-modal-close"
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        onClick={onClose}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.negativeGrey}
+                        size={ComponentSizeType.xs}
+                        showAriaLabelInTippy={false}
+                    />
                 </div>
                 <div className="flexbox-col px-20 py-16 dc__overflow-auto flex-grow-1 dc__gap-16">
-                    <InfoBlock description={<TaintInfoMessage tippyContent={tippyContent} />} />
-                    <div className="flexbox-col dc__gap-12">
-                        <div className="cursor cb-5 fw-6 fs-13 flexbox dc__gap-8" onClick={addNewTaint}>
-                            <Add className="icon-dim-20 fcb-5" /> {EDIT_TAINTS_MODAL_MESSAGING.addTaint}
+                    <InfoBlock description={<TaintInfoMessage />} />
+                    {taintList.length ? (
+                        <DynamicDataTable<TaintsTableHeaderKeys>
+                            headers={TAINTS_TABLE_HEADERS}
+                            rows={taintList}
+                            onRowAdd={handleAddTaint}
+                            onRowDelete={handleDeleteTaint}
+                            onRowEdit={handleEditTaint}
+                            cellError={taintCellError}
+                            addBtnTooltip="Add taint"
+                        />
+                    ) : (
+                        <div className="p-8 bg__secondary dc__border-dashed--n3 br-4 flex dc__content-space">
+                            {/* TODO: update this text */}
+                            <p className="m-0 fs-12 lh-18 cn-7">Add Taint</p>
+                            <Button
+                                dataTestId="add-taint"
+                                variant={ButtonVariantType.text}
+                                text="Add Taint"
+                                startIcon={<Icon name="ic-add" color={null} />}
+                                onClick={handleAddTaint}
+                            />
                         </div>
-                        {taintList?.map((taintDetails, index) => {
-                            const _errorObj = errorObj?.taintErrorList[index]
-                            return (
-                                <div className="flex left dc__gap-8 mb-8">
-                                    <CustomInput
-                                        type="text"
-                                        name="key"
-                                        data-index={index}
-                                        value={taintDetails.key}
-                                        onChange={handleInputChange}
-                                        placeholder="Key"
-                                        error={errorObj && !_errorObj['key'].isValid ? _errorObj['key'].message : null}
-                                        fullWidth
-                                    />
-                                    <CustomInput
-                                        type="text"
-                                        name="value"
-                                        data-index={index}
-                                        value={taintDetails.value}
-                                        onChange={handleInputChange}
-                                        placeholder="Value"
-                                        error={
-                                            errorObj && !_errorObj['value'].isValid ? _errorObj['value'].message : null
-                                        }
-                                        fullWidth
-                                    />
-                                    <div className="w-70">
-                                        <SelectPicker
-                                            inputId="select-taint-effect"
-                                            options={TAINT_OPTIONS}
-                                            onChange={(selectedValue: OptionType) => {
-                                                onEffectChange(selectedValue, index)
-                                            }}
-                                            data-index={index}
-                                            value={{
-                                                label: taintDetails.effect,
-                                                value: taintDetails.effect,
-                                            }}
-                                            size={ComponentSizeType.large}
-                                        />
-                                    </div>
-                                    <Button
-                                        icon={<DeleteIcon />}
-                                        dataTestId={`delete-taint-${index}`}
-                                        onClick={deleteTaint}
-                                        data-index={index}
-                                        ariaLabel="Delete Taint"
-                                        showAriaLabelInTippy={false}
-                                        size={ComponentSizeType.small}
-                                        variant={ButtonVariantType.borderLess}
-                                        style={ButtonStyleType.negativeGrey}
-                                    />
-                                </div>
-                            )
-                        })}
-                    </div>
+                    )}
                 </div>
-                <div className="dc__border-top flex right p-16">
-                    <button
-                        className="cta cancel h-36 lh-36 mr-12"
-                        type="button"
+                <div className="dc__border-top flex right p-16 dc__gap-8">
+                    <Button
+                        dataTestId="edit-taints-modal-cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
                         disabled={apiCallInProgress}
+                        text={EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
                         onClick={onClose}
-                    >
-                        {EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
-                    </button>
-                    <button className="cta h-36 lh-36" disabled={apiCallInProgress} onClick={onSave}>
-                        {apiCallInProgress ? <Progressing /> : EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
-                    </button>
+                    />
+                    <Button
+                        dataTestId="edit-taints-modal-save"
+                        isLoading={apiCallInProgress}
+                        text={EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
+                        onClick={onSave}
+                    />
                 </div>
             </div>
         </Drawer>
     )
 }
+
+export default EditTaintsModal
