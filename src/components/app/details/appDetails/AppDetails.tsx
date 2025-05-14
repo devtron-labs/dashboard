@@ -44,6 +44,7 @@ import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
+import { DocLink } from '@Config/DocLink'
 
 import {
     DEFAULT_STATUS,
@@ -159,9 +160,11 @@ export const AppNotConfigured = ({
                 subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
-                            {APP_DETAILS.NEED_HELP}
-                        </a>
+                        <DocLink
+                            docLinkText={APP_DETAILS.NEED_HELP}
+                            docLink={DOCUMENTATION.APP_CREATE}
+                            dataTestId="app-details-empty"
+                        />
                     </>
                 )
             }

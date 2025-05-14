@@ -67,6 +67,7 @@ import EmptyWorkflow from './EmptyWorkflow'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
+import { DocLink, getDocumentationUrl } from '@Config/DocLink'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -820,15 +821,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br />
                     {!this.props.isJobView && (
-                        <a
-                            className="dc__link"
-                            data-testid="learn-more-about-creating-workflow-link"
-                            href={DOCUMENTATION.APP_CREATE_WORKFLOW}
-                            target="blank"
-                            rel="noreferrer noopener"
-                        >
-                            Learn about creating workflows
-                        </a>
+                        <DocLink
+                            docLinkText="Learn about creating workflows"
+                            docLink={DOCUMENTATION.APP_CREATE_WORKFLOW}
+                            dataTestId="learn-more-about-creating-workflow-link"
+                        />
                     )}
                 </p>
                 {this.renderWorkflowControlButton()}
@@ -957,8 +954,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             }
                             documentationLink={
                                 this.props.isJobView
-                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
-                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
+                                    ? getDocumentationUrl(DOCUMENTATION.JOB_WORKFLOW_EDITOR)
+                                    : getDocumentationUrl(DOCUMENTATION.APP_CREATE_WORKFLOW)
                             }
                             documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
                             placement="right"

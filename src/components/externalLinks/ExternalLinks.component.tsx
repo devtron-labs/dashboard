@@ -60,12 +60,14 @@ import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
+import { DocLink, getDocumentationUrl } from '@Config/DocLink'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
     return (
-        <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
-            Learn more
-        </a>
+        <DocLink
+            docLink={DOCUMENTATION.EXTERNAL_LINKS}
+            dataTestId="external-links-learn-more"
+        />
     )
 }
 

@@ -37,6 +37,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
+import { getDocumentationUrl } from '@Config/DocLink'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 const CacheConfiguration = importComponentFromFELibrary('CacheConfiguration', null, 'function')
@@ -69,7 +70,7 @@ export const Sidebar = ({
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
-        docLink: DOCUMENTATION.BUILD_STAGE,
+        docLink: getDocumentationUrl(DOCUMENTATION.BUILD_STAGE),
     })
     const isPreBuildTab = activeStageName === BuildStageVariable.PreBuild
     const changeTriggerType = (appCreationType: string): void => {
@@ -80,13 +81,25 @@ export const Sidebar = ({
     const isJobCard = isJobCI || isJobView // common constant for both job and CI_JOB
     useEffect(() => {
         if (isJobCard) {
-            setHelpData({ helpText: 'Docs: Configure job', docLink: DOCUMENTATION.JOB_WORKFLOW_EDITOR })
+            setHelpData({
+                helpText: 'Docs: Configure job',
+                docLink: getDocumentationUrl(DOCUMENTATION.JOB_WORKFLOW_EDITOR),
+            })
         } else if (activeStageName === BuildStageVariable.Build) {
-            setHelpData({ helpText: 'Docs: Configure build stage', docLink: DOCUMENTATION.BUILD_STAGE })
+            setHelpData({
+                helpText: 'Docs: Configure build stage',
+                docLink: getDocumentationUrl(DOCUMENTATION.BUILD_STAGE),
+            })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
-            setHelpData({ helpText: 'Docs: Configure post-build tasks', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
+            setHelpData({
+                helpText: 'Docs: Configure post-build tasks',
+                docLink: getDocumentationUrl(DOCUMENTATION.PRE_POST_BUILD_STAGE),
+            })
         } else if (isPreBuildTab) {
-            setHelpData({ helpText: 'Docs: Configure pre-build tasks', docLink: DOCUMENTATION.PRE_POST_BUILD_STAGE })
+            setHelpData({
+                helpText: 'Docs: Configure pre-build tasks',
+                docLink: getDocumentationUrl(DOCUMENTATION.PRE_POST_BUILD_STAGE),
+            })
         }
     }, [activeStageName])
 
@@ -319,19 +332,24 @@ export const Sidebar = ({
         if (!formData.workflowCacheConfig) {
             return
         }
-        
+
         const newWorkflowCacheConfigType =
             formData.workflowCacheConfig.type === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT
                 ? WORKFLOW_CACHE_CONFIG_ENUM.OVERRIDE
                 : WORKFLOW_CACHE_CONFIG_ENUM.INHERIT
 
-        setFormData({ ...formData, workflowCacheConfig: {
-            ...formData.workflowCacheConfig,
-            type: newWorkflowCacheConfigType,
-            ...(newWorkflowCacheConfigType === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT ? {
-                value: formData.workflowCacheConfig.globalValue
-            } : {}),
-        }})
+        setFormData({
+            ...formData,
+            workflowCacheConfig: {
+                ...formData.workflowCacheConfig,
+                type: newWorkflowCacheConfigType,
+                ...(newWorkflowCacheConfigType === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT
+                    ? {
+                          value: formData.workflowCacheConfig.globalValue,
+                      }
+                    : {}),
+            },
+        })
     }
 
     const handleSetUseRemoteCache = () => {
@@ -339,8 +357,11 @@ export const Sidebar = ({
         if (!formData.workflowCacheConfig) {
             return
         }
-        
-        setFormData({ ...formData, workflowCacheConfig: { ...formData.workflowCacheConfig, value: !formData.workflowCacheConfig.value } })
+
+        setFormData({
+            ...formData,
+            workflowCacheConfig: { ...formData.workflowCacheConfig, value: !formData.workflowCacheConfig.value },
+        })
     }
 
     return (
@@ -382,9 +403,7 @@ export const Sidebar = ({
                 </div>
             ) : (
                 <div className="sidebar-action-container pr-20 flexbox-col dc__gap-4">
-                    <div className="dc__uppercase fw-6 fs-12 cn-6">
-                        Trigger {isJobCard ? 'JOB' : 'BUILD'} PIPELINE
-                    </div>
+                    <div className="dc__uppercase fw-6 fs-12 cn-6">Trigger {isJobCard ? 'JOB' : 'BUILD'} PIPELINE</div>
                     <div>
                         <RadioGroup
                             className="no-border"
@@ -412,17 +431,20 @@ export const Sidebar = ({
             )}
             {isCdPipeline && activeStageName !== BuildStageVariable.Build && renderConfigSecret()}
 
-            {!isCdPipeline && CacheConfiguration && activeStageName === BuildStageVariable.Build && formData.workflowCacheConfig && (
-                <div className='sidebar-action-container sidebar-action-container-border dc__border-top-n1'>
-                    <CacheConfiguration
-                        isInheriting={formData.workflowCacheConfig.type === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT}
-                        handleSetIsInheriting={handleSetIsInheriting}
-                        useRemoteCache={formData.workflowCacheConfig.value}
-                        handleSetUseRemoteCache={handleSetUseRemoteCache}
-                        isBlobStorageConfigured={isBlobStorageConfigured}
-                    />
-                </div>
-            )}
+            {!isCdPipeline &&
+                CacheConfiguration &&
+                activeStageName === BuildStageVariable.Build &&
+                formData.workflowCacheConfig && (
+                    <div className="sidebar-action-container sidebar-action-container-border dc__border-top-n1">
+                        <CacheConfiguration
+                            isInheriting={formData.workflowCacheConfig.type === WORKFLOW_CACHE_CONFIG_ENUM.INHERIT}
+                            handleSetIsInheriting={handleSetIsInheriting}
+                            useRemoteCache={formData.workflowCacheConfig.value}
+                            handleSetUseRemoteCache={handleSetUseRemoteCache}
+                            isBlobStorageConfigured={isBlobStorageConfigured}
+                        />
+                    </div>
+                )}
 
             {!isCdPipeline && (
                 <div className="sidebar-action-container pr-20">

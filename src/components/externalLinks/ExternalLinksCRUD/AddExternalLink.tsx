@@ -48,6 +48,7 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICOpenBook } from '@Icons/ic-book-open.svg'
 import './AddExternalLink.scss'
+import { getDocumentationUrl } from '@Config/DocLink'
 
 export default function AddExternalLink({
     appId,
@@ -320,7 +321,7 @@ export default function AddExternalLink({
                         style={ButtonStyleType.neutral}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.small}
-                        onClick={getHandleOpenURL(DOCUMENTATION.EXTERNAL_LINKS)}
+                        onClick={getHandleOpenURL(getDocumentationUrl(DOCUMENTATION.EXTERNAL_LINKS))}
                         showAriaLabelInTippy={false}
                         showTooltip
                         tooltipProps={{

@@ -50,6 +50,7 @@ import {
     initCurrentCIBuildConfig,
     processBuildArgs,
 } from './CIConfig.utils'
+import { getDocumentationUrl } from '@Config/DocLink'
 
 export default function CIConfigForm({
     parentReloading,
@@ -360,7 +361,7 @@ export default function CIConfigForm({
                                 className="flex right dc__link"
                                 rel="noreferrer noopener"
                                 target="_blank"
-                                href={DOCUMENTATION.APP_CREATE_CI_CONFIG}
+                                href={getDocumentationUrl(DOCUMENTATION.APP_CREATE_CI_CONFIG)}
                             >
                                 <BookOpenIcon className="icon-dim-16 mr-8" />
                                 <span>View documentation</span>

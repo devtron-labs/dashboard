@@ -91,6 +91,7 @@ import { CIMaterialModal } from './CIMaterialModal'
 import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
+import { DocLink } from '@Config/DocLink'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -1430,9 +1431,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return (
             <>
                 {APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.subTitle}&nbsp;
-                <a href={DOCUMENTATION.APP_CREATE} target="_blank noopener noreferrer">
-                    {APP_DETAILS.NEED_HELP}
-                </a>
+                <DocLink
+                    docLinkText={APP_DETAILS.NEED_HELP}
+                    docLink={DOCUMENTATION.APP_CREATE}
+                    dataTestId="learn-more-about-creating-job-link"
+                />
             </>
         )
     }

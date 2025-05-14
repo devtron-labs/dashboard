@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     showError,
     Progressing,
@@ -31,6 +31,7 @@ import { ReactComponent as GitHub } from '@Icons/ic-sample-app.svg'
 import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Folder } from '@Icons/ic-folder-filled.svg'
 import './material.scss'
+import { DocLink } from '@Config/DocLink'
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
@@ -163,14 +164,11 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
                     Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        href={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
-                    >
-                        Learn more
-                    </a>
+
+                    <DocLink
+                        docLink={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
+                        dataTestId="learn-more-about-git-repositories-link"
+                    />
                 </p>
             </>
         )

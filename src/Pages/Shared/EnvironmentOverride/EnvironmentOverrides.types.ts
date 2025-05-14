@@ -18,6 +18,7 @@ import React from 'react'
 
 import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getDocumentationUrl } from '@Config/DocLink'
 import {
     AppConfigState,
     EnvConfigurationState,
@@ -45,12 +46,12 @@ export const SECTION_HEADING_INFO: Record<string, SectionHeadingType> = {
         title: 'ConfigMaps',
         subtitle:
             'ConfigMap is used to store common configuration variables, allowing users to unify environment variables for different modules in a distributed system into one object.',
-        learnMoreLink: DOCUMENTATION.APP_CREATE_CONFIG_MAP,
+        learnMoreLink: getDocumentationUrl(DOCUMENTATION.APP_CREATE_CONFIG_MAP),
     },
     [URLS.APP_CS_CONFIG]: {
         title: 'Secrets',
         subtitle: 'A Secret is an object that contains sensitive data such as passwords, OAuth tokens, and SSH keys.',
-        learnMoreLink: DOCUMENTATION.APP_CREATE_SECRET,
+        learnMoreLink: getDocumentationUrl(DOCUMENTATION.APP_CREATE_SECRET),
     },
 }
 
