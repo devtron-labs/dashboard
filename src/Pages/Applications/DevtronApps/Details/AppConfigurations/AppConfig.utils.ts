@@ -20,12 +20,12 @@ import {
     AppConfigProps,
     BASE_CONFIGURATION_ENV_ID,
     ConfigResourceType,
+    getDocumentationUrl,
     ResourceKindType,
     stringComparatorBySortOrder,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getDocumentationUrl } from '@Config/DocLink'
 import { APP_COMPOSE_STAGE, DOCUMENTATION, getAppComposeURL, URLS } from '@Config/index'
 
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'

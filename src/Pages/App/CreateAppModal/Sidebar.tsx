@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
+import { getDocumentationUrl, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DOCUMENTATION } from '@Config/constants'
-import { getDocumentationUrl } from '@Config/DocLink'
 
 import { CreationMethodType, SidebarProps } from './types'
 

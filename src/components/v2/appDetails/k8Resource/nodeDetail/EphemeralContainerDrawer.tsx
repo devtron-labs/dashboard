@@ -29,6 +29,7 @@ import {
     SelectPicker,
     ComponentSizeType,
     MODES,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -185,7 +186,7 @@ const EphemeralContainerDrawer = ({
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
                         iconClassName="icon-dim-20 fcn-6 ml-8"
-                        documentationLink={DOCUMENTATION.APP_EPHEMERAL_CONTAINER}
+                        documentationLink={getDocumentationUrl(DOCUMENTATION.APP_EPHEMERAL_CONTAINER)}
                         documentationLinkText="View Documentation"
                     />
                 </h2>

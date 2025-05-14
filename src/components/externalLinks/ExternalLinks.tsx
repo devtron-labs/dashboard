@@ -22,6 +22,7 @@ import {
     ErrorScreenManager,
     FilterChips,
     getClusterListMin,
+    getDocumentationUrl,
     InfoIconTippy,
     Progressing,
     SearchBar,
@@ -32,7 +33,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
-import { getDocumentationUrl } from '@Config/DocLink'
 
 import { DOCUMENTATION, SERVER_MODE } from '../../config'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'

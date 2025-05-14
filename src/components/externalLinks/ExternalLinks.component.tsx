@@ -52,6 +52,7 @@ import {
     ButtonStyleType,
     ImageWithFallback,
     InfoBlock,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
@@ -60,7 +61,6 @@ import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
-import { DocLink, getDocumentationUrl } from '@Config/DocLink'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
     return (

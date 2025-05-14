@@ -37,6 +37,8 @@ import {
     ConfirmationModalVariantType,
     deleteWorkflow,
     InfoBlock,
+    getDocumentationUrl,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
@@ -67,7 +69,6 @@ import EmptyWorkflow from './EmptyWorkflow'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
-import { DocLink, getDocumentationUrl } from '@Config/DocLink'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')

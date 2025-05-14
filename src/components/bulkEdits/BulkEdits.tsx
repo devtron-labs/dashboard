@@ -32,6 +32,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     MODES,
+    getDocumentationUrl
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
 import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
@@ -525,7 +526,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     tippyProps={{
                         isTippyCustomized: true,
                         tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
-                        tippyRedirectLink: DOCUMENTATION.BULK_UPDATE,
+                        tippyRedirectLink: getDocumentationUrl(DOCUMENTATION.BULK_UPDATE),
                     }}
                 />
                 {this.renderBulkEditBody()}

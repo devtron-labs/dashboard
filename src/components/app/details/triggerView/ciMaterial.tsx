@@ -32,6 +32,8 @@ import {
     Tooltip,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     savePipeline,
+    DOCUMENTATION,
+    getDocumentationUrl
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
@@ -40,7 +42,7 @@ import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
-import { DOCUMENTATION, SOURCE_NOT_CONFIGURED } from '../../../../config'
+import { SOURCE_NOT_CONFIGURED } from '../../../../config'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { TriggerViewContext } from './config'
 import { IGNORE_CACHE_INFO } from './Constants'
@@ -137,7 +139,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
                             <a
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                href={DOCUMENTATION.BLOB_STORAGE}
+                                href={getDocumentationUrl(DOCUMENTATION.BLOB_STORAGE)}
                                 target="_blank"
                                 rel="noreferrer"
                             >

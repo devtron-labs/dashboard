@@ -25,6 +25,7 @@ import {
     ConfirmationModalVariantType,
     Button,
     OptionType,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DOCUMENTATION } from '../../config'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
@@ -50,7 +51,6 @@ import {
     initCurrentCIBuildConfig,
     processBuildArgs,
 } from './CIConfig.utils'
-import { getDocumentationUrl } from '@Config/DocLink'
 
 export default function CIConfigForm({
     parentReloading,

@@ -24,6 +24,7 @@ import {
     ArtifactInfoModal,
     Button,
     DeploymentAppTypes,
+    DocLink,
     GenericEmptyState,
     getAppsInfoForEnv,
     getIsRequestAborted,
@@ -44,7 +45,6 @@ import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
-import { DocLink } from '@Config/DocLink'
 
 import {
     DEFAULT_STATUS,

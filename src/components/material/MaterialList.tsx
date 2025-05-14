@@ -21,6 +21,7 @@ import {
     ErrorScreenManager,
     sortCallback,
     AppListConstants,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
 import { AppConfigStatus, ViewType, DOCUMENTATION, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
@@ -31,7 +32,6 @@ import { ReactComponent as GitHub } from '@Icons/ic-sample-app.svg'
 import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Folder } from '@Icons/ic-folder-filled.svg'
 import './material.scss'
-import { DocLink } from '@Config/DocLink'
 
 class MaterialList extends Component<MaterialListProps, MaterialListState> {
     constructor(props) {
@@ -164,7 +164,6 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
                     Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
-
                     <DocLink
                         docLink={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
                         dataTestId="learn-more-about-git-repositories-link"
@@ -253,7 +252,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             isTemplateView={this.props.isTemplateView}
                             isCreateAppView={this.props.isCreateAppView}
                             handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
-                        />                    )
+                        />
+                    )
                 })}
             </div>
         )

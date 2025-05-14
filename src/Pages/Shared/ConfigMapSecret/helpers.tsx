@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom'
 import {
     CMSecretComponentType,
     CMSecretExternalType,
+    DocLink,
     Icon,
     InfoBlock,
     InfoColourBar,
@@ -81,14 +82,11 @@ export const renderChartVersionBelow3090NotSupportedText = () => (
     <span className="fs-12 fw-4">
         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
         <span className="cn-7">Learn more about</span>&nbsp;
-        <a
-            className="dc__link"
-            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-            rel="noreferrer noopener"
-            target="_blank"
-        >
-            Deployment Template &gt; Chart Version
-        </a>
+        <DocLink
+            docLink={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
+            docLinkText="Deployment Template &gt; Chart Version"
+            dataTestId="chart-version-learn-more"
+        />
     </span>
 )
 

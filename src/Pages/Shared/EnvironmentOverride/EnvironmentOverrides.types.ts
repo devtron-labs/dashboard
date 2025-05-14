@@ -16,9 +16,8 @@
 
 import React from 'react'
 
-import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, getDocumentationUrl } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getDocumentationUrl } from '@Config/DocLink'
 import {
     AppConfigState,
     EnvConfigurationState,

@@ -24,6 +24,7 @@ import {
     ResourceKindType,
     WORKFLOW_CACHE_CONFIG_ENUM,
     TriggerType,
+    getDocumentationUrl
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildStageVariable, DOCUMENTATION } from '../../config'
@@ -37,7 +38,6 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Remove } from '../../assets/icons/ic-close.svg'
 import { GeneratedHelmPush } from '../cdPipeline/cdPipeline.types'
 import { EnvironmentList } from './EnvironmentList'
-import { getDocumentationUrl } from '@Config/DocLink'
 
 const MandatoryPluginWarning = importComponentFromFELibrary('MandatoryPluginWarning')
 const CacheConfiguration = importComponentFromFELibrary('CacheConfiguration', null, 'function')

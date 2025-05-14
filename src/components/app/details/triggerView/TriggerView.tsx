@@ -35,9 +35,10 @@ import {
     BlockedStateData,
     getEnvironmentListMinPublic,
     CIPipelineNodeType,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
-import { withRouter, NavLink, Route, Switch } from 'react-router-dom'
+import { withRouter, Route, Switch } from 'react-router-dom'
 import {
     getCIMaterialList,
     triggerCINode,
@@ -91,7 +92,6 @@ import { CIMaterialModal } from './CIMaterialModal'
 import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
-import { DocLink } from '@Config/DocLink'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(

@@ -20,6 +20,7 @@ import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-rout
 import {
     ConfirmationDialog,
     DeleteConfirmationModal,
+    DocLink,
     EnvResourceType,
     getEnvironmentListMinPublic,
     InfoBlock,
@@ -49,14 +50,7 @@ const EnvOverridesHelpNote = () => (
     <div className="fs-12 fw-4 lh-18">
         Environment overrides allow you to manage environment specific configurations after you’ve created deployment
         pipelines. &nbsp;
-        <a
-            className="dc__link"
-            href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
-            rel="noreferrer noopener"
-            target="_blank"
-        >
-            Learn more
-        </a>
+        <DocLink docLink={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} dataTestId="env-overrides-learn-more" />
     </div>
 )
 
