@@ -20,14 +20,12 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
-    getDocumentationUrl,
-    InfoIconTippy,
+    FeatureTitleWithInfo,
     SearchBar,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { DOCUMENTATION } from '../../../../../config'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
@@ -50,24 +48,13 @@ const UserPermissionListHeader = ({
     return (
         <div className="flex dc__content-space px-20 dc__zi-2 pt-16">
             <div className="flex dc__gap-8">
-                <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">User Permissions</h2>
-                <InfoIconTippy
-                    infoText="Manage your organization's users and their permissions."
-                    heading="User Permissions"
-                    additionalContent={
-                        <div className="pl-12 pb-12">
-                            <a
-                                href={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_USER)}
-                                target="_blank"
-                                rel="noreferrer noreferrer"
-                                className="anchor flexbox flex-align-center fs-13 dc__gap-4"
-                            >
-                                View Documentation
-                                <ArrowSquareOut className="icon-dim-14 scb-5" />
-                            </a>
-                        </div>
+                <FeatureTitleWithInfo
+                    title="User Permissions"
+                    renderDescriptionContent={() =>
+                        "Manage your organization's users and their permissions. You can assign users to permission groups to provide all underlying permissions."
                     }
-                    iconClassName="mw-20 icon-dim-20 fcn-6"
+                    docLink={DOCUMENTATION.GLOBAL_CONFIG_USER}
+                    showInfoIconTippy
                 />
             </div>
             <div className="flex dc__gap-8">

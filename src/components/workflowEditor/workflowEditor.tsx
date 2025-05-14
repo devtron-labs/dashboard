@@ -955,8 +955,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             }
                             documentationLink={
                                 this.props.isJobView
-                                    ? getDocumentationUrl(DOCUMENTATION.JOB_WORKFLOW_EDITOR)
-                                    : getDocumentationUrl(DOCUMENTATION.APP_CREATE_WORKFLOW)
+                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
+                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
                             }
                             documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
                             placement="right"

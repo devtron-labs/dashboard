@@ -826,7 +826,7 @@ export const ChartGroupListMin = ({
                         renderDescriptionContent={() =>
                             'Use chart groups to pre-configure and deploy frequently used charts together.'
                         }
-                        docLink={getDocumentationUrl(DOCUMENTATION.CHART_GROUP)}
+                        docLink={DOCUMENTATION.CHART_GROUP}
                         docLinkText="Learn more"
                         dataTestId="chart-store"
                         showInfoIconTippy

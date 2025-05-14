@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getDocumentationUrl, InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT, DOCUMENTATION } from '@Config/constants'
 
@@ -38,7 +38,7 @@ const DeploymentChartsListHeader = ({
                     </p>
                 }
                 documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
-                documentationLink={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_CUSTOM_CHART)}
+                documentationLink={DOCUMENTATION.GLOBAL_CONFIG_CUSTOM_CHART}
                 iconClassName="icon-dim-20 fcn-6"
             />
         </div>
