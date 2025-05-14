@@ -595,7 +595,7 @@ export default function DevtronStackManager({
                                         configDriftModal={null}
                                         initialTab={AppStatusModalTabType.APP_STATUS}
                                         processVirtualEnvironmentDeploymentData={noop}
-                                        handleUpdateDeploymentStatusDetailsBreakdownData={noop}
+                                        updateDeploymentStatusDetailsBreakdownData={noop}
                                         debugWithAIButton={ExplainWithAIButton}
                                     />
                                 )}

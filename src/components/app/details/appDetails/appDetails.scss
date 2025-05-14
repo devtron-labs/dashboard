@@ -1365,10 +1365,6 @@ table.resource-tree {
     }
 }
 
-.deployment-approval-container + .deployment-status-breakdown-container {
-    padding-top: 0px;
-}
-
 .env-select {
     font-weight: 600 !important;
     color: var(--B500);

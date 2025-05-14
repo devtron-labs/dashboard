@@ -650,9 +650,7 @@ const Details: React.FC<DetailsType> = ({
         />
     )
 
-    const handleUpdateDeploymentStatusDetailsBreakdownData = (
-        updatedTimelines: DeploymentStatusDetailsBreakdownDataType,
-    ) => {
+    const updateDeploymentStatusDetailsBreakdownData = (updatedTimelines: DeploymentStatusDetailsBreakdownDataType) => {
         setDeploymentStatusDetailsBreakdownData(updatedTimelines)
     }
 
@@ -724,7 +722,7 @@ const Details: React.FC<DetailsType> = ({
                         showAppStatusModal ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
                     }
                     processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
-                    handleUpdateDeploymentStatusDetailsBreakdownData={handleUpdateDeploymentStatusDetailsBreakdownData}
+                    updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
                     debugWithAIButton={ExplainWithAIButton}
                 />
             )}

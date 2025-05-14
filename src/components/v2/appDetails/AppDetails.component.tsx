@@ -142,7 +142,7 @@ const AppDetailsComponent = ({
         })
     }
 
-    const handleUpdateDeploymentStatusDetailsBreakdownData = (
+    const updateDeploymentStatusDetailsBreakdownData = (
         updatedTimelineData: typeof deploymentStatusDetailsBreakdownData,
     ) => {
         setDeploymentStatusDetailsBreakdownData(updatedTimelineData)
@@ -204,9 +204,7 @@ const AppDetailsComponent = ({
                                 loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 isVirtualEnvironment={isVirtualEnv.current}
-                                handleUpdateDeploymentStatusDetailsBreakdownData={
-                                    handleUpdateDeploymentStatusDetailsBreakdownData
-                                }
+                                updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
                             />
                         )}
                     </div>
@@ -236,9 +234,7 @@ const AppDetailsComponent = ({
                             configDriftModal={null}
                             initialTab={AppStatusModalTabType.DEPLOYMENT_STATUS}
                             processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
-                            handleUpdateDeploymentStatusDetailsBreakdownData={
-                                handleUpdateDeploymentStatusDetailsBreakdownData
-                            }
+                            updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
                             debugWithAIButton={ExplainWithAIButton}
                         />
                     )}

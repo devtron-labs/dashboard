@@ -56,7 +56,7 @@ const EnvironmentStatusComponent = ({
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
-    handleUpdateDeploymentStatusDetailsBreakdownData,
+    updateDeploymentStatusDetailsBreakdownData,
 }: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -214,7 +214,7 @@ const EnvironmentStatusComponent = ({
                     isConfigDriftEnabled={false}
                     configDriftModal={null}
                     initialTab={AppStatusModalTabType.APP_STATUS}
-                    handleUpdateDeploymentStatusDetailsBreakdownData={handleUpdateDeploymentStatusDetailsBreakdownData}
+                    updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
                     processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     debugWithAIButton={ExplainWithAIButton}
                 />
