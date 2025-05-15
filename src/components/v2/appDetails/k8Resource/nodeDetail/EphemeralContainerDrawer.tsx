@@ -16,6 +16,7 @@
 
 import {
     CustomInput,
+    DOCUMENTATION,
     Drawer,
     OptionType,
     showError,
@@ -52,7 +53,7 @@ import { getHostURLConfiguration } from '../../../../../services/service'
 import { CLUSTER_TERMINAL_MESSAGING, IMAGE_LIST } from '../../../../ClusterNodes/constants'
 import { Options } from '../../appDetails.type'
 import { EPHEMERAL_CONTAINER } from '../../../../../config/constantMessaging'
-import { DEFAULT_CONTAINER_NAME, SwitchItemValues, DOCUMENTATION, EDITOR_VIEW } from '../../../../../config'
+import { DEFAULT_CONTAINER_NAME, SwitchItemValues, EDITOR_VIEW } from '../../../../../config'
 
 const EphemeralContainerDrawer = ({
     setShowEphemeralContainerDrawer,

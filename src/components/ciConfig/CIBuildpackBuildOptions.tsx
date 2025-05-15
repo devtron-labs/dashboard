@@ -20,6 +20,7 @@ import {
     CIBuildType,
     ComponentSizeType,
     CustomInput,
+    DOCUMENTATION,
     getUniqueId,
     InfoIconTippy,
     SelectPicker,
@@ -46,7 +47,6 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
     BUILDER_SELECT_STYLES,

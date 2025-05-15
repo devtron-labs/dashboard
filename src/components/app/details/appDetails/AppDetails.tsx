@@ -24,6 +24,7 @@ import {
     ArtifactInfoModal,
     Button,
     DeploymentAppTypes,
+    DocLink,
     GenericEmptyState,
     getAppsInfoForEnv,
     getIsRequestAborted,
@@ -50,7 +51,6 @@ import {
     DEFAULT_STATUS_TEXT,
     DEPLOYMENT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
-    DOCUMENTATION,
     getAppDetailsURL,
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
@@ -159,9 +159,7 @@ export const AppNotConfigured = ({
                 subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
-                            {APP_DETAILS.NEED_HELP}
-                        </a>
+                        <DocLink text={APP_DETAILS.NEED_HELP} docLinkKey="APP_CREATE" dataTestId="app-details-empty" />
                     </>
                 )
             }

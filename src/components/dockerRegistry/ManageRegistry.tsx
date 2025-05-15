@@ -34,9 +34,9 @@ import {
     StyledRadioGroup as RadioGroup,
     InfoIconTippy,
     InfoBlock,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { DOCUMENTATION } from '../../config'
 import { Link } from 'react-router-dom'
 
 export const DropdownIndicator = (props) => {
@@ -322,7 +322,7 @@ const ManageRegistry = ({
         return (
             <div className="flex left">
                 Use the&nbsp;
-                <Link to={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET} target="_blank" className="anchor">
+                <Link to={getDocumentationUrl({docLinkKey: "SPECIFY_IMAGE_PULL_SECRET"})} target="_blank" className="anchor">
                     image pull secret name created via CLI
                 </Link>
                 . The secret must be present in the namespaces you're deploying to.

@@ -17,6 +17,7 @@
 import { useContext } from 'react'
 
 import {
+    getDocumentationUrl,
     PluginDetailType,
     PluginImageContainer,
     PluginTagsContainer,
@@ -30,7 +31,6 @@ import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
 import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { INLINE_PLUGIN_TEXT } from '../Constants'
 import { PluginDetailHeaderProps } from '../types'
@@ -48,7 +48,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 description: INLINE_PLUGIN_TEXT.DESCRIPTION,
                 icon: '',
                 tags: [],
-                docLink: DOCUMENTATION.EXECUTE_CUSTOM_SCRIPT,
+                docLink: getDocumentationUrl({ docLinkKey: 'EXECUTE_CUSTOM_SCRIPT' }),
             }
         }
         const selectedPluginId = formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId

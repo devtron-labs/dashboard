@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ButtonWithLoader, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ButtonWithLoader, ConfirmationDialog, DocLink } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
 
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICWarning } from '../../assets/icons/ic-warning.svg'
-import { DOCUMENTATION } from '../../config'
 import GitProviderTabIcons from '../common/GitTabs/GitProviderTabIcons'
 import { UpdateConfirmationDialogProps } from './gitops.type'
 
@@ -76,14 +75,11 @@ const UpdateConfirmationDialog = ({
             <div className="flexbox-col dc__gap-24">
                 <p className="m-0 cn-8 fs-13 fw-4 lh-20">
                     Changing/Updating GitOps provider details might be disastrous.&nbsp;
-                    <a
-                        href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}
-                        target="_blank"
-                        className="anchor"
-                        rel="noreferrer noopener"
-                    >
-                        Know more
-                    </a>
+                    <DocLink
+                        docLinkKey="GLOBAL_CONFIG_GITOPS"
+                        text="Know more"
+                        dataTestId="know-more-about-git-ops-link"
+                    />
                 </p>
 
                 <p className="m-0 cn-8 fs-13 fw-4 lh-20">Are you sure to make the changes?</p>

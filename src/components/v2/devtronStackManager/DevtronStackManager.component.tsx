@@ -27,13 +27,13 @@ import {
     IMAGE_SCAN_TOOL,
     PageHeader,
     GenericFilterEmptyState,
-    useMainContext,
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     MarkDown,
     Button,
     RAISE_ISSUE,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -62,7 +62,7 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
+import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import {
     AboutSection,
@@ -169,12 +169,7 @@ const ModuleDetailsCard = ({
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;
-                        <a
-                            href={RAISE_ISSUE}
-                            className="cb-5 fw-6"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
+                        <a href={RAISE_ISSUE} className="cb-5 fw-6" target="_blank" rel="noreferrer noopener">
                             submit a ticket
                         </a>
                         &nbsp;to request an integration
@@ -1160,7 +1155,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                                 Please refer&nbsp;
                                 <a
                                     className="cb-5 fw-6"
-                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
+                                    href={getDocumentationUrl({ docLinkKey: 'DEVTRON_UPGRADE' })}
                                     target="_blank"
                                     rel="noreferrer"
                                 >

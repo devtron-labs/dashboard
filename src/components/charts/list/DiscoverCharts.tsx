@@ -26,6 +26,7 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -42,7 +43,7 @@ import { DeployableCharts, deployChartGroup, getChartProviderList } from '../cha
 import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
+import { URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
@@ -732,15 +733,11 @@ const ChartListHeader = ({ charts }) => {
             </h3>
             <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.CHART_LIST}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    data-testid="chart-store-link"
-                >
-                    Learn more about deploying charts
-                </a>
+                <DocLink
+                    docLinkKey="CHART_LIST"
+                    dataTestId="chart-store-link"
+                    text="Learn more about deploying charts"
+                />
             </p>
         </div>
     )
@@ -769,15 +766,11 @@ export const EmptyChartGroup = ({
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
-                    <a
-                        href={DOCUMENTATION.CHART_GROUP}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        data-testid="chart-group-link"
-                    >
-                        Learn more about chart groups
-                    </a>
+                    <DocLink
+                        docLinkKey={'CHART_GROUP'}
+                        text="Learn more about chart groups"
+                        dataTestId="chart-group-link"
+                    />
                 )}
                 {typeof onClickViewChartButton === 'function' ? (
                     <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-24">
@@ -832,7 +825,7 @@ export const ChartGroupListMin = ({
                         renderDescriptionContent={() =>
                             'Use chart groups to pre-configure and deploy frequently used charts together.'
                         }
-                        docLink={DOCUMENTATION.CHART_GROUP}
+                        docLink='CHART_GROUP'
                         docLinkText="Learn more"
                         dataTestId="chart-store"
                         showInfoIconTippy

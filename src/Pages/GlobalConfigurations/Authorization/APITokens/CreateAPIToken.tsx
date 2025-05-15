@@ -22,6 +22,7 @@ import { Moment } from 'moment'
 
 import {
     CustomInput,
+    DOCUMENTATION,
     InfoIconTippy,
     ServerErrors,
     showError,
@@ -33,7 +34,7 @@ import {
 
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { importComponentFromFELibrary } from '../../../../components/common'
-import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
+import { REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser } from '../authorization.service'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'

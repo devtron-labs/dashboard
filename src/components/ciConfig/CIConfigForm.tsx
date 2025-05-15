@@ -25,8 +25,8 @@ import {
     ConfirmationModalVariantType,
     Button,
     OptionType,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION } from '../../config'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'
@@ -360,7 +360,7 @@ export default function CIConfigForm({
                                 className="flex right dc__link"
                                 rel="noreferrer noopener"
                                 target="_blank"
-                                href={DOCUMENTATION.APP_CREATE_CI_CONFIG}
+                                href={getDocumentationUrl({ docLinkKey: 'APP_CREATE_CI_CONFIG' })}
                             >
                                 <BookOpenIcon className="icon-dim-16 mr-8" />
                                 <span>View documentation</span>

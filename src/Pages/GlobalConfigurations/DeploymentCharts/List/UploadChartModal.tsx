@@ -19,6 +19,7 @@ import { useRef, useState } from 'react'
 import {
     ButtonWithLoader,
     CustomInput,
+    getDocumentationUrl,
     noop,
     showError,
     Textarea,
@@ -30,7 +31,7 @@ import {
 import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import errorImage from '@Images/ic_upload_chart_error.png'
-import { DOCUMENTATION, SERVER_ERROR_CODES } from '@Config/constants'
+import { SERVER_ERROR_CODES } from '@Config/constants'
 
 import uploadingImage from '../../../../assets/gif/uploading.gif'
 import { ChartUploadResponse, ChartUploadType, UPLOAD_STATE, UploadChartModalType } from '../types'
@@ -203,7 +204,7 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                     📙 Need help?&nbsp;
                     <a
                         className="dc__link fw-6"
-                        href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
+                        href={getDocumentationUrl({ docLinkKey: 'GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES' })}
                         target="_blank"
                         rel="noreferrer noopener"
                     >

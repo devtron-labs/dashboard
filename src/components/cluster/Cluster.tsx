@@ -52,7 +52,7 @@ import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
 import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, ClusterFormProps } from './cluster.type'
-import { DOCUMENTATION, ViewType, CONFIGURATION_TYPES, URLS, AppCreationType } from '../../config'
+import { ViewType, CONFIGURATION_TYPES, URLS, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
@@ -243,7 +243,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                     <FeatureTitleWithInfo
                         title={moduleBasedTitle}
                         renderDescriptionContent={() => `Manage your organization’s ${moduleBasedTitle.toLowerCase()}.`}
-                        docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
+                        docLink="GLOBAL_CONFIG_CLUSTER"
                         showInfoIconTippy
                         additionalContainerClasses="mb-20"
                     />

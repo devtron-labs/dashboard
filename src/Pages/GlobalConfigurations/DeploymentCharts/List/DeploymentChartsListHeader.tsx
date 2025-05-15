@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION, InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT, DOCUMENTATION } from '@Config/constants'
+import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT } from '@Config/constants'
 
 import { DeploymentChartsListHeaderProps } from '../types'
 import UploadButton from './UploadButton'
@@ -38,7 +38,7 @@ const DeploymentChartsListHeader = ({
                     </p>
                 }
                 documentationLinkText={CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT.documentationLinkText}
-                documentationLink={DOCUMENTATION.CUSTOM_CHART}
+                documentationLink={DOCUMENTATION.GLOBAL_CONFIG_CUSTOM_CHART}
                 iconClassName="icon-dim-20 fcn-6"
             />
         </div>
