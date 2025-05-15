@@ -88,8 +88,9 @@ export interface SidebarType {
 }
 
 export interface ClusterOptionType extends OptionType {
-    errorInConnecting: string
     isProd: boolean
+    installationId: number
+    isClusterInCreationPhase: boolean
 }
 
 export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {
@@ -218,6 +219,8 @@ export interface ClusterSelectorType {
     onChange: ({ label, value }) => void
     clusterList: ClusterOptionType[]
     clusterId: string
+    isClusterListLoading: boolean
+    isInstallationStatusView?: boolean
 }
 
 export interface CreateResourceButtonType {

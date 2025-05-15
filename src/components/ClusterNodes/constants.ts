@@ -17,7 +17,7 @@
 import { ClusterFiltersType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { EFFECT_TYPE, TaintsTableHeaderKeys, TaintsTableType } from './types'
+import { DescriptionDataType, EFFECT_TYPE, TaintsTableHeaderKeys, TaintsTableType } from './types'
 
 export const clusterSelectStyle = {
     ...multiSelectStyles,
@@ -340,3 +340,12 @@ export const TAINTS_TABLE_HEADERS: TaintsTableType['headers'] = [
     { key: TaintsTableHeaderKeys.VALUE, label: 'Value', width: '1fr' },
     { key: TaintsTableHeaderKeys.EFFECT, label: 'Effect', width: '250px' },
 ]
+
+export const CLUSTER_CONFIG_POLLING_INTERVAL = 1000 * 30 // half a minute
+
+export const CLUSTER_DESCRIPTION_DUMMY_DATA: DescriptionDataType = {
+    descriptionId: 0,
+    descriptionText: defaultClusterNote,
+    descriptionUpdatedBy: '',
+    descriptionUpdatedOn: '',
+}

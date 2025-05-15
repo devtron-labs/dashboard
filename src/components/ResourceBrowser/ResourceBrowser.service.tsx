@@ -17,31 +17,30 @@
 import { RefObject } from 'react'
 
 import {
+    APIOptions,
     ApiResourceType,
+    ClusterDetail,
     get,
     getIsRequestAborted,
     getK8sResourceList,
     getK8sResourceListPayload,
+    getNamespaceListMin,
     getUrlWithSearchParams,
+    Nodes,
     ResponseType,
     showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import {
+    getClusterListMinWithInstalledClusters,
+    getClusterListWithInstalledClusters,
+} from '@Components/ClusterNodes/clusterNodes.service'
+
 import { Routes } from '../../config'
-import { ClusterListResponse } from '../../services/service.types'
 import { SIDEBAR_KEYS } from './Constants'
 import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
-
-export const getClusterList = async (): Promise<ClusterListResponse> => {
-    const response = await get<ClusterListResponse['result']>(Routes.CLUSTER_LIST_PERMISSION)
-
-    return {
-        ...response,
-        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a.cluster_name, b.cluster_name)),
-    }
-}
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -79,10 +78,48 @@ export const getResourceData = async ({
             return parseNodeList(response)
         }
 
-        return await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
-            abortControllerRef.current.signal,
-        )
+        const isNamespaceList = selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()
+
+        const [k8sResponse, namespaceListResponse] = await Promise.allSettled([
+            getK8sResourceList(
+                getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+                abortControllerRef.current.signal,
+            ),
+            isNamespaceList ? getNamespaceListMin(clusterId, abortControllerRef) : null,
+        ])
+
+        const response = k8sResponse.status === 'fulfilled' ? k8sResponse.value : null
+
+        if (isNamespaceList && namespaceListResponse?.status === 'fulfilled') {
+            const { result } = namespaceListResponse.value
+            const [{ environments }] = result
+
+            const namespaceToEnvironmentMap = environments.reduce(
+                (acc, { environmentName, namespace, environmentId }) => {
+                    if (environmentId === 0) {
+                        return acc
+                    }
+
+                    acc[namespace] = environmentName
+                    return acc
+                },
+                {},
+            )
+
+            return {
+                ...response,
+                result: {
+                    ...response.result,
+                    headers: [...response.result.headers, 'environment'],
+                    data: response.result.data.map((data) => ({
+                        ...data,
+                        environment: namespaceToEnvironmentMap[data.name as string],
+                    })),
+                },
+            }
+        }
+
+        return response
     } catch (err) {
         if (!getIsRequestAborted(err)) {
             showError(err)
@@ -90,5 +127,23 @@ export const getResourceData = async ({
         }
 
         return null
+    }
+}
+
+export const getClusterListing = async (
+    minified: boolean,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+): Promise<ClusterDetail[]> => {
+    try {
+        const { result: clusterList } = await (
+            minified ? getClusterListMinWithInstalledClusters : getClusterListWithInstalledClusters
+        )(abortControllerRef)
+
+        return clusterList
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+        }
+        throw err
     }
 }

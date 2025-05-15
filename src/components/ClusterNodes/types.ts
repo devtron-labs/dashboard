@@ -15,6 +15,7 @@
  */
 
 import {
+    APIOptions,
     ClusterCapacityType,
     ClusterDetail,
     DynamicDataTableProps,
@@ -290,3 +291,9 @@ export enum TaintsTableHeaderKeys {
 }
 
 export type TaintsTableType = DynamicDataTableProps<TaintsTableHeaderKeys>
+
+export interface GetClusterOverviewDetailsProps {
+    clusterId: string
+    requestAbortControllerRef: APIOptions['abortControllerRef']
+    fetchClusterConfig: (clusterName: string) => Promise<void>
+}
