@@ -17,111 +17,100 @@
 import React, { useContext, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+
 import {
-    CDMaterialType,
-    showError,
-    Progressing,
-    ConditionalWrap,
-    noop,
-    MaterialInfo,
-    UserApprovalMetadataType,
-    DeploymentNodeType,
-    GenericEmptyState,
-    FilterStates,
-    stopPropagation,
-    useAsync,
-    genericCDMaterialsService,
-    CDMaterialServiceEnum,
-    useSearchString,
-    handleUTCTime,
-    ServerErrors,
-    DeploymentAppTypes,
-    FilterConditionsListType,
-    useGetUserRoles,
-    ImageCard,
-    ExcludedImageNode,
-    ImageCardAccordion,
+    abortPreviousRequests,
+    ACTION_STATE,
+    AnimatedDeployButton,
+    AnnouncementBanner,
+    ApprovalRuntimeStateType,
     ArtifactInfo,
     ArtifactInfoProps,
-    EXCLUDED_IMAGE_TOOLTIP,
-    STAGE_TYPE,
-    getIsMaterialInfoAvailable,
-    ModuleNameMap,
-    ModuleStatus,
-    getGitCommitInfo,
-    ImageTaggingContainerType,
-    SequentialCDCardTitleProps,
-    AnnouncementBanner,
-    ButtonWithLoader,
-    ACTION_STATE,
-    MODAL_TYPE,
-    DEPLOYMENT_WINDOW_TYPE,
-    DeploymentWithConfigType,
-    usePrompt,
-    getIsRequestAborted,
-    GitCommitInfoGeneric,
-    ErrorScreenManager,
-    useDownload,
-    SearchBar,
-    CDMaterialSidebarType,
-    CDMaterialResponseType,
-    CD_MATERIAL_SIDEBAR_TABS,
-    ToastManager,
-    ToastVariantType,
-    EnvResourceType,
-    abortPreviousRequests,
-    CommonNodeAttr,
-    getIsApprovalPolicyConfigured,
-    ApprovalRuntimeStateType,
-    GetPolicyConsequencesProps,
-    PolicyConsequencesDTO,
-    PipelineStageBlockInfo,
-    RuntimePluginVariables,
-    uploadCDPipelineFile,
     Button,
-    ComponentSizeType,
     ButtonStyleType,
-    AnimatedDeployButton,
-    triggerCDNode,
+    ButtonWithLoader,
+    CD_MATERIAL_SIDEBAR_TABS,
+    CDMaterialResponseType,
+    CDMaterialServiceEnum,
+    CDMaterialSidebarType,
+    CDMaterialType,
+    CommonNodeAttr,
+    ComponentSizeType,
+    ConditionalWrap,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
-    SortingOrder,
-    SegmentedControlProps,
+    DEPLOYMENT_WINDOW_TYPE,
+    DeploymentAppTypes,
+    DeploymentNodeType,
+    DeploymentStageType,
+    DeploymentStrategyTypeWithDefault,
+    DeploymentWithConfigType,
+    EnvResourceType,
+    ErrorScreenManager,
+    EXCLUDED_IMAGE_TOOLTIP,
+    ExcludedImageNode,
+    FilterConditionsListType,
+    FilterStates,
+    genericCDMaterialsService,
+    GenericEmptyState,
+    getGitCommitInfo,
+    getIsApprovalPolicyConfigured,
+    getIsMaterialInfoAvailable,
+    getIsRequestAborted,
+    GetPolicyConsequencesProps,
+    GitCommitInfoGeneric,
+    handleUTCTime,
     Icon,
-    isNullOrUndefined,
+    ImageCard,
+    ImageCardAccordion,
+    ImageTaggingContainerType,
     InfoBlock,
+    isNullOrUndefined,
+    MaterialInfo,
+    MODAL_TYPE,
+    ModuleNameMap,
+    ModuleStatus,
+    noop,
+    PipelineStageBlockInfo,
+    PolicyConsequencesDTO,
+    Progressing,
+    RuntimePluginVariables,
+    SearchBar,
+    SegmentedControlProps,
+    SequentialCDCardTitleProps,
+    ServerErrors,
+    showError,
+    SortingOrder,
+    STAGE_TYPE,
+    stopPropagation,
+    ToastManager,
+    ToastVariantType,
+    triggerCDNode,
+    uploadCDPipelineFile,
+    useAsync,
+    useDownload,
+    useGetUserRoles,
+    usePrompt,
+    UserApprovalMetadataType,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import {
-    CDMaterialProps,
-    CDMaterialState,
-    FilterConditionViews,
-    MATERIAL_TYPE,
-    TriggerViewContextType,
-    BulkSelectionEvents,
-    RenderCTAType,
-    RuntimeParamsErrorState,
-} from './types'
-import close from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
-import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+
 import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
 
+import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
+import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import close from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
+import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
+import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
 import noArtifact from '../../../../assets/img/no-artifact.webp'
-import { importComponentFromFELibrary, useAppContext } from '../../../common'
-import { CDButtonLabelMap, TriggerViewContext } from './config'
-import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import {
-    LAST_SAVED_CONFIG_OPTION,
-    SPECIFIC_TRIGGER_CONFIG_OPTION,
-    LATEST_TRIGGER_CONFIG_OPTION,
-} from './TriggerView.utils'
-import { TRIGGER_VIEW_GA_EVENTS, CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_PARAMS } from './Constants'
+import { URLS } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
+import { importComponentFromFELibrary, useAppContext } from '../../../common'
+import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
+import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
+import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
 import {
     getCanDeployWithoutApproval,
     getCanImageApproverDeploy,
@@ -129,10 +118,24 @@ import {
     getIsMaterialApproved,
     getWfrId,
 } from './cdMaterials.utils'
-import { URLS } from '../../../../config'
+import { CDButtonLabelMap, TriggerViewContext } from './config'
+import { CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_GA_EVENTS, TRIGGER_VIEW_PARAMS } from './Constants'
 import { PipelineConfigDiff } from './PipelineConfigDiff'
-import { usePipelineDeploymentConfig } from './PipelineConfigDiff/usePipelineDeploymentConfig'
-import { PipelineConfigDiffStatusTile } from './PipelineConfigDiff/PipelineConfigDiffStatusTile'
+import {
+    LAST_SAVED_CONFIG_OPTION,
+    LATEST_TRIGGER_CONFIG_OPTION,
+    SPECIFIC_TRIGGER_CONFIG_OPTION,
+} from './TriggerView.utils'
+import {
+    BulkSelectionEvents,
+    CDMaterialProps,
+    CDMaterialState,
+    FilterConditionViews,
+    MATERIAL_TYPE,
+    RenderCTAType,
+    RuntimeParamsErrorState,
+    TriggerViewContextType,
+} from './types'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -168,6 +171,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
+const SelectDeploymentStrategy = importComponentFromFELibrary('SelectDeploymentStrategy', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -224,6 +228,8 @@ const CDMaterial = ({
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
+    const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyTypeWithDefault>('DEFAULT')
+
     // It is derived from materialResult and can be fixed as a constant fix this
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
     const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
@@ -232,6 +238,7 @@ const CDMaterial = ({
     const abortDeployRef = useRef(null)
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
+    const isCDNode = stageType === DeploymentNodeType.CD
     const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
     // This check assumes we have isPreOrPostCD as true
     const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
@@ -788,13 +795,11 @@ const CDMaterial = ({
     const getConfigToDeployValue = () => {
         if (searchParams.deploy) {
             return searchParams.deploy
-        } else {
-            if (materialType === MATERIAL_TYPE.rollbackMaterialList) {
-                return DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
-            } else {
-                return DeploymentWithConfigType.LAST_SAVED_CONFIG
-            }
         }
+        if (materialType === MATERIAL_TYPE.rollbackMaterialList) {
+            return DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG
+        }
+        return DeploymentWithConfigType.LAST_SAVED_CONFIG
     }
 
     const onClickSetInitialParams = (modeParamValue: 'list' | 'review-config') => {
@@ -912,6 +917,7 @@ const CDMaterial = ({
                     ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
                     : {}),
                 skipIfHibernated: false,
+                ...(SelectDeploymentStrategy && deploymentStrategy !== 'DEFAULT' ? { strategy: deploymentStrategy } : {} )
             })
                 .then((response: any) => {
                     if (response.result) {
@@ -1402,7 +1408,7 @@ const CDMaterial = ({
     })
 
     const getSequentialCDCardTitleProps = (mat: CDMaterialType): SequentialCDCardTitleProps => {
-        const promotionApprovalMetadata = mat.promotionApprovalMetadata
+        const { promotionApprovalMetadata } = mat
         const promotionApprovedBy = promotionApprovalMetadata?.approvedUsersData?.map((users) => users.userEmail)
 
         return {
@@ -1438,7 +1444,7 @@ const CDMaterial = ({
             const hideSourceInfo = !state.materialInEditModeMap.get(+mat.id)
             const showApprovalInfoTippy =
                 !disableSelection &&
-                (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
+                (isCDNode || state.isRollbackTrigger) &&
                 isApprovalConfigured &&
                 ApprovalInfoTippy &&
                 !isNullOrUndefined(mat.userApprovalMetadata.approvalRuntimeState)
@@ -1661,7 +1667,8 @@ const CDMaterial = ({
     const getDeployButtonIcon = () => {
         if (deploymentWindowMetadata.userActionState === ACTION_STATE.BLOCKED) {
             return null
-        } else if (stageType !== STAGE_TYPE.CD) {
+        }
+        if (stageType !== STAGE_TYPE.CD) {
             return <PlayIC />
         }
         return <DeployIcon />
@@ -1698,14 +1705,12 @@ const CDMaterial = ({
     }
 
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
-        const userActionState: ACTION_STATE = deploymentWindowMetadata.userActionState
+        const { userActionState } = deploymentWindowMetadata
         const canDeployWithoutApproval = getCanDeployWithoutApproval(state, isExceptionUser)
         const canImageApproverDeploy = getCanImageApproverDeploy(state, canApproverDeploy, isExceptionUser)
 
         const showAnimatedDeployButton =
-            stageType === DeploymentNodeType.CD &&
-            !disableDeployButton &&
-            (!userActionState || userActionState === ACTION_STATE.ALLOWED)
+            isCDNode && !disableDeployButton && (!userActionState || userActionState === ACTION_STATE.ALLOWED)
 
         if (showAnimatedDeployButton) {
             return (
@@ -1760,7 +1765,7 @@ const CDMaterial = ({
                 {!hideConfigDiffSelector &&
                 (state.isRollbackTrigger || state.isSelectImageTrigger) &&
                 !showConfigDiffView &&
-                stageType === DeploymentNodeType.CD ? (
+                isCDNode ? (
                     <PipelineConfigDiffStatusTile
                         isLoading={pipelineDeploymentConfigLoading}
                         deploymentConfigSelectorProps={deploymentConfigSelectorProps}
@@ -1775,51 +1780,61 @@ const CDMaterial = ({
                     // NOTE: needed so that the button is pushed to the right since justify-content is set to space-between
                     <div />
                 )}
-                <ConditionalWrap
-                    condition={!pipelineDeploymentConfigLoading && isDeployButtonDisabled()}
-                    wrap={(children) => (
-                        <Tippy
-                            className="default-tt w-200"
-                            arrow={false}
-                            placement="top"
-                            content={renderTippyContent()}
-                        >
-                            {children}
-                        </Tippy>
+                <div className="flex dc__gap-8">
+                    {SelectDeploymentStrategy && isCDNode && (
+                        // verify if we need below check
+                        // (state.isRollbackTrigger || state.isSelectImageTrigger) && (
+                        <SelectDeploymentStrategy
+                            appId={appId}
+                            envId={envId}
+                            deploymentStrategy={deploymentStrategy}
+                            setDeploymentStrategy={setDeploymentStrategy}
+                        />
                     )}
-                >
-                    {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
-                        <AllowedWithWarningTippy
-                            consequence={consequence}
-                            configurePluginURL={configurePluginURL}
-                            showTriggerButton
-                            onTrigger={(e) => onClickDeploy(e, disableDeployButton)}
-                            nodeType={allowWarningWithTippyNodeTypeProp}
-                            visible={showPluginWarningOverlay}
-                            onClose={handleClosePluginWarningOverlay}
-                        >
-                            {renderTriggerDeployButton(disableDeployButton)}
-                        </AllowedWithWarningTippy>
-                    ) : (
-                        renderTriggerDeployButton(disableDeployButton)
-                    )}
-                </ConditionalWrap>
+                    <ConditionalWrap
+                        condition={!pipelineDeploymentConfigLoading && isDeployButtonDisabled()}
+                        wrap={(children) => (
+                            <Tippy
+                                className="default-tt w-200"
+                                arrow={false}
+                                placement="top"
+                                content={renderTippyContent()}
+                            >
+                                {children}
+                            </Tippy>
+                        )}
+                    >
+                        {AllowedWithWarningTippy && showPluginWarningBeforeTrigger ? (
+                            <AllowedWithWarningTippy
+                                consequence={consequence}
+                                configurePluginURL={configurePluginURL}
+                                showTriggerButton
+                                onTrigger={(e) => onClickDeploy(e, disableDeployButton)}
+                                nodeType={allowWarningWithTippyNodeTypeProp}
+                                visible={showPluginWarningOverlay}
+                                onClose={handleClosePluginWarningOverlay}
+                            >
+                                {renderTriggerDeployButton(disableDeployButton)}
+                            </AllowedWithWarningTippy>
+                        ) : (
+                            renderTriggerDeployButton(disableDeployButton)
+                        )}
+                    </ConditionalWrap>
+                </div>
             </div>
         )
     }
 
-    const renderTriggerViewConfigDiff = () => {
-        return (
-            <PipelineConfigDiff
-                {...pipelineDeploymentConfig}
-                isLoading={pipelineDeploymentConfigLoading}
-                errorConfig={errorConfig}
-                deploymentConfigSelectorProps={deploymentConfigSelectorProps}
-                scopeVariablesConfig={scopeVariablesConfig}
-                urlFilters={urlFilters}
-            />
-        )
-    }
+    const renderTriggerViewConfigDiff = () => (
+        <PipelineConfigDiff
+            {...pipelineDeploymentConfig}
+            isLoading={pipelineDeploymentConfigLoading}
+            errorConfig={errorConfig}
+            deploymentConfigSelectorProps={deploymentConfigSelectorProps}
+            scopeVariablesConfig={scopeVariablesConfig}
+            urlFilters={urlFilters}
+        />
+    )
 
     const renderTriggerBody = (isApprovalConfigured: boolean) => (
         <div className="trigger-modal__body p-0 flex-grow-1 h-100">
@@ -1856,9 +1871,7 @@ const CDMaterial = ({
                             <ArtifactInfo
                                 {...getArtifactInfoProps(
                                     state.selectedMaterial,
-                                    (stageType === DeploymentNodeType.CD || state.isRollbackTrigger) &&
-                                        isApprovalConfigured &&
-                                        ApprovalInfoTippy,
+                                    (isCDNode || state.isRollbackTrigger) && isApprovalConfigured && ApprovalInfoTippy,
                                 )}
                             />
                         )}

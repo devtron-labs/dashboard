@@ -26,6 +26,7 @@ import {
     ToastVariantType,
     ToastManager,
     ForceDeleteConfirmationModal,
+    LoadingCard,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
@@ -36,7 +37,6 @@ import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog
 import { AppType } from '../../../v2/appDetails/appDetails.type'
 import { AppDetailsErrorType } from '../../../../config'
 import IndexStore from '../../../v2/appDetails/index.store'
-import LoadingCard from './LoadingCard'
 
 const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed }: IssuesCardType) => {
     const [forceDeleteDialog, showForceDeleteDialog] = useState(false)
