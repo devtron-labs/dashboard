@@ -25,8 +25,9 @@ import {
     AppEnvironment,
     HelmReleaseStatus,
     BaseAppMetaData,
+    DeploymentStatusDetailsBreakdownDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentStatusDetailsBreakdownDataType, DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
+import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
@@ -515,7 +516,6 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     loadingResourceTree?: boolean
     isVirtualEnvironment?: boolean
     setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
-    refetchDeploymentStatus: (showTimeline?: boolean) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number
