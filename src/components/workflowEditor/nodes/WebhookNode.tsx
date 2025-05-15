@@ -18,6 +18,7 @@ import { ReactElement, useState } from 'react'
 import {
     WorkflowNodeType,
     ConditionalWrap,
+    DOCUMENTATION,
     TARGET_IDS,
     TippyTheme,
     TippyCustomized,
@@ -28,7 +29,6 @@ import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { WebhookNodeProps } from '../types'
 import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
-import { DOCUMENTATION } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')

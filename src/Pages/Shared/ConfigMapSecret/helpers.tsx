@@ -20,13 +20,13 @@ import {
     CMSecretComponentType,
     CMSecretExternalType,
     DocLink,
+    DOCUMENTATION,
     Icon,
     InfoBlock,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { DOCUMENTATION } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
 import { EXTERNAL_INFO_TEXT } from './constants'

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-
-import { DOCUMENTATION } from '@Config/constants'
+import { DOCUMENTATION, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO = 'BaseDeploymentTemplate' as const
 

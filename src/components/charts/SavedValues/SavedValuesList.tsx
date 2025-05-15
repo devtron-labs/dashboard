@@ -19,6 +19,7 @@ import { useParams, useHistory, RouteComponentProps } from 'react-router-dom'
 import {
     showError,
     Progressing,
+    DOCUMENTATION,
     ErrorScreenManager,
     BreadCrumb,
     useBreadcrumb,
@@ -30,7 +31,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
+import { Moment12HourFormat, URLS } from '../../../config'
 import emptyCustomChart from '../../../assets/img/app-not-configured.png'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'

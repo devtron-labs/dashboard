@@ -17,6 +17,7 @@
 import { Component } from 'react'
 import {
     showError,
+    DOCUMENTATION,
     Progressing,
     ErrorScreenManager,
     sortCallback,
@@ -24,7 +25,7 @@ import {
     DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { AppConfigStatus, ViewType, DOCUMENTATION, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { AppConfigStatus, ViewType, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { CreateMaterial } from './CreateMaterial'
 import { UpdateMaterial, UpdateMaterialProps } from './UpdateMaterial'
 import { GitMaterialType, MaterialListProps, MaterialListState } from './material.types'

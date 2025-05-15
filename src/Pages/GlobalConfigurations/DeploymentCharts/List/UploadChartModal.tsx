@@ -19,6 +19,7 @@ import { useRef, useState } from 'react'
 import {
     ButtonWithLoader,
     CustomInput,
+    DOCUMENTATION,
     getDocumentationUrl,
     noop,
     showError,
@@ -31,7 +32,7 @@ import {
 import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import errorImage from '@Images/ic_upload_chart_error.png'
-import { DOCUMENTATION, SERVER_ERROR_CODES } from '@Config/constants'
+import { SERVER_ERROR_CODES } from '@Config/constants'
 
 import uploadingImage from '../../../../assets/gif/uploading.gif'
 import { ChartUploadResponse, ChartUploadType, UPLOAD_STATE, UploadChartModalType } from '../types'

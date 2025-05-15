@@ -16,13 +16,12 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION,copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
 import 'tippy.js/themes/light.css'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import './cluster.scss'
 import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
 import { ClusterStepModal } from './cluster.type'
-import { DOCUMENTATION } from '../../config'
 
 const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     const [copied, setCopied] = useState(false)

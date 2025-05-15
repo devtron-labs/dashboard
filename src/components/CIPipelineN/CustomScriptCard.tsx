@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getDocumentationUrl, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION, getDocumentationUrl, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { INLINE_PLUGIN_TEXT } from './Constants'
 

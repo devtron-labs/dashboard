@@ -19,8 +19,7 @@ import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { DOCUMENTATION, URLS } from '../../config'
+import { URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
     ExpandedExternalLink,
@@ -53,6 +52,7 @@ import {
     ImageWithFallback,
     InfoBlock,
     DocLink,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'

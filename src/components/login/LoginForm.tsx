@@ -24,6 +24,7 @@ import {
     ComponentSizeType,
     CustomInput,
     DocLink,
+    DOCUMENTATION,
     Icon,
     PasswordField,
     ServerErrors,
@@ -35,7 +36,6 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { loginAsAdmin } from './login.service'
 import { LoginFormType } from './login.types'

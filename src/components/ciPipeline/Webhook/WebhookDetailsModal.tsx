@@ -18,6 +18,7 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
+    DOCUMENTATION,
     Drawer,
     InfoColourBar,
     Reload,
@@ -37,7 +38,6 @@ import {
     ButtonVariantType,
     ActionTypes,
     InfoBlock,
-    getDocumentationUrl,
     DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
@@ -54,7 +54,7 @@ import {
     getUserRole,
     createOrUpdateUser,
 } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,

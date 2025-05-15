@@ -18,6 +18,7 @@ import { Component, createContext } from 'react'
 import { Route, Switch, withRouter, generatePath } from 'react-router-dom'
 import {
     showError,
+    DOCUMENTATION,
     Progressing,
     ErrorScreenManager,
     ConditionalWrap,
@@ -37,12 +38,11 @@ import {
     ConfirmationModalVariantType,
     deleteWorkflow,
     InfoBlock,
-    getDocumentationUrl,
     DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
-import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
+import { URLS, AppConfigStatus, ViewType } from '../../config'
 import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
 import { Workflow } from './Workflow'
 import {

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { getDocumentationUrl } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION, getDocumentationUrl } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GitProvider } from '@Components/common/GitTabs/constants'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { DefaultShortGitOpsType, GitOpsFormErrorType } from './gitops.type'
 

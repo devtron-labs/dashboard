@@ -26,6 +26,7 @@ import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import {
     ClearIndicator,
+    DOCUMENTATION,
     multiSelectStyles,
     MultiValueRemove,
     Option,
@@ -37,7 +38,6 @@ import {
     getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { DOCUMENTATION } from '../../config'
 import { Link } from 'react-router-dom'
 
 export const DropdownIndicator = (props) => {

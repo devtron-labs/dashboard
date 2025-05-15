@@ -16,6 +16,7 @@
 
 import { Fragment, useEffect, useState } from 'react'
 import {
+    DOCUMENTATION,
     showError,
     Progressing,
     Drawer,
@@ -30,7 +31,7 @@ import {
     OptionType,
     getDocumentationUrl
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION } from '@Config/constants'
+import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'

@@ -21,6 +21,7 @@ import {
     ConfirmationDialog,
     DeleteConfirmationModal,
     DocLink,
+    DOCUMENTATION,
     EnvResourceType,
     getEnvironmentListMinPublic,
     InfoBlock,
@@ -40,7 +41,7 @@ import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-o
 import warn from '../../../../../../assets/icons/ic-warning.svg'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
-import { DOCUMENTATION, URLS } from '../../../../../../config'
+import { URLS } from '../../../../../../config'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
 import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'

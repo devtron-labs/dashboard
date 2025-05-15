@@ -18,6 +18,7 @@ import React, { useState, useEffect } from 'react'
 import {
     getDocumentationUrl,
     not,
+    DOCUMENTATION,
     Progressing,
     ToastManager,
     ToastVariantType,
@@ -44,14 +45,7 @@ import { DatePickerType2 as DateRangePicker, InValidHostUrlWarningBlock } from '
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
-import {
-    getAppComposeURL,
-    APP_COMPOSE_STAGE,
-    DOCUMENTATION,
-    DEFAULTK8SVERSION,
-    ModuleNameMap,
-    URLS,
-} from '../../../../config'
+import { getAppComposeURL, APP_COMPOSE_STAGE, DEFAULTK8SVERSION, ModuleNameMap, URLS } from '../../../../config'
 import { getDataSourceDetailsFromEnvironment, isDatasourceHealthy } from './appDetails.service'
 import { getHostURLConfiguration } from '../../../../services/service'
 import PrometheusErrorImage from '../../../../assets/img/ic-error-prometheus.png'
@@ -612,8 +606,9 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                             <p className="fw-6 fs-14 cn-9">
                                 Unable to show metrics due to insufficient/incorrect configurations
                             </p>
-                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) &&
-                                <InValidHostUrlWarningBlock />}
+                            {(!hostURLConfig || hostURLConfig.value !== window.location.origin) && (
+                                <InValidHostUrlWarningBlock />
+                            )}
                             {(!isConfigured || !isHealthy) && (
                                 <>
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>

@@ -16,11 +16,11 @@
 
 import { Component } from 'react'
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
-import { ErrorScreenNotAuthorized, FeatureTitleWithInfo, getDocumentationUrl, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION, ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
-import { DOCUMENTATION, HEADER_TEXT } from '../../config'
+import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
 
 interface NotificationsProps extends RouteComponentProps<{}> {

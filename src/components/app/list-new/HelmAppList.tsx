@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
     AppStatus,
     showError,
+    DOCUMENTATION,
     ErrorScreenManager,
     ServerErrors,
     Host,
@@ -36,7 +37,7 @@ import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
 import { LazyImage } from '../../common'
-import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'

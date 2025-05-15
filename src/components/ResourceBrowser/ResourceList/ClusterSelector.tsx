@@ -20,10 +20,10 @@ import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
+    DOCUMENTATION,
     getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DOCUMENTATION } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,

@@ -18,6 +18,7 @@ import React, { useEffect, useState } from 'react'
 import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
+    DOCUMENTATION,
     Progressing,
     VisibleModal,
     Checkbox,
@@ -27,7 +28,6 @@ import {
     IMAGE_SCAN_TOOL,
     PageHeader,
     GenericFilterEmptyState,
-    useMainContext,
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
@@ -63,7 +63,7 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
+import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import {
     AboutSection,

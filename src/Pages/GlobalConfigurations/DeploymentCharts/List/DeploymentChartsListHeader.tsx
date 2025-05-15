@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { DOCUMENTATION, InfoIconTippy, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT, DOCUMENTATION } from '@Config/constants'
+import { CUSTOM_CHART_TITLE_DESCRIPTION_CONTENT } from '@Config/constants'
 
 import { DeploymentChartsListHeaderProps } from '../types'
 import UploadButton from './UploadButton'

@@ -19,6 +19,7 @@ import yamlJsParser from 'yaml'
 import {
     showError,
     Progressing,
+    DOCUMENTATION,
     ErrorScreenManager,
     PageHeader,
     CodeEditor,
@@ -34,7 +35,7 @@ import {
     MODES,
     getDocumentationUrl
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION, SERVER_MODE, ViewType } from '../../config'
+import { SERVER_MODE, ViewType } from '../../config'
 import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'

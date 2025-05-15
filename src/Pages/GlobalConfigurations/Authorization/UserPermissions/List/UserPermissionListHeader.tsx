@@ -20,6 +20,7 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
+    DOCUMENTATION,
     FeatureTitleWithInfo,
     SearchBar,
     useMainContext,
@@ -27,7 +28,6 @@ import {
 
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { DOCUMENTATION } from '../../../../../config'
 import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
 import { UserPermissionListHeaderProps } from './types'
 

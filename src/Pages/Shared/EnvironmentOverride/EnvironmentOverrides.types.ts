@@ -16,7 +16,7 @@
 
 import React from 'react'
 
-import { AppConfigProps, getDocumentationUrl } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, DOCUMENTATION, getDocumentationUrl } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     AppConfigState,
@@ -24,7 +24,7 @@ import {
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
-import { DOCUMENTATION, URLS } from '../../../config'
+import { URLS } from '../../../config'
 
 export enum ComponentStates {
     loading = 'loading',

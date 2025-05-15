@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ButtonWithLoader, ConfirmationDialog, DocLink } from '@devtron-labs/devtron-fe-common-lib'
+import { ButtonWithLoader, ConfirmationDialog, DocLink, DOCUMENTATION } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
 
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICWarning } from '../../assets/icons/ic-warning.svg'
-import { DOCUMENTATION } from '../../config'
 import GitProviderTabIcons from '../common/GitTabs/GitProviderTabIcons'
 import { UpdateConfirmationDialogProps } from './gitops.type'
 

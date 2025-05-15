@@ -17,6 +17,7 @@
 import { useContext } from 'react'
 
 import {
+    DOCUMENTATION,
     getDocumentationUrl,
     PluginDetailType,
     PluginImageContainer,
@@ -31,7 +32,6 @@ import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
 import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
 import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { INLINE_PLUGIN_TEXT } from '../Constants'
 import { PluginDetailHeaderProps } from '../types'

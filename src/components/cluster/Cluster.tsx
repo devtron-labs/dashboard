@@ -21,6 +21,7 @@ import {
     ErrorScreenNotAuthorized,
     Reload,
     Drawer,
+    DOCUMENTATION,
     sortCallback,
     noop,
     DEFAULT_SECRET_PLACEHOLDER,
@@ -34,7 +35,6 @@ import {
     ComponentSizeType,
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
-    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, useHistory, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
@@ -53,7 +53,7 @@ import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as VirtualClusterIcon } from '@Icons/ic-virtual-cluster.svg'
 import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
 import { POLLING_INTERVAL, ClusterListProps, AuthenticationType, ClusterFormProps } from './cluster.type'
-import { DOCUMENTATION, ViewType, CONFIGURATION_TYPES, URLS, AppCreationType } from '../../config'
+import { ViewType, CONFIGURATION_TYPES, URLS, AppCreationType } from '../../config'
 import { getEnvName } from './cluster.util'
 import ClusterForm from './ClusterForm'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'

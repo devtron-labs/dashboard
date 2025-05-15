@@ -16,6 +16,7 @@
 
 import { useContext, useEffect, useState } from 'react'
 import {
+    DOCUMENTATION,
     RadioGroup,
     RadioGroupItem,
     CHECKBOX_VALUE,
@@ -24,10 +25,10 @@ import {
     ResourceKindType,
     WORKFLOW_CACHE_CONFIG_ENUM,
     TriggerType,
-    getDocumentationUrl
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { BuildStageVariable, DOCUMENTATION } from '../../config'
+import { BuildStageVariable } from '../../config'
 import { TaskList } from './TaskList'
 import { importComponentFromFELibrary } from '../common'
 import { CIPipelineSidebarType } from '../ciConfig/types'

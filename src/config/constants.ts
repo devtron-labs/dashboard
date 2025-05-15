@@ -15,13 +15,12 @@
  */
 
 import {
-    DOCUMENTATION_HOME_PAGE,
     SelectPickerOptionType,
     ToastManager,
     ROUTES as COMMON_ROUTES,
     EnvResourceType,
     RegistryCredentialsType,
-    getDocumentationUrl,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULT_STATUS_TEXT = 'Checking Status'
@@ -327,64 +326,6 @@ export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 export const MomentInvalidDate = 'Invalid date'
-
-export const DOCUMENTATION = {
-    ADMIN_PASSWORD: 'install/install-devtron#devtron-admin-credentials',
-    APP_CI_CONFIG_BUILD_WITHOUT_DOCKER: 'usage/applications/creating-application/docker-build-configuration#build-docker-image-without-dockerfile',
-    APP_CREATE: 'usage/applications/create-application',
-    APP_CREATE_CI_CONFIG: 'usage/applications/creating-application/docker-build-configuration',
-    APP_CREATE_CONFIG_MAP: 'usage/applications/creating-application/config-maps',
-    APP_CREATE_ENVIRONMENT_OVERRIDE: 'usage/applications/creating-application/environment-overrides',
-    APP_CREATE_MATERIAL: 'usage/applications/creating-application/git-material',
-    APP_CREATE_SECRET: 'usage/applications/creating-application/secrets',
-    APP_CREATE_WORKFLOW: 'usage/applications/creating-application/workflow',
-    APP_DEPLOYMENT_TEMPLATE: 'usage/applications/creating-application/deployment-template',
-    APP_EPHEMERAL_CONTAINER: 'usage/applications/app-details/ephemeral-containers',
-    APP_ROLLOUT_DEPLOYMENT_TEMPLATE: 'usage/applications/creating-application/deployment-template/rollout-deployment',
-    BUILD_STAGE: 'usage/applications/creating-application/ci-pipeline#build-stage',
-    BULK_UPDATE: 'usage/bulk-update',
-    CHART_GROUP: 'usage/deploy-chart/chart-group',
-    CHART_LIST: 'usage/deploy-chart/overview-of-charts',
-    CUSTOM_VALUES: 'usage/deploy-chart/overview-of-charts#custom-values',
-    DEPLOYMENT: 'usage/applications/creating-application/deployment-template/deployment',
-    DEPLOYMENT_TEMPLATE: 'usage/applications/creating-application/deployment-template',
-    DEVTRON_UPGRADE: 'getting-started/upgrade',
-    CONFIGURING_WEBHOOK: 'usage/applications/creating-application/workflow/ci-pipeline#configuring-webhook',
-    EXECUTE_CUSTOM_SCRIPT: 'usage/applications/creating-application/workflow/ci-pipeline/ci-build-pre-post-plugins#execute-custom-script',
-    EXTERNAL_LINKS: 'getting-started/global-configurations/external-links',
-    EXTERNAL_SECRET: 'usage/applications/creating-application/secrets#external-secrets',
-    // Global Configurations
-    GLOBAL_CONFIG_API_TOKEN: 'getting-started/global-configurations/authorization/api-tokens',
-    GLOBAL_CONFIG_CHART: 'getting-started/global-configurations/chart-repo',
-    GLOBAL_CONFIG_CLUSTER: 'getting-started/global-configurations/cluster-and-environments',
-    GLOBAL_CONFIG_CUSTOM_CHART: 'getting-started/global-configurations/custom-charts',
-    GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES: 'getting-started/global-configurations/custom-charts#prerequisites',
-    GLOBAL_CONFIG_DOCKER: 'getting-started/global-configurations/container-registries',
-    GLOBAL_CONFIG_GIT: 'getting-started/global-configurations/git-accounts',
-    GLOBAL_CONFIG_GITOPS: 'getting-started/global-configurations/gitops',
-    GLOBAL_CONFIG_GITOPS_GITHUB: 'global-configurations/gitops#github',
-    GLOBAL_CONFIG_GITOPS_GITLAB: 'global-configurations/gitops#gitlab',
-    GLOBAL_CONFIG_GITOPS_AZURE: 'global-configurations/gitops#azure',
-    GLOBAL_CONFIG_GITOPS_BITBUCKET: 'global-configurations/gitops#bitbucket',
-    GLOBAL_CONFIG_GROUPS: 'getting-started/global-configurations/authorization/permission-groups',
-    GLOBAL_CONFIG_HOST_URL: 'getting-started/global-configurations/host-url',
-    GLOBAL_CONFIG_NOTIFICATION: 'getting-started/global-configurations/manage-notification',
-    GLOBAL_CONFIG_PERMISSION: `${DOCUMENTATION_HOME_PAGE}/global-configurations/authorization/user-access#devtron-apps-permissions`,
-    GLOBAL_CONFIG_PROJECT: 'getting-started/global-configurations/projects',
-    GLOBAL_CONFIG_SSO: 'getting-started/global-configurations/sso-login',
-    GLOBAL_CONFIG_SCOPED_VARIABLES: 'getting-started/global-configurations/scoped-variables',
-    GLOBAL_CONFIG_USER: 'getting-started/global-configurations/authorization/user-access',
-    HYPERION: `${DOCUMENTATION_HOME_PAGE}/#hyperion`,
-    JOB_CRONJOB: 'usage/applications/creating-application/deployment-template/job-and-cronjob',
-    JOB_SOURCE_CODE: 'usage/jobs/configuration-job',
-    JOB_WORKFLOW_EDITOR: 'usage/jobs/workflow-editor-job',
-    K8S_RESOURCES_PERMISSIONS: 'global-configurations/authorization/user-access#kubernetes-resources-permissions',
-    MANDATORY_TAGS: `${DOCUMENTATION_HOME_PAGE}/global-configurations/tags-policy#create-application-with-mandatory-tags`,
-    PRE_POST_BUILD_STAGE: 'usage/applications/creating-application/ci-pipeline/ci-build-pre-post-plugins',
-    ROLLOUT: 'usage/applications/creating-application/deployment-template/rollout-deployment',
-    SECURITY: 'usage/security-features',
-    SPECIFY_IMAGE_PULL_SECRET: 'getting-started/global-configurations/container-registries#specify-image-pull-secret',
-}
 
 export const HEADER_TEXT = {
     API_TOKEN: {

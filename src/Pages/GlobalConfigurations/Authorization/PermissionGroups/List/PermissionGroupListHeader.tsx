@@ -20,13 +20,13 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
+    DOCUMENTATION,
     FeatureTitleWithInfo,
     SearchBar,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
-import { DOCUMENTATION } from '../../../../../config'
 import ExportPermissionGroupsToCsv from './ExportPermissionGroupsToCsv'
 import { PermissionGroupListHeaderProps } from './types'
 

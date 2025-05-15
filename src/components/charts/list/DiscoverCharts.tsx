@@ -20,13 +20,13 @@ import {
     Progressing,
     ConditionalWrap,
     DevtronProgressing,
+    DOCUMENTATION,
     PageHeader,
     useMainContext,
     DetectBottom,
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
-    getDocumentationUrl,
     DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
@@ -44,7 +44,7 @@ import { DeployableCharts, deployChartGroup, getChartProviderList } from '../cha
 import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
+import { URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'

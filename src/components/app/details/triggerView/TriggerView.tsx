@@ -36,6 +36,7 @@ import {
     getEnvironmentListMinPublic,
     CIPipelineNodeType,
     DocLink,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'
@@ -65,7 +66,6 @@ import {
     SourceTypeMap,
     BUILD_STATUS,
     DEFAULT_GIT_BRANCH_VALUE,
-    DOCUMENTATION,
     NO_COMMIT_SELECTED,
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'

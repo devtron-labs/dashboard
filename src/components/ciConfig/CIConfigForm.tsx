@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import {
     CIBuildConfigType,
     CIBuildType,
+    DOCUMENTATION,
     showError,
     ToastVariantType,
     ToastManager,
@@ -27,7 +28,6 @@ import {
     OptionType,
     getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DOCUMENTATION } from '../../config'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
 import { saveCIConfig, updateCIConfig } from './service'

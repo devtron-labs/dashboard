@@ -19,6 +19,7 @@ import { useParams } from 'react-router-dom'
 
 import {
     DeleteConfirmationModal,
+    DOCUMENTATION,
     ErrorScreenManager,
     FilterChips,
     getClusterListMin,
@@ -33,7 +34,7 @@ import {
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
-import { DOCUMENTATION, SERVER_MODE } from '../../config'
+import { SERVER_MODE } from '../../config'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import { AddLinkButton } from './AddLinkButton'

@@ -20,13 +20,14 @@ import {
     AppConfigProps,
     BASE_CONFIGURATION_ENV_ID,
     ConfigResourceType,
+    DOCUMENTATION,
     getDocumentationUrl,
     ResourceKindType,
     stringComparatorBySortOrder,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { APP_COMPOSE_STAGE, DOCUMENTATION, getAppComposeURL, URLS } from '@Config/index'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 
 import { AppConfigStatusItemType, EnvConfigDTO } from '../../service.types'
 import { AppConfigState, AppStageUnlockedType, CustomNavItemsType, EnvConfigType, STAGE_NAME } from './AppConfig.types'

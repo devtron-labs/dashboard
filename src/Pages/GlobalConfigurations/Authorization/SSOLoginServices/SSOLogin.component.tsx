@@ -37,6 +37,7 @@ import {
     ConfirmationModalVariantType,
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
+    DOCUMENTATION,
     ErrorScreenManager,
     FeatureTitleWithInfo,
     InfoBlock,
@@ -60,7 +61,7 @@ import {
 } from '@Components/common'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-import { DOCUMENTATION, HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
+import { HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
