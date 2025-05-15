@@ -598,6 +598,7 @@ export interface AppDetailsCDButtonType
     isRedirectedFromAppDetails?: boolean
     cdModal: CDModalProps
     isForEmptyState?: boolean
+    isForRollback?: boolean
     handleSuccess?: CDMaterialProps['handleSuccess']
 }
 
