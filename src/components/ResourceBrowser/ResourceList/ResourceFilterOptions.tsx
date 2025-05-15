@@ -19,8 +19,12 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
+    ComponentSizeType,
+    Nodes,
     OptionType,
     SearchBar,
+    SegmentedControl,
+    SegmentedControlProps,
     SelectPicker,
     useAsync,
     useRegisterShortcut,
@@ -49,6 +53,8 @@ const ResourceFilterOptions = ({
     updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
+    eventType = 'warning',
+    updateSearchParams,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -57,6 +63,8 @@ const ResourceFilterOptions = ({
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
+
+    const isEventListing = selectedResource?.gvk?.Kind === Nodes.Event
 
     const showShortcutKey = !isInputFocused && !searchText
 
@@ -124,30 +132,58 @@ const ResourceFilterOptions = ({
 
     const handleInputFocus = () => setIsInputFocused(true)
 
+    const handleOnEventTypeChange: SegmentedControlProps['onChange'] = ({ value }) => {
+        updateSearchParams({ eventType: value })
+    }
+
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="resource-filter-options-container__search-box dc__position-rel">
-                    <SearchBar
-                        inputProps={{
-                            placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
-                            disabled: isSearchInputDisabled,
-                            onBlur: handleInputBlur,
-                            onFocus: handleInputFocus,
-                            ref: searchInputRef,
-                            onKeyUp: handleFilterKeyUp,
-                        }}
-                        handleSearchChange={handleOnChangeSearchText}
-                        initialSearchText={searchText}
-                    />
-                    {showShortcutKey && (
-                        <ShortcutKeyBadge
-                            shortcutKey="r"
-                            rootClassName="resource-search-shortcut-key"
-                            onClick={handleInputShortcut}
+                <div className="flexbox dc__gap-8">
+                    {isEventListing && (
+                        <SegmentedControl
+                            name="event-type-control"
+                            value={eventType}
+                            size={ComponentSizeType.small}
+                            segments={[
+                                {
+                                    icon: 'ic-warning',
+                                    ariaLabel: 'Only show warning events',
+                                    value: 'warning',
+                                    tooltipProps: { content: 'Only show warning events' },
+                                },
+                                {
+                                    icon: 'ic-info-filled',
+                                    ariaLabel: 'Only show normal events',
+                                    value: 'normal',
+                                    tooltipProps: { content: 'Only show normal events' },
+                                },
+                            ]}
+                            onChange={handleOnEventTypeChange}
                         />
                     )}
+                    <div className="resource-filter-options-container__search-box dc__position-rel">
+                        <SearchBar
+                            inputProps={{
+                                placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
+                                disabled: isSearchInputDisabled,
+                                onBlur: handleInputBlur,
+                                onFocus: handleInputFocus,
+                                ref: searchInputRef,
+                                onKeyUp: handleFilterKeyUp,
+                            }}
+                            handleSearchChange={handleOnChangeSearchText}
+                            initialSearchText={searchText}
+                        />
+                        {showShortcutKey && (
+                            <ShortcutKeyBadge
+                                shortcutKey="r"
+                                rootClassName="resource-search-shortcut-key"
+                                onClick={handleInputShortcut}
+                            />
+                        )}
+                    </div>
                 </div>
                 {!areFiltersHidden && (
                     <div className="flexbox dc__gap-8 dc__zi-3">

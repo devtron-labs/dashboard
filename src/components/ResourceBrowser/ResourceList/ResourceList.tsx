@@ -18,12 +18,11 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, Route, useHistory, useParams } from 'react-router-dom'
 
 import {
-    ALL_NAMESPACE_OPTION,
     BreadCrumb,
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
-    noop,
+    Nodes,
     PageHeader,
     useAsync,
     useBreadcrumb,
@@ -45,7 +44,6 @@ import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import {
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
@@ -56,23 +54,24 @@ import {
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import { clearCacheRepo } from '../ResourceBrowser.service'
 import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
 import { getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
+import AdminTerminalDummy from './AdminTerminalDummy'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
-import { getFirstResourceFromKindResourceMap } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
 const ResourceList = () => {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
-    const { replace, push } = useHistory()
+    const { replace } = useHistory()
     const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
         tabs,
@@ -153,6 +152,7 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
+            clearCacheRepo()
         }
     }, [])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
@@ -190,7 +190,7 @@ const ResourceList = () => {
         const redirectUrl = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId: selected.value,
             group: K8S_EMPTY_GROUP,
-            kind: 'node',
+            kind: Nodes.Node.toLowerCase(),
             version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
@@ -226,6 +226,7 @@ const ResourceList = () => {
     )
 
     const refreshData = () => {
+        clearCacheRepo()
         const activeTab = tabs.find((tab) => tab.isSelected)
         updateTabComponentKey(activeTab.id)
         updateTabLastSyncMoment(activeTab.id)
@@ -259,61 +260,16 @@ const ResourceList = () => {
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
-        if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
+        if (!terminalTab) {
             return
         }
         updateTabUrl({ id: terminalTab.id, url: `${terminalTab.url.split('?')[0]}?${queryParams}` })
     }
 
-    const updateK8sResourceTabLastSyncMoment = () =>
-        updateTabLastSyncMoment(getTabById(ResourceBrowserTabsId.k8s_Resources)?.id)
-
     const getUpdateTabUrlForId =
         (id: UpdateTabUrlParamsType['id']): ClusterListType['updateTabUrl'] =>
         ({ url: _url, dynamicTitle, retainSearchParams }: Omit<UpdateTabUrlParamsType, 'id'>) =>
             updateTabUrl({ id, url: _url, dynamicTitle, retainSearchParams })
-
-    const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
-        const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
-        const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
-        let _group: string = shouldOverrideSelectedResourceKind
-            ? getFirstResourceFromKindResourceMap(
-                  lowercaseKindToResourceGroupMap,
-                  lowercaseKindFromResource,
-              )?.gvk?.Group?.toLowerCase()
-            : K8S_EMPTY_GROUP
-        const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
-
-        let resourceParam: string
-        let kind: string
-        let resourceName: string
-
-        if (origin === 'event') {
-            const [_kind, _resourceName] = name.split('/')
-            const eventKind = shouldOverrideSelectedResourceKind ? lowercaseKindFromResource : _kind
-            // For event, we should read the group for kind from the resource group map else fallback to empty group
-
-            _group =
-                getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, eventKind)?.gvk?.Group ||
-                K8S_EMPTY_GROUP
-
-            resourceParam = `${eventKind}/${_group}/${_resourceName}`
-            kind = eventKind
-            resourceName = _resourceName
-        } else {
-            kind = lowercaseKindFromResource
-            resourceParam = `${kind}/${_group}/${name}`
-            resourceName = name
-        }
-
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${_namespace}/${resourceParam}${
-            tab ? `/${tab.toLowerCase()}` : ''
-        }`
-        const idPrefix = kind === 'node' ? `${_group}` : `${_group}_${_namespace}`
-        addTab({ idPrefix, kind, name: resourceName, url: _url })
-            .then(() => push(_url))
-            .catch(noop)
-    }
 
     const renderPageHeaderActionButtons = () => {
         const clusterConnectionFailed = !!clusterList?.find(({ id }) => clusterId === String(id))?.errorInNodeListing
@@ -324,6 +280,20 @@ const ResourceList = () => {
                     <CompareClusterButton sourceClusterId={clusterId} />
                 )}
                 {renderCreateResourceButton(clusterId, closeResourceModal)()}
+            </div>
+        )
+    }
+
+    const renderTerminal = () => {
+        const tab = getTabById(ResourceBrowserTabsId.terminal)
+
+        if (!tab?.isAlive) {
+            return null
+        }
+
+        return (
+            <div className={!tab?.isSelected ? 'cluster-terminal-hidden' : 'flexbox-col flex-grow-1'}>
+                <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
             </div>
         )
     }
@@ -367,13 +337,16 @@ const ResourceList = () => {
                     <MonitoringDashboard />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
-                    <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
+                    <AdminTerminalDummy
+                        markTabActiveById={markTabActiveById}
+                        clusterName={selectedCluster.label}
+                        getTabById={getTabById}
+                        updateTabUrl={updateTabUrl}
+                    />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE} exact>
                     <ClusterUpgradeCompatibilityInfo
-                        clusterId={clusterId}
                         clusterName={selectedCluster.label}
-                        selectedCluster={selectedCluster}
                         updateTabUrl={getUpdateTabUrlForId(
                             getTabId(
                                 UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
@@ -383,7 +356,8 @@ const ResourceList = () => {
                         )}
                         addTab={addTab}
                         lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        handleResourceClick={handleResourceClick}
+                        getTabId={getTabId}
+                        markTabActiveById={markTabActiveById}
                     />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL} exact>
@@ -420,11 +394,13 @@ const ResourceList = () => {
                             refreshData,
                         )}
                         updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
-                        updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
                         clusterName={selectedCluster.label}
                         lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                        key={getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString()}
                     />
                 </Route>
+
+                {renderTerminal()}
             </>
         )
     }

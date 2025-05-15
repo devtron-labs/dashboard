@@ -33,7 +33,6 @@ const K8SResourceTabComponent = ({
     renderRefreshBar,
     addTab,
     updateK8sResourceTab,
-    updateK8sResourceTabLastSyncMoment,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
@@ -86,7 +85,6 @@ const K8SResourceTabComponent = ({
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
                 updateK8sResourceTab={updateK8sResourceTab}
-                updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             />
             <K8SResourceList
                 clusterName={clusterName}

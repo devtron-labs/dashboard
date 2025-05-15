@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import React, { forwardRef, useState } from 'react'
 
 import {
     GetResourceScanDetailsPayloadType,
@@ -58,151 +58,156 @@ const getResourceScanDetails: ({
     'function',
 )
 
-const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
-    clusterId,
-    resourceData,
-    selectedResource,
-    getResourceListData,
-    handleResourceClick,
-    removeTabByIdentifier,
-    hideDeleteResource,
-    handleClearBulkSelection,
-}) => {
-    const { installedModuleMap } = useMainContext()
+const ResourceBrowserActionMenu = forwardRef(
+    (
+        {
+            clusterId,
+            resourceData,
+            selectedResource,
+            getResourceListData,
+            handleResourceClick,
+            removeTabByIdentifier,
+            hideDeleteResource,
+            handleClearBulkSelection,
+        }: ResourceBrowserActionMenuType,
+        forwardedRef: React.Ref<HTMLButtonElement>,
+    ) => {
+        const { installedModuleMap } = useMainContext()
 
-    const [showDeleteDialog, setShowDeleteDialog] = useState(false)
-    const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
+        const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+        const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
-    const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
-        () =>
-            getResourceScanDetails({
-                name: String(resourceData.name),
-                namespace: String(resourceData.namespace),
-                group: selectedResource?.gvk?.Group,
-                kind: selectedResource?.gvk?.Kind,
-                version: selectedResource?.gvk?.Version,
-                clusterId: +clusterId,
-            }),
-        [],
-        showVulnerabilityModal && !!getResourceScanDetails,
-    )
+        const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
+            () =>
+                getResourceScanDetails({
+                    name: String(resourceData.name),
+                    namespace: String(resourceData.namespace),
+                    group: selectedResource?.gvk?.Group,
+                    kind: selectedResource?.gvk?.Kind,
+                    version: selectedResource?.gvk?.Version,
+                    clusterId: +clusterId,
+                }),
+            [],
+            showVulnerabilityModal && !!getResourceScanDetails,
+        )
 
-    const toggleDeleteDialog = () => {
-        setShowDeleteDialog((prevState) => !prevState)
-    }
+        const toggleDeleteDialog = () => {
+            setShowDeleteDialog((prevState) => !prevState)
+        }
 
-    const handleShowVulnerabilityModal = () => {
-        setShowVulnerabilityModal(true)
-    }
+        const handleShowVulnerabilityModal = () => {
+            setShowVulnerabilityModal(true)
+        }
 
-    const handleCloseVulnerabilityModal = () => {
-        setShowVulnerabilityModal(false)
-    }
+        const handleCloseVulnerabilityModal = () => {
+            setShowVulnerabilityModal(false)
+        }
 
-    const showResourceScanModal = getShowResourceScanModal(
-        selectedResource?.gvk?.Kind as NodeType,
-        installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
-    )
+        const showResourceScanModal = getShowResourceScanModal(
+            selectedResource?.gvk?.Kind as NodeType,
+            installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
+        )
 
-    return (
-        <>
-            <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
-                    <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
-                </PopupMenu.Button>
-                <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
-                    <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">
-                        <span
-                            data-name={resourceData.name}
-                            data-tab={RESOURCE_ACTION_MENU.manifest}
-                            data-namespace={resourceData.namespace}
-                            data-kind={resourceData.kind}
-                            className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                            onClick={handleResourceClick}
-                            data-testid="manifest-option-link"
-                        >
-                            <ManifestIcon className="icon-dim-16 scn-6 mr-8 dc__no-shrink" />
-                            <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
-                        </span>
-                        <span
-                            data-name={resourceData.name}
-                            data-tab={RESOURCE_ACTION_MENU.Events}
-                            data-namespace={resourceData.namespace}
-                            data-kind={resourceData.kind}
-                            className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                            onClick={handleResourceClick}
-                            data-testid="events-option-link"
-                        >
-                            <CalendarIcon className="icon-dim-16 mr-8 fcn-6" />
-                            <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
-                        </span>
-                        {selectedResource?.gvk?.Kind === Nodes.Pod && (
-                            <>
-                                <span
-                                    data-name={resourceData.name}
-                                    data-tab={RESOURCE_ACTION_MENU.logs}
-                                    data-namespace={resourceData.namespace}
-                                    data-kind={resourceData.kind}
-                                    className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                    onClick={handleResourceClick}
-                                    data-testid="logs-option-link"
-                                >
-                                    <LogAnalyzerIcon className="icon-dim-16 mr-8 fcn-6" />
-                                    <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
-                                </span>
-                                <span
-                                    data-name={resourceData.name}
-                                    data-tab={RESOURCE_ACTION_MENU.terminal}
-                                    data-namespace={resourceData.namespace}
-                                    data-kind={resourceData.kind}
-                                    className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                    onClick={handleResourceClick}
-                                    data-testid="terminal-option-link"
-                                >
-                                    <TerminalIcon className="icon-dim-16 mr-8 fcn-6" />
-                                    <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
-                                </span>
-                            </>
-                        )}
-                        {showResourceScanModal && OpenSecurityModalButton && (
-                            <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
-                        )}
-                        {!hideDeleteResource && (
+        return (
+            <>
+                <PopupMenu autoClose>
+                    <PopupMenu.Button ref={forwardedRef} rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
+                        <MenuDots className="node-actions-menu-icon icon-dim-16" data-testid="popup-menu-button" />
+                    </PopupMenu.Button>
+                    <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
+                        <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">
                             <span
-                                className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                                onClick={toggleDeleteDialog}
-                                data-testid="delete-option-link"
+                                data-name={resourceData.name}
+                                data-tab={RESOURCE_ACTION_MENU.manifest}
+                                data-namespace={resourceData.namespace}
+                                data-kind={resourceData.kind}
+                                className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                onClick={handleResourceClick}
+                                data-testid="manifest-option-link"
                             >
-                                <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                                {RESOURCE_ACTION_MENU.delete}
+                                <ManifestIcon className="icon-dim-16 scn-6 mr-8 dc__no-shrink" />
+                                <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
                             </span>
-                        )}
-                    </div>
-                </PopupMenu.Body>
-            </PopupMenu>
-            {showDeleteDialog && (
-                <DeleteResourcePopup
-                    clusterId={clusterId}
-                    resourceData={resourceData}
-                    selectedResource={selectedResource}
-                    getResourceListData={getResourceListData}
-                    toggleDeleteDialog={toggleDeleteDialog}
-                    removeTabByIdentifier={removeTabByIdentifier}
-                    handleClearBulkSelection={handleClearBulkSelection}
-                />
-            )}
+                            <span
+                                data-name={resourceData.name}
+                                data-tab={RESOURCE_ACTION_MENU.Events}
+                                data-namespace={resourceData.namespace}
+                                data-kind={resourceData.kind}
+                                className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                onClick={handleResourceClick}
+                                data-testid="events-option-link"
+                            >
+                                <CalendarIcon className="icon-dim-16 mr-8 fcn-6" />
+                                <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
+                            </span>
+                            {selectedResource?.gvk?.Kind === Nodes.Pod && (
+                                <>
+                                    <span
+                                        data-name={resourceData.name}
+                                        data-tab={RESOURCE_ACTION_MENU.logs}
+                                        data-namespace={resourceData.namespace}
+                                        data-kind={resourceData.kind}
+                                        className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                        onClick={handleResourceClick}
+                                        data-testid="logs-option-link"
+                                    >
+                                        <LogAnalyzerIcon className="icon-dim-16 mr-8 fcn-6" />
+                                        <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
+                                    </span>
+                                    <span
+                                        data-name={resourceData.name}
+                                        data-tab={RESOURCE_ACTION_MENU.terminal}
+                                        data-namespace={resourceData.namespace}
+                                        data-kind={resourceData.kind}
+                                        className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                        onClick={handleResourceClick}
+                                        data-testid="terminal-option-link"
+                                    >
+                                        <TerminalIcon className="icon-dim-16 mr-8 fcn-6" />
+                                        <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
+                                    </span>
+                                </>
+                            )}
+                            {showResourceScanModal && OpenSecurityModalButton && (
+                                <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
+                            )}
+                            {!hideDeleteResource && (
+                                <span
+                                    className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
+                                    onClick={toggleDeleteDialog}
+                                    data-testid="delete-option-link"
+                                >
+                                    <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
+                                    {RESOURCE_ACTION_MENU.delete}
+                                </span>
+                            )}
+                        </div>
+                    </PopupMenu.Body>
+                </PopupMenu>
+                {showDeleteDialog && (
+                    <DeleteResourcePopup
+                        clusterId={clusterId}
+                        resourceData={resourceData}
+                        selectedResource={selectedResource}
+                        getResourceListData={getResourceListData}
+                        toggleDeleteDialog={toggleDeleteDialog}
+                        removeTabByIdentifier={removeTabByIdentifier}
+                        handleClearBulkSelection={handleClearBulkSelection}
+                    />
+                )}
 
-            {showVulnerabilityModal && !!getResourceScanDetails && (
-                <SecurityModal
-                    handleModalClose={handleCloseVulnerabilityModal}
-                    isLoading={resourceScanLoading}
-                    error={resourceScanError}
-                    responseData={resourceScanResponse?.result}
-                    hidePolicy
-                />
-            )}
-        </>
-    )
-}
+                {showVulnerabilityModal && !!getResourceScanDetails && (
+                    <SecurityModal
+                        handleModalClose={handleCloseVulnerabilityModal}
+                        isLoading={resourceScanLoading}
+                        error={resourceScanError}
+                        responseData={resourceScanResponse?.result}
+                        hidePolicy
+                    />
+                )}
+            </>
+        )
+    },
+)
 
 export default ResourceBrowserActionMenu

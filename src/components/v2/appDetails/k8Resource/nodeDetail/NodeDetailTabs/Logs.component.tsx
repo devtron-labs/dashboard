@@ -97,9 +97,11 @@ const LogsComponent = ({
         podName: string
         clusterId: string
         nodeType: string
-        node: string
+        name: string
         namespace: string
+        kind?: string
     }>()
+    params.nodeType = params.kind ?? params.nodeType
     const key = useKeyDown()
     const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
@@ -111,7 +113,7 @@ const LogsComponent = ({
     const logsPausedRef = useRef(false)
     const workerRef = useRef(null)
     const appDetails = IndexStore.getAppDetails()
-    const isLogAnalyzer = !params.podName && !params.node
+    const isLogAnalyzer = !params.podName && !params.name
     const [logState, setLogState] = useState(() =>
         getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
     )
@@ -387,7 +389,7 @@ const LogsComponent = ({
             ...logSearchTerms,
             [isLogAnalyzer
                 ? AppDetailsTabs.log_analyzer
-                : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`]: searchTerm,
+                : `${params.nodeType}/${isResourceBrowserView ? params.name : params.podName}`]: searchTerm,
         })
     }
 
@@ -440,7 +442,7 @@ const LogsComponent = ({
                 logSearchTerms[
                     isLogAnalyzer
                         ? AppDetailsTabs.log_analyzer
-                        : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`
+                        : `${params.nodeType}/${isResourceBrowserView ? params.name : params.podName}`
                 ]
 
             if (currentSearchTerm) {
@@ -451,7 +453,7 @@ const LogsComponent = ({
             }
         }
         // TODO: reset pauseLog and grepToken
-    }, [params.podName, params.node, params.namespace])
+    }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         // Values are already set once we reach here

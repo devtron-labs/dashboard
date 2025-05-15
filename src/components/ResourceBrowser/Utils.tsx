@@ -351,6 +351,19 @@ export const getRenderNodeButton =
         </button>
     )
 
+export const getRenderInvolvedObjectButton = (value: string, handleButtonClick: (e) => void) => () => {
+    const [kind, name] = value.split('/')
+    return (
+        <button
+            type="button"
+            className="dc__unset-button-styles dc__no-decor flex"
+            onClick={handleButtonClick}
+            aria-label={`Goto ${kind} ${name}`}
+        >
+            <span className="dc__link dc__truncate">{value}</span>
+        </button>
+    )
+}
 export const renderResourceValue = (value: string) => {
     const isDateValue = moment(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
 

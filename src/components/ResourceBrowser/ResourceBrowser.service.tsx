@@ -72,6 +72,12 @@ export const getNodeList = (
 
 const cacheRepository: Record<string, any> = {}
 
+export const clearCacheRepo = () => {
+    Object.keys(cacheRepository).forEach((key) => {
+        delete cacheRepository[key]
+    })
+}
+
 export const cacheResult = async <T = any,>(name: string, promiseCallback: () => Promise<T>) => {
     if (cacheRepository[name]) {
         return cacheRepository[name] as T
