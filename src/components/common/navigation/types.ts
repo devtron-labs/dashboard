@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+
 import {
     customEnv,
     EnvironmentDataValuesDTO,
@@ -46,4 +48,9 @@ export interface EnvironmentDataStateType extends Omit<EnvironmentDataValuesDTO,
 
 export interface NavigationRoutesTypes {
     reloadVersionConfig: ReloadVersionConfigTypes
+}
+
+export interface SideDocumentationProps {
+    asideWidth: number
+    setAsideWidth: Dispatch<SetStateAction<number>>
 }
