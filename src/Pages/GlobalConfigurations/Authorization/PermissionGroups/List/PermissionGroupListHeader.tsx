@@ -20,7 +20,6 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
-    DOCUMENTATION,
     FeatureTitleWithInfo,
     SearchBar,
     useMainContext,
@@ -47,7 +46,7 @@ const PermissionGroupListHeader = ({
                     renderDescriptionContent={() =>
                         'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'
                     }
-                    docLink={DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
+                    docLink="GLOBAL_CONFIG_GROUPS"
                     showInfoIconTippy
                 />
             </div>

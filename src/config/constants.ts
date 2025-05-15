@@ -327,51 +327,51 @@ export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 export const MomentInvalidDate = 'Invalid date'
 
-export const HEADER_TEXT = {
+export const HEADER_TEXT: Record<string, { title: string; description: string; docLink: keyof typeof DOCUMENTATION }> = {
     API_TOKEN: {
         title: 'API Token',
         description: 'Tokens you have generated that can be used to access the Devtron API.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN,
+        docLink: "GLOBAL_CONFIG_API_TOKEN"
     },
     CHART_REPOSITORY: {
         title: 'Chart Repository',
         description: 'Manage your organization’s chart repositories.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_CHART,
+        docLink: "GLOBAL_CONFIG_CHART"
     },
     HOST_URL: {
         title: 'Host URL',
         description: 'Host URL is the domain address at which your devtron dashboard can be reached.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_HOST_URL,
+        docLink: "GLOBAL_CONFIG_HOST_URL"
     },
     GITOPS: {
         title: 'GitOps',
         description: 'Devtron uses GitOps configuration to store kubernetes configuration files of applications.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_GITOPS,
+        docLink: "GLOBAL_CONFIG_GITOPS"
     },
     GIT_ACCOUNTS: {
         title: 'Git Accounts',
         description: 'Manage your organization’s git accounts.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_GIT,
+        docLink: "GLOBAL_CONFIG_GIT"
     },
     NOTIFICATIONS: {
         title: 'Notifications',
         description: 'Manage notifications for build and deployment pipelines.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION,
+        docLink: "GLOBAL_CONFIG_NOTIFICATION"
     },
     PROJECTS: {
         title: 'Projects',
         description: "Manage your organization's projects.",
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_PROJECT,
+        docLink: "GLOBAL_CONFIG_PROJECT"
     },
     SSO_LOGIN: {
         title: 'SSO Login Service',
         description: 'Configure and manage login service for your organization.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_SSO,
+        docLink: "GLOBAL_CONFIG_SSO"
     },
     SCOPED_VARIABLES: {
         title: 'Scoped Variables',
         description: 'Scoped variables are used to define environment-specific variables.',
-        docLink: DOCUMENTATION.GLOBAL_CONFIG_SCOPED_VARIABLES,
+        docLink: "GLOBAL_CONFIG_SCOPED_VARIABLES"
     },
 }
 

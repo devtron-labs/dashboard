@@ -20,7 +20,6 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
-    DOCUMENTATION,
     FeatureTitleWithInfo,
     SearchBar,
     useMainContext,
@@ -53,7 +52,7 @@ const UserPermissionListHeader = ({
                     renderDescriptionContent={() =>
                         "Manage your organization's users and their permissions. You can assign users to permission groups to provide all underlying permissions."
                     }
-                    docLink={DOCUMENTATION.GLOBAL_CONFIG_USER}
+                    docLink="GLOBAL_CONFIG_USER"
                     showInfoIconTippy
                 />
             </div>

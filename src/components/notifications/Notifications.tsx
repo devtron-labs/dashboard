@@ -35,7 +35,7 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                     <FeatureTitleWithInfo
                         title={HEADER_TEXT.NOTIFICATIONS.title}
                         renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
-                        docLink={DOCUMENTATION.GLOBAL_CONFIG_NOTIFICATION}
+                        docLink="GLOBAL_CONFIG_NOTIFICATION"
                         showInfoIconTippy
                         dataTestId="notifications-feature-title"
                     />

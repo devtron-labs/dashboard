@@ -37,7 +37,6 @@ import {
     ConfirmationModalVariantType,
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
-    DOCUMENTATION,
     ErrorScreenManager,
     FeatureTitleWithInfo,
     InfoBlock,
@@ -834,7 +833,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <FeatureTitleWithInfo
                             title={HEADER_TEXT.SSO_LOGIN.title}
                             renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
-                            docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
+                            docLink="GLOBAL_CONFIG_SSO"
                             showInfoIconTippy
                             dataTestId="sso-login-heading"
                         />
