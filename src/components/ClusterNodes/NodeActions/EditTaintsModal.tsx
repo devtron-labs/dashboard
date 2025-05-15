@@ -43,7 +43,7 @@ import {
     getTaintsRowCellError,
     getTaintsTableCellError,
     getTaintsTableCellValidateState,
-    getTaintsTableEmptyRow,
+    getTaintsTableRow,
     getTaintsTableRows,
     getTaintTableValidateState,
     validateUniqueTaintKey,
@@ -100,7 +100,7 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
     }
 
     const handleAddTaint: TaintsTableType['onRowAdd'] = () => {
-        const updatedTaintList: typeof taintList = [getTaintsTableEmptyRow(), ...taintList]
+        const updatedTaintList: typeof taintList = [getTaintsTableRow(), ...taintList]
         const updatedTaintCellError = taintCellError
         updatedTaintCellError[updatedTaintList[0].id] = getTaintsRowCellError()
 
@@ -165,7 +165,7 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={onClose}>
             <div className="flexbox-col bg__primary h-100 flex-grow-1 mh-0">
                 <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 cn-9">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0 cn-9 dc__truncate">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
                     <Button
                         dataTestId="edit-taints-modal-close"
                         ariaLabel="edit-taints-modal-close"

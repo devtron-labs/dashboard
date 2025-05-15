@@ -25,26 +25,26 @@ import { PATTERNS } from '@Config/constants'
 import { TAINT_OPTIONS, TAINTS_TABLE_HEADERS } from '../constants'
 import { EFFECT_TYPE, TaintsTableHeaderKeys, TaintsTableType, TaintType } from '../types'
 
-export const getTaintsTableEmptyRow = (): TaintsTableType['rows'][number] => ({
-    id: getUniqueId(),
+export const getTaintsTableRow = (taint?: TaintType, id?: number): TaintsTableType['rows'][number] => ({
+    id: id ?? getUniqueId(),
     data: {
         [TaintsTableHeaderKeys.KEY]: {
             type: DynamicDataTableRowDataType.TEXT,
-            value: '',
+            value: taint?.key || '',
             props: {
                 placeholder: 'Enter key',
             },
         },
         [TaintsTableHeaderKeys.VALUE]: {
             type: DynamicDataTableRowDataType.TEXT,
-            value: '',
+            value: taint?.value || '',
             props: {
                 placeholder: 'Enter value',
             },
         },
         [TaintsTableHeaderKeys.EFFECT]: {
             type: DynamicDataTableRowDataType.DROPDOWN,
-            value: EFFECT_TYPE.PreferNoSchedule,
+            value: taint?.effect || EFFECT_TYPE.PreferNoSchedule,
             props: {
                 options: TAINT_OPTIONS,
             },
@@ -53,34 +53,7 @@ export const getTaintsTableEmptyRow = (): TaintsTableType['rows'][number] => ({
 })
 
 export const getTaintsTableRows = (taints: TaintType[]): TaintsTableType['rows'] =>
-    taints?.length
-        ? taints.map(({ key, value, effect }, id) => ({
-              id,
-              data: {
-                  [TaintsTableHeaderKeys.KEY]: {
-                      type: DynamicDataTableRowDataType.TEXT,
-                      value: key,
-                      props: {
-                          placeholder: 'Enter key',
-                      },
-                  },
-                  [TaintsTableHeaderKeys.VALUE]: {
-                      type: DynamicDataTableRowDataType.TEXT,
-                      value,
-                      props: {
-                          placeholder: 'Enter value',
-                      },
-                  },
-                  [TaintsTableHeaderKeys.EFFECT]: {
-                      type: DynamicDataTableRowDataType.DROPDOWN,
-                      value: effect,
-                      props: {
-                          options: TAINT_OPTIONS,
-                      },
-                  },
-              },
-          }))
-        : []
+    taints?.length ? taints.map(getTaintsTableRow) : []
 
 export const getTaintsRowCellError = () =>
     TAINTS_TABLE_HEADERS.reduce(
