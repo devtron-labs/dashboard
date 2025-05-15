@@ -22,7 +22,6 @@ import {
     FiltersTypeEnum,
     K8sResourceDetailType,
     Nodes,
-    noop,
     PaginationEnum,
     ResponseType,
     SelectAllDialogStatus,
@@ -76,6 +75,8 @@ const K8SResourceListViewWrapper = ({
     isNodeListing,
     allColumns,
     setVisibleColumns,
+    updateSearchParams,
+    eventType,
     ...restProps
 }: K8SResourceListViewWrapperProps) => (
     <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
@@ -97,6 +98,8 @@ const K8SResourceListViewWrapper = ({
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
                 areFiltersHidden={false}
+                updateSearchParams={updateSearchParams}
+                eventType={eventType}
             />
         )}
         {children}
@@ -196,24 +199,34 @@ export const K8SResourceList = ({
 
         switch (field) {
             case 'message':
-                return { fixed: 400 }
+                return {
+                    range: {
+                        maxWidth: 800,
+                        minWidth: 180,
+                        startWidth: 400,
+                    },
+                }
             case 'type':
-                return { fixed: 80 }
+                return { fixed: 20 }
             case 'namespace':
             case 'involved object':
             case 'source':
-                return { fixed: 150 }
+                return {
+                    range: {
+                        maxWidth: 600,
+                        minWidth: 80,
+                        startWidth: 140,
+                    },
+                }
             default:
-                return { fixed: 80 }
+                return {
+                    range: {
+                        maxWidth: 300,
+                        minWidth: 80,
+                        startWidth: 80,
+                    },
+                }
         }
-    }
-
-    const getColumnComparator = (field: string) => {
-        if (isEventListing) {
-            return (a: any, b: any) => String(a).localeCompare(String(b))
-        }
-
-        return dynamicSort(field)
     }
 
     const columns: TableColumnType[] = useMemo(
@@ -222,11 +235,11 @@ export const K8SResourceList = ({
                 (header) =>
                     ({
                         field: header,
-                        label: header,
+                        label: header === 'type' && isEventListing ? '' : header,
                         size: getColumnSize(header),
                         CellComponent: K8sResourceListTableCellComponent,
-                        comparator: getColumnComparator(header),
-                        isSortable: true,
+                        comparator: header === 'message' && isEventListing ? null : dynamicSort(header),
+                        isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
                     }) as TableColumnType,
             ) ?? [],
         [resourceList?.headers],
@@ -235,12 +248,12 @@ export const K8SResourceList = ({
     const rows: TableProps['rows'] = useMemo(
         () =>
             resourceList?.data.map(
-                (row, index) =>
+                (row) =>
                     ({
                         data: row,
                         id:
                             selectedResource.gvk.Kind === Nodes.Event
-                                ? index
+                                ? row.id
                                 : `${row.name}-${row.namespace}-${row.status}`,
                     }) as TableProps['rows'][number],
             ) ?? null,
@@ -272,21 +285,37 @@ export const K8SResourceList = ({
         reloadResourceList()
     }
 
+    const tableFilter: TableProps['filter'] = (row, filterData) => {
+        if (isEventListing) {
+            return (
+                (row.data.type as string).toLowerCase() ===
+                (filterData as unknown as K8sResourceListFilterType).eventType
+            )
+        }
+
+        if (isNodeListing) {
+            return isItemASearchMatchForNodeListing(row.data, filterData)
+        }
+
+        return Object.entries(row.data).some(
+            ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+        )
+    }
+
     return (
         <Table
-            loading={resourceListLoader || resourceList === null}
+            key={JSON.stringify(selectedResource)}
+            loading={resourceListLoader || !resourceList}
             columns={columns}
             rows={rows}
-            bulkSelectionConfig={
-                RBBulkSelectionActions
-                    ? {
+            {...(RBBulkSelectionActions && !isEventListing
+                ? {
+                      bulkSelectionConfig: {
                           BulkActionsComponent: renderBulkActions,
                           getSelectAllDialogStatus: () => SelectAllDialogStatus.CLOSED,
-                          // TODO: maybe this is not required
-                          onBulkSelectionChanged: noop,
-                      }
-                    : undefined
-            }
+                      },
+                  }
+                : {})}
             emptyStateConfig={{
                 noRowsConfig: {
                     image: emptyCustomChart,
@@ -300,16 +329,7 @@ export const K8SResourceList = ({
             id="table__gvk-resource-list"
             additionalFilterProps={{ parseSearchParams: parseK8sResourceListSearchParams }}
             ViewWrapper={K8SResourceListViewWrapper}
-            filter={(row, filterData) => {
-                if (isNodeListing) {
-                    return isItemASearchMatchForNodeListing(row.data, filterData)
-                }
-
-                return Object.entries(row.data).some(
-                    ([key, value]) =>
-                        key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-                )
-            }}
+            filter={tableFilter}
             additionalProps={{
                 renderRefreshBar,
                 updateK8sResourceTab,

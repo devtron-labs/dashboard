@@ -15,13 +15,12 @@
  */
 
 import { useState } from 'react'
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { TaintType } from '@Components/ClusterNodes/types'
-import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 
 import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
@@ -35,13 +34,14 @@ import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
 import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
 import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
 import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
-import { K8S_EMPTY_GROUP } from '../Constants'
+import { K8S_EMPTY_GROUP, RESOURCE_BROWSER_ROUTES } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
+import { K8sResourceListURLParams } from './types'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps) => {
     const history = useHistory()
-    const { url } = useRouteMatch()
+    const { clusterId } = useParams<K8sResourceListURLParams>()
     const location = useLocation()
 
     const [showCordonNodeDialog, setShowCordonNodeDialog] = useState(false)
@@ -54,13 +54,11 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
     const handleOpenTerminalAction = () => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', name)
-        history.push(
-            `${location.pathname.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
-        )
+        history.push(`${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`)
     }
 
     const handleEditYamlAction = () => {
-        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
+        const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })}?tab=yaml`
         addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => history.push(_url))
             .catch(noop)

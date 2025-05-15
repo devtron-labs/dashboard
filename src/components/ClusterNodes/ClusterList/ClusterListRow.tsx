@@ -1,7 +1,6 @@
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 
 import {
-    ALL_NAMESPACE_OPTION,
     BulkSelectionIdentifiersType,
     Button,
     ButtonComponentType,
@@ -11,15 +10,18 @@ import {
     ClusterStatusType,
     ComponentSizeType,
     Icon,
+    Nodes,
     Tooltip,
-    URLS,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
-import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
+import {
+    DUMMY_RESOURCE_GVK_VERSION,
+    K8S_EMPTY_GROUP,
+    RESOURCE_BROWSER_ROUTES,
+} from '@Components/ResourceBrowser/Constants'
 
 import { ClusterMapInitialStatus } from '../ClusterMapInitialStatus'
 import { CLUSTER_PROD_TYPE } from '../constants'
@@ -57,8 +59,6 @@ const ClusterListRow = ({
     }
     const isIdentifierSelected = !!bulkSelectionState[clusterData.name]
 
-    // TODO: @Elessar1802 will be replacing all terminal url with new utils
-
     return (
         <div
             key={`cluster-${clusterData.id}`}
@@ -74,7 +74,12 @@ const ClusterListRow = ({
             <div data-testid={`cluster-row-${clusterData.name}`} className="flex left dc__overflow-hidden">
                 <Link
                     className="dc__ellipsis-right dc__no-decor lh-24"
-                    to={`${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`}
+                    to={generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+                        clusterId: clusterData.id,
+                        group: K8S_EMPTY_GROUP,
+                        kind: Nodes.Node.toLowerCase(),
+                        version: DUMMY_RESOURCE_GVK_VERSION,
+                    })}
                 >
                     {clusterData.name}
                 </Link>
@@ -91,7 +96,7 @@ const ClusterListRow = ({
                                 variant={ButtonVariantType.borderLess}
                                 component={ButtonComponentType.link}
                                 linkProps={{
-                                    to: `${URLS.RESOURCE_BROWSER}/${clusterData.id}/${ALL_NAMESPACE_OPTION.value}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+                                    to: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId: clusterData.id }),
                                 }}
                             />
                         )}

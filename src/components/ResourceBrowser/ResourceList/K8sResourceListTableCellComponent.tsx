@@ -8,12 +8,13 @@ import {
     ClipboardButton,
     ConditionalWrap,
     highlightSearchText,
+    Icon,
+    IconName,
     K8sResourceDetailDataType,
     Nodes,
     noop,
     TableSignalEnum,
     Tooltip,
-    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
@@ -24,6 +25,7 @@ import {
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     NODE_LIST_HEADERS_TO_KEY_MAP,
+    RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
 } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
@@ -56,14 +58,29 @@ const K8sResourceListTableCellComponent = ({
     const contextMenuRef = useRef<HTMLButtonElement>(null)
 
     const handleResourceClick = (e) => {
-        const { name, namespace, kind, group: _group } = e.currentTarget.dataset
+        const {
+            name,
+            namespace = ALL_NAMESPACE_OPTION.value,
+            kind,
+            group: _group,
+            tab = RESOURCE_ACTION_MENU.manifest,
+        } = e.currentTarget.dataset
 
-        push(`${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind}/${_group}/v1/${name}`)
+        const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
+            clusterId,
+            namespace,
+            name,
+            kind: kind.toLowerCase(),
+            group: _group ?? K8S_EMPTY_GROUP,
+            version: DUMMY_RESOURCE_GVK_VERSION,
+        })
+
+        push(`${url}/${tab}`)
     }
 
     const handleNodeClick = (e) => {
         const { name } = e.currentTarget.dataset
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/node/${name}`
+        const _url = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
         addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => push(_url))
             .catch(noop)
@@ -142,6 +159,17 @@ const K8sResourceListTableCellComponent = ({
                 kind,
                 version: DUMMY_RESOURCE_GVK_VERSION,
             }),
+        )
+    }
+
+    if (columnName === 'type') {
+        const iconName: IconName =
+            (resourceData.type as string).toLowerCase() === 'normal' ? 'ic-info-filled' : 'ic-warning'
+
+        return (
+            <div className="py-10">
+                <Icon name={iconName} size={20} color="B500" />
+            </div>
         )
     }
 

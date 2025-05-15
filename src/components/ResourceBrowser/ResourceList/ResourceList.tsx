@@ -22,6 +22,7 @@ import {
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    Nodes,
     PageHeader,
     useAsync,
     useBreadcrumb,
@@ -43,7 +44,6 @@ import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import {
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
@@ -58,6 +58,7 @@ import { clearCacheRepo } from '../ResourceBrowser.service'
 import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
 import { getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
+import AdminTerminalDummy from './AdminTerminalDummy'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
@@ -151,6 +152,7 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
+            clearCacheRepo()
         }
     }, [])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
@@ -188,7 +190,7 @@ const ResourceList = () => {
         const redirectUrl = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId: selected.value,
             group: K8S_EMPTY_GROUP,
-            kind: 'node',
+            kind: Nodes.Node.toLowerCase(),
             version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
@@ -258,7 +260,7 @@ const ResourceList = () => {
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
-        if (!terminalTab || terminalTab.name !== AppDetailsTabs.terminal) {
+        if (!terminalTab) {
             return
         }
         updateTabUrl({ id: terminalTab.id, url: `${terminalTab.url.split('?')[0]}?${queryParams}` })
@@ -278,6 +280,20 @@ const ResourceList = () => {
                     <CompareClusterButton sourceClusterId={clusterId} />
                 )}
                 {renderCreateResourceButton(clusterId, closeResourceModal)()}
+            </div>
+        )
+    }
+
+    const renderTerminal = () => {
+        const tab = getTabById(ResourceBrowserTabsId.terminal)
+
+        if (!tab?.isAlive) {
+            return null
+        }
+
+        return (
+            <div className={!tab?.isSelected ? 'cluster-terminal-hidden' : 'flexbox-col flex-grow-1'}>
+                <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
             </div>
         )
     }
@@ -321,7 +337,12 @@ const ResourceList = () => {
                     <MonitoringDashboard />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
-                    <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
+                    <AdminTerminalDummy
+                        markTabActiveById={markTabActiveById}
+                        clusterName={selectedCluster.label}
+                        getTabById={getTabById}
+                        updateTabUrl={updateTabUrl}
+                    />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE} exact>
                     <ClusterUpgradeCompatibilityInfo
@@ -334,6 +355,9 @@ const ResourceList = () => {
                             ),
                         )}
                         addTab={addTab}
+                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                        getTabId={getTabId}
+                        markTabActiveById={markTabActiveById}
                     />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL} exact>
@@ -375,6 +399,8 @@ const ResourceList = () => {
                         key={getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString()}
                     />
                 </Route>
+
+                {renderTerminal()}
             </>
         )
     }

@@ -18,6 +18,7 @@ import React, { RefObject } from 'react'
 
 import {
     ApiResourceGroupType,
+    FiltersTypeEnum,
     GVKType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
@@ -32,6 +33,7 @@ import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import { ClusterListType } from '../ClusterNodes/types'
 import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
+import { K8sResourceListFilterType } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -83,7 +85,10 @@ export interface ClusterOptionType extends OptionType {
     isProd: boolean
 }
 
-export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {
+export interface ResourceFilterOptionsProps
+    extends Pick<SidebarType, 'updateK8sResourceTab'>,
+        Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams'>,
+        Pick<K8sResourceListFilterType, 'eventType'> {
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
@@ -104,7 +109,8 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
     searchPlaceholder?: string
 }
 
-export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
+export interface K8SResourceListType
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType'> {
     addTab: UseTabsReturnType['addTab']
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string

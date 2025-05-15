@@ -15,6 +15,7 @@
  */
 
 import {
+    FiltersTypeEnum,
     RBBulkOperationType,
     TableCellComponentProps,
     TableViewWrapperProps,
@@ -28,8 +29,9 @@ import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS } from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<UseTabsReturnType, 'addTab'>,
-        Pick<ClusterListType, 'updateTabUrl'> {
+    extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId'>,
+        Pick<ClusterListType, 'updateTabUrl'>,
+        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     clusterName: string
 }
 
@@ -66,20 +68,24 @@ export interface K8sResourceListFilterType
     extends Record<(typeof NODE_SEARCH_KEYS)[keyof typeof NODE_SEARCH_KEYS], string> {
     selectedNamespace?: string
     [NODE_K8S_VERSION_FILTER_KEY]?: string
+    eventType: 'warning' | 'normal'
 }
 
 export interface K8SResourceListViewWrapperProps
-    extends TableViewWrapperProps,
-        Pick<
-            K8SResourceListType,
-            'selectedCluster' | 'selectedResource' | 'updateK8sResourceTab' | 'renderRefreshBar'
-        > {
+    extends TableViewWrapperProps<FiltersTypeEnum.URL>,
+        Pick<K8SResourceListType, 'selectedCluster' | 'selectedResource' | 'updateK8sResourceTab' | 'renderRefreshBar'>,
+        Pick<K8sResourceListFilterType, 'eventType'> {
     selectedNamespace: string
 }
 
 export interface K8sResourceListTableCellComponentProps
-    extends TableCellComponentProps,
+    extends TableCellComponentProps<FiltersTypeEnum.URL>,
         Pick<
             K8SResourceListType,
             'selectedCluster' | 'selectedResource' | 'addTab' | 'lowercaseKindToResourceGroupMap'
         > {}
+
+export interface AdminTerminalDummyProps
+    extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
+    clusterName: string
+}
