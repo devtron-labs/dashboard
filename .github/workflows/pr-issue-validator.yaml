@@ -12,7 +12,7 @@ on:
       - 'release-**'
       - 'develop'
       - 'hotfix-**'
-  
+
 jobs:
   pr-validation:
     uses: devtron-labs/utilities/.github/workflows/pr-validator.yaml@feat/central-pr-validator
