@@ -15,7 +15,7 @@
  */
 
 import { useContext, useEffect, useState } from 'react'
-import { CIBuildConfigType, CIBuildType, KeyValueTableProps, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { CIBuildConfigType, CIBuildType, KeyValueTableProps, noop, OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import CIConfig from '../ciConfig/CIConfig'
 import DockerArgs from './DockerArgs'
 import CustomImageTags from './CustomImageTags'
@@ -23,7 +23,6 @@ import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
 import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
-import { OptionType } from '../app/types'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'

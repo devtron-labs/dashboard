@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, post, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { get, getUrlWithSearchParams, post, refresh, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
@@ -30,7 +30,6 @@ import {
     ReleaseNotesResponse,
     ServerInfoResponse,
 } from './DevtronStackManager.type'
-import { reloadLocation } from '../../common'
 import { INSTALLATION_TYPE_TO_REPO_MAP } from './DevtronStackManager.utils'
 
 let moduleStatusMap: Record<string, ModuleInfo> = {}
@@ -112,7 +111,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
                 buttonProps: {
                     text: 'Reload',
                     dataTestId: 'reload-button',
-                    onClick: reloadLocation,
+                    onClick: refresh,
                     startIcon: <ICArrowClockwise />,
                 },
                 icon: <ICSparkles />,

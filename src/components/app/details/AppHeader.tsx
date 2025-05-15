@@ -253,13 +253,5 @@ export const AppHeader = ({
         </>
     )
 
-    return (
-        <PageHeader
-            breadCrumbs={renderBreadcrumbs}
-            isBreadcrumbs
-            showTabs
-            renderHeaderTabs={renderAppDetailsTabs}
-            showAnnouncementHeader
-        />
-    )
+    return <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs showTabs renderHeaderTabs={renderAppDetailsTabs} />
 }

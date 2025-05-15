@@ -64,7 +64,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         triggerId: string
         pipelineId: string
     }>()
-    const { currentAppName } = useAppContext()
+    const { currentAppName, environmentId, setEnvironmentId } = useAppContext()
     const [pagination, setPagination] = useState<{ offset: number; size: number }>({ offset: 0, size: 20 })
     const [hasMore, setHasMore] = useState<boolean>(false)
     const [hasMoreLoading, setHasMoreLoading] = useState<boolean>(false)
@@ -161,8 +161,12 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
 
     //Result Typing to be fixed here
     useEffect(() => {
+        if (!envId && environmentId) {
+            replace(generatePath(path, { envId: environmentId, appId }))
+            return
+        }
         if (result) {
-            if (result[1]) {
+            if (result[1] && pipelineId) {
                 setDeploymentAppType(
                     result[1]['value']?.pipelines?.find((pipeline) => pipeline.id === Number(pipelineId))
                         ?.deploymentAppType,
@@ -179,6 +183,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                     })
                 setSelectedEnv(_selectedEnvironment)
             }
+            setEnvironmentId(+envId)
         }
 
         return () => {
@@ -187,7 +192,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             setHasMore(false)
             setFetchTriggerIdData(null)
         }
-    }, [envId])
+    }, [envId, result, pipelineId])
 
     useEffect(() => {
         if (result) {
@@ -196,6 +201,7 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 (pipeline) => pipeline.id === Number(pipelineId),
             )?.deploymentAppType
             const cdPipelinesMap = mapByKey(pipelines, 'environmentId')
+
             let _selectedEnvironment
             let isEnvDeleted = false
             const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
@@ -222,9 +228,11 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
                 (envOptions.length === 1 && !envId && !isEnvDeleted) ||
                 (envId && envOptions.length && !_selectedEnvironment)
             ) {
+                setEnvironmentId(+envOptions[0].value)
                 replace(generatePath(path, { appId, envId: envOptions[0].value, pipelineId: envOptions[0].pipelineId }))
             } else if (envId && !pipelineId && _selectedEnvironment) {
                 // Update the pipeline id when the selected environment is available and pipeline id is not available
+                setEnvironmentId(_selectedEnvironment.environmentId)
                 replace(
                     generatePath(path, {
                         appId,
