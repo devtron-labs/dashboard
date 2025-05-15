@@ -356,7 +356,13 @@ export default function CDPipeline({
                 })
                 sortObjectArrayAlphabetically(list, 'name')
                 form.environments = list
-                setFormData(form)
+                setFormData((prevState) => {
+                    return {
+                        ...form,
+                        // Can retain the release mode since this method is called only when creating a new pipeline
+                        releaseMode: prevState.releaseMode,
+                    }
+                })
                 setPageState(ViewType.FORM)
                 setIsAdvanced(false)
             })
@@ -827,6 +833,9 @@ export default function CDPipeline({
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
+    /**
+     * @description This method is called only in case when we render basic view, i.e, CD creation first modal
+     */
     const handleStrategy = (value: string): void => {
         let newSelection
         newSelection = {}
@@ -838,10 +847,10 @@ export default function CDPipeline({
         newSelection['jsonStr'] = JSON.stringify(allStrategies.current[value], null, 4)
         newSelection['yamlStr'] = YAMLStringify(allStrategies.current[value])
 
-        const _form = { ...formData }
-        _form.savedStrategies.push(newSelection)
-        _form.savedStrategies = [newSelection]
-        setFormData(_form)
+        setFormData((prevState) => ({
+            ...prevState,
+            savedStrategies: [newSelection],
+        }))
     }
 
     const handleValidateMandatoryPlugins: PipelineContext['handleValidateMandatoryPlugins'] = ({
@@ -1411,7 +1420,7 @@ export default function CDPipeline({
                     </button>
                 </div>
 
-                {!isAdvanced && (
+                {!isAdvanced && !isTemplateView && (
                     <div className="px-20">
                         <TabGroup
                             tabs={[
@@ -1425,18 +1434,16 @@ export default function CDPipeline({
                                         'data-testid': 'new-deployment-tab',
                                     },
                                 },
-                                ...(isTemplateView
-                                    ? []
-                                    : [{
-                                          tabType: 'button' as const,
-                                          active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
-                                          label: 'Migrate to Devtron',
-                                          id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
-                                          props: {
-                                              onClick: handleSelectMigrateToDevtron,
-                                              'data-testid': 'migrate-to-devtron-tab',
-                                          },
-                                      }]),
+                                {
+                                    tabType: 'button' as const,
+                                    active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                    label: 'Migrate to Devtron',
+                                    id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
+                                    props: {
+                                        onClick: handleSelectMigrateToDevtron,
+                                        'data-testid': 'migrate-to-devtron-tab',
+                                    },
+                                },
                             ]}
                         />
                     </div>
