@@ -52,7 +52,6 @@ import {
     ImageWithFallback,
     InfoBlock,
     DocLink,
-    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'

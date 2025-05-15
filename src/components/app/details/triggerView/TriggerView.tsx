@@ -36,7 +36,6 @@ import {
     getEnvironmentListMinPublic,
     CIPipelineNodeType,
     DocLink,
-    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'

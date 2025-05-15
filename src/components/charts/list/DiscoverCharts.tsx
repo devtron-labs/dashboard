@@ -20,7 +20,6 @@ import {
     Progressing,
     ConditionalWrap,
     DevtronProgressing,
-    DOCUMENTATION,
     PageHeader,
     useMainContext,
     DetectBottom,

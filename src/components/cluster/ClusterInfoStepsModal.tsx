@@ -16,7 +16,7 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
-import { DOCUMENTATION,copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
 import 'tippy.js/themes/light.css'
 import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
 import './cluster.scss'
