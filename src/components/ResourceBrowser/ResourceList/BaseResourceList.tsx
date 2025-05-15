@@ -554,14 +554,16 @@ const BaseResourceListContent = ({
                                         }}
                                     />
                                 </Tooltip>
-                                {columnName === 'environment' && !resourceData.environment && (
-                                    <Button
-                                        text="Add environment"
-                                        dataTestId="add-environment"
-                                        variant={ButtonVariantType.text}
-                                        onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
-                                    />
-                                )}
+                                {selectedResource?.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase() &&
+                                    columnName === 'environment' &&
+                                    !resourceData.environment && (
+                                        <Button
+                                            text="Add environment"
+                                            dataTestId="add-environment"
+                                            variant={ButtonVariantType.text}
+                                            onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                                        />
+                                    )}
                                 {columnName === 'status' && isNodeUnschedulable && (
                                     <>
                                         <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />

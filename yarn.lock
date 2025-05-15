@@ -1128,8 +1128,8 @@
 
 "@devtron-labs/devtron-fe-common-lib@1.13.0-pre-4":
   version "1.13.0-pre-4"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.13.0-pre-4.tgz#76827523822dc93046eb7dc7b4a500d5892da09b"
-  integrity sha512-MnvUU7TxzDxJoWyOcaDU7eRMSgpd0niFpNTVYlEiPex69lA3gWlCuEN/MDDObeQ75p4Fgkn7kR6lMDCuFpLZsg==
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.13.0-pre-4.tgz#333a71f75905a38f4706b698b93089cc08680fa7"
+  integrity sha512-DVODh1yAI6KxiANtPW1t6AUyIiKA+PMniMfb/LB2XtBUlEGkAgKWzpbPWdIw0m1Wn+iFwzmUOL2KDQ9I4FYt9g==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"

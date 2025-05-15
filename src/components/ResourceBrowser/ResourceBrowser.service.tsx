@@ -78,13 +78,20 @@ export const getResourceData = async ({
             return parseNodeList(response)
         }
 
-        const response = await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
-            abortControllerRef.current.signal,
-        )
+        const isNamespaceList = selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()
 
-        if (selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()) {
-            const { result } = await getNamespaceListMin(clusterId, abortControllerRef)
+        const [k8sResponse, namespaceListResponse] = await Promise.allSettled([
+            getK8sResourceList(
+                getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
+                abortControllerRef.current.signal,
+            ),
+            isNamespaceList ? getNamespaceListMin(clusterId, abortControllerRef) : null,
+        ])
+
+        const response = k8sResponse.status === 'fulfilled' ? k8sResponse.value : null
+
+        if (isNamespaceList && namespaceListResponse?.status === 'fulfilled') {
+            const { result } = namespaceListResponse.value
             const [{ environments }] = result
 
             const namespaceToEnvironmentMap = environments.reduce(
