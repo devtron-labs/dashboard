@@ -46,7 +46,7 @@ export const ConditionContainer = ({ type }: { type: ConditionContainerType }) =
         const { isConditionDetailsValid, conditionDetails: conditionDetailsError } =
             formDataErrorObj[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
 
-        if (!isConditionDetailsValid) {
+        if (!isConditionDetailsValid && conditionDetailsError) {
             const { conditionDetails } = formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
 
             const invalidConditionDetailsIds = Object.keys(conditionDetailsError).reduce((acc, key) => {

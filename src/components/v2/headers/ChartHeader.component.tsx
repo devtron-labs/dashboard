@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import ReactGA from 'react-ga4'
 import { Link, useRouteMatch } from 'react-router-dom'
 import { AppListConstants, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
@@ -114,7 +113,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
             )
         }
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     return (
@@ -124,7 +123,6 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
-                showAnnouncementHeader
             />
         </div>
     )

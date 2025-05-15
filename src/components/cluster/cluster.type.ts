@@ -17,10 +17,9 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE_TYPE } from '../../config'
-import { OptionType } from '../app/types'
 
 export const POLLING_INTERVAL = 30000
 

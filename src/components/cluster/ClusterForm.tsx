@@ -991,20 +991,13 @@ const ClusterForm = ({
     }
 
     const codeEditor = () => (
-        <CodeEditor.Container flexExpand overflowHidden>
+        <CodeEditor.Container flexExpand>
             <CodeEditor
                 diffView={false}
                 mode={MODES.YAML}
-                codeEditorProps={{
-                    value: saveYamlData,
-                    onChange: onChangeEditorValue,
-                    height: '0',
-                }}
-                codeMirrorProps={{
-                    value: saveYamlData,
-                    onChange: onChangeEditorValue,
-                    height: 'fitToParent',
-                }}
+                value={saveYamlData}
+                onChange={onChangeEditorValue}
+                height="fitToParent"
             >
                 <CodeEditor.Header>
                     <div className="user-list__subtitle flex fs-13 lh-20 w-100">

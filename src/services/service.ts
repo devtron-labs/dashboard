@@ -54,7 +54,11 @@ import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
 
-export function getAppConfigStatus(appId: number, isJobView: boolean, isTemplateView: AppConfigProps['isTemplateView']): Promise<any> {
+export function getAppConfigStatus(
+    appId: number,
+    isJobView: boolean,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<any> {
     const queryParams = {
         'app-id': appId,
         appType: isJobView ? '2' : undefined,
@@ -93,13 +97,16 @@ export function getConfigOverrideWorkflowDetails(appId: string): Promise<ConfigO
     return get(`${Routes.CI_CONFIG_OVERRIDE_GET}/${appId}`)
 }
 
-export function getCDConfig(appId: number | string, isTemplateView: AppConfigProps['isTemplateView']): Promise<CDPipelines> {
+export function getCDConfig(
+    appId: number | string,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<CDPipelines> {
     const URL = isTemplateView
         ? getTemplateAPIRoute({
-            type: GetTemplateAPIRouteType.CD_PIPELINE_LIST,
-            queryParams: {
-                id: appId,
-            }
+              type: GetTemplateAPIRouteType.CD_PIPELINE_LIST,
+              queryParams: {
+                  id: appId,
+              },
           })
         : `${Routes.CD_CONFIG}/${appId}`
     return get(URL).then((response) => response.result)
@@ -304,13 +311,15 @@ export function getJobCIPipeline(jobId) {
 }
 
 export function getEnvironmentConfigs(appId, envId, isTemplateView: AppConfigProps['isTemplateView']) {
-    const url = isTemplateView ? getTemplateAPIRoute({
-        type: GetTemplateAPIRouteType.CONFIG_CM,
-        queryParams: {
-            id: appId,
-            envId,
-        }
-    }) : `${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.CONFIG_CM,
+              queryParams: {
+                  id: appId,
+                  envId,
+              },
+          })
+        : `${Routes.APP_CREATE_ENV_CONFIG_MAP}/${appId}/${envId}`
 
     return get(url)
 }
@@ -410,7 +419,11 @@ export function isGitOpsModuleInstalledAndConfigured(): Promise<ResponseType> {
         })
 }
 
-export function getChartReferencesForAppAndEnv(appId: number, envId: number | null, isTemplateView: AppConfigProps['isTemplateView']): Promise<ResponseType<MinChartRefDTO>> {
+export function getChartReferencesForAppAndEnv(
+    appId: number,
+    envId: number | null,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<ResponseType<MinChartRefDTO>> {
     const url = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.CHART_REF,
@@ -423,7 +436,11 @@ export function getChartReferencesForAppAndEnv(appId: number, envId: number | nu
     return get(url)
 }
 
-export function getAppChartRefForAppAndEnv(appId: number, envId: number  | null, isTemplateView: AppConfigProps['isTemplateView']): Promise<ResponseType> {
+export function getAppChartRefForAppAndEnv(
+    appId: number,
+    envId: number | null,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<ResponseType> {
     return getChartReferencesForAppAndEnv(appId, envId, isTemplateView).then((response) => {
         const {
             result: { chartRefs, latestEnvChartRef, latestAppChartRef },
@@ -520,6 +537,11 @@ export const validateContainerConfiguration = (request: any): Promise<any> => {
     return post(URL, request)
 }
 
-export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> => (
+export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> =>
     get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
-)
+
+export const getInternetConnectivity = (controller: AbortController): Promise<any> => {
+    return fetch(`${window._env_?.CENTRAL_API_ENDPOINT ?? 'https://api.devtron.ai'}/${Routes.HEALTH}`, {
+        signal: controller.signal,
+    }).then((res) => res.json())
+}

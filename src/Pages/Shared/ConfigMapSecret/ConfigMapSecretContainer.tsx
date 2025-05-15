@@ -1193,7 +1193,10 @@ export const ConfigMapSecretContainer = ({
                         areCommentsPresent={areCommentsPresent}
                         disableAllActions={isLoading || isSubmitting || !!parsingError}
                         isDraftPresent={isDraftAvailable}
-                        isPublishedConfigPresent={cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED}
+                        isPublishedConfigPresent={
+                            cmSecretStateLabel !== CM_SECRET_STATE.UNPUBLISHED &&
+                            cmSecretStateLabel !== CM_SECRET_STATE.INHERITED
+                        }
                         isApprovalPending={draftData?.draftState === DraftState.AwaitApproval}
                         isUnpublished={cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED}
                         showDeleteOverrideDraftEmptyState={

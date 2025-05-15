@@ -24,7 +24,7 @@ import {
     OPTIONAL_NODE_LIST_HEADERS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { ClusterOptionType, K8SResourceListType } from '../Types'
+import { ClusterOptionType, K8SResourceListType, ShowAIButtonConfig } from '../Types'
 import { ResourceListUrlFiltersType } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
@@ -104,3 +104,13 @@ export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionTy
                   isClusterInCreationPhase: !!installationId && !id,
               }))
         : []
+
+export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: string, value: string) => {
+    if (!aiButtonConfig || columnName !== aiButtonConfig.column) {
+        return false
+    }
+    if (aiButtonConfig.includeValues) {
+        return aiButtonConfig.includeValues.has(value)
+    }
+    return !aiButtonConfig.excludeValues.has(value)
+}

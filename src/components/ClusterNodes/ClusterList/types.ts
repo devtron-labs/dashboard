@@ -1,3 +1,5 @@
+import { MutableRefObject } from 'react'
+
 import { ClusterDetail } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterViewType {
@@ -5,6 +7,7 @@ export interface ClusterViewType {
     clusterListLoader: boolean
     initialLoading: boolean
     refreshData: () => void
+    parentRef: MutableRefObject<HTMLDivElement>
 }
 
 export interface ClusterListTypes {

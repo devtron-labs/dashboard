@@ -26,6 +26,7 @@ const AuthorizationContext = createContext<AuthorizationContextProps>({
         possibleRolesMetaForCluster: {},
     },
     isAutoAssignFlowEnabled: false,
+    authorizationContainerRef: { current: null },
 })
 
 export const AuthorizationProvider = ({ children, value }: AuthorizationProviderProps) => (

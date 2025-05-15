@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import {
     showError,
@@ -22,6 +22,8 @@ import {
     ErrorScreenManager,
     ServerErrors,
     DeploymentAppTypes,
+    getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
@@ -49,6 +51,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     })
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
 
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     let initTimer = null
     let isAPICallInProgress = false
 
@@ -56,6 +60,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     useEffect(() => {
         _init()
         return (): void => {
+            abortControllerRef.current.abort()
+
             if (initTimer) {
                 clearTimeout(initTimer)
             }
@@ -74,11 +80,8 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
     const _init = () => {
         if (!isAPICallInProgress) {
-            _getAndSetAppDetail()
+            _getAndSetAppDetail(true)
         }
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
     const _convertToGenericAppDetailModel = (
@@ -117,10 +120,11 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         return genericAppDetail
     }
 
-    const _getAndSetAppDetail = () => {
+    const _getAndSetAppDetail = (shouldTriggerPolling: boolean = false) => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getAppDetail(appId)
+
+        abortPreviousRequests(() => getAppDetail(appId, abortControllerRef), abortControllerRef)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(
                     _convertToGenericAppDetailModel(appDetailResponse.result),
@@ -159,13 +163,22 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                 setErrorResponseCode(undefined)
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                }
+
                 setIsLoading(false)
                 isAPICallInProgress = false
             })
             .finally(() => {
                 setIsReloadResourceTreeInProgress(false)
+
+                if (shouldTriggerPolling) {
+                    initTimer = setTimeout(() => {
+                        _init()
+                    }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+                }
             })
     }
 

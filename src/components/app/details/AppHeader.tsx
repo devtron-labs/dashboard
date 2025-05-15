@@ -240,7 +240,7 @@ export const AppHeader = ({
             },
         ]
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     const renderBreadcrumbs = () => (
@@ -253,13 +253,5 @@ export const AppHeader = ({
         </>
     )
 
-    return (
-        <PageHeader
-            breadCrumbs={renderBreadcrumbs}
-            isBreadcrumbs
-            showTabs
-            renderHeaderTabs={renderAppDetailsTabs}
-            showAnnouncementHeader
-        />
-    )
+    return <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs showTabs renderHeaderTabs={renderAppDetailsTabs} />
 }

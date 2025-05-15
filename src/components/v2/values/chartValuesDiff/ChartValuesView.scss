@@ -15,10 +15,6 @@
  */
 
 .chart-values-view__container {
-  & .react-monaco-editor-container {
-    flex-grow: 1;
-  }
-
   &.readmeOpened {
     .chart-values-view__wrapper {
       grid-template-columns: 50% 50%;

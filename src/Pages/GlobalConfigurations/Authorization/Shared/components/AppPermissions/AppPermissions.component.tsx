@@ -996,7 +996,6 @@ const AppPermissions = () => {
                               }
                             : [],
                     )}
-                    alignActiveBorderWithContainer
                 />
             </div>
             <div>

@@ -25,6 +25,7 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -69,10 +70,15 @@ const SelectMergeStrategy = ({
 
         return (
             <>
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label className={`m-0 ${MERGE_STRATEGY_LABEL_CLASS}`} htmlFor="config-toolbar-select-strategy">
-                    Merge strategy
-                </label>
+                <Tooltip content="Merge strategy">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label
+                        className={`m-0 dc__ellipsis-right ${MERGE_STRATEGY_LABEL_CLASS}`}
+                        htmlFor="config-toolbar-select-strategy"
+                    >
+                        Merge strategy
+                    </label>
+                </Tooltip>
 
                 <SelectPicker
                     inputId="config-toolbar-select-strategy"

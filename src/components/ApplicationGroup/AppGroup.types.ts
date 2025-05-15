@@ -29,9 +29,10 @@ import {
     CommonNodeAttr,
     ApprovalConfigDataType,
     RuntimePluginVariables,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
-import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
+import { EditDescRequest, NodeType, Nodes } from '../app/types'
 import { MultiValue } from 'react-select'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
@@ -93,17 +94,29 @@ export interface BulkCDDetailType
     ciPipelineId?: number
     hideImageTaggingHardDelete?: boolean
     resourceFilters?: FilterConditionsListType[]
+    isExceptionUser?: boolean
 }
 
-export interface ResponseRowType {
+export type TriggerVirtualEnvResponseRowType =
+    | {
+          isVirtual: true
+          helmPackageName: string
+          cdWorkflowType: DeploymentNodeType
+      }
+    | {
+          isVirtual?: never
+          helmPackageName?: never
+          cdWorkflowType?: DeploymentNodeType
+      }
+
+export type ResponseRowType = {
     appId: number
     appName: string
     status: BulkResponseStatus
     statusText: string
     message: string
-    isVirtual?: boolean
     envId?: number
-}
+} & TriggerVirtualEnvResponseRowType
 
 interface BulkRuntimeParamsType {
     runtimeParams: Record<string, RuntimePluginVariables[]>
@@ -182,7 +195,6 @@ export interface TriggerResponseModalBodyProps {
     responseList: ResponseRowType[]
     isLoading: boolean
     isVirtualEnv?: boolean
-    envName?: string
 }
 
 type RetryFailedType =
@@ -205,7 +217,6 @@ export interface TriggerModalRowType {
     rowData: ResponseRowType
     index: number
     isVirtualEnv?: boolean
-    envName?: string
 }
 
 export interface WorkflowNodeSelectionType {

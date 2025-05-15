@@ -1307,7 +1307,6 @@ export default function CDPipeline({
                                 getNavLink(`post-build`, BuildStageVariable.PostBuild),
                             ]}
                             hideTopPadding
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}
@@ -1439,7 +1438,6 @@ export default function CDPipeline({
                                           },
                                       }]),
                             ]}
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}
