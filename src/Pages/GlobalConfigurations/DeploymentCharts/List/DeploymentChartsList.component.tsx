@@ -20,7 +20,6 @@ import DOMPurify from 'dompurify'
 import {
     APIResponseHandler,
     DocLink,
-    DOCUMENTATION,
     EMPTY_STATE_STATUS,
     GenericEmptyState,
     GenericFilterEmptyState,
@@ -89,10 +88,7 @@ const DeploymentChartsList = () => {
                     subTitle={
                         <>
                             Import custom charts to use them in apps instead of the default system template. &nbsp;
-                            <DocLink
-                                docLink={DOCUMENTATION.DEPLOYMENT_TEMPLATE}
-                                dataTestId="deployment-charts-list-learn-more"
-                            />
+                            <DocLink docLinkKey="DEPLOYMENT_TEMPLATE" dataTestId="deployment-charts-list-learn-more" />
                         </>
                     }
                     isButtonAvailable

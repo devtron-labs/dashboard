@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DOCUMENTATION, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO = 'BaseDeploymentTemplate' as const
 
@@ -22,9 +22,9 @@ export const CHART_TYPE_TAB_KEYS = { DEVTRON_CHART: 'devtronChart', CUSTOM_CHART
 export const CHART_TYPE_TAB = { devtronChart: 'Charts by Devtron', customCharts: 'Custom charts' }
 
 export const CHART_DOCUMENTATION_LINK = {
-    'Job & CronJob': DOCUMENTATION.JOB_CRONJOB,
-    'Rollout Deployment': DOCUMENTATION.ROLLOUT,
-    Deployment: DOCUMENTATION.DEPLOYMENT,
+    'Job & CronJob': 'JOB_CRONJOB',
+    'Rollout Deployment': 'ROLLOUT',
+    Deployment: 'DEPLOYMENT',
 }
 
 export const GUI_VIEW_TEXTS = {

@@ -42,8 +42,7 @@ import {
     uploadCIPipelineFile,
     UploadFileProps,
     savePipeline,
-    DOCUMENTATION,
-    getDocumentationUrl
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -784,7 +783,7 @@ const BulkCITrigger = ({
                                 <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
                                 <a
                                     className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                    href={getDocumentationUrl(DOCUMENTATION.BLOB_STORAGE)}
+                                    href={getDocumentationUrl({ docLinkKey: 'BLOB_STORAGE' })}
                                     target="_blank"
                                     rel="noreferrer"
                                 >

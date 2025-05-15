@@ -18,7 +18,6 @@ import React, { Fragment, useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
-    DOCUMENTATION,
     Drawer,
     InfoColourBar,
     Reload,
@@ -475,8 +474,8 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         if (!isSuperAdmin) {
             return (
                 <DocLink
-                    docLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
-                    docLinkText="How to generate API tokens?"
+                    docLinkKey="GLOBAL_CONFIG_API_TOKEN"
+                    text="How to generate API tokens?"
                     dataTestId="learn-more-about-generating-api-tokens"
                 />
               

@@ -18,7 +18,6 @@ import { ReactElement, useState } from 'react'
 import {
     WorkflowNodeType,
     ConditionalWrap,
-    DOCUMENTATION,
     TARGET_IDS,
     TippyTheme,
     TippyCustomized,
@@ -94,7 +93,7 @@ export const WebhookNode = ({
                 onClose={toggleIsWebhookTippyOpen}
                 interactive
                 appendTo={document.getElementById(TARGET_IDS.WORKFLOW_EDITOR_CONTAINER)}
-                documentationLink={getDocumentationUrl(DOCUMENTATION.CONFIGURING_WEBHOOK)}
+                documentationLink={getDocumentationUrl({ docLinkKey: 'CONFIGURING_WEBHOOK' })}
                 documentationLinkText="Documentation"
                 visible={isWebhookTippyOpen}
             >

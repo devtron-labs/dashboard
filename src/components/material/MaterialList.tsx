@@ -17,7 +17,6 @@
 import { Component } from 'react'
 import {
     showError,
-    DOCUMENTATION,
     Progressing,
     ErrorScreenManager,
     sortCallback,
@@ -166,7 +165,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 <p className="form__subtitle form__subtitle--artifacts">
                     Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
                     <DocLink
-                        docLink={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
+                        docLinkKey={this.props.isJobView ? "JOB_SOURCE_CODE" : "GLOBAL_CONFIG_GIT"}
                         dataTestId="learn-more-about-git-repositories-link"
                     />
                 </p>

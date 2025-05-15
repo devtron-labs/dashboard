@@ -25,7 +25,6 @@ import {
     Button,
     DeploymentAppTypes,
     DocLink,
-    DOCUMENTATION,
     GenericEmptyState,
     getAppsInfoForEnv,
     getIsRequestAborted,
@@ -160,11 +159,7 @@ export const AppNotConfigured = ({
                 subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <DocLink
-                            docLinkText={APP_DETAILS.NEED_HELP}
-                            docLink={DOCUMENTATION.APP_CREATE}
-                            dataTestId="app-details-empty"
-                        />
+                        <DocLink text={APP_DETAILS.NEED_HELP} docLinkKey="APP_CREATE" dataTestId="app-details-empty" />
                     </>
                 )
             }

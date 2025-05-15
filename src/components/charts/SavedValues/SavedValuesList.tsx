@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom'
 import {
     showError,
     Progressing,
-    DOCUMENTATION,
     ErrorScreenManager,
     BreadCrumb,
     useBreadcrumb,
@@ -174,7 +173,7 @@ export default function SavedValuesList() {
             <>
                 <p className="fs-13 fw-4">
                     {subtitleText}&nbsp;
-                    <DocLink docLink={DOCUMENTATION.CUSTOM_VALUES} dataTestId="preset-values-learn-more-link" />
+                    <DocLink docLinkKey="CUSTOM_VALUES" dataTestId="preset-values-learn-more-link" />
                 </p>
                 <div className="flexbox dc__content-space">
                     {renderUploadButton()}

@@ -20,7 +20,6 @@ import {
     CMSecretComponentType,
     CMSecretExternalType,
     DocLink,
-    DOCUMENTATION,
     Icon,
     InfoBlock,
     InfoColourBar,
@@ -44,7 +43,7 @@ export const renderESOInfo = (isESO: boolean) =>
                         External Secrets Operator
                     </Link>
                     &nbsp;<span>should be installed in the target cluster.</span>&nbsp;
-                    <DocLink docLink={DOCUMENTATION.EXTERNAL_SECRET} dataTestId="learn-more-about-external-secrets" />
+                    <DocLink docLinkKey="EXTERNAL_SECRET" dataTestId="learn-more-about-external-secrets" />
                 </p>
             }
         />
@@ -76,8 +75,8 @@ export const renderChartVersionBelow3090NotSupportedText = () => (
         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
         <span className="cn-7">Learn more about</span>&nbsp;
         <DocLink
-            docLink={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-            docLinkText="Deployment Template &gt; Chart Version"
+            docLinkKey="APP_ROLLOUT_DEPLOYMENT_TEMPLATE"
+            text="Deployment Template &gt; Chart Version"
             dataTestId="chart-version-learn-more"
         />
     </span>

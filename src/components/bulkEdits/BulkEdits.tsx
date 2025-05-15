@@ -19,7 +19,6 @@ import yamlJsParser from 'yaml'
 import {
     showError,
     Progressing,
-    DOCUMENTATION,
     ErrorScreenManager,
     PageHeader,
     CodeEditor,
@@ -33,7 +32,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     MODES,
-    getDocumentationUrl
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE, ViewType } from '../../config'
 import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
@@ -527,7 +526,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     tippyProps={{
                         isTippyCustomized: true,
                         tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
-                        tippyRedirectLink: getDocumentationUrl(DOCUMENTATION.BULK_UPDATE),
+                        tippyRedirectLink: getDocumentationUrl({ docLinkKey: 'BULK_UPDATE' }),
                     }}
                 />
                 {this.renderBulkEditBody()}

@@ -76,7 +76,7 @@ export default ClusterSelector
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {
         text: ERROR_SCREEN_SUBTITLE,
-        link: getDocumentationUrl(DOCUMENTATION.K8S_RESOURCES_PERMISSIONS),
+        link: getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' }),
         linkText: ERROR_SCREEN_LEARN_MORE,
     }
 

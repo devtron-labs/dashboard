@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react'
 import {
     CIBuildConfigType,
     CIBuildType,
-    DOCUMENTATION,
     showError,
     ToastVariantType,
     ToastManager,
@@ -361,7 +360,7 @@ export default function CIConfigForm({
                                 className="flex right dc__link"
                                 rel="noreferrer noopener"
                                 target="_blank"
-                                href={getDocumentationUrl(DOCUMENTATION.APP_CREATE_CI_CONFIG)}
+                                href={getDocumentationUrl({ docLinkKey: 'APP_CREATE_CI_CONFIG' })}
                             >
                                 <BookOpenIcon className="icon-dim-16 mr-8" />
                                 <span>View documentation</span>

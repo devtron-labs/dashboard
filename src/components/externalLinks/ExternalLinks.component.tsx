@@ -63,12 +63,7 @@ import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
-    return (
-        <DocLink
-            docLink={DOCUMENTATION.EXTERNAL_LINKS}
-            dataTestId="external-links-learn-more"
-        />
-    )
+    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" />
 }
 
 export const NoExternalLinksView = ({
@@ -99,13 +94,15 @@ export const NoExternalLinksView = ({
 }
 
 const redirectToGlobalConfig = (linkText) => {
-    return <Link
-        to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-        data-testid="info-bar-internal-link"
-        className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
-    >
-        {linkText}
-    </Link>
+    return (
+        <Link
+            to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+            data-testid="info-bar-internal-link"
+            className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
+        >
+            {linkText}
+        </Link>
+    )
 }
 
 const renderInfoDescription = (userRole) => {
@@ -128,9 +125,7 @@ const renderInfoDescription = (userRole) => {
 export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
     return (
         <div className="flexbox-col px-20">
-            <InfoBlock
-                description={renderInfoDescription(userRole)}
-            />
+            <InfoBlock description={renderInfoDescription(userRole)} />
         </div>
     )
 }

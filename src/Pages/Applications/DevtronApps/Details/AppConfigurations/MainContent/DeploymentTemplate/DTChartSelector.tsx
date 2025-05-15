@@ -183,7 +183,7 @@ const ChartSelectorDropdown = ({
                                         &nbsp;
                                         {CHART_DOCUMENTATION_LINK[chart.name] && (
                                             <DocLink
-                                                docLink={CHART_DOCUMENTATION_LINK[chart.name]}
+                                                docLinkKey={CHART_DOCUMENTATION_LINK[chart.name]}
                                                 dataTestId="chart-doc-link"
                                             />
                                         )}

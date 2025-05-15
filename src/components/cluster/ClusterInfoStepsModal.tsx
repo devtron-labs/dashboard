@@ -104,8 +104,8 @@ export default function ClusterInfoStepsModal({ subTitle, command, clusterName }
             <ClusterInfoSteps subTitle={subTitle} command={command} clusterName={clusterName} />
             <div className="p-12">
                 <DocLink
-                    docLink={DOCUMENTATION.GLOBAL_CONFIG_CLUSTER}
-                    docLinkText="View documentation"
+                    docLinkKey="GLOBAL_CONFIG_CLUSTER"
+                    text="View documentation"
                     dataTestId="cluster-info-step-view-documentation"
                 />
             </div>

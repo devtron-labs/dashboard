@@ -18,7 +18,6 @@ import React, { useState, useEffect } from 'react'
 import {
     getDocumentationUrl,
     not,
-    DOCUMENTATION,
     Progressing,
     ToastManager,
     ToastVariantType,
@@ -614,7 +613,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
                                     <a
                                         className="dc__link cta small text pl-0"
-                                        href={getDocumentationUrl(DOCUMENTATION.GLOBAL_CONFIG_CLUSTER)}
+                                        href={getDocumentationUrl({ docLinkKey: 'GLOBAL_CONFIG_CLUSTER' })}
                                         target="_blank"
                                         style={{ paddingLeft: '0' }}
                                         rel="noreferrer"

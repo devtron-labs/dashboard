@@ -18,7 +18,6 @@ import React, { useEffect, useState } from 'react'
 import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
-    DOCUMENTATION,
     Progressing,
     VisibleModal,
     Checkbox,
@@ -170,12 +169,7 @@ const ModuleDetailsCard = ({
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;
-                        <a
-                            href={RAISE_ISSUE}
-                            className="cb-5 fw-6"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
+                        <a href={RAISE_ISSUE} className="cb-5 fw-6" target="_blank" rel="noreferrer noopener">
                             submit a ticket
                         </a>
                         &nbsp;to request an integration
@@ -1161,7 +1155,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                                 Please refer&nbsp;
                                 <a
                                     className="cb-5 fw-6"
-                                    href={getDocumentationUrl(DOCUMENTATION.DEVTRON_UPGRADE)}
+                                    href={getDocumentationUrl({ docLinkKey: 'DEVTRON_UPGRADE' })}
                                     target="_blank"
                                     rel="noreferrer"
                                 >

@@ -17,7 +17,6 @@
 import { useContext } from 'react'
 
 import {
-    DOCUMENTATION,
     getDocumentationUrl,
     PluginDetailType,
     PluginImageContainer,
@@ -49,7 +48,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                 description: INLINE_PLUGIN_TEXT.DESCRIPTION,
                 icon: '',
                 tags: [],
-                docLink: getDocumentationUrl(DOCUMENTATION.EXECUTE_CUSTOM_SCRIPT),
+                docLink: getDocumentationUrl({ docLinkKey: 'EXECUTE_CUSTOM_SCRIPT' }),
             }
         }
         const selectedPluginId = formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId

@@ -32,8 +32,7 @@ import {
     Tooltip,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     savePipeline,
-    DOCUMENTATION,
-    getDocumentationUrl
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
@@ -139,7 +138,7 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                             <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
                             <a
                                 className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                href={getDocumentationUrl(DOCUMENTATION.BLOB_STORAGE)}
+                                href={getDocumentationUrl({ docLinkKey: 'BLOB_STORAGE' })}
                                 target="_blank"
                                 rel="noreferrer"
                             >
@@ -174,13 +173,13 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                 <div className="mr-5">
                     <div className="fs-13 fw-6 lh-20">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
 
-                    <div className='flex dc__gap-4'>
+                    <div className="flex dc__gap-4">
                         <span className="fs-12 fw-4 lh-16">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</span>
 
                         <Tooltip content={IGNORE_CACHE_INFO.IgnoreCache.infoTooltipContent} alwaysShowTippyOnHover>
                             {/* NOTE: need to wrap react elements with html elements when passing as children to tooltip */}
                             <div>
-                                <ICInfoOutline className='dc__no-shrink icon-dim-16 flex scn-6' />
+                                <ICInfoOutline className="dc__no-shrink icon-dim-16 flex scn-6" />
                             </div>
                         </Tooltip>
                     </div>

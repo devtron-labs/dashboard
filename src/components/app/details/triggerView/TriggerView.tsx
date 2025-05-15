@@ -1432,8 +1432,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             <>
                 {APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.subTitle}&nbsp;
                 <DocLink
-                    docLinkText={APP_DETAILS.NEED_HELP}
-                    docLink={DOCUMENTATION.APP_CREATE}
+                    text={APP_DETAILS.NEED_HELP}
+                    docLinkKey="APP_CREATE"
                     dataTestId="learn-more-about-creating-job-link"
                 />
             </>

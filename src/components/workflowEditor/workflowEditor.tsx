@@ -823,8 +823,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     <br />
                     {!this.props.isJobView && (
                         <DocLink
-                            docLinkText="Learn about creating workflows"
-                            docLink={DOCUMENTATION.APP_CREATE_WORKFLOW}
+                            text="Learn about creating workflows"
+                            docLinkKey="APP_CREATE_WORKFLOW"
                             dataTestId="learn-more-about-creating-workflow-link"
                         />
                     )}

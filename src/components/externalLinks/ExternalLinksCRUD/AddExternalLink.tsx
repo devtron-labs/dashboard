@@ -16,7 +16,6 @@
 
 import { Fragment, useEffect, useState } from 'react'
 import {
-    DOCUMENTATION,
     showError,
     Progressing,
     Drawer,
@@ -322,7 +321,7 @@ export default function AddExternalLink({
                         style={ButtonStyleType.neutral}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.small}
-                        onClick={getHandleOpenURL(getDocumentationUrl(DOCUMENTATION.EXTERNAL_LINKS))}
+                        onClick={getHandleOpenURL(getDocumentationUrl({docLinkKey : "EXTERNAL_LINKS"}))}
                         showAriaLabelInTippy={false}
                         showTooltip
                         tooltipProps={{

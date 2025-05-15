@@ -26,7 +26,6 @@ import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import {
     ClearIndicator,
-    DOCUMENTATION,
     multiSelectStyles,
     MultiValueRemove,
     Option,
@@ -323,7 +322,7 @@ const ManageRegistry = ({
         return (
             <div className="flex left">
                 Use the&nbsp;
-                <Link to={getDocumentationUrl(DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET)} target="_blank" className="anchor">
+                <Link to={getDocumentationUrl({docLinkKey: "SPECIFY_IMAGE_PULL_SECRET"})} target="_blank" className="anchor">
                     image pull secret name created via CLI
                 </Link>
                 . The secret must be present in the namespaces you're deploying to.

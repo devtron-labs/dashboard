@@ -735,9 +735,9 @@ const ChartListHeader = ({ charts }) => {
             <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
                 <DocLink
-                    docLink={DOCUMENTATION.CHART_LIST}
+                    docLinkKey="CHART_LIST"
                     dataTestId="chart-store-link"
-                    docLinkText="Learn more about deploying charts"
+                    text="Learn more about deploying charts"
                 />
             </p>
         </div>
@@ -768,8 +768,8 @@ export const EmptyChartGroup = ({
                 </div>
                 {!removeLearnMore && (
                     <DocLink
-                        docLink={DOCUMENTATION.CHART_GROUP}
-                        docLinkText="Learn more about chart groups"
+                        docLinkKey={'CHART_GROUP'}
+                        text="Learn more about chart groups"
                         dataTestId="chart-group-link"
                     />
                 )}
@@ -826,7 +826,7 @@ export const ChartGroupListMin = ({
                         renderDescriptionContent={() =>
                             'Use chart groups to pre-configure and deploy frequently used charts together.'
                         }
-                        docLink={DOCUMENTATION.CHART_GROUP}
+                        docLink={'CHART_GROUP'}
                         docLinkText="Learn more"
                         dataTestId="chart-store"
                         showInfoIconTippy

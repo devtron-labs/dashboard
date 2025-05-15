@@ -24,7 +24,6 @@ import {
     ComponentSizeType,
     CustomInput,
     DocLink,
-    DOCUMENTATION,
     Icon,
     PasswordField,
     ServerErrors,
@@ -143,10 +142,10 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
                     <div className="flex left dc__gap-4">
                         <Icon name="ic-help-outline" color="B500" size={12} />
                         <DocLink
-                            docLink={DOCUMENTATION.ADMIN_PASSWORD}
-                            docLinkText="What is my admin password?"
+                            docLinkKey="ADMIN_PASSWORD"
+                            text="What is my admin password?"
                             dataTestId="learn-more-about-admin-password"
-                            className="fs-11"
+                            size={ComponentSizeType.xxs}
                         />
                     </div>
                 </div>

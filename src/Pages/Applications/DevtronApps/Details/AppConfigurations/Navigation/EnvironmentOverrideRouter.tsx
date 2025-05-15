@@ -21,7 +21,6 @@ import {
     ConfirmationDialog,
     DeleteConfirmationModal,
     DocLink,
-    DOCUMENTATION,
     EnvResourceType,
     getEnvironmentListMinPublic,
     InfoBlock,
@@ -51,7 +50,7 @@ const EnvOverridesHelpNote = () => (
     <div className="fs-12 fw-4 lh-18">
         Environment overrides allow you to manage environment specific configurations after you’ve created deployment
         pipelines. &nbsp;
-        <DocLink docLink={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE} dataTestId="env-overrides-learn-more" />
+        <DocLink docLinkKey="APP_CREATE_ENVIRONMENT_OVERRIDE" dataTestId="env-overrides-learn-more" />
     </div>
 )
 

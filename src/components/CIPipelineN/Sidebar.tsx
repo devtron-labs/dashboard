@@ -16,7 +16,6 @@
 
 import { useContext, useEffect, useState } from 'react'
 import {
-    DOCUMENTATION,
     RadioGroup,
     RadioGroupItem,
     CHECKBOX_VALUE,
@@ -71,7 +70,7 @@ export const Sidebar = ({
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
     const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
         helpText: 'Docs: Configure build stage',
-        docLink: getDocumentationUrl(DOCUMENTATION.BUILD_STAGE),
+        docLink: getDocumentationUrl({ docLinkKey: 'BUILD_STAGE' }),
     })
     const isPreBuildTab = activeStageName === BuildStageVariable.PreBuild
     const changeTriggerType = (appCreationType: string): void => {
@@ -84,22 +83,22 @@ export const Sidebar = ({
         if (isJobCard) {
             setHelpData({
                 helpText: 'Docs: Configure job',
-                docLink: getDocumentationUrl(DOCUMENTATION.JOB_WORKFLOW_EDITOR),
+                docLink: getDocumentationUrl({ docLinkKey: 'JOB_WORKFLOW_EDITOR' }),
             })
         } else if (activeStageName === BuildStageVariable.Build) {
             setHelpData({
                 helpText: 'Docs: Configure build stage',
-                docLink: getDocumentationUrl(DOCUMENTATION.BUILD_STAGE),
+                docLink: getDocumentationUrl({ docLinkKey: 'BUILD_STAGE' }),
             })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
             setHelpData({
                 helpText: 'Docs: Configure post-build tasks',
-                docLink: getDocumentationUrl(DOCUMENTATION.PRE_POST_BUILD_STAGE),
+                docLink: getDocumentationUrl({ docLinkKey: 'PRE_POST_BUILD_STAGE' }),
             })
         } else if (isPreBuildTab) {
             setHelpData({
                 helpText: 'Docs: Configure pre-build tasks',
-                docLink: getDocumentationUrl(DOCUMENTATION.PRE_POST_BUILD_STAGE),
+                docLink: getDocumentationUrl({ docLinkKey: 'PRE_POST_BUILD_STAGE' }),
             })
         }
     }, [activeStageName])
