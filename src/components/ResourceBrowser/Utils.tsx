@@ -20,6 +20,7 @@ import moment from 'moment'
 import queryString from 'query-string'
 
 import {
+    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     GVKType,
@@ -408,3 +409,10 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): Response
         }),
     },
 })
+
+export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
+    shouldRedirectToInstallationStatus
+        ? `${URLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        : `${URLS.RESOURCE_BROWSER}/${id}/${
+              ALL_NAMESPACE_OPTION.value
+          }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
