@@ -14,7 +14,7 @@ on:
       - 'hotfix-**'
 
 jobs:
-  pr-validation:
+  validate-PR-issue:
     uses: devtron-labs/utilities/.github/workflows/pr-validator.yaml@feat/central-pr-validator
     secrets: inherit
     with:
