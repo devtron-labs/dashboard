@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import {
     Button,
+    ButtonStyleType,
+    ButtonVariantType,
     ComponentSizeType,
     DetectBottom,
     GenericInfoCardBorderVariant,
@@ -11,10 +13,11 @@ import {
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CreationMethodType } from '../types'
 import { AppCloneListProps } from './types'
 import { useDevtronCloneList } from './useDevtronCloneList'
 
-export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListProps) => {
+export const AppCloneList = ({ handleCloneAppClick, isJobView, handleCreationMethodChange }: AppCloneListProps) => {
     const { searchKey, handleSearch, clearFilters } = useStateFilters()
     const [isLoadingMoreJobList, setIsLoadingMoreJobList] = useState<boolean>(false)
     const [hasError, setHasError] = useState<boolean>(false)
@@ -38,7 +41,7 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListPro
     }
 
     const handleCreateFromScratch = () => {
-        // TODO: Implement create from scratch functionality
+        handleCreationMethodChange(CreationMethodType.blank)
     }
 
     const renderCreateFromScratchButton = () => (
@@ -46,6 +49,9 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListPro
             dataTestId="create-app-modal-create-from-scratch-btn"
             text="Create from scratch"
             onClick={handleCreateFromScratch}
+            size={ComponentSizeType.medium}
+            variant={ButtonVariantType.primary}
+            style={ButtonStyleType.default}
         />
     )
 

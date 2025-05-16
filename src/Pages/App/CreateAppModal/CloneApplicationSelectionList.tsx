@@ -24,7 +24,7 @@ import UpdateTemplateConfig from './UpdateTemplateConfig'
 
 const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
 
-export const ApplicationSelectionList = ({
+export const CloneApplicationSelectionList = ({
     formState,
     selectedCreationMethod,
     isJobView,
@@ -33,6 +33,7 @@ export const ApplicationSelectionList = ({
     handleTagErrorChange,
     isTagsAccordionExpanded,
     toggleIsTagsAccordionExpanded,
+    handleCreationMethodChange,
 }: ApplicationSelectionListProps) => {
     const isCreationMethodTemplate = selectedCreationMethod === CreationMethodType.template
 
@@ -73,7 +74,13 @@ export const ApplicationSelectionList = ({
                     />
                 )
             case CreationMethodType.clone:
-                return <AppCloneList handleCloneAppClick={handleCloneAppClick} isJobView={isJobView} />
+                return (
+                    <AppCloneList
+                        handleCloneAppClick={handleCloneAppClick}
+                        isJobView={isJobView}
+                        handleCreationMethodChange={handleCreationMethodChange}
+                    />
+                )
             default:
                 return null
         }

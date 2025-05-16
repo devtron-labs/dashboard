@@ -184,4 +184,5 @@ export interface ApplicationSelectionListProps
             | 'handleFormStateChange'
             | 'formErrorState'
             | 'handleTagErrorChange'
-        > {}
+        >,
+        Pick<SidebarProps, 'handleCreationMethodChange'> {}

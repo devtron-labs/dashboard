@@ -35,7 +35,7 @@ import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
 import { getHostURLConfiguration } from '@Services/service'
 
 import ApplicationInfoForm from './ApplicationInfoForm'
-import { ApplicationSelectionList } from './ApplicationSelectionList'
+import { CloneApplicationSelectionList } from './CloneApplicationSelectionList'
 import { createAppInitialFormErrorState, createAppInitialFormState } from './constants'
 import HeaderSection from './HeaderSection'
 import { createApp } from './service'
@@ -327,6 +327,16 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         }
     }
 
+    const handleCreationMethodChange = (method: CreationMethodType) => {
+        setFormState((prev) => ({
+            ...prev,
+            templateConfig: null,
+            cloneAppConfig: null,
+        }))
+
+        setSelectedCreationMethod(method)
+    }
+
     const getSelectedMethodContent = () => {
         switch (selectedCreationMethod) {
             case CreationMethodType.blank:
@@ -345,7 +355,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
             case CreationMethodType.clone:
             case CreationMethodType.template:
                 return (
-                    <ApplicationSelectionList
+                    <CloneApplicationSelectionList
                         formState={formState}
                         formErrorState={formErrorState}
                         selectedCreationMethod={selectedCreationMethod}
@@ -354,21 +364,12 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                         isJobView={isJobView}
                         isTagsAccordionExpanded={isTagsAccordionExpanded}
                         toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
+                        handleCreationMethodChange={handleCreationMethodChange}
                     />
                 )
             default:
                 return null
         }
-    }
-
-    const handleCreationMethodChange = (method: CreationMethodType) => {
-        setFormState((prev) => ({
-            ...prev,
-            templateConfig: null,
-            cloneAppConfig: null,
-        }))
-
-        setSelectedCreationMethod(method)
     }
 
     return (

@@ -15,9 +15,9 @@ import { APP_TYPE } from '@Config/constants'
 import { getAppIconWithBackground } from '@Config/utils'
 import { getAppListMin } from '@Services/service'
 
-import { AppCloneListProps, DevtronListResponse } from './types'
+import { DevtronAppCloneListProps, DevtronListResponse } from './types'
 
-export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListProps) => {
+export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronAppCloneListProps) => {
     const cloneListAbortControllerRef = useRef(new AbortController())
     const [isLoadingMore, setIsLoadingMore] = useState(false)
 
