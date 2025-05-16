@@ -705,6 +705,7 @@ const BaseResourceListContent = ({
             description={null}
             hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
             isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
+            category={null}
         />
     )
 

@@ -27,6 +27,7 @@ import {
     Drawer,
     GenericEmptyState,
     noop,
+    SelectPicker,
     ServerErrors,
     showError,
     stopPropagation,
@@ -70,6 +71,7 @@ export const ClusterEnvironmentDrawer = ({
     hideClusterDrawer,
     isVirtual,
     clusterName,
+    category,
 }: ClusterEnvironmentDrawerProps) => {
     // STATES
     // Manages the loading state for create and update actions
@@ -152,6 +154,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
+            category,
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
@@ -317,6 +320,17 @@ export const ClusterEnvironmentDrawer = ({
                             required={!isVirtual}
                         />
                     </div>
+                    <div className="mb-16">
+                        <CustomInput
+                            placeholder="Add a description for this environment"
+                            value={data.description}
+                            error={errors.description}
+                            {...register('description')}
+                            label="Description (Maximum 40 characters allowed)"
+                            autoFocus={!!id}
+                            shouldTrim={false}
+                        />
+                    </div>
                     {!isVirtual && (
                         <div className="mb-16 flex left">
                             <label htmlFor="env-production-checkbox" className="pr-16 flex cursor">
@@ -343,17 +357,23 @@ export const ClusterEnvironmentDrawer = ({
                             </label>
                         </div>
                     )}
-                    <div className="mb-16">
-                        <CustomInput
-                            placeholder="Add a description for this environment"
-                            value={data.description}
-                            error={errors.description}
-                            {...register('description')}
-                            label="Description (Maximum 40 characters allowed)"
-                            autoFocus={!!id}
-                            shouldTrim={false}
+                    <div className="mb-16 flex left">
+                        <SelectPicker
+                            label="Assign Category"
+                            required
+                            inputId="assign-category-menu-list"
+                            name="assign-category-menu-list"
+                            classNamePrefix="assign-category-menu-list"
+                            options={[
+                                { label: 'category1', value: 1 },
+                                { label: 'category2', value: 2 },
+                            ]}
+                            value={data.category}
+                            {...register('category', { isCustomComponent: true })}
+                            size={ComponentSizeType.large}
                         />
                     </div>
+
                     {EnvironmentLabels && !isVirtual && (
                         <div className="dc__border-top-n1 pt-16">
                             <EnvironmentLabels

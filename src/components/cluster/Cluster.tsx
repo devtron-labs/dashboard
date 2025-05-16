@@ -36,12 +36,7 @@ import { generatePath, Route, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
 import { importComponentFromFELibrary } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
-import {
-    getClusterList,
-    getEnvironmentList,
-    getCluster,
-    deleteEnvironment,
-} from './cluster.service'
+import { getClusterList, getEnvironmentList, getCluster, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
 import { ReactComponent as Database } from '@Icons/ic-env.svg'
 import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
@@ -55,6 +50,7 @@ import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAn
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import ManageCategories from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/ManageCategories.component'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getSSHConfig: (
@@ -224,18 +220,30 @@ class ClusterList extends Component<ClusterListProps, any> {
                         showInfoIconTippy
                         additionalContainerClasses="mb-20"
                     />
-                    <Button
-                        dataTestId="add_cluster_button"
-                        linkProps={{
-                            to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
-                                type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                            }),
-                        }}
-                        component={ButtonComponentType.link}
-                        startIcon={<Add />}
-                        size={ComponentSizeType.medium}
-                        text="New Cluster"
-                    />
+                    <div className="flexbox dc__gap-8">
+                        <Button
+                            dataTestId="manage_categories_button"
+                            linkProps={{
+                                to: URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES,
+                            }}
+                            component={ButtonComponentType.link}
+                            startIcon={<Add />}
+                            size={ComponentSizeType.medium}
+                            text="Manage Categories"
+                        />
+                        <Button
+                            dataTestId="add_cluster_button"
+                            linkProps={{
+                                to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                                    type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                                }),
+                            }}
+                            component={ButtonComponentType.link}
+                            startIcon={<Add />}
+                            size={ComponentSizeType.medium}
+                            text="New Cluster"
+                        />
+                    </div>
                 </div>
                 {this.state.clusters.map(
                     (cluster) =>
@@ -252,10 +260,12 @@ class ClusterList extends Component<ClusterListProps, any> {
                         ),
                 )}
 
+                <Route path={URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>
+                    <ManageCategories />
+                </Route>
+
                 <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <CreateCluster
-                        handleReloadClusterList={this.initialise}
-                    />
+                    <CreateCluster handleReloadClusterList={this.initialise} />
                 </Route>
 
                 <Route
@@ -280,6 +290,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                                 description={null}
                                 hideClusterDrawer={this.handleRedirectToClusterList}
                                 isVirtual={isVirtualCluster}
+                                category={null}
                             />
                         )
                     }}
@@ -467,6 +478,7 @@ const Cluster = ({
                             <div />
                             <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
                             <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
+                            <div>{CONFIGURATION_TYPES.CATEGORY}</div>
                             <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
                             <div />
                         </div>
@@ -478,6 +490,8 @@ const Cluster = ({
                                     environment_name,
                                     prometheus_url,
                                     namespace,
+                                    categoryId,
+                                    category,
                                     default: isProduction,
                                     description,
                                 }) =>
@@ -492,6 +506,7 @@ const Cluster = ({
                                                     environmentName: environment_name,
                                                     clusterId,
                                                     namespace,
+                                                    category:{label: category, value: categoryId},
                                                     prometheusEndpoint: prometheus_url,
                                                     isProduction,
                                                     description,
@@ -514,6 +529,13 @@ const Cluster = ({
                                                 )}
                                             </div>
                                             <div className="dc__truncate-text">{namespace}</div>
+                                            <div>
+                                                {category && (
+                                                    <div className="bg__secondary dc__border pr-6 pl-6 fs-12 h-20 ml-8 flex cn-7 br-4 ">
+                                                        {category}
+                                                    </div>
+                                                )}
+                                            </div>
                                             <div className="cluster-list__description dc__truncate-text">
                                                 {description}
                                             </div>

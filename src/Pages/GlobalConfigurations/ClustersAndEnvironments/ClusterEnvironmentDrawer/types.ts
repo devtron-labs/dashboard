@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { DeleteConfirmationModalProps, TagType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModalProps, OptionType, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
     namespace: string
     isProduction: boolean
     description: string
+    category: OptionType<number, string>
 }
 
 export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
