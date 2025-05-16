@@ -3,18 +3,13 @@
  */
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import {
-    abortPreviousRequests,
-    GenericInfoCardListingProps,
-    getIsRequestAborted,
-    useAsync,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { abortPreviousRequests, getIsRequestAborted, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getJobs } from '@Components/Jobs/Service'
 import { APP_TYPE } from '@Config/constants'
-import { getAppIconWithBackground } from '@Config/utils'
 import { getAppListMin } from '@Services/service'
 
+import { getDevtronAppList } from '../service'
 import { DevtronAppCloneListProps, DevtronListResponse } from './types'
 
 export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronAppCloneListProps) => {
@@ -53,11 +48,11 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronA
         },
         [],
     )
-    let totalCount = 0
 
-    if (listResponse?.type === APP_TYPE.JOB) {
-        totalCount = listResponse.data.result.jobCount
-    }
+    const { list, totalCount } = useMemo(() => {
+        if (!listResponse) return { list: [], totalCount: 0 }
+        return getDevtronAppList({ listResponse, handleCloneAppClick })
+    }, [isListLoading, listResponse, handleCloneAppClick])
 
     const loadMoreData = async () => {
         if (isLoadingMore || !listResponse) return
@@ -100,43 +95,6 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronA
             setIsLoadingMore(false)
         }
     }
-
-    const list = useMemo(() => {
-        if (isListLoading || !listResponse) return []
-
-        if (listResponse.type === APP_TYPE.JOB) {
-            const jobContainers = listResponse.data.result?.jobContainers ?? []
-
-            totalCount = listResponse.data.result.jobCount
-
-            return jobContainers.map<GenericInfoCardListingProps['list'][number]>((job) => {
-                const { jobId, jobName, description } = job
-
-                return {
-                    id: String(jobId),
-                    title: jobName,
-                    description: description.description,
-                    author: description.createdBy,
-                    Icon: getAppIconWithBackground(APP_TYPE.JOB, 40),
-                    onClick: () => handleCloneAppClick({ appId: jobId, appName: jobName }),
-                }
-            })
-        }
-        const apps = listResponse.data.result ?? []
-
-        return apps.map<GenericInfoCardListingProps['list'][number]>((app) => {
-            const { id, name, createdBy, description } = app
-
-            return {
-                id: String(id),
-                title: name,
-                Icon: getAppIconWithBackground(APP_TYPE.DEVTRON_APPS, 40),
-                onClick: () => handleCloneAppClick({ appId: id, appName: name }),
-                author: createdBy,
-                description,
-            }
-        })
-    }, [isListLoading, listResponse])
 
     return {
         isListLoading: isListLoading ?? getIsRequestAborted(listError),
