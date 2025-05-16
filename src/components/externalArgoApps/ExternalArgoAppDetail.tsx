@@ -32,6 +32,8 @@ import { AppDetails, AppType } from '../v2/appDetails/appDetails.type'
 import IndexStore from '../v2/appDetails/index.store'
 import { ExternalArgoAppDetailType } from './externalArgoApp.type'
 
+let initTimer = null
+
 const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) => {
     const location = useLocation()
     const history = useHistory()
@@ -39,7 +41,6 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
 
-    let initTimer = null
     let isAPICallInProgress = false
 
     const abortControllerRef = useRef<AbortController>(new AbortController())

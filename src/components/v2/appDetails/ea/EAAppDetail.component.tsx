@@ -40,6 +40,8 @@ import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 
+let initTimer = null
+
 const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
     const history = useHistory()
@@ -53,7 +55,6 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    let initTimer = null
     let isAPICallInProgress = false
 
     // component load
