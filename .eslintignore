@@ -24,7 +24,6 @@ src/components/ApplicationGroup/Details/EnvCIDetails/EnvCIDetails.tsx
 src/components/ApplicationGroup/Details/EnvCIDetails/__test__/EnvCIDetails.test.tsx
 src/components/ApplicationGroup/Details/EnvironmentConfig/__test__/ApplicationRoutes.test.tsx
 src/components/ApplicationGroup/Details/EnvironmentConfig/__test__/EnvConfig.test.tsx
-src/components/ApplicationGroup/Details/EnvironmentOverview/EnvironmentOverview.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusListDrawer.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.tsx

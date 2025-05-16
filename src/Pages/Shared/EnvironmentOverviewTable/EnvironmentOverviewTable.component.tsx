@@ -25,7 +25,6 @@ import {
     getRandomColor,
     handleRelativeDateSorting,
     ImageChipCell,
-    PopupMenu,
     processDeployedTime,
     RegistryType,
     SortableTableHeaderCell,
@@ -38,7 +37,6 @@ import {
 import { ReactComponent as ICActivity } from '@Icons/ic-activity.svg'
 import { ReactComponent as ICArrowLineDown } from '@Icons/ic-arrow-line-down.svg'
 import { ReactComponent as DevtronIcon } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as ICMoreOption } from '@Icons/ic-more-option.svg'
 
 import {
     EnvironmentOverviewTableHeaderFixedKeys,
@@ -46,47 +44,10 @@ import {
     EnvironmentOverviewTableHeaderVariableKeys,
     EnvironmentOverviewTableSortableKeys,
 } from './EnvironmentOverview.constants'
-import {
-    EnvironmentOverviewTableProps,
-    EnvironmentOverviewTableRow,
-    EnvironmentOverviewTableRowData,
-} from './EnvironmentOverviewTable.types'
+import { EnvironmentOverviewPopupMenu } from './EnvironmentOverviewPopupMenu'
+import { EnvironmentOverviewTableProps, EnvironmentOverviewTableRowData } from './EnvironmentOverviewTable.types'
 
 import './EnvironmentOverviewTable.scss'
-
-const renderPopUpMenu = (items: EnvironmentOverviewTableRow['popUpMenuItems']) => (
-    <PopupMenu autoClose>
-        <PopupMenu.Button isKebab rootClassName="p-4 flex dc__no-border cursor">
-            <ICMoreOption className="icon-dim-16 fcn-6 rotateBy--90" />
-        </PopupMenu.Button>
-        <PopupMenu.Body rootClassName="dc__border py-4 w-180">
-            {items.map((popUpMenuItem) => {
-                if ('label' in popUpMenuItem) {
-                    const { label, onClick, disabled, Icon, iconType = 'fill' } = popUpMenuItem
-
-                    return (
-                        <button
-                            key={label}
-                            type="button"
-                            className={`dc__transparent w-100 py-6 px-8 flexbox dc__align-items-center dc__gap-8 ${disabled ? ' dc__opacity-0_5 cursor-not-allowed' : 'dc__hover-n50'}`}
-                            onClick={onClick}
-                            disabled={disabled}
-                        >
-                            {Icon && (
-                                <Icon
-                                    className={`icon-dim-16 ${iconType === 'fill' ? 'fcn-7' : ''} ${iconType === 'stroke' ? 'scn-7' : ''}`}
-                                />
-                            )}
-                            <span className="dc__truncate cn-9 fs-13 lh-20">{label}</span>
-                        </button>
-                    )
-                }
-
-                return popUpMenuItem
-            })}
-        </PopupMenu.Body>
-    </PopupMenu>
-)
 
 export const EnvironmentOverviewTable = ({
     rows = [],
@@ -231,7 +192,7 @@ export const EnvironmentOverviewTable = ({
                                 {name}
                             </Link>
                         </Tooltip>
-                        {!!popUpMenuItems?.length && renderPopUpMenu(popUpMenuItems)}
+                        {!!popUpMenuItems?.length && <EnvironmentOverviewPopupMenu popUpMenuItems={popUpMenuItems} />}
                     </div>
                 </div>
                 <div
