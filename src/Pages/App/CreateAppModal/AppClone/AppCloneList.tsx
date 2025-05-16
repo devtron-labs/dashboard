@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import {
+    Button,
     ComponentSizeType,
     DetectBottom,
     GenericInfoCardBorderVariant,
@@ -36,6 +37,18 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListPro
         }
     }
 
+    const handleCreateFromScratch = () => {
+        // TODO: Implement create from scratch functionality
+    }
+
+    const renderCreateFromScratchButton = () => (
+        <Button
+            dataTestId="create-app-modal-create-from-scratch-btn"
+            text="Create from scratch"
+            onClick={handleCreateFromScratch}
+        />
+    )
+
     return (
         <div className="flex-grow-1 flexbox-col dc__overflow-auto">
             <div className="flexbox-col dc__gap-12 pt-20 px-20">
@@ -46,6 +59,9 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListPro
                     initialSearchText={searchKey}
                     size={ComponentSizeType.medium}
                     handleEnter={handleSearch}
+                    inputProps={{
+                        placeholder: `Search ${isJobView ? 'job' : 'application'}`,
+                    }}
                 />
             </div>
             <div className="flex-grow-1 flexbox-col dc__gap-12 p-20 dc__overflow-auto">
@@ -59,7 +75,8 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListPro
                     handleClearFilters={clearFilters}
                     emptyStateConfig={{
                         title: 'Nothing to Clone… Yet!',
-                        subTitle: `Looks like you haven’t created any ${isJobView ? 'job' : 'application'} to clone. Go ahead and start fresh — your first app awaits!`,
+                        subTitle: `You haven’t created any ${isJobView ? 'job' : 'application'} to clone. Kick things off by crafting one from scratch—it’s quick and easy!`,
+                        renderButton: renderCreateFromScratchButton,
                     }}
                 />
                 {hasMoreData && isLoadingMoreJobList && <GenericInfoListSkeleton />}

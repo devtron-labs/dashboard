@@ -21,7 +21,6 @@ import {
     CreationMethodType,
 } from './types'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
-import { getBreadcrumbText } from './utils'
 
 const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
 
@@ -80,9 +79,21 @@ export const ApplicationSelectionList = ({
         }
     }
 
+    const getBreadcrumbText = () => {
+        if (isCreationMethodTemplate) {
+            return 'Templates'
+        }
+
+        if (isJobView) {
+            return 'Clone Job'
+        }
+
+        return 'Clone Application'
+    }
+
     const renderAppInfoForm = () => {
         const goBack = isCreationMethodTemplate ? goBackToTemplatesList : goBackToAppCloneList
-        const breadcrumbText = getBreadcrumbText(selectedCreationMethod)
+        const breadcrumbText = getBreadcrumbText()
         const breadcrumbDataTestId = isCreationMethodTemplate ? 'template-list-breadcrumb' : 'clone-list-breadcrumb'
         const icon = isCreationMethodTemplate ? (
             <Icon name="ic-app-template" color={null} />
@@ -108,14 +119,14 @@ export const ApplicationSelectionList = ({
                         showAriaLabelInTippy={false}
                         onClick={goBack}
                     />
-                    <div className="flex left dc__gap-4">
+                    <div className="flex left dc__gap-6">
                         <Button
                             dataTestId={breadcrumbDataTestId}
                             variant={ButtonVariantType.text}
                             text={breadcrumbText}
                             onClick={goBack}
                         />
-                        <span>/</span>
+                        <span className="fs-13">/</span>
                         <p className="m-0 flex left dc__gap-6">
                             {icon}
                             <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">{name}</span>

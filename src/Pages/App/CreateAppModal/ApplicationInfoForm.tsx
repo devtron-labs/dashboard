@@ -69,6 +69,8 @@ const ApplicationInfoForm = ({
         })
     }
 
+    const isMandatoryTag = formState.tags.some((tag) => tag.data.tagKey.required)
+
     return (
         // key is required for ensuring autoFocus on name on creation method change
         <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary" key={selectedCreationMethod}>
@@ -113,7 +115,9 @@ const ApplicationInfoForm = ({
                     <ICCaretLeftSmall
                         className={`scn-7 dc__no-shrink dc__transition--transform ${isTagsAccordionExpanded ? 'dc__flip-270' : 'dc__flip-180'}`}
                     />
-                    <span className="fs-13 fw-6 lh-20 cn-9">Add tags to {isJobView ? 'job' : 'application'}</span>
+                    <span className={`fs-13 fw-6 lh-20 cn-9 ${isMandatoryTag ? 'dc__required-field' : ''}`}>
+                        Add tags to {isJobView ? 'job' : 'application'}
+                    </span>
                 </button>
                 <div className={!isTagsAccordionExpanded ? 'dc__hide-section' : ''}>
                     {MandatoryTagsContainer ? (

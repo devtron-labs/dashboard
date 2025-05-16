@@ -32,7 +32,7 @@ const Sidebar = ({
 
     const renderAppContent = () => (
         <div className="flexbox-col dc__gap-24">
-            <p className="m-0" />
+            <p className="m-0">In Devtron, an &quot;Application&quot; represents your software project or service.</p>
             <p className="m-0">
                 It serves as a container for your deployment configurations, environments, and other settings. Define
                 your application to start managing and monitoring its deployment efficiently.
@@ -80,7 +80,7 @@ const Sidebar = ({
             <div className="divider__secondary--horizontal" />
             <ModalSidebarPanel
                 heading={null}
-                documentationLink={isJobView ? DOCUMENTATION.JOB_CRONJOB : DOCUMENTATION.APP_CREATE}
+                documentationLink={isJobView ? DOCUMENTATION.JOBS : DOCUMENTATION.APP_CREATE}
                 rootClassName="w-100 dc__no-background-imp"
             >
                 {isJobView ? renderJobContent() : renderAppContent()}

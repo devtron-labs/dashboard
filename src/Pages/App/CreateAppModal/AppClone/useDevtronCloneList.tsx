@@ -117,7 +117,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
                     title: jobName,
                     description: description.description,
                     author: description.createdBy,
-                    Icon: getAppIconWithBackground(APP_TYPE.JOB, 20),
+                    Icon: getAppIconWithBackground(APP_TYPE.JOB, 40),
                     onClick: () => handleCloneAppClick({ appId: jobId, appName: jobName }),
                 }
             })
@@ -130,7 +130,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
             return {
                 id: String(id),
                 title: name,
-                Icon: getAppIconWithBackground(APP_TYPE.DEVTRON_APPS, 20),
+                Icon: getAppIconWithBackground(APP_TYPE.DEVTRON_APPS, 40),
                 onClick: () => handleCloneAppClick({ appId: id, appName: name }),
                 author: createdBy,
                 description,

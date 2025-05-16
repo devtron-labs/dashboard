@@ -76,7 +76,7 @@ export const getCreateMethodConfig = (
 
     return [
         {
-            label: `Blank ${labelSuffix}`,
+            label: 'Create from Scratch',
             value: CreationMethodType.blank,
             startIcon: (
                 <Icon
@@ -114,17 +114,6 @@ export const getCreateMethodConfig = (
                   },
               ]),
     ]
-}
-
-export const getBreadcrumbText = (selectedCreationMethod: CreationMethodType) => {
-    switch (selectedCreationMethod) {
-        case CreationMethodType.template:
-            return 'Templates'
-        case CreationMethodType.clone:
-            return 'Clone Application'
-        default:
-            return 'Clone Job'
-    }
 }
 
 export const getNoItemSelectToastText = (selectedCreationMethod: CreationMethodType) => {
