@@ -2,13 +2,12 @@ import { useState } from 'react'
 
 import {
     Button,
-    ButtonStyleType,
-    ButtonVariantType,
     ComponentSizeType,
     DetectBottom,
     GenericInfoCardBorderVariant,
     GenericInfoCardListing,
     GenericInfoListSkeleton,
+    Icon,
     SearchBar,
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -49,9 +48,7 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView, handleCreationMet
             dataTestId="create-app-modal-create-from-scratch-btn"
             text="Create from scratch"
             onClick={handleCreateFromScratch}
-            size={ComponentSizeType.medium}
-            variant={ButtonVariantType.primary}
-            style={ButtonStyleType.default}
+            startIcon={<Icon name="ic-new" color={null} />}
         />
     )
 
