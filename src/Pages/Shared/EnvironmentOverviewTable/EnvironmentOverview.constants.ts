@@ -45,3 +45,5 @@ export const EnvironmentOverviewTableHeaderValues: Record<keyof typeof Environme
     DEPLOYED_BY: 'DEPLOYED BY',
     STATUS: null,
 }
+
+export const ENVIRONMENT_OVERVIEW_DRAG_SELECTOR_IDENTIFIER = 'environment-overview-drag-selector'
