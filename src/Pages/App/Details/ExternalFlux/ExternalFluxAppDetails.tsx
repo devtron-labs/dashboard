@@ -69,9 +69,12 @@ const ExternalFluxAppDetails = () => {
         setAppDetailsError(null)
     }
 
+    /**
+     * Throws error in case request is aborted
+     */
     const handleFetchExternalFluxCDAppDetails = () =>
         // NOTE: returning a promise so that we can trigger the next timeout after this api call completes
-        new Promise<void>((resolve) => {
+        new Promise<void>((resolve, reject) => {
             setIsReloadResourceTreeInProgress(true)
 
             abortPreviousRequests(
@@ -87,6 +90,8 @@ const ExternalFluxAppDetails = () => {
                         } else {
                             setAppDetailsError(error)
                         }
+                    } else {
+                        reject(error)
                     }
                 })
                 .finally(() => {
@@ -107,7 +112,11 @@ const ExternalFluxAppDetails = () => {
     }
 
     const handleReloadResourceTree = async () => {
-        await handleFetchExternalFluxCDAppDetails()
+        try {
+            await handleFetchExternalFluxCDAppDetails()
+        } catch {
+            // do nothing
+        }
     }
 
     useEffect(() => {
