@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { Icon, IconsProps, SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Icon,
+    IconsProps,
+    SelectPickerOptionType,
+    validateDescription,
+    ValidationResponseType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { MAX_LENGTH_30 } from '@Config/constantMessaging'
@@ -108,4 +114,40 @@ export const getCreateMethodConfig = (
                   },
               ]),
     ]
+}
+
+export const getBreadcrumbText = (selectedCreationMethod: CreationMethodType) => {
+    switch (selectedCreationMethod) {
+        case CreationMethodType.template:
+            return 'Templates'
+        case CreationMethodType.clone:
+            return 'Clone Application'
+        default:
+            return 'Clone Job'
+    }
+}
+
+export const getNoItemSelectToastText = (selectedCreationMethod: CreationMethodType) => {
+    if (selectedCreationMethod === CreationMethodType.template) {
+        return 'Please select a template to create app'
+    }
+
+    if (selectedCreationMethod === CreationMethodType.clone) {
+        return 'Please select an app to clone'
+    }
+
+    return null
+}
+
+export const validateFormField = (field: keyof CreateAppFormStateType, value) => {
+    switch (field) {
+        case 'name':
+            return validateAppName(value).message
+        case 'description':
+            return validateDescription(value).message
+        case 'projectId':
+            return validateProject(value).message
+        default:
+            throw new Error(`Invalid field: ${field}`)
+    }
 }

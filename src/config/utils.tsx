@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { ReactComponent as AppIcon } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as JobIcon } from '@Icons/ic-devtron-job.svg'
+import { Icon, IconBaseSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { AppOverviewProps } from '@Components/app/types'
 
 import { APP_TYPE, DEVTRON_DEFAULT_CLUSTER_ID, DEVTRON_DEFAULT_NAMESPACE, DEVTRON_DEFAULT_RELEASE_NAME } from '.'
@@ -25,12 +25,12 @@ export const checkIfDevtronOperatorHelmRelease = (releaseName: string, namespace
     namespace === DEVTRON_DEFAULT_NAMESPACE &&
     clusterId === DEVTRON_DEFAULT_CLUSTER_ID
 
-export const getAppIconWithBackground = (appType: AppOverviewProps['appType'], iconSize) => {
+export const getAppIconWithBackground = (appType: AppOverviewProps['appType'], iconSize: IconBaseSizeType = 20) => {
     switch (appType) {
         case APP_TYPE.DEVTRON_APPS:
-            return <AppIcon className={`icon-dim-${iconSize}`} />
+            return <Icon name="ic-devtron-app" color={null} size={iconSize} />
         case APP_TYPE.JOB:
-            return <JobIcon className={`icon-dim-${iconSize}`} />
+            return <Icon name="ic-devtron-job" color={null} size={iconSize} />
         default:
             return null
     }

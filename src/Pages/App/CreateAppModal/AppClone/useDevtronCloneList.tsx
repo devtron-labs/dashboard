@@ -3,7 +3,12 @@
  */
 import { useEffect, useMemo, useRef } from 'react'
 
-import { abortPreviousRequests, GenericInfoCardListingProps, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    abortPreviousRequests,
+    GenericInfoCardListingProps,
+    getIsRequestAborted,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { getJobs } from '@Components/Jobs/Service'
 import { APP_TYPE } from '@Config/constants'
@@ -88,7 +93,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, updatedLis
     }, [isListLoading, listResponse, updatedList])
 
     return {
-        isListLoading,
+        isListLoading: isListLoading || getIsRequestAborted(listError),
         list,
         listError,
         reloadList,

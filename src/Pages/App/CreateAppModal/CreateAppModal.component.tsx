@@ -18,33 +18,24 @@ import { useEffect, useMemo, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
-    BaseAppMetaData,
     Button,
-    ButtonStyleType,
-    ButtonVariantType,
-    ComponentSizeType,
     Drawer,
-    Progressing,
     showError,
     ToastManager,
     ToastVariantType,
-    validateDescription,
     validateTagKeyValue,
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAppTemplate } from '@Icons/ic-app-template.svg'
-import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
-import { getAppConfig } from '@Components/app/Overview/utils'
 import { importComponentFromFELibrary } from '@Components/common'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
-import { APP_TYPE, REQUIRED_FIELDS_MISSING } from '@Config/constants'
+import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
 import { getHostURLConfiguration } from '@Services/service'
 
-import { AppCloneList } from './AppClone'
 import ApplicationInfoForm from './ApplicationInfoForm'
+import { ApplicationSelectionList } from './ApplicationSelectionList'
 import { createAppInitialFormErrorState, createAppInitialFormState } from './constants'
 import HeaderSection from './HeaderSection'
 import { createApp } from './service'
@@ -57,12 +48,10 @@ import {
     CreateAppModalProps,
     CreationMethodType,
 } from './types'
-import UpdateTemplateConfig from './UpdateTemplateConfig'
-import { getCreateMethodConfig, validateAppName, validateProject } from './utils'
+import { getCreateMethodConfig, getNoItemSelectToastText, validateFormField } from './utils'
 
 import './styles.scss'
 
-const TemplateList = importComponentFromFELibrary('TemplateList', null, 'function')
 const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtronAppUsingTemplate', null, 'function')
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
@@ -88,19 +77,6 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
 
     const toggleIsTagsAccordionExpanded = () => {
         setIsTagsAccordionExpanded((prev) => !prev)
-    }
-
-    const validateFormField = (field: keyof CreateAppFormStateType, value) => {
-        switch (field) {
-            case 'name':
-                return validateAppName(value).message
-            case 'description':
-                return validateDescription(value).message
-            case 'projectId':
-                return validateProject(value).message
-            default:
-                throw new Error(`Invalid field: ${field}`)
-        }
     }
 
     const validateForm = () => {
@@ -239,32 +215,6 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         }))
     }
 
-    const handleTemplateClick = ({ id, templateId, name }: CreateAppFormStateType['templateConfig']) => {
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateTemplateConfig,
-            value: { id, templateId, name },
-        })
-    }
-
-    const handleCloneAppClick = ({ appId, appName }: BaseAppMetaData) => {
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateCloneAppConfig,
-            value: { appId, appName },
-        })
-    }
-
-    const goBackToTemplatesList = () =>
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateTemplateConfig,
-            value: null,
-        })
-
-    const goBackToAppCloneList = () =>
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateCloneAppConfig,
-            value: null,
-        })
-
     const getHostURLConfig = async () => {
         try {
             const { result } = await getHostURLConfiguration()
@@ -301,10 +251,10 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
         if (isCreationMethodTemplate) {
-            if (!formState.templateConfig?.templateId) {
+            if (!formState.templateConfig?.templateId || !formState.cloneAppConfig?.appId) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
-                    description: 'Please select a template to create app',
+                    description: getNoItemSelectToastText(CreationMethodType.template),
                 })
                 return
             }
@@ -316,6 +266,13 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 })
                 return
             }
+        }
+
+        if (selectedCreationMethod === CreationMethodType.clone && !formState.cloneAppConfig?.appId) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: getNoItemSelectToastText(CreationMethodType.clone),
+            })
         }
 
         if (!isFormValid || invalidLabels) {
@@ -370,116 +327,6 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         }
     }
 
-    const renderAppTemplateContent = () =>
-        formState.templateConfig ? (
-            <>
-                <div className="flex left dc__gap-12 py-12 px-20">
-                    <Button
-                        icon={<ICBack />}
-                        dataTestId="create-app-modal-go-back-to-templates-list"
-                        ariaLabel="go-back-to-templates-list"
-                        variant={ButtonVariantType.secondary}
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.xs}
-                        showAriaLabelInTippy={false}
-                        onClick={goBackToTemplatesList}
-                    />
-                    <div className="flex left dc__gap-4">
-                        <Button
-                            dataTestId="template-list-breadcrumb"
-                            variant={ButtonVariantType.text}
-                            text="Templates"
-                            onClick={goBackToTemplatesList}
-                        />
-                        <span>/</span>
-                        <p className="m-0 flex left dc__gap-6">
-                            <ICAppTemplate className="icon-dim-20 p-1 dc__no-shrink" />
-                            <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">{formState.templateConfig.name}</span>
-                        </p>
-                    </div>
-                </div>
-                <div className="divider__secondary--horizontal" />
-                <div className="flexbox-col flex-grow-1 dc__overflow-auto create-app-modal__template">
-                    <div className="create-app-modal__template__loader">
-                        <Progressing size={32} />
-                    </div>
-                    <div className="create-app-modal__template__content flexbox-col dc__gap-20 flex-grow-1 bg__secondary dc__overflow-auto p-20">
-                        <ApplicationInfoForm
-                            formState={formState}
-                            handleFormStateChange={handleFormStateChange}
-                            formErrorState={formErrorState}
-                            handleTagErrorChange={handleTagErrorChange}
-                            isJobView={isJobView}
-                            selectedCreationMethod={selectedCreationMethod}
-                            isTagsAccordionExpanded={isTagsAccordionExpanded}
-                            toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
-                        />
-                        <UpdateTemplateConfig
-                            formState={formState}
-                            isJobView={isJobView}
-                            handleFormStateChange={handleFormStateChange}
-                            formErrorState={formErrorState}
-                        />
-                    </div>
-                </div>
-            </>
-        ) : (
-            TemplateList && <TemplateList handleTemplateClick={handleTemplateClick} />
-        )
-
-    const renderAppCloneContent = () =>
-        formState.cloneAppConfig ? (
-            <>
-                <div className="flex left dc__gap-12 py-12 px-20">
-                    <Button
-                        icon={<ICBack />}
-                        dataTestId="create-app-modal-go-back-to-clone-app-list"
-                        ariaLabel="go-back-to-clone-app-list"
-                        variant={ButtonVariantType.secondary}
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.xs}
-                        showAriaLabelInTippy={false}
-                        onClick={goBackToAppCloneList}
-                    />
-                    <div className="flex left dc__gap-4">
-                        <Button
-                            dataTestId="clone-list-breadcrumb"
-                            variant={ButtonVariantType.text}
-                            text={isJobView ? 'Clone Job' : 'Clone Application'}
-                            onClick={goBackToAppCloneList}
-                        />
-                        <span>/</span>
-                        <p className="m-0 flex left dc__gap-6">
-                            {getAppConfig(isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS, 20).icon}
-                            <span className="fs-13 lh-20 fw-6 cn-9 dc__truncate">
-                                {formState.cloneAppConfig.appName}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-                <div className="divider__secondary--horizontal" />
-                <div className="flexbox-col flex-grow-1 dc__overflow-auto create-app-modal__template">
-                    <div className="create-app-modal__template__loader">
-                        <Progressing size={32} />
-                    </div>
-                    <div className="create-app-modal__template__content flexbox-col dc__gap-20 flex-grow-1 bg__secondary dc__overflow-auto p-20">
-                        <ApplicationInfoForm
-                            formState={formState}
-                            handleFormStateChange={handleFormStateChange}
-                            formErrorState={formErrorState}
-                            handleTagErrorChange={handleTagErrorChange}
-                            isJobView={isJobView}
-                            selectedCreationMethod={selectedCreationMethod}
-                            isTagsAccordionExpanded={isTagsAccordionExpanded}
-                            toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
-                        />
-                    </div>
-                </div>
-            </>
-        ) : (
-            <AppCloneList handleCloneAppClick={handleCloneAppClick} isJobView={isJobView} />
-        )
-
     const getSelectedMethodContent = () => {
         switch (selectedCreationMethod) {
             case CreationMethodType.blank:
@@ -496,12 +343,32 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                     />
                 )
             case CreationMethodType.clone:
-                return renderAppCloneContent()
             case CreationMethodType.template:
-                return renderAppTemplateContent()
+                return (
+                    <ApplicationSelectionList
+                        formState={formState}
+                        formErrorState={formErrorState}
+                        selectedCreationMethod={selectedCreationMethod}
+                        handleFormStateChange={handleFormStateChange}
+                        handleTagErrorChange={handleTagErrorChange}
+                        isJobView={isJobView}
+                        isTagsAccordionExpanded={isTagsAccordionExpanded}
+                        toggleIsTagsAccordionExpanded={toggleIsTagsAccordionExpanded}
+                    />
+                )
             default:
                 return null
         }
+    }
+
+    const handleCreationMethodChange = (method: CreationMethodType) => {
+        setFormState((prev) => ({
+            ...prev,
+            templateConfig: null,
+            cloneAppConfig: null,
+        }))
+
+        setSelectedCreationMethod(method)
     }
 
     return (
@@ -511,7 +378,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
                 <div className="flexbox flex-grow-1 dc__overflow-hidden">
                     <Sidebar
                         selectedCreationMethod={selectedCreationMethod}
-                        handleCreationMethodChange={setSelectedCreationMethod}
+                        handleCreationMethodChange={handleCreationMethodChange}
                         createMethodConfig={createMethodConfig}
                         isJobView={isJobView}
                     />

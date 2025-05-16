@@ -41,7 +41,7 @@ const UpdateTemplateConfig = ({
     handleFormStateChange,
     formErrorState,
 }: UpdateTemplateConfigProps) => {
-    const stringTemplateDbId = formState.templateConfig.id.toString()
+    const stringTemplateDbId = formState.templateConfig?.id.toString()
 
     const handleBuildConfigurationChange: CIConfigProps['updateDockerConfigOverride'] = (key, value) => {
         switch (key) {

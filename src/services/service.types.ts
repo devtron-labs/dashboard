@@ -62,9 +62,14 @@ export interface CDPipeline {
     isDeploymentBlocked?: boolean
 }
 
-export interface AppListMin extends ResponseType {
-    result?: { id: number; name: string; createdBy: string; description: string }[]
+export interface AppListMinDTO {
+    id: number
+    name: string
+    createdBy: string
+    description: string
 }
+
+export type AppListMin = ResponseType<AppListMinDTO[]>
 
 export interface ProjectFilteredApps extends ResponseType {
     result?: {

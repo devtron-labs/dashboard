@@ -17,7 +17,7 @@
 import { AppOverviewProps } from '../types'
 import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { IconBaseSizeType, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 import { getAppIconWithBackground } from '@Config/utils'
 
 const {
@@ -35,7 +35,7 @@ export const getResourceKindFromAppType = (appType: AppOverviewProps['appType'])
     }
 }
 
-export const getAppConfig = (appType: AppOverviewProps['appType'], iconSize = 48) => {
+export const getAppConfig = (appType: AppOverviewProps['appType'], iconSize: IconBaseSizeType = 48) => {
     switch (appType) {
         case 'app':
             return {

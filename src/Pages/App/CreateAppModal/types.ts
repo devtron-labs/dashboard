@@ -166,15 +166,22 @@ export interface SidebarProps extends Pick<CreateAppModalProps, 'isJobView'> {
     createMethodConfig: ReturnType<typeof getCreateMethodConfig>
 }
 
-export interface AppToCloneSelectorProps
-    extends Pick<CreateAppModalProps, 'isJobView'>,
-        Required<Pick<SelectPickerProps, 'error'>> {
-    handleCloneIdChange: (cloneAppId: CreateAppFormStateType['cloneAppId']) => void
-}
-
 export interface UpdateTemplateConfigProps
     extends Pick<CreateAppModalProps, 'isJobView'>,
         Pick<ApplicationInfoFormProps, 'handleFormStateChange'> {
     formState: CreateAppFormStateType
     formErrorState: CreateAppFormErrorStateType
 }
+
+export interface ApplicationSelectionListProps
+    extends Pick<CreateAppModalProps, 'isJobView'>,
+        Pick<
+            ApplicationInfoFormProps,
+            | 'formState'
+            | 'selectedCreationMethod'
+            | 'isTagsAccordionExpanded'
+            | 'toggleIsTagsAccordionExpanded'
+            | 'handleFormStateChange'
+            | 'formErrorState'
+            | 'handleTagErrorChange'
+        > {}
