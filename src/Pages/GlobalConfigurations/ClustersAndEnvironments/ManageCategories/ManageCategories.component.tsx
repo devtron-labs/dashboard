@@ -97,8 +97,8 @@ const ManageCategories = () => {
                     />
                 </header>
 
-                <div className="flexbox-col flex-grow-1 dc__gap-12 dc__overflow-hidden px-20 py-20">
-                    <div className="flex right">
+                <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+                    <div className="flex right px-20 py-12">
                         <Button
                             dataTestId="manage_categories_button"
                             variant={ButtonVariantType.secondary}
@@ -109,13 +109,15 @@ const ManageCategories = () => {
                             onClick={onClickAddRow}
                         />
                     </div>
-                    <DynamicDataTable
-                        headers={CATEGORIES_TABLE_HEADERS}
-                        rows={rows}
-                        onRowEdit={dataTableHandleChange}
-                        onRowDelete={onDeleteRow}
-                        onRowAdd={onClickAddRow}
-                    />
+                    <div className="flexbox-col flex-grow-1 dc__overflow-auto px-20 pb-12">
+                        <DynamicDataTable
+                            headers={CATEGORIES_TABLE_HEADERS}
+                            rows={rows}
+                            onRowEdit={dataTableHandleChange}
+                            onRowDelete={onDeleteRow}
+                            onRowAdd={onClickAddRow}
+                        />
+                    </div>
                 </div>
                 <div className="flex right w-100 dc__gap-12 px-20 py-12 dc__border-top">
                     <Button

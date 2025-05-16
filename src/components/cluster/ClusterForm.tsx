@@ -34,9 +34,11 @@ import {
     InfoBlock,
     NewClusterFormProps,
     noop,
+    OptionType,
     PasswordField,
     RadioGroup,
     RadioGroupItem,
+    SelectPicker,
     showError,
     Textarea,
     ToastManager,
@@ -133,6 +135,7 @@ const ClusterForm = ({
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
+    category,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -171,6 +174,7 @@ const ClusterForm = ({
     const areSomeEntriesSelected = Object.values(isClusterSelected).some((_selected) => _selected)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
+    const [selectedCategory, setSelectedCategory] = useState<OptionType<number, string>>(category)
 
     useEffect(
         () => () => {
@@ -390,6 +394,7 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
+        category: selectedCategory.value,
     })
 
     const onValidation = async (state) => {
@@ -679,6 +684,10 @@ const ClusterForm = ({
         setSSHConnectionType(authType)
     }
 
+    const handleCategoryChange = (selected: OptionType<number, string>) => {
+        setSelectedCategory(selected)
+    }
+
     const clusterTitle = () => {
         if (!id) {
             return 'Add Cluster'
@@ -795,6 +804,21 @@ const ClusterForm = ({
                     <RadioGroupItem value="true">Production</RadioGroupItem>
                     <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
+                <div className="form__row">
+                    <SelectPicker
+                        label="Assign Category"
+                        inputId="assign-category-menu-list"
+                        name="assign-category-menu-list"
+                        classNamePrefix="assign-category-menu-list"
+                        options={[
+                            { label: 'category1', value: 1 },
+                            { label: 'category2', value: 2 },
+                        ]}
+                        onChange={handleCategoryChange}
+                        value={selectedCategory}
+                        size={ComponentSizeType.large}
+                    />
+                </div>
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
                         <div className="divider divider--n1 mt-20 mb-20" />

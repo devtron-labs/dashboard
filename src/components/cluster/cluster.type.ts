@@ -193,6 +193,7 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
+    category: OptionType<number, string>
 }
 
 export type ClusterFormProps = { reload: () => void } & (

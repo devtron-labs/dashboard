@@ -254,8 +254,6 @@ class ClusterList extends Component<ClusterListProps, any> {
                                 key={cluster.id || Math.random().toString(36).substr(2, 5)}
                                 showEditCluster={this.state.showEditCluster}
                                 toggleShowAddCluster={this.toggleShowEditCluster}
-                                isTlsConnection={cluster.isTlsConnection}
-                                prometheus_url={cluster.prometheus_url}
                             />
                         ),
                 )}
@@ -274,7 +272,6 @@ class ClusterList extends Component<ClusterListProps, any> {
                         const clusterName = props.match.params.clusterName
                         const {
                             isVirtualCluster,
-                            prometheus_url,
                             id: clusterId,
                         } = this.state.clusters.find((cluster) => cluster.cluster_name === clusterName) || {}
 
@@ -316,6 +313,7 @@ const Cluster = ({
     isVirtualCluster,
     isProd,
     installationId = 0,
+    category,
 }) => {
     const [editMode, toggleEditMode] = useState(false)
     const [environment, setEnvironment] = useState(null)
@@ -594,6 +592,7 @@ const Cluster = ({
                                     isProd={isProd}
                                     isTlsConnection={!insecureSkipTlsVerify}
                                     installationId={installationId}
+                                    category={category}
                                 />
                             </div>
                         </Drawer>

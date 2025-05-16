@@ -360,7 +360,6 @@ export const ClusterEnvironmentDrawer = ({
                     <div className="mb-16 flex left">
                         <SelectPicker
                             label="Assign Category"
-                            required
                             inputId="assign-category-menu-list"
                             name="assign-category-menu-list"
                             classNamePrefix="assign-category-menu-list"
