@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { CHECKBOX_VALUE, Checkbox, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
@@ -24,6 +23,9 @@ import { Accordian } from '../common/Accordian/Accordian'
 import { URLS } from '../../config'
 import { CHART_KEYS } from './constants'
 import { ChartHeaderFilterProps } from './charts.types'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const ChartCategoryFilters = importComponentFromFELibrary('ChartCategoryFilters', null, 'function')
 
 const ChartHeaderFilter = ({
     selectedChartRepo,
@@ -33,6 +35,8 @@ const ChartHeaderFilter = ({
     appStoreName,
     isGrid,
     setIsGrid,
+    chartCategoryIds,
+    setChartCategoryIds,
 }: ChartHeaderFilterProps) => {
     const match = useRouteMatch()
     const history = useHistory()
@@ -53,12 +57,15 @@ const ChartHeaderFilter = ({
         history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
     }
 
+    // Should be replaced with useURLFilters
     function handleFilterChanges(selected, key): void {
         const searchParams = new URLSearchParams(location.search)
         const app = searchParams.get(QueryParams.AppStoreName)
         const deprecate = searchParams.get(QueryParams.IncludeDeprecated)
         const chartRepoId = searchParams.get(QueryParams.ChartRepoId)
         const registryId = searchParams.get(QueryParams.RegistryId)
+        const chartCategoryIdsCsv = searchParams.get(QueryParams.ChartCategoryId)
+
         let isOCIRegistry
         if (key === CHART_KEYS.CHART_REPO) {
             const paramsChartRepoIds = selected
@@ -86,6 +93,9 @@ const ChartHeaderFilter = ({
                 if (deprecate) {
                     qsr = `${qsr}&${QueryParams.IncludeDeprecated}=${deprecate}`
                 }
+                if (chartCategoryIdsCsv) {
+                    qsr = `${qsr}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
+                }
                 history.push(`${url}?${qsr}`)
             } else {
                 let qs = `${QueryParams.ChartRepoId}=${paramsChartRepoIds}`
@@ -98,8 +108,29 @@ const ChartHeaderFilter = ({
                 if (deprecate) {
                     qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
                 }
+                if (chartCategoryIdsCsv) {
+                    qs = `${qs}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
+                }
                 history.push(`${url}?${qs}`)
             }
+        }
+
+        if (key === CHART_KEYS.CHART_CATEGORY) {
+            const chartCategoryCsv = selected.join(',')
+            let qs = `${QueryParams.ChartCategoryId}=${chartCategoryCsv}`
+            if (app) {
+                qs = `${qs}&${QueryParams.AppStoreName}=${app}`
+            }
+            if (chartRepoId) {
+                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
+            }
+            if (registryId) {
+                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
+            if (deprecate) {
+                qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
+            }
+            history.push(`${url}?${qs}`)
         }
 
         if (key === CHART_KEYS.DEPRECATED) {
@@ -112,6 +143,9 @@ const ChartHeaderFilter = ({
             }
             if (registryId) {
                 qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            }
+            if (chartCategoryIdsCsv) {
+                qs = `${qs}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
             }
             history.push(`${url}?${qs}`)
         }
@@ -127,19 +161,8 @@ const ChartHeaderFilter = ({
             if (registryId) {
                 qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
             }
-            history.push(`${url}?${qs}`)
-        }
-
-        if (key === CHART_KEYS.CLEAR) {
-            let qs: string = ''
-            if (deprecate) {
-                qs = `${qs}&${QueryParams.IncludeDeprecated}=${deprecate}`
-            }
-            if (chartRepoId) {
-                qs = `${qs}&${QueryParams.ChartRepoId}=${chartRepoId}`
-            }
-            if (registryId) {
-                qs = `${qs}&${QueryParams.RegistryId}=${registryId}`
+            if (chartCategoryIdsCsv) {
+                qs = `${qs}&${QueryParams.ChartCategoryId}=${chartCategoryIdsCsv}`
             }
             history.push(`${url}?${qs}`)
         }
@@ -162,6 +185,11 @@ const ChartHeaderFilter = ({
         handleFilterChanges(searchKey, CHART_KEYS.SEARCH)
     }
 
+    const handleUpdateCategoryFilter = (selectedCategories: string[]) => {
+        setChartCategoryIds(selectedCategories)
+        handleFilterChanges(selectedCategories, CHART_KEYS.CHART_CATEGORY)
+    }
+
     return (
         <div className="filter-column-container flexbox-col h-100 dc__overflow-hidden">
             <div className="pb-12 pl-12 pr-12 pt-16">
@@ -171,35 +199,29 @@ const ChartHeaderFilter = ({
                     handleEnter={handleSearchEnter}
                     inputProps={{
                         placeholder: 'Search charts',
-                        autoFocus: true
+                        autoFocus: true,
                     }}
                     dataTestId="chart-store-search-box"
                 />
             </div>
             <div className="pl-12 pr-12 flexbox-col flex-grow-1 dc__overflow-auto">
-                <div className="fs-12 fw-6 ml-8 cn-6 pb-8 pt-8" data-testid="chart-store-view-type-heading">
-                    VIEW AS
-                </div>
-                <div className="cursor flex">
-                    <div
-                        onClick={setGrid}
-                        className={`flex pt-8 pb-8 pl-10 pr-10 fs-13 br-4 w-100 ${
-                            isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'
-                        }`}
-                        data-testid="chart-store-grid-view"
-                    >
-                        <Grid className="icon-dim-20 mr-8" />
-                        Grid
-                    </div>
-                    <div
-                        onClick={setList}
-                        className={`flex pt-8 pb-8 fs-13 pr-10 pl-10 br-4 w-100 ${
-                            !isGrid ? 'cb-5 bcb-1 scb-5' : 'dc__hover-n50'
-                        }`}
-                        data-testid="chart-store-list-view"
-                    >
-                        <List className="icon-dim-20 mr-8" />
-                        List
+                <div className="flex dc__content-space px-8 py-6 dc__gap-8">
+                    <span className="fs-12 cn-6 fw-6 lh-20">VIEW AS</span>
+                    <div className="cursor flex dc__gap-8">
+                        <button
+                            onClick={setGrid}
+                            className={`flex dc__unset-button-styles ${isGrid ? 'scb-5' : ''}`}
+                            data-testid="chart-store-grid-view"
+                        >
+                            <Grid className="icon-dim-20" />
+                        </button>
+                        <button
+                            onClick={setList}
+                            className={`flex dc__unset-button-styles ${!isGrid ? 'scb-5' : ''}`}
+                            data-testid="chart-store-list-view"
+                        >
+                            <List className="icon-dim-20" />
+                        </button>
                     </div>
                 </div>
                 <hr className="mt-8 mb-8" />
@@ -215,6 +237,15 @@ const ChartHeaderFilter = ({
                 >
                     <div> Show deprecated charts</div>
                 </Checkbox>
+                {ChartCategoryFilters && (
+                    <>
+                        <hr className="mt-8 mb-8" />
+                        <ChartCategoryFilters
+                            selectedCategories={chartCategoryIds}
+                            handleUpdateCategoryFilter={handleUpdateCategoryFilter}
+                        />
+                    </>
+                )}
                 <hr className="mt-8 mb-8" />
                 <Accordian
                     header="CHART SOURCE"
