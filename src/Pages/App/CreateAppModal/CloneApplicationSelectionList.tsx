@@ -37,18 +37,14 @@ export const CloneApplicationSelectionList = ({
 }: ApplicationSelectionListProps) => {
     const isCreationMethodTemplate = selectedCreationMethod === CreationMethodType.template
 
-    const goBackToTemplatesList = () =>
+    const handleGoBack = () => {
         handleFormStateChange({
-            action: CreateAppFormStateActionType.updateTemplateConfig,
+            action: isCreationMethodTemplate
+                ? CreateAppFormStateActionType.updateTemplateConfig
+                : CreateAppFormStateActionType.updateCloneAppConfig,
             value: null,
         })
-
-    const goBackToAppCloneList = () =>
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateCloneAppConfig,
-            value: null,
-        })
-
+    }
     const handleTemplateClick = ({ id, templateId, name }: CreateAppFormStateType['templateConfig']) => {
         handleFormStateChange({
             action: CreateAppFormStateActionType.updateTemplateConfig,
@@ -99,7 +95,6 @@ export const CloneApplicationSelectionList = ({
     }
 
     const renderAppInfoForm = () => {
-        const goBack = isCreationMethodTemplate ? goBackToTemplatesList : goBackToAppCloneList
         const breadcrumbText = getBreadcrumbText()
         const breadcrumbDataTestId = isCreationMethodTemplate ? 'template-list-breadcrumb' : 'clone-list-breadcrumb'
         const icon = isCreationMethodTemplate ? (
@@ -124,14 +119,14 @@ export const CloneApplicationSelectionList = ({
                         style={ButtonStyleType.neutral}
                         size={ComponentSizeType.xs}
                         showAriaLabelInTippy={false}
-                        onClick={goBack}
+                        onClick={handleGoBack}
                     />
                     <div className="flex left dc__gap-6">
                         <Button
                             dataTestId={breadcrumbDataTestId}
                             variant={ButtonVariantType.text}
                             text={breadcrumbText}
-                            onClick={goBack}
+                            onClick={handleGoBack}
                         />
                         <span className="fs-13">/</span>
                         <p className="m-0 flex left dc__gap-6">

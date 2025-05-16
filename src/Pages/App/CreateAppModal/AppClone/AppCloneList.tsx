@@ -1,5 +1,3 @@
-import { useState } from 'react'
-
 import {
     Button,
     ComponentSizeType,
@@ -18,25 +16,16 @@ import { useDevtronCloneList } from './useDevtronCloneList'
 
 export const AppCloneList = ({ handleCloneAppClick, isJobView, handleCreationMethodChange }: AppCloneListProps) => {
     const { searchKey, handleSearch, clearFilters } = useStateFilters()
-    const [isLoadingMoreJobList, setIsLoadingMoreJobList] = useState<boolean>(false)
-    const [hasError, setHasError] = useState<boolean>(false)
 
-    const { isListLoading, list, listError, reloadList, loadMoreData, hasMoreData } = useDevtronCloneList({
-        handleCloneAppClick,
-        isJobView,
-    })
+    const { isListLoading, list, listError, reloadList, loadMoreData, hasMoreData, isLoadingMore, hasError } =
+        useDevtronCloneList({
+            handleCloneAppClick,
+            isJobView,
+        })
 
     const handleLoadMore = async () => {
-        if (isLoadingMoreJobList || !hasMoreData) return
-        setIsLoadingMoreJobList(true)
-        setHasError(false)
-        try {
-            await loadMoreData()
-        } catch {
-            setHasError(true)
-        } finally {
-            setIsLoadingMoreJobList(false)
-        }
+        if (isLoadingMore || !hasMoreData) return
+        await loadMoreData()
     }
 
     const handleCreateFromScratch = () => {
@@ -82,9 +71,9 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView, handleCreationMet
                         renderButton: renderCreateFromScratchButton,
                     }}
                 />
-                {hasMoreData && isLoadingMoreJobList && <GenericInfoListSkeleton />}
+                {hasMoreData && isLoadingMore && <GenericInfoListSkeleton />}
 
-                {hasMoreData && !isLoadingMoreJobList && <DetectBottom callback={handleLoadMore} hasError={hasError} />}
+                {hasMoreData && !isLoadingMore && <DetectBottom callback={handleLoadMore} hasError={hasError} />}
             </div>
         </div>
     )

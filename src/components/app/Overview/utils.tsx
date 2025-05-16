@@ -36,19 +36,20 @@ export const getResourceKindFromAppType = (appType: AppOverviewProps['appType'])
 }
 
 export const getAppConfig = (appType: AppOverviewProps['appType'], iconSize: IconBaseSizeType = 48) => {
+    const icon = getAppIconWithBackground(appType, iconSize)
     switch (appType) {
         case 'app':
             return {
                 resourceName: 'application',
                 defaultNote: DefaultAppNote,
-                icon: getAppIconWithBackground(appType, iconSize),
+                icon: icon,
                 defaultDescription: APP_DESCRIPTION,
             }
         case 'job':
             return {
                 resourceName: 'job',
                 defaultNote: DefaultJobNote,
-                icon: getAppIconWithBackground(appType, iconSize),
+                icon: icon,
                 defaultDescription: JOB_DESCRIPTION,
             }
         case 'helm-chart':

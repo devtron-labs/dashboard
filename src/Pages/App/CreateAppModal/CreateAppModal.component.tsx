@@ -251,7 +251,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
         const { isFormValid, invalidLabels, labelTags, invalidWorkFlow } = validateForm()
 
         if (isCreationMethodTemplate) {
-            if (!formState.templateConfig?.templateId || !formState.cloneAppConfig?.appId) {
+            if (!formState.templateConfig?.templateId) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     description: getNoItemSelectToastText(CreationMethodType.template),
@@ -328,11 +328,12 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     const handleCreationMethodChange = (method: CreationMethodType) => {
-        setFormState((prev) => ({
-            ...prev,
-            templateConfig: null,
-            cloneAppConfig: null,
-        }))
+        handleFormStateChange({
+            action: isCreationMethodTemplate
+                ? CreateAppFormStateActionType.updateTemplateConfig
+                : CreateAppFormStateActionType.updateCloneAppConfig,
+            value: null,
+        })
 
         setSelectedCreationMethod(method)
     }
