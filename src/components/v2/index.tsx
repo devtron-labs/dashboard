@@ -116,7 +116,7 @@ const RouterComponent = ({ envType }) => {
     }, [location.search])
 
     const _init = (fetchExternalLinks?: boolean) => {
-        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks, true), abortControllerRef)
+        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks), abortControllerRef)
     }
 
     const handleAppDetailsCallError = (e: any) => {
@@ -141,12 +141,16 @@ const RouterComponent = ({ envType }) => {
     }
 
     const handleInitiatePolling = () => {
+        if (initTimer) {
+            clearTimeout(initTimer)
+        }
+
         initTimer = setTimeout(() => {
             _init()
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
-    const handleFetchAppDetails = async (fetchExternalLinks: boolean) => {
+    const handleFetchAppDetails = async (fetchExternalLinks: boolean): Promise<{ isAborted: boolean }> => {
         try {
             const response = await getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
             handlePublishAppDetails(response)
@@ -155,32 +159,49 @@ const RouterComponent = ({ envType }) => {
             if (fetchExternalLinks) {
                 getExternalLinksAndTools(response.result?.clusterId)
             }
-        } catch (error) {
-            handleAppDetailsCallError(error)
-        } finally {
             setLoadingDetails(false)
+        } catch (error) {
+            const isAborted = getIsRequestAborted(error)
+            
+            if (!isAborted) {
+                handleAppDetailsCallError(error)
+            }
+            setLoadingDetails(false)
+
+            return { isAborted }
         }
+
+        return { isAborted: false }
     }
 
     const handleFetchResourceTree = async () => {
         try {
             const response = await getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
             handlePublishAppDetails(response)
-        } catch (error) {
-            handleAppDetailsCallError(error)
-        } finally {
             setLoadingResourceTree(false)
+        } catch (error) {
+            const isAborted = getIsRequestAborted(error)
+
+            if (!isAborted) {
+                handleAppDetailsCallError(error)
+            }
+            setLoadingResourceTree(false)
+
+            return { isAborted }
         }
+
+        return { isAborted: false }
     }
 
-    const _getAndSetAppDetail = async (fetchExternalLinks: boolean, shouldTriggerPolling: boolean = false) => {
+    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         if (envType === EnvType.CHART) {
             // Intentionally not setting await since it was not awaited earlier when in thens as well
             Promise.allSettled([
                 handleFetchAppDetails(fetchExternalLinks),
                 handleFetchResourceTree(),
-            ]).finally(() => {
-                if (shouldTriggerPolling) {
+            ]).then((results) => {
+                const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
+                if (!isAborted) {
                     handleInitiatePolling()
                 }
             })
@@ -195,9 +216,8 @@ const RouterComponent = ({ envType }) => {
                     setErrorResponseCode(e.code)
                 }
             } finally {
-                if (shouldTriggerPolling) {
-                    handleInitiatePolling()
-                }
+                // BTW This is a dead block BTW should be removed
+                handleInitiatePolling()
             }
         }
     }
