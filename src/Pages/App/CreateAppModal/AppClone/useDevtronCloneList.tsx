@@ -65,7 +65,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
         setIsLoadingMore(true)
         try {
             if (listResponse.type === APP_TYPE.JOB) {
-                const currentJobContainers = listResponse.data.result?.jobContainers || []
+                const currentJobContainers = listResponse.data.result?.jobContainers ?? []
 
                 const response = await getJobs(
                     {
@@ -82,7 +82,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
                     },
                 )
 
-                const newJobContainers = response.result?.jobContainers || []
+                const newJobContainers = response.result?.jobContainers ?? []
 
                 // Update the list response with the new data
                 setListResponse({
@@ -105,7 +105,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
         if (isListLoading || !listResponse) return []
 
         if (listResponse.type === APP_TYPE.JOB) {
-            const jobContainers = listResponse.data.result?.jobContainers || []
+            const jobContainers = listResponse.data.result?.jobContainers ?? []
 
             totalCount = listResponse.data.result.jobCount
 
@@ -122,7 +122,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
                 }
             })
         }
-        const apps = listResponse.data.result || []
+        const apps = listResponse.data.result ?? []
 
         return apps.map<GenericInfoCardListingProps['list'][number]>((app) => {
             const { id, name, createdBy, description } = app
@@ -139,7 +139,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppClone
     }, [isListLoading, listResponse])
 
     return {
-        isListLoading: isListLoading || getIsRequestAborted(listError),
+        isListLoading: isListLoading ?? getIsRequestAborted(listError),
         list,
         listError,
         reloadList,
