@@ -797,28 +797,26 @@ const ClusterForm = ({
                 </div>
                 <RadioGroup
                     name="isProd"
-                    className="radio-group-no-border"
+                    className="radio-group-no-border mb-8"
                     value={state.isProd.value}
                     onChange={handleOnChange}
                 >
                     <RadioGroupItem value="true">Production</RadioGroupItem>
                     <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
-                <div className="form__row">
-                    <SelectPicker
-                        label="Assign Category"
-                        inputId="assign-category-menu-list"
-                        name="assign-category-menu-list"
-                        classNamePrefix="assign-category-menu-list"
-                        options={[
-                            { label: 'category1', value: 1 },
-                            { label: 'category2', value: 2 },
-                        ]}
-                        onChange={handleCategoryChange}
-                        value={selectedCategory}
-                        size={ComponentSizeType.large}
-                    />
-                </div>
+                <SelectPicker
+                    label="Assign Category"
+                    inputId="assign-category-menu-list"
+                    name="assign-category-menu-list"
+                    classNamePrefix="assign-category-menu-list"
+                    options={[
+                        { label: 'category1', value: 1 },
+                        { label: 'category2', value: 2 },
+                    ]}
+                    onChange={handleCategoryChange}
+                    value={selectedCategory}
+                    size={ComponentSizeType.large}
+                />
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
                         <div className="divider divider--n1 mt-20 mb-20" />

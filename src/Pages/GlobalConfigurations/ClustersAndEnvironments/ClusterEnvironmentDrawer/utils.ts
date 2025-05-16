@@ -42,6 +42,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               default: data.isProduction,
               description: data.description || '',
               updateLabels: !!namespaceLabels,
+              category: data.category?.value,
               ...(namespaceLabels
                   ? {
                         namespaceResourceVersion: resourceVersion,
