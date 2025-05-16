@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { Icon, IconsProps, SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Icon,
+    IconsProps,
+    SelectPickerOptionType,
+    validateDescription,
+    ValidationResponseType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { MAX_LENGTH_30 } from '@Config/constantMessaging'
@@ -60,14 +66,6 @@ export const validateProject = (projectId: CreateAppFormStateType['projectId']):
     return { isValid: false, message: 'Please select a project' }
 }
 
-export const validateCloneApp = (cloneAppId: CreateAppFormStateType['cloneAppId']): ValidationResponseType => {
-    if (cloneAppId) {
-        return { isValid: true, message: '' }
-    }
-
-    return { isValid: false, message: 'Please select an application to clone' }
-}
-
 export const getCreateMethodConfig = (
     isJobView: CreateAppModalProps['isJobView'],
     selectedCreationMethod: CreationMethodType,
@@ -78,7 +76,7 @@ export const getCreateMethodConfig = (
 
     return [
         {
-            label: `Blank ${labelSuffix}`,
+            label: 'Create from Scratch',
             value: CreationMethodType.blank,
             startIcon: (
                 <Icon
@@ -116,4 +114,29 @@ export const getCreateMethodConfig = (
                   },
               ]),
     ]
+}
+
+export const getNoItemSelectToastText = (selectedCreationMethod: CreationMethodType) => {
+    if (selectedCreationMethod === CreationMethodType.template) {
+        return 'Please select a template to create app'
+    }
+
+    if (selectedCreationMethod === CreationMethodType.clone) {
+        return 'Please select an app to clone'
+    }
+
+    return null
+}
+
+export const validateFormField = (field: keyof CreateAppFormStateType, value) => {
+    switch (field) {
+        case 'name':
+            return validateAppName(value).message
+        case 'description':
+            return validateDescription(value).message
+        case 'projectId':
+            return validateProject(value).message
+        default:
+            throw new Error(`Invalid field: ${field}`)
+    }
 }

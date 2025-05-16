@@ -17,6 +17,7 @@
 import { SyntheticEvent } from 'react'
 
 import {
+    BaseAppMetaData,
     ButtonProps,
     DynamicDataTableCellErrorType,
     DynamicDataTableRowType,
@@ -56,6 +57,7 @@ export interface CreateAppFormStateType {
     gitMaterials: CreateAppGitMaterialType[]
     buildConfiguration: Required<Pick<CIConfigProps['parentState']['ciConfig'], 'dockerRegistry' | 'dockerRepository'>>
     workflowConfig: CreateAppWorkflowConfigType
+    cloneAppConfig: BaseAppMetaData
 }
 
 export interface CreateAppFormErrorStateType {
@@ -63,7 +65,6 @@ export interface CreateAppFormErrorStateType {
     name: string
     description: string
     tags: DynamicDataTableCellErrorType<TagsTableColumnsType>
-    cloneAppId: string | null
     gitMaterials: boolean
     // Map of workflow id to error message
     workflowConfig: Record<string, string>
@@ -85,6 +86,7 @@ export enum CreateAppFormStateActionType {
     updateBuildConfiguration = 'updateBuildConfiguration',
     updateWorkflowConfig = 'updateWorkflowConfig',
     updateTemplateConfig = 'updateTemplateConfig',
+    updateCloneAppConfig = 'updateCloneAppConfig',
 }
 
 type BaseHandleFormStateChangeParamsType<Action extends CreateAppFormStateActionType, Value> = {
@@ -129,6 +131,10 @@ export type HandleFormStateChangeParamsType =
           CreateAppFormStateActionType.updateTemplateConfig,
           CreateAppFormStateType['templateConfig']
       >
+    | BaseHandleFormStateChangeParamsType<
+          CreateAppFormStateActionType.updateCloneAppConfig,
+          CreateAppFormStateType['cloneAppConfig']
+      >
 
 export interface CreateAppModalProps {
     isJobView: boolean
@@ -160,15 +166,23 @@ export interface SidebarProps extends Pick<CreateAppModalProps, 'isJobView'> {
     createMethodConfig: ReturnType<typeof getCreateMethodConfig>
 }
 
-export interface AppToCloneSelectorProps
-    extends Pick<CreateAppModalProps, 'isJobView'>,
-        Required<Pick<SelectPickerProps, 'error'>> {
-    handleCloneIdChange: (cloneAppId: CreateAppFormStateType['cloneAppId']) => void
-}
-
 export interface UpdateTemplateConfigProps
     extends Pick<CreateAppModalProps, 'isJobView'>,
         Pick<ApplicationInfoFormProps, 'handleFormStateChange'> {
     formState: CreateAppFormStateType
     formErrorState: CreateAppFormErrorStateType
 }
+
+export interface ApplicationSelectionListProps
+    extends Pick<CreateAppModalProps, 'isJobView'>,
+        Pick<
+            ApplicationInfoFormProps,
+            | 'formState'
+            | 'selectedCreationMethod'
+            | 'isTagsAccordionExpanded'
+            | 'toggleIsTagsAccordionExpanded'
+            | 'handleFormStateChange'
+            | 'formErrorState'
+            | 'handleTagErrorChange'
+        >,
+        Pick<SidebarProps, 'handleCreationMethodChange'> {}

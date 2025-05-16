@@ -151,18 +151,22 @@ export interface JobsEmptyProps {
     clickHandler: () => void
 }
 
+export interface JobContainerTypes {
+    id: number
+    jobName: string
+    appName: string
+    jobId: number
+    ciPipelines: JobCIPipeline[]
+    description: {
+        description: string
+        updatedBy: string
+        createdBy: string
+    }
+    projectId: number
+}
+
 export type JobList = ResponseType<{
-    jobContainers?: {
-        id: number
-        jobName: string
-        appName: string
-        jobId: number
-        ciPipelines: JobCIPipeline[]
-        description: {
-            description: string
-        }
-        projectId: number
-    }[]
+    jobContainers?: JobContainerTypes[]
     jobCount: number
 }>
 

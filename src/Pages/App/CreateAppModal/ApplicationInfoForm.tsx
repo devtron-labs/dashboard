@@ -19,17 +19,15 @@ import { ChangeEvent } from 'react'
 import { CustomInput, TagsContainer, Textarea } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICCaretLeftSmall } from '@Icons/ic-caret-left-small.svg'
-import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { APP_TYPE } from '@Config/constants'
+import { getAppIconWithBackground } from '@Config/utils'
 
-import AppToCloneSelector from './AppToCloneSelector'
 import ProjectSelector from './ProjectSelector'
 import {
     ApplicationInfoFormProps,
     CreateAppFormStateActionType,
     CreateAppFormStateType,
-    CreationMethodType,
     HandleFormStateChangeParamsType,
     ProjectSelectorProps,
 } from './types'
@@ -71,17 +69,12 @@ const ApplicationInfoForm = ({
         })
     }
 
-    const handleCloneIdChange = (cloneId) => {
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateCloneAppId,
-            value: cloneId,
-        })
-    }
+    const isMandatoryTag = formState.tags.some((tag) => tag.data.tagKey.required)
 
     return (
         // key is required for ensuring autoFocus on name on creation method change
         <div className="flexbox-col dc__gap-16 p-20 br-8 border__secondary bg__primary" key={selectedCreationMethod}>
-            <ICDevtronApp className="icon-dim-48 dc__no-shrink" />
+            {getAppIconWithBackground(isJobView ? APP_TYPE.JOB : APP_TYPE.DEVTRON_APPS, 48)}
             <div className="flexbox dc__gap-8">
                 <ProjectSelector
                     selectedProjectId={formState.projectId}
@@ -122,7 +115,9 @@ const ApplicationInfoForm = ({
                     <ICCaretLeftSmall
                         className={`scn-7 dc__no-shrink dc__transition--transform ${isTagsAccordionExpanded ? 'dc__flip-270' : 'dc__flip-180'}`}
                     />
-                    <span className="fs-13 fw-6 lh-20 cn-9">Add tags to {isJobView ? 'job' : 'application'}</span>
+                    <span className={`fs-13 fw-6 lh-20 cn-9 ${isMandatoryTag ? 'dc__required-field' : ''}`}>
+                        Add tags to {isJobView ? 'job' : 'application'}
+                    </span>
                 </button>
                 <div className={!isTagsAccordionExpanded ? 'dc__hide-section' : ''}>
                     {MandatoryTagsContainer ? (
@@ -147,13 +142,6 @@ const ApplicationInfoForm = ({
                     )}
                 </div>
             </div>
-            {selectedCreationMethod === CreationMethodType.clone && (
-                <AppToCloneSelector
-                    error={formErrorState.cloneAppId}
-                    isJobView={isJobView}
-                    handleCloneIdChange={handleCloneIdChange}
-                />
-            )}
         </div>
     )
 }

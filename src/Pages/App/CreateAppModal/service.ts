@@ -14,8 +14,58 @@
  * limitations under the License.
  */
 
-import { post } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseAppMetaData, GenericInfoCardListingProps, post } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Routes } from '@Config/constants'
+import { APP_TYPE, Routes } from '@Config/constants'
+import { getAppIconWithBackground } from '@Config/utils'
+
+import { DevtronListResponse } from './AppClone/types'
 
 export const createApp = (request) => post(Routes.APP, request)
+
+export const getDevtronAppList = ({
+    listResponse,
+    handleCloneAppClick,
+}: {
+    listResponse: DevtronListResponse
+    handleCloneAppClick: (app: BaseAppMetaData) => void
+}) => {
+    if (listResponse.type === APP_TYPE.JOB) {
+        const jobContainers = listResponse.data.result?.jobContainers ?? []
+
+        const totalCount = listResponse.data.result.jobCount
+
+        return {
+            list: jobContainers.map<GenericInfoCardListingProps['list'][number]>((job) => {
+                const { jobId, jobName, description } = job
+
+                return {
+                    id: String(jobId),
+                    title: jobName,
+                    description: description.description,
+                    author: description.createdBy,
+                    Icon: getAppIconWithBackground(APP_TYPE.JOB, 40),
+                    onClick: () => handleCloneAppClick({ appId: jobId, appName: jobName }),
+                }
+            }),
+            totalCount,
+        }
+    }
+    const apps = listResponse.data.result ?? []
+
+    return {
+        list: apps.map<GenericInfoCardListingProps['list'][number]>((app) => {
+            const { id, name, createdBy, description } = app
+
+            return {
+                id: String(id),
+                title: name,
+                Icon: getAppIconWithBackground(APP_TYPE.DEVTRON_APPS, 40),
+                onClick: () => handleCloneAppClick({ appId: id, appName: name }),
+                author: createdBy,
+                description,
+            }
+        }),
+        totalCount: apps.length,
+    }
+}

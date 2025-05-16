@@ -22,7 +22,7 @@ import { HeaderSectionProps } from './types'
 
 const HeaderSection = ({ isJobView, handleClose, isCloseDisabled }: HeaderSectionProps) => (
     <div className="flex flex-align-center flex-justify border__primary--bottom py-12 px-20">
-        <h2 className="fs-16 fw-6 lh-1-43 m-0">Create {isJobView ? 'Job' : 'Devtron Application'}</h2>
+        <h2 className="fs-16 fw-6 lh-1-43 m-0 cn-9">Create {isJobView ? 'Job' : 'Devtron Application'}</h2>
         <Button
             onClick={handleClose}
             dataTestId={`close-create-custom${isJobView ? 'job' : 'app'}-wing`}
