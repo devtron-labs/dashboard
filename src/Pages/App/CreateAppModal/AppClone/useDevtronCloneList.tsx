@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2024. Devtron Inc.
  */
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import {
     abortPreviousRequests,
@@ -17,10 +17,11 @@ import { getAppListMin } from '@Services/service'
 
 import { AppCloneListProps, DevtronListResponse } from './types'
 
-export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, updatedList }: AppCloneListProps) => {
+export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: AppCloneListProps) => {
     const cloneListAbortControllerRef = useRef(new AbortController())
+    const [isLoadingMore, setIsLoadingMore] = useState(false)
 
-    const [isListLoading, listResponse, listError, reloadList] = useAsync<DevtronListResponse>(() =>
+    const [isListLoading, listResponse, listError, reloadList, setListResponse] = useAsync<DevtronListResponse>(() =>
         abortPreviousRequests(
             () =>
                 isJobView
@@ -54,16 +55,61 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, updatedLis
     )
     let totalCount = 0
 
+    if (listResponse?.type === APP_TYPE.JOB) {
+        totalCount = listResponse.data.result.jobCount
+    }
+
+    const loadMoreData = async () => {
+        if (isLoadingMore || !listResponse) return
+
+        setIsLoadingMore(true)
+        try {
+            if (listResponse.type === APP_TYPE.JOB) {
+                const currentJobContainers = listResponse.data.result?.jobContainers || []
+
+                const response = await getJobs(
+                    {
+                        teams: [],
+                        appStatuses: [],
+                        appNameSearch: '',
+                        offset: currentJobContainers.length,
+                        size: 20,
+                        sortBy: 'appNameSort',
+                        sortOrder: 'ASC',
+                    },
+                    {
+                        signal: cloneListAbortControllerRef.current.signal,
+                    },
+                )
+
+                const newJobContainers = response.result?.jobContainers || []
+
+                // Update the list response with the new data
+                setListResponse({
+                    type: APP_TYPE.JOB,
+                    data: {
+                        ...response,
+                        result: {
+                            ...response.result,
+                            jobContainers: [...currentJobContainers, ...newJobContainers],
+                        },
+                    },
+                })
+            }
+        } finally {
+            setIsLoadingMore(false)
+        }
+    }
+
     const list = useMemo(() => {
         if (isListLoading || !listResponse) return []
 
         if (listResponse.type === APP_TYPE.JOB) {
             const jobContainers = listResponse.data.result?.jobContainers || []
-            const updatedJobList = [...jobContainers, ...updatedList]
 
             totalCount = listResponse.data.result.jobCount
 
-            return updatedJobList.map<GenericInfoCardListingProps['list'][number]>((job) => {
+            return jobContainers.map<GenericInfoCardListingProps['list'][number]>((job) => {
                 const { jobId, jobName, description } = job
 
                 return {
@@ -90,7 +136,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, updatedLis
                 description,
             }
         })
-    }, [isListLoading, listResponse, updatedList])
+    }, [isListLoading, listResponse])
 
     return {
         isListLoading: isListLoading || getIsRequestAborted(listError),
@@ -98,5 +144,7 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, updatedLis
         listError,
         reloadList,
         totalCount,
+        loadMoreData,
+        hasMoreData: listResponse?.type === APP_TYPE.JOB && list.length < totalCount,
     }
 }
