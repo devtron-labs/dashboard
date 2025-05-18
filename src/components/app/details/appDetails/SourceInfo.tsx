@@ -86,6 +86,7 @@ export const SourceInfo = ({
     setHibernationPatchChartName,
     applications,
     isAppView,
+    isResourceTreeReloading,
 }: SourceInfoType) => {
     const params = useParams<{ appId: string; envId?: string }>()
 
@@ -171,6 +172,7 @@ export const SourceInfo = ({
     const renderAppDetailsCDButton = (isForRollback?: boolean) => (
         <AppDetailsCDButton
             appId={appDetails.appId}
+            appName={appDetails.appName}
             environmentId={appDetails.environmentId}
             environmentName={appDetails.environmentName}
             isVirtualEnvironment={appDetails.isVirtualEnvironment}
@@ -445,6 +447,7 @@ export const SourceInfo = ({
                                   appName={appDetails.appName}
                                   envName={appDetails.environmentName}
                                   renderRollbackButton={() => renderAppDetailsCDButton(true)}
+                                isResourceTreeReloading={isResourceTreeReloading}
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest &&

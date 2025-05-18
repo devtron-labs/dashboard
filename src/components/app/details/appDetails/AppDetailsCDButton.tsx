@@ -44,6 +44,7 @@ const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModa
 
 const AppDetailsCDButton = ({
     appId,
+    appName,
     environmentId,
     cdModal,
     deploymentAppType,
@@ -94,7 +95,7 @@ const AppDetailsCDButton = ({
                 text="Rollback"
                 variant={ButtonVariantType.text}
                 onClick={onClickDeployButton}
-                size={ComponentSizeType.medium}
+                size={ComponentSizeType.small}
             />
         ) : (
             <Button
@@ -152,6 +153,7 @@ const AppDetailsCDButton = ({
                         isLoading={loadingDetails}
                         isRedirectedFromAppDetails
                         handleSuccess={handleSuccess}
+                        selectedAppName={appName}
                     />
                 </div>
             </VisibleModal>

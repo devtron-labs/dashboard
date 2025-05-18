@@ -587,6 +587,7 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     filteredEnvIds?: string
     deploymentUserActionState?: ACTION_STATE
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
+    isResourceTreeReloading?: boolean
 }
 
 export interface AppDetailsCDButtonType
@@ -599,6 +600,7 @@ export interface AppDetailsCDButtonType
     cdModal: CDModalProps
     isForEmptyState?: boolean
     isForRollback?: boolean
+    appName?: string
     handleSuccess?: CDMaterialProps['handleSuccess']
 }
 
