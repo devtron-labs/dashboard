@@ -89,6 +89,7 @@ const SWITCH_TEMPLATE: Story = {
         isLoading: false,
         tooltipContent: '',
         shape: 'rounded',
+        ariaLabel: 'Toggle',
     },
 }
 
