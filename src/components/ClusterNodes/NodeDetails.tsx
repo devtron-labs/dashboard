@@ -78,6 +78,9 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
 
 const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
@@ -152,20 +155,36 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         getData(patchData)
     }, [node])
 
+    const getSanitizedNodeTabId = (id: string) => id.toLowerCase().replace(' ', '-')
+
+    // id will be populated into url
+    const NODE_TABS_INFO: (Pick<TabProps, 'label' | 'icon'> & { id: string })[] = [
+        {
+            id: getSanitizedNodeTabId(NODE_DETAILS_TABS.summary),
+            label: NODE_DETAILS_TABS.summary,
+        },
+        {
+            id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
+            label: NODE_DETAILS_TABS.yaml,
+            icon: Edit,
+        },
+        {
+            id: getSanitizedNodeTabId(NODE_DETAILS_TABS.nodeConditions),
+            label: NODE_DETAILS_TABS.nodeConditions,
+        },
+        ...REDFISH_NODE_UI_TABS,
+    ]
+
     useEffect(() => {
-        if (queryParams.has('tab')) {
-            const tab = queryParams.get('tab').replace('-', ' ')
-            if (tab === NODE_DETAILS_TABS.summary.toLowerCase()) {
-                setSelectedTabIndex(0)
-            } else if (tab === NODE_DETAILS_TABS.yaml.toLowerCase()) {
-                setSelectedTabIndex(1)
-            } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
-                setSelectedTabIndex(2)
-            }
+        const tab = queryParams.get('tab')
+        const tabIndex = NODE_TABS_INFO.findIndex((tabDetails) => tabDetails.id === tab)
+
+        if (tabIndex !== -1) {
+            setSelectedTabIndex(tabIndex)
         } else {
             replace({
                 pathname: location.pathname,
-                search: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+                search: `?tab=${getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)}`,
             })
         }
     }, [location.search])
@@ -182,14 +201,9 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
         if (node !== AUTO_SELECT.value) {
-            let _searchParam = '?tab='
-            if (_tabIndex === 0) {
-                _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
-            } else if (_tabIndex === 1) {
-                _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
-            } else if (_tabIndex === 2) {
-                _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
-            }
+            const selectedTab = NODE_TABS_INFO[_tabIndex]?.id || ''
+            const _searchParam = `?tab=${selectedTab}`
+
             updateTabUrl({
                 url: `${location.pathname}${_searchParam}`,
             })
@@ -197,43 +211,16 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs: TabProps[] = [
-            {
-                id: NODE_DETAILS_TABS.summary,
-                label: NODE_DETAILS_TABS.summary,
-                tabType: 'navLink',
-                props: {
-                    to: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
-                    onClick: changeNodeTab,
-                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
-                    ['data-tab-index']: 0,
-                },
+        const tabs: TabProps[] = NODE_TABS_INFO.map((tabDetails, index) => ({
+            ...tabDetails,
+            tabType: 'navLink',
+            props: {
+                to: `?tab=${tabDetails.id}`,
+                onClick: changeNodeTab,
+                isActive: (_, { search }) => search === `?tab=${tabDetails.id}`,
+                ['data-tab-index']: index,
             },
-            {
-                id: NODE_DETAILS_TABS.yaml,
-                label: NODE_DETAILS_TABS.yaml,
-                tabType: 'navLink',
-                icon: Edit,
-                props: {
-                    to: `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
-                    onClick: changeNodeTab,
-                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
-                    ['data-tab-index']: 1,
-                },
-            },
-            {
-                id: NODE_DETAILS_TABS.nodeConditions,
-                label: NODE_DETAILS_TABS.nodeConditions,
-                tabType: 'navLink',
-                props: {
-                    to: `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
-                    onClick: changeNodeTab,
-                    isActive: (_, { search }) =>
-                        search === `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
-                    ['data-tab-index']: 2,
-                },
-            },
-        ]
+        }))
 
         return (
             <div className="pl-20 dc__border-bottom flex dc__gap-16">
@@ -799,8 +786,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const nodeControls = () => {
-        return (
+    const nodeControls = () => (
             <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
                 <div className="flex left">
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
@@ -816,7 +802,6 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 </span>
             </div>
         )
-    }
 
     const renderSummary = (): JSX.Element | null => {
         if (!nodeDetail) {
