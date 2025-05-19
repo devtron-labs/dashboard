@@ -48,11 +48,12 @@ import {
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
-import { clearCacheRepo, getClusterListing } from '../ResourceBrowser.service'
+import { getClusterListing } from '../ResourceBrowser.service'
 import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
 import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
 import AdminTerminalDummy from './AdminTerminalDummy'
+import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
@@ -136,7 +137,7 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
-            clearCacheRepo()
+            Cache.clear()
         }
     }, [])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
@@ -209,7 +210,7 @@ const ResourceList = () => {
     )
 
     const refreshData = () => {
-        clearCacheRepo()
+        Cache.clear()
         const activeTab = tabs.find((tab) => tab.isSelected)
         updateTabComponentKey(activeTab.id)
         updateTabLastSyncMoment(activeTab.id)

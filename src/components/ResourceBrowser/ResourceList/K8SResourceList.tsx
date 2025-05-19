@@ -20,10 +20,8 @@ import { useLocation, useParams } from 'react-router-dom'
 import {
     abortPreviousRequests,
     FiltersTypeEnum,
-    K8sResourceDetailType,
     Nodes,
     PaginationEnum,
-    ResponseType,
     SelectAllDialogStatus,
     Table,
     TableColumnType,
@@ -40,9 +38,10 @@ import {
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 import { SIDEBAR_KEYS } from '../Constants'
-import { cacheResult, clearCacheRepo, getResourceData } from '../ResourceBrowser.service'
+import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
+import Cache from './Cache'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -145,10 +144,9 @@ export const K8SResourceList = ({
 
     const [resourceListLoader, _resourceList, , reloadResourceList] = useAsync(
         () =>
-            abortPreviousRequests(
-                () =>
-                    selectedResource &&
-                    cacheResult<ResponseType<K8sResourceDetailType>>(`${location.pathname}${location.search}`, () =>
+            abortPreviousRequests(async () => {
+                if (selectedResource) {
+                    return Cache.get(location.pathname, () =>
                         getResourceData({
                             selectedResource,
                             selectedNamespace,
@@ -156,9 +154,11 @@ export const K8SResourceList = ({
                             filters,
                             abortControllerRef,
                         }),
-                    ),
-                abortControllerRef,
-            ),
+                    )
+                }
+
+                return null
+            }, abortControllerRef),
         [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
         true,
         { resetOnChange: false },
@@ -243,7 +243,7 @@ export const K8SResourceList = ({
     )
 
     const handleClearCacheAndReload = () => {
-        clearCacheRepo()
+        Cache.clear()
         reloadResourceList()
     }
 

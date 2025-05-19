@@ -173,3 +173,13 @@ export interface DeleteEphemeralButtonType {
     containers: Options[]
     isExternal: boolean
 }
+
+export interface TerminalParamsType {
+    actionName: string
+    podName: string
+    nodeType: string
+    name: string
+    clusterId?: string
+    namespace: string
+    kind?: string
+}

@@ -100,9 +100,9 @@ const NodeDetailComponent = ({
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
     const [hideManagedFields, setHideManagedFields] = useState(true)
-    params.nodeType = params.kind ?? params.nodeType
+    const nodeType = params.kind ?? params.nodeType
     const [fetchingResource, setFetchingResource] = useState(
-        isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
+        isResourceBrowserView && nodeType === Nodes.Pod.toLowerCase(),
     )
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const [showEphemeralContainerDrawer, setShowEphemeralContainerDrawer] = useState<boolean>(false)
@@ -126,9 +126,9 @@ const NodeDetailComponent = ({
     const _selectedResource = useMemo(
         () =>
             lowercaseKindToResourceGroupMap[
-                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`
+                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${nodeType.toLowerCase()}`
             ],
-        [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
+        [lowercaseKindToResourceGroupMap, nodeType, params.group],
     )
 
     const resourceName = isResourceBrowserView ? params.name : params.podName
@@ -147,7 +147,7 @@ const NodeDetailComponent = ({
     const currentResource = isResourceBrowserView
         ? selectedResource
         : appDetails.resourceTree.nodes.filter(
-              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+              (data) => data.name === params.podName && data.kind.toLowerCase() === nodeType,
           )[0]
 
     const showDesiredAndCompareManifest =
@@ -201,32 +201,26 @@ const NodeDetailComponent = ({
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
 
     useEffect(() => {
-        if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
+        if (location.pathname.endsWith('/terminal') && nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
         }
     }, [location])
 
     useEffect(() => {
-        if (params.nodeType) {
-            const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
+        if (nodeType) {
+            const _tabs = getNodeDetailTabs(nodeType as NodeType, true)
             setTabs(_tabs)
         }
-    }, [params.nodeType])
+    }, [nodeType])
 
     const getContainersFromManifest = async () => {
         try {
-            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? resourceName : ''
-            const { result } = (await getManifestResource(
-                appDetails,
-                resourceName,
-                params.nodeType,
-                isResourceBrowserView,
-                {
-                    ...selectedResource,
-                    name: selectedResource.name ? selectedResource.name : nullCaseName,
-                    namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
-                },
-            )) as any
+            const nullCaseName = isResourceBrowserView && nodeType === 'pod' ? resourceName : ''
+            const { result } = (await getManifestResource(appDetails, resourceName, nodeType, isResourceBrowserView, {
+                ...selectedResource,
+                name: selectedResource.name ? selectedResource.name : nullCaseName,
+                namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
+            })) as any
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
@@ -297,7 +291,7 @@ const NodeDetailComponent = ({
             !loadingResources &&
             selectedResource &&
             resourceName &&
-            params.nodeType === Nodes.Pod.toLowerCase()
+            nodeType === Nodes.Pod.toLowerCase()
         ) {
             getContainersFromManifest().catch(noop)
         }
@@ -319,7 +313,7 @@ const NodeDetailComponent = ({
         (!isResourceBrowserView &&
             !(
                 appDetails.resourceTree.nodes?.findIndex(
-                    (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
+                    (node) => node.name === params.podName && node.kind.toLowerCase() === nodeType,
                 ) >= 0
             ))
 

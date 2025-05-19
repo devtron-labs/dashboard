@@ -26,6 +26,8 @@ const NodeDetailWrapper = ({
     const updateTabUrlHandler: ClusterListType['updateTabUrl'] = (props) => updateTabUrl({ id, ...props })
 
     useEffect(() => {
+        // NOTE: when the component mounts, we select the tab as active
+        // If the tab is not found, we add a new tab
         markTabActiveById(id)
             .then((wasFound) => {
                 if (!wasFound) {

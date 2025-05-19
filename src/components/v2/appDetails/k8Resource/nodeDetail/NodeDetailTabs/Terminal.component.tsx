@@ -16,8 +16,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
-import { get, OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { get, showError, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { NodeDetailTab, TerminalParamsType } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import {
@@ -49,16 +49,7 @@ const TerminalComponent = ({
     setContainers,
     showTerminal,
 }: TerminalComponentProps) => {
-    const params = useParams<{
-        actionName: string
-        podName: string
-        nodeType: string
-        name: string
-        clusterId?: string
-        namespace: string
-        kind?: string
-    }>()
-    params.nodeType = params.kind ?? params.nodeType
+    const params = useParams<TerminalParamsType>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
