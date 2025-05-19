@@ -1,5 +1,3 @@
-import React from 'react'
-
 import {
     BulkSelection,
     ClusterFiltersType,
@@ -40,22 +38,20 @@ const ClusterList = ({
             <div className="cluster-list-row fw-6 cn-7 fs-12 dc__border-bottom pt-8 pb-8 pr-20 pl-20 dc__uppercase bg__primary dc__position-sticky dc__top-0 dc__zi-3">
                 {KubeConfigRowCheckbox ? <BulkSelection showPagination={false} /> : <div />}
                 {Object.entries(ClusterMapListSortableKeys).map(([cellName, cellKey]) => (
-                    <React.Fragment key={cellName}>
-                        <SortableTableHeaderCell
-                            key={cellName}
-                            title={ClusterMapListSortableTitle[cellName]}
-                            isSorted={sortBy === cellKey}
-                            sortOrder={sortOrder}
-                            isSortable
-                            disabled={false}
-                            triggerSorting={handleCellSorting(cellKey)}
-                        />
-                    </React.Fragment>
+                    <SortableTableHeaderCell
+                        key={cellName}
+                        title={ClusterMapListSortableTitle[cellName]}
+                        isSorted={sortBy === cellKey}
+                        sortOrder={sortOrder}
+                        isSortable
+                        disabled={false}
+                        triggerSorting={handleCellSorting(cellKey)}
+                    />
                 ))}
             </div>
             {filteredList.map((clusterData) => (
                 <ClusterListRow
-                    key={clusterData.id}
+                    key={clusterData.id ?? clusterData.installationId}
                     clusterData={clusterData}
                     clusterListLoader={clusterListLoader}
                     showKubeConfigModal={showKubeConfigModal}

@@ -36,7 +36,7 @@ import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
 import { deleteInstalledChart } from '../charts.service'
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png'
-import dots from '../../../assets/icons/appstatus/ic-menu-dots.svg'
+import { ReactComponent as Dots } from '@Icons/ic-dot.svg'
 import trash from '../../../assets/icons/ic-delete.svg'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ClusterNotReachableDialog from '../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
@@ -243,8 +243,8 @@ export const DeploymentRow = ({
                 </Td>
                 <Td>
                     <PopupMenu autoClose>
-                        <PopupMenu.Button isKebab>
-                            <img src={dots} alt="" />
+                        <PopupMenu.Button isKebab rootClassName='p-4 flex'>
+                            <Dots className='icon-dim-16 fcn-7 dc__no-shrink' />
                         </PopupMenu.Button>
                         <PopupMenu.Body rootClassName="deployment-table-row__delete">
                             <div className="flex left" onClick={(e) => setConfirmation(true)}>

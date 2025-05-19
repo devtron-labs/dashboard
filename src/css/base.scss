@@ -784,6 +784,7 @@ button.anchor {
     }
 
     &.f-degraded,
+    &.f-oomkilled,
     &.f-sync.failed,
     &.f-failed,
     &.f-error,
@@ -2819,6 +2820,10 @@ button.anchor {
 
 .mw-152 {
     min-width: 152px;
+}
+
+.mw-232 {
+    min-width: 232px;
 }
 
 .mw-264 {
