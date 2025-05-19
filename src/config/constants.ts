@@ -150,7 +150,6 @@ export const Routes = {
     CHART_INSTALLED: 'app-store/installed-app',
     ARGO_APPS: 'argo-application',
     FLUX_APPS: 'flux-application',
-    CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
     CHART_RESYNC: 'sync-charts',
@@ -328,6 +327,7 @@ export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'
 export const MomentInvalidDate = 'Invalid date'
 
 export const HEADER_TEXT: Record<string, { title: string; description: string; docLink: keyof typeof DOCUMENTATION }> = {
+
     API_TOKEN: {
         title: 'API Token',
         description: 'Tokens you have generated that can be used to access the Devtron API.',
