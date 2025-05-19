@@ -32,6 +32,8 @@ import { AppDetails, AppType } from '../v2/appDetails/appDetails.type'
 import IndexStore from '../v2/appDetails/index.store'
 import { ExternalArgoAppDetailType } from './externalArgoApp.type'
 
+let initTimer = null
+
 const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }: ExternalArgoAppDetailType) => {
     const location = useLocation()
     const history = useHistory()
@@ -39,7 +41,6 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
 
-    let initTimer = null
     let isAPICallInProgress = false
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -68,11 +69,21 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
 
     const _init = () => {
         if (!isAPICallInProgress) {
-            _getAndSetAppDetail(true)
+            _getAndSetAppDetail()
         }
     }
 
-    const _getAndSetAppDetail = async (shouldTriggerPolling: boolean = false) => {
+    const handleInitiatePolling = () => {
+        if (initTimer) {
+            clearTimeout(initTimer)
+        }
+
+        initTimer = setTimeout(() => {
+            _init()
+        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+    }
+
+    const _getAndSetAppDetail = async () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
 
@@ -85,6 +96,10 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                     ...appDetailResponse.result,
                     deploymentAppType: DeploymentAppTypes.GITOPS,
                 }
+
+                isAPICallInProgress = false
+                handleInitiatePolling()
+
                 IndexStore.publishAppDetails(genericAppDetail, AppType.EXTERNAL_ARGO_APP)
                 setErrorResponseCode(undefined)
             })
@@ -92,18 +107,14 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
                     setErrorResponseCode(errors.code)
+                    isAPICallInProgress = false
+                    handleInitiatePolling()
                 }
             })
             .finally(() => {
                 setIsLoading(false)
                 isAPICallInProgress = false
                 setIsReloadResourceTreeInProgress(false)
-
-                if (shouldTriggerPolling) {
-                    initTimer = setTimeout(() => {
-                        _init()
-                    }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
-                }
             })
     }
 

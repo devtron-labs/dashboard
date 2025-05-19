@@ -40,6 +40,8 @@ import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 
+let initTimer = null
+
 const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
     const history = useHistory()
@@ -53,7 +55,6 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    let initTimer = null
     let isAPICallInProgress = false
 
     // component load
@@ -80,7 +81,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
     const _init = () => {
         if (!isAPICallInProgress) {
-            _getAndSetAppDetail(true)
+            _getAndSetAppDetail()
         }
     }
 
@@ -120,7 +121,17 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         return genericAppDetail
     }
 
-    const _getAndSetAppDetail = (shouldTriggerPolling: boolean = false) => {
+    const handleInitiatePolling = () => {
+        if (initTimer) {
+            clearTimeout(initTimer)
+        }
+
+        initTimer = setTimeout(() => {
+            _init()
+        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+    }
+
+    const _getAndSetAppDetail = () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
 
@@ -161,24 +172,21 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                 }
 
                 setErrorResponseCode(undefined)
+
+                handleInitiatePolling()
             })
             .catch((errors: ServerErrors) => {
+                setIsLoading(false)
+                isAPICallInProgress = false
+
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
                     setErrorResponseCode(errors.code)
+                    handleInitiatePolling()
                 }
-
-                setIsLoading(false)
-                isAPICallInProgress = false
             })
             .finally(() => {
                 setIsReloadResourceTreeInProgress(false)
-
-                if (shouldTriggerPolling) {
-                    initTimer = setTimeout(() => {
-                        _init()
-                    }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
-                }
             })
     }
 
