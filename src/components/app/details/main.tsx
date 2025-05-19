@@ -405,7 +405,15 @@ export default function AppDetailsPage() {
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
                             render={(props) => {
-                                return <DeploymentMetrics {...props} filteredEnvIds={_filteredEnvIds} />
+                                const envId = props.match.params.envId
+                                const match = {
+                                    ...props.match,
+                                    params: {
+                                        appId: appId,
+                                        envId: envId,
+                                    },
+                                }
+                                return <DeploymentMetrics {...props} match={match} filteredEnvIds={_filteredEnvIds} />
                             }}
                         />
                         <Route

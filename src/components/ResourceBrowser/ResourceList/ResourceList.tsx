@@ -15,16 +15,14 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, Route, useHistory, useParams } from 'react-router-dom'
+import { Route, useHistory, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
-    BreadCrumb,
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
     noop,
-    PageHeader,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -41,13 +39,11 @@ import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from
 
 import { URLS } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
-import { getClusterListMin } from '../../ClusterNodes/clusterNodes.service'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
-import { convertToOptionsList, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../common'
+import { importComponentFromFELibrary } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import {
-    DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
     RESOURCE_BROWSER_ROUTES,
@@ -56,8 +52,9 @@ import {
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { renderCreateResourceButton } from '../PageHeader.buttons'
+import { getClusterListing } from '../ResourceBrowser.service'
 import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
-import { getTabsBasedOnRole } from '../Utils'
+import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
 import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
@@ -66,7 +63,8 @@ import K8SResourceTabComponent from './K8SResourceTabComponent'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
-import { getFirstResourceFromKindResourceMap } from './utils'
+import ResourcePageHeader from './ResourcePageHeader'
+import { getClusterOptions, getFirstResourceFromKindResourceMap } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
@@ -97,22 +95,9 @@ const ResourceList = () => {
         [clusterId],
     )
 
-    const [loading, clusterListData, error] = useAsync(() => getClusterListMin())
+    const [loading, clusterList, error] = useAsync(() => getClusterListing(true))
 
-    const clusterList = clusterListData?.result || null
-
-    const clusterOptions = useMemo(
-        () =>
-            clusterList &&
-            (convertToOptionsList(
-                sortObjectArrayAlphabetically(clusterList, 'name').filter(({ isVirtualCluster }) => !isVirtualCluster),
-                'name',
-                'id',
-                'nodeErrors',
-                'isProd',
-            ) as ClusterOptionType[]),
-        [clusterList],
-    )
+    const clusterOptions: ClusterOptionType[] = useMemo(() => getClusterOptions(clusterList), [clusterList])
 
     /* NOTE: this is being used as dependency in useEffect down the tree */
     const selectedCluster = useMemo(
@@ -120,8 +105,9 @@ const ResourceList = () => {
             clusterOptions?.find((cluster) => String(cluster.value) === clusterId) || {
                 label: '',
                 value: clusterId,
-                errorInConnecting: '',
                 isProd: false,
+                isClusterInCreationPhase: false,
+                installationId: 0,
             },
         [clusterId, clusterOptions],
     )
@@ -174,7 +160,7 @@ const ResourceList = () => {
         }
     }, [getTabById(ResourceBrowserTabsId.terminal)?.dynamicTitle, selectedCluster])
 
-    const onClusterChange = (selected) => {
+    const onClusterChange = (selected: ClusterOptionType) => {
         if (selected.value === selectedCluster?.value) {
             return
         }
@@ -182,22 +168,20 @@ const ResourceList = () => {
         setIntelligenceConfig(null)
 
         /* if user manually tries default cluster url redirect */
-        if (selected.value === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
+        if (Number(selected.value) === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
                 pathname: URLS.RESOURCE_BROWSER,
             })
             return
         }
 
-        const redirectUrl = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
-            clusterId: selected.value,
-            group: K8S_EMPTY_GROUP,
-            kind: 'node',
-            version: DUMMY_RESOURCE_GVK_VERSION,
-        })
+        const path = getClusterChangeRedirectionUrl(
+            selected.isClusterInCreationPhase,
+            String(selected.isClusterInCreationPhase ? selected.installationId : selected.value),
+        )
 
         replace({
-            pathname: redirectUrl,
+            pathname: path,
         })
     }
 
@@ -214,6 +198,7 @@ const ResourceList = () => {
                             onChange={onClusterChange}
                             clusterList={clusterOptions || []}
                             clusterId={clusterId}
+                            isClusterListLoading={loading}
                         />
                     ),
                     linked: false,
@@ -256,8 +241,6 @@ const ResourceList = () => {
             reloadK8sObjectMapRaw()
         }
     }
-
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const updateTerminalTabUrl = (queryParams: string) => {
         const terminalTab = getTabById(ResourceBrowserTabsId.terminal)
@@ -433,11 +416,9 @@ const ResourceList = () => {
 
     return (
         <div className="resource-browser-container flexbox-col h-100 bg__primary" ref={resourceBrowserRef}>
-            <PageHeader
-                isBreadcrumbs
-                breadCrumbs={renderBreadcrumbs}
-                headerName=""
-                renderActionButtons={renderPageHeaderActionButtons}
+            <ResourcePageHeader
+                breadcrumbs={breadcrumbs}
+                renderPageHeaderActionButtons={renderPageHeaderActionButtons}
             />
             {renderMainBody()}
         </div>

@@ -19,10 +19,10 @@ import {
     CIBuildType,
     DockerConfigOverrideType,
     getUniqueId,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PATTERNS } from '../../config'
 import { CiPipelineResult } from '../app/details/triggerView/types'
-import { OptionType } from '../app/types'
 import { CIPipelineDataType } from '../ciPipeline/types'
 import { deepEqual } from '../common'
 import { CIBuildArgType, CIConfigDiffType, CurrentMaterialType } from './types'

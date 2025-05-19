@@ -28,7 +28,7 @@ import {
 
 import NoClusterEmptyState from '@Images/no-cluster-empty-state.png'
 import { importComponentFromFELibrary } from '@Components/common'
-import { AddClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
+import { renderNewClusterButton } from '@Components/ResourceBrowser/PageHeader.buttons'
 
 import ClusterNodeEmptyState from '../ClusterNodeEmptyStates'
 import { ClusterMapListSortableKeys } from '../constants'
@@ -50,6 +50,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     clusterOptions,
     clusterListLoader,
     filteredList,
+    refreshData,
     parentRef,
 }) => {
     const [showKubeConfigModal, setShowKubeConfigModal] = useState(false)
@@ -77,7 +78,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
                 image={NoClusterEmptyState}
                 title="No clusters found"
                 subTitle="Add a cluster to view and debug Kubernetes resources in the cluster"
-                renderButton={AddClusterButton}
+                renderButton={renderNewClusterButton(refreshData)}
             />
         )
     }

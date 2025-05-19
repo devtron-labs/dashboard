@@ -16,7 +16,12 @@
 
 import { ReactNode } from 'react'
 
-import { K8sResourceDetailType, RBBulkOperationType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    K8sResourceDetailType,
+    RBBulkOperationType,
+    ServerErrors,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
@@ -102,4 +107,9 @@ export interface NodeDetailURLParams {
 
 export interface K8sResourceListFilterType {
     selectedNamespace: string
+}
+
+export interface ResourcePageHeaderProps {
+    breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
+    renderPageHeaderActionButtons?: () => JSX.Element
 }

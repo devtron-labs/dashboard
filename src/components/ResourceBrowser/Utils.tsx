@@ -27,6 +27,7 @@ import {
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     ResponseType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { LAST_SEEN } from '../../config'
@@ -404,3 +405,13 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): Response
         }),
     },
 })
+
+export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
+    shouldRedirectToInstallationStatus
+        ? `${CommonURLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+              clusterId: id,
+              group: K8S_EMPTY_GROUP,
+              kind: 'node',
+              version: DUMMY_RESOURCE_GVK_VERSION,
+          })

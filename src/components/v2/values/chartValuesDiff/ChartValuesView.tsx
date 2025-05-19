@@ -699,7 +699,7 @@ const ChartValuesView = ({
                     })
 
                     init && init()
-                    history.push(`${URLS.APP}/${URLS.APP_LIST}/${URLS.APP_LIST_HELM}`)
+                    history.push(URLS.HELM_APP_LIST)
                     return
                 }
 

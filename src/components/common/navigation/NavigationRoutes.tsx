@@ -79,7 +79,8 @@ import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
-import { EnvironmentDataStateType } from './types'
+import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+import { Banner } from '../Banner/Banner'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
@@ -115,7 +116,7 @@ const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null
 const EnterpriseLicenseBar = importComponentFromFELibrary('EnterpriseLicenseBar', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 
-export default function NavigationRoutes() {
+export default function NavigationRoutes({ reloadVersionConfig }: Readonly<NavigationRoutesTypes> ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -163,6 +164,7 @@ export default function NavigationRoutes() {
     const handleCloseLicenseInfoDialog = () => {
         setLicenseInfoDialogType(null)
     }
+
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -485,6 +487,7 @@ export default function NavigationRoutes() {
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
             }}
@@ -517,8 +520,7 @@ export default function NavigationRoutes() {
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
                         ref={navRouteRef}
                     >
-                        {/* To be replaced with Announcement Banner */}
-                        {EnterpriseLicenseBar && <EnterpriseLicenseBar />}
+                        <Banner />
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <Suspense
                                 fallback={
@@ -683,7 +685,7 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={(props) => <DevtronChartRouter envType={EnvType.CHART} />}
+                        render={(props) => <DevtronChartRouter />}
                     />
                     <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
 
@@ -726,6 +728,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { pathname } = useLocation()
     const { serverMode } = useMainContext()
     useEffect(() => {
+
         if (pathname && pathname !== '/') {
             Sentry.captureMessage(
                 `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
