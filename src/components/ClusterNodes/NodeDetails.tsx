@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react'
 import {
     showError,
     Progressing,
@@ -37,6 +37,7 @@ import {
     noop,
     AppThemeType,
     Icon,
+    NodeDetailTabsInfoType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -157,20 +158,117 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const getSanitizedNodeTabId = (id: string) => id.toLowerCase().replace(' ', '-')
 
+    const renderSummary = (): JSX.Element | null => {
+        if (!nodeDetail) {
+            return null
+        }
+
+        return (
+            <div className="node-details-container node-data-wrapper dc__overflow-hidden flexbox-col flex-grow-1">
+                <div className="mt-12 node-details-grid dc__overflow-hidden">
+                    <div className="pl-20 fw-6 fs-16 cn-9 dc__overflow-auto">
+                        {renderErrorOverviewCard()}
+                        {renderProbableIssuesOverviewCard()}
+                        {renderNodeOverviewCard()}
+                    </div>
+                    <div className="dc__overflow-auto pr-20">
+                        {renderResourceList()}
+                        {renderLabelAnnotationTaint()}
+                        {renderPodList()}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const renderYAMLEditor = (): JSX.Element => {
+        return (
+            <div className="flex-grow-1 flexbox-col">
+                <CodeEditor
+                    readOnly={!isEdit}
+                    diffView={isReviewState}
+                    mode={MODES.YAML}
+                    noParsing
+                    theme={AppThemeType.dark}
+                    height="fitToParent"
+                    {...(isReviewState
+                        ? {
+                              diffView: true,
+                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                              modifiedValue: modifiedManifest,
+                              onModifiedValueChange: handleEditorValueChange,
+                          }
+                        : {
+                              diffView: false,
+                              value: modifiedManifest,
+                              onChange: handleEditorValueChange,
+                          })}
+                >
+                    {isReviewState && isShowWarning && (
+                        <CodeEditor.Warning
+                            className="dc__ellipsis-right"
+                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
+                        />
+                    )}
+                    {isReviewState && (
+                        <CodeEditor.Header hideDefaultSplitHeader>
+                            <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
+                            <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                                <Edit className="icon-dim-16" />
+                                <span>YAML (Editing)</span>
+                            </p>
+                        </CodeEditor.Header>
+                    )}
+                </CodeEditor>
+            </div>
+        )
+    }
+
+    const renderConditions = (): JSX.Element => {
+        return (
+            <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
+                <div className="ml-20 mr-20 mb-12 mt-16 bg__primary br-8 en-2 bw-1">
+                    <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
+                        <div>Type</div>
+                        <div>Status</div>
+                        <div>Message</div>
+                    </div>
+                    {nodeDetail.conditions.map((condition) => (
+                        <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                            <div>{condition.type}</div>
+                            <div className="flexbox">
+                                {condition.haveIssue ? (
+                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                ) : (
+                                    <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                                )}
+                                {condition.reason}
+                            </div>
+                            <div>{condition.message}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+
     // id will be populated into url
-    const NODE_TABS_INFO: (Pick<TabProps, 'label' | 'icon'> & { id: string })[] = [
+    const NODE_TABS_INFO: NodeDetailTabsInfoType = [
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.summary),
             label: NODE_DETAILS_TABS.summary,
+            node: renderSummary,
         },
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
             label: NODE_DETAILS_TABS.yaml,
             icon: Edit,
+            node: renderYAMLEditor,
         },
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.nodeConditions),
             label: NODE_DETAILS_TABS.nodeConditions,
+            node: renderConditions,
         },
         ...REDFISH_NODE_UI_TABS,
     ]
@@ -211,7 +309,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs: TabProps[] = NODE_TABS_INFO.map((tabDetails, index) => ({
+        const tabs: TabProps[] = NODE_TABS_INFO.map(({ node, ...tabDetails }, index) => ({
             ...tabDetails,
             tabType: 'navLink',
             props: {
@@ -803,29 +901,6 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             </div>
         )
 
-    const renderSummary = (): JSX.Element | null => {
-        if (!nodeDetail) {
-            return null
-        }
-
-        return (
-            <div className="node-details-container node-data-wrapper dc__overflow-hidden flexbox-col flex-grow-1">
-                <div className="mt-12 node-details-grid dc__overflow-hidden">
-                    <div className="pl-20 fw-6 fs-16 cn-9 dc__overflow-auto">
-                        {renderErrorOverviewCard()}
-                        {renderProbableIssuesOverviewCard()}
-                        {renderNodeOverviewCard()}
-                    </div>
-                    <div className="dc__overflow-auto pr-20">
-                        {renderResourceList()}
-                        {renderLabelAnnotationTaint()}
-                        {renderPodList()}
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
         setIsEdit(false)
@@ -900,85 +975,15 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const renderYAMLEditor = (): JSX.Element => {
-        return (
-            <div className="flex-grow-1 flexbox-col">
-                <CodeEditor
-                    readOnly={!isEdit}
-                    diffView={isReviewState}
-                    mode={MODES.YAML}
-                    noParsing
-                    theme={AppThemeType.dark}
-                    height="fitToParent"
-                    {...(isReviewState
-                        ? {
-                              diffView: true,
-                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                              modifiedValue: modifiedManifest,
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: modifiedManifest,
-                              onChange: handleEditorValueChange,
-                          })}
-                >
-                    {isReviewState && isShowWarning && (
-                        <CodeEditor.Warning
-                            className="dc__ellipsis-right"
-                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
-                        />
-                    )}
-                    {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader>
-                            <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
-                            <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
-                                <Edit className="icon-dim-16" />
-                                <span>YAML (Editing)</span>
-                            </p>
-                        </CodeEditor.Header>
-                    )}
-                </CodeEditor>
-            </div>
-        )
-    }
-
-    const renderConditions = (): JSX.Element => {
-        return (
-            <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
-                <div className="ml-20 mr-20 mb-12 mt-16 bg__primary br-8 en-2 bw-1">
-                    <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
-                        <div>Type</div>
-                        <div>Status</div>
-                        <div>Message</div>
-                    </div>
-                    {nodeDetail.conditions.map((condition) => (
-                        <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
-                            <div>{condition.type}</div>
-                            <div className="flexbox">
-                                {condition.haveIssue ? (
-                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                ) : (
-                                    <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                )}
-                                {condition.reason}
-                            </div>
-                            <div>{condition.message}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        )
-    }
-
     const renderTabs = (): JSX.Element => {
-        if (selectedTabIndex === 1) {
-            return renderYAMLEditor()
+        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
+        const renderNode = selectedTab?.node
+
+        if (renderNode) {
+            return renderNode()
         }
-        if (selectedTabIndex === 2) {
-            return renderConditions()
-        }
-        return renderSummary()
+
+        return null
     }
 
     const showCordonNodeModal = (): void => {
