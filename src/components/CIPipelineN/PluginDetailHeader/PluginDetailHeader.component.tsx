@@ -17,8 +17,6 @@
 import { useContext } from 'react'
 
 import {
-    getDocumentationUrl,
-    PluginDetailType,
     PluginImageContainer,
     PluginTagsContainer,
     PluginType,
@@ -36,19 +34,20 @@ import { INLINE_PLUGIN_TEXT } from '../Constants'
 import { PluginDetailHeaderProps } from '../types'
 import CreatePluginButton from './CreatePluginButton'
 import PluginVersionSelect from './PluginVersionSelect'
+import { PluginDetailTypes } from './types'
 
 const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderProps) => {
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)
     const { stepType } = formData[activeStageName].steps[selectedTaskIndex]
 
-    const getPluginDetails = (): Pick<PluginDetailType, 'name' | 'description' | 'icon' | 'tags' | 'docLink'> => {
+    const getPluginDetails = (): PluginDetailTypes => {
         if (stepType !== PluginType.PLUGIN_REF) {
             return {
                 name: INLINE_PLUGIN_TEXT.TITLE,
                 description: INLINE_PLUGIN_TEXT.DESCRIPTION,
                 icon: '',
                 tags: [],
-                docLink: getDocumentationUrl({ docLinkKey: 'EXECUTE_CUSTOM_SCRIPT' }),
+                docLink: 'EXECUTE_CUSTOM_SCRIPT',
             }
         }
         const selectedPluginId = formData[activeStageName].steps[selectedTaskIndex].pluginRefStepDetail.pluginId
@@ -109,8 +108,9 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                     showCloseButton
                     trigger="click"
                     interactive
-                    documentationLink={docLink}
+                    documentationLink={docLink as any}
                     documentationLinkText="View documentation"
+                    isExternalLink
                 >
                     <button
                         type="button"

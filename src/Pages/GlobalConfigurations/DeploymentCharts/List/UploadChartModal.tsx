@@ -19,7 +19,7 @@ import { useRef, useState } from 'react'
 import {
     ButtonWithLoader,
     CustomInput,
-    getDocumentationUrl,
+    DocLink,
     noop,
     showError,
     Textarea,
@@ -202,14 +202,11 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
             <div className="sidebar-action-container pr-20">
                 <div className="fw-6 fs-13 cn-9 mb-8">
                     📙 Need help?&nbsp;
-                    <a
-                        className="dc__link fw-6"
-                        href={getDocumentationUrl({ docLinkKey: 'GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES' })}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                    >
-                        View documentation
-                    </a>
+                    <DocLink
+                        docLinkKey="GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES"
+                        text="View documentation"
+                        dataTestId="learn-more-about-custom-chart-pre-requisites-link"
+                    />
                 </div>
             </div>
         </>

@@ -87,7 +87,7 @@ export class Security extends Component<SecurityProps> {
                 headerName="Security"
                 tippyProps={{
                     isTippyCustomized: true,
-                    tippyRedirectLink: getDocumentationUrl({ docLinkKey: 'SECURITY' }),
+                    tippyRedirectLink: 'SECURITY' ,
                     additionalContent: this.getTippyContent(),
                 }}
                 showTabs

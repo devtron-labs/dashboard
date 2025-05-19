@@ -21,7 +21,6 @@ import {
     TARGET_IDS,
     TippyTheme,
     TippyCustomized,
-    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
@@ -93,7 +92,7 @@ export const WebhookNode = ({
                 onClose={toggleIsWebhookTippyOpen}
                 interactive
                 appendTo={document.getElementById(TARGET_IDS.WORKFLOW_EDITOR_CONTAINER)}
-                documentationLink={getDocumentationUrl({ docLinkKey: 'CONFIGURING_WEBHOOK' })}
+                documentationLink="CONFIGURING_WEBHOOK"
                 documentationLinkText="Documentation"
                 visible={isWebhookTippyOpen}
             >

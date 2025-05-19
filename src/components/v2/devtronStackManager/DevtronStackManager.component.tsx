@@ -34,6 +34,7 @@ import {
     Button,
     RAISE_ISSUE,
     getDocumentationUrl,
+    DISCORD_LINK,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -638,7 +639,7 @@ const GetHelpCard = (): JSX.Element => {
             <span className="fw-6 mb-10">Facing issues?</span>
             <a
                 className="module-details__help-chat cb-5 flex left"
-                href="https://discord.devtron.ai/"
+                href={DISCORD_LINK}
                 target="_blank"
                 rel="noreferrer noopener"
             >
@@ -810,7 +811,7 @@ export const InstallationWrapper = ({
                             <span className="cn-9 fs-13 fw-6">Facing issues?</span>
                             <a
                                 className="pre-requisite-modal__help-chat fs-13 cb-5 flex left"
-                                href="https://discord.devtron.ai/"
+                                href={DISCORD_LINK}
                                 target="_blank"
                                 rel="noreferrer noopener"
                             >

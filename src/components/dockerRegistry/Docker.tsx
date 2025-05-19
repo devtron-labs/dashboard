@@ -208,7 +208,7 @@ export default function Docker({ ...props }) {
                             ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
-                    documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                    documentationLink="GLOBAL_CONFIG_DOCKER"
                     iconClassName="icon-dim-20 ml-4"
                 />
             </div>

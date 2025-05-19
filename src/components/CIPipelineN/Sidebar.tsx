@@ -24,7 +24,8 @@ import {
     ResourceKindType,
     WORKFLOW_CACHE_CONFIG_ENUM,
     TriggerType,
-    getDocumentationUrl,
+    DocLink,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BuildStageVariable } from '../../config'
@@ -68,9 +69,9 @@ export const Sidebar = ({
     } = useContext(pipelineContext)
 
     const [addConfigSecret, setAddConfigSecret] = useState<boolean>(false)
-    const [helpData, setHelpData] = useState<{ helpText: string; docLink: string }>({
+    const [helpData, setHelpData] = useState<{ helpText: string; docLink: keyof typeof DOCUMENTATION }>({
         helpText: 'Docs: Configure build stage',
-        docLink: getDocumentationUrl({ docLinkKey: 'BUILD_STAGE' }),
+        docLink: "BUILD_STAGE",
     })
     const isPreBuildTab = activeStageName === BuildStageVariable.PreBuild
     const changeTriggerType = (appCreationType: string): void => {
@@ -83,22 +84,22 @@ export const Sidebar = ({
         if (isJobCard) {
             setHelpData({
                 helpText: 'Docs: Configure job',
-                docLink: getDocumentationUrl({ docLinkKey: 'JOB_WORKFLOW_EDITOR' }),
+                docLink: "JOB_WORKFLOW_EDITOR",
             })
         } else if (activeStageName === BuildStageVariable.Build) {
             setHelpData({
                 helpText: 'Docs: Configure build stage',
-                docLink: getDocumentationUrl({ docLinkKey: 'BUILD_STAGE' }),
+                docLink: "BUILD_STAGE",
             })
         } else if (activeStageName === BuildStageVariable.PostBuild) {
             setHelpData({
                 helpText: 'Docs: Configure post-build tasks',
-                docLink: getDocumentationUrl({ docLinkKey: 'PRE_POST_BUILD_STAGE' }),
+                docLink: "PRE_POST_BUILD_STAGE",
             })
         } else if (isPreBuildTab) {
             setHelpData({
                 helpText: 'Docs: Configure pre-build tasks',
-                docLink: getDocumentationUrl({ docLinkKey: 'PRE_POST_BUILD_STAGE' }),
+                docLink: "PRE_POST_BUILD_STAGE",
             })
         }
     }, [activeStageName])
@@ -449,11 +450,11 @@ export const Sidebar = ({
             {!isCdPipeline && (
                 <div className="sidebar-action-container pr-20">
                     <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
-                    <div>
-                        <a className="dc__link fw-6" href={helpData.docLink} target="_blank" rel="noreferrer noopener">
-                            {helpData.helpText}
-                        </a>
-                    </div>
+                    <DocLink
+                        docLinkKey={helpData.docLink}
+                        text={helpData.helpText}
+                        dataTestId="learn-more-about-ci-pipeline-workflow-editor-link"
+                    />
                 </div>
             )}
         </div>

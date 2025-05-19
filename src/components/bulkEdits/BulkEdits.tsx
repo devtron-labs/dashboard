@@ -526,7 +526,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     tippyProps={{
                         isTippyCustomized: true,
                         tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
-                        tippyRedirectLink: getDocumentationUrl({ docLinkKey: 'BULK_UPDATE' }),
+                        tippyRedirectLink: 'BULK_UPDATE',
                     }}
                 />
                 {this.renderBulkEditBody()}
