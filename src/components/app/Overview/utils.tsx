@@ -42,14 +42,14 @@ export const getAppConfig = (appType: AppOverviewProps['appType'], iconSize: Ico
             return {
                 resourceName: 'application',
                 defaultNote: DefaultAppNote,
-                icon: icon,
+                icon,
                 defaultDescription: APP_DESCRIPTION,
             }
         case 'job':
             return {
                 resourceName: 'job',
                 defaultNote: DefaultJobNote,
-                icon: icon,
+                icon,
                 defaultDescription: JOB_DESCRIPTION,
             }
         case 'helm-chart':
