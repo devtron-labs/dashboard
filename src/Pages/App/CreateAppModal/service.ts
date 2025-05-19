@@ -14,58 +14,75 @@
  * limitations under the License.
  */
 
-import { BaseAppMetaData, GenericInfoCardListingProps, post } from '@devtron-labs/devtron-fe-common-lib'
+import { abortPreviousRequests, BaseAppMetaData, post } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getJobs } from '@Components/Jobs/Service'
 import { APP_TYPE, Routes } from '@Config/constants'
 import { getAppIconWithBackground } from '@Config/utils'
+import { getAppListMin } from '@Services/service'
 
-import { DevtronListResponse } from './AppClone/types'
+import { CloneListResponse } from './AppClone/types'
 
 export const createApp = (request) => post(Routes.APP, request)
 
-export const getDevtronAppList = ({
-    listResponse,
+export const fetchDevtronCloneList = async ({
+    offset = 0,
+    isJobView = false,
+    searchKey = '',
+    cloneListAbortControllerRef,
     handleCloneAppClick,
 }: {
-    listResponse: DevtronListResponse
+    offset?: number
+    isJobView?: boolean
+    searchKey?: string
+    cloneListAbortControllerRef: React.MutableRefObject<AbortController>
     handleCloneAppClick: (app: BaseAppMetaData) => void
-}) => {
-    if (listResponse.type === APP_TYPE.JOB) {
-        const jobContainers = listResponse.data.result?.jobContainers ?? []
+}): Promise<CloneListResponse> =>
+    abortPreviousRequests(async () => {
+        if (isJobView) {
+            const res = await getJobs({
+                teams: [],
+                appStatuses: [],
+                appNameSearch: '',
+                offset,
+                size: 20,
+                sortBy: 'appNameSort',
+                sortOrder: 'ASC',
+                searchKey,
+            })
 
-        const totalCount = listResponse.data.result.jobCount
+            const jobContainers = res.result?.jobContainers ?? []
+            const totalCount = res.result?.jobCount ?? 0
 
-        return {
-            list: jobContainers.map<GenericInfoCardListingProps['list'][number]>((job) => {
-                const { jobId, jobName, description } = job
+            const list = jobContainers.map((job) => ({
+                id: String(job.jobId),
+                title: job.jobName,
+                description: job.description.description,
+                author: job.description.createdBy,
+                Icon: getAppIconWithBackground(APP_TYPE.JOB, 40),
+                onClick: () => handleCloneAppClick({ appId: job.jobId, appName: job.jobName }),
+            }))
 
-                return {
-                    id: String(jobId),
-                    title: jobName,
-                    description: description.description,
-                    author: description.createdBy,
-                    Icon: getAppIconWithBackground(APP_TYPE.JOB, 40),
-                    onClick: () => handleCloneAppClick({ appId: jobId, appName: jobName }),
-                }
-            }),
-            totalCount,
+            return { type: APP_TYPE.JOB, list, totalCount }
         }
-    }
-    const apps = listResponse.data.result ?? []
+        const res = await getAppListMin(
+            null,
+            { signal: cloneListAbortControllerRef.current.signal },
+            searchKey,
+            isJobView,
+            offset,
+        )
 
-    return {
-        list: apps.map<GenericInfoCardListingProps['list'][number]>((app) => {
-            const { id, name, createdBy, description } = app
+        const apps = res.result ?? []
 
-            return {
-                id: String(id),
-                title: name,
-                Icon: getAppIconWithBackground(APP_TYPE.DEVTRON_APPS, 40),
-                onClick: () => handleCloneAppClick({ appId: id, appName: name }),
-                author: createdBy,
-                description,
-            }
-        }),
-        totalCount: apps.length,
-    }
-}
+        const list = apps.map((app) => ({
+            id: String(app.id),
+            title: app.name,
+            description: app.description,
+            author: app.createdBy,
+            Icon: getAppIconWithBackground(APP_TYPE.DEVTRON_APPS, 40),
+            onClick: () => handleCloneAppClick({ appId: app.id, appName: app.name }),
+        }))
+
+        return { type: APP_TYPE.DEVTRON_APPS, list, totalCount: apps.length }
+    }, cloneListAbortControllerRef)

@@ -21,6 +21,7 @@ export const AppCloneList = ({ handleCloneAppClick, isJobView, handleCreationMet
         useDevtronCloneList({
             handleCloneAppClick,
             isJobView,
+            searchKey,
         })
 
     const handleLoadMore = async () => {

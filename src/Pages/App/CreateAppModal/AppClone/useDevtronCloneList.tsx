@@ -1,58 +1,19 @@
 /*
  * Copyright (c) 2024. Devtron Inc.
  */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-import {
-    abortPreviousRequests,
-    getIsRequestAborted,
-    showError,
-    useAsync,
-    useStateFilters,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { getIsRequestAborted, showError, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getJobs } from '@Components/Jobs/Service'
 import { APP_TYPE } from '@Config/constants'
-import { getAppListMin } from '@Services/service'
 
-import { getDevtronAppList } from '../service'
-import { DevtronAppCloneListProps, DevtronListResponse } from './types'
+import { fetchDevtronCloneList } from '../service'
+import { DevtronAppCloneListProps } from './types'
 
-export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronAppCloneListProps) => {
+export const useDevtronCloneList = ({ handleCloneAppClick, isJobView, searchKey }: DevtronAppCloneListProps) => {
     const cloneListAbortControllerRef = useRef(new AbortController())
     const [isLoadingMore, setIsLoadingMore] = useState(false)
     const [hasError, setHasError] = useState(false)
-    const { searchKey } = useStateFilters()
-
-    const fetchDevtronCloneList = (offset = 0): Promise<DevtronListResponse> =>
-        abortPreviousRequests(
-            () =>
-                isJobView
-                    ? getJobs(
-                          {
-                              teams: [],
-                              appStatuses: [],
-                              appNameSearch: '',
-                              offset,
-                              size: 20,
-                              sortBy: 'appNameSort',
-                              sortOrder: 'ASC',
-                              searchKey,
-                          },
-                          {
-                              signal: cloneListAbortControllerRef.current.signal,
-                          },
-                      ).then((res) => ({ type: APP_TYPE.JOB, data: res }))
-                    : getAppListMin(null, { signal: cloneListAbortControllerRef.current.signal }).then((res) => ({
-                          type: APP_TYPE.DEVTRON_APPS,
-                          data: res,
-                      })),
-            cloneListAbortControllerRef,
-        )
-
-    const [isListLoading, listResponse, listError, reloadList, setListResponse] = useAsync<DevtronListResponse>(() =>
-        fetchDevtronCloneList(0),
-    )
 
     useEffect(
         () => () => {
@@ -61,10 +22,14 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronA
         [],
     )
 
-    const { list, totalCount } = useMemo(() => {
-        if (!listResponse) return { list: [], totalCount: 0 }
-        return getDevtronAppList({ listResponse, handleCloneAppClick })
-    }, [isListLoading, listResponse, handleCloneAppClick])
+    const [isListLoading, listResponse, listError, reloadList, setListResponse] = useAsync(() =>
+        fetchDevtronCloneList({
+            isJobView,
+            searchKey,
+            cloneListAbortControllerRef,
+            handleCloneAppClick,
+        }),
+    )
 
     const loadMoreData = async () => {
         if (isLoadingMore || !listResponse) return
@@ -72,25 +37,19 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronA
         setIsLoadingMore(true)
         try {
             if (listResponse.type === APP_TYPE.JOB) {
-                const currentJobContainers = listResponse.data.result?.jobContainers ?? []
+                const currentList = listResponse.list
 
-                const response: DevtronListResponse = await fetchDevtronCloneList(currentJobContainers.length)
+                const response = await fetchDevtronCloneList({
+                    isJobView,
+                    searchKey,
+                    offset: currentList.length,
+                    cloneListAbortControllerRef,
+                    handleCloneAppClick,
+                })
 
-                // Update the list response with the new data
                 setListResponse({
-                    type: APP_TYPE.JOB,
-                    data: {
-                        ...response,
-                        result: {
-                            ...response.data,
-                            jobContainers: [
-                                ...currentJobContainers,
-                                ...('jobContainers' in response.data.result
-                                    ? response.data.result.jobContainers || []
-                                    : []),
-                            ],
-                        },
-                    },
+                    ...response,
+                    list: [...currentList, ...response.list],
                 })
             }
         } catch (error) {
@@ -102,13 +61,13 @@ export const useDevtronCloneList = ({ handleCloneAppClick, isJobView }: DevtronA
     }
 
     return {
-        isListLoading: isListLoading ?? getIsRequestAborted(listError),
-        list,
+        isListLoading: isListLoading || getIsRequestAborted(listError),
+        list: listResponse?.list ?? [],
         listError,
         reloadList,
-        totalCount,
+        totalCount: listResponse?.totalCount ?? 0,
         loadMoreData,
-        hasMoreData: listResponse?.type === APP_TYPE.JOB && list.length < totalCount,
+        hasMoreData: listResponse?.type === APP_TYPE.JOB && (listResponse.list?.length ?? 0) < listResponse.totalCount,
         hasError,
         isLoadingMore,
     }
