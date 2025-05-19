@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { abortPreviousRequests, BaseAppMetaData, post } from '@devtron-labs/devtron-fe-common-lib'
+import { abortPreviousRequests, post } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getJobs } from '@Components/Jobs/Service'
 import { APP_TYPE, Routes } from '@Config/constants'
 import { getAppIconWithBackground } from '@Config/utils'
 import { getAppListMin } from '@Services/service'
 
-import { CloneListResponse } from './AppClone/types'
+import { CloneListResponse, CloneListTypes } from './AppClone/types'
 
 export const createApp = (request) => post(Routes.APP, request)
 
@@ -31,13 +31,7 @@ export const fetchDevtronCloneList = async ({
     searchKey = '',
     cloneListAbortControllerRef,
     handleCloneAppClick,
-}: {
-    offset?: number
-    isJobView?: boolean
-    searchKey?: string
-    cloneListAbortControllerRef: React.MutableRefObject<AbortController>
-    handleCloneAppClick: (app: BaseAppMetaData) => void
-}): Promise<CloneListResponse> =>
+}: CloneListTypes): Promise<CloneListResponse> =>
     abortPreviousRequests(async () => {
         if (isJobView) {
             const res = await getJobs({

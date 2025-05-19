@@ -15,6 +15,14 @@ export type CloneListResponse = {
     totalCount: number
 }
 
+export interface CloneListTypes {
+    offset?: number
+    isJobView?: boolean
+    searchKey?: string
+    cloneListAbortControllerRef: React.MutableRefObject<AbortController>
+    handleCloneAppClick: (app: BaseAppMetaData) => void
+}
+
 export interface DevtronAppCloneListProps extends Pick<AppCloneListProps, 'handleCloneAppClick' | 'isJobView'> {
     searchKey: string
 }
