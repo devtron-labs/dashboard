@@ -53,7 +53,7 @@ const getVariantWithIconMap = (iconName: IconsProps['name']): Partial<Record<Ban
 const getVariantWithIconColorMap = (
     licenseType?: InfoBlockVariantType,
 ): Record<BannerVariant, IconBaseColorType | null> => ({
-    [BannerVariant.OFFLINE]: null,
+    [BannerVariant.OFFLINE]: 'N0',
     [BannerVariant.ONLINE]: null,
     [BannerVariant.VERSION_UPDATE]: null,
     [BannerVariant.INCOMPATIBLE_MICROSERVICES]: 'N0',
