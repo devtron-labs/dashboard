@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { ClusterDetail, logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterDetail,
+    logExceptionToSentry,
+    numberComparatorBySortOrder,
+    stringComparatorBySortOrder,
+    versionComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '@Components/common'
+import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
 
 import {
     NODE_K8S_VERSION_FILTER_KEY,
@@ -109,45 +115,10 @@ export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams):
     }
 }
 
-const stringComparatorBySortOrder = (a: string, b: string) => a.localeCompare(b)
-
-const numberComparatorBySortOrder = (a: number, b: number) => a - b
-
 const numberInStringComparator = <T extends string>(a: T, b: T) =>
     numberComparatorBySortOrder(a ? parseInt(a.match(/^\d+/)[0], 10) : 0, b ? parseInt(b.match(/^\d+/)[0], 10) : 0)
 
-const k8sStyledAgeToSeconds = (duration: string) => {
-    let totalTimeInSec: number = 0
-    if (!duration || duration === '<none>') {
-        return totalTimeInSec
-    }
-    // Parses time(format:- ex. 4h20m) in second
-    const matchesNumber = duration.match(/[-+]?\d*\.?\d+/g)
-    const matchesChar = duration.match(/[dhms]/g)
-    for (let i = 0; i < matchesNumber.length; i++) {
-        const _unit = matchesChar[i]
-        const _unitVal = +matchesNumber[i]
-        switch (_unit) {
-            case 'd':
-                totalTimeInSec += _unitVal * 24 * 60 * 60
-                break
-            case 'h':
-                totalTimeInSec += _unitVal * 60 * 60
-                break
-            case 'm':
-                totalTimeInSec += _unitVal * 60
-                break
-            default:
-                totalTimeInSec += _unitVal
-                break
-        }
-    }
-    return totalTimeInSec
-}
-
 const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
-
-const versionComparatorBySortOrder = (a: string, b: string) => a?.localeCompare(b, undefined, { numeric: true }) ?? 1
 
 const propertyComparatorMap = {
     age: durationComparator,

@@ -25,7 +25,6 @@ import {
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
-    K8sResourceDetailType,
     ResponseType,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -338,33 +337,34 @@ export const getRenderNodeButton =
     (
         resourceData: K8sResourceDetailDataType,
         columnName: string,
-        handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
+        onClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
         <button
             type="button"
             className="dc__unset-button-styles dc__no-decor flex"
             data-name={resourceData[columnName]}
-            onClick={handleNodeClick}
+            onClick={onClick}
             aria-label={`Select ${resourceData[columnName]}`}
         >
             <span className="dc__link">{children}</span>
         </button>
     )
 
-export const getRenderInvolvedObjectButton = (value: string, handleButtonClick: (e) => void) => () => {
-    const [kind, name] = value.split('/')
-    return (
-        <button
-            type="button"
-            className="dc__unset-button-styles dc__no-decor flex"
-            onClick={handleButtonClick}
-            aria-label={`Goto ${kind} ${name}`}
-        >
-            <span className="dc__link dc__truncate">{value}</span>
-        </button>
-    )
-}
+export const getRenderInvolvedObjectButton =
+    (value: string, onClick: (e: React.MouseEvent<HTMLButtonElement>) => void) => () => {
+        const [kind, name] = value.split('/')
+        return (
+            <button
+                type="button"
+                className="dc__unset-button-styles dc__no-decor flex"
+                onClick={onClick}
+                aria-label={`Goto ${kind} ${name}`}
+            >
+                <span className="dc__link dc__truncate">{value}</span>
+            </button>
+        )
+    }
 export const renderResourceValue = (value: string) => {
     const isDateValue = moment(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
 
@@ -399,24 +399,21 @@ const flattenObject = (ob: object): Record<string, any> => {
 }
 
 // NOTE: Please understand the big comment on @flattenObject to understand this
-export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
-    ...response,
-    result: {
-        headers: [...NODE_LIST_HEADERS] as string[],
-        data: response.result.map((data) => {
-            const _flattenNodeData = flattenObject(data)
-            const meta: Record<string, any> = {}
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix: string) => ({
+    headers: [...NODE_LIST_HEADERS] as string[],
+    data: response.result.map((data, index) => {
+        const _flattenNodeData = flattenObject(data)
+        const meta: Record<string, any> = {}
 
-            if (data.errors) {
-                meta.errorCount = String(Object.keys(data.errors).length || '')
-            }
+        if (data.errors) {
+            meta.errorCount = String(Object.keys(data.errors).length || '')
+        }
 
-            meta.taintCount =
-                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+        meta.taintCount =
+            Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
 
-            return { ..._flattenNodeData, ...meta }
-        }),
-    },
+        return { ..._flattenNodeData, ...meta, id: `${idPrefix}${index}` }
+    }),
 })
 
 export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>

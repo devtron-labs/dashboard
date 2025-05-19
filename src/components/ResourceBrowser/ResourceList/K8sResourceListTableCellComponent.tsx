@@ -29,7 +29,6 @@ import {
     AI_BUTTON_CONFIG_MAP,
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
-    NODE_LIST_HEADERS_TO_KEY_MAP,
     RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
 } from '../Constants'
@@ -108,27 +107,27 @@ const K8sResourceListTableCellComponent = ({
     }
 
     useEffect(() => {
-        const callback = ({ detail: { activeRowData } }) => {
+        const handleEnterPressed = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
                 nameButtonRef.current?.click()
             }
         }
 
-        const c = ({ detail: { activeRowData } }) => {
+        const handleOpenContextMenu = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
                 contextMenuRef.current?.click()
             }
         }
 
         if (columnName === 'name') {
-            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, callback)
-            signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, c)
+            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, handleEnterPressed)
+            signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, handleOpenContextMenu)
         }
 
         return () => {
             if (columnName === 'name') {
-                signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, callback)
-                signals.removeEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, c)
+                signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, handleEnterPressed)
+                signals.removeEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, handleOpenContextMenu)
             }
         }
     }, [])
@@ -258,13 +257,7 @@ const K8sResourceListTableCellComponent = ({
                         {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
                             <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
                         )}
-                        <Tooltip
-                            content={renderResourceValue(
-                                resourceData[
-                                    isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
-                                ]?.toString(),
-                            )}
-                        >
+                        <Tooltip content={renderResourceValue(resourceData[columnName]?.toString())}>
                             <span
                                 className={getClassNameForColumn(columnName, isNodeUnschedulable)}
                                 data-testid={`${columnName}-count`}
@@ -273,13 +266,7 @@ const K8sResourceListTableCellComponent = ({
                                     __html: DOMPurify.sanitize(
                                         highlightSearchText({
                                             searchText,
-                                            text: renderResourceValue(
-                                                resourceData[
-                                                    isNodeListing
-                                                        ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName]
-                                                        : columnName
-                                                ]?.toString(),
-                                            ),
+                                            text: renderResourceValue(resourceData[columnName]?.toString()),
                                             highlightClasses: 'p-0 fw-6 bcy-2',
                                         }),
                                     ),

@@ -378,7 +378,7 @@ const ResourceList = () => {
                         updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
                         clusterName={selectedCluster.label}
                         lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        key={getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString()}
+                        key={getTabById(ResourceBrowserTabsId.k8s_Resources).lastSyncMoment.toString()}
                     />
                 </Route>
 

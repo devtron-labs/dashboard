@@ -37,10 +37,9 @@ import {
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
-import { SIDEBAR_KEYS } from '../Constants'
+import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
-import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import Cache from './Cache'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
 import NodeListSearchFilter from './NodeListSearchFilter'
@@ -132,6 +131,7 @@ export const K8SResourceList = ({
     const abortControllerRef = useRef(new AbortController())
 
     const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
+    const isEventListing = selectedResource?.gvk.Kind === Nodes.Event
 
     const resourceFilters = RESOURCE_FILTER_KEYS
         ? Object.entries(filters).reduce((acc, [key, value]) => {
@@ -142,16 +142,16 @@ export const K8SResourceList = ({
           }, {})
         : null
 
-    const [resourceListLoader, _resourceList, , reloadResourceList] = useAsync(
+    const [resourceListLoader, resourceList, , reloadResourceList] = useAsync(
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
-                    return Cache.get(location.pathname, () =>
+                    return Cache.get(`${location.pathname}${location.search}`, () =>
                         getResourceData({
                             selectedResource,
                             selectedNamespace,
                             clusterId,
-                            filters,
+                            filters: resourceFilters,
                             abortControllerRef,
                         }),
                     )
@@ -171,37 +171,18 @@ export const K8SResourceList = ({
         [],
     )
 
-    const resourceList = useMemo(() => {
-        if (!_resourceList) {
-            return null
-        }
-        const result = structuredClone(_resourceList.result)
-        switch (selectedResource?.gvk.Kind) {
-            case SIDEBAR_KEYS.eventGVK.Kind:
-                result.data = sortEventListData(result.data)
-                break
-            case Nodes.StorageClass:
-                result.data = removeDefaultForStorageClass(result.data)
-                break
-            default:
-                break
-        }
-        return result
-    }, [_resourceList])
-
-    const isEventListing = selectedResource?.gvk.Kind === Nodes.Event
-
     const columns: TableColumnType[] = useMemo(
         () =>
             resourceList?.headers.map(
                 (header) =>
                     ({
-                        field: header,
+                        field: isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[header] : header,
                         label: header === 'type' && isEventListing ? '' : header,
                         size: getColumnSize(header, isEventListing),
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
                         isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
+                        horizontallySticky: true,
                     }) as TableColumnType,
             ) ?? [],
         [resourceList?.headers],
@@ -209,16 +190,13 @@ export const K8SResourceList = ({
 
     const rows: TableProps['rows'] = useMemo(
         () =>
-            resourceList?.data.map(
-                (row) =>
-                    ({
-                        data: row,
-                        id:
-                            selectedResource.gvk.Kind === Nodes.Event
-                                ? row.id
-                                : `${row.name}-${row.namespace}-${row.status}`,
-                    }) as TableProps['rows'][number],
-            ) ?? null,
+            resourceList?.data.map((row) => {
+                const { id, ...rest } = row
+                return {
+                    data: rest,
+                    id,
+                } as TableProps['rows'][number]
+            }) ?? null,
         [resourceList?.data],
     )
 
@@ -248,20 +226,25 @@ export const K8SResourceList = ({
     }
 
     const tableFilter: TableProps['filter'] = (row, filterData) => {
-        if (isEventListing) {
-            return (
-                (row.data.type as string).toLowerCase() ===
-                (filterData as unknown as K8sResourceListFilterType).eventType
-            )
-        }
-
         if (isNodeListing) {
             return isItemASearchMatchForNodeListing(row.data, filterData)
         }
 
-        return Object.entries(row.data).some(
-            ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-        )
+        const isSearchMatch =
+            !filterData.searchKey ||
+            Object.entries(row.data).some(
+                ([key, value]) =>
+                    key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+            )
+
+        if (isEventListing) {
+            return (
+                (row.data.type as string)?.toLowerCase() ===
+                    (filterData as unknown as K8sResourceListFilterType).eventType && isSearchMatch
+            )
+        }
+
+        return isSearchMatch
     }
 
     return (

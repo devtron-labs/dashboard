@@ -40,7 +40,7 @@ import {
 import { Routes } from '../../config'
 import { SIDEBAR_KEYS } from './Constants'
 import { ClusterDetailBaseParams, GetResourceDataType, NodeRowDetail } from './Types'
-import { parseNodeList } from './Utils'
+import { parseNodeList, removeDefaultForStorageClass } from './Utils'
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -76,11 +76,13 @@ export const getResourceData = async ({
     filters,
     abortControllerRef,
 }: GetResourceDataType) => {
+    const idPrefix = `${clusterId}${JSON.stringify(selectedResource)}${JSON.stringify(filters)}${selectedNamespace}`
+
     try {
         if (selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
             const response = await getNodeList(clusterId, abortControllerRef)
 
-            return parseNodeList(response)
+            return parseNodeList(response, idPrefix)
         }
 
         const isNamespaceList = selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()
@@ -112,19 +114,31 @@ export const getResourceData = async ({
             )
 
             return {
-                ...response,
-                result: {
-                    ...response.result,
-                    headers: [...response.result.headers, 'environment'],
-                    data: response.result.data.map((data) => ({
-                        ...data,
-                        environment: namespaceToEnvironmentMap[data.name as string],
-                    })),
-                },
+                headers: [...response.result.headers, 'environment'],
+                data: response.result.data.map((data, index) => ({
+                    ...data,
+                    environment: namespaceToEnvironmentMap[data.name as string],
+                    id: `${idPrefix}${index}`,
+                })),
             }
         }
 
-        return response
+        if (!response) {
+            return null
+        }
+
+        const data =
+            selectedResource.gvk.Kind === Nodes.StorageClass
+                ? removeDefaultForStorageClass(response.result.data)
+                : response.result.data
+
+        return {
+            ...response.result,
+            data: data.map((entry, index) => ({
+                ...entry,
+                id: `${idPrefix}${index}`,
+            })),
+        }
     } catch (err) {
         if (!getIsRequestAborted(err)) {
             showError(err)

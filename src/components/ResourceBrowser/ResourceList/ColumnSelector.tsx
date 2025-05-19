@@ -29,19 +29,17 @@ import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'
 
 const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: ColumnSelectorType) => {
-    const headerToColumnMap = allColumns.reduce((acc, column) => {
-        acc[column.field] = column
-        return acc
-    }, {})
+    const columnOptions = useMemo(() => {
+        const headerToColumnMap = allColumns.reduce((acc, column) => {
+            acc[column.label] = column
+            return acc
+        }, {})
 
-    const columnOptions = useMemo(
-        () =>
-            OPTIONAL_NODE_LIST_HEADERS.map((header) => ({
-                value: headerToColumnMap[header],
-                label: header,
-            })),
-        [],
-    )
+        return OPTIONAL_NODE_LIST_HEADERS.map((header) => ({
+            value: headerToColumnMap[header],
+            label: header,
+        }))
+    }, [])
 
     const [isMenuOpen, setIsMenuOpen] = useState(false)
     const [selectedColumns, setSelectedColumns] = useState<MultiValue<SelectPickerOptionType<TableColumnType>>>(
@@ -66,12 +64,12 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
         setIsMenuOpen(false)
 
         const columnFieldMap = selectedColumns.reduce((acc, { value: column }) => {
-            acc[column.field] = column
+            acc[column.label] = column
             return acc
         }, {})
         const optionalNodeListHeadersSet = new Set(OPTIONAL_NODE_LIST_HEADERS as string[])
         const newVisibleColumns = allColumns.filter(
-            (column) => !optionalNodeListHeadersSet.has(column.label) || columnFieldMap[column.field],
+            (column) => !optionalNodeListHeadersSet.has(column.label) || columnFieldMap[column.label],
         )
 
         selectRef.current?.blur()

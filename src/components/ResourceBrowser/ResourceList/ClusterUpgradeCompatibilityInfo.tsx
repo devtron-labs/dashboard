@@ -14,285 +14,40 @@
  * limitations under the License.
  */
 
-import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import DOMPurify from 'dompurify'
+import { useEffect, useMemo } from 'react'
+import { useParams, useRouteMatch } from 'react-router-dom'
 
 import {
-    ALL_NAMESPACE_OPTION,
-    ClipboardButton,
     CollapsibleList,
     ErrorScreenManager,
     FiltersTypeEnum,
     GenericEmptyState,
-    GVKType,
-    highlightSearchText,
     ImageType,
-    K8sResourceDetailDataType,
-    Nodes,
     noop,
     PaginationEnum,
     Progressing,
-    SearchBar,
     Table,
-    TableCellComponentProps,
     TableColumnType,
-    TableSignalEnum,
-    TableViewWrapperProps,
-    Tooltip,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 import { URLS } from '@Config/routes'
 
-import {
-    DUMMY_RESOURCE_GVK_VERSION,
-    K8S_EMPTY_GROUP,
-    RESOURCE_ACTION_MENU,
-    RESOURCE_BROWSER_ROUTES,
-    SIDEBAR_KEYS,
-    TARGET_K8S_VERSION_SEARCH_KEY,
-    UPGRADE_CLUSTER_CONSTANTS,
-} from '../Constants'
-import { ClusterDetailBaseParams, K8SResourceListType } from '../Types'
-import { renderResourceValue } from '../Utils'
-import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
+import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
+import { ClusterDetailBaseParams } from '../Types'
+import ClusterUpgradeCompatibilityInfoTableCellComponent from './ClusterUpgradeCompatibilityInfoTableCellComponent'
+import ClusterUpgradeCompatibilityInfoTableWrapper from './ClusterUpgradeCompatibilityInfoTableWrapper'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
-import { dynamicSort, getFirstResourceFromKindResourceMap, getUpgradeCompatibilityTippyConfig } from './utils'
+import { dynamicSort, getUpgradeCompatibilityTippyConfig } from './utils'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
     'useClusterUpgradeCompatibilityInfo',
     null,
     'function',
 )
-
-interface ClusterUpgradeCompatibilityInfoTableWrapperProps extends TableViewWrapperProps<FiltersTypeEnum.URL> {}
-
-const ClusterUpgradeCompatibilityInfoTableWrapper = ({
-    searchKey,
-    handleSearch,
-    children,
-}: ClusterUpgradeCompatibilityInfoTableWrapperProps) => {
-    const [isInputFocused, setIsInputFocused] = useState(false)
-    const searchInputRef = useRef<HTMLInputElement>(null)
-
-    const handleInputBlur = () => setIsInputFocused(false)
-
-    const handleInputFocus = () => setIsInputFocused(true)
-
-    const handleFilterKeyUp = (e: React.KeyboardEvent): void => {
-        if (e.key === 'Escape' || e.key === 'Esc') {
-            searchInputRef.current?.blur()
-        }
-    }
-
-    const handleOnChangeSearchText: ComponentProps<typeof SearchBar>['handleSearchChange'] = (text) => {
-        handleSearch(text)
-        if (!text) {
-            searchInputRef.current?.focus()
-        }
-    }
-
-    const showShortcutKey = !isInputFocused && !searchKey
-
-    const handleInputShortcut = () => {
-        searchInputRef.current?.focus()
-    }
-
-    return (
-        <div className="resource-list-container flexbox-col flex-grow-1 border__primary--left dc__overflow-hidden">
-            <div className="resource-filter-options-container flexbox w-100 px-20 py-16 dc__content-start">
-                <div className="resource-filter-options-container__search-box dc__position-rel">
-                    <SearchBar
-                        inputProps={{
-                            placeholder: 'Search',
-                            onBlur: handleInputBlur,
-                            onFocus: handleInputFocus,
-                            ref: searchInputRef,
-                            onKeyUp: handleFilterKeyUp,
-                        }}
-                        handleSearchChange={handleOnChangeSearchText}
-                        initialSearchText={searchKey}
-                    />
-
-                    {showShortcutKey && (
-                        <ShortcutKeyBadge
-                            shortcutKey="r"
-                            rootClassName="resource-search-shortcut-key"
-                            onClick={handleInputShortcut}
-                        />
-                    )}
-                </div>
-            </div>
-
-            {children}
-        </div>
-    )
-}
-
-interface ClusterUpgradeCompatibilityInfoTableCellComponentProps
-    extends TableCellComponentProps<FiltersTypeEnum.URL>,
-        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {}
-
-const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
-    field: columnName,
-    row: { id, data: resourceData },
-    filterData: { searchKey: searchText },
-    signals,
-    reloadResourceListData,
-    lowercaseKindToResourceGroupMap,
-}: ClusterUpgradeCompatibilityInfoTableCellComponentProps) => {
-    const { push } = useHistory()
-    const { clusterId } = useParams<ClusterDetailBaseParams>()
-    const nameButtonRef = useRef<HTMLButtonElement>(null)
-    const contextMenuRef = useRef<HTMLButtonElement>(null)
-
-    const handleResourceClick = (e) => {
-        const { name, namespace, kind, tab = RESOURCE_ACTION_MENU.manifest } = e.currentTarget.dataset
-
-        const group =
-            getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, kind.toLowerCase())?.gvk?.Group ||
-            K8S_EMPTY_GROUP
-
-        const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
-            clusterId,
-            namespace,
-            name,
-            kind: kind.toLowerCase(),
-            group,
-            version: DUMMY_RESOURCE_GVK_VERSION,
-        })
-
-        push(`${url}/${tab}`)
-    }
-
-    useEffect(() => {
-        const openResourceCallback = ({ detail: { activeRowData } }) => {
-            if (activeRowData.id === id) {
-                nameButtonRef.current?.click()
-            }
-        }
-
-        const openContextMenuCallback = ({ detail: { activeRowData } }) => {
-            if (activeRowData.id === id) {
-                contextMenuRef.current?.click()
-            }
-        }
-
-        if (columnName === 'name') {
-            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, openResourceCallback)
-            signals.addEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, openContextMenuCallback)
-        }
-
-        return () => {
-            if (columnName === 'name') {
-                signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, openResourceCallback)
-                signals.removeEventListener(TableSignalEnum.OPEN_CONTEXT_MENU, openContextMenuCallback)
-            }
-        }
-    }, [])
-
-    // This should be used only if shouldOverrideSelectedResourceKind is true
-    // Group and version are not available for Events / shouldOverrideSelectedResourceKind is true
-    const getSelectedResourceKindOverride = (lowercaseKind: string) => {
-        const gvkFromRawData: GVKType = getFirstResourceFromKindResourceMap(
-            lowercaseKindToResourceGroupMap,
-            lowercaseKind,
-        ).gvk
-
-        return {
-            gvk: {
-                Group: gvkFromRawData.Group,
-                Kind: gvkFromRawData.Kind,
-                Version: gvkFromRawData.Version,
-            },
-        }
-    }
-
-    const selectedResource = {
-        ...getSelectedResourceKindOverride((resourceData.kind as string).toLowerCase()),
-        namespaced: !!resourceData.namespace,
-    }
-    const shouldHideContextMenu = selectedResource.gvk.Kind === Nodes.Event
-
-    return columnName === 'name' ? (
-        <div
-            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10"
-            data-testid="created-resource-name"
-        >
-            <div className="flex left dc__gap-4">
-                <Tooltip content={resourceData.name}>
-                    <button
-                        type="button"
-                        className="dc__unset-button-styles dc__align-left dc__truncate"
-                        data-name={resourceData.name}
-                        data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
-                        data-kind={resourceData.kind}
-                        onClick={!shouldHideContextMenu ? handleResourceClick : noop}
-                        aria-label={`Select ${resourceData.name}`}
-                        ref={nameButtonRef}
-                    >
-                        <span
-                            className={!shouldHideContextMenu ? 'dc__link cursor' : ''}
-                            // eslint-disable-next-line react/no-danger
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText,
-                                        text: String(resourceData.name),
-                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                    }),
-                                ),
-                            }}
-                        />
-                    </button>
-                </Tooltip>
-                {!shouldHideContextMenu && (
-                    <ClipboardButton content={String(resourceData.name)} rootClassName="p-4 dc__visible-hover--child" />
-                )}
-            </div>
-
-            {!shouldHideContextMenu && (
-                <ResourceBrowserActionMenu
-                    ref={contextMenuRef}
-                    clusterId={clusterId}
-                    resourceData={resourceData as K8sResourceDetailDataType}
-                    getResourceListData={reloadResourceListData as () => Promise<void>}
-                    selectedResource={{
-                        ...getSelectedResourceKindOverride((resourceData.kind as string).toLowerCase()),
-                        namespaced: !!resourceData.namespace,
-                    }}
-                    hideDeleteResource
-                    handleResourceClick={handleResourceClick}
-                    handleClearBulkSelection={noop}
-                />
-            )}
-        </div>
-    ) : (
-        <div className="flexbox dc__align-items-center py-10">
-            <Tooltip content={renderResourceValue(resourceData[columnName]?.toString())}>
-                <span
-                    className="dc__truncate fs-12 lh-20"
-                    data-testid={`${columnName}-count`}
-                    // eslint-disable-next-line react/no-danger
-                    dangerouslySetInnerHTML={{
-                        __html: DOMPurify.sanitize(
-                            highlightSearchText({
-                                searchText,
-                                text: renderResourceValue(resourceData[columnName]?.toString()),
-                                highlightClasses: 'p-0 fw-6 bcy-2',
-                            }),
-                        ),
-                    }}
-                />
-            </Tooltip>
-        </div>
-    )
-}
 
 const ClusterUpgradeCompatibilityInfo = ({
     updateTabUrl,

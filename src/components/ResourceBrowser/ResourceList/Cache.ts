@@ -6,7 +6,7 @@ class Cache {
     }
 
     static get = async <T = any>(name: string, promiseCallback: () => Promise<T>) => {
-        if (Cache.cacheRepository[name]) {
+        if (Cache.cacheRepository[name] && Cache.cacheRepository[name]?.code === 200) {
             return Cache.cacheRepository[name] as T
         }
         const response = await promiseCallback()

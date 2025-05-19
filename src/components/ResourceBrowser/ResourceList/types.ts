@@ -97,3 +97,9 @@ export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
     renderPageHeaderActionButtons?: () => JSX.Element
 }
+
+export interface ClusterUpgradeCompatibilityInfoTableCellComponentProps
+    extends TableCellComponentProps<FiltersTypeEnum.URL>,
+        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {}
+
+export interface ClusterUpgradeCompatibilityInfoTableWrapperProps extends TableViewWrapperProps<FiltersTypeEnum.URL> {}
