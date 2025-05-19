@@ -99,3 +99,7 @@ export interface NodeDetailComponentWrapperProps
 export interface NodeDetailURLParams {
     name: string
 }
+
+export interface K8sResourceListFilterType {
+    selectedNamespace: string
+}

@@ -70,17 +70,6 @@ export const getNodeList = (
         },
     )
 
-const cacheRepository: Record<string, any> = {}
-
-export const cacheResult = async <T = any,>(name: string, promiseCallback: () => Promise<T>) => {
-    if (cacheRepository[name]) {
-        return cacheRepository[name] as T
-    }
-    const response = await promiseCallback()
-    cacheRepository[name] = response
-    return response
-}
-
 export const getResourceData = async ({
     selectedResource,
     selectedNamespace,

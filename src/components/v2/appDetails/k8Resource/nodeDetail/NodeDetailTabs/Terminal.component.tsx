@@ -17,7 +17,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
 import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { NodeDetailTab, TerminalParamsType } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import {
@@ -32,7 +32,7 @@ import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../nodeDetail.api'
 
 let clusterTimeOut
 
@@ -50,16 +50,7 @@ const TerminalComponent = ({
     setContainers,
     showTerminal,
 }: TerminalComponentProps) => {
-    const params = useParams<{
-        actionName: string
-        podName: string
-        nodeType: string
-        name: string
-        clusterId?: string
-        namespace: string
-        kind?: string
-    }>()
-    params.nodeType = params.kind ?? params.nodeType
+    const params = useParams<TerminalParamsType>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)

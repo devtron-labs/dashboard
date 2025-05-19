@@ -30,11 +30,13 @@ import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/n
 
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
-import { cacheResult, getResourceData } from '../ResourceBrowser.service'
+import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
-import { K8sResourceListURLParams } from './types'
+import Cache from './Cache'
+import { K8sResourceListFilterType, K8sResourceListURLParams } from './types'
+import { parseK8sResourceListSearchParams } from './utils'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -42,16 +44,6 @@ const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     null,
     'function',
 )
-
-interface K8sResourceListFilterType {
-    selectedNamespace: string
-}
-
-const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
-    const namespace = searchParams.get('namespace')
-    const selectedNamespace = namespace ?? 'all'
-    return { selectedNamespace }
-}
 
 export const K8SResourceList = ({
     selectedResource,
@@ -82,7 +74,7 @@ export const K8SResourceList = ({
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
-                    return cacheResult(location.pathname, () =>
+                    return Cache.get(location.pathname, () =>
                         getResourceData({
                             selectedResource,
                             selectedNamespace,

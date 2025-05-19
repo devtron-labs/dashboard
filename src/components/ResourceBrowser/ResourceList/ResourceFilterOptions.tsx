@@ -32,8 +32,9 @@ import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
-import { cacheResult, namespaceListByClusterId } from '../ResourceBrowser.service'
+import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps } from '../Types'
+import Cache from './Cache'
 import { K8sResourceListURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
@@ -61,7 +62,7 @@ const ResourceFilterOptions = ({
     const showShortcutKey = !isInputFocused && !searchText
 
     const [, namespaceByClusterIdList] = useAsync(
-        () => cacheResult(`${clusterId}/namespaces`, () => namespaceListByClusterId(clusterId)),
+        () => Cache.get(`${clusterId}/namespaces`, () => namespaceListByClusterId(clusterId)),
         [clusterId],
     )
 

@@ -59,6 +59,7 @@ import { renderCreateResourceButton } from '../PageHeader.buttons'
 import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
 import { getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
+import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
@@ -153,6 +154,7 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
+            Cache.clear()
         }
     }, [])
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])

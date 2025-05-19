@@ -23,7 +23,7 @@ import {
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
 import { K8SResourceListType, ShowAIButtonConfig } from '../Types'
-import { ResourceListUrlFiltersType } from './types'
+import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
@@ -97,4 +97,10 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
         return aiButtonConfig.includeValues.has(value)
     }
     return !aiButtonConfig.excludeValues.has(value)
+}
+
+export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
+    const namespace = searchParams.get('namespace')
+    const selectedNamespace = namespace ?? 'all'
+    return { selectedNamespace }
 }
