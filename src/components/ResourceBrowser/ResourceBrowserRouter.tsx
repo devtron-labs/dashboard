@@ -20,30 +20,39 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
 
+import ClusterInstallationStatus from './ClusterInstallationStatus'
 import ResourceBrowser from './ResourceBrowser'
 import ResourceList from './ResourceList'
 
 import './ResourceBrowser.scss'
 
 const CompareClusterViewWrapper = importComponentFromFELibrary('CompareClusterViewWrapper', null, 'function')
+const isFeLibAvailable = !!CompareClusterViewWrapper
 
 const ResourceBrowserRouter: React.FC = () => {
     const { path } = useRouteMatch()
 
     return (
         <Switch>
+            {isFeLibAvailable && (
+                <Route path={URLS.RESOURCE_BROWSER_INSTALLATION_CLUSTER} exact>
+                    <ClusterInstallationStatus />
+                </Route>
+            )}
+
             <Route path={`${path}/:clusterId`}>
                 <ResourceList />
             </Route>
 
-            {CompareClusterViewWrapper && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
+            {isFeLibAvailable && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
                 <Route path={`${COMMON_URLS.RESOURCE_BROWSER}${COMMON_URLS.COMPARE_CLUSTERS}`} exact>
                     <CompareClusterViewWrapper />
                 </Route>
             )}
 
-            <Route path={path} exact>
+            <Route path={[path, URLS.RESOURCE_BROWSER_CREATE_CLUSTER]} exact>
                 <ResourceBrowser />
             </Route>
 

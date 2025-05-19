@@ -52,7 +52,12 @@ import {
     K8sResourceListURLParams,
     K8SResourceListViewWrapperProps,
 } from './types'
-import { dynamicSort, isItemASearchMatchForNodeListing, parseK8sResourceListSearchParams } from './utils'
+import {
+    getColumnComparator,
+    getColumnSize,
+    isItemASearchMatchForNodeListing,
+    parseK8sResourceListSearchParams,
+} from './utils'
 
 const RESOURCE_FILTER_KEYS: Record<string, unknown> = importComponentFromFELibrary(
     'RESOURCE_FILTER_KEYS',
@@ -186,49 +191,6 @@ export const K8SResourceList = ({
 
     const isEventListing = selectedResource?.gvk.Kind === Nodes.Event
 
-    const getColumnSize = (field: string) => {
-        if (!isEventListing) {
-            return {
-                range: {
-                    maxWidth: 600,
-                    minWidth: field === 'name' ? 200 : 180,
-                    startWidth: field === 'name' ? 300 : 200,
-                },
-            }
-        }
-
-        switch (field) {
-            case 'message':
-                return {
-                    range: {
-                        maxWidth: 800,
-                        minWidth: 180,
-                        startWidth: 400,
-                    },
-                }
-            case 'type':
-                return { fixed: 20 }
-            case 'namespace':
-            case 'involved object':
-            case 'source':
-                return {
-                    range: {
-                        maxWidth: 600,
-                        minWidth: 80,
-                        startWidth: 140,
-                    },
-                }
-            default:
-                return {
-                    range: {
-                        maxWidth: 300,
-                        minWidth: 80,
-                        startWidth: 80,
-                    },
-                }
-        }
-    }
-
     const columns: TableColumnType[] = useMemo(
         () =>
             resourceList?.headers.map(
@@ -236,9 +198,9 @@ export const K8SResourceList = ({
                     ({
                         field: header,
                         label: header === 'type' && isEventListing ? '' : header,
-                        size: getColumnSize(header),
+                        size: getColumnSize(header, isEventListing),
                         CellComponent: K8sResourceListTableCellComponent,
-                        comparator: header === 'message' && isEventListing ? null : dynamicSort(header),
+                        comparator: getColumnComparator(header, isEventListing),
                         isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
                     }) as TableColumnType,
             ) ?? [],

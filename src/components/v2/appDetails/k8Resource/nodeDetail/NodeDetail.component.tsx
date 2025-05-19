@@ -16,7 +16,6 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     capitalizeFirstLetter,
@@ -26,6 +25,7 @@ import {
     ConfigurationType,
     DeploymentAppTypes,
     FormProps,
+    getAIAnalyticsEvents,
     noop,
     OptionsBase,
     OptionType,

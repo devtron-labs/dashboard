@@ -20,34 +20,25 @@ import {
     ClusterDetail,
     DevtronProgressing,
     ErrorScreenManager,
-    getIsRequestAborted,
     PageHeader,
-    showError,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 
-import { getClusterList, getClusterListMin } from '../ClusterNodes/clusterNodes.service'
 import { sortObjectArrayAlphabetically } from '../common'
-import { AddClusterButton } from './PageHeader.buttons'
+import { renderNewClusterButton } from './PageHeader.buttons'
+import { getClusterListing } from './ResourceBrowser.service'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(async () => {
-        try {
-            return await getClusterList(abortControllerRef.current.signal)
-        } catch (err) {
-            if (!getIsRequestAborted(err)) {
-                showError(err)
-            }
-            return null
-        }
-    })
-    const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListMin())
+    const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(() =>
+        getClusterListing(false, abortControllerRef),
+    )
+    const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListing(true, abortControllerRef))
 
     useEffect(
         () => () => {
@@ -58,7 +49,7 @@ const ResourceBrowser: React.FC = () => {
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
-            sortObjectArrayAlphabetically(detailClusterList?.result || clusterListMinData?.result || [], 'name').filter(
+            sortObjectArrayAlphabetically(detailClusterList || clusterListMinData || [], 'name').filter(
                 (option) =>
                     !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
                     !option.isVirtualCluster,
@@ -91,7 +82,7 @@ const ResourceBrowser: React.FC = () => {
             <PageHeader
                 isBreadcrumbs={false}
                 headerName="Kubernetes Resource Browser"
-                renderActionButtons={AddClusterButton}
+                renderActionButtons={renderNewClusterButton(reloadDetailClusterList)}
             />
             {renderContent()}
         </div>

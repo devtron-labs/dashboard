@@ -19,6 +19,7 @@ import {
     RBBulkOperationType,
     TableCellComponentProps,
     TableViewWrapperProps,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
@@ -82,10 +83,17 @@ export interface K8sResourceListTableCellComponentProps
     extends TableCellComponentProps<FiltersTypeEnum.URL>,
         Pick<
             K8SResourceListType,
-            'selectedCluster' | 'selectedResource' | 'addTab' | 'lowercaseKindToResourceGroupMap'
-        > {}
+            'selectedCluster' | 'selectedResource' | 'addTab' | 'lowercaseKindToResourceGroupMap' | 'clusterName'
+        > {
+    reloadResourceListData: () => void
+}
 
 export interface AdminTerminalDummyProps
     extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
     clusterName: string
+}
+
+export interface ResourcePageHeaderProps {
+    breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
+    renderPageHeaderActionButtons?: () => JSX.Element
 }

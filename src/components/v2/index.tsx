@@ -32,23 +32,18 @@ import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
-import {
-    getInstalledAppDetail,
-    getInstalledChartDetail,
-    getInstalledChartResourceTree,
-} from './appDetails/appDetails.api'
+import { getInstalledChartDetail, getInstalledChartResourceTree } from './appDetails/appDetails.api'
 import AppDetailsComponent from './appDetails/AppDetails.component'
 import { AppDetails, AppType, EnvType } from './appDetails/appDetails.type'
 import IndexStore from './appDetails/index.store'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
-import AppHeaderComponent from './headers/AppHeader.component'
 import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 import ValuesComponent from './values/ChartValues.component'
 
 let initTimer = null
 
-const RouterComponent = ({ envType }) => {
+const RouterComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path } = useRouteMatch()
     const location = useLocation()
@@ -62,7 +57,6 @@ const RouterComponent = ({ envType }) => {
     })
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [loadingResourceTree, setLoadingResourceTree] = useState(false)
-    const [helmAppPackageName, setHelmAppPackageName] = useState('')
     // NOTE: this might seem like a duplicate of loadingResourceTree
     // but its not since loadingResourceTree runs a loader on the whole page
     // maybe we can rename loadingResourceTree
@@ -72,7 +66,7 @@ const RouterComponent = ({ envType }) => {
     const isVirtualRef = useRef(false)
 
     useEffect(() => {
-        IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
+        IndexStore.setEnvDetails(EnvType.CHART, +params.appId, +params.envId)
         setLoadingDetails(true)
         setLoadingResourceTree(true)
 
@@ -116,7 +110,7 @@ const RouterComponent = ({ envType }) => {
     }, [location.search])
 
     const _init = (fetchExternalLinks?: boolean) => {
-        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks, true), abortControllerRef)
+        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks), abortControllerRef)
     }
 
     const handleAppDetailsCallError = (e: any) => {
@@ -141,85 +135,86 @@ const RouterComponent = ({ envType }) => {
     }
 
     const handleInitiatePolling = () => {
+        if (initTimer) {
+            clearTimeout(initTimer)
+        }
+
         initTimer = setTimeout(() => {
             _init()
         }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
-    const handleFetchAppDetails = async (fetchExternalLinks: boolean) => {
+    const handleFetchAppDetails = async (fetchExternalLinks: boolean): Promise<{ isAborted: boolean }> => {
         try {
             const response = await getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
             handlePublishAppDetails(response)
             isVirtualRef.current = response.result?.isVirtualEnvironment
-            setHelmAppPackageName(response.result?.helmPackageName)
             if (fetchExternalLinks) {
                 getExternalLinksAndTools(response.result?.clusterId)
             }
-        } catch (error) {
-            handleAppDetailsCallError(error)
-        } finally {
             setLoadingDetails(false)
+        } catch (error) {
+            const isAborted = getIsRequestAborted(error)
+            
+            if (!isAborted) {
+                handleAppDetailsCallError(error)
+            }
+            setLoadingDetails(false)
+
+            return { isAborted }
         }
+
+        return { isAborted: false }
     }
 
     const handleFetchResourceTree = async () => {
         try {
             const response = await getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
             handlePublishAppDetails(response)
-        } catch (error) {
-            handleAppDetailsCallError(error)
-        } finally {
             setLoadingResourceTree(false)
+        } catch (error) {
+            const isAborted = getIsRequestAborted(error)
+
+            if (!isAborted) {
+                handleAppDetailsCallError(error)
+            }
+            setLoadingResourceTree(false)
+
+            return { isAborted }
         }
+
+        return { isAborted: false }
     }
 
-    const _getAndSetAppDetail = async (fetchExternalLinks: boolean, shouldTriggerPolling: boolean = false) => {
-        if (envType === EnvType.CHART) {
-            // Intentionally not setting await since it was not awaited earlier when in thens as well
-            Promise.allSettled([
-                handleFetchAppDetails(fetchExternalLinks),
-                handleFetchResourceTree(),
-            ]).finally(() => {
-                if (shouldTriggerPolling) {
-                    handleInitiatePolling()
-                }
-            })
-        } else {
-            try {
-                // Revisit this flow
-                const response = await getInstalledAppDetail(+params.appId, +params.envId)
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
-                setErrorResponseCode(undefined)
-            } catch (e: any) {
-                if (e.code) {
-                    setErrorResponseCode(e.code)
-                }
-            } finally {
-                if (shouldTriggerPolling) {
-                    handleInitiatePolling()
-                }
+    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
+        // Intentionally not setting await since it was not awaited earlier when in thens as well
+        Promise.allSettled([
+            handleFetchAppDetails(fetchExternalLinks),
+            handleFetchResourceTree(),
+        ]).then((results) => {
+            const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
+            if (!isAborted) {
+                handleInitiatePolling()
             }
-        }
+        })
     }
 
     const handleReloadResourceTree = () => {
-        if (envType === EnvType.CHART) {
-            setIsReloadResourceTreeInProgress(true)
-            abortPreviousRequests(
-                () => getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef),
-                abortControllerRef,
-            )
-                .then(handlePublishAppDetails)
-                .catch((err) => {
-                    if (!getIsRequestAborted(err)) {
-                        showError(err)
-                    }
-                })
-                .finally(() => {
-                    setLoadingResourceTree(false)
-                    setIsReloadResourceTreeInProgress(false)
-                })
-        }
+        setIsReloadResourceTreeInProgress(true)
+        abortPreviousRequests(
+            () => getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef),
+            abortControllerRef,
+        )
+            .then(handlePublishAppDetails)
+            .catch((err) => {
+                if (!getIsRequestAborted(err)) {
+                    showError(err)
+                }
+            })
+            .finally(() => {
+                setLoadingResourceTree(false)
+                setIsReloadResourceTreeInProgress(false)
+            })
     }
 
     const getExternalLinksAndTools = (clusterId) => {
@@ -246,11 +241,7 @@ const RouterComponent = ({ envType }) => {
         if (errorResponseCode === 404) {
             return (
                 <div className="h-100">
-                    {EnvType.APPLICATION === envType ? (
-                        <AppHeaderComponent />
-                    ) : (
-                        <ChartHeaderComponent errorResponseCode={errorResponseCode} />
-                    )}
+                    <ChartHeaderComponent errorResponseCode={errorResponseCode} />
                     <AppDetailsEmptyState envType={EnvType.CHART} />
                 </div>
             )
@@ -270,7 +261,7 @@ const RouterComponent = ({ envType }) => {
             {renderErrorScreen()}
             {!errorResponseCode && (
                 <>
-                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+                    <ChartHeaderComponent />
                     <Suspense fallback={<DetailsProgressing fullHeight loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
@@ -301,7 +292,6 @@ const RouterComponent = ({ envType }) => {
                                     isExternal={false}
                                     isLoadingDetails={loadingDetails}
                                     isVirtualEnvironment={isVirtualRef.current}
-                                    helmAppPackageName={helmAppPackageName}
                                 />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />

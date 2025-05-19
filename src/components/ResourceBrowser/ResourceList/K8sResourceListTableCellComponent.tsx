@@ -1,12 +1,14 @@
-import { useEffect, useMemo, useRef } from 'react'
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
 import {
     ALL_NAMESPACE_OPTION,
+    Button,
+    ButtonVariantType,
     ClipboardButton,
     ConditionalWrap,
+    getAIAnalyticsEvents,
     highlightSearchText,
     Icon,
     IconName,
@@ -18,7 +20,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
+import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import { importComponentFromFELibrary } from '@Components/common'
+import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 import {
     AI_BUTTON_CONFIG_MAP,
@@ -33,7 +38,7 @@ import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue
 import NodeActionsMenu from './NodeActionsMenu'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { K8sResourceListTableCellComponentProps } from './types'
-import { getFirstResourceFromKindResourceMap, getShowAIButton } from './utils'
+import { getClassNameForColumn, getFirstResourceFromKindResourceMap, getShowAIButton, getStatusClass } from './utils'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
@@ -48,6 +53,7 @@ const K8sResourceListTableCellComponent = ({
     addTab,
     isEventListing,
     lowercaseKindToResourceGroupMap,
+    clusterName,
 }: K8sResourceListTableCellComponentProps) => {
     const { push } = useHistory()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
@@ -57,7 +63,23 @@ const K8sResourceListTableCellComponent = ({
     const nameButtonRef = useRef<HTMLButtonElement>(null)
     const contextMenuRef = useRef<HTMLButtonElement>(null)
 
-    const handleResourceClick = (e) => {
+    const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
+
+    const getAddEnvironmentClickHandler = (namespace: string) => () => {
+        const environmentFormData: AddEnvironmentFormPrefilledInfoType = {
+            namespace,
+        }
+
+        localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify(environmentFormData))
+
+        setShowCreateEnvironmentDrawer(true)
+    }
+
+    const handleCloseCreateEnvironmentDrawer = () => {
+        setShowCreateEnvironmentDrawer(false)
+    }
+
+    const handleResourceClick = (e: MouseEvent<HTMLButtonElement>) => {
         const {
             name,
             namespace = ALL_NAMESPACE_OPTION.value,
@@ -78,25 +100,11 @@ const K8sResourceListTableCellComponent = ({
         push(`${url}/${tab}`)
     }
 
-    const handleNodeClick = (e) => {
+    const handleNodeClick = async (e: MouseEvent<HTMLButtonElement>) => {
         const { name } = e.currentTarget.dataset
         const _url = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
-        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
-            .then(() => push(_url))
-            .catch(noop)
-    }
-
-    const getStatusClass = (status: string) => {
-        let statusPostfix = status?.toLowerCase()
-
-        if (
-            statusPostfix &&
-            (statusPostfix.includes(':') || statusPostfix.includes('/') || statusPostfix.includes(' '))
-        ) {
-            statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
-        }
-
-        return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
+        await addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
+        push(_url)
     }
 
     useEffect(() => {
@@ -137,14 +145,6 @@ const K8sResourceListTableCellComponent = ({
     const showAIButton =
         !!ExplainWithAIButton && getShowAIButton(aiButtonConfig, columnName, resourceData[columnName] as string)
 
-    const getClassNameForColumn = (name: string) => {
-        if (name === 'message') {
-            return 'dc__word-break'
-        }
-
-        return name === 'status' && isNodeUnschedulable ? 'dc__no-shrink' : 'dc__truncate'
-    }
-
     const handleEventInvolvedObjectClick = () => {
         const [kind, name] = (resourceData[columnName] as string).split('/')
         const group =
@@ -173,142 +173,182 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
-    return columnName === 'name' ? (
-        <div
-            className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10"
-            data-testid="created-resource-name"
-        >
-            <div className="flex left dc__gap-4">
-                <Tooltip content={resourceData.name}>
-                    <button
-                        type="button"
-                        className="dc__unset-button-styles dc__align-left dc__truncate"
-                        data-name={resourceData.name}
-                        data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
-                        data-kind={selectedResource.gvk.Kind}
-                        data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
-                        onClick={isNodeListing ? handleNodeClick : handleResourceClick}
-                        aria-label={`Select ${resourceData.name}`}
-                        ref={nameButtonRef}
-                    >
-                        <span
-                            className="dc__link cursor"
-                            // eslint-disable-next-line react/no-danger
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText,
-                                        text: String(resourceData.name),
-                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                    }),
-                                ),
-                            }}
-                        />
-                    </button>
-                </Tooltip>
-                <ClipboardButton content={String(resourceData.name)} rootClassName="p-4 dc__visible-hover--child" />
-            </div>
-            {!isNodeListing ? (
-                <ResourceBrowserActionMenu
-                    ref={contextMenuRef}
-                    clusterId={clusterId}
-                    resourceData={resourceData as K8sResourceDetailDataType}
-                    getResourceListData={reloadResourceListData as () => Promise<void>}
-                    selectedResource={selectedResource}
-                    handleResourceClick={handleResourceClick}
-                    handleClearBulkSelection={noop}
-                />
-            ) : (
-                <NodeActionsMenu
-                    getNodeListData={reloadResourceListData as () => Promise<void>}
-                    addTab={addTab}
-                    nodeData={resourceData as K8sResourceDetailDataType}
-                    handleClearBulkSelection={noop}
-                />
-            )}
-        </div>
-    ) : (
-        <div
-            className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-self-start'} py-10 ${
-                columnName === 'status' || columnName === 'type'
-                    ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
-                    : ''
-            } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
-        >
-            <ConditionalWrap
-                condition={columnName === 'node' || columnName === 'involved object'}
-                wrap={
-                    columnName === 'node'
-                        ? getRenderNodeButton(resourceData as K8sResourceDetailDataType, columnName, handleNodeClick)
-                        : getRenderInvolvedObjectButton(
-                              resourceData[columnName] as string,
-                              handleEventInvolvedObjectClick,
-                          )
-                }
-            >
-                {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
-                    <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
-                )}
-                <Tooltip
-                    content={renderResourceValue(
-                        resourceData[isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName]?.toString(),
-                    )}
+    return (
+        <>
+            {columnName === 'name' ? (
+                <div
+                    className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10"
+                    data-testid="created-resource-name"
                 >
-                    <span
-                        className={getClassNameForColumn(columnName)}
-                        data-testid={`${columnName}-count`}
-                        // eslint-disable-next-line react/no-danger
-                        dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                                highlightSearchText({
-                                    searchText,
-                                    text: renderResourceValue(
-                                        resourceData[
-                                            isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
-                                        ]?.toString(),
-                                    ),
-                                    highlightClasses: 'p-0 fw-6 bcy-2',
-                                }),
-                            ),
-                        }}
-                    />
-                </Tooltip>
-                {columnName === 'status' && isNodeUnschedulable && (
-                    <>
-                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
-                        <Tooltip content="Scheduling disabled">
-                            <span className="cr-5 dc__truncate">SchedulingDisabled</span>
+                    <div className="flex left dc__gap-4">
+                        <Tooltip content={resourceData.name}>
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles dc__align-left dc__truncate"
+                                data-name={resourceData.name}
+                                data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
+                                data-kind={selectedResource.gvk.Kind}
+                                data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
+                                onClick={isNodeListing ? handleNodeClick : handleResourceClick}
+                                aria-label={`Select ${resourceData.name}`}
+                                ref={nameButtonRef}
+                            >
+                                <span
+                                    className="dc__link cursor"
+                                    // eslint-disable-next-line react/no-danger
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMPurify.sanitize(
+                                            highlightSearchText({
+                                                searchText,
+                                                text: String(resourceData.name),
+                                                highlightClasses: 'p-0 fw-6 bcy-2',
+                                            }),
+                                        ),
+                                    }}
+                                />
+                            </button>
                         </Tooltip>
-                    </>
-                )}
-                <span>
-                    {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
-                        <PodRestartIcon
+                        <ClipboardButton
+                            content={String(resourceData.name)}
+                            rootClassName="p-4 dc__visible-hover--child"
+                        />
+                    </div>
+                    {!isNodeListing ? (
+                        <ResourceBrowserActionMenu
+                            ref={contextMenuRef}
                             clusterId={clusterId}
-                            name={resourceData.name}
-                            namespace={resourceData.namespace}
+                            resourceData={resourceData as K8sResourceDetailDataType}
+                            getResourceListData={reloadResourceListData as () => Promise<void>}
+                            selectedResource={selectedResource}
+                            handleResourceClick={handleResourceClick}
+                            handleClearBulkSelection={noop}
+                        />
+                    ) : (
+                        <NodeActionsMenu
+                            getNodeListData={reloadResourceListData as () => Promise<void>}
+                            addTab={addTab}
+                            nodeData={resourceData as K8sResourceDetailDataType}
+                            handleClearBulkSelection={noop}
                         />
                     )}
-                </span>
-            </ConditionalWrap>
-            {showAIButton && (
-                <div className="ml-4">
-                    <ExplainWithAIButton
-                        isIconButton
-                        intelligenceConfig={{
-                            clusterId,
-                            metadata: {
-                                object: `${selectedResource?.gvk?.Kind}/${resourceData.name}`,
-                                namespace: resourceData.namespace,
-                                status: resourceData.status ?? '',
-                            },
-                            prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
-                            analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
-                        }}
-                    />
+                </div>
+            ) : (
+                <div
+                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-self-start'} py-10 ${
+                        columnName === 'status' || columnName === 'type'
+                            ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]), isNodeListing)}`
+                            : ''
+                    } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
+                >
+                    <ConditionalWrap
+                        condition={columnName === 'node' || columnName === 'involved object'}
+                        wrap={
+                            columnName === 'node'
+                                ? getRenderNodeButton(
+                                      resourceData as K8sResourceDetailDataType,
+                                      columnName,
+                                      handleNodeClick,
+                                  )
+                                : getRenderInvolvedObjectButton(
+                                      resourceData[columnName] as string,
+                                      handleEventInvolvedObjectClick,
+                                  )
+                        }
+                    >
+                        {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
+                            <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
+                        )}
+                        <Tooltip
+                            content={renderResourceValue(
+                                resourceData[
+                                    isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
+                                ]?.toString(),
+                            )}
+                        >
+                            <span
+                                className={getClassNameForColumn(columnName, isNodeUnschedulable)}
+                                data-testid={`${columnName}-count`}
+                                // eslint-disable-next-line react/no-danger
+                                dangerouslySetInnerHTML={{
+                                    __html: DOMPurify.sanitize(
+                                        highlightSearchText({
+                                            searchText,
+                                            text: renderResourceValue(
+                                                resourceData[
+                                                    isNodeListing
+                                                        ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName]
+                                                        : columnName
+                                                ]?.toString(),
+                                            ),
+                                            highlightClasses: 'p-0 fw-6 bcy-2',
+                                        }),
+                                    ),
+                                }}
+                            />
+                        </Tooltip>
+                        {selectedResource?.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase() &&
+                            columnName === 'environment' &&
+                            !resourceData.environment && (
+                                <Button
+                                    text="Add environment"
+                                    dataTestId="add-environment"
+                                    variant={ButtonVariantType.text}
+                                    onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                                />
+                            )}
+                        {columnName === 'status' && isNodeUnschedulable && (
+                            <>
+                                <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
+                                <Tooltip content="Scheduling disabled">
+                                    <span className="cr-5 dc__truncate">SchedulingDisabled</span>
+                                </Tooltip>
+                            </>
+                        )}
+                        <span>
+                            {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
+                                <PodRestartIcon
+                                    clusterId={clusterId}
+                                    name={resourceData.name}
+                                    namespace={resourceData.namespace}
+                                />
+                            )}
+                        </span>
+                    </ConditionalWrap>
+                    {showAIButton && (
+                        <div className="ml-4">
+                            <ExplainWithAIButton
+                                isIconButton
+                                intelligenceConfig={{
+                                    clusterId,
+                                    metadata: {
+                                        object: `${selectedResource?.gvk?.Kind}/${resourceData.name}`,
+                                        namespace: resourceData.namespace,
+                                        status: resourceData.status ?? '',
+                                    },
+                                    prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
+                                    analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
+                                }}
+                            />
+                        </div>
+                    )}
                 </div>
             )}
-        </div>
+
+            {showCreateEnvironmentDrawer && (
+                <ClusterEnvironmentDrawer
+                    reload={reloadResourceListData}
+                    clusterName={clusterName}
+                    id={null}
+                    environmentName={null}
+                    clusterId={Number(clusterId)}
+                    namespace={null}
+                    isProduction={null}
+                    description={null}
+                    hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
+                    isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
+                />
+            )}
+        </>
     )
 }
 

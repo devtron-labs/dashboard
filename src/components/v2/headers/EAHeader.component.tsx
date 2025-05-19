@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import ReactGA from 'react-ga4'
 import { Link, useParams, useRouteMatch } from 'react-router-dom'
 import { PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
@@ -100,7 +99,6 @@ const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: E
                 showTabs
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
-                showAnnouncementHeader
             />
         </div>
     )

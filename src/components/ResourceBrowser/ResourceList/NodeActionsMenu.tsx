@@ -19,10 +19,10 @@ import { generatePath, useHistory, useLocation, useParams } from 'react-router-d
 
 import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
 import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { TaintType } from '@Components/ClusterNodes/types'
 
-import { ReactComponent as MenuDots } from '../../../assets/icons/appstatus/ic-menu-dots.svg'
 import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
 import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
@@ -156,7 +156,7 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
         <>
             <PopupMenu autoClose>
                 <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
-                    <MenuDots className="node-actions-menu-icon icon-dim-16" />
+                    <MenuDots className="fcn-7 icon-dim-16" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border">
                     <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">

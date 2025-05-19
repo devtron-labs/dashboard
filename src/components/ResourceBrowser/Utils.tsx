@@ -26,10 +26,11 @@ import {
     InitTabType,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
+    Nodes,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { LAST_SEEN } from '../../config'
+import { LAST_SEEN, URLS } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
@@ -417,3 +418,13 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): Response
         }),
     },
 })
+
+export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
+    shouldRedirectToInstallationStatus
+        ? `${URLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+              clusterId: id,
+              group: K8S_EMPTY_GROUP,
+              kind: Nodes.Node.toLowerCase(),
+              version: DUMMY_RESOURCE_GVK_VERSION,
+          })

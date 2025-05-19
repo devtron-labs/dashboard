@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EnterpriseTag, OverrideMergeStrategyType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, OverrideMergeStrategyType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -37,7 +37,11 @@ export const MERGE_STRATEGY_OPTIONS: SelectPickerOptionType[] = [
         label: (
             <div className="flexbox dc__gap-8">
                 <span>Patch</span>
-                {!isFELibAvailable && <EnterpriseTag />}
+                {!isFELibAvailable && (
+                    <div className="dc__fill-available-space dc__w-fit-content h-20">
+                        <Icon name="ic-enterprise-tag" size={null} color={null} />
+                    </div>
+                )}
             </div>
         ),
         description: 'Override values for specific keys',

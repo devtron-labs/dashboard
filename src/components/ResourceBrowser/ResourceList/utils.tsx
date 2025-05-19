@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterDetail, logExceptionToSentry } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '@Components/common'
 
 import {
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
+import { ClusterOptionType, K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
 import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
 
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -63,6 +63,20 @@ export const getFirstResourceFromKindResourceMap = (
         (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
 }
+
+export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionType[] =>
+    clusterList
+        ? sortObjectArrayAlphabetically(clusterList, 'name')
+              .filter(({ isVirtualCluster }) => !isVirtualCluster)
+              .map(({ name, id, nodeErrors, isProd, installationId }) => ({
+                  label: name,
+                  value: String(id ?? '0'),
+                  description: nodeErrors,
+                  installationId,
+                  isProd,
+                  isClusterInCreationPhase: !!installationId && !id,
+              }))
+        : []
 
 export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: string, value: string) => {
     if (!aiButtonConfig || columnName !== aiButtonConfig.column) {
@@ -227,3 +241,67 @@ export const isItemASearchMatchForNodeListing = (item: Record<string, any>, sear
 
     return isK8sVersionFilterAppliedAndMatchFound && doesItemHaveAnyMatchingSearchKey
 }
+
+export const getClassNameForColumn = (name: string, isNodeUnschedulable: boolean) => {
+    if (name === 'message') {
+        return 'dc__word-break'
+    }
+
+    return name === 'status' && isNodeUnschedulable ? 'dc__no-shrink' : 'dc__truncate'
+}
+
+export const getStatusClass = (status: string, isNodeListing: boolean) => {
+    let statusPostfix = status?.toLowerCase()
+
+    if (statusPostfix && (statusPostfix.includes(':') || statusPostfix.includes('/') || statusPostfix.includes(' '))) {
+        statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
+    }
+
+    return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
+}
+
+export const getColumnSize = (field: string, isEventListing: boolean) => {
+    if (!isEventListing) {
+        return {
+            range: {
+                maxWidth: 600,
+                minWidth: field === 'name' ? 200 : 180,
+                startWidth: field === 'name' ? 300 : 200,
+            },
+        }
+    }
+
+    switch (field) {
+        case 'message':
+            return {
+                range: {
+                    maxWidth: 800,
+                    minWidth: 180,
+                    startWidth: 400,
+                },
+            }
+        case 'type':
+            return { fixed: 20 }
+        case 'namespace':
+        case 'involved object':
+        case 'source':
+            return {
+                range: {
+                    maxWidth: 600,
+                    minWidth: 80,
+                    startWidth: 140,
+                },
+            }
+        default:
+            return {
+                range: {
+                    maxWidth: 300,
+                    minWidth: 80,
+                    startWidth: 80,
+                },
+            }
+    }
+}
+
+export const getColumnComparator = (field: string, isEventListing: boolean) =>
+    field === 'message' && isEventListing ? null : dynamicSort(field)

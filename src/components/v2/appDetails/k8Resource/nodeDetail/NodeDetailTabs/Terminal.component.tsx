@@ -16,7 +16,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
-import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { get, OptionType, showError } from '@devtron-labs/devtron-fe-common-lib'
 import { NodeDetailTab } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
@@ -25,14 +25,13 @@ import {
     getGroupedContainerOptions,
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
-import { OptionType } from '../../../../../app/types'
-import { AppType, TerminalComponentProps, Options } from '../../../appDetails.type'
+import { AppType, TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../nodeDetail.api'
 
 let clusterTimeOut
 
