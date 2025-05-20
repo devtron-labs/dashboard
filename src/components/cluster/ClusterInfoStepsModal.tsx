@@ -101,11 +101,12 @@ export default function ClusterInfoStepsModal({ subTitle, command, clusterName }
             </h2>
             {subTitle && <p className="bcn-1 pt-8 pb-8 pl-12 pr-12 m-0">{subTitle}</p>}
             <ClusterInfoSteps subTitle={subTitle} command={command} clusterName={clusterName} />
-            <div className="p-12">
+            <div className="p-12 flexbox dc__align-start">
                 <DocLink
                     docLinkKey="GLOBAL_CONFIG_CLUSTER"
                     text="View documentation"
                     dataTestId="cluster-info-step-view-documentation"
+                    showExternalIcon
                 />
             </div>
         </div>
