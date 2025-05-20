@@ -820,18 +820,24 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
             if (!isEdit) {
                 return (
-                    <Button
-                        dataTestId="edit-yaml"
-                        variant={ButtonVariantType.text}
-                        size={ComponentSizeType.small}
-                        text="Edit YAML"
-                        onClick={setYAMLEdit}
-                        startIcon={<Icon name="ic-pencil" color={null} />}
-                    />
+                    <div className="flexbox dc__align-items-center dc__gap-12">
+                        <div className="dc__divider h-16" />
+
+                        <Button
+                            dataTestId="edit-yaml"
+                            variant={ButtonVariantType.text}
+                            size={ComponentSizeType.small}
+                            text="Edit YAML"
+                            onClick={setYAMLEdit}
+                            startIcon={<Icon name="ic-pencil" color={null} />}
+                        />
+                    </div>
                 )
             }
             return (
                 <div className="flexbox dc__align-items-center dc__gap-12">
+                    <div className="dc__divider h-16" />
+
                     <Button
                         dataTestId={isReviewState ? 'apply-changes' : 'review-changes'}
                         variant={ButtonVariantType.text}
