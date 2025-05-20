@@ -230,6 +230,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                             startIcon={<Add />}
                             size={ComponentSizeType.medium}
                             text="Manage Categories"
+                            variant={ButtonVariantType.secondary}
                         />
                         <Button
                             dataTestId="add_cluster_button"

@@ -105,7 +105,7 @@ const ManageCategories = () => {
                             component={ButtonComponentType.button}
                             startIcon={<Add />}
                             size={ComponentSizeType.medium}
-                            text="Manage Categories"
+                            text="Add Categories"
                             onClick={onClickAddRow}
                         />
                     </div>
