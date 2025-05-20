@@ -176,95 +176,91 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         )
     }
 
-    const renderYAMLEditor = (): JSX.Element => {
-        return (
-            <div className="flex-grow-1 flexbox-col">
-                <CodeEditor
-                    readOnly={!isEdit}
-                    diffView={isReviewState}
-                    mode={MODES.YAML}
-                    noParsing
-                    theme={AppThemeType.dark}
-                    height="fitToParent"
-                    {...(isReviewState
-                        ? {
-                              diffView: true,
-                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                              modifiedValue: modifiedManifest,
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: modifiedManifest,
-                              onChange: handleEditorValueChange,
-                          })}
-                >
-                    {isReviewState && isShowWarning && (
-                        <CodeEditor.Warning
-                            className="dc__ellipsis-right"
-                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
-                        />
-                    )}
-                    {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader>
-                            <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
-                            <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
-                                <Edit className="icon-dim-16" />
-                                <span>YAML (Editing)</span>
-                            </p>
-                        </CodeEditor.Header>
-                    )}
-                </CodeEditor>
-            </div>
-        )
-    }
+    const renderYAMLEditor = (): JSX.Element => (
+        <div className="flex-grow-1 flexbox-col">
+            <CodeEditor
+                readOnly={!isEdit}
+                diffView={isReviewState}
+                mode={MODES.YAML}
+                noParsing
+                theme={AppThemeType.dark}
+                height="fitToParent"
+                {...(isReviewState
+                    ? {
+                          diffView: true,
+                          originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                          modifiedValue: modifiedManifest,
+                          onModifiedValueChange: handleEditorValueChange,
+                      }
+                    : {
+                          diffView: false,
+                          value: modifiedManifest,
+                          onChange: handleEditorValueChange,
+                      })}
+            >
+                {isReviewState && isShowWarning && (
+                    <CodeEditor.Warning
+                        className="dc__ellipsis-right"
+                        text="Actual YAML has changed since you made the changes. Please check the diff carefully."
+                    />
+                )}
+                {isReviewState && (
+                    <CodeEditor.Header hideDefaultSplitHeader>
+                        <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
+                        <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                            <Edit className="icon-dim-16" />
+                            <span>YAML (Editing)</span>
+                        </p>
+                    </CodeEditor.Header>
+                )}
+            </CodeEditor>
+        </div>
+    )
 
-    const renderConditions = (): JSX.Element => {
-        return (
-            <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
-                <div className="ml-20 mr-20 mb-12 mt-12 bg__primary br-8 en-2 bw-1">
-                    <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
-                        <div>Type</div>
-                        <div>Status</div>
-                        <div>Message</div>
-                    </div>
-                    {nodeDetail.conditions.map((condition) => (
-                        <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
-                            <div>{condition.type}</div>
-                            <div className="flexbox">
-                                {condition.haveIssue ? (
-                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                ) : (
-                                    <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                )}
-                                {condition.reason}
-                            </div>
-                            <div>{condition.message}</div>
-                        </div>
-                    ))}
+    const renderConditions = (): JSX.Element => (
+        <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
+            <div className="ml-20 mr-20 mb-12 mt-12 bg__primary br-8 en-2 bw-1">
+                <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
+                    <div>Type</div>
+                    <div>Status</div>
+                    <div>Message</div>
                 </div>
+                {nodeDetail.conditions.map((condition) => (
+                    <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                        <div>{condition.type}</div>
+                        <div className="flexbox">
+                            {condition.haveIssue ? (
+                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            ) : (
+                                <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            )}
+                            {condition.reason}
+                        </div>
+                        <div>{condition.message}</div>
+                    </div>
+                ))}
             </div>
-        )
-    }
+        </div>
+    )
 
     // id will be populated into url
     const NODE_TABS_INFO: NodeDetailTabsInfoType = [
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.summary),
             label: NODE_DETAILS_TABS.summary,
-            node: renderSummary,
+            renderComponent: renderSummary,
         },
         ...(window._env_.FEATURE_REDFISH_NODE_ENABLE ? REDFISH_NODE_UI_TABS : []),
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
             label: NODE_DETAILS_TABS.yaml,
             icon: Edit,
-            node: renderYAMLEditor,
+            renderComponent: renderYAMLEditor,
         },
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.nodeConditions),
             label: NODE_DETAILS_TABS.nodeConditions,
-            node: renderConditions,
+            renderComponent: renderConditions,
         },
     ]
 
@@ -304,7 +300,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs: TabProps[] = NODE_TABS_INFO.map(({ node, ...tabDetails }, index) => ({
+        const tabs: TabProps[] = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
             ...tabDetails,
             tabType: 'navLink',
             props: {
@@ -994,7 +990,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const renderTabContent = (): JSX.Element => {
         const selectedTab = NODE_TABS_INFO[selectedTabIndex]
-        const renderNode = selectedTab?.node
+        const renderNode = selectedTab?.renderComponent
 
         if (renderNode) {
             return renderNode()
