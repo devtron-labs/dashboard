@@ -31,6 +31,7 @@ import {
     BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
+import { initializeFaro } from '@grafana/faro-web-sdk'
 
 declare global {
     interface Window {
@@ -51,6 +52,16 @@ if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
 }
 
 const root = document.getElementById('root')
+
+initializeFaro({
+  // required: the URL of the Grafana collector
+  url: 'https://devtron-ent-7.devtron.info/faro',
+
+  // required: the identification label of your application
+  app: {
+    name: 'dashboard',
+  },
+});
 if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._env_.SENTRY_ERROR_ENABLED) {
     const integrationArr = []
     integrationArr.push(new CaptureConsole({ levels: ['error'] }))

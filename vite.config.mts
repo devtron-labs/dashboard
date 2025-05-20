@@ -31,7 +31,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { compression } from 'vite-plugin-compression2'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
-const TARGET_URL = 'https://preview.devtron.ai/'
+const TARGET_URL = 'https://devtron-ent-7.devtron.info/'
 
 function reactVirtualized(): PluginOption {
     return {

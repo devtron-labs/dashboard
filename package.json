@@ -6,6 +6,7 @@
     "dependencies": {
         "@devtron-labs/devtron-fe-common-lib": "1.13.0-pre-5",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
+        "@grafana/faro-react": "^1.18.1",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
         "@rjsf/validator-ajv8": "^5.13.3",
