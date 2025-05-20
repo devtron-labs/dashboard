@@ -30,6 +30,7 @@ import {
     Button,
     ComponentSizeType,
     ButtonVariantType,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -751,11 +752,15 @@ const ChartListHeader = ({ charts }) => {
             </h3>
             <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
-                <DocLink
-                    docLinkKey="CHART_LIST"
-                    dataTestId="chart-store-link"
-                    text="Learn more about deploying charts"
-                />
+                  <a
+                        href={getDocumentationUrl({ docLinkKey: 'CHART_GROUP' })}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                        data-testid="chart-group-link"
+                    >
+                        Learn more about chart groups
+                    </a>
             </p>
         </div>
     )
@@ -784,11 +789,15 @@ export const EmptyChartGroup = ({
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
-                    <DocLink
-                        docLinkKey={'CHART_GROUP'}
-                        text="Learn more about chart groups"
-                        dataTestId="chart-group-link"
-                    />
+                    <a
+                        href={getDocumentationUrl({ docLinkKey: 'CHART_GROUP' })}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                        data-testid="chart-group-link"
+                    >
+                        Learn more about chart groups
+                    </a>
                 )}
                 {typeof onClickViewChartButton === 'function' ? (
                     <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-24">
@@ -844,7 +853,6 @@ export const ChartGroupListMin = ({
                             'Use chart groups to pre-configure and deploy frequently used charts together.'
                         }
                         docLink='CHART_GROUP'
-                        docLinkText="Learn more"
                         dataTestId="chart-store"
                         showInfoIconTippy
                     />

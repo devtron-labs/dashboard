@@ -478,7 +478,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                     text="How to generate API tokens?"
                     dataTestId="learn-more-about-generating-api-tokens"
                 />
-              
             )
         }
         return !showTokenSection ? (

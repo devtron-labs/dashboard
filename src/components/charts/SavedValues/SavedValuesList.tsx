@@ -171,7 +171,7 @@ export default function SavedValuesList() {
     const renderSubtitleAndNewButton = (subtitleText: string): JSX.Element => {
         return (
             <>
-                <p className="fs-13 fw-4">
+                <p className="flexbox fs-13 fw-4">
                     {subtitleText}&nbsp;
                     <DocLink docLinkKey="CUSTOM_VALUES" dataTestId="preset-values-learn-more-link" />
                 </p>

@@ -36,6 +36,7 @@ import {
     getEnvironmentListMinPublic,
     CIPipelineNodeType,
     DocLink,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'
@@ -1430,11 +1431,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return (
             <>
                 {APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.subTitle}&nbsp;
-                <DocLink
-                    text={APP_DETAILS.NEED_HELP}
-                    docLinkKey="APP_CREATE"
-                    dataTestId="learn-more-about-creating-job-link"
-                />
+                <a href={getDocumentationUrl({ docLinkKey: 'APP_CREATE' })} target="_blank noopener noreferrer">
+                    {APP_DETAILS.NEED_HELP}
+                </a>
             </>
         )
     }

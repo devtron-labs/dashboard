@@ -31,6 +31,7 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
     DocLink,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -469,10 +470,10 @@ const HelmAppList = ({
                             <span className="mr-8 flex">
                                 <InfoFillPurple className="icon-dim-20" />
                             </span>
-                            <span>
+                            <div className="flexbox">
                                 {SELECT_CLUSTER_FROM_FILTER_NOTE}&nbsp;
-                                <DocLink docLinkKey="HYPERION" dataTestId="learn-more-about-hyperion-link" />
-                            </span>
+                                <DocLink docLinkKey="HYPERION" dataTestId="learn-more-about-hyperion-link" size={ComponentSizeType.xs} />
+                            </div>
                         </div>
                     </div>
                 )}

@@ -403,7 +403,7 @@ export const Sidebar = ({
                     )}
                 </div>
             ) : (
-                <div className="sidebar-action-container pr-20 flexbox-col dc__gap-4">
+                <div className="flexbox-col dc__gap-4">
                     <div className="dc__uppercase fw-6 fs-12 cn-6">Trigger {isJobCard ? 'JOB' : 'BUILD'} PIPELINE</div>
                     <div>
                         <RadioGroup
@@ -448,7 +448,7 @@ export const Sidebar = ({
                 )}
 
             {!isCdPipeline && (
-                <div className="sidebar-action-container pr-20">
+                <div className="sidebar-action-container flexbox-col dc__align-start pr-20">
                     <div className="fw-6 fs-13 cn-9 mb-8">📙 Need help?</div>
                     <DocLink
                         docLinkKey={helpData.docLink}
