@@ -326,7 +326,7 @@ export const getAppGroupDeploymentHistoryLink = (
 ) => {
     if (status?.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING) {
         //If deployment is in progress then it will redirect to app details page
-        return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`
+        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_DETAILS}/${envId}`
     }
     if (redirectToAppGroup) {
         // It will redirect to application group deployment history in case of same environment
