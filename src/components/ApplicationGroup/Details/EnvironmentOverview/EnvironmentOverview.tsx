@@ -74,10 +74,15 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     null,
     'function',
 )
-// TODO: remove from fe-lib
-// const ClonePipelineButton = importComponentFromFELibrary('ClonePipelineButton', null, 'function')
+const AppGroupManageTrafficDrawer = importComponentFromFELibrary('AppGroupManageTrafficDrawer', null, 'function')
+const ManageTrafficButton = importComponentFromFELibrary('ManageTrafficButton', null, 'function')
 const ClonePipelineMenuButton = importComponentFromFELibrary('ClonePipelineMenuButton', null, 'function')
 const ClonePipelineModal = importComponentFromFELibrary('ClonePipelineModal', null, 'function')
+const getManageTrafficMenuButtonConfig = importComponentFromFELibrary(
+    'getManageTrafficMenuButtonConfig',
+    null,
+    'function',
+)
 
 const EnvironmentOverview = ({
     appGroupListData,
@@ -111,6 +116,7 @@ const EnvironmentOverview = ({
         Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE; isActive: boolean }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
+    const [isManageTrafficDrawerOpen, setIsManageTrafficDrawerOpen] = useState(false)
 
     // HOOKS
     const { envId } = useParams<{ envId: string }>()
@@ -285,10 +291,14 @@ const EnvironmentOverview = ({
 
     const handleBulkSelectionWidgetClose = () => setSelectedAppDetailsList([])
 
+    const handleOpenManageTrafficDrawer = () => setIsManageTrafficDrawerOpen(true)
+
+    const handleCloseManageTrafficDrawer = () => setIsManageTrafficDrawerOpen(false)
+
     // CONFIGS
     const environmentOverviewTableRows = (appListData?.appInfoList ?? []).map<EnvironmentOverviewTableRow>(
         (appInfo) => ({
-            environment: {
+            app: {
                 id: appInfo.appId,
                 name: appInfo.application,
                 commits: appInfo.commits,
@@ -502,13 +512,7 @@ const EnvironmentOverview = ({
                     <span className="flex">
                         <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                     </span>
-                    <Button
-                        dataTestId="environment-overview-table-manage-traffic"
-                        startIcon={<Icon name="ic-traffic-signal" color={null} />}
-                        variant={ButtonVariantType.secondary}
-                        size={ComponentSizeType.medium}
-                        text="Manage Traffic"
-                    />
+                    {ManageTrafficButton && <ManageTrafficButton onClick={handleOpenManageTrafficDrawer} />}
                 </div>
                 <EnvironmentOverviewTable
                     rows={environmentOverviewTableRows}
@@ -519,6 +523,16 @@ const EnvironmentOverview = ({
             {/* MODALS */}
             {renderOverviewModal()}
 
+            {AppGroupManageTrafficDrawer && isManageTrafficDrawerOpen && (
+                <AppGroupManageTrafficDrawer
+                    envId={+envId}
+                    envName={appListData.environment}
+                    appInfoList={appListData?.appInfoList}
+                    initialSelectedAppList={selectedAppDetailsList}
+                    onClose={handleCloseManageTrafficDrawer}
+                />
+            )}
+
             {/* BULK SELECTION WIDGET */}
             {!!selectedAppDetailsList.length && (
                 <EnvironmentOverviewBulkSelectionWidget
@@ -526,12 +540,9 @@ const EnvironmentOverview = ({
                     count={selectedAppDetailsList.length}
                     onClose={handleBulkSelectionWidgetClose}
                     popUpMenuItems={[
-                        {
-                            label: 'Manage Traffic',
-                            iconName: 'ic-traffic-signal',
-                            // TODO: open manage traffic drawer here
-                            onClick: () => {},
-                        },
+                        ...(getManageTrafficMenuButtonConfig
+                            ? [getManageTrafficMenuButtonConfig({ onClick: handleOpenManageTrafficDrawer })]
+                            : []),
                         ...(ClonePipelineMenuButton && appListData.environment
                             ? [
                                   <ClonePipelineMenuButton

@@ -69,10 +69,10 @@ export const EnvironmentOverviewTable = ({
         () =>
             rows.sort((a, b) => {
                 if (sortBy === EnvironmentOverviewTableSortableKeys.DEPLOYED_AT) {
-                    return handleRelativeDateSorting(a.environment.deployedAt, b.environment.deployedAt, sortOrder)
+                    return handleRelativeDateSorting(a.app.deployedAt, b.app.deployedAt, sortOrder)
                 }
 
-                return stringComparatorBySortOrder(a.environment.name, b.environment.name, sortOrder)
+                return stringComparatorBySortOrder(a.app.name, b.app.name, sortOrder)
             }),
         [rows, sortBy, sortOrder],
     )
@@ -163,7 +163,7 @@ export const EnvironmentOverviewTable = ({
     )
 
     const renderRow = ({
-        environment,
+        app,
         isChecked,
         deployedAtLink,
         redirectLink,
@@ -171,7 +171,7 @@ export const EnvironmentOverviewTable = ({
         onLastDeployedImageClick,
         popUpMenuItems = [],
     }: EnvironmentOverviewTableProps['rows'][0]) => {
-        const { id, name, status, commits, deployedAt, deployedBy, deploymentStatus, lastDeployedImage } = environment
+        const { id, name, status, commits, deployedAt, deployedBy, deploymentStatus, lastDeployedImage } = app
 
         return (
             <div className={`environment-overview-table__row ${isChecked ? isCheckedRowClassName : ''}`}>
@@ -244,7 +244,7 @@ export const EnvironmentOverviewTable = ({
         <div className="environment-overview-table dc__border br-4 bg__primary w-100">
             {renderHeaderRow()}
             {sortedRows.map((row) => (
-                <Fragment key={row.environment.id}>{renderRow(row)}</Fragment>
+                <Fragment key={row.app.id}>{renderRow(row)}</Fragment>
             ))}
         </div>
     )

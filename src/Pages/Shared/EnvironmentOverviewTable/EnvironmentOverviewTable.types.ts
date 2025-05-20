@@ -41,7 +41,7 @@ export type EnvironmentOverviewTablePopUpMenuItem =
     | ReactElement
 
 export interface EnvironmentOverviewTableRow {
-    environment: EnvironmentOverviewTableRowData
+    app: EnvironmentOverviewTableRowData
     isChecked?: boolean
     onLastDeployedImageClick: (event: MouseEvent<HTMLButtonElement>) => void
     onCommitClick: (event: MouseEvent<HTMLButtonElement>) => void

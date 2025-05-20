@@ -52,7 +52,7 @@ export const EnvironmentOverviewBulkSelectionWidget = ({
                 </div>
                 <div className="w-1 h-20 bcb-1" />
                 {children}
-                <EnvironmentOverviewPopupMenu popUpMenuItems={popUpMenuItems} />
+                {popUpMenuItems.length > 0 && <EnvironmentOverviewPopupMenu popUpMenuItems={popUpMenuItems} />}
                 <div className="w-1 h-20 bcb-1" />
                 <Button
                     icon={<Icon name="ic-close-large" color={null} />}
