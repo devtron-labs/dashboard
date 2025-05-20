@@ -254,7 +254,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             label: NODE_DETAILS_TABS.summary,
             node: renderSummary,
         },
-        ...REDFISH_NODE_UI_TABS,
+        ...(window._env_.FEATURE_REDFISH_NODE_ENABLE ? REDFISH_NODE_UI_TABS : []),
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
             label: NODE_DETAILS_TABS.yaml,
