@@ -38,6 +38,9 @@ import {
     AppThemeType,
     Icon,
     NodeDetailTabsInfoType,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -49,14 +52,7 @@ import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
-import { ReactComponent as CordonIcon } from '@Icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
-import { ReactComponent as DrainIcon } from '@Icons/ic-clean-brush.svg'
-import { ReactComponent as EditTaintsIcon } from '@Icons/ic-spraycan.svg'
-import { ReactComponent as DeleteIcon } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
-import { ReactComponent as Check } from '@Icons/ic-check.svg'
-import { ReactComponent as Review } from '@Icons/ic-visibility-on.svg'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
@@ -68,7 +64,6 @@ import {
 } from './types'
 import { OrderBy } from '../app/list/types'
 import { MODES, URLS } from '../../config'
-import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
@@ -227,7 +222,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const renderConditions = (): JSX.Element => {
         return (
             <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
-                <div className="ml-20 mr-20 mb-12 mt-16 bg__primary br-8 en-2 bw-1">
+                <div className="ml-20 mr-20 mb-12 mt-12 bg__primary br-8 en-2 bw-1">
                     <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
                         <div>Type</div>
                         <div>Status</div>
@@ -321,7 +316,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }))
 
         return (
-            <div className="pl-20 dc__border-bottom flex dc__gap-16">
+            <div className="px-20 dc__border-bottom flex dc__gap-16">
                 <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
                 {nodeControls()}
             </div>
@@ -826,82 +821,102 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const renderTabControls = () => {
         const selectedTab = NODE_TABS_INFO[selectedTabIndex]
 
-        if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)) {
-            return (
-                <>
-                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
-                        {nodeDetail?.unschedulable ? (
-                            <>
-                                <UncordonIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                            </>
-                        ) : (
-                            <>
-                                <CordonIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                            </>
-                        )}
-                    </span>
-                    <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showDrainNodeModal}>
-                        <DrainIcon className="icon-dim-16 mr-5 scb-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                    </span>
-                    <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showEditTaintsModal}>
-                        <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                    </span>
-                </>
-            )
-        }
         if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
             if (!isEdit) {
                 return (
-                    <span className="cb-5 fs-12 scb-5 fw-6 cursor flex" onClick={setYAMLEdit}>
-                        <Edit className="icon-dim-16 mr-6" /> Edit YAML
-                    </span>
+                    <Button
+                        dataTestId="edit-yaml"
+                        variant={ButtonVariantType.text}
+                        size={ComponentSizeType.small}
+                        text="Edit YAML"
+                        onClick={setYAMLEdit}
+                        startIcon={<Icon name="ic-pencil" color={null} />}
+                    />
                 )
             }
             return (
-                <>
-                    {apiInProgress ? (
-                        <Progressing />
-                    ) : (
-                        <span className="flex scb-5 cb-5 left fw-6 fs-12 cursor" onClick={saveYAML}>
-                            {isReviewState ? (
-                                <>
-                                    <Check className="icon-dim-16 mr-6" /> Apply changes
-                                </>
-                            ) : (
-                                <>
-                                    <Review className="icon-dim-16 mr-6" /> Review & Save changes
-                                </>
-                            )}
-                        </span>
+                <div className="flexbox dc__align-items-center dc__gap-12">
+                    <Button
+                        dataTestId={isReviewState ? 'apply-changes' : 'review-changes'}
+                        variant={ButtonVariantType.text}
+                        size={ComponentSizeType.small}
+                        text={isReviewState ? 'Apply changes' : 'Review & Save changes'}
+                        onClick={saveYAML}
+                        startIcon={isReviewState ? <Icon name="ic-check" color={null} /> : null}
+                        isLoading={apiInProgress}
+                    />
+
+                    {!apiInProgress && (
+                        <Button
+                            dataTestId="cancel-changes"
+                            variant={ButtonVariantType.text}
+                            size={ComponentSizeType.small}
+                            style={ButtonStyleType.negativeGrey}
+                            onClick={cancelYAMLEdit}
+                            text="Cancel"
+                        />
                     )}
-                    <span className="flex left fw-6 fs-12 cn-6 cursor ml-12" onClick={cancelYAMLEdit}>
-                        Cancel
-                    </span>
-                </>
+                </div>
             )
         }
+
+        return <div />
     }
 
     const nodeControls = () => (
-            <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
-                <div className="flex left">
-                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
-                        <TerminalLineIcon className="icon-dim-16 mr-5" />
-                        {NODE_DETAILS_TABS.debug}
-                    </span>
-                    <span className="cn-2 mr-16 ml-16">|</span>
-                    {renderTabControls()}
-                </div>
-                <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={showDeleteNodeModal}>
-                    <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                    {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                </span>
+        <div className="flex-grow-1 flexbox dc__content-space dc__gap-12">
+            {renderTabControls()}
+
+            <div className="flexbox dc__gap-12 dc__align-items-center">
+                <Button
+                    dataTestId="open-debug-terminal"
+                    variant={ButtonVariantType.text}
+                    text={NODE_DETAILS_TABS.debug}
+                    onClick={openDebugTerminal}
+                    size={ComponentSizeType.small}
+                    startIcon={<Icon name="ic-terminal" color={null} />}
+                />
+
+                <Button
+                    dataTestId={nodeDetail?.unschedulable ? 'un-cordon-node' : 'cordon-node'}
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    text={
+                        nodeDetail?.unschedulable
+                            ? CLUSTER_NODE_ACTIONS_LABELS.uncordon
+                            : CLUSTER_NODE_ACTIONS_LABELS.cordon
+                    }
+                    onClick={showCordonNodeModal}
+                />
+
+                <Button
+                    dataTestId="drain-node"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.drain}
+                    onClick={showDrainNodeModal}
+                />
+
+                <Button
+                    dataTestId="edit-taints"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    onClick={showEditTaintsModal}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.taints}
+                />
+
+                <Button
+                    dataTestId="delete-node"
+                    variant={ButtonVariantType.text}
+                    style={ButtonStyleType.negative}
+                    size={ComponentSizeType.small}
+                    onClick={showDeleteNodeModal}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.delete}
+                    startIcon={<Icon name="ic-delete" color={null} />}
+                />
             </div>
-        )
+        </div>
+    )
 
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
@@ -977,7 +992,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const renderTabs = (): JSX.Element => {
+    const renderTabContent = (): JSX.Element => {
         const selectedTab = NODE_TABS_INFO[selectedTabIndex]
         const renderNode = selectedTab?.node
 
@@ -1048,7 +1063,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             ) : (
                 <>
                     {renderNodeDetailsTabs()}
-                    {renderTabs()}
+                    {renderTabContent()}
                     {showCordonNodeDialog && (
                         <CordonNodeModal
                             name={node}
