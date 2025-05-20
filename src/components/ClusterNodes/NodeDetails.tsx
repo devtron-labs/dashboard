@@ -259,6 +259,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             label: NODE_DETAILS_TABS.summary,
             node: renderSummary,
         },
+        ...REDFISH_NODE_UI_TABS,
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
             label: NODE_DETAILS_TABS.yaml,
@@ -270,7 +271,6 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             label: NODE_DETAILS_TABS.nodeConditions,
             node: renderConditions,
         },
-        ...REDFISH_NODE_UI_TABS,
     ]
 
     useEffect(() => {
@@ -824,7 +824,9 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderTabControls = () => {
-        if (selectedTabIndex == 0) {
+        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
+
+        if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)) {
             return (
                 <>
                     <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
@@ -851,7 +853,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 </>
             )
         }
-        if (selectedTabIndex == 1) {
+        if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
             if (!isEdit) {
                 return (
                     <span className="cb-5 fs-12 scb-5 fw-6 cursor flex" onClick={setYAMLEdit}>
