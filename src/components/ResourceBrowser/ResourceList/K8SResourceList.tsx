@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -44,12 +44,7 @@ import Cache from './Cache'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import {
-    BulkOperationsModalState,
-    K8sResourceListFilterType,
-    K8sResourceListURLParams,
-    K8SResourceListViewWrapperProps,
-} from './types'
+import { K8sResourceListFilterType, K8sResourceListURLParams, K8SResourceListViewWrapperProps } from './types'
 import {
     getColumnComparator,
     getColumnSize,
@@ -125,7 +120,6 @@ export const K8SResourceList = ({
     const { selectedNamespace = 'all', ...filters } = useUrlFilters<string, K8sResourceListFilterType>({
         parseSearchParams: parseK8sResourceListSearchParams,
     })
-    const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationsModalState>('closed')
 
     // REFS
     const abortControllerRef = useRef(new AbortController())
@@ -200,26 +194,6 @@ export const K8SResourceList = ({
         [resourceList?.data],
     )
 
-    const getBulkOperationsModalStateSetter = (option: BulkOperationsModalState) => () => {
-        setBulkOperationModalState(option)
-    }
-
-    const renderBulkActions = () => (
-        <RBBulkSelectionActions
-            handleOpenBulkDeleteModal={getBulkOperationsModalStateSetter('delete')}
-            handleOpenRestartWorkloadModal={getBulkOperationsModalStateSetter('restart')}
-            showBulkRestartOption={
-                window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
-                    .map((feat: string) => feat.trim().toUpperCase())
-                    .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1
-            }
-            showNodeListingOptions={isNodeListing}
-            handleOpenCordonNodeModal={getBulkOperationsModalStateSetter('cordon')}
-            handleOpenUncordonNodeModal={getBulkOperationsModalStateSetter('uncordon')}
-            handleOpenDrainNodeModal={getBulkOperationsModalStateSetter('drain')}
-        />
-    )
-
     const handleClearCacheAndReload = () => {
         Cache.clear()
         reloadResourceList()
@@ -256,8 +230,25 @@ export const K8SResourceList = ({
             {...(RBBulkSelectionActions && !isEventListing
                 ? {
                       bulkSelectionConfig: {
-                          BulkActionsComponent: renderBulkActions,
+                          BulkActionsComponent: RBBulkSelectionActions,
                           getSelectAllDialogStatus: () => SelectAllDialogStatus.CLOSED,
+                          BulkOperationModal: RBBulkOperations,
+                          bulkOperationModalData: {
+                              selectedResource,
+                              isNodeListing,
+                              getManifestResource,
+                              updateManifestResourceHelmApps,
+                              clusterId,
+                              clusterName: selectedCluster?.label ?? '',
+                              handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
+                          },
+                          bulkActionsData: {
+                              showBulkRestartOption:
+                                  window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                                      .map((feat: string) => feat.trim().toUpperCase())
+                                      .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1,
+                              showNodeListingOptions: isNodeListing,
+                          },
                       },
                   }
                 : {})}
@@ -286,21 +277,6 @@ export const K8SResourceList = ({
                 lowercaseKindToResourceGroupMap,
                 reloadResourceListData: handleClearCacheAndReload,
             }}
-        >
-            {RBBulkOperations && bulkOperationModalState !== 'closed' && (
-                <RBBulkOperations
-                    handleModalClose={getBulkOperationsModalStateSetter('closed')}
-                    handleReloadDataAfterBulkOperation={handleClearCacheAndReload}
-                    operationType={bulkOperationModalState}
-                    allResources={resourceList?.data ?? []}
-                    selectedResource={selectedResource}
-                    clusterName={selectedCluster?.label ?? ''}
-                    clusterId={clusterId}
-                    isNodeListing={isNodeListing}
-                    getManifestResource={getManifestResource}
-                    updateManifestResourceHelmApps={updateManifestResourceHelmApps}
-                />
-            )}
-        </Table>
+        />
     )
 }

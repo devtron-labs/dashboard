@@ -155,7 +155,7 @@ const ResourceFilterOptions = ({
                                     tooltipProps: { content: 'Only show warning events' },
                                 },
                                 {
-                                    icon: 'ic-info-filled',
+                                    icon: 'ic-info-filled-color',
                                     ariaLabel: 'Only show normal events',
                                     value: 'normal',
                                     tooltipProps: { content: 'Only show normal events' },

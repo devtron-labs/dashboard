@@ -16,7 +16,6 @@
 
 import {
     FiltersTypeEnum,
-    RBBulkOperationType,
     TableCellComponentProps,
     TableViewWrapperProps,
     useBreadcrumb,
@@ -39,8 +38,6 @@ export interface ClusterUpgradeCompatibilityInfoProps
 export interface ResourceListUrlFiltersType {
     targetK8sVersion: string
 }
-
-export type BulkOperationsModalState = RBBulkOperationType | 'closed'
 
 export interface K8sResourceListURLParams extends ClusterDetailBaseParams {
     version: string

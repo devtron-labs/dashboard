@@ -163,11 +163,11 @@ const K8sResourceListTableCellComponent = ({
 
     if (columnName === 'type') {
         const iconName: IconName =
-            (resourceData.type as string).toLowerCase() === 'normal' ? 'ic-info-filled' : 'ic-warning'
+            (resourceData.type as string).toLowerCase() === 'normal' ? 'ic-info-filled-color' : 'ic-warning'
 
         return (
             <div className="py-10">
-                <Icon name={iconName} size={20} color="B500" />
+                <Icon name={iconName} size={20} color={null} />
             </div>
         )
     }
