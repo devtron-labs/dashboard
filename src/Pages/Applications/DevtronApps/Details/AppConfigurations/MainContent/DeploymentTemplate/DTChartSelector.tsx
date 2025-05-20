@@ -185,6 +185,7 @@ const ChartSelectorDropdown = ({
                                             <DocLink
                                                 docLinkKey={CHART_DOCUMENTATION_LINK[chart.name]}
                                                 dataTestId="chart-doc-link"
+                                                onClick={stopPropagation}
                                             />
                                         )}
                                     </div>

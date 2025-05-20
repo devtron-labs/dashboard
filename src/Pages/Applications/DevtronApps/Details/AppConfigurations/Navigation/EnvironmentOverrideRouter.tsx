@@ -18,6 +18,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    ComponentSizeType,
     ConfirmationDialog,
     DeleteConfirmationModal,
     DocLink,
@@ -50,7 +51,11 @@ const EnvOverridesHelpNote = () => (
     <div className="fs-12 fw-4 lh-18">
         Environment overrides allow you to manage environment specific configurations after you’ve created deployment
         pipelines. &nbsp;
-        <DocLink docLinkKey="APP_CREATE_ENVIRONMENT_OVERRIDE" dataTestId="env-overrides-learn-more" />
+        <DocLink
+            docLinkKey="APP_CREATE_ENVIRONMENT_OVERRIDE"
+            dataTestId="env-overrides-learn-more"
+            size={ComponentSizeType.xs}
+        />
     </div>
 )
 

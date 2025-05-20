@@ -255,7 +255,7 @@ export const getNavItems = ({
                         href: `${basePath}/edit/workflow`,
                         stage: STAGE_NAME.WORKFLOW,
                         isLocked: !_isUnlocked.workflowEditor,
-                        supportDocumentURL: 'test',
+                        supportDocumentURL: getDocumentationUrl({ docLinkKey: 'APP_CREATE_WORKFLOW' }),
                         flowCompletionPercent: completedPercent,
                         currentStep: completedSteps,
                         required: true,

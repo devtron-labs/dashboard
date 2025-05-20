@@ -21,7 +21,7 @@ import {
     ErrorScreenManager,
     sortCallback,
     AppListConstants,
-    DocLink,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
 import { AppConfigStatus, ViewType, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
@@ -164,10 +164,14 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
                     Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
-                    <DocLink
-                        docLinkKey={this.props.isJobView ? "JOB_SOURCE_CODE" : "GLOBAL_CONFIG_GIT"}
-                        dataTestId="learn-more-about-git-repositories-link"
-                    />
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="dc__link"
+                        href={getDocumentationUrl({ docLinkKey: this.props.isJobView ? "JOB_SOURCE_CODE" : "GLOBAL_CONFIG_GIT"})}
+                    >
+                        Learn more
+                    </a>
                 </p>
             </>
         )

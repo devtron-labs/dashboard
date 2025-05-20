@@ -265,6 +265,7 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                         infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
                         documentationLink="EXTERNAL_LINKS"
+                        documentationLinkText="View Documentation"
                         iconClassName="icon-dim-20 fcn-6 ml-8"
                     />
                 </h3>
