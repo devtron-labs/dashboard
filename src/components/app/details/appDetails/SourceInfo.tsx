@@ -350,7 +350,7 @@ export const SourceInfo = ({
                                             pcoId={appDetails.pcoId}
                                         />
                                     )}
-                                {renderAppDetailsCDButton(false)}
+                                {renderAppDetailsCDButton()}
                             </div>
                         )}
                     </>
@@ -440,14 +440,14 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {DeploymentStrategyCard && (
+                          {!isVirtualEnvironment && DeploymentStrategyCard && (
                               <DeploymentStrategyCard
                                   appId={appDetails.appId}
                                   envId={appDetails.environmentId}
                                   appName={appDetails.appName}
                                   envName={appDetails.environmentName}
                                   renderRollbackButton={() => renderAppDetailsCDButton(true)}
-                                isResourceTreeReloading={isResourceTreeReloading}
+                                  isResourceTreeReloading={isResourceTreeReloading}
                               />
                           )}
                           {!appDetails?.deploymentAppDeleteRequest &&

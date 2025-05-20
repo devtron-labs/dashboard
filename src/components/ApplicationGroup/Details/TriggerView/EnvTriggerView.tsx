@@ -56,6 +56,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     API_STATUS_CODES,
+    PipelineIdsVsDeploymentStrategyMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, URLS, ViewType } from '../../../../config'
@@ -197,8 +198,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
     const [selectedWebhookNode, setSelectedWebhookNode] = useState<{ appId: number; id: number }>(null)
-
-    const selectedWorkflows = filteredWorkflows.filter((wf) => wf.isSelected)
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
@@ -1438,7 +1437,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return true
     }
 
-    const onClickTriggerBulkCD = (skipIfHibernated: boolean, appsToRetry?: Record<string, boolean>) => {
+    const onClickTriggerBulkCD = (
+        skipIfHibernated: boolean,
+        pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap,
+        appsToRetry?: Record<string, boolean>,
+    ) => {
         if (isCDLoading || !validateBulkRuntimeParams()) {
             return
         }
@@ -1482,9 +1485,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
             })
             if (ciArtifact) {
+                const pipelineId = Number(node.id)
+                const strategy = pipelineIdVsStrategyMap[pipelineId]
                 _CDTriggerPromiseFunctionList.push(() =>
                     triggerCDNode({
-                        pipelineId: Number(node.id),
+                        pipelineId,
                         ciArtifactId: Number(ciArtifact.id),
                         appId: Number(currentAppId),
                         stageType: bulkTriggerType,
@@ -1492,6 +1497,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
                             : {}),
                         skipIfHibernated,
+                        ...(strategy ? { strategy } : {}),
                     }),
                 )
             } else {
@@ -2058,6 +2064,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
         const bulkCDDetailTypeResponse = createBulkCDTriggerData()
         const _selectedAppWorkflowList: BulkCDDetailType[] = bulkCDDetailTypeResponse.bulkCDDetailType
+
         const { uniqueReleaseTags } = bulkCDDetailTypeResponse
 
         // Have to look for its each prop carefully
@@ -2315,6 +2322,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {
+        const selectedWorkflows = filteredWorkflows.filter((wf) => wf.isSelected)
         const _showPopupMenu = showPreDeployment || showPostDeployment
         return (
             <div className="flex dc__min-width-fit-content dc__gap-12">
