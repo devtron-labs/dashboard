@@ -67,7 +67,7 @@ export const CLUSTER_STATUS = {
 export const NODE_DETAILS_TABS = {
     summary: 'Summary',
     yaml: 'YAML',
-    nodeConditions: 'Node conditions',
+    nodeConditions: 'Node Conditions',
     debug: 'Debug',
 }
 
