@@ -23,7 +23,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     CustomInput,
-    DocLink,
+    getDocumentationUrl,
     Icon,
     PasswordField,
     ServerErrors,
@@ -141,12 +141,14 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
 
                     <div className="flex left dc__gap-4">
                         <Icon name="ic-help-outline" color="B500" size={12} />
-                        <DocLink
-                            docLinkKey="ADMIN_PASSWORD"
-                            text="What is my admin password?"
-                            dataTestId="learn-more-about-admin-password"
-                            size={ComponentSizeType.xxs}
-                        />
+                        <a
+                            className="anchor fs-11 cb-5"
+                            rel="noreferrer noopener"
+                            target="_blank"
+                            href={getDocumentationUrl({ docLinkKey: 'ADMIN_PASSWORD' })}
+                        >
+                            What is my admin password?
+                        </a>
                     </div>
                 </div>
             </div>
