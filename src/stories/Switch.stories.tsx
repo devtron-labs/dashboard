@@ -17,9 +17,15 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { ComponentSizeType, iconMap, Switch, SWITCH_VARIANTS, SwitchProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    DTSwitch,
+    DTSwitchProps,
+    iconMap,
+    SWITCH_VARIANTS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-type BaseComponentPropsType = Omit<SwitchProps, 'onChange' | 'isChecked'>
+type BaseComponentPropsType = Omit<DTSwitchProps, 'onChange' | 'isChecked'>
 
 const BaseComponent = (props: BaseComponentPropsType) => {
     const [isChecked, setIsChecked] = useState<boolean>(false)
@@ -32,9 +38,9 @@ const BaseComponent = (props: BaseComponentPropsType) => {
         ...props,
         isChecked,
         onChange: handleChange,
-    } as SwitchProps
+    } as DTSwitchProps
 
-    return <Switch {...switchProps} />
+    return <DTSwitch {...switchProps} />
 }
 
 const meta = {
