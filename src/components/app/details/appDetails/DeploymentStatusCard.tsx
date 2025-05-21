@@ -18,10 +18,12 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
+import { DEPLOYMENT_STATUS_TEXT_MAP, PROGRESSING_DEPLOYMENT_STATUS } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
-import { DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
+import { DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
 import LoadingCard from './LoadingCard'
 import { validateMomentDate } from './utils'
@@ -31,7 +33,6 @@ const DeploymentStatusCard = ({
     cardLoading,
     hideDetails,
     isVirtualEnvironment,
-    refetchDeploymentStatus,
 }: DeploymentStatusCardType) => {
     const history = useHistory()
 
@@ -41,16 +42,9 @@ const DeploymentStatusCard = ({
             search: DEPLOYMENT_STATUS_QUERY_PARAM,
         })
     }
-    const ProgressingStateList: string[] = [
-        DEPLOYMENT_STATUS.INPROGRESS,
-        DEPLOYMENT_STATUS.PROGRESSING,
-        DEPLOYMENT_STATUS.STARTING,
-        DEPLOYMENT_STATUS.INITIATING,
-        DEPLOYMENT_STATUS.CHECKING,
-    ]
+
     const renderDeploymentStatus = () => {
-        const { triggeredBy, deploymentStatus, deploymentTriggerTime, deploymentStatusText } =
-            deploymentStatusDetailsBreakdownData
+        const { triggeredBy, deploymentStatus, deploymentTriggerTime } = deploymentStatusDetailsBreakdownData
         return (
             <>
                 <div className="app-details-info-card__top-container flex">
@@ -73,10 +67,10 @@ const DeploymentStatusCard = ({
                             <span
                                 data-testid="deployment-status-name"
                                 className={`app-summary__status-name fs-13 mr-8 fw-6 f-${deploymentStatus?.toLowerCase()} ${
-                                    ProgressingStateList.includes(deploymentStatus) ? 'dc__loading-dots' : ''
+                                    PROGRESSING_DEPLOYMENT_STATUS.includes(deploymentStatus) ? 'dc__loading-dots' : ''
                                 }`}
                             >
-                                {deploymentStatusText}
+                                {DEPLOYMENT_STATUS_TEXT_MAP[deploymentStatus] || deploymentStatus}
                             </span>
                         </div>
                     </div>
@@ -110,7 +104,6 @@ const DeploymentStatusCard = ({
     const onClickLastDeploymentStatus = (e) => {
         if (!hideDetails) {
             showDeploymentDetailedStatus(e)
-            refetchDeploymentStatus(true)
         }
     }
 

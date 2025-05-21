@@ -76,7 +76,6 @@ export const SourceInfo = ({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
-    refetchDeploymentStatus,
     toggleIssuesModal,
     envId,
     ciArtifactId,
@@ -184,7 +183,7 @@ export const SourceInfo = ({
                     >
                         <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
                             {/* TODO: verify what appType needs to be passed */}
-                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} appType={null} />
+                            <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} appType={null} />
                         </div>
                     </Tooltip>
                 )}
@@ -412,7 +411,6 @@ export const SourceInfo = ({
                                           appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
-                                      refetchDeploymentStatus={refetchDeploymentStatus}
                                   />
                                   {appDetails?.dataSource !== 'EXTERNAL' && (
                                       <DeployedCommitCard

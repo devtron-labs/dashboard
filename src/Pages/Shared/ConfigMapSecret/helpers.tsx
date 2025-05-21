@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom'
 import {
     CMSecretComponentType,
     CMSecretExternalType,
+    ComponentSizeType,
     DocLink,
     Icon,
     InfoBlock,
@@ -71,13 +72,14 @@ export const renderExternalInfo = (
     ) : null
 
 export const renderChartVersionBelow3090NotSupportedText = () => (
-    <span className="fs-12 fw-4">
+    <span className="fs-12 fw-4 flex">
         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
         <span className="cn-7">Learn more about</span>&nbsp;
         <DocLink
             docLinkKey="APP_ROLLOUT_DEPLOYMENT_TEMPLATE"
             text="Deployment Template &gt; Chart Version"
             dataTestId="chart-version-learn-more"
+            size={ComponentSizeType.xs}
         />
     </span>
 )

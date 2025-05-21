@@ -28,6 +28,31 @@ const Sidebar = ({
         handleCreationMethodChange(creationMethod)
     }
 
+    const renderAppContent = () => (
+        <>
+            <p className="m-0">In Devtron, an &quot;Application&quot; represents your software project or service.</p>
+            <p className="m-0">
+                It serves as a container for your deployment configurations, environments, and other settings. Define
+                your application to start managing and monitoring its deployment efficiently.
+            </p>
+            <p className="m-0">
+                Applications are not environment specific and can be deployed to multiple environments.
+            </p>
+        </>
+    )
+
+    const renderJobContent = () => (
+        <>
+            <p className="m-0">Job allows manual and automated execution of your source code.</p>
+            <p className="m-0">
+                Job pipelines do not have a deployment stage as the job is limited to your source code only.
+            </p>
+            <p className="m-0">
+                You can execute custom tasks or leverage the plugin library to execute tasks in a job pipeline.
+            </p>
+        </>
+    )
+
     return (
         <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink dc__overflow-auto">
             <div className="flexbox-col">
@@ -50,30 +75,14 @@ const Sidebar = ({
                     )
                 })}
             </div>
-            {!isJobView && (
-                <>
-                    <div className="divider__secondary--horizontal" />
-                    <ModalSidebarPanel
-                        heading={null}
-                        documentationLink="APP_CREATE"
-                        rootClassName="w-100 dc__no-background-imp"
-                    >
-                        <div className="flexbox-col dc__gap-24">
-                            <p className="m-0">
-                                In Devtron, an &quot;Application&quot; represents your software project or service.
-                            </p>
-                            <p className="m-0">
-                                It serves as a container for your deployment configurations, environments, and other
-                                settings. Define your application to start managing and monitoring its deployment
-                                efficiently.
-                            </p>
-                            <p className="m-0">
-                                Applications are not environment specific and can be deployed to multiple environments.
-                            </p>
-                        </div>
-                    </ModalSidebarPanel>
-                </>
-            )}
+            <div className="divider__secondary--horizontal" />
+            <ModalSidebarPanel
+                heading={null}
+                documentationLink={isJobView ? 'JOBS' : 'APP_CREATE'}
+                rootClassName="w-100 dc__no-background-imp"
+            >
+                <div className="flexbox-col dc__gap-24">{isJobView ? renderJobContent() : renderAppContent()}</div>
+            </ModalSidebarPanel>
         </div>
     )
 }

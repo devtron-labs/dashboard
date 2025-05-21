@@ -21,11 +21,15 @@ import {
     ACTION_STATE,
     aggregateNodes,
     AppStatusModal,
+    AppStatusModalTabType,
     ArtifactInfoModal,
     Button,
     DeploymentAppTypes,
+    DeploymentStatusDetailsBreakdownDataType,
+    DeploymentStatusDetailsType,
     DocLink,
     GenericEmptyState,
+    getAppDetailsURL,
     getAppsInfoForEnv,
     getIsRequestAborted,
     MODAL_TYPE,
@@ -48,11 +52,8 @@ import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
 
 import {
     DEFAULT_STATUS,
-    DEFAULT_STATUS_TEXT,
     DEPLOYMENT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
-    getAppDetailsURL,
-    HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
@@ -80,15 +81,12 @@ import { getDeploymentStatusDetail } from './appDetails.service'
 import {
     AppDetailProps,
     DeletedAppComponentType,
-    DeploymentStatusDetailsBreakdownDataType,
-    DeploymentStatusDetailsType,
     DetailsType,
     ErrorItem,
     HibernationModalTypes,
 } from './appDetails.type'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { AppMetrics } from './AppMetrics'
-import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
@@ -206,11 +204,11 @@ const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
+    const { replace } = useHistory()
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
-    // fixme: the state is not being set anywhere and just being drilled down
-    const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
+    const [showAppStatusModal, setShowAppStatusModal] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
     const [urlInfo, setUrlInfo] = useState<boolean>(false)
     const [hibernateConfirmationModal, setHibernateConfirmationModal] = useState<HibernationModalTypes>(null)
@@ -233,14 +231,11 @@ const Details: React.FC<DetailsType> = ({
 
     const [loadingDetails, setLoadingDetails] = useState(true)
     const [loadingResourceTree, setLoadingResourceTree] = useState(true)
-    // State to track the loading state for the timeline data when the detailed status modal opens
-    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef<AbortController>(null)
-    const shouldFetchTimelineRef = useRef(false)
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
@@ -248,7 +243,6 @@ const Details: React.FC<DetailsType> = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
     const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
@@ -260,16 +254,6 @@ const Details: React.FC<DetailsType> = ({
         () => aggregateNodes(appDetails?.resourceTree?.nodes || [], appDetails?.resourceTree?.podMetadata || []),
         [appDetails],
     )
-
-    useEffect(() => {
-        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
-        // Reset the loading state when the modal is closed
-        if (shouldFetchTimelineRef.current && !isModalOpen) {
-            setIsInitialTimelineDataLoading(true)
-        }
-        // The timeline should be fetched by default if the modal is open
-        shouldFetchTimelineRef.current = isModalOpen
-    }, [location.search])
 
     const clearDeploymentStatusTimer = useCallback((): void => {
         if (deploymentStatusTimer) {
@@ -306,30 +290,14 @@ const Details: React.FC<DetailsType> = ({
         ],
     )
 
-    // This is called only when timeline modal is open
-    const getDeploymentDetailStepsData = useCallback(
-        (showTimeline?: boolean): void => {
-            const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
-
-            // Deployments status details for Devtron apps
-            getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline)
-                .then((deploymentStatusDetailRes) => {
-                    processDeploymentStatusData(deploymentStatusDetailRes.result)
-                    // Update the loading status if the modal is open
-                    if (shouldFetchTimeline) {
-                        setIsInitialTimelineDataLoading(false)
-                    }
-                })
-                .catch(noop)
-        },
-        [
-            params.appId,
-            params.envId,
-            shouldFetchTimelineRef.current,
-            getDeploymentStatusDetail,
-            processDeploymentStatusData,
-        ],
-    )
+    const getDeploymentDetailStepsData = useCallback((): void => {
+        // Deployments status details for Devtron apps
+        getDeploymentStatusDetail(params.appId, params.envId)
+            .then((deploymentStatusDetailRes) => {
+                processDeploymentStatusData(deploymentStatusDetailRes.result)
+            })
+            .catch(noop)
+    }, [params.appId, params.envId, getDeploymentStatusDetail, processDeploymentStatusData])
 
     function clearPollingInterval() {
         if (appDetailsIntervalID) {
@@ -435,31 +403,20 @@ const Details: React.FC<DetailsType> = ({
         isIsolatedEnv: boolean,
         triggerIdToFetch?: number,
     ) {
-        const shouldFetchTimeline = shouldFetchTimelineRef.current
-
         // triggerIdToFetch represents the wfrId to fetch for any specific deployment
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, triggerIdToFetch?.toString())
+        getDeploymentStatusDetail(params.appId, params.envId, triggerIdToFetch?.toString())
             .then((deploymentStatusDetailRes) => {
                 if (deploymentStatusDetailRes.result) {
                     // Timelines are not applicable for helm deployments and air gapped envs
                     if (deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv) {
-                        setDeploymentStatusDetailsBreakdownData({
-                            ...deploymentStatusDetailsBreakdownData,
-                            deploymentStatus:
-                                DEPLOYMENT_STATUS[deploymentStatusDetailRes.result.wfrStatus?.toUpperCase()],
-                            deploymentStatusText:
-                                deploymentStatusDetailRes.result.wfrStatus === HELM_DEPLOYMENT_STATUS_TEXT.PROGRESSING
-                                    ? HELM_DEPLOYMENT_STATUS_TEXT.INPROGRESS
-                                    : deploymentStatusDetailRes.result.wfrStatus,
-                            deploymentTriggerTime: deploymentStatusDetailRes.result.deploymentStartedOn,
-                            deploymentEndTime: deploymentStatusDetailRes.result.deploymentFinishedOn,
-                            triggeredBy: deploymentStatusDetailRes.result.triggeredBy,
-                        })
+                        const processedDeploymentStatusData =
+                            isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
+                                ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes.result)
+                                : processDeploymentStatusDetailsData(deploymentStatusDetailRes.result)
+
+                        setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusData)
                     } else {
                         processDeploymentStatusData(deploymentStatusDetailRes.result)
-                    }
-                    if (shouldFetchTimeline) {
-                        setIsInitialTimelineDataLoading(false)
                     }
                 }
             })
@@ -551,12 +508,20 @@ const Details: React.FC<DetailsType> = ({
         }
     }
 
-    const hideAppDetailsStatus = (): void => {
-        toggleDetailedStatus(false)
+    const handleCloseAppStatusModal = (): void => {
+        if (showAppStatusModal) {
+            setShowAppStatusModal(false)
+        }
+
+        if (location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)) {
+            replace({
+                search: '',
+            })
+        }
     }
 
     const showApplicationDetailedModal = (): void => {
-        toggleDetailedStatus(true)
+        setShowAppStatusModal(true)
     }
 
     const renderAppDetailsCDButton = () =>
@@ -682,6 +647,11 @@ const Details: React.FC<DetailsType> = ({
             isDeploymentBlocked={isDeploymentBlocked}
         />
     )
+
+    const updateDeploymentStatusDetailsBreakdownData = (updatedTimelines: DeploymentStatusDetailsBreakdownDataType) => {
+        setDeploymentStatusDetailsBreakdownData(updatedTimelines)
+    }
+
     const isDeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     return (
         <>
@@ -690,7 +660,7 @@ const Details: React.FC<DetailsType> = ({
             >
                 <SourceInfo
                     appDetails={appDetails}
-                    setDetailed={toggleDetailedStatus}
+                    setDetailed={setShowAppStatusModal}
                     environment={environment}
                     isAppView={isAppView}
                     environments={environments}
@@ -702,7 +672,6 @@ const Details: React.FC<DetailsType> = ({
                     setRotateModal={setRotateModal}
                     loadingDetails={loadingDetails}
                     loadingResourceTree={loadingResourceTree}
-                    refetchDeploymentStatus={getDeploymentDetailStepsData}
                     toggleIssuesModal={toggleIssuesModal}
                     envId={appDetails?.environmentId}
                     ciArtifactId={appDetails?.ciArtifactId}
@@ -739,24 +708,20 @@ const Details: React.FC<DetailsType> = ({
             ) : (
                 renderAppDetails()
             )}
-            {detailedStatus && (
+            {(showAppStatusModal || (appDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM))) && (
                 <AppStatusModal
                     titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
-                    handleClose={hideAppDetailsStatus}
+                    handleClose={handleCloseAppStatusModal}
                     type="devtron-app"
                     appDetails={appDetailsFromIndexStore}
                     isConfigDriftEnabled={isConfigDriftEnabled}
                     configDriftModal={ConfigDriftModal}
+                    initialTab={
+                        showAppStatusModal ? AppStatusModalTabType.APP_STATUS : AppStatusModalTabType.DEPLOYMENT_STATUS
+                    }
+                    processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                    updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
                     debugWithAIButton={ExplainWithAIButton}
-                />
-            )}
-            {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
-                <DeploymentStatusDetailModal
-                    appName={appDetails?.appName}
-                    environmentName={appDetails?.environmentName}
-                    deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                    isVirtualEnvironment={isVirtualEnvRef.current}
-                    isLoading={isInitialTimelineDataLoading}
                 />
             )}
             {location.search.includes('deployment-window-status') && DeploymentWindowStatusModal && (
@@ -908,7 +873,6 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
                                 appDetails={null}
                                 environments={envList}
                                 environment={environment}
-                                refetchDeploymentStatus={noop}
                                 isAppView={isAppView}
                             />
                         </div>
