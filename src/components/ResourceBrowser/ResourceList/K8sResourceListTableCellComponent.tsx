@@ -224,6 +224,7 @@ const K8sResourceListTableCellComponent = ({
                         />
                     ) : (
                         <NodeActionsMenu
+                            ref={contextMenuRef}
                             getNodeListData={reloadResourceListData as () => Promise<void>}
                             addTab={addTab}
                             nodeData={resourceData as K8sResourceDetailDataType}

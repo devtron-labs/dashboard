@@ -176,7 +176,7 @@ export const K8SResourceList = ({
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
                         isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
-                        horizontallySticky: true,
+                        horizontallySticky: header === 'name',
                     }) as TableColumnType,
             ) ?? [],
         [resourceList?.headers],

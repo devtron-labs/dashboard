@@ -172,37 +172,6 @@ const ResourceBrowserActionMenu = forwardRef(
                             {showResourceScanModal && OpenSecurityModalButton && (
                                 <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
                             )}
-                            {selectedResource?.gvk?.Kind === Nodes.Pod && (
-                                <>
-                                    <span
-                                        data-name={resourceData.name}
-                                        data-tab={RESOURCE_ACTION_MENU.logs}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
-                                        className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                        onClick={handleResourceClick}
-                                        data-testid="logs-option-link"
-                                    >
-                                        <LogAnalyzerIcon className="icon-dim-16 mr-8 fcn-6" />
-                                        <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
-                                    </span>
-                                    <span
-                                        data-name={resourceData.name}
-                                        data-tab={RESOURCE_ACTION_MENU.terminal}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
-                                        className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                        onClick={handleResourceClick}
-                                        data-testid="terminal-option-link"
-                                    >
-                                        <TerminalIcon className="icon-dim-16 mr-8 fcn-6" />
-                                        <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
-                                    </span>
-                                </>
-                            )}
-                            {showResourceScanModal && OpenSecurityModalButton && (
-                                <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
-                            )}
                             {!hideDeleteResource && (
                                 <span
                                     className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
