@@ -18,7 +18,6 @@ import { Component } from 'react'
 import {
     ConditionalWrap,
     Checkbox,
-    InfoColourBar,
     TippyCustomized,
     TippyTheme,
     stopPropagation,
@@ -55,7 +54,6 @@ import {
     DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
-import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
 import {
@@ -645,10 +643,10 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         return (
             <form
                 key={`${this.props.material.id}`}
-                className={
-                    this.props.isCreateAppView
+                className={`flexbox-col dc__gap-16
+                    ${this.props.isCreateAppView
                         ? ''
-                        : 'br-8 py-16 px-20 bg__primary border__secondary mb-16 flexbox-col dc__gap-16'
+                        : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'} `
                 }
             >
                 {!this.props.isCreateAppView && (
@@ -950,7 +948,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </Checkbox>
                             </div>
                         </label>
-                        <div className="flexbox dc__content-space pt-20">
+                        <div className="flexbox dc__content-space">
                             {this.props.material.id && (
                                 <ConditionalWrap
                                     condition={this.props.preventRepoDelete}

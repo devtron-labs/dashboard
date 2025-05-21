@@ -30,21 +30,7 @@
         position: sticky;
         top: 0;
     }
-
-    .tab-list__tab-link {
-        padding: 0 0 8px 0;
-        &.active {
-            .tab-list__icon path {
-                fill: var(--B500);
-            }
-        }
-        &:hover path,
-        &.focus {
-            color: var(--B500);
-            text-decoration: none;
-            fill: var(--B500);
-        }
-    }
+    
     &.helm-app-page-header {
         z-index: var(--page-header-index);
         position: sticky;

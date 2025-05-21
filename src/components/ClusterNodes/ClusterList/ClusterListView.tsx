@@ -69,6 +69,11 @@ const ClusterListView = (props: ClusterViewType) => {
     const allOnThisPageIdentifiers = useMemo(
         () =>
             filteredList?.reduce((acc, cluster) => {
+                // NOTE: clusters that are being created or deleted don't have corresponding id
+                // and should not be included in the bulk selection
+                if (!cluster.id) {
+                    return acc
+                }
                 acc[cluster.name] = cluster
                 return acc
             }, {} as ClusterDetail) ?? {},

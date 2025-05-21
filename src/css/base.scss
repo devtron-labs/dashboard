@@ -483,6 +483,10 @@ a:focus {
     cursor: default;
 }
 
+.cursor-wait {
+    cursor: wait;
+}
+
 // block
 .dc__block {
     display: block;
@@ -759,7 +763,8 @@ button.anchor {
     &.f-active,
     &.f-ready,
     &.f-created,
-    &.f-scalingreplicasetdown {
+    &.f-scalingreplicasetdown,
+    &.f-deployed {
         color: var(--G500);
     }
 
@@ -770,11 +775,16 @@ button.anchor {
     &.f-containercreating,
     &.f-pending,
     &.f-podinitializing,
+    &.f-uninstalling,
+    &.f-pending-install,
+    &.f-pending-upgrade,
+    &.f-pending-rollback,
     &[class*='f-init__']:not(.f-init__crashloopbackoff) {
         color: var(--O500);
     }
 
     &.f-degraded,
+    &.f-oomkilled,
     &.f-sync.failed,
     &.f-failed,
     &.f-error,
@@ -788,7 +798,10 @@ button.anchor {
     &.f-createcontainerconfigerror,
     &.f-deleted,
     &.f-not__ready,
-    &.f-evicted {
+    &.f-evicted,
+    &.f-disconnect,
+    &.f-syncfail,
+    &.f-superseded {
         color: var(--R500);
     }
 
@@ -798,12 +811,15 @@ button.anchor {
         color: var(--O500);
     }
 
-    &.f-unknown {
-        color: var(--Y500);
+    &.f-updated,
+    &.f-waiting {
+        color: var(--Y700);
     }
 
-    &.f-updated {
-        color: var(--Y700);
+    &.f-queued,
+    &.f-missing,
+    &.f-unknown {
+        color: var(--N700);
     }
 }
 
@@ -2342,6 +2358,11 @@ button.anchor {
     border-top-right-radius: 4px;
 }
 
+.dc__top-radius-6 {
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+}
+
 .dc__bottom-radius-8 {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
@@ -2802,6 +2823,10 @@ button.anchor {
     min-width: 152px;
 }
 
+.mw-232 {
+    min-width: 232px;
+}
+
 .mw-264 {
     min-width: 264px;
 }
@@ -3230,6 +3255,10 @@ button.anchor {
 
 .h-0 {
     height: 0px;
+}
+
+.h-2 {
+    height: 2px;
 }
 
 .h-8 {
@@ -4581,21 +4610,6 @@ textarea::placeholder {
     font-size: 13px !important;
 }
 
-// Start: accouncement banner
-.announcement-banner-container {
-    &.page-header-banner {
-        width: fit-content;
-        position: absolute;
-        margin: auto;
-        left: 0;
-        right: 0;
-        top: 0;
-        text-align: center;
-    }
-}
-
-// End: accouncement banner
-
 .bulk-selection-widget {
     border: 1px solid var(--B500);
     background: var(--bg-bulk-selection-widget);
@@ -5128,7 +5142,7 @@ details[open] {
 
     &:has(.deployment-config__comments-view) {
         grid-template-columns: 0 1fr !important;
-        
+
         .collapsible-sidebar {
             overflow: hidden;
         }
@@ -5174,6 +5188,7 @@ details[open] {
         .image-tags-container {
             background-color: var(--bg-secondary);
         }
+
         .image-tags-container-edit__icon {
             display: block;
         }

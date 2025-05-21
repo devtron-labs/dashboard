@@ -17,10 +17,30 @@
 import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { ActionMenu, ActionMenuProps, Button, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenu, ActionMenuProps, Icon } from '@devtron-labs/devtron-fe-common-lib'
+
+const Component = (props: ActionMenuProps) => (
+    <div className="flex w-100" style={{ height: '90vh' }}>
+        <ActionMenu {...props} />
+    </div>
+)
 
 const meta = {
-    component: ActionMenu,
+    component: Component,
+    argTypes: {
+        position: {
+            control: 'radio',
+            options: ['bottom', 'top', 'left', 'right'],
+        },
+        alignment: {
+            control: 'radio',
+            options: ['start', 'middle', 'end'],
+        },
+        disableDescriptionEllipsis: {
+            control: 'boolean',
+            type: 'boolean',
+        },
+    },
 } satisfies Meta<ActionMenuProps>
 
 export default meta
@@ -29,22 +49,30 @@ type Story = StoryObj<typeof meta>
 
 const options: ActionMenuProps['options'] = [
     {
-        label: 'Label 1',
-        value: 'value-1',
-        startIcon: <Icon name="ic-cube" color="N800" />,
+        items: [
+            {
+                id: 'value-1',
+                label: 'Label 1',
+                startIcon: {
+                    name: 'ic-cube',
+                },
+            },
+        ],
     },
     {
-        label: 'Group label 1',
-        options: [
+        groupLabel: 'Group 1',
+        items: [
             {
+                id: 'group-value-1',
                 label: 'Group Label 1',
-                value: 'group-value-1',
-                startIcon: <Icon name="ic-cube" color="N800" />,
+                startIcon: {
+                    name: 'ic-cube',
+                },
                 isDisabled: true,
             },
             {
+                id: 'group-value-2',
                 label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
-                value: 'group-value-2',
                 description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
                 tooltipProps: {
                     content: 'There is an error',
@@ -52,17 +80,21 @@ const options: ActionMenuProps['options'] = [
                 type: 'negative',
             },
             {
+                id: 'group-value-3',
                 label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
-                value: 'group-value-3',
             },
             {
+                id: 'group-value-4',
                 label: 'Group Label 4',
-                value: 'group-value-4',
             },
             {
-                startIcon: <Icon name="ic-cube" color="N800" />,
-                endIcon: <Icon name="ic-cube" color="N800" />,
-                value: 'group-value-5',
+                id: 'group-value-5',
+                startIcon: {
+                    name: 'ic-cube',
+                },
+                endIcon: {
+                    name: 'ic-cube',
+                },
                 tooltipProps: {
                     content: 'Tooltip content for value 5',
                 },
@@ -73,55 +105,91 @@ const options: ActionMenuProps['options'] = [
         ],
     },
     {
-        label: 'Label 2',
-        value: 'value-2',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-        tooltipProps: {
-            content: 'There is an error',
-        },
-    },
-    {
-        label: 'Label 3',
-        value: 'value-3',
-    },
-    {
-        label: 'Label 4',
-        value: 'value-4',
-    },
-    {
-        startIcon: <Icon name="ic-cube" color="N800" />,
-        endIcon: <Icon name="ic-cube" color="N800" />,
-        value: 'value-5',
-        tooltipProps: {
-            content: 'Tooltip content for value 5',
-        },
-        label: 'Label 5',
-        description:
-            'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
+        items: [
+            {
+                id: 'value-2',
+                label: 'Label 2',
+                description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+                tooltipProps: {
+                    content: 'There is an error',
+                },
+            },
+            {
+                id: 'value-3',
+                label: 'Label 3',
+            },
+            {
+                id: 'value-4',
+                label: 'Label 4',
+            },
+            {
+                id: 'value-5',
+                startIcon: {
+                    name: 'ic-cube',
+                },
+                endIcon: {
+                    name: 'ic-cube',
+                },
+                tooltipProps: {
+                    content: 'Tooltip content for value 5',
+                },
+                label: 'Label 5',
+                description:
+                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
+            },
+        ],
     },
 ]
 
 export const WithButtonElement: Story = {
     args: {
+        id: 'action-menu-with-button',
         options,
+        position: 'bottom',
+        alignment: 'start',
         disableDescriptionEllipsis: false,
-        children: <Button text="Open Action Menu" dataTestId="action-menu" />,
         onClick: action('option clicked'),
+        isSearchable: true,
+        buttonProps: {
+            text: 'Open Action Menu',
+            dataTestId: 'action-menu',
+        },
     },
 }
 
 export const WithIconButtonElement: Story = {
     args: {
+        id: 'action-menu-with-icon-button',
         options,
+        position: 'bottom',
+        alignment: 'start',
         disableDescriptionEllipsis: false,
-        children: (
-            <Button
-                icon={<Icon name="ic-cube" color="N800" />}
-                ariaLabel="action-menu"
-                showAriaLabelInTippy={false}
-                dataTestId="action-menu"
-            />
-        ),
         onClick: action('option clicked'),
+        buttonProps: {
+            icon: <Icon name="ic-cube" color="N800" />,
+            ariaLabel: 'action-menu',
+            showAriaLabelInTippy: false,
+            dataTestId: 'action-menu',
+        },
+    },
+}
+
+export const WithFooterConfig: Story = {
+    args: {
+        id: 'action-menu-with-button',
+        options,
+        position: 'bottom',
+        alignment: 'start',
+        disableDescriptionEllipsis: false,
+        onClick: action('option clicked'),
+        isSearchable: true,
+        buttonProps: {
+            text: 'Open Action Menu',
+            dataTestId: 'action-menu',
+        },
+        footerConfig: {
+            type: 'text',
+            value: 'This is footer',
+        },
     },
 }

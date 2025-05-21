@@ -17,7 +17,7 @@
 import { ClusterFiltersType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { EFFECT_TYPE } from './types'
+import { DescriptionDataType, EFFECT_TYPE } from './types'
 
 export const clusterSelectStyle = {
     ...multiSelectStyles,
@@ -333,4 +333,13 @@ export enum CLUSTER_PROD_TYPE {
     PRODUCTION= 'Production',
     NON_PRODUCTION= 'Non Production',
 
+}
+
+export const CLUSTER_CONFIG_POLLING_INTERVAL = 1000 * 30 // half a minute
+
+export const CLUSTER_DESCRIPTION_DUMMY_DATA: DescriptionDataType = {
+    descriptionId: 0,
+    descriptionText: defaultClusterNote,
+    descriptionUpdatedBy: '',
+    descriptionUpdatedOn: '',
 }

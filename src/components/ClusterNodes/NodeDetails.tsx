@@ -254,7 +254,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         {
             id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
             label: NODE_DETAILS_TABS.yaml,
-            icon: Edit,
+            icon: 'ic-pencil',
             renderComponent: renderYAMLEditor,
         },
         {
@@ -300,7 +300,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs: TabProps[] = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
+        const tabs = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
             ...tabDetails,
             tabType: 'navLink',
             props: {
@@ -309,7 +309,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 isActive: (_, { search }) => search === `?tab=${tabDetails.id}`,
                 ['data-tab-index']: index,
             },
-        }))
+        })) as TabProps[]
 
         return (
             <div className="px-20 dc__border-bottom flex dc__gap-16">
