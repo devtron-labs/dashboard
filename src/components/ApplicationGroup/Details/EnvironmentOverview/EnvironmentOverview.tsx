@@ -93,7 +93,7 @@ const EnvironmentOverview = ({
     handleSaveDescription,
 }: AppGroupDetailDefaultType) => {
     // STATES
-    const [loading, setLoading] = useState<boolean>()
+    const [loading, setLoading] = useState<boolean>(false)
     const [appListData, setAppListData] = useState<AppListDataType>()
     const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
