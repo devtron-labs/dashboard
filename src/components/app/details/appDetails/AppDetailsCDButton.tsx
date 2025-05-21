@@ -62,12 +62,14 @@ const AppDetailsCDButton = ({
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const mode = queryParams.get('mode')
+    const materialType = queryParams.get('materialType')
 
     const onClickDeployButton = (event) => {
         stopPropagation(event)
         const newParams = {
             ...searchParams,
             mode: URL_PARAM_MODE_TYPE.LIST,
+            materialType: isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList,
         }
 
         history.push({
@@ -113,8 +115,6 @@ const AppDetailsCDButton = ({
         parentEnvironmentName: cdModal.parentEnvironmentName,
         isVirtualEnvironment,
     }
-
-    const materialType = isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList
 
     const renderApprovalMaterial = () =>
         ApprovalMaterialModal &&

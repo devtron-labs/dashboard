@@ -74,7 +74,7 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import { BULK_ERROR_MESSAGES } from './constants'
 import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerResponseModal'
-import { getIsImageApprovedByDeployerSelected, getIsNonApprovedImageSelected } from './utils'
+import { getIsImageApprovedByDeployerSelected, getIsNonApprovedImageSelected, getSelectedAppListForBulkStrategy } from './utils'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
@@ -991,8 +991,6 @@ const BulkCDTrigger = ({
         )
     }
 
-    console.log(appList)
-
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
             <div className="bg__primary bulk-ci-trigger-container">
@@ -1004,7 +1002,7 @@ const BulkCDTrigger = ({
                         bulkDeploymentStrategy={bulkDeploymentStrategy}
                         pipelineIdVsStrategyMap={pipelineIdVsStrategyMap}
                         setPipelineIdVsStrategyMap={setPipelineIdVsStrategyMap}
-                        appList={appList.map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))}
+                        appList={getSelectedAppListForBulkStrategy(appList)}
                     />
                 ) : (
                     <>
