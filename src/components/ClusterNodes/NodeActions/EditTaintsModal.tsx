@@ -24,17 +24,14 @@ import {
     ComponentSizeType,
     Drawer,
     DynamicDataTable,
+    GenericEmptyState,
     Icon,
-    InfoBlock,
+    InfoIconTippy,
     showError,
-    stopPropagation,
-    TippyCustomized,
-    TippyTheme,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as HelpIcon } from '../../../assets/icons/ic-help.svg'
 import { updateTaints } from '../clusterNodes.service'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINTS_TABLE_HEADERS } from '../constants'
 import { EditTaintsModalType, EditTaintsRequest, TaintsTableHeaderKeys, TaintsTableType } from '../types'
@@ -49,35 +46,20 @@ import {
     validateUniqueTaintKey,
 } from './utils'
 
-const TaintInfoMessage = () => (
-    <div className="fs-13 fw-4 lh-20">
-        <span>{EDIT_TAINTS_MODAL_MESSAGING.infoText}</span> &nbsp;
-        <TippyCustomized
-            theme={TippyTheme.white}
-            className="w-400"
-            placement="top"
-            Icon={HelpIcon}
-            iconClass="fcv-5"
-            heading={EDIT_TAINTS_MODAL_MESSAGING.tippyTitle}
-            infoText=""
-            showCloseButton
-            trigger="click"
-            interactive
-            additionalContent={
-                <div className="p-12 fs-13">
-                    <div>{EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.message}</div>
-                    <ul className="p-0" style={{ listStyleType: 'none' }}>
-                        {EDIT_TAINTS_MODAL_MESSAGING.tippyDescription.messageList.map((message) => (
-                            <li key={`msg-${message}`}>{message}</li>
-                        ))}
-                    </ul>
-                </div>
-            }
-        >
-            <span className="cb-5 cursor" onClick={stopPropagation}>
-                {EDIT_TAINTS_MODAL_MESSAGING.infoLinkText}
-            </span>
-        </TippyCustomized>
+const AdditionalContent = () => (
+    <div className="p-12 h-200 dc__overflow-auto fs-13 lh-20">
+        {EDIT_TAINTS_MODAL_MESSAGING.infoText}
+        <br />
+        <br />
+        <div>
+            {EDIT_TAINTS_MODAL_MESSAGING.description.title}
+            <br />
+            <ol className="pl-24">
+                {EDIT_TAINTS_MODAL_MESSAGING.description.messageList.map((text) => (
+                    <li key={text}>{text}</li>
+                ))}
+            </ol>
+        </div>
     </div>
 )
 
@@ -91,6 +73,9 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
 
     // HOOKS
     const { clusterId } = useParams<{ clusterId: string }>()
+
+    // CONSTANTS
+    const isTaintListEmpty = taintList.length === 0
 
     // HANDLERS
     const onClose = () => {
@@ -177,48 +162,73 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
                         showAriaLabelInTippy={false}
                     />
                 </div>
-                <div className="flexbox-col px-20 py-16 dc__overflow-auto flex-grow-1 dc__gap-16">
-                    <InfoBlock description={<TaintInfoMessage />} />
-                    {taintList.length ? (
-                        <DynamicDataTable<TaintsTableHeaderKeys>
-                            headers={TAINTS_TABLE_HEADERS}
-                            rows={taintList}
-                            onRowAdd={handleAddTaint}
-                            onRowDelete={handleDeleteTaint}
-                            onRowEdit={handleEditTaint}
-                            cellError={taintCellError}
-                            addBtnTooltip="Add taint"
+                <div className="flex-grow-1 dc__overflow-auto flexbox-col dc__gap-16 p-20">
+                    {isTaintListEmpty ? (
+                        <GenericEmptyState
+                            title={EDIT_TAINTS_MODAL_MESSAGING.emptyState.title}
+                            subTitle={EDIT_TAINTS_MODAL_MESSAGING.emptyState.subTitle}
+                            isButtonAvailable
+                            renderButton={() => (
+                                <Button
+                                    dataTestId="add-taint"
+                                    text={EDIT_TAINTS_MODAL_MESSAGING.addTaint}
+                                    startIcon={<Icon name="ic-add" color={null} />}
+                                    onClick={handleAddTaint}
+                                />
+                            )}
                         />
                     ) : (
-                        <div className="p-8 bg__secondary dc__border-dashed--n3 br-4 flex dc__content-space">
-                            {/* TODO: update this text */}
-                            <p className="m-0 fs-12 lh-18 cn-7">Add Taint</p>
-                            <Button
-                                dataTestId="add-taint"
-                                variant={ButtonVariantType.text}
-                                text="Add Taint"
-                                startIcon={<Icon name="ic-add" color={null} />}
-                                onClick={handleAddTaint}
+                        <>
+                            <div className="flex dc__content-space">
+                                <div className="flex">
+                                    <Icon name="ic-error" color="N900" />
+                                    <h3 className="fs-14 lh-20 fw-6 cn-9 mt-0 mb-0 ml-8 mr-4">Taints</h3>
+                                    <InfoIconTippy
+                                        heading="Taints"
+                                        documentationLinkText="View documentation"
+                                        documentationLink="https://docs.devtron.ai/usage/resource-browser#taint-a-node"
+                                        additionalContent={<AdditionalContent />}
+                                    />
+                                </div>
+                                <Button
+                                    dataTestId="add-taint"
+                                    variant={ButtonVariantType.secondary}
+                                    startIcon={<Icon name="ic-add" color={null} />}
+                                    size={ComponentSizeType.small}
+                                    text={EDIT_TAINTS_MODAL_MESSAGING.addTaint}
+                                    onClick={handleAddTaint}
+                                />
+                            </div>
+                            <DynamicDataTable<TaintsTableHeaderKeys>
+                                headers={TAINTS_TABLE_HEADERS}
+                                rows={taintList}
+                                onRowAdd={handleAddTaint}
+                                onRowDelete={handleDeleteTaint}
+                                onRowEdit={handleEditTaint}
+                                cellError={taintCellError}
+                                isAdditionNotAllowed
                             />
-                        </div>
+                        </>
                     )}
                 </div>
-                <div className="dc__border-top flex right p-16 dc__gap-8">
-                    <Button
-                        dataTestId="edit-taints-modal-cancel"
-                        variant={ButtonVariantType.secondary}
-                        style={ButtonStyleType.neutral}
-                        disabled={apiCallInProgress}
-                        text={EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
-                        onClick={onClose}
-                    />
-                    <Button
-                        dataTestId="edit-taints-modal-save"
-                        isLoading={apiCallInProgress}
-                        text={EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
-                        onClick={onSave}
-                    />
-                </div>
+                {!isTaintListEmpty && (
+                    <div className="dc__border-top flex right p-16 dc__gap-8">
+                        <Button
+                            dataTestId="edit-taints-modal-cancel"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.neutral}
+                            disabled={apiCallInProgress}
+                            text={EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
+                            onClick={onClose}
+                        />
+                        <Button
+                            dataTestId="edit-taints-modal-save"
+                            isLoading={apiCallInProgress}
+                            text={EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
+                            onClick={onSave}
+                        />
+                    </div>
+                )}
             </div>
         </Drawer>
     )

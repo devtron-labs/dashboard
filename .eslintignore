@@ -57,7 +57,6 @@ src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
 src/components/ClusterNodes/NodeDetails.tsx
 src/components/ClusterNodes/__tests__/ClusterManifest.test.tsx
 src/components/ClusterNodes/__tests__/NodeList.test.tsx
-src/components/ClusterNodes/constants.ts
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
