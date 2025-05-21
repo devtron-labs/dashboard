@@ -20,7 +20,6 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import {
     Button,
-    ButtonComponentType,
     ButtonVariantType,
     ComponentSizeType,
     DeploymentNodeType,
@@ -45,6 +44,7 @@ const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModa
 
 const AppDetailsCDButton = ({
     appId,
+    appName,
     environmentId,
     cdModal,
     deploymentAppType,
@@ -55,6 +55,7 @@ const AppDetailsCDButton = ({
     isForEmptyState = false,
     handleSuccess,
     isAppView,
+    isForRollback = false,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -73,9 +74,11 @@ const AppDetailsCDButton = ({
             search: new URLSearchParams(newParams).toString(),
         })
 
-        ReactGA.event(
-            isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
-        )
+        if (!isForRollback) {
+            ReactGA.event(
+                isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
+            )
+        }
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
@@ -85,18 +88,25 @@ const AppDetailsCDButton = ({
 
     const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState, isForEmptyState)
 
-    const renderDeployButton = () => (
-        <Button
-            dataTestId="deploy-button"
-            size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
-            variant={ButtonVariantType.primary}
-            text={isForEmptyState ? 'Select Image to Deploy' : BUTTON_TITLE[DeploymentNodeType.CD]}
-            startIcon={iconName && <Icon name={iconName} color={null} />}
-            onClick={onClickDeployButton}
-            component={ButtonComponentType.button}
-            style={buttonStyle}
-        />
-    )
+    const renderDeployButton = () =>
+        isForRollback ? (
+            <Button
+                dataTestId="rollback-button"
+                text="Rollback"
+                variant={ButtonVariantType.text}
+                onClick={onClickDeployButton}
+                size={ComponentSizeType.small}
+            />
+        ) : (
+            <Button
+                dataTestId="deploy-button"
+                size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
+                text={isForEmptyState ? 'Select Image to Deploy' : BUTTON_TITLE[DeploymentNodeType.CD]}
+                startIcon={iconName && <Icon name={iconName} color={null} />}
+                onClick={onClickDeployButton}
+                style={buttonStyle}
+            />
+        )
 
     const node = {
         environmentName,
@@ -104,13 +114,15 @@ const AppDetailsCDButton = ({
         isVirtualEnvironment,
     }
 
+    const materialType = isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList
+
     const renderApprovalMaterial = () =>
         ApprovalMaterialModal &&
         location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE) && (
             <ApprovalMaterialModal
                 isLoading={loadingDetails}
                 node={node}
-                materialType={MATERIAL_TYPE.inputMaterialList}
+                materialType={materialType}
                 stageType={DeploymentNodeType.CD}
                 closeApprovalModal={closeCDModal}
                 appId={appId}
@@ -126,7 +138,7 @@ const AppDetailsCDButton = ({
             <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
                 <div className="modal-body--cd-material h-100 contains-diff-view flexbox-col" onClick={stopPropagation}>
                     <CDMaterial
-                        materialType={MATERIAL_TYPE.inputMaterialList}
+                        materialType={materialType}
                         appId={appId}
                         envId={environmentId}
                         pipelineId={cdModal.cdPipelineId}
@@ -141,6 +153,7 @@ const AppDetailsCDButton = ({
                         isLoading={loadingDetails}
                         isRedirectedFromAppDetails
                         handleSuccess={handleSuccess}
+                        selectedAppName={appName}
                     />
                 </div>
             </VisibleModal>
