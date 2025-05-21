@@ -43,8 +43,7 @@ import {
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentAppTypes,
     DeploymentNodeType,
-    DeploymentStageType,
-    DeploymentStrategyTypeWithDefault,
+    DeploymentStrategyType,
     DeploymentWithConfigType,
     EnvResourceType,
     ErrorScreenManager,
@@ -228,7 +227,7 @@ const CDMaterial = ({
 
     const [material, setMaterial] = useState<CDMaterialType[]>([])
     const [state, setState] = useState<CDMaterialState>(getInitialState(materialType, material, searchImageTag))
-    const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyTypeWithDefault>('DEFAULT')
+    const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyType | null>(null)
 
     // It is derived from materialResult and can be fixed as a constant fix this
     const [isConsumedImageAvailable, setIsConsumedImageAvailable] = useState<boolean>(false)
@@ -917,7 +916,7 @@ const CDMaterial = ({
                     ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParamsList ?? []) }
                     : {}),
                 skipIfHibernated: false,
-                ...(SelectDeploymentStrategy && deploymentStrategy !== 'DEFAULT' ? { strategy: deploymentStrategy } : {} )
+                ...(SelectDeploymentStrategy && deploymentStrategy ? { strategy: deploymentStrategy } : {}),
             })
                 .then((response: any) => {
                     if (response.result) {
@@ -1782,11 +1781,8 @@ const CDMaterial = ({
                 )}
                 <div className="flex dc__gap-8">
                     {SelectDeploymentStrategy && isCDNode && (
-                        // verify if we need below check
-                        // (state.isRollbackTrigger || state.isSelectImageTrigger) && (
                         <SelectDeploymentStrategy
-                            appId={appId}
-                            envId={envId}
+                            pipelineIds={[pipelineId]}
                             deploymentStrategy={deploymentStrategy}
                             setDeploymentStrategy={setDeploymentStrategy}
                         />

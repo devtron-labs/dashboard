@@ -29,6 +29,7 @@ import {
     CommonNodeAttr,
     ApprovalConfigDataType,
     RuntimePluginVariables,
+    PipelineIdsVsDeploymentStrategyMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
 import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
@@ -134,7 +135,11 @@ export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     appList: BulkCDDetailType[]
     closePopup: (e) => void
     updateBulkInputMaterial: (materialList: Record<string, any>) => void
-    onClickTriggerBulkCD: (skipIfHibernated: boolean, appsToRetry?: Record<string, boolean>) => void
+    onClickTriggerBulkCD: (
+        skipIfHibernated: boolean,
+        pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap,
+        appsToRetry?: Record<string, boolean>,
+    ) => void
     changeTab?: (
         materrialId: string | number,
         artifactId: number,
@@ -190,11 +195,13 @@ type RetryFailedType =
     | {
           onClickRetryDeploy: BulkCDTriggerType['onClickTriggerBulkCD']
           skipHibernatedApps: boolean
+          pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap
           onClickRetryBuild?: never
       }
     | {
           onClickRetryDeploy?: never
           skipHibernatedApps?: never
+          pipelineIdVsStrategyMap?: never
           onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
       }
 
