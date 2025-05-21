@@ -17,6 +17,7 @@
 import { useContext } from 'react'
 
 import {
+    DOCUMENTATION,
     PluginImageContainer,
     PluginTagsContainer,
     PluginType,
@@ -108,7 +109,7 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                     showCloseButton
                     trigger="click"
                     interactive
-                    documentationLink={docLink as any}
+                    documentationLink={docLink as keyof typeof DOCUMENTATION}
                     documentationLinkText="View documentation"
                     isExternalLink
                 >

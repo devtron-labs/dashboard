@@ -131,7 +131,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
-    const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
+    const noChartAvailable: boolean =
+        chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
@@ -752,15 +753,15 @@ const ChartListHeader = ({ charts }) => {
             </h3>
             <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
-                  <a
-                        href={getDocumentationUrl({ docLinkKey: 'CHART_GROUP' })}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        data-testid="chart-group-link"
-                    >
-                        Learn more about chart groups
-                    </a>
+                <a
+                    href={getDocumentationUrl({ docLinkKey: 'CHART_GROUP' })}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                    className="dc__link"
+                    data-testid="chart-group-link"
+                >
+                    Learn more about chart groups
+                </a>
             </p>
         </div>
     )
@@ -852,7 +853,7 @@ export const ChartGroupListMin = ({
                         renderDescriptionContent={() =>
                             'Use chart groups to pre-configure and deploy frequently used charts together.'
                         }
-                        docLink='CHART_GROUP'
+                        docLink="CHART_GROUP"
                         dataTestId="chart-store"
                         showInfoIconTippy
                     />
