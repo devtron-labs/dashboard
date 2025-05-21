@@ -161,7 +161,7 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
-    if (columnName === 'type') {
+    if (columnName === 'type' && isEventListing) {
         const iconName: IconName =
             (resourceData.type as string).toLowerCase() === 'normal' ? 'ic-info-filled-color' : 'ic-warning'
 
