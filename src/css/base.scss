@@ -800,6 +800,7 @@ button.anchor {
     &.f-not__ready,
     &.f-evicted,
     &.f-disconnect,
+    &.f-syncfail,
     &.f-superseded {
         color: var(--R500);
     }

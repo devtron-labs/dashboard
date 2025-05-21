@@ -15,11 +15,10 @@
  */
 
 import { AppOverviewProps } from '../types'
-import { ReactComponent as AppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { DefaultJobNote, DefaultAppNote, DefaultHelmChartNote } from '../list-new/Constants'
 import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
-import { ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { IconBaseSizeType, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import { getAppIconWithBackground } from '@Config/utils'
 
 const {
     OVERVIEW: { APP_DESCRIPTION, JOB_DESCRIPTION },
@@ -36,20 +35,21 @@ export const getResourceKindFromAppType = (appType: AppOverviewProps['appType'])
     }
 }
 
-export const getAppConfig = (appType: AppOverviewProps['appType']) => {
+export const getAppConfig = (appType: AppOverviewProps['appType'], iconSize: IconBaseSizeType = 48) => {
+    const icon = getAppIconWithBackground(appType, iconSize)
     switch (appType) {
         case 'app':
             return {
                 resourceName: 'application',
                 defaultNote: DefaultAppNote,
-                icon: <AppIcon className="icon-dim-48" />,
+                icon,
                 defaultDescription: APP_DESCRIPTION,
             }
         case 'job':
             return {
                 resourceName: 'job',
                 defaultNote: DefaultJobNote,
-                icon: <JobIcon className="icon-dim-48 dc__icon-bg-color br-4 p-8" />,
+                icon,
                 defaultDescription: JOB_DESCRIPTION,
             }
         case 'helm-chart':
