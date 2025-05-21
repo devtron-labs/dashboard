@@ -334,41 +334,38 @@ export default function CDPipeline({
         handlePluginDataStoreUpdate(getUpdatedPluginStore(pluginDataStore, parentPluginStore, pluginVersionStore))
     }
 
-    const getEnvCDPipelineName = (form) => {
-        Promise.all([getCDPipelineNameSuggestion(appId, isTemplateView), getEnvironmentListMinPublic(true)])
-            .then(([cpPipelineName, envList]) => {
-                form.name = cpPipelineName.result
-                let list = envList.result || []
-                list = list.map((env) => {
-                    return {
-                        id: env.id,
-                        clusterId: env.cluster_id,
-                        clusterName: env.cluster_name,
-                        name: env.environment_name,
-                        namespace: env.namespace || '',
-                        active: false,
-                        isClusterCdActive: env.isClusterCdActive,
-                        description: env.description,
-                        isVirtualEnvironment: env.isVirtualEnvironment,
-                        allowedDeploymentTypes: env.allowedDeploymentTypes || [],
-                        isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
-                    }
-                })
-                sortObjectArrayAlphabetically(list, 'name')
-                form.environments = list
-                setFormData((prevState) => {
-                    return {
-                        ...form,
-                        // Can retain the release mode since this method is called only when creating a new pipeline
-                        releaseMode: prevState.releaseMode,
-                    }
-                })
-                setPageState(ViewType.FORM)
-                setIsAdvanced(false)
-            })
-            .catch((error) => {
-                showError(error)
-            })
+    const getNewPipelineNameAndEnvironments = async (): Promise<Pick<typeof formData, 'name' | 'environments'>> => {
+        try {
+            const [cpPipelineName, envList] = await Promise.all([
+                getCDPipelineNameSuggestion(appId, isTemplateView),
+                getEnvironmentListMinPublic(true),
+            ])
+            const list = (envList.result || []).map((env) => ({
+                id: env.id,
+                clusterId: env.cluster_id,
+                clusterName: env.cluster_name,
+                name: env.environment_name,
+                namespace: env.namespace || '',
+                active: false,
+                isClusterCdActive: env.isClusterCdActive,
+                description: env.description,
+                isVirtualEnvironment: env.isVirtualEnvironment,
+                allowedDeploymentTypes: env.allowedDeploymentTypes || [],
+                isDigestEnforcedForEnv: env.isDigestEnforcedForEnv,
+            }))
+
+            return {
+                name: cpPipelineName.result,
+                environments: sortObjectArrayAlphabetically(list, 'name'),
+            }
+        } catch (error) {
+            showError(error)
+        }
+
+        return {
+            name: '',
+            environments: [],
+        }
     }
 
     const getInit = () => {
@@ -376,36 +373,52 @@ export default function CDPipeline({
             getDeploymentStrategyList(appId, isTemplateView),
             getGlobalVariables({ appId: Number(appId), isCD: true }),
             getDockerRegistryMinAuth(appId, true),
+            !cdPipelineId ? getNewPipelineNameAndEnvironments() : { name: '', environments: [] },
         ])
-            .then(([pipelineStrategyResponse, globalVariablesOptions, dockerResponse]) => {
-                const strategies = pipelineStrategyResponse.result.pipelineStrategy || []
-                const dockerRegistries = dockerResponse.result || []
-                const _allStrategies = {}
+            .then(
+                ([
+                    pipelineStrategyResponse,
+                    globalVariablesOptions,
+                    dockerResponse,
+                    newPipelineNameAndEnvironments,
+                ]) => {
+                    const strategies = pipelineStrategyResponse.result.pipelineStrategy || []
+                    const dockerRegistries = dockerResponse.result || []
+                    const _allStrategies = {}
 
-                strategies.forEach((strategy) => {
-                    if (!_allStrategies[strategy.deploymentTemplate]) {
-                        _allStrategies[strategy.deploymentTemplate] = {}
+                    strategies.forEach((strategy) => {
+                        if (!_allStrategies[strategy.deploymentTemplate]) {
+                            _allStrategies[strategy.deploymentTemplate] = {}
+                        }
+                        _allStrategies[strategy.deploymentTemplate] = strategy.config
+                    })
+                    allStrategies.current = _allStrategies
+                    noStrategyAvailable.current = strategies.length === 0
+
+                    if (cdPipelineId) {
+                        const _form = { ...formData }
+                        _form.strategies = strategies
+                        getCDPipeline(_form, dockerRegistries)
+                    } else {
+                        if (strategies.length > 0) {
+                            const defaultStrategy = strategies.find((strategy) => strategy.default)
+                            handleStrategy(defaultStrategy.deploymentTemplate)
+                        }
+
+                        setFormData((prevState) => ({
+                            ...prevState,
+                            ...newPipelineNameAndEnvironments,
+                            strategies,
+                        }))
+
+                        setPageState(ViewType.FORM)
+                        setIsAdvanced(false)
                     }
-                    _allStrategies[strategy.deploymentTemplate] = strategy.config
-                })
-                allStrategies.current = _allStrategies
-                noStrategyAvailable.current = strategies.length === 0
 
-                const _form = { ...formData }
-                _form.strategies = strategies
-                if (cdPipelineId) {
-                    getCDPipeline(_form, dockerRegistries)
-                } else {
-                    getEnvCDPipelineName(_form)
-                    if (strategies.length > 0) {
-                        const defaultStrategy = strategies.find((strategy) => strategy.default)
-                        handleStrategy(defaultStrategy.deploymentTemplate)
-                    }
-                }
-
-                setGlobalVariables(globalVariablesOptions)
-                setDockerRegistries(dockerRegistries)
-            })
+                    setGlobalVariables(globalVariablesOptions)
+                    setDockerRegistries(dockerRegistries)
+                },
+            )
             .catch((error: ServerErrors) => {
                 showError(error)
                 setErrorCode(error.code)

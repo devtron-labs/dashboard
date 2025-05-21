@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, ResponseType, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentStatusDetailsResponse,
+    get,
+    getUrlWithSearchParams,
+    ResponseType,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '../../../../config'
 import { fetchWithFullRoute } from '../../../../services/fetchWithFullRoute'
@@ -24,7 +30,6 @@ import {
     DataSourceDetailsDTO,
     DataSourceDetailsQueryParams,
     DataSourceDetailsType,
-    DeploymentStatusDetailsResponse,
     ModuleConfigResponse,
 } from './appDetails.type'
 
@@ -79,7 +84,6 @@ export function deleteArgoCDAppWithNonCascade(
 export function getDeploymentStatusDetail(
     appId: string,
     envId: string,
-    showTimeline: boolean,
     triggerId?: string,
     isHelmApps?: boolean,
     installedAppVersionHistoryId?: number,
@@ -91,7 +95,7 @@ export function getDeploymentStatusDetail(
         appendUrl = Routes.DEPLOYMENT_STATUS
     }
     return get(
-        `${appendUrl}/${appId}/${envId}${`?showTimeline=${showTimeline}`}${triggerId ? `&wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `&installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`,
+        `${appendUrl}/${appId}/${envId}?showTimeline=false${triggerId ? `&wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `&installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`,
     )
 }
 
