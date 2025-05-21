@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, RouteComponentProps, Router, Switch, useHistory, useLocation } from 'react-router-dom'
 import {
     showError,
@@ -22,9 +22,12 @@ import {
     ErrorScreenManager,
     DevtronProgressing,
     useMainContext,
+    AppStatusModal,
+    AppStatusModalTabType,
+    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
-import { ErrorBoundary, useInterval } from '../../common'
+import { ErrorBoundary, importComponentFromFELibrary, useInterval } from '../../common'
 import AboutDevtronView from './AboutDevtronView'
 import {
     handleError,
@@ -47,8 +50,9 @@ import {
 } from './DevtronStackManager.type'
 import './devtronStackManager.scss'
 import { isGitopsConfigured } from '../../../services/service'
-import AppStatusDetailModal from '../appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import { AppStatusClass, buildResourceStatusModalData } from './DevtronStackManager.utils'
+import { getAppDetailsFromResourceStatusData } from './DevtronStackManager.utils'
+
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 export default function DevtronStackManager({
     serverInfo,
@@ -93,9 +97,14 @@ export default function DevtronStackManager({
         getCurrentServerInfo()
     }, [])
 
-    useEffect(() => {
-        buildResourceStatusModalData(selectedModule?.moduleResourcesStatus)
-    }, [selectedModule])
+    const appDetails = useMemo(
+        () =>
+            getAppDetailsFromResourceStatusData(
+                selectedModule?.moduleResourcesStatus,
+                selectedModule?.installationStatus,
+            ),
+        [selectedModule],
+    )
 
     /**
      * Activate polling for latest server info, module details & logPodName
@@ -577,13 +586,17 @@ export default function DevtronStackManager({
                             <ErrorBoundary>
                                 <Body />
                                 {showResourceStatusModal && selectedModule && (
-                                    <AppStatusDetailModal
-                                        close={closeCheckResourceStatusModal}
-                                        showAppStatusMessage
-                                        title="Integration installation status"
-                                        appStatusText={selectedModule.installationStatus}
-                                        appStatus={AppStatusClass[selectedModule.installationStatus] || ''}
-                                        showFooter
+                                    <AppStatusModal
+                                        titleSegments={['Integration installation status']}
+                                        handleClose={closeCheckResourceStatusModal}
+                                        type="stack-manager"
+                                        appDetails={appDetails}
+                                        isConfigDriftEnabled={false}
+                                        configDriftModal={null}
+                                        initialTab={AppStatusModalTabType.APP_STATUS}
+                                        processVirtualEnvironmentDeploymentData={noop}
+                                        updateDeploymentStatusDetailsBreakdownData={noop}
+                                        debugWithAIButton={ExplainWithAIButton}
                                     />
                                 )}
                             </ErrorBoundary>

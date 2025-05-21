@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterDetail, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+
+import { sortObjectArrayAlphabetically } from '@Components/common'
 
 import {
     LOCAL_STORAGE_EXISTS,
@@ -22,7 +24,7 @@ import {
     OPTIONAL_NODE_LIST_HEADERS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { K8SResourceListType, ShowAIButtonConfig } from '../Types'
+import { ClusterOptionType, K8SResourceListType, ShowAIButtonConfig } from '../Types'
 import { ResourceListUrlFiltersType } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
@@ -88,6 +90,20 @@ export const getFirstResourceFromKindResourceMap = (
         (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
 }
+
+export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionType[] =>
+    clusterList
+        ? sortObjectArrayAlphabetically(clusterList, 'name')
+              .filter(({ isVirtualCluster }) => !isVirtualCluster)
+              .map(({ name, id, nodeErrors, isProd, installationId }) => ({
+                  label: name,
+                  value: String(id ?? '0'),
+                  description: nodeErrors,
+                  installationId,
+                  isProd,
+                  isClusterInCreationPhase: !!installationId && !id,
+              }))
+        : []
 
 export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: string, value: string) => {
     if (!aiButtonConfig || columnName !== aiButtonConfig.column) {

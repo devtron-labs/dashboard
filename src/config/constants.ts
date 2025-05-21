@@ -24,7 +24,6 @@ import {
     RegistryCredentialsType,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
-export const DEFAULT_STATUS_TEXT = 'Checking Status'
 export const DEFAULTK8SVERSION = 'v1.16.0'
 export const TOKEN_COOKIE_NAME = 'argocd.token'
 export const DEVTRON_DEFAULT_RELEASE_NAME = 'devtron'
@@ -81,7 +80,7 @@ export const Routes = {
     APP_LIST_V1: 'v1',
     APP_LIST_V2: 'v2',
     APP_LIST_MIN: 'app/autocomplete',
-    APP_DETAIL: 'app/detail',
+    APP_DETAIL: COMMON_ROUTES.APP_DETAIL,
     APP_CONFIG_STATUS: 'app/stage/status',
     APP_OTHER_ENVIRONMENT: 'app/other-env',
     APP_OTHER_ENVIRONMENT_MIN: 'app/other-env/min',
@@ -151,7 +150,6 @@ export const Routes = {
     CHART_INSTALLED: 'app-store/installed-app',
     ARGO_APPS: 'argo-application',
     FLUX_APPS: 'flux-application',
-    CHART_AVAILABLE: 'app-store',
     CHART_STORE: 'app-store',
     CHART_REPO: 'chart-repo',
     CHART_RESYNC: 'sync-charts',
@@ -391,6 +389,7 @@ export const DOCUMENTATION = {
     SECURITY: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/security-features`,
     SPECIFY_IMAGE_PULL_SECRET: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/getting-started/global-configurations/container-registries#specify-image-pull-secret`,
     WEBHOOK_CI: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/usage/applications/creating-application/ci-pipeline#3.-deploy-image-from-external-service`,
+    CLUSTER_AND_ENVIRONMENT: `${DOCUMENTATION_HOME_PAGE}${DOCUMENTATION_VERSION}/global-configurations/cluster-and-environments`,
 }
 
 export const HEADER_TEXT = {
@@ -592,12 +591,6 @@ export const JobPipelineTabText = {
     preBuildStage: 'Tasks to be executed',
 }
 
-export const APP_STATUS_CUSTOM_MESSAGES = {
-    HIBERNATED: "This application's workloads are scaled down to 0 replicas",
-    'PARTIALLY HIBERNATED': "Some of this application's workloads are scaled down to 0 replicas.",
-    INTEGRATION_INSTALLING: 'The installation will complete when status for all the below resources become HEALTHY.',
-}
-
 export const ROLLOUT_DEPLOYMENT = 'Rollout Deployment'
 export const DEPLOYMENT = 'Deployment'
 export const MODULE_TYPE_SECURITY = 'security'
@@ -701,32 +694,6 @@ export const CHART_REPO_LABEL = [
     { value: 'PUBLIC', label: 'Public repository' },
     { value: 'PRIVATE', label: 'Private repository' },
 ]
-
-/**
- * @deprecated - use from fe-common
- */
-export enum TIMELINE_STATUS {
-    DEPLOYMENT_INITIATED = 'DEPLOYMENT_INITIATED',
-    GIT_COMMIT = 'GIT_COMMIT',
-    GIT_COMMIT_FAILED = 'GIT_COMMIT_FAILED',
-    ARGOCD_SYNC = 'ARGOCD_SYNC',
-    ARGOCD_SYNC_FAILED = 'ARGOCD_SYNC_FAILED',
-    KUBECTL_APPLY = 'KUBECTL_APPLY',
-    KUBECTL_APPLY_STARTED = 'KUBECTL_APPLY_STARTED',
-    KUBECTL_APPLY_SYNCED = 'KUBECTL_APPLY_SYNCED',
-    HEALTHY = 'HEALTHY',
-    APP_HEALTH = 'APP_HEALTH',
-    DEPLOYMENT_FAILED = 'FAILED',
-    FETCH_TIMED_OUT = 'TIMED_OUT',
-    UNABLE_TO_FETCH_STATUS = 'UNABLE_TO_FETCH_STATUS',
-    DEGRADED = 'DEGRADED',
-    DEPLOYMENT_SUPERSEDED = 'DEPLOYMENT_SUPERSEDED',
-    ABORTED = 'ABORTED',
-    INPROGRESS = 'INPROGRESS',
-    HELM_PACKAGE_GENERATED = 'HELM_PACKAGE_GENERATED',
-    HELM_MANIFEST_PUSHED_TO_HELM_REPO = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO',
-    HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED = 'HELM_MANIFEST_PUSHED_TO_HELM_REPO_FAILED',
-}
 
 /**
  * @deprecated - use from fe-common

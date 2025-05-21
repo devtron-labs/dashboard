@@ -6,7 +6,6 @@
 vite.config.mts
 
 # The following files have eslint errors/warnings
-src/App.tsx
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
 src/components/AppSelector/ChartSelector.tsx
 src/components/ApplicationGroup/AppGroup.service.ts
@@ -53,7 +52,6 @@ src/components/CIPipelineN/ciPipeline.utils.tsx
 src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
-src/components/ClusterNodes/ClusterOverview.tsx
 src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
 src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
 src/components/ClusterNodes/NodeActions/validationRules.ts
@@ -209,7 +207,6 @@ src/components/ciPipeline/ciPipeline.service.ts
 src/components/ciPipeline/validationRules.ts
 src/components/cluster/Cluster.tsx
 src/components/cluster/ClusterComponentModal.tsx
-src/components/cluster/ClusterForm.tsx
 src/components/cluster/ClusterInfoStepsModal.tsx
 src/components/cluster/ClusterInstallStatus.tsx
 src/components/cluster/UseNameListDropdown.tsx
@@ -330,7 +327,6 @@ src/components/v2/appDetails/ReleaseStatusEmptyState.tsx
 src/components/v2/appDetails/SyncError.component.tsx
 src/components/v2/appDetails/__tests__/index.store.test.ts
 src/components/v2/appDetails/appDetails.api.ts
-src/components/v2/appDetails/appDetails.type.ts
 src/components/v2/appDetails/ea/EAAppDetail.component.tsx
 src/components/v2/appDetails/k8Resource/FilterResource.tsx
 src/components/v2/appDetails/k8Resource/nodeDetail/EphemeralContainerDrawer.tsx
@@ -367,7 +363,6 @@ src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
 src/components/v2/devtronStackManager/SuccessModalComponent.tsx
-src/components/v2/headers/AppHeader.component.tsx
 src/components/v2/headers/ChartHeader.component.tsx
 src/components/v2/headers/EAHeader.component.tsx
 src/components/v2/index.tsx

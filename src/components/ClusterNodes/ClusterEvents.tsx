@@ -15,14 +15,13 @@
  */
 
 import { useState, useEffect } from 'react'
-import { showError } from '@devtron-labs/devtron-fe-common-lib'
+import { showError, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
 import { MESSAGING_UI } from '../../config'
 import { EventsTable } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/EventsTable'
 import { PodEventsType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/node.type'
 import MessageUI from '../v2/common/message.ui'
 import { getClusterEvents } from './clusterNodes.service'
 import { ClusterEventsType } from './types'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
 export default function ClusterEvents({ terminalAccessId, reconnectStart, clusterId }: ClusterEventsType) {
     const [events, setEvents] = useState([])

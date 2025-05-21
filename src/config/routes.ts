@@ -17,12 +17,7 @@
 import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-export interface NavItem {
-    title: string
-    href: string
-    stage: number
-    isLocked: boolean
-}
+const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-eks-cluster|add-isolated-cluster)'
 
 export const URLS = {
     CHARTS: '/chart-store',
@@ -32,18 +27,14 @@ export const URLS = {
     CREATE_JOB: 'create-job',
     APPLICATION_GROUP: '/application-group',
     RESOURCE_BROWSER: COMMON_URLS.RESOURCE_BROWSER,
+    RESOURCE_BROWSER_INSTALLATION_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/installation-cluster/:installationId`,
+    RESOURCE_BROWSER_CREATE_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/${CREATE_CLUSTER_PATH}`,
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
     EXTERNAL_FLUX_APP: 'external-flux',
     APP_LIST: 'list',
-    APP_LIST_DEVTRON: 'd',
-    APP_LIST_HELM: 'h',
-    APP_LIST_ARGO: 'a',
-    APP_LIST_FLUX: 'f',
-    APPS: '/devtron-apps', // for V2 router
-    HELM_CHARTS: 'helm-apps', // for V2 router
-    APP_VALUES: 'values', // for V2 router
+    APP_VALUES: 'values',
     APP_DETAILS: 'details',
     APP_DEPLOYMNENT_HISTORY: 'deployments',
     APP_DETAILS_K8: 'k8s-resources', // for V2
@@ -75,6 +66,7 @@ export const URLS = {
     BASE_CONFIG: 'base-config',
     BULK_EDITS: '/bulk-edits',
     LINKED_CD: 'linked-cd',
+    LOGIN: '/login',
     LOGIN_ADMIN: '/login/admin', //
     LOGIN_SSO: '/login/sso',
     GIT_OPS_CONFIG: '/gitops/config',
@@ -83,7 +75,7 @@ export const URLS = {
     GLOBAL_CONFIG_GITOPS: '/global-config/gitops',
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
-    GLOBAL_CONFIG_CREATE_CLUSTER: '/global-config/cluster-env/create/cluster',
+    GLOBAL_CONFIG_CREATE_CLUSTER: `/global-config/cluster-env/${CREATE_CLUSTER_PATH}`,
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
     GLOBAL_CONFIG_AUTH_USER_PERMISSION: '/global-config/auth/users',
@@ -171,47 +163,4 @@ export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | nu
         }
     }
     return `${_url}/${URLS.APP_GIT_CONFIG}`
-}
-
-export function getAppDetailsURL(appId: number | string, envId?: number | string): string {
-    let url = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}`
-    if (envId) {
-        url = `${url}/${envId}`
-    }
-    return url
-}
-
-export function getAppTriggerURL(appId: number | string): string {
-    return `${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`
-}
-export function getAppCIURL(appId: number | string, ciPipelineId: number | string, buildId: number | string): string {
-    let url = `${URLS.APP}/${appId}/${URLS.APP_CI_DETAILS}`
-    if (ciPipelineId) {
-        url = `${url}/${ciPipelineId}`
-        if (buildId) {
-            url = `${url}/${buildId}`
-        }
-    }
-    return url
-}
-export function getAppCDURL(
-    appId: number | string,
-    envId?: number | string,
-    cdPipelineId?: number | string,
-    triggerId?: number | string,
-): string {
-    let url = `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}`
-    if (envId) {
-        url = `${url}/${envId}`
-        if (cdPipelineId) {
-            url = `${url}/${cdPipelineId}`
-            if (triggerId) {
-                url = `${url}/${triggerId}`
-            }
-        }
-    }
-    return url
-}
-export function getAppDeploymentMetricsURL(appId: number | string): string {
-    return `${URLS.APP}/${appId}/${URLS.APP_DEPLOYMENT_METRICS}`
 }

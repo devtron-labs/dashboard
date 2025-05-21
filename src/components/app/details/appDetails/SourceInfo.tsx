@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { Link, useHistory, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import ReactGA from 'react-ga4'
 import moment from 'moment'
 import {
@@ -27,6 +27,7 @@ import {
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     handleUTCTime,
+    logExceptionToSentry,
     Icon,
     Progressing,
     ReleaseMode,
@@ -75,7 +76,6 @@ export const SourceInfo = ({
     loadingResourceTree = false,
     isVirtualEnvironment,
     setRotateModal = null,
-    refetchDeploymentStatus,
     toggleIssuesModal,
     envId,
     ciArtifactId,
@@ -183,7 +183,7 @@ export const SourceInfo = ({
                     >
                         <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
                             {/* TODO: verify what appType needs to be passed */}
-                            <DeploymentTypeIcon deploymentAppType={appDetails?.deploymentAppType} appType={null} />
+                            <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} appType={null} />
                         </div>
                     </Tooltip>
                 )}
@@ -196,7 +196,6 @@ export const SourceInfo = ({
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
                                 appId={appDetails.appId}
                                 envId={envId}
-                                isAppView={isAppView}
                             />
                         </div>
                     )}
@@ -351,10 +350,14 @@ export const SourceInfo = ({
     const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        if (!appDetails?.helmPackageName) {
+            logExceptionToSentry(new Error('Cannot find helm package name in appDetails while downloading'))
+        }
+
         const paramsId = {
             appId: +params.appId,
             envId: +params.envId,
-            appName: `${appDetails?.appName}-${appDetails?.environmentName}-${appDetails?.imageTag}`,
+            appName: appDetails?.helmPackageName || 'helm-package',
         }
         if (AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />
@@ -408,7 +411,6 @@ export const SourceInfo = ({
                                           appDetails?.deploymentAppType === DeploymentAppTypes.HELM || isIsolatedEnv
                                       }
                                       isVirtualEnvironment={isVirtualEnvironment}
-                                      refetchDeploymentStatus={refetchDeploymentStatus}
                                   />
                                   {appDetails?.dataSource !== 'EXTERNAL' && (
                                       <DeployedCommitCard

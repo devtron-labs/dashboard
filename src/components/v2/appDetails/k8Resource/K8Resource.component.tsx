@@ -104,12 +104,16 @@ export const K8ResourceComponent = ({
     }
 
     const handleFilterClick = (selectedFilter: string) => {
-        const searchParams = new URLSearchParams([['filterType', selectedFilter]])
+        const searchParams = new URLSearchParams(location.search)
+        searchParams.set('filterType', selectedFilter)
+
         IndexStore.updateFilterType(selectedFilter.toUpperCase())
         if (selectedFilter === ALL_RESOURCE_KIND_FILTER) {
-            history.push({ search: '' })
+            searchParams.delete('filterType')
+            history.push({ search: `${searchParams}` })
             return
         }
+
         // current selected node exist in new selected filter or not
         const nextFilterNodes = nodes.filter((node) => doesNodeSatisfiesFilter(node, selectedFilter))
         const selectedNodeExists = nextFilterNodes.some((node) => node.kind.toLowerCase() === currentNode)
@@ -133,7 +137,7 @@ export const K8ResourceComponent = ({
                         className="dc__border-right--n1 dc__overflow-hidden flexbox-col dc__no-shrink w-250"
                         data-testid="k8-resources-node-tree"
                     >
-                        <div className="pt-16 pb-15 px-16 border__secondary--bottom">
+                        <div className="pt-14 pb-13 px-16 border__secondary--bottom">
                             <StatusFilterButtonComponent
                                 nodes={nodes}
                                 selectedTab={currentFilter}
