@@ -45,3 +45,6 @@ export const getIsImageApprovedByDeployerSelected = (appList: BulkCDDetailType[]
                 material.userApprovalMetadata?.hasCurrentUserApproved,
         )
     })
+
+export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[]) =>
+    appList.map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))

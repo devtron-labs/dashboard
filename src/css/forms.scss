@@ -310,6 +310,10 @@ $checkbox-hover-bg-image: url('../assets/icons/ic-checkbox-hover.svg');
     background-image: url('../assets/icons/ic-checkbox-selected.svg');
 }
 
+.form__checkbox.error:checked[value='CHECKED'] ~ .form__checkbox-container {
+    background-image: url('../assets/icons/ic-checkbox-selected-error.svg');
+}
+
 .form__checkbox:checked[value='BULK_CHECKED'] ~ .form__checkbox-container {
     background-image: url('../assets/icons/ic-bulk-check.svg');
 }

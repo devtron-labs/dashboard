@@ -14,46 +14,59 @@
  * limitations under the License.
  */
 
+import { useEffect, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
+import moment from 'moment'
+
 import {
     ACTION_STATE,
-    getRandomColor,
-    Progressing,
-    showError,
-    EditableTextArea,
-    useSearchString,
     AppInfoListType,
-    MODAL_TYPE,
-    DEPLOYMENT_WINDOW_TYPE,
     ArtifactInfoModal,
     ArtifactInfoModalProps,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    DEPLOYMENT_WINDOW_TYPE,
+    EditableTextArea,
+    getRandomColor,
+    Icon,
+    MODAL_TYPE,
+    Progressing,
+    showError,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { useEffect, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
-import { HibernateModal } from './HibernateModal'
-import HibernateStatusListDrawer from './HibernateStatusListDrawer'
-import { RestartWorkloadModal } from './RestartWorkloadModal'
-import { Moment12HourFormat, URLS } from '../../../../config'
-import { importComponentFromFELibrary } from '../../../common'
-import { getDeploymentStatus } from '../../AppGroup.service'
+
+import { ReactComponent as GridIcon } from '@Icons/ic-grid-view.svg'
+import { ReactComponent as GridIconBlue } from '@Icons/ic-grid-view-blue.svg'
+import { renderCIListHeader } from '@Components/app/details/cdDetails/utils'
+import { getDeploymentStatus } from '@Components/ApplicationGroup/AppGroup.service'
 import {
     AppGroupDetailDefaultType,
-    AppGroupListType,
     AppListDataType,
     HibernateModalProps,
     ManageAppsResponse,
     StatusDrawer,
-} from '../../AppGroup.types'
-import { GROUP_LIST_HEADER } from '../../Constants'
+} from '@Components/ApplicationGroup/AppGroup.types'
+import {
+    getAppRedirectLink,
+    getDeploymentHistoryLink,
+    parseAppListData,
+} from '@Components/ApplicationGroup/AppGroup.utils'
+import { GROUP_LIST_HEADER } from '@Components/ApplicationGroup/Constants'
+import { importComponentFromFELibrary } from '@Components/common'
+import { Moment12HourFormat } from '@Config/constants'
+import {
+    EnvironmentOverviewBulkSelectionWidget,
+    EnvironmentOverviewTable,
+    EnvironmentOverviewTableRow,
+} from '@Pages/Shared/EnvironmentOverviewTable'
+
 import { BIO_MAX_LENGTH, BIO_MAX_LENGTH_ERROR, URL_SEARCH_PARAMS } from './constants'
-import { ReactComponent as InfoFilled } from '@Icons/info-filled.svg'
-import { ReactComponent as GridIconBlue } from '../../../../assets/icons/ic-grid-view-blue.svg'
-import { ReactComponent as GridIcon } from '../../../../assets/icons/ic-grid-view.svg'
-import { ReactComponent as HibernateIcon } from '../../../../assets/icons/ic-hibernate-3.svg'
-import { ReactComponent as UnHibernateIcon } from '../../../../assets/icons/ic-unhibernate.svg'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { renderCIListHeader } from '../../../app/details/cdDetails/utils'
-import { EnvironmentOverviewTable, EnvironmentOverviewTableRow } from '@Pages/Shared/EnvironmentOverviewTable'
+import { HibernateModal } from './HibernateModal'
+import HibernateStatusListDrawer from './HibernateStatusListDrawer'
+import { RestartWorkloadModal } from './RestartWorkloadModal'
+
 import './envOverview.scss'
 
 const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
@@ -61,28 +74,33 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     null,
     'function',
 )
-const ClonePipelineButton = importComponentFromFELibrary('ClonePipelineButton', null, 'function')
+const AppGroupManageTrafficDrawer = importComponentFromFELibrary('AppGroupManageTrafficDrawer', null, 'function')
+const ManageTrafficButton = importComponentFromFELibrary('ManageTrafficButton', null, 'function')
 const ClonePipelineMenuButton = importComponentFromFELibrary('ClonePipelineMenuButton', null, 'function')
 const ClonePipelineModal = importComponentFromFELibrary('ClonePipelineModal', null, 'function')
+const getManageTrafficMenuButtonConfig = importComponentFromFELibrary(
+    'getManageTrafficMenuButtonConfig',
+    null,
+    'function',
+)
 
-export default function EnvironmentOverview({
+const EnvironmentOverview = ({
     appGroupListData,
     filteredAppIds,
     isVirtualEnv,
     description,
     getAppListData,
     handleSaveDescription,
-}: AppGroupDetailDefaultType) {
-    const { envId } = useParams<{ envId: string }>()
+}: AppGroupDetailDefaultType) => {
+    // STATES
+    const [loading, setLoading] = useState<boolean>(false)
     const [appListData, setAppListData] = useState<AppListDataType>()
-    const [loading, setLoading] = useState<boolean>()
+    const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
     const [showHibernateStatusDrawer, setShowHibernateStatusDrawer] = useState<StatusDrawer>({
         hibernationOperation: true,
         showStatus: false,
         inProgress: false,
     })
-    const [appStatusResponseList, setAppStatusResponseList] = useState<ManageAppsResponse[]>([])
-    const timerId = useRef(null)
     const [selectedAppDetailsList, setSelectedAppDetailsList] = useState<AppInfoListType[]>([])
     const [selectedAppDetails, setSelectedAppDetails] = useState<AppInfoListType>(null)
     const [openedHibernateModalType, setOpenedHibernateModalType] =
@@ -98,26 +116,39 @@ export default function EnvironmentOverview({
         Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE; isActive: boolean }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
+    const [isManageTrafficDrawerOpen, setIsManageTrafficDrawerOpen] = useState(false)
+
+    // HOOKS
+    const { envId } = useParams<{ envId: string }>()
+    const history = useHistory()
+    const location = useLocation()
+    const { searchParams } = useSearchString()
+
+    // REFS
+    const timerId = useRef<NodeJS.Timeout | null>(null)
+    const parentRef = useRef<HTMLDivElement | null>(null)
+
+    // CONSTANTS
     const isDeploymentBlockedViaWindow = Object.values(hibernateInfoMap).some(
         ({ type, isActive }) =>
             (type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT && isActive) ||
             (type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE && !isActive),
     )
 
-    const { searchParams } = useSearchString()
-    const history = useHistory()
     const isAppSelected = selectedAppDetails ?? !!selectedAppDetailsList.length
     const selectedApps = selectedAppDetails ?? selectedAppDetailsList
 
-    useEffect(() => {
-        return () => {
+    useEffect(
+        () => () => {
             if (timerId.current) {
                 clearInterval(timerId.current)
             }
-        }
-    }, [])
+        },
+        [],
+    )
 
-    async function getDeploymentWindowEnvOverrideMetaData() {
+    // POLLING APIs
+    const getDeploymentWindowEnvOverrideMetaData = async () => {
         const appEnvTuples = (selectedAppDetails ? [selectedAppDetails] : selectedAppDetailsList).map((appDetail) => ({
             appId: +appDetail.appId,
             envId: Number(envId),
@@ -142,22 +173,13 @@ export default function EnvironmentOverview({
                 showHibernateStatusDrawer.showStatus ||
                 location.search.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD))
         ) {
+            // TODO: can move to useAsync
+            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             getDeploymentWindowEnvOverrideMetaData()
         }
     }, [openedHibernateModalType, showHibernateStatusDrawer.showStatus, location.search, isAppSelected])
 
-    useEffect(() => {
-        setLoading(true)
-        fetchDeployments()
-        timerId.current = setInterval(fetchDeployments, 30000)
-        return () => {
-            if (timerId.current) {
-                clearInterval(timerId.current)
-            }
-        }
-    }, [appGroupListData])
-
-    async function fetchDeployments() {
+    const fetchDeployments = async () => {
         try {
             const response = await getDeploymentStatus(+envId, filteredAppIds)
             if (response?.result) {
@@ -172,7 +194,7 @@ export default function EnvironmentOverview({
                     }
                 })
 
-                parseAppListData(appGroupListData, statusRecord)
+                setAppListData(parseAppListData(appGroupListData, statusRecord))
                 setLoading(false)
             }
         } catch (err) {
@@ -180,6 +202,29 @@ export default function EnvironmentOverview({
         }
     }
 
+    useEffect(() => {
+        setLoading(true)
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        fetchDeployments()
+
+        timerId.current = setInterval(fetchDeployments, 30000)
+        return () => {
+            if (timerId.current) {
+                clearInterval(timerId.current)
+            }
+        }
+    }, [appGroupListData])
+
+    // EARLY RETURN FOR LOADING
+    if (loading) {
+        return (
+            <div className="flex-grow-1">
+                <Progressing pageLoader />
+            </div>
+        )
+    }
+
+    // HANDLERS
     const handleCheckboxSelect = (id: number, checked: boolean, allChecked: boolean) => {
         if (allChecked) {
             setSelectedAppDetailsList(checked ? appListData.appInfoList : [])
@@ -195,41 +240,6 @@ export default function EnvironmentOverview({
                 setSelectedAppDetailsList(selectedAppDetailsList.filter((app) => app.appId !== targetApp.appId))
             }
         }
-    }
-
-    const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
-        `${URLS.APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
-
-    const getAppRedirectLink = (appId: number, envId: number) => `${URLS.APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`
-
-    const parseAppListData = (
-        data: AppGroupListType,
-        statusRecord: Record<string, { status: string; pipelineId: number }>,
-    ): void => {
-        const parsedData = {
-            environment: data.environmentName,
-            namespace: data.namespace || '-',
-            cluster: data.clusterName,
-            appInfoList: [],
-        }
-
-        data?.apps?.forEach((app) => {
-            const appInfo = {
-                appId: app.appId,
-                application: app.appName,
-                appStatus: app.appStatus,
-                deploymentStatus: statusRecord[app.appId].status,
-                pipelineId: statusRecord[app.appId].pipelineId,
-                lastDeployed: app.lastDeployedTime,
-                lastDeployedBy: app.lastDeployedBy,
-                lastDeployedImage: app.lastDeployedImage,
-                commits: app.commits,
-                ciArtifactId: app.ciArtifactId,
-            }
-            parsedData.appInfoList.push(appInfo)
-        })
-
-        setAppListData(parsedData)
     }
 
     const closePopup = () => {
@@ -271,157 +281,82 @@ export default function EnvironmentOverview({
         resetSelectedAppDetails()
     }
 
-    if (loading) {
-        return (
-            <div className="flex-grow-1">
-                <Progressing pageLoader />
-            </div>
-        )
-    }
-
     const openCommitInfoModal = (ciArtifactId: number) => (e) => {
         e.stopPropagation()
         setCommitInfoModalConfig({
             envId,
-            ciArtifactId: ciArtifactId,
+            ciArtifactId,
         })
     }
 
-    const environmentOverviewTableRows: EnvironmentOverviewTableRow[] = appListData?.appInfoList?.map((appInfo) => ({
-        environment: {
-            id: appInfo.appId,
-            name: appInfo.application,
-            commits: appInfo.commits,
-            deployedAt: appInfo.lastDeployed,
-            status: appInfo.appStatus,
-            deploymentStatus: appInfo.deploymentStatus,
-            deployedBy: appInfo.lastDeployedBy,
-            lastDeployedImage: appInfo.lastDeployedImage,
-        },
-        popUpMenuItems: [
-            ...((ClonePipelineMenuButton && appListData.environment
-                ? [
-                      <ClonePipelineMenuButton
-                          sourceEnvironmentName={appListData.environment}
-                          onClick={() => {
-                              setSelectedAppDetails(appInfo)
-                              setOpenClonePipelineConfig(true)
-                          }}
-                      />,
-                  ]
-                : []) as EnvironmentOverviewTableRow['popUpMenuItems']),
-            {
-                label: 'Hibernate',
-                Icon: HibernateIcon,
-                iconType: null,
-                disabled: !appInfo.lastDeployed,
-                onClick: () => {
-                    setSelectedAppDetails(appInfo)
-                    openHibernateModalPopup()
-                },
+    const handleBulkSelectionWidgetClose = () => setSelectedAppDetailsList([])
+
+    const handleOpenManageTrafficDrawer = () => setIsManageTrafficDrawerOpen(true)
+
+    const handleCloseManageTrafficDrawer = () => setIsManageTrafficDrawerOpen(false)
+
+    // CONFIGS
+    const environmentOverviewTableRows = (appListData?.appInfoList ?? []).map<EnvironmentOverviewTableRow>(
+        (appInfo) => ({
+            app: {
+                id: appInfo.appId,
+                name: appInfo.application,
+                commits: appInfo.commits,
+                deployedAt: appInfo.lastDeployed,
+                status: appInfo.appStatus,
+                deploymentStatus: appInfo.deploymentStatus,
+                deployedBy: appInfo.lastDeployedBy,
+                lastDeployedImage: appInfo.lastDeployedImage,
             },
-            {
-                label: 'Unhibernate',
-                Icon: UnHibernateIcon,
-                iconType: null,
-                disabled: !appInfo.lastDeployed,
-                onClick: () => {
-                    setSelectedAppDetails(appInfo)
-                    openUnHibernateModalPopup()
+            popUpMenuItems: [
+                ...((ClonePipelineMenuButton && appListData.environment
+                    ? [
+                          <ClonePipelineMenuButton
+                              sourceEnvironmentName={appListData.environment}
+                              onClick={() => {
+                                  setSelectedAppDetails(appInfo)
+                                  setOpenClonePipelineConfig(true)
+                              }}
+                          />,
+                      ]
+                    : []) as EnvironmentOverviewTableRow['popUpMenuItems']),
+                {
+                    label: 'Hibernate',
+                    iconName: 'ic-hibernate-circle',
+                    disabled: !appInfo.lastDeployed,
+                    onClick: () => {
+                        setSelectedAppDetails(appInfo)
+                        openHibernateModalPopup()
+                    },
                 },
-            },
-            {
-                label: 'Restart Workload',
-                Icon: RotateIcon,
-                iconType: 'stroke',
-                disabled: !appInfo.lastDeployed,
-                onClick: () => {
-                    setSelectedAppDetails(appInfo)
-                    onClickShowBulkRestartModal()
+                {
+                    label: 'Unhibernate',
+                    iconName: 'ic-sun',
+                    disabled: !appInfo.lastDeployed,
+                    onClick: () => {
+                        setSelectedAppDetails(appInfo)
+                        openUnHibernateModalPopup()
+                    },
                 },
-            },
-        ],
-        isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
-        onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
-        onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
-        deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId),
-        redirectLink: getAppRedirectLink(appInfo.appId, +envId),
-    }))
+                {
+                    label: 'Restart Workload',
+                    iconName: 'ic-arrows-clockwise',
+                    disabled: !appInfo.lastDeployed,
+                    onClick: () => {
+                        setSelectedAppDetails(appInfo)
+                        onClickShowBulkRestartModal()
+                    },
+                },
+            ],
+            isChecked: selectedAppDetailsList.some(({ appId }) => appId === appInfo.appId),
+            onLastDeployedImageClick: openCommitInfoModal(appInfo.ciArtifactId),
+            onCommitClick: openCommitInfoModal(appInfo.ciArtifactId),
+            deployedAtLink: getDeploymentHistoryLink(appInfo.appId, appInfo.pipelineId, envId),
+            redirectLink: getAppRedirectLink(appInfo.appId, +envId),
+        }),
+    )
 
-    const renderSideInfoColumn = () => {
-        return (
-            <aside className="flexbox-col dc__gap-16">
-                <div className="flexbox-col dc__gap-12">
-                    <div>
-                        <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
-                            <div className="flex dc__border-radius-8-imp mw-48 h-48 bcb-1">
-                                <GridIconBlue className="w-32 h-32" />
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">
-                        {appGroupListData.environmentName}
-                    </div>
-                    <EditableTextArea
-                        emptyState="Write a short description for this environment"
-                        placeholder="Write a short description for this environment"
-                        initialText={description}
-                        updateContent={handleSaveDescription}
-                        validations={{
-                            maxLength: {
-                                value: BIO_MAX_LENGTH,
-                                message: BIO_MAX_LENGTH_ERROR,
-                            },
-                        }}
-                    />
-                </div>
-                <div className="dc__border-top-n1" />
-                <div className="flexbox-col dc__gap-12">
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Type</div>
-                        <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
-                            {appGroupListData.environmentType}
-                        </div>
-                    </div>
-
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Namespace</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
-                            <span>{appGroupListData.namespace}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Cluster</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
-                            <span>{appGroupListData.clusterName}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
-                            {appGroupListData.createdOn
-                                ? moment(appGroupListData.createdOn).format(Moment12HourFormat)
-                                : '-'}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
-                            <div
-                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                                style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
-                            >
-                                {appGroupListData.createdBy[0]}
-                            </div>
-                            {appGroupListData.createdBy}
-                        </div>
-                    </div>
-                </div>
-            </aside>
-        )
-    }
-
+    // RENDERERS
     const renderOverviewModal = () => {
         if (isAppSelected && location.search?.includes(URL_SEARCH_PARAMS.BULK_RESTART_WORKLOAD)) {
             return (
@@ -495,50 +430,89 @@ export default function EnvironmentOverview({
         return null
     }
 
-    return appListData?.appInfoList?.length > 0 ? (
-        <div className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bg__primary p-20">
-            <div>{renderSideInfoColumn()}</div>
+    return environmentOverviewTableRows.length > 0 ? (
+        <div
+            ref={parentRef}
+            className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bg__primary p-20 dc__position-rel"
+        >
+            {/* SIDE INFO COLUMN */}
+            <aside className="flexbox-col dc__gap-16">
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
+                            <div className="flex dc__border-radius-8-imp mw-48 h-48 bcb-1">
+                                <GridIconBlue className="w-32 h-32" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">
+                        {appGroupListData.environmentName}
+                    </div>
+                    <EditableTextArea
+                        emptyState="Write a short description for this environment"
+                        placeholder="Write a short description for this environment"
+                        initialText={description}
+                        updateContent={handleSaveDescription}
+                        validations={{
+                            maxLength: {
+                                value: BIO_MAX_LENGTH,
+                                message: BIO_MAX_LENGTH_ERROR,
+                            },
+                        }}
+                    />
+                </div>
+                <div className="dc__border-top-n1" />
+                <div className="flexbox-col dc__gap-12">
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Type</div>
+                        <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
+                            {appGroupListData.environmentType}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Namespace</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            <span>{appGroupListData.namespace}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Cluster</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            <span>{appGroupListData.clusterName}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                            {appGroupListData.createdOn
+                                ? moment(appGroupListData.createdOn).format(Moment12HourFormat)
+                                : '-'}
+                        </div>
+                    </div>
+                    <div>
+                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
+                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
+                            <div
+                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
+                            >
+                                {appGroupListData.createdBy[0]}
+                            </div>
+                            {appGroupListData.createdBy}
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            {/* OVERVIEW TABLE */}
             <div className="mw-none">
                 <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
                     <span className="flex">
                         <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                     </span>
-                    {selectedAppDetailsList.length > 0 ? (
-                        <div className="flexbox dc__gap-6">
-                            {ClonePipelineButton && appListData.environment && (
-                                <ClonePipelineButton
-                                    sourceEnvironmentName={appListData.environment}
-                                    selectedAppDetailsList={selectedAppDetailsList}
-                                />
-                            )}
-                            <button
-                                onClick={openHibernateModalPopup}
-                                className="bg__primary fs-12 dc__border dc__border-radius-4-imp flex h-28"
-                            >
-                                <HibernateIcon className="icon-dim-12 mr-4" />
-                                Hibernate
-                            </button>
-                            <button
-                                onClick={openUnHibernateModalPopup}
-                                className="bg__primary fs-12 dc__border dc__border-radius-4-imp flex h-28"
-                            >
-                                <UnHibernateIcon className="icon-dim-12 mr-4" />
-                                Unhibernate
-                            </button>
-                            <button
-                                onClick={onClickShowBulkRestartModal}
-                                className="bg__primary fs-12 dc__border dc__border-radius-4-imp flex h-28"
-                            >
-                                <RotateIcon className="icon-dim-12 mr-4 scn-9" />
-                                Restart Workload
-                            </button>
-                        </div>
-                    ) : (
-                        <p className="m-0 flex dc__gap-8 cn-9 fs-13 lh-20 fw-4">
-                            <InfoFilled className="icon-dim-20" />
-                            <span>Select applications to take bulk actions</span>
-                        </p>
-                    )}
+                    {ManageTrafficButton && <ManageTrafficButton onClick={handleOpenManageTrafficDrawer} />}
                 </div>
                 <EnvironmentOverviewTable
                     rows={environmentOverviewTableRows}
@@ -546,7 +520,74 @@ export default function EnvironmentOverview({
                     onCheckboxSelect={handleCheckboxSelect}
                 />
             </div>
+            {/* MODALS */}
             {renderOverviewModal()}
+
+            {AppGroupManageTrafficDrawer && isManageTrafficDrawerOpen && (
+                <AppGroupManageTrafficDrawer
+                    envId={+envId}
+                    envName={appListData.environment}
+                    appInfoList={appListData?.appInfoList}
+                    initialSelectedAppList={selectedAppDetailsList}
+                    onClose={handleCloseManageTrafficDrawer}
+                />
+            )}
+
+            {/* BULK SELECTION WIDGET */}
+            {!!selectedAppDetailsList.length && (
+                <EnvironmentOverviewBulkSelectionWidget
+                    parentRef={parentRef}
+                    count={selectedAppDetailsList.length}
+                    onClose={handleBulkSelectionWidgetClose}
+                    popUpMenuItems={[
+                        ...(getManageTrafficMenuButtonConfig
+                            ? [getManageTrafficMenuButtonConfig({ onClick: handleOpenManageTrafficDrawer })]
+                            : []),
+                        ...(ClonePipelineMenuButton && appListData.environment
+                            ? [
+                                  <ClonePipelineMenuButton
+                                      sourceEnvironmentName={appListData.environment}
+                                      onClick={() => {
+                                          setOpenClonePipelineConfig(true)
+                                      }}
+                                  />,
+                              ]
+                            : []),
+                    ]}
+                >
+                    <div className="flex dc__gap-4">
+                        <Button
+                            icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                            dataTestId="environment-overview-action-widget-restart-workloads"
+                            style={ButtonStyleType.neutral}
+                            variant={ButtonVariantType.borderLess}
+                            ariaLabel="Restart Workloads"
+                            size={ComponentSizeType.small}
+                            onClick={onClickShowBulkRestartModal}
+                        />
+                        <Button
+                            icon={<Icon name="ic-hibernate-circle" color={null} />}
+                            dataTestId="environment-overview-action-widget-hibernate"
+                            style={ButtonStyleType.neutral}
+                            variant={ButtonVariantType.borderLess}
+                            ariaLabel="Hibernate Applications"
+                            size={ComponentSizeType.small}
+                            onClick={openHibernateModalPopup}
+                        />
+                        <Button
+                            icon={<Icon name="ic-sun" color={null} />}
+                            dataTestId="environment-overview-action-widget-unhibernate"
+                            style={ButtonStyleType.neutral}
+                            variant={ButtonVariantType.borderLess}
+                            ariaLabel="Unhibernate Applications"
+                            size={ComponentSizeType.small}
+                            onClick={openUnHibernateModalPopup}
+                        />
+                    </div>
+                </EnvironmentOverviewBulkSelectionWidget>
+            )}
         </div>
     ) : null
 }
+
+export default EnvironmentOverview
