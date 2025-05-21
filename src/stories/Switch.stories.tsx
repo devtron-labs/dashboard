@@ -44,10 +44,6 @@ const meta = {
             options: Object.keys(SWITCH_VARIANTS) as Array<keyof typeof SWITCH_VARIANTS>,
             control: { type: 'radio' },
         },
-        shape: {
-            options: ['rounded', 'square'],
-            control: { type: 'radio' },
-        },
         iconName: {
             options: [null, ...Object.keys(iconMap)],
             control: { type: 'select' },
@@ -79,7 +75,7 @@ const meta = {
 
 type Story = StoryObj<typeof meta>
 
-const SWITCH_TEMPLATE: Story = {
+const COMMON_SWITCH_TEMPLATE: Story = {
     args: {
         name: 'switch-story',
         dataTestId: 'switch-story',
@@ -88,15 +84,38 @@ const SWITCH_TEMPLATE: Story = {
         isDisabled: false,
         isLoading: false,
         tooltipContent: '',
-        shape: 'rounded',
         ariaLabel: 'Toggle',
     },
 }
 
-export const Default: Story = {
-    ...SWITCH_TEMPLATE,
+export const RoundedSwitch: Story = {
+    ...COMMON_SWITCH_TEMPLATE,
+    argTypes: {
+        ...meta.argTypes,
+        iconName: {
+            options: [null],
+            control: { type: 'select' },
+        },
+    },
     args: {
-        ...SWITCH_TEMPLATE.args,
+        ...COMMON_SWITCH_TEMPLATE.args,
+        shape: 'rounded',
+    } satisfies BaseComponentPropsType,
+}
+
+export const SquareSwitch: Story = {
+    ...COMMON_SWITCH_TEMPLATE,
+    argTypes: {
+        ...meta.argTypes,
+        indeterminate: {
+            options: [false],
+            control: { type: 'radio' },
+        },
+    },
+    args: {
+        ...COMMON_SWITCH_TEMPLATE.args,
+        shape: 'square',
+        iconName: 'ic-check',
     } satisfies BaseComponentPropsType,
 }
 
