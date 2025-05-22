@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { NodeTaintType, SelectPickerOptionType, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, NodeTaintType, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
+
 import {
-    ClusterComponentType,
-    ClusterComponentStatusType,
-    ClusterComponentStatus,
-    ClusterTerminalParamsType,
-    emptyClusterTerminalParamsData,
     AddClusterFormPrefilledInfoType,
     AddEnvironmentFormPrefilledInfoType,
+    ClusterComponentStatus,
+    ClusterComponentStatusType,
+    ClusterComponentType,
+    ClusterTerminalParamsType,
+    emptyClusterTerminalParamsData,
 } from './cluster.type'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
@@ -84,15 +87,14 @@ export function getClusterTerminalParamsData(
     }
 }
 
-export const createTaintsList = (list: any[], nodeLabel: string): Map<string, NodeTaintType[]> => {
-    return list?.reduce((taints, node) => {
+export const createTaintsList = (list: any[], nodeLabel: string): Map<string, NodeTaintType[]> =>
+    list?.reduce((taints, node) => {
         const label = node[nodeLabel]
         if (!taints.has(label)) {
             taints.set(label, node.taints)
         }
         return taints
     }, new Map<string, NodeTaintType[]>())
-}
 
 export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string => {
     const stringifiedClusterData = localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)
@@ -102,6 +104,7 @@ export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string 
             const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(stringifiedClusterData)
             const serverURL = clusterData?.serverURL || fallbackServerUrl
             return serverURL
+            // eslint-disable-next-line no-empty
         } catch {}
     }
 
@@ -116,7 +119,49 @@ export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string 
             const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(stringifiedEnvData)
             const namespace = envData?.namespace || fallbackNamespace
             return namespace
+            // eslint-disable-next-line no-empty
         } catch {}
     }
-      return fallbackNamespace
+    return fallbackNamespace
 }
+
+export const PrometheusWarningInfo = () => (
+    <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
+        <div className="flex left dc__align-start">
+            <Warning className="icon-dim-20 fcr-7" />
+            <div className="ml-8 fs-13">
+                <span className="fw-6 dc__capitalize">Warning: </span>Prometheus configuration will be removed and you
+                won’t be able to see metrics for applications deployed in this cluster.
+            </div>
+        </div>
+    </div>
+)
+
+export const PrometheusRequiredFieldInfo = () => (
+    <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
+        <div className="flex left dc__align-start">
+            <Icon name="ic-error" size={20} color="R500" />
+            <div className="ml-8 fs-13">
+                Fill all the required fields OR turn off the above switch to skip configuring prometheus.
+            </div>
+        </div>
+    </div>
+)
+
+export const renderKubeConfigClusterCountInfo = (clusterCount: number) => (
+    <div>
+        <div className="flex left dc__gap-4">
+            <span className="fw-6">{clusterCount} valid cluster(s). </span>
+            <span>Select the cluster you want to add/update</span>
+        </div>
+    </div>
+)
+
+export const renderNoEnvironmentTab = () => (
+    <div className="br-4 dashed dc__border flex bg__secondary pb-16 pt-16 m-16 fs-12 fw-4">
+        <div className="dc__align-center">
+            <div className="fw-6">No Environments Added</div>
+            <div>This cluster doesn&apos;t have any environments yet</div>
+        </div>
+    </div>
+)

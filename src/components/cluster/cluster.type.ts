@@ -19,8 +19,6 @@ import { RouteComponentProps } from 'react-router-dom'
 
 import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SERVER_MODE_TYPE } from '../../config'
-
 export const POLLING_INTERVAL = 30000
 
 export const DEFAULT_CLUSTER_ID = 1
@@ -139,8 +137,7 @@ export interface UserInfos {
     config: ConfigCluster
 }
 
-export interface ClusterListProps extends RouteComponentProps<{}> {
-    serverMode: SERVER_MODE_TYPE
+export interface ClusterProps extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
 }
 
@@ -227,4 +224,21 @@ export interface DeleteClusterConfirmationModalProps {
 
 export interface DeleteClusterPayload {
     id: number
+}
+
+export interface ClusterListProps {
+    clusterName: string
+    isVirtualCluster: boolean
+    environments: any[]
+    reload: () => void
+    sshTunnelConfig: any
+    isProd: boolean
+    serverURL: string
+    prometheusURL: string
+    prometheusAuth: any
+    proxyUrl: string
+    insecureSkipTlsVerify: boolean
+    installationId: number
+    category: OptionType<number, string>
+    toConnectWithSSHTunnel: boolean
 }

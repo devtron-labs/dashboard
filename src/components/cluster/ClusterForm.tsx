@@ -38,7 +38,6 @@ import {
     PasswordField,
     RadioGroup,
     RadioGroupItem,
-    SelectPicker,
     showError,
     Textarea,
     ToastManager,
@@ -47,10 +46,8 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-right.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
@@ -61,6 +58,7 @@ import { importComponentFromFELibrary, useForm } from '../common'
 import { RemoteConnectionType } from '../dockerRegistry/dockerType'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
+import { AssignCategorySelect } from './AssignCategorySelect'
 import { saveCluster, saveClusters, updateCluster, validateCluster } from './cluster.service'
 import {
     AuthenticationType,
@@ -72,7 +70,12 @@ import {
     SSHAuthenticationType,
     UserDetails,
 } from './cluster.type'
-import { getServerURLFromLocalStorage } from './cluster.util'
+import {
+    getServerURLFromLocalStorage,
+    PrometheusRequiredFieldInfo,
+    PrometheusWarningInfo,
+    renderKubeConfigClusterCountInfo,
+} from './cluster.util'
 import ClusterInfoStepsModal from './ClusterInfoStepsModal'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY } from './constants'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
@@ -82,38 +85,6 @@ import './cluster.scss'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
-
-const PrometheusWarningInfo = () => (
-    <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
-        <div className="flex left dc__align-start">
-            <Warning className="icon-dim-20 fcr-7" />
-            <div className="ml-8 fs-13">
-                <span className="fw-6 dc__capitalize">Warning: </span>Prometheus configuration will be removed and you
-                won’t be able to see metrics for applications deployed in this cluster.
-            </div>
-        </div>
-    </div>
-)
-
-const PrometheusRequiredFieldInfo = () => (
-    <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
-        <div className="flex left dc__align-start">
-            <Error className="icon-dim-20" />
-            <div className="ml-8 fs-13">
-                Fill all the required fields OR turn off the above switch to skip configuring prometheus.
-            </div>
-        </div>
-    </div>
-)
-
-const renderKubeConfigClusterCountInfo = (clusterCount: number) => (
-    <div>
-        <div className="flex left dc__gap-4">
-            <span className="fw-6">{clusterCount} valid cluster(s). </span>
-            <span>Select the cluster you want to add/update</span>
-        </div>
-    </div>
-)
 
 const ClusterForm = ({
     id = null,
@@ -684,10 +655,6 @@ const ClusterForm = ({
         setSSHConnectionType(authType)
     }
 
-    const handleCategoryChange = (selected: OptionType<number, string>) => {
-        setSelectedCategory(selected)
-    }
-
     const clusterTitle = () => {
         if (!id) {
             return 'Add Cluster'
@@ -804,19 +771,9 @@ const ClusterForm = ({
                     <RadioGroupItem value="true">Production</RadioGroupItem>
                     <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
-                <SelectPicker
-                    label="Assign Category"
-                    inputId="assign-category-menu-list"
-                    name="assign-category-menu-list"
-                    classNamePrefix="assign-category-menu-list"
-                    options={[
-                        { label: 'category1', value: 1 },
-                        { label: 'category2', value: 2 },
-                    ]}
-                    onChange={handleCategoryChange}
-                    value={selectedCategory}
-                    size={ComponentSizeType.large}
-                />
+
+                <AssignCategorySelect selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
                         <div className="divider divider--n1 mt-20 mb-20" />

@@ -16,5 +16,11 @@
 
 import { DynamicDataTableRowType } from '@devtron-labs/devtron-fe-common-lib'
 
+export interface ManageCategoryDTO {
+    id: number
+    category: string
+    description: string
+}
+
 export type CategoriesTableColumnsType = 'categories' | 'description'
 export type CategoriesDataRowType = DynamicDataTableRowType<CategoriesTableColumnsType>

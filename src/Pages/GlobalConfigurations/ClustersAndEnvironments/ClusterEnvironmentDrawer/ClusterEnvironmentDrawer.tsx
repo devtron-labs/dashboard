@@ -27,7 +27,7 @@ import {
     Drawer,
     GenericEmptyState,
     noop,
-    SelectPicker,
+    OptionType,
     ServerErrors,
     showError,
     stopPropagation,
@@ -42,6 +42,7 @@ import {
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { AssignCategorySelect } from '@Components/cluster/AssignCategorySelect'
 import { deleteEnvironment, saveEnvironment, updateEnvironment } from '@Components/cluster/cluster.service'
 import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
@@ -93,6 +94,8 @@ export const ClusterEnvironmentDrawer = ({
         data: null,
         error: null,
     })
+
+    const [selectedCategory, setSelectedCategory] = useState<OptionType<number, string>>(category)
 
     const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
@@ -357,19 +360,10 @@ export const ClusterEnvironmentDrawer = ({
                             </label>
                         </div>
                     )}
-                    <div className="mb-16 flex left">
-                        <SelectPicker
-                            label="Assign Category"
-                            inputId="assign-category-menu-list"
-                            name="assign-category-menu-list"
-                            classNamePrefix="assign-category-menu-list"
-                            options={[
-                                { label: 'category1', value: 1 },
-                                { label: 'category2', value: 2 },
-                            ]}
-                            value={data.category}
-                            {...register('category', { isCustomComponent: true })}
-                            size={ComponentSizeType.large}
+                    <div className="mb-16 flex left mw-200">
+                        <AssignCategorySelect
+                            selectedCategory={selectedCategory}
+                            setSelectedCategory={setSelectedCategory}
                         />
                     </div>
 
