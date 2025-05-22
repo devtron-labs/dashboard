@@ -28,6 +28,7 @@ export const createAppInitialFormState: CreateAppFormStateType = {
     gitMaterials: null,
     buildConfiguration: null,
     workflowConfig: null,
+    cloneAppConfig: null,
 }
 
 export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
@@ -35,7 +36,6 @@ export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
     projectId: '',
     description: '',
     tags: {},
-    cloneAppId: null,
     gitMaterials: null,
     workflowConfig: null,
 }

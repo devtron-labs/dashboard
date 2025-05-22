@@ -21,6 +21,7 @@ import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
+    getDocumentationUrl,
     Icon,
     PopupMenu,
     ValueContainerWithLoadingShimmer,
@@ -29,7 +30,7 @@ import {
 import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
 import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 
-import { DOCUMENTATION, URLS } from '../../../config'
+import { URLS } from '../../../config'
 import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,
@@ -155,17 +156,17 @@ export default ClusterSelector
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {
         text: ERROR_SCREEN_SUBTITLE,
-        link: DOCUMENTATION.K8S_RESOURCES_PERMISSIONS,
+        link: getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' }),
         linkText: ERROR_SCREEN_LEARN_MORE,
     }
 
     if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(true)
-        emptyStateData.link = DOCUMENTATION.GLOBAL_CONFIG_PERMISSION
+        emptyStateData.link = getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' })
         emptyStateData.linkText = LEARN_MORE
     } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(false)
-        emptyStateData.link = DOCUMENTATION.GLOBAL_CONFIG_PERMISSION
+        emptyStateData.link = getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' })
         emptyStateData.linkText = LEARN_MORE
     }
 

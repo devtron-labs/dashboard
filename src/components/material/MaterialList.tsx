@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
     sortCallback,
     AppListConstants,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { AppConfigStatus, ViewType, DOCUMENTATION, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { AppConfigStatus, ViewType, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { CreateMaterial } from './CreateMaterial'
 import { UpdateMaterial, UpdateMaterialProps } from './UpdateMaterial'
 import { GitMaterialType, MaterialListProps, MaterialListState } from './material.types'
@@ -167,7 +168,7 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                         rel="noreferrer noopener"
                         target="_blank"
                         className="dc__link"
-                        href={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
+                        href={getDocumentationUrl({ docLinkKey: this.props.isJobView ? "JOB_SOURCE_CODE" : "GLOBAL_CONFIG_GIT"})}
                     >
                         Learn more
                     </a>
@@ -255,7 +256,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             isTemplateView={this.props.isTemplateView}
                             isCreateAppView={this.props.isCreateAppView}
                             handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
-                        />                    )
+                        />
+                    )
                 })}
             </div>
         )

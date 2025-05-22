@@ -1,4 +1,4 @@
-import { IconName } from '@devtron-labs/devtron-fe-common-lib/dist'
+import { IconName } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum CreateClusterTypeEnum {
     CONNECT_CLUSTER = 'connect-cluster',

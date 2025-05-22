@@ -19,13 +19,14 @@ import { Link } from 'react-router-dom'
 import {
     CMSecretComponentType,
     CMSecretExternalType,
+    ComponentSizeType,
+    DocLink,
     Icon,
     InfoBlock,
     InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { DOCUMENTATION } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
@@ -43,14 +44,7 @@ export const renderESOInfo = (isESO: boolean) =>
                         External Secrets Operator
                     </Link>
                     &nbsp;<span>should be installed in the target cluster.</span>&nbsp;
-                    <a
-                        className="anchor"
-                        href={DOCUMENTATION.EXTERNAL_SECRET}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
+                    <DocLink docLinkKey="EXTERNAL_SECRET" dataTestId="learn-more-about-external-secrets" />
                 </p>
             }
         />
@@ -78,17 +72,15 @@ export const renderExternalInfo = (
     ) : null
 
 export const renderChartVersionBelow3090NotSupportedText = () => (
-    <span className="fs-12 fw-4">
+    <span className="fs-12 fw-4 flex">
         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
         <span className="cn-7">Learn more about</span>&nbsp;
-        <a
-            className="dc__link"
-            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-            rel="noreferrer noopener"
-            target="_blank"
-        >
-            Deployment Template &gt; Chart Version
-        </a>
+        <DocLink
+            docLinkKey="APP_ROLLOUT_DEPLOYMENT_TEMPLATE"
+            text="Deployment Template &gt; Chart Version"
+            dataTestId="chart-version-learn-more"
+            size={ComponentSizeType.xs}
+        />
     </span>
 )
 

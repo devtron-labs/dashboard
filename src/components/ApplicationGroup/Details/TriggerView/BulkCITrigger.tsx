@@ -42,6 +42,7 @@ import {
     uploadCIPipelineFile,
     UploadFileProps,
     savePipeline,
+    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -56,7 +57,7 @@ import externalCiImg from '../../../../assets/img/external-ci.webp'
 import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.webp'
 import linkedCiImg from '../../../../assets/img/linked-ci.webp'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
+import { SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -782,7 +783,7 @@ const BulkCITrigger = ({
                                 <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
                                 <a
                                     className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                    href={DOCUMENTATION.BLOB_STORAGE}
+                                    href={getDocumentationUrl({ docLinkKey: 'BLOB_STORAGE' })}
                                     target="_blank"
                                     rel="noreferrer"
                                 >
