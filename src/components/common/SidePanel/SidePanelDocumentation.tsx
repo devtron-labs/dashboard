@@ -55,7 +55,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         title="side-panel-documentation"
                         loading="lazy"
                         className="dc__no-border"
-                        src={`${docLink}?theme=${appTheme}`}
+                        src={`${docLink}&theme=${appTheme}`}
                         width="100%"
                         height="100%"
                     />
