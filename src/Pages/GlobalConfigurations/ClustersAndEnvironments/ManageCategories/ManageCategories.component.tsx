@@ -21,6 +21,7 @@ import {
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import emptyFolder from '@Images/no-artifact.webp'
 import { URLS } from '@Config/routes'
 
 import { CATEGORIES_TABLE_HEADERS } from './constants'
@@ -117,15 +118,17 @@ const ManageCategories = () => {
         return <Progressing pageLoader />
     }
 
-    if (categoryList.result.length === 0) {
-        return (
-            <GenericEmptyState
-                title="No categories added"
-                subTitle="Create categories (example: Stage, Dev, QA etc)  and assign it to Cluster or Environments"
-            />
-        )
-    }
-
+    const renderAddCategoryButton = () => (
+        <Button
+            dataTestId="manage_categories_button"
+            variant={categoryList?.result?.length !== 0 ? ButtonVariantType.primary : ButtonVariantType.secondary}
+            component={ButtonComponentType.button}
+            startIcon={<Icon name="ic-add" color={null} />}
+            size={ComponentSizeType.medium}
+            text="Add Category"
+            onClick={onClickAddRow}
+        />
+    )
     const renderSearchBar = () => (
         <div className="flex dc__content-space px-20 py-12">
             <SearchBar
@@ -138,15 +141,7 @@ const ManageCategories = () => {
                 handleEnter={handleSearch}
                 dataTestId="search-category-input"
             />
-            <Button
-                dataTestId="manage_categories_button"
-                variant={ButtonVariantType.secondary}
-                component={ButtonComponentType.button}
-                startIcon={<Icon name="ic-add" color={null} />}
-                size={ComponentSizeType.medium}
-                text="Add Categories"
-                onClick={onClickAddRow}
-            />
+            {renderAddCategoryButton()}
         </div>
     )
 
@@ -199,8 +194,21 @@ const ManageCategories = () => {
                 onClick={stopPropagation}
             >
                 {renderHeader()}
-                {renderSearchBar()}
-                {renderList()}
+
+                {categoryList?.result?.length === 0 ? (
+                    <GenericEmptyState
+                        title="No categories added"
+                        subTitle="Create categories (example: Stage, Dev, QA etc)  and assign it to Cluster or Environments"
+                        renderButton={renderAddCategoryButton}
+                        isButtonAvailable
+                        image={emptyFolder}
+                    />
+                ) : (
+                    <>
+                        {renderSearchBar()}
+                        {renderList()}
+                    </>
+                )}
             </div>
         </Drawer>
     )

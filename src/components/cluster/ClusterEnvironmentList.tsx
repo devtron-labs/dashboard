@@ -110,7 +110,7 @@ export const ClusterEnvironmentList = ({
                         >
                             <div className="cursor flex w-100">
                                 <Icon
-                                    name={isVirtualCluster ? 'ic-virtual-cluster' : 'ic-env'}
+                                    name={isVirtualCluster ? 'ic-environment-isolated' : 'ic-env'}
                                     color="B500"
                                     size={20}
                                 />
@@ -133,7 +133,7 @@ export const ClusterEnvironmentList = ({
                             <div>
                                 {category && (
                                     <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content">
-                                        {category}
+                                        {category || 'category'}
                                     </span>
                                 )}
                             </div>

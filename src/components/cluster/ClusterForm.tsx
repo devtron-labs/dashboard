@@ -719,7 +719,7 @@ const ClusterForm = ({
 
         const getGrafanaModuleSectionClassName = () => {
             if (prometheusToggleEnabled) {
-                return 'mb-20'
+                return ''
             }
             return prometheusUrl ? 'mb-20' : 'mb-40'
         }
@@ -765,7 +765,7 @@ const ClusterForm = ({
                     <RadioGroupItem value="true">Production</RadioGroupItem>
                     <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
-                <div className="w-200">
+                <div className="w-250">
                     <AssignCategorySelect
                         selectedCategory={selectedCategory}
                         setSelectedCategory={setSelectedCategory}
@@ -866,7 +866,7 @@ const ClusterForm = ({
                     </>
                 )}
                 {isGrafanaModuleInstalled && (
-                    <div className={`${getGrafanaModuleSectionClassName()} mt-20`}>
+                    <div className={`${getGrafanaModuleSectionClassName()}`}>
                         <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
                             <div className="w-32 h-20">
@@ -881,7 +881,7 @@ const ClusterForm = ({
                 )}
                 {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheusUrl && <PrometheusWarningInfo />}
                 {isGrafanaModuleInstalled && prometheusToggleEnabled && (
-                    <div className="">
+                    <div className="flexbox-col dc__gap-16">
                         {(state.userName.error || state.password.error || state.endpoint.error) && (
                             <PrometheusRequiredFieldInfo />
                         )}
