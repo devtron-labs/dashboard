@@ -512,7 +512,9 @@ const EnvironmentOverview = ({
                     <span className="flex">
                         <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
                     </span>
-                    {ManageTrafficButton && <ManageTrafficButton onClick={handleOpenManageTrafficDrawer} />}
+                    {window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE && ManageTrafficButton && (
+                        <ManageTrafficButton onClick={handleOpenManageTrafficDrawer} />
+                    )}
                 </div>
                 <EnvironmentOverviewTable
                     rows={environmentOverviewTableRows}
@@ -540,7 +542,7 @@ const EnvironmentOverview = ({
                     count={selectedAppDetailsList.length}
                     onClose={handleBulkSelectionWidgetClose}
                     popUpMenuItems={[
-                        ...(getManageTrafficMenuButtonConfig
+                        ...(window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE && getManageTrafficMenuButtonConfig
                             ? [getManageTrafficMenuButtonConfig({ onClick: handleOpenManageTrafficDrawer })]
                             : []),
                         ...(ClonePipelineMenuButton && appListData.environment

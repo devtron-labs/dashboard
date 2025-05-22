@@ -440,16 +440,18 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!isVirtualEnvironment && DeploymentStrategyCard && (
-                              <DeploymentStrategyCard
-                                  appId={appDetails.appId}
-                                  envId={appDetails.environmentId}
-                                  appName={appDetails.appName}
-                                  envName={appDetails.environmentName}
-                                  renderRollbackButton={() => renderAppDetailsCDButton(true)}
-                                  isResourceTreeReloading={isResourceTreeReloading}
-                              />
-                          )}
+                          {window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE &&
+                              !isVirtualEnvironment &&
+                              DeploymentStrategyCard && (
+                                  <DeploymentStrategyCard
+                                      appId={appDetails.appId}
+                                      envId={appDetails.environmentId}
+                                      appName={appDetails.appName}
+                                      envName={appDetails.environmentName}
+                                      renderRollbackButton={() => renderAppDetailsCDButton(true)}
+                                      isResourceTreeReloading={isResourceTreeReloading}
+                                  />
+                              )}
                           {!appDetails?.deploymentAppDeleteRequest &&
                               !appMigratedFromExternalSourceAndIsNotTriggered && (
                                   <SecurityVulnerabilityCard
