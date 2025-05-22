@@ -181,12 +181,14 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
                         <>
                             <div className="flex dc__content-space">
                                 <div className="flex">
-                                    <Icon name="ic-error" color="N900" />
-                                    <h3 className="fs-14 lh-20 fw-6 cn-9 mt-0 mb-0 ml-8 mr-4">Taints</h3>
+                                    <Icon name="ic-spray-can" color="N900" />
+                                    <h3 className="fs-14 lh-20 fw-6 cn-9 mt-0 mb-0 ml-8 mr-4">
+                                        {EDIT_TAINTS_MODAL_MESSAGING.infoTitle}
+                                    </h3>
                                     <InfoIconTippy
                                         heading="Taints"
                                         documentationLinkText="View documentation"
-                                        documentationLink="https://docs.devtron.ai/usage/resource-browser#taint-a-node"
+                                        documentationLink="TAINT"
                                         additionalContent={<AdditionalContent />}
                                     />
                                 </div>

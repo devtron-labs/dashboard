@@ -104,6 +104,7 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
 
 export const EDIT_TAINTS_MODAL_MESSAGING = {
     titlePrefix: 'Edit taints for node ',
+    infoTitle: 'Taints',
     infoText:
         'Add taints to nodes to prevent or discourage pods from being scheduled on them. Use tolerations on pods to let them run on nodes with matching taints.',
     description: {
