@@ -16,8 +16,6 @@
 
 import { ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
 
-import { DOCUMENTATION } from '@Config/constants'
-
 import { CreationMethodType, SidebarProps } from './types'
 
 const Sidebar = ({
@@ -80,7 +78,7 @@ const Sidebar = ({
             <div className="divider__secondary--horizontal" />
             <ModalSidebarPanel
                 heading={null}
-                documentationLink={isJobView ? DOCUMENTATION.JOBS : DOCUMENTATION.APP_CREATE}
+                documentationLink={isJobView ? 'JOBS' : 'APP_CREATE'}
                 rootClassName="w-100 dc__no-background-imp"
             >
                 <div className="flexbox-col dc__gap-24">{isJobView ? renderJobContent() : renderAppContent()}</div>

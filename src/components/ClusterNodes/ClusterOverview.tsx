@@ -31,6 +31,7 @@ import {
     StatusComponent,
     StatusType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
@@ -38,7 +39,6 @@ import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
 import { getAvailableCharts } from '@Services/service'
 
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { URLS } from '../../config'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import GenericDescription from '../common/Description/GenericDescription'
@@ -90,7 +90,7 @@ const tippyForMetricsApi = () => (
             heading="Metrics API is not available"
             additionalContent={metricsApiTippyContent()}
             documentationLinkText="View metrics-server helm chart"
-            documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}?appStoreName=metrics-server`}
+            documentationLink="CHART_STORE_METRICS_SERVER"
             iconClassName="icon-dim-20 ml-8 fcn-5"
         />
     </div>
@@ -120,6 +120,8 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         namespace: string
     }>()
 
+    const { isSuperAdmin } = useMainContext()
+
     const history = useHistory()
     const { path } = useRouteMatch()
     const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
@@ -129,7 +131,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const getClusterConfigAbortControllerRef = useRef(new AbortController())
 
     const fetchClusterConfig = async (clusterName: string) => {
-        if (!getInstallationClusterConfig) {
+        if (!getInstallationClusterConfig || !isSuperAdmin) {
             return
         }
 
