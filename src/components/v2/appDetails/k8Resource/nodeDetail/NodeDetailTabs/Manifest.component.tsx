@@ -699,6 +699,7 @@ const ManifestComponent = ({
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                     theme={AppThemeType.dark}
                     height={isResourceBrowserView ? 'fitToParent' : '100%'}
+                    scrollElementSelector={isResourceBrowserView ? null : '.app-details-page-wrapper'}
                     {...(showManifestCompareView
                         ? {
                               diffView: true,
@@ -752,7 +753,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className="flexbox-col flex-grow-1 dc__overflow-auto"
+            className="flexbox-col flex-grow-1"
             data-testid="app-manifest-container"
             style={{
                 background: 'var(--terminal-bg)',
