@@ -18,6 +18,7 @@ import { Component, createContext } from 'react'
 import { Route, Switch, withRouter, generatePath } from 'react-router-dom'
 import {
     showError,
+    DOCUMENTATION,
     Progressing,
     ErrorScreenManager,
     ConditionalWrap,
@@ -37,10 +38,11 @@ import {
     ConfirmationModalVariantType,
     deleteWorkflow,
     InfoBlock,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
-import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
+import { URLS, AppConfigStatus, ViewType } from '../../config'
 import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
 import { Workflow } from './Workflow'
 import {
@@ -820,15 +822,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br />
                     {!this.props.isJobView && (
-                        <a
-                            className="dc__link"
-                            data-testid="learn-more-about-creating-workflow-link"
-                            href={DOCUMENTATION.APP_CREATE_WORKFLOW}
-                            target="blank"
-                            rel="noreferrer noopener"
-                        >
-                            Learn about creating workflows
-                        </a>
+                        <DocLink
+                            text="Learn about creating workflows"
+                            docLinkKey="APP_CREATE_WORKFLOW"
+                            dataTestId="learn-more-about-creating-workflow-link"
+                        />
                     )}
                 </p>
                 {this.renderWorkflowControlButton()}
@@ -957,8 +955,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             }
                             documentationLink={
                                 this.props.isJobView
-                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
-                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
+                                    ? "JOB_WORKFLOW_EDITOR"
+                                    : "APP_CREATE_WORKFLOW"
                             }
                             documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
                             placement="right"

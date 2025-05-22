@@ -27,13 +27,14 @@ import {
     IMAGE_SCAN_TOOL,
     PageHeader,
     GenericFilterEmptyState,
-    useMainContext,
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     MarkDown,
     Button,
     RAISE_ISSUE,
+    getDocumentationUrl,
+    DISCORD_LINK,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -62,7 +63,7 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
+import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import {
     AboutSection,
@@ -169,12 +170,7 @@ const ModuleDetailsCard = ({
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;
-                        <a
-                            href={RAISE_ISSUE}
-                            className="cb-5 fw-6"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
+                        <a href={RAISE_ISSUE} className="cb-5 fw-6" target="_blank" rel="noreferrer noopener">
                             submit a ticket
                         </a>
                         &nbsp;to request an integration
@@ -643,7 +639,7 @@ const GetHelpCard = (): JSX.Element => {
             <span className="fw-6 mb-10">Facing issues?</span>
             <a
                 className="module-details__help-chat cb-5 flex left"
-                href="https://discord.devtron.ai/"
+                href={DISCORD_LINK}
                 target="_blank"
                 rel="noreferrer noopener"
             >
@@ -815,7 +811,7 @@ export const InstallationWrapper = ({
                             <span className="cn-9 fs-13 fw-6">Facing issues?</span>
                             <a
                                 className="pre-requisite-modal__help-chat fs-13 cb-5 flex left"
-                                href="https://discord.devtron.ai/"
+                                href={DISCORD_LINK}
                                 target="_blank"
                                 rel="noreferrer noopener"
                             >
@@ -1160,7 +1156,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                                 Please refer&nbsp;
                                 <a
                                     className="cb-5 fw-6"
-                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
+                                    href={getDocumentationUrl({ docLinkKey: 'DEVTRON_UPGRADE' })}
                                     target="_blank"
                                     rel="noreferrer"
                                 >

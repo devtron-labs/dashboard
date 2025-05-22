@@ -138,7 +138,7 @@ export type VariableDataTableAction<
 
 export type HandleRowUpdateActionProps = VariableDataTableAction
 
-export interface VariableDataTablePopupMenuProps extends Pick<TippyCustomizedProps, 'placement'> {
+export interface VariableDataTablePopupMenuProps extends Pick<TippyCustomizedProps<false>, 'placement'> {
     heading: string
     showHeaderIcon?: boolean
     showIconDot?: boolean
