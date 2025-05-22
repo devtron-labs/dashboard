@@ -26,7 +26,7 @@ import {
     ValueContainerWithLoadingShimmer,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 
 import { DOCUMENTATION, URLS } from '../../../config'
