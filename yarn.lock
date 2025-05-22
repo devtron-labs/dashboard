@@ -1124,10 +1124,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.14.0-pre-0":
-  version "1.14.0-pre-0"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.14.0-pre-0.tgz#772fc8ce19b63df0a18eff7275f7a8d9dfe2abc5"
-  integrity sha512-GCfgKQFjRNBQKxn3CyJFqOszuHs9E5VtQLzWBRDXgb9MVb4tlX8I8Hu53Lf1LVrJsPHABLFlQ6nCwLi3LbxqKg==
+"@devtron-labs/devtron-fe-common-lib@1.14.0-beta-0":
+  version "1.14.0-beta-0"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.14.0-beta-0.tgz#ee8ab6f64a6984ba276a8867e43ef60efa06a370"
+  integrity sha512-ttJ5poY5MmQ1Qot6isXyj4asSNEs5zlvu2R7lipHRFyD6tVkSNSJaqeCO2HBRMWRmoII7UCLZdAj1nMEMENfwQ==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
@@ -1139,7 +1139,7 @@
     "@lezer/highlight" "1.2.1"
     "@replit/codemirror-indentation-markers" "6.5.3"
     "@replit/codemirror-vscode-keymap" "6.0.2"
-    "@types/react-dates" "^21.8.6"
+    "@tanstack/react-query" "<5"
     "@uiw/codemirror-extensions-hyper-link" "4.23.10"
     "@uiw/codemirror-theme-github" "4.23.7"
     "@uiw/react-codemirror" "4.23.7"
@@ -2666,6 +2666,19 @@
     "@svgr/hast-util-to-babel-ast" "^6.5.1"
     svg-parser "^2.0.4"
 
+"@tanstack/query-core@4.36.1":
+  version "4.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/query-core/-/query-core-4.36.1.tgz#79f8c1a539d47c83104210be2388813a7af2e524"
+  integrity sha512-DJSilV5+ytBP1FbFcEJovv4rnnm/CokuVvrBEtW/Va9DvuJ3HksbXUJEpI0aV1KtuL4ZoO9AVE6PyNLzF7tLeA==
+
+"@tanstack/react-query@<5":
+  version "4.36.1"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-query/-/react-query-4.36.1.tgz#acb589fab4085060e2e78013164868c9c785e5d2"
+  integrity sha512-y7ySVHFyyQblPl3J3eQBWpXZkliroki3ARnBKsdJchlgt7yJLRDUcf4B8soufgiYt3pEQIkBWBx1N9/ZPIeUWw==
+  dependencies:
+    "@tanstack/query-core" "4.36.1"
+    use-sync-external-store "^1.2.0"
+
 "@testing-library/dom@10.4.0":
   version "10.4.0"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-10.4.0.tgz"
@@ -3027,26 +3040,10 @@
   dependencies:
     "@types/react" "*"
 
-"@types/react-dates@^21.8.6":
-  version "21.8.6"
-  resolved "https://registry.yarnpkg.com/@types/react-dates/-/react-dates-21.8.6.tgz#ec9314b59e9d8e1ad71ccf021a7634e8afd26135"
-  integrity sha512-fDF322SOXAxstapv0/oruiPx9kY4DiiaEHYAVvXdPfQhi/hdaONsA9dFw5JBNPAWz7Niuwk+UUhxPU98h70TjA==
-  dependencies:
-    "@types/react" "*"
-    "@types/react-outside-click-handler" "*"
-    moment "^2.26.0"
-
 "@types/react-dom@17.0.13", "@types/react-dom@<18.0.0":
   version "17.0.13"
   resolved "https://registry.npmjs.org/@types/react-dom/-/react-dom-17.0.13.tgz"
   integrity sha512-wEP+B8hzvy6ORDv1QBhcQia4j6ea4SFIBttHYpXKPFZRviBvknq0FRh3VrIxeXUmsPkwuXVZrVGG7KUVONmXCQ==
-  dependencies:
-    "@types/react" "*"
-
-"@types/react-outside-click-handler@*":
-  version "1.3.4"
-  resolved "https://registry.yarnpkg.com/@types/react-outside-click-handler/-/react-outside-click-handler-1.3.4.tgz#999e61057a3a23c6dfc9159b28f96378749d6c42"
-  integrity sha512-kLuYIa9nWk1n0ywJPbVWqOEIRg0mh3vumriCHbz6LUObJw4rXYx9inDm8G579BtnH8vC0wKfrTq5c2y/K/Xzww==
   dependencies:
     "@types/react" "*"
 
@@ -6734,7 +6731,7 @@ mock-socket@^9.2.1:
   resolved "https://registry.npmjs.org/mock-socket/-/mock-socket-9.3.1.tgz"
   integrity sha512-qxBgB7Qa2sEQgHFjj0dSigq7fX4k6Saisd5Nelwp2q8mlbAFh5dHV9JTTlF8viYJLSSWgMCZFUom8PJcMNBoJw==
 
-moment@>=1.6.0, moment@^2.26.0, moment@^2.29.4:
+moment@>=1.6.0, moment@^2.29.4:
   version "2.30.1"
   resolved "https://registry.npmjs.org/moment/-/moment-2.30.1.tgz"
   integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
@@ -8770,7 +8767,7 @@ use-isomorphic-layout-effect@^1.1.2:
   resolved "https://registry.npmjs.org/use-isomorphic-layout-effect/-/use-isomorphic-layout-effect-1.1.2.tgz"
   integrity sha512-49L8yCO3iGT/ZF9QttjwLF/ZD9Iwto5LnH5LmEdk/6cFmXddqi2ulF0edxTwjj+7mqvpVVGQWvbXZdn32wRSHA==
 
-use-sync-external-store@^1.2.2:
+use-sync-external-store@^1.2.0, use-sync-external-store@^1.2.2:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.5.0.tgz#55122e2a3edd2a6c106174c27485e0fd59bcfca0"
   integrity sha512-Rb46I4cGGVBmjamjphe8L/UnvJD+uPPtTkNvX5mZgqdbavhI4EbgIWJiIHXJ8bc/i9EQGPRh4DwEURJ552Do0A==

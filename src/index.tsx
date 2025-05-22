@@ -29,6 +29,7 @@ import {
     ThemeProvider,
     ConfirmationModalProvider,
     BaseConfirmationModal,
+    QueryClientProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -179,19 +180,21 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <ThemeProvider>
-                <BrowserRouter basename={window.__BASE_URL__}>
-                    <UseRegisterShortcutProvider>
-                        <UserEmailProvider>
-                            <ConfirmationModalProvider>
-                                <App />
-                                <BaseConfirmationModal />
-                            </ConfirmationModalProvider>
-                        </UserEmailProvider>
-                    </UseRegisterShortcutProvider>
-                    <ToastManagerContainer />
-                </BrowserRouter>
-            </ThemeProvider>
+            <QueryClientProvider>
+                <ThemeProvider>
+                    <BrowserRouter basename={window.__BASE_URL__}>
+                        <UseRegisterShortcutProvider>
+                            <UserEmailProvider>
+                                <ConfirmationModalProvider>
+                                    <App />
+                                    <BaseConfirmationModal />
+                                </ConfirmationModalProvider>
+                            </UserEmailProvider>
+                        </UseRegisterShortcutProvider>
+                        <ToastManagerContainer />
+                    </BrowserRouter>
+                </ThemeProvider>
+            </QueryClientProvider>
         ) : null}
     </React.StrictMode>,
     root,
