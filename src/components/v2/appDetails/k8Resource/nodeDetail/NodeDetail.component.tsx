@@ -89,6 +89,8 @@ const NodeDetailComponent = ({
     updateTabUrl,
     isExternalApp,
     clusterName = '',
+    isDynamicTabsStuck,
+    handleStickDynamicTabsToTop,
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
@@ -489,13 +491,9 @@ const NodeDetailComponent = ({
         },
     }))
 
-    const isManifestTabSelected = selectedTabName === NodeDetailTab.MANIFEST
-
     return (
         <>
-            <div
-                className={`${!isResourceBrowserView && isManifestTabSelected ? 'dc__position-sticky dc__top-43 dc__zi-1' : ''} w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32`}
-            >
+            <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
@@ -547,7 +545,6 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
-                            isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
                             getComponentKey={getComponentKeyFromParams}
@@ -561,6 +558,9 @@ const NodeDetailComponent = ({
                             handleManifestGUIErrors={handleManifestGUIError}
                             manifestGUIFormRef={manifestGUIFormRef}
                             isManifestEditable={isManifestEditable}
+                            {...(isResourceBrowserView
+                                ? { isResourceBrowserView: true }
+                                : { isResourceBrowserView: false, isDynamicTabsStuck, handleStickDynamicTabsToTop })}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>

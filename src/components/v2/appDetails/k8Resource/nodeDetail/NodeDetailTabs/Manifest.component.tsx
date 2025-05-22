@@ -81,12 +81,14 @@ const getLockedManifestKeys = importComponentFromFELibrary('getLockedManifestKey
 const ManifestGUIView = importComponentFromFELibrary('ManifestGUIView', null, 'function')
 const checkForIneligibleChanges = importComponentFromFELibrary('checkForIneligibleChanges', null, 'function')
 const ShowIneligibleChangesModal = importComponentFromFELibrary('ShowIneligibleChangesModal', null, 'function')
+
 const ManifestComponent = ({
     selectedTab,
     hideManagedFields,
     toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
+    isDynamicTabsStuck,
     selectedResource,
     manifestViewRef,
     getComponentKey,
@@ -100,6 +102,7 @@ const ManifestComponent = ({
     handleManifestGUIErrors,
     manifestGUIFormRef,
     isManifestEditable,
+    handleStickDynamicTabsToTop,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -169,6 +172,8 @@ const ManifestComponent = ({
           )[0]
 
     const isReadOnlyView = showManifestCompareView || !isEditMode
+
+    const showGUIView = !isReadOnlyView && manifestFormConfigurationType === ConfigurationType.GUI
 
     useEffectAfterMount(() => {
         // eslint-disable-next-line no-param-reassign
@@ -396,6 +401,10 @@ const ManifestComponent = ({
     }, [showManifestCompareView])
 
     const handleEditorValueChange = (codeEditorData: string) => {
+        if (!isResourceBrowserView && !showGUIView) {
+            handleStickDynamicTabsToTop()
+        }
+
         if (!showManifestCompareView && isEditMode) {
             setModifiedManifest(codeEditorData)
             // Question: Should we directly set this in case of errored string?
@@ -671,7 +680,7 @@ const ManifestComponent = ({
     }
 
     const renderContent = () => {
-        if (!isReadOnlyView && manifestFormConfigurationType === ConfigurationType.GUI) {
+        if (showGUIView) {
             return (
                 <>
                     {renderEditorInfo()}
@@ -698,8 +707,8 @@ const ManifestComponent = ({
                     loading={loading}
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                     theme={AppThemeType.dark}
-                    height={isResourceBrowserView ? 'fitToParent' : '100%'}
-                    scrollElementSelector={isResourceBrowserView ? null : '.app-details-page-wrapper'}
+                    height={isResourceBrowserView || isDynamicTabsStuck ? 'fitToParent' : '100%'}
+                    onOpenSearchPanel={isResourceBrowserView ? noop : handleStickDynamicTabsToTop}
                     {...(showManifestCompareView
                         ? {
                               diffView: true,

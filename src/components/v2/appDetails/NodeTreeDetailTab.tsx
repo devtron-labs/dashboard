@@ -110,18 +110,23 @@ const NodeTreeDetailTab = ({
     // Check not in RB?
     const isManifestTabView = location.pathname.includes(NodeDetailTab.MANIFEST.toLowerCase())
 
+    const handleStickDynamicTabsToTop = () => {
+        if (isDynamicTabsStuck) {
+            return
+        }
+
+        stickyElementRef.current?.scrollIntoView(true)
+    }
+
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
         showContent && (
             <div
-                ref={isManifestTabView ? null : stickyElementRef}
-                className={`${isManifestTabView ? 'flex-grow-1' : 'dc__position-sticky dc__top-0 h-100'} dc__no-shrink flexbox-col node-tree-details-wrapper`}
+                ref={stickyElementRef}
+                className="flex-grow-1 dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
             >
-                <div
-                    ref={isManifestTabView ? stickyElementRef : null}
-                    className={`${isManifestTabView ? 'dc__position-sticky dc__top-0 dc__zi-1' : ''} ${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}
-                >
+                <div className={`${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}>
                     <DynamicTabs
                         backgroundColorToken={dynamicTabsBackgroundClass}
                         variant={DynamicTabsVariantType.ROUNDED}
@@ -148,9 +153,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div
-                    className={`flexbox-col w-100 flex-grow-1 ${isManifestTabView ? 'dc__position-rel' : 'dc__overflow-hidden'}`}
-                >
+                <div className={`flexbox-col w-100 flex-grow-1 ${isManifestTabView ? '' : 'dc__overflow-hidden'}`}>
                     <Switch>
                         <Route
                             path={[
@@ -188,6 +191,9 @@ const NodeTreeDetailTab = ({
                                         setLogSearchTerms,
                                         isExternalApp,
                                         lowercaseKindToResourceGroupMap: {},
+                                        isResourceBrowserView: false,
+                                        isDynamicTabsStuck,
+                                        handleStickDynamicTabsToTop,
                                     }}
                                 />
                             )}
