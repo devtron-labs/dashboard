@@ -15,17 +15,20 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import ReactSelect, { SelectInstance } from 'react-select'
 import ReactGA from 'react-ga4'
-import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
-import { appGroupAppSelectorStyle } from './AppGroup.utils'
-import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
-import { AppFilterTabs } from './Constants'
-import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
+import ReactSelect, { SelectInstance } from 'react-select'
+
 import { OptionType, ReactSelectInputAction, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+
 import { setAppGroupFilterInLocalStorage } from '@Components/common'
 
-export default function AppGroupAppFilter() {
+import { AppGroupAppFilterContextType, FilterParentType } from './AppGroup.types'
+import { appGroupAppSelectorStyle } from './AppGroup.utils'
+import { MenuList, Option, ValueContainer } from './AppGroupAppFilter.components'
+import { useAppGroupAppFilterContext } from './AppGroupDetailsRoute'
+import { AppFilterTabs } from './Constants'
+
+const AppGroupAppFilter = () => {
     const {
         resourceId,
         appListOptions,
@@ -171,3 +174,5 @@ export default function AppGroupAppFilter() {
         />
     )
 }
+
+export default AppGroupAppFilter

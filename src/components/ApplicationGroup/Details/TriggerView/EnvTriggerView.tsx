@@ -57,6 +57,7 @@ import {
     ComponentSizeType,
     API_STATUS_CODES,
     PipelineIdsVsDeploymentStrategyMap,
+    DeploymentStrategyTypeWithDefault,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, URLS, ViewType } from '../../../../config'
@@ -198,6 +199,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
     const [selectedWebhookNode, setSelectedWebhookNode] = useState<{ appId: number; id: number }>(null)
+    const [bulkDeploymentStrategy, setBulkDeploymentStrategy] = useState<DeploymentStrategyTypeWithDefault>('DEFAULT')
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
@@ -1498,9 +1500,11 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     ciArtifact = artifact
                 }
             })
-            if (ciArtifact) {
-                const pipelineId = Number(node.id)
-                const strategy = pipelineIdVsStrategyMap[pipelineId]
+            const pipelineId = Number(node.id)
+            const strategy = pipelineIdVsStrategyMap[pipelineId]
+
+            // skip app if bulkDeploymentStrategy is not default and strategy is not configured for app
+            if (ciArtifact && (bulkDeploymentStrategy === 'DEFAULT' || !!strategy)) {   
                 _CDTriggerPromiseFunctionList.push(() =>
                     triggerCDNode({
                         pipelineId,
@@ -2102,7 +2106,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setRuntimeParams={setRuntimeParams}
                 runtimeParamsErrorState={runtimeParamsErrorState}
                 setRuntimeParamsErrorState={setRuntimeParamsErrorState}
-            />
+                bulkDeploymentStrategy={bulkDeploymentStrategy}
+                setBulkDeploymentStrategy={setBulkDeploymentStrategy}
+                />
         )
     }
 

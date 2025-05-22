@@ -123,6 +123,8 @@ const BulkCDTrigger = ({
     uniqueReleaseTags,
     runtimeParams,
     setRuntimeParams,
+    bulkDeploymentStrategy,
+    setBulkDeploymentStrategy,
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
 }: BulkCDTriggerType) => {
@@ -144,7 +146,6 @@ const BulkCDTrigger = ({
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
     const [skipHibernatedApps, setSkipHibernatedApps] = useState<boolean>(false)
-    const [bulkDeploymentStrategy, setBulkDeploymentStrategy] = useState<DeploymentStrategyTypeWithDefault>('DEFAULT')
     const [showStrategyFeasibilityPage, setShowStrategyFeasibilityPage] = useState<boolean>(false)
     const [pipelineIdVsStrategyMap, setPipelineIdVsStrategyMap] = useState<PipelineIdsVsDeploymentStrategyMap>({})
 

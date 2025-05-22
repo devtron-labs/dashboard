@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+import { MultiValue } from 'react-select'
+
 import {
     ACTION_STATE,
+    AppInfoListType,
+    ApprovalConfigDataType,
     CDModalTabType,
+    CommonNodeAttr,
     DeploymentNodeType,
+    DeploymentStrategyTypeWithDefault,
     FilterConditionsListType,
+    GVKType,
     MODAL_TYPE,
+    PipelineIdsVsDeploymentStrategyMap,
     ResponseType,
+    RuntimePluginVariables,
+    UseUrlFiltersReturnType,
     WorkflowNodeType,
     WorkflowType,
-    AppInfoListType,
-    GVKType,
-    UseUrlFiltersReturnType,
-    CommonNodeAttr,
-    ApprovalConfigDataType,
-    RuntimePluginVariables,
-    PipelineIdsVsDeploymentStrategyMap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { CDMaterialProps, RuntimeParamsErrorState } from '../app/details/triggerView/types'
-import { EditDescRequest, NodeType, Nodes, OptionType } from '../app/types'
-import { MultiValue } from 'react-select'
-import { AppFilterTabs, BulkResponseStatus } from './Constants'
-import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
+
+import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
+import { CDMaterialProps, RuntimeParamsErrorState, WebhookPayloadType } from '@Components/app/details/triggerView/types'
 import {
     AppConfigState,
     EnvConfigurationsNavProps,
     EnvConfigurationState,
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { WebhookPayloadType } from '@Components/app/details/triggerView/types'
-import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
+
+import { EditDescRequest, Nodes, NodeType, OptionType } from '../app/types'
+import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
+import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
     workFlowId: string
@@ -158,6 +162,8 @@ export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     isVirtualEnv?: boolean
     uniqueReleaseTags: string[]
     feasiblePipelineIds: Set<number>
+    bulkDeploymentStrategy: DeploymentStrategyTypeWithDefault
+    setBulkDeploymentStrategy: Dispatch<SetStateAction<DeploymentStrategyTypeWithDefault>>
 }
 
 export interface ProcessWorkFlowStatusType {
