@@ -343,18 +343,3 @@
     /* window-bg */
     background: var(--bg-tertiary);
 }
-
-.aside-drag {
-    &__handle {
-        height: 32px;
-        background-color: var(--white-40);
-        transition: all 0.2s;
-    }
-
-    &:hover, &--dragging {
-        .aside-drag__handle {
-            height: 48px;
-            background-color: var(--B500);
-        }
-    }
-}

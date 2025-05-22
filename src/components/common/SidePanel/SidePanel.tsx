@@ -2,10 +2,12 @@ import { useState } from 'react'
 // eslint-disable-next-line import/no-extraneous-dependencies
 import Draggable, { DraggableEventHandler } from 'react-draggable'
 
-import { AnimatePresence, motion, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { AnimatePresence, AppThemeType, motion, useMainContext, useTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SidePanelDocumentation } from './SidePanelDocumentation'
 import { SidePanelProps } from './types'
+
+import './SidePanel.scss'
 
 const MAX_ASIDE_WIDTH = 525
 const MIN_ASIDE_WIDTH = 350
@@ -15,6 +17,7 @@ export const SidePanel = ({ asideWidth, setAsideWidth }: SidePanelProps) => {
     const [contentOverlay, setContentOverlay] = useState(false)
 
     // HOOKS
+    const { appTheme } = useTheme()
     const { sidePanelConfig, setSidePanelConfig } = useMainContext()
 
     const { open } = sidePanelConfig
@@ -69,7 +72,7 @@ export const SidePanel = ({ asideWidth, setAsideWidth }: SidePanelProps) => {
                             stiffness: 300,
                             damping: 30,
                         }}
-                        className="dc__position-rel mt-8 mr-8 mb-8 border__primary br-6 bg__primary flexbox-col dc__overflow-hidden"
+                        className={`dc__position-rel mt-8 mr-8 mb-8 br-6 bg__primary flexbox-col dc__overflow-hidden ${appTheme === AppThemeType.dark ? 'border__primary-translucent' : ''}`}
                     >
                         {contentOverlay && <div className="dc__position-abs w-100 h-100 dc__zi-1" />}
                         <SidePanelDocumentation onClose={handleClose} />
