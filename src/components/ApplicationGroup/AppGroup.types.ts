@@ -157,6 +157,7 @@ export interface BulkCDTriggerType extends BulkRuntimeParamsType {
     setLoading: React.Dispatch<React.SetStateAction<boolean>>
     isVirtualEnv?: boolean
     uniqueReleaseTags: string[]
+    feasiblePipelineIds: Set<number>
 }
 
 export interface ProcessWorkFlowStatusType {

@@ -46,5 +46,7 @@ export const getIsImageApprovedByDeployerSelected = (appList: BulkCDDetailType[]
         )
     })
 
-export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[]) =>
-    appList.map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))
+export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[], feasiblePipelineIds: Set<number>) =>
+    appList
+        .map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))
+        .filter(({ pipelineId }) => feasiblePipelineIds.has(pipelineId))

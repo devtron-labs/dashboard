@@ -1437,6 +1437,33 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return true
     }
 
+    // Helper to get selected CD nodes
+    const getSelectedCDNodesWithArtifacts = (selectedWorkflows: WorkflowType[]): { node: CommonNodeAttr; wf: WorkflowType }[] =>
+        selectedWorkflows
+            .filter((wf) => wf.isSelected)
+            .map((wf) => {
+                const _cdNode = wf.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
+                )
+                if (!_cdNode) return null
+
+                let _selectedNode: CommonNodeAttr | undefined
+                if (bulkTriggerType === DeploymentNodeType.PRECD) {
+                    _selectedNode = _cdNode.preNode
+                } else if (bulkTriggerType === DeploymentNodeType.CD) {
+                    _selectedNode = _cdNode
+                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+                    _selectedNode = _cdNode.postNode
+                }
+
+                const selectedArtifacts = _selectedNode?.[materialType]?.filter((artifact) => artifact.isSelected) || []
+                if (_selectedNode && selectedArtifacts.length > 0) {
+                    return { node: _selectedNode, wf }
+                }
+                return null
+            })
+            .filter(Boolean)
+
     const onClickTriggerBulkCD = (
         skipIfHibernated: boolean,
         pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap,
@@ -1452,27 +1479,14 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         const nodeList: CommonNodeAttr[] = []
         const triggeredAppList: { appId: number; envId?: number; appName: string }[] = []
 
-        for (const _wf of filteredWorkflows) {
-            if (_wf.isSelected && (!appsToRetry || appsToRetry[_wf.appId])) {
-                const _cdNode = _wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-                )
-                let _selectedNode: CommonNodeAttr
-                if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                    _selectedNode = _cdNode.preNode
-                } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                    _selectedNode = _cdNode
-                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.postNode
-                }
-
-                if (_selectedNode?.[materialType]?.length) {
-                    nodeList.push(_selectedNode)
-                    _appIdMap.set(_selectedNode.id, _wf.appId.toString())
-                    triggeredAppList.push({ appId: _wf.appId, appName: _wf.name, envId: _selectedNode.environmentId })
-                }
-            }
-        }
+        const eligibleNodes = getSelectedCDNodesWithArtifacts(
+            filteredWorkflows.filter((wf) => !appsToRetry || appsToRetry[wf.appId]),
+        )
+        eligibleNodes.forEach(({ node: eligibleNode, wf }) => {
+            nodeList.push(eligibleNode)
+            _appIdMap.set(eligibleNode.id, wf.appId.toString())
+            triggeredAppList.push({ appId: wf.appId, appName: wf.name, envId: eligibleNode.environmentId })
+        })
 
         const _CDTriggerPromiseFunctionList = []
         nodeList.forEach((node, index) => {
@@ -2067,12 +2081,15 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
         const { uniqueReleaseTags } = bulkCDDetailTypeResponse
 
+        const feasiblePipelineIds = new Set(getSelectedCDNodesWithArtifacts(filteredWorkflows).map(({ node }) => +node.id))
+
         // Have to look for its each prop carefully
         // No need to send uniqueReleaseTags will get those in BulkCDTrigger itself
         return (
             <BulkCDTrigger
                 stage={bulkTriggerType}
                 appList={_selectedAppWorkflowList}
+                feasiblePipelineIds={feasiblePipelineIds}
                 closePopup={hideBulkCDModal}
                 updateBulkInputMaterial={updateBulkCDInputMaterial}
                 onClickTriggerBulkCD={onClickTriggerBulkCD}
