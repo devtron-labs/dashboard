@@ -27,6 +27,7 @@ import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/Dyn
 
 import { URLS } from '../../../config'
 import { K8ResourceComponent } from './k8Resource/K8Resource.component'
+import { NodeDetailTab } from './k8Resource/nodeDetail/nodeDetail.type'
 import { getApplicationsGAEvent } from './k8Resource/utils'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
@@ -106,15 +107,21 @@ const NodeTreeDetailTab = ({
         })
     }
 
+    // Check not in RB?
+    const isManifestTabView = location.pathname.includes(NodeDetailTab.MANIFEST.toLowerCase())
+
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
         showContent && (
             <div
-                ref={stickyElementRef}
-                className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
+                ref={isManifestTabView ? null : stickyElementRef}
+                className={`${isManifestTabView ? 'flex-grow-1' : 'dc__position-sticky dc__top-0 h-100'} dc__no-shrink flexbox-col node-tree-details-wrapper`}
             >
-                <div className={`${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}>
+                <div
+                    ref={isManifestTabView ? stickyElementRef : null}
+                    className={`${isManifestTabView ? 'dc__position-sticky dc__top-0 dc__zi-1' : ''} ${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}
+                >
                     <DynamicTabs
                         backgroundColorToken={dynamicTabsBackgroundClass}
                         variant={DynamicTabsVariantType.ROUNDED}
@@ -141,7 +148,9 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className="flexbox-col w-100 flex-grow-1 dc__overflow-hidden">
+                <div
+                    className={`flexbox-col w-100 flex-grow-1 ${isManifestTabView ? 'dc__position-rel' : 'dc__overflow-hidden'}`}
+                >
                     <Switch>
                         <Route
                             path={[

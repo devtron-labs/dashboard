@@ -489,9 +489,13 @@ const NodeDetailComponent = ({
         },
     }))
 
+    const isManifestTabSelected = selectedTabName === NodeDetailTab.MANIFEST
+
     return (
         <>
-            <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
+            <div
+                className={`${!isResourceBrowserView && isManifestTabSelected ? 'dc__position-sticky dc__top-43 dc__zi-1' : ''} w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32`}
+            >
                 <div className="flex left">
                     <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} />
                     {selectedTabName === NodeDetailTab.TERMINAL && (

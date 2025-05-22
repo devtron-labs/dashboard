@@ -698,7 +698,7 @@ const ManifestComponent = ({
                     loading={loading}
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                     theme={AppThemeType.dark}
-                    height="fitToParent"
+                    height={isResourceBrowserView ? 'fitToParent' : '100%'}
                     {...(showManifestCompareView
                         ? {
                               diffView: true,
@@ -763,7 +763,7 @@ const ManifestComponent = ({
                 <div
                     className={`${
                         manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-hidden`}
+                    } flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-hidden' : ''}`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI
