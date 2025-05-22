@@ -18,11 +18,7 @@
     width: 100%;
     min-height: 100vh;
     display: grid;
-    grid-template-columns: 56px 1fr;
     overflow-y: hidden;
-    &.no-nav {
-        grid-template-columns: 1fr;
-    }
 }
 
 .main {
@@ -52,13 +48,16 @@
         display: flex;
         overflow: hidden;
         z-index: var(--navigation-index);
-        transition: width $transition-duration ease-out, background 150ms ease-out 200ms;
+        transition:
+            width $transition-duration ease-out,
+            background 150ms ease-out 200ms;
 
         .nav-grid {
             display: grid;
             grid-template-rows: 72px repeat(auto-fill, 36px);
             align-items: center;
             row-gap: 4px;
+
             a,
             button {
                 &:hover {
@@ -147,7 +146,11 @@
             background: var(--bg-sidebar-modern-layout);
             border-right: 1px solid var(--border-primary-translucent);
             box-shadow: var(--shadow-modal);
-            transition: width $transition-duration ease-in $transition-delay, background 150ms ease-in $transition-delay, border-right $transition-duration ease-in $transition-delay, box-shadow $transition-duration ease-in $transition-delay;
+            transition:
+                width $transition-duration ease-in $transition-delay,
+                background 150ms ease-in $transition-delay,
+                border-right $transition-duration ease-in $transition-delay,
+                box-shadow $transition-duration ease-in $transition-delay;
         }
 
         .short-nav__bottom-options {
@@ -170,6 +173,7 @@
         opacity: 1;
         fill: var(--white);
     }
+
     .devtron-logo--text {
         width: 76px;
         height: 40px;
@@ -196,6 +200,7 @@
     bottom: 88px;
     left: 68px;
 }
+
 .logout-card__initial {
     font-weight: 500;
     text-transform: uppercase;
@@ -259,6 +264,7 @@
     grid-template-rows: 36px 36px 36px 36px auto;
     align-items: center;
     z-index: var(--modal-index);
+
     .help-card__option {
         padding: 6px 12px;
         height: 36px;
@@ -266,6 +272,7 @@
         &:hover {
             background-color: var(--N100);
         }
+
         .help-card__link {
             text-decoration: none;
         }
@@ -297,6 +304,7 @@
     color: var(--N900);
     padding: 10px 16px;
 }
+
 .more-option-card__link {
     text-decoration: none !important;
 }
@@ -334,4 +342,19 @@
 
     /* window-bg */
     background: var(--bg-tertiary);
+}
+
+.aside-drag {
+    &__handle {
+        height: 32px;
+        background-color: var(--white-40);
+        transition: all 0.2s;
+    }
+
+    &:hover, &--dragging {
+        .aside-drag__handle {
+            height: 48px;
+            background-color: var(--B500);
+        }
+    }
 }
