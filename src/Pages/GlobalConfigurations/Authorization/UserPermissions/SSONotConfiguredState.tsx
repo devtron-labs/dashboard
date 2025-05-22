@@ -18,7 +18,8 @@ import { Link } from 'react-router-dom'
 
 import { GenericEmptyState, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
 
-import EmptyImage from '../../../../assets/img/empty-applist@2x.png'
+import EmptyImage from '@Images/empty-list.png'
+
 import { SSO_NOT_CONFIGURED_STATE_TEXTS } from '../../../../config/constantMessaging'
 
 const renderSsoInfoDescription = () => (
