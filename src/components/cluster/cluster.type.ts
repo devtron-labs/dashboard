@@ -214,18 +214,6 @@ export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
 }
 
-export interface DeleteClusterConfirmationModalProps {
-    clusterId: string
-    clusterName: string
-    handleClose: () => void
-    installationId?: string
-    reload?: () => void
-}
-
-export interface DeleteClusterPayload {
-    id: number
-}
-
 export interface ClusterListProps {
     clusterName: string
     isVirtualCluster: boolean
@@ -241,4 +229,26 @@ export interface ClusterListProps {
     installationId: number
     category: OptionType<number, string>
     toConnectWithSSHTunnel: boolean
+}
+
+export interface ClusterEnvironmentListProps
+    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName'> {
+    clusterId: string
+    newEnvs: any[]
+}
+
+export type AssignCategorySelectTypes = {
+    selectedCategory: OptionType<number, string>
+    setSelectedCategory: Dispatch<SetStateAction<OptionType<number, string>>>
+}
+
+export interface DeleteClusterConfirmationModalProps
+    extends Pick<ClusterListProps, 'clusterName' | 'reload'>,
+        Pick<ClusterEnvironmentListProps, 'clusterId'> {
+    handleClose: () => void
+    installationId: string
+}
+
+export interface DeleteClusterPayload {
+    id: number
 }

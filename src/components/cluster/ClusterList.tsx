@@ -153,7 +153,7 @@ export const ClusterList = ({
             </List>
             {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                 <ClusterEnvironmentList
-                    clusterId={+clusterId}
+                    clusterId={clusterId}
                     reload={reload}
                     newEnvs={newEnvs}
                     isVirtualCluster={isVirtualCluster}

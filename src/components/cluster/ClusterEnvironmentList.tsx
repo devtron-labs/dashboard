@@ -10,8 +10,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { ReactComponent as Database } from '@Icons/ic-env.svg'
-import { ReactComponent as VirtualEnvIcon } from '@Icons/ic-environment-temp.svg'
 import { CONFIGURATION_TYPES } from '@Config/constants'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
@@ -29,13 +27,6 @@ export const ClusterEnvironmentList = ({
     const [environment, setEnvironment] = useState(null)
     const [confirmation, setConfirmation] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
-
-    const envIcon = () => {
-        if (isVirtualCluster) {
-            return <VirtualEnvIcon className="fcb-5 icon-dim-20" />
-        }
-        return <Database className="icon-dim-20" />
-    }
 
     const showWindowModal = () => setShowWindow(true)
 
@@ -117,7 +108,13 @@ export const ClusterEnvironmentList = ({
                                 })
                             }
                         >
-                            <span className="cursor flex w-100">{envIcon()}</span>
+                            <div className="cursor flex w-100">
+                                <Icon
+                                    name={isVirtualCluster ? 'ic-virtual-cluster' : 'ic-env'}
+                                    color="B500"
+                                    size={20}
+                                />
+                            </div>
 
                             <div
                                 className="dc__truncate-text flex left cb-5 cursor"

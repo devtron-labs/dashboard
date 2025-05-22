@@ -726,57 +726,55 @@ const ClusterForm = ({
 
         return (
             <>
-                <div className="form__row">
-                    <CustomInput
-                        required
-                        name="cluster_name"
-                        disabled={isDefaultCluster}
-                        value={state.cluster_name.value}
-                        error={state.cluster_name.error}
+                <CustomInput
+                    required
+                    name="cluster_name"
+                    disabled={isDefaultCluster}
+                    value={state.cluster_name.value}
+                    error={state.cluster_name.error}
+                    onChange={handleOnChange}
+                    label="Cluster Name"
+                    placeholder="Cluster Name"
+                />
+                <CustomInput
+                    name="url"
+                    value={state.url.value}
+                    error={state.url.error}
+                    onChange={handleOnChange}
+                    label={clusterLabel()}
+                    disabled={isDefaultCluster}
+                    placeholder="Enter server URL"
+                />
+                {id !== DEFAULT_CLUSTER_ID && (
+                    <Textarea
+                        name="token"
+                        value={getTokenText()}
                         onChange={handleOnChange}
-                        label="Cluster Name"
-                        placeholder="Cluster Name"
+                        onBlur={handleOnBlur}
+                        onFocus={handleOnFocus}
+                        placeholder="Enter bearer token"
+                        error={state.token.error}
                     />
-                </div>
-                <div className="form__row mb-8-imp">
-                    <CustomInput
-                        name="url"
-                        value={state.url.value}
-                        error={state.url.error}
-                        onChange={handleOnChange}
-                        label={clusterLabel()}
-                        disabled={isDefaultCluster}
-                        placeholder="Enter server URL"
-                    />
-                </div>
-                <div className="form__row">
-                    {id !== DEFAULT_CLUSTER_ID && (
-                        <Textarea
-                            name="token"
-                            value={getTokenText()}
-                            onChange={handleOnChange}
-                            onBlur={handleOnBlur}
-                            onFocus={handleOnFocus}
-                            placeholder="Enter bearer token"
-                            error={state.token.error}
-                        />
-                    )}
-                </div>
+                )}
                 <RadioGroup
                     name="isProd"
-                    className="radio-group-no-border mb-8"
+                    className="radio-group-no-border"
                     value={state.isProd.value}
                     onChange={handleOnChange}
                 >
                     <RadioGroupItem value="true">Production</RadioGroupItem>
                     <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
-
-                <AssignCategorySelect selectedCategory={selectedCategory} setSelectedCategory={setSelectedCategory} />
+                <div className="w-200">
+                    <AssignCategorySelect
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
+                    />
+                </div>
 
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
-                        <div className="divider divider--n1 mt-20 mb-20" />
+                        <div className="divider divider--n1" />
                         <div className="dc__position-rel dc__hover">
                             <span className="form__input-header pb-20">
                                 How do you want Devtron to connect with this cluster?
@@ -797,8 +795,8 @@ const ClusterForm = ({
                 )}
                 {id !== DEFAULT_CLUSTER_ID && (
                     <>
-                        <div className="divider divider--n1 mt-20 mb-20" />
-                        <div className="dc__position-rel flex left dc__hover mb-20">
+                        <div className="divider divider--n1" />
+                        <div className="dc__position-rel flex left dc__hover">
                             <Checkbox
                                 isChecked={isTlsConnection}
                                 rootClassName="form__checkbox-label--ignore-cache mb-0"
@@ -813,24 +811,22 @@ const ClusterForm = ({
                         {!isTlsConnection && <div className="divider divider--n1" />}
                         {isTlsConnection && (
                             <>
-                                <div className="form__row ml-24">
-                                    <Textarea
-                                        required
-                                        label="Certificate Authority Data"
-                                        name="certificateAuthorityData"
-                                        value={
-                                            id && id !== 1 && isTlsConnection
-                                                ? DEFAULT_SECRET_PLACEHOLDER
-                                                : state.certificateAuthorityData.value
-                                        }
-                                        onChange={handleOnChange}
-                                        onBlur={handleOnBlur}
-                                        onFocus={handleOnFocus}
-                                        placeholder="Enter CA Data"
-                                        error={state.certificateAuthorityData.error}
-                                    />
-                                </div>
-                                <div className="form__row ml-24">
+                                <Textarea
+                                    required
+                                    label="Certificate Authority Data"
+                                    name="certificateAuthorityData"
+                                    value={
+                                        id && id !== 1 && isTlsConnection
+                                            ? DEFAULT_SECRET_PLACEHOLDER
+                                            : state.certificateAuthorityData.value
+                                    }
+                                    onChange={handleOnChange}
+                                    onBlur={handleOnBlur}
+                                    onFocus={handleOnFocus}
+                                    placeholder="Enter CA Data"
+                                    error={state.certificateAuthorityData.error}
+                                />
+                                <div className="ml-24">
                                     <Textarea
                                         label="TLS Key"
                                         required
@@ -847,7 +843,7 @@ const ClusterForm = ({
                                         error={state.tlsClientKey.error}
                                     />
                                 </div>
-                                <div className="form__row ml-24">
+                                <div className="ml-24">
                                     <Textarea
                                         label="TLS Certificate"
                                         required
@@ -889,18 +885,16 @@ const ClusterForm = ({
                         {(state.userName.error || state.password.error || state.endpoint.error) && (
                             <PrometheusRequiredFieldInfo />
                         )}
-                        <div className="form__row">
-                            <CustomInput
-                                required
-                                placeholder="Enter endpoint"
-                                name="endpoint"
-                                value={state.endpoint.value}
-                                error={state.endpoint.error}
-                                onChange={handleOnChange}
-                                label="Prometheus endpoint"
-                            />
-                        </div>
-                        <div className="form__row">
+                        <CustomInput
+                            required
+                            placeholder="Enter endpoint"
+                            name="endpoint"
+                            value={state.endpoint.value}
+                            error={state.endpoint.error}
+                            onChange={handleOnChange}
+                            label="Prometheus endpoint"
+                        />
+                        <div>
                             <span className="form__label dc__required-field">Authentication Type</span>
                             <RadioGroup
                                 value={state.authType.value}
@@ -912,7 +906,7 @@ const ClusterForm = ({
                             </RadioGroup>
                         </div>
                         {state.authType.value === AuthenticationType.BASIC ? (
-                            <div className="form__row form__row--flex">
+                            <div className="form__row--flex">
                                 <div className="w-50 mr-8 ">
                                     <CustomInput
                                         placeholder="Enter username"
@@ -936,24 +930,20 @@ const ClusterForm = ({
                                 </div>
                             </div>
                         ) : null}
-                        <div className="form__row">
-                            <Textarea
-                                label="TLS Key"
-                                name="prometheusTlsClientKey"
-                                value={state.prometheusTlsClientKey.value}
-                                onChange={handleOnChange}
-                                placeholder="Enter TLS Key"
-                            />
-                        </div>
-                        <div className="form__row">
-                            <Textarea
-                                label="TLS Certificate"
-                                name="prometheusTlsClientCert"
-                                value={state.prometheusTlsClientCert.value}
-                                onChange={handleOnChange}
-                                placeholder="Enter TLS Certificate"
-                            />
-                        </div>
+                        <Textarea
+                            label="TLS Key"
+                            name="prometheusTlsClientKey"
+                            value={state.prometheusTlsClientKey.value}
+                            onChange={handleOnChange}
+                            placeholder="Enter TLS Key"
+                        />
+                        <Textarea
+                            label="TLS Certificate"
+                            name="prometheusTlsClientCert"
+                            value={state.prometheusTlsClientCert.value}
+                            onChange={handleOnChange}
+                            placeholder="Enter TLS Certificate"
+                        />
                     </div>
                 )}
             </>
@@ -1484,9 +1474,9 @@ const ClusterForm = ({
             ) : (
                 <>
                     <div className={`flex-grow-1 flexbox-col ${id ? 'dc__overflow-auto' : ''}`}>
-                        <div className="p-20 flex-grow-1 flexbox-col">
+                        <div className="p-20 flex-grow-1 flexbox-col dc__gap-16">
                             {!id && (
-                                <div className="form__row clone-apps dc__inline-block p-0">
+                                <div className="clone-apps dc__inline-block p-0">
                                     <RadioGroup
                                         className="radio-group-no-border"
                                         value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}

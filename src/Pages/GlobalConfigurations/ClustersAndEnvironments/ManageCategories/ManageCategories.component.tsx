@@ -37,7 +37,10 @@ const ManageCategories = () => {
 
     useEffect(() => {
         if (categoryList) {
-            setRows(getInitialCategoryListData(categoryList.result))
+            const filteredCategories = categoryList.result.filter((category) =>
+                category.category.toLowerCase().includes(searchKey.toLowerCase()),
+            )
+            setRows(getInitialCategoryListData(filteredCategories))
         }
     }, [categoryList, searchKey])
 

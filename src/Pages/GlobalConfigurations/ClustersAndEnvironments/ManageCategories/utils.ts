@@ -26,8 +26,11 @@ export const getEmptyCategoriesDataRow = (): CategoriesDataRowType => {
     }
 }
 
-export const getInitialCategoryListData = (categoryList: ManageCategoryDTO[]) =>
-    categoryList.map((category) => ({
+export const getInitialCategoryListData = (categoryList: ManageCategoryDTO[]): CategoriesDataRowType[] => {
+    if (categoryList.length === 0) {
+        return [getEmptyCategoriesDataRow()]
+    }
+    return categoryList.map((category) => ({
         data: {
             categories: {
                 value: category.category,
@@ -46,3 +49,4 @@ export const getInitialCategoryListData = (categoryList: ManageCategoryDTO[]) =>
         },
         id: category.id,
     }))
+}

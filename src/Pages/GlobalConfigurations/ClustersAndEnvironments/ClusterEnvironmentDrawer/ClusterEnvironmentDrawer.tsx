@@ -27,7 +27,6 @@ import {
     Drawer,
     GenericEmptyState,
     noop,
-    OptionType,
     ServerErrors,
     showError,
     stopPropagation,
@@ -94,8 +93,6 @@ export const ClusterEnvironmentDrawer = ({
         data: null,
         error: null,
     })
-
-    const [selectedCategory, setSelectedCategory] = useState<OptionType<number, string>>(category)
 
     const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
@@ -279,6 +276,10 @@ export const ClusterEnvironmentDrawer = ({
         />
     )
 
+    const handleSelectedCategory = (_selectedCategory) => {
+        register('category').onChange({ target: { name: 'category', value: _selectedCategory } })
+    }
+
     const renderContent = () => {
         if (!clusterId) {
             return (
@@ -297,45 +298,41 @@ export const ClusterEnvironmentDrawer = ({
                 onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
                 noValidate
             >
-                <div className="dc__overflow-auto p-20 flex-grow-1">
-                    <div className="mb-16">
-                        <CustomInput
-                            disabled={!!environmentName}
-                            placeholder={id ? 'sample-env-name' : 'Eg. production'}
-                            value={data.environmentName}
-                            error={errors.environmentName}
-                            {...register('environmentName')}
-                            label="Environment Name"
-                            autoFocus={!id}
-                            shouldTrim={false}
-                            required
-                        />
-                    </div>
-                    <div className="mb-16">
-                        <CustomInput
-                            disabled={!!namespace}
-                            placeholder={id ? 'sample-namespace' : 'Eg. prod'}
-                            value={data.namespace}
-                            error={errors.namespace}
-                            {...register('namespace')}
-                            label="Namespace"
-                            shouldTrim={false}
-                            required={!isVirtual}
-                        />
-                    </div>
-                    <div className="mb-16">
-                        <CustomInput
-                            placeholder="Add a description for this environment"
-                            value={data.description}
-                            error={errors.description}
-                            {...register('description')}
-                            label="Description (Maximum 40 characters allowed)"
-                            autoFocus={!!id}
-                            shouldTrim={false}
-                        />
-                    </div>
+                <div className="flexbox-col dc__overflow-auto p-20 flex-grow-1 dc__gap-16">
+                    <CustomInput
+                        disabled={!!environmentName}
+                        placeholder={id ? 'sample-env-name' : 'Eg. production'}
+                        value={data.environmentName}
+                        error={errors.environmentName}
+                        {...register('environmentName')}
+                        label="Environment Name"
+                        autoFocus={!id}
+                        shouldTrim={false}
+                        required
+                    />
+
+                    <CustomInput
+                        disabled={!!namespace}
+                        placeholder={id ? 'sample-namespace' : 'Eg. prod'}
+                        value={data.namespace}
+                        error={errors.namespace}
+                        {...register('namespace')}
+                        label="Namespace"
+                        shouldTrim={false}
+                        required={!isVirtual}
+                    />
+
+                    <CustomInput
+                        placeholder="Add a description for this environment"
+                        value={data.description}
+                        error={errors.description}
+                        {...register('description')}
+                        label="Description (Maximum 40 characters allowed)"
+                        autoFocus={!!id}
+                        shouldTrim={false}
+                    />
                     {!isVirtual && (
-                        <div className="mb-16 flex left">
+                        <div className="flex left">
                             <label htmlFor="env-production-checkbox" className="pr-16 flex cursor">
                                 <input
                                     id="env-production-checkbox"
@@ -360,10 +357,10 @@ export const ClusterEnvironmentDrawer = ({
                             </label>
                         </div>
                     )}
-                    <div className="mb-16 flex left mw-200">
+                    <div className="w-200">
                         <AssignCategorySelect
-                            selectedCategory={selectedCategory}
-                            setSelectedCategory={setSelectedCategory}
+                            selectedCategory={data.category}
+                            setSelectedCategory={handleSelectedCategory}
                         />
                     </div>
 

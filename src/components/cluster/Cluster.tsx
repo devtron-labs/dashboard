@@ -31,6 +31,7 @@ import {
     ComponentSizeType,
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath, Route, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
@@ -227,7 +228,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                                 to: URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES,
                             }}
                             component={ButtonComponentType.link}
-                            startIcon={<Add />}
+                            startIcon={<Icon name="ic-shapes" color={null} />}
                             size={ComponentSizeType.medium}
                             text="Manage Categories"
                             variant={ButtonVariantType.secondary}
@@ -271,10 +272,8 @@ class ClusterList extends Component<ClusterListProps, any> {
                     path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}
                     render={(props) => {
                         const clusterName = props.match.params.clusterName
-                        const {
-                            isVirtualCluster,
-                            id: clusterId,
-                        } = this.state.clusters.find((cluster) => cluster.cluster_name === clusterName) || {}
+                        const { isVirtualCluster, id: clusterId } =
+                            this.state.clusters.find((cluster) => cluster.cluster_name === clusterName) || {}
 
                         return (
                             <ClusterEnvironmentDrawer
@@ -505,7 +504,7 @@ const Cluster = ({
                                                     environmentName: environment_name,
                                                     clusterId,
                                                     namespace,
-                                                    category:{label: category, value: categoryId},
+                                                    category: { label: category, value: categoryId },
                                                     prometheusEndpoint: prometheus_url,
                                                     isProduction,
                                                     description,

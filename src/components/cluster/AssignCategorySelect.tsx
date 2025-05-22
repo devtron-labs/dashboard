@@ -1,19 +1,17 @@
-import { useState } from 'react'
+import { ComponentSizeType, OptionType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ComponentSizeType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { AssignCategorySelectTypes } from './cluster.type'
 
 export const categoryList = ['staging', 'production']
 
 export const getCategoryList = () =>
     categoryList.map((category) => ({
         label: category,
-        value: category,
+        value: +category,
     }))
 
-export const AssignCategorySelect = () => {
-    const [selectedCategory, setSelectedCategory] = useState(null)
-
-    const handleCategoryChange = (selected) => {
+export const AssignCategorySelect = ({ selectedCategory, setSelectedCategory }: AssignCategorySelectTypes) => {
+    const handleCategoryChange = (selected: OptionType<number, string>) => {
         setSelectedCategory(selected)
     }
 
@@ -26,7 +24,8 @@ export const AssignCategorySelect = () => {
             options={getCategoryList()}
             onChange={handleCategoryChange}
             value={selectedCategory}
-            size={ComponentSizeType.large}
+            size={ComponentSizeType.medium}
+            fullWidth
         />
     )
 }
