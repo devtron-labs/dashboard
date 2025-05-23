@@ -30,6 +30,7 @@ import {
     Reload,
     showError,
     sortCallback,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -39,23 +40,24 @@ import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAn
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import ManageCategories from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/ManageCategories.component'
+import { getClusterCategoryList } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/service'
 
 import { getClusterList, getEnvironmentList } from './cluster.service'
-import { ClusterProps, POLLING_INTERVAL } from './cluster.type'
+import { ClusterMetadataTypes, ClusterProps, POLLING_INTERVAL } from './cluster.type'
 import { ClusterList } from './ClusterList'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 
 const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
-    const [clusters, setClusters] = useState([])
+    const [clusters, setClusters] = useState<ClusterMetadataTypes[]>([])
     const [clusterEnvMap, setClusterEnvMap] = useState({})
-    // const [browseFile, setBrowseFile] = useState(false)
-    // const [showEditCluster, setShowEditCluster] = useState(false)
 
     const timerRef = useRef(null)
 
     const history = useHistory()
+
+    const [categoryLoader, categoryList, categoryListError, reloadCategoryList] = useAsync(getClusterCategoryList)
 
     const pollClusterList = useCallback(async () => {
         try {
@@ -142,9 +144,6 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
             })
     }, [])
 
-    // const toggleBrowseFile = () => setBrowseFile((prev) => !prev)
-    // const toggleShowEditCluster = () => setShowEditCluster((prev) => !prev)
-
     const handleRedirectToClusterList = () => {
         history.push(URLS.GLOBAL_CONFIG_CLUSTER)
     }
@@ -226,14 +225,20 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             proxyUrl={cluster.proxyUrl}
                             insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
                             installationId={cluster.installationId}
-                            category={cluster.category}
+                            clusterCategory={cluster.clusterCategory}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
+                            clusterCategoriesList={categoryList?.clusterCategories}
                         />
                     ),
             )}
 
             <Route path={URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>
-                <ManageCategories />
+                <ManageCategories
+                    clusterCategoriesList={categoryList?.clusterCategories}
+                    categoryLoader={categoryLoader}
+                    categoryListError={categoryListError}
+                    reloadCategoryList={reloadCategoryList}
+                />
             </Route>
 
             <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
@@ -244,7 +249,8 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                 path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}
                 render={(props) => {
                     const { clusterName } = props.match.params
-                    const foundCluster = clusters.find((c) => c.cluster_name === clusterName) || {}
+                    const foundCluster: ClusterMetadataTypes | { isVirtualCluster?: boolean; id?: null } =
+                        clusters.find((c) => c.cluster_name === clusterName) || {}
                     const { isVirtualCluster, id: clusterId } = foundCluster
 
                     return (
@@ -260,6 +266,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             hideClusterDrawer={handleRedirectToClusterList}
                             isVirtual={isVirtualCluster}
                             category={null}
+                            environmentCategory={null}
                         />
                     )
                 }}

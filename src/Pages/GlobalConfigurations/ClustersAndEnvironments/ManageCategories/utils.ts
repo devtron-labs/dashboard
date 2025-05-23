@@ -1,6 +1,6 @@
 import { DynamicDataTableRowDataType, getUniqueId } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CategoriesDataRowType, ManageCategoryDTO } from './types'
+import { CategoriesDataRowType, ClusterEnvironmentCategoryDTO } from './types'
 
 export const getEmptyCategoriesDataRow = (): CategoriesDataRowType => {
     const id = getUniqueId()
@@ -26,14 +26,14 @@ export const getEmptyCategoriesDataRow = (): CategoriesDataRowType => {
     }
 }
 
-export const getInitialCategoryListData = (categoryList: ManageCategoryDTO[]): CategoriesDataRowType[] => {
+export const getInitialCategoryListData = (categoryList: ClusterEnvironmentCategoryDTO[]): CategoriesDataRowType[] => {
     if (categoryList.length === 0) {
         return [getEmptyCategoriesDataRow()]
     }
     return categoryList.map((category) => ({
         data: {
             categories: {
-                value: category.category,
+                value: category.name,
                 type: DynamicDataTableRowDataType.TEXT,
                 props: {
                     placeholder: 'Eg. staging',

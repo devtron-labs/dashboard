@@ -1,16 +1,22 @@
 import { ComponentSizeType, OptionType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ClusterEnvironmentCategoryType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/types'
+
 import { AssignCategorySelectTypes } from './cluster.type'
 
 export const categoryList = ['staging', 'production']
 
-export const getCategoryList = () =>
-    categoryList.map((category) => ({
-        label: category,
-        value: +category,
+export const getClusterCategoryOptions = (clusterCategory: ClusterEnvironmentCategoryType[]) =>
+    clusterCategory?.map((category) => ({
+        label: category.name,
+        value: category.id,
     }))
 
-export const AssignCategorySelect = ({ selectedCategory, setSelectedCategory }: AssignCategorySelectTypes) => {
+export const AssignCategorySelect = ({
+    selectedCategory,
+    setSelectedCategory,
+    categoriesList,
+}: AssignCategorySelectTypes) => {
     const handleCategoryChange = (selected: OptionType<number, string>) => {
         setSelectedCategory(selected)
     }
@@ -21,7 +27,7 @@ export const AssignCategorySelect = ({ selectedCategory, setSelectedCategory }: 
             inputId="assign-category-menu-list"
             name="assign-category-menu-list"
             classNamePrefix="assign-category-menu-list"
-            options={getCategoryList()}
+            options={getClusterCategoryOptions(categoriesList)}
             onChange={handleCategoryChange}
             value={selectedCategory}
             size={ComponentSizeType.medium}

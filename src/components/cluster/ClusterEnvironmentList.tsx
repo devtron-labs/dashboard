@@ -23,6 +23,7 @@ export const ClusterEnvironmentList = ({
     isVirtualCluster,
     newEnvs,
     clusterName,
+    environmentCategoryList,
 }: ClusterEnvironmentListProps) => {
     const [environment, setEnvironment] = useState(null)
     const [confirmation, setConfirmation] = useState(false)
@@ -85,8 +86,7 @@ export const ClusterEnvironmentList = ({
                     environment_name: environmentName,
                     prometheusEndpoint,
                     namespace,
-                    categoryId,
-                    category,
+                    environmentCategory,
                     default: isProduction,
                     description,
                 }) =>
@@ -102,7 +102,7 @@ export const ClusterEnvironmentList = ({
                                     prometheusEndpoint,
                                     clusterId,
                                     namespace,
-                                    category: { label: category, value: categoryId },
+                                    category: { label: environmentCategory.name, value: environmentCategory.id },
                                     default: isProduction,
                                     description,
                                 })
@@ -131,9 +131,9 @@ export const ClusterEnvironmentList = ({
                             </div>
                             <div className="dc__truncate-text">{namespace}</div>
                             <div>
-                                {category && (
+                                {environmentCategory.name && (
                                     <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content">
-                                        {category || 'category'}
+                                        {environmentCategory.name || 'category'}
                                     </span>
                                 )}
                             </div>
@@ -170,6 +170,7 @@ export const ClusterEnvironmentList = ({
                     {...environment}
                     hideClusterDrawer={hideClusterDrawer}
                     isVirtual={isVirtualCluster}
+                    environmentCategoriesList={environmentCategoryList}
                 />
             )}
         </div>

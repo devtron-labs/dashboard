@@ -27,6 +27,7 @@ import {
     Drawer,
     GenericEmptyState,
     noop,
+    Progressing,
     ServerErrors,
     showError,
     stopPropagation,
@@ -34,6 +35,7 @@ import {
     ToastManager,
     ToastVariantType,
     Tooltip,
+    useAsync,
     useForm,
     UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -50,6 +52,7 @@ import { URLS } from '@Config/routes'
 
 import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
+import { getEnvironmentCategoryList } from '../ManageCategories/service'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNamespaceLabels } from './utils'
@@ -71,7 +74,7 @@ export const ClusterEnvironmentDrawer = ({
     hideClusterDrawer,
     isVirtual,
     clusterName,
-    category,
+    environmentCategory,
 }: ClusterEnvironmentDrawerProps) => {
     // STATES
     // Manages the loading state for create and update actions
@@ -93,6 +96,9 @@ export const ClusterEnvironmentDrawer = ({
         data: null,
         error: null,
     })
+
+    const [environmentCategoryLoader, environmentCategoryList, environmentCategoryListError] =
+        useAsync(getEnvironmentCategoryList)
 
     const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
@@ -154,7 +160,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
-            category,
+            category: { label: environmentCategory?.name, value: environmentCategory?.id },
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
@@ -292,6 +298,19 @@ export const ClusterEnvironmentDrawer = ({
             )
         }
 
+        if (environmentCategoryLoader) {
+            return <Progressing pageLoader />
+        }
+
+        if (environmentCategoryListError) {
+            return (
+                <GenericEmptyState
+                    title="Failed to load environment categories"
+                    subTitle="Failed to load environment categories"
+                />
+            )
+        }
+
         return (
             <form
                 className="flex-grow-1 flexbox-col mh-0"
@@ -364,6 +383,7 @@ export const ClusterEnvironmentDrawer = ({
                         <AssignCategorySelect
                             selectedCategory={data.category}
                             setSelectedCategory={handleSelectedCategory}
+                            categoriesList={environmentCategoryList?.environmentCategories}
                         />
                     </div>
 

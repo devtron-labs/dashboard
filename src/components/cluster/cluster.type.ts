@@ -17,7 +17,9 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvListMinDTO, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ClusterEnvironmentCategoryType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/types'
 
 export const POLLING_INTERVAL = 30000
 
@@ -110,6 +112,28 @@ export interface ClusterComponentType {
     status: ClusterComponentStatusType
 }
 
+export interface ClusterMetadataTypes {
+    id: number
+    cluster_name: string
+    active: boolean
+    errorInConnecting?: string
+    isVirtualCluster?: boolean
+    agentInstallationStage: ClusterInstallStage
+    clusterCategory: ClusterEnvironmentCategoryType
+    isProd: boolean
+    remoteConnectionConfig: RemoteConnectionConfig
+    insecureSkipTlsVerify: boolean
+    installationId: number
+    server_url: string
+    prometheus_url: string
+    prometheusAuth: any
+    proxyUrl: string
+    toConnectWithSSHTunnel: boolean
+    sshTunnelConfig: any
+    environments: EnvListMinDTO[]
+    description: string
+}
+
 export interface ClusterComponentModalProps {
     agentInstallationStage: ClusterInstallStage
     components: ClusterComponentType[] | null
@@ -190,7 +214,8 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-    category: OptionType<number, string>
+    clusterCategoriesList: ClusterEnvironmentCategoryType[]
+    clusterCategory: ClusterEnvironmentCategoryType
 }
 
 export type ClusterFormProps = { reload: () => void } & (
@@ -227,19 +252,22 @@ export interface ClusterListProps {
     proxyUrl: string
     insecureSkipTlsVerify: boolean
     installationId: number
-    category: OptionType<number, string>
+    clusterCategory: ClusterEnvironmentCategoryType
     toConnectWithSSHTunnel: boolean
+    clusterCategoriesList: ClusterEnvironmentCategoryType[]
 }
 
 export interface ClusterEnvironmentListProps
     extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName'> {
     clusterId: string
     newEnvs: any[]
+    environmentCategoryList?: ClusterEnvironmentCategoryType[]
 }
 
 export type AssignCategorySelectTypes = {
     selectedCategory: OptionType<number, string>
     setSelectedCategory: Dispatch<SetStateAction<OptionType<number, string>>>
+    categoriesList: ClusterEnvironmentCategoryType[]
 }
 
 export interface DeleteClusterConfirmationModalProps

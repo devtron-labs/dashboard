@@ -17,7 +17,6 @@ import {
     Progressing,
     SearchBar,
     stopPropagation,
-    useAsync,
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -25,25 +24,30 @@ import emptyFolder from '@Images/no-artifact.webp'
 import { URLS } from '@Config/routes'
 
 import { CATEGORIES_TABLE_HEADERS } from './constants'
-import { getCategoryList } from './service'
-import { CategoriesDataRowType, CategoriesTableColumnsType } from './types'
+import { CategoriesDataRowType, CategoriesTableColumnsType, ManageCategoriesProps } from './types'
 import { getEmptyCategoriesDataRow, getInitialCategoryListData } from './utils'
 
-const ManageCategories = () => {
+const ManageCategories = ({
+    clusterCategoriesList,
+    categoryLoader,
+    categoryListError,
+    reloadCategoryList,
+}: ManageCategoriesProps) => {
     const { searchKey, handleSearch, clearFilters } = useStateFilters()
-    const [categoryLoader, categoryList, categoryListError, reloadCategoryList] = useAsync(getCategoryList)
 
     const [rows, setRows] = useState<CategoriesDataRowType[]>([getEmptyCategoriesDataRow()])
     const { push } = useHistory()
 
+    console.log(clusterCategoriesList, 'clusterCategoriesList')
+
     useEffect(() => {
-        if (categoryList) {
-            const filteredCategories = categoryList.result.filter((category) =>
-                category.category.toLowerCase().includes(searchKey.toLowerCase()),
+        if (clusterCategoriesList) {
+            const filteredCategories = clusterCategoriesList.filter((category) =>
+                category.name.toLowerCase().includes(searchKey.toLowerCase()),
             )
             setRows(getInitialCategoryListData(filteredCategories))
         }
-    }, [categoryList, searchKey])
+    }, [clusterCategoriesList, searchKey])
 
     const handleModalClose = () => {
         push(URLS.GLOBAL_CONFIG_CLUSTER)
@@ -121,7 +125,7 @@ const ManageCategories = () => {
     const renderAddCategoryButton = () => (
         <Button
             dataTestId="manage_categories_button"
-            variant={categoryList?.result?.length !== 0 ? ButtonVariantType.primary : ButtonVariantType.secondary}
+            variant={clusterCategoriesList?.length !== 0 ? ButtonVariantType.primary : ButtonVariantType.secondary}
             component={ButtonComponentType.button}
             startIcon={<Icon name="ic-add" color={null} />}
             size={ComponentSizeType.medium}
@@ -168,7 +172,7 @@ const ManageCategories = () => {
     )
 
     const renderList = () => {
-        if (!categoryList.result.some((res) => res.category.includes(searchKey))) {
+        if (!clusterCategoriesList.some((res) => res.name.includes(searchKey))) {
             return <GenericFilterEmptyState handleClearFilters={clearFilters} />
         }
         return (
@@ -195,7 +199,7 @@ const ManageCategories = () => {
             >
                 {renderHeader()}
 
-                {categoryList?.result?.length === 0 ? (
+                {clusterCategoriesList?.length === 0 ? (
                     <GenericEmptyState
                         title="No categories added"
                         subTitle="Create categories (example: Stage, Dev, QA etc)  and assign it to Cluster or Environments"

@@ -44,8 +44,9 @@ export const ClusterList = ({
     proxyUrl,
     insecureSkipTlsVerify,
     installationId,
-    category,
+    clusterCategory,
     toConnectWithSSHTunnel,
+    clusterCategoriesList,
 }: ClusterListProps) => {
     const [editMode, toggleEditMode] = useState(false)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
@@ -79,13 +80,6 @@ export const ClusterList = ({
         }
     }
 
-    const clusterIcon = () => {
-        if (isVirtualCluster) {
-            return <Icon name="ic-virtual-cluster" color="B500" size={24} />
-        }
-        return <Icon name="ic-cluster" color="B500" size={24} />
-    }
-
     const handleToggleEditMode = (): void => {
         toggleEditMode((t) => !t)
     }
@@ -114,13 +108,20 @@ export const ClusterList = ({
                     </List.Logo>
                 )}
                 <div className="flex left dc__gap-16">
-                    {clusterId && clusterIcon()}
+                    {clusterId && (
+                        <Icon name={isVirtualCluster ? 'ic-virtual-cluster' : 'ic-cluster'} color="B500" size={24} />
+                    )}
                     <List.Title
                         title={clusterName || 'Add cluster'}
                         subtitle={subTitle}
                         className="fw-6 dc__mxw-400 dc__truncate-text"
                         tag={isProd ? 'Prod' : null}
                     />
+                    {clusterCategory && (
+                        <span className="dc__truncate-text dc__border bg__secondary eb-5 px-6 fs-12 lh-20 br-4 flex dc_width-max-content flex top cb-5 h-100">
+                            {clusterCategory.name}
+                        </span>
+                    )}
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16">
                             <Button
@@ -180,7 +181,8 @@ export const ClusterList = ({
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}
-                                category={category}
+                                clusterCategoriesList={clusterCategoriesList}
+                                clusterCategory={clusterCategory}
                             />
                         </div>
                     </Drawer>

@@ -106,7 +106,8 @@ const ClusterForm = ({
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
-    category,
+    clusterCategoriesList,
+    clusterCategory,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -145,7 +146,10 @@ const ClusterForm = ({
     const areSomeEntriesSelected = Object.values(isClusterSelected).some((_selected) => _selected)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
-    const [selectedCategory, setSelectedCategory] = useState<OptionType<number, string>>(category)
+    const [selectedCategory, setSelectedCategory] = useState<OptionType<number, string>>({
+        label: clusterCategory?.name,
+        value: clusterCategory?.id,
+    })
 
     useEffect(
         () => () => {
@@ -769,6 +773,7 @@ const ClusterForm = ({
                     <AssignCategorySelect
                         selectedCategory={selectedCategory}
                         setSelectedCategory={setSelectedCategory}
+                        categoriesList={clusterCategoriesList}
                     />
                 </div>
 

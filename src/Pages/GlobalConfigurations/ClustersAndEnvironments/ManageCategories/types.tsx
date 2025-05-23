@@ -14,13 +14,30 @@
  * limitations under the License.
  */
 
-import { DynamicDataTableRowType } from '@devtron-labs/devtron-fe-common-lib'
+import { DynamicDataTableRowType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ManageCategoryDTO {
+export interface ClusterEnvironmentCategoryDTO {
     id: number
-    category: string
+    name: string
     description: string
 }
 
+export interface ManageClusterCategoryDTO {
+    clusterCategories: ClusterEnvironmentCategoryDTO[]
+}
+
+export interface ManageEnvironmentCategoryDTO {
+    environmentCategories: ClusterEnvironmentCategoryDTO[]
+}
+
+export interface ClusterEnvironmentCategoryType extends ClusterEnvironmentCategoryDTO {}
+
 export type CategoriesTableColumnsType = 'categories' | 'description'
 export type CategoriesDataRowType = DynamicDataTableRowType<CategoriesTableColumnsType>
+
+export interface ManageCategoriesProps {
+    clusterCategoriesList: ClusterEnvironmentCategoryType[]
+    categoryLoader: boolean
+    categoryListError: ServerErrors
+    reloadCategoryList: () => void
+}

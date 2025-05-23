@@ -1,29 +1,21 @@
-import { ResponseType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ROUTES, showError } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ManageCategoryDTO } from './types'
+import { ManageClusterCategoryDTO, ManageEnvironmentCategoryDTO } from './types'
 
-const getMockData: () => ManageCategoryDTO[] = () => [
-    {
-        id: 1,
-        category: 'staging',
-        description: 'staging environment',
-    },
-    {
-        id: 2,
-        category: 'production',
-        description: 'production environment',
-    },
-]
-
-export const getCategoryList = async (): Promise<ResponseType<ManageCategoryDTO[]>> => {
+export const getClusterCategoryList = async (): Promise<ManageClusterCategoryDTO> => {
     try {
-        // const response = await get(`${ROUTES.CATEGORIES}`)
+        const response = await get(`${ROUTES.CLUSTER_CATEGORIES}`)
+        return response.result
+    } catch (err) {
+        showError(err)
+        throw err
+    }
+}
 
-        return {
-            code: 200,
-            status: 'OK',
-            result: getMockData(),
-        }
+export const getEnvironmentCategoryList = async (): Promise<ManageEnvironmentCategoryDTO> => {
+    try {
+        const response = await get(`${ROUTES.ENVIRONMENT_CATEGORIES}`)
+        return response.result
     } catch (err) {
         showError(err)
         throw err

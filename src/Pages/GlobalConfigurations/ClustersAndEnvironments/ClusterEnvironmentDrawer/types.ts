@@ -16,6 +16,8 @@
 
 import { DeleteConfirmationModalProps, OptionType, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ClusterEnvironmentCategoryType } from '../ManageCategories/types'
+
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
     namespace: string
@@ -31,6 +33,7 @@ export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerF
     hideClusterDrawer: () => void
     isVirtual: boolean
     clusterName: string
+    environmentCategory: ClusterEnvironmentCategoryType
 }
 
 export type GetClusterEnvironmentUpdatePayloadType = Pick<
