@@ -42,7 +42,7 @@ import { ClusterListType } from '@Components/ClusterNodes/types'
 import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 
 import { URLS } from '../../../config'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
+import { DEFAULT_CLUSTER_ID } from '../../../Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { importComponentFromFELibrary } from '../../common'

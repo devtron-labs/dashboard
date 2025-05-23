@@ -55,7 +55,7 @@ export function getEnvName(components: ClusterComponentType[], agentInstallation
     }
 
     const str = nonTerminatingStatus.join('')
-    const c = components?.find((c) => str.search(c.status) >= 0)
+    const c = components?.find((component) => str.search(component.status) >= 0)
     return c?.envName
 }
 

@@ -280,3 +280,9 @@ export interface DeleteClusterConfirmationModalProps
 export interface DeleteClusterPayload {
     id: number
 }
+
+export interface UserNameDropDownListProps {
+    clusterDetail: DataListType
+    selectedUserNameOptions: Record<string, any>
+    onChangeUserName: (selectedOption: any, clusterDetail: DataListType) => void
+}

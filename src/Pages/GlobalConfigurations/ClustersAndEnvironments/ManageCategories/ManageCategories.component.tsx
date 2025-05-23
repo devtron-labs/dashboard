@@ -38,8 +38,6 @@ const ManageCategories = ({
     const [rows, setRows] = useState<CategoriesDataRowType[]>([getEmptyCategoriesDataRow()])
     const { push } = useHistory()
 
-    console.log(clusterCategoriesList, 'clusterCategoriesList')
-
     useEffect(() => {
         if (clusterCategoriesList) {
             const filteredCategories = clusterCategoriesList.filter((category) =>

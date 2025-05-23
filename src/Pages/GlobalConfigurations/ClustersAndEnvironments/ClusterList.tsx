@@ -18,7 +18,7 @@ import { clusterId } from '@Components/ClusterNodes/__mocks__/clusterAbout.mock'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
-import { List } from '../globalConfigurations/GlobalConfiguration'
+import { List } from '../../../components/globalConfigurations/GlobalConfiguration'
 import { getCluster } from './cluster.service'
 import { ClusterListProps, EditClusterFormProps } from './cluster.type'
 import { renderNoEnvironmentTab } from './cluster.util'
