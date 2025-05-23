@@ -49,7 +49,7 @@ import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
-import { ErrorBoundary, AppContext } from '..'
+import { ErrorBoundary, AppContext, AppContextType } from '..'
 import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { Security } from '../../security/Security'
 import {
@@ -142,7 +142,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
         setHelpGettingStartedClicked(true)
     }
     const [environmentId, setEnvironmentId] = useState(null)
-    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
+    const [aiAgentContext, setAIAgentContext] = useState(null)
+    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId, aiAgentContext, setAIAgentContext }), [environmentId])
 
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
@@ -658,10 +659,11 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentAppName, setCurrentAppName] = useState<string>('')
+    const [aiAgentContext, setAIAgentContext] = useState<AppContextType['aiAgentContext']>(null)
 
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName, aiAgentContext, setAIAgentContext }}>
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}
