@@ -401,10 +401,6 @@ const ManifestComponent = ({
     }, [showManifestCompareView])
 
     const handleEditorValueChange = (codeEditorData: string) => {
-        if (!isResourceBrowserView && !showGUIView) {
-            handleStickDynamicTabsToTop()
-        }
-
         if (!showManifestCompareView && isEditMode) {
             setModifiedManifest(codeEditorData)
             // Question: Should we directly set this in case of errored string?

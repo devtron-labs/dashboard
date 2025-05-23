@@ -367,7 +367,12 @@ const NodeDetailComponent = ({
         setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
     }
 
-    const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
+    const handleManifestEdit = () => {
+        if (manifestFormConfigurationType === ConfigurationType.YAML) {
+            handleStickDynamicTabsToTop()
+        }
+        setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
+    }
 
     const handleManifestCompareWithDesired = () => setShowManifestCompareView(true)
 

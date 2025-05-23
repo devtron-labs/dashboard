@@ -74,6 +74,31 @@ const NodeTreeDetailTab = ({
         identifier: 'node-tree-detail-tab',
     })
 
+    // TODO: Framer
+    const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3
+
+    const smoothScrollToTop = () => {
+        // We are going to scroll stickyElementRef.current.parentElement up px by px for 10s 1s for 2pxx
+        const scrollContainer = stickyElementRef.current.parentElement
+        const start = scrollContainer.scrollTop
+        const change = stickyElementRef.current.offsetTop - start
+        const startTime = performance.now()
+
+        function animateScroll(currentTime: number) {
+            const elapsed = currentTime - startTime
+            const progress = Math.min(elapsed / 300, 1)
+            const easedProgress = easeOutCubic(progress)
+
+            scrollContainer.scrollTop = start + change * easedProgress
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll)
+            }
+        }
+
+        requestAnimationFrame(animateScroll)
+    }
+
     const dynamicTabsBackgroundClass = isDynamicTabsStuck ? 'bg__tertiary' : 'bg__primary'
 
     useEffect(() => {
@@ -114,8 +139,9 @@ const NodeTreeDetailTab = ({
         if (isDynamicTabsStuck) {
             return
         }
-
-        stickyElementRef.current?.scrollIntoView(true)
+        if (stickyElementRef.current) {
+            smoothScrollToTop() // or your scroll container
+        }
     }
 
     // NOTE: don't render any of the components before tabs are initialized
