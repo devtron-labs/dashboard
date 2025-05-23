@@ -74,7 +74,11 @@ import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
 import { BULK_CD_DEPLOYMENT_STATUS, BULK_CD_MATERIAL_STATUS, BULK_CD_MESSAGING, BUTTON_TITLE } from '../../Constants'
 import { BULK_ERROR_MESSAGES } from './constants'
 import TriggerResponseModalBody, { TriggerResponseModalFooter } from './TriggerResponseModal'
-import { getIsImageApprovedByDeployerSelected, getIsNonApprovedImageSelected, getSelectedAppListForBulkStrategy } from './utils'
+import {
+    getIsImageApprovedByDeployerSelected,
+    getIsNonApprovedImageSelected,
+    getSelectedAppListForBulkStrategy,
+} from './utils'
 
 const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
@@ -111,6 +115,7 @@ const BulkCDTrigger = ({
     updateBulkInputMaterial,
     // NOTE: Should trigger the bulk cd here only but since its also calling another parent function not refactoring right now
     onClickTriggerBulkCD,
+    feasiblePipelineIds,
     responseList,
     isLoading,
     setLoading,
@@ -118,6 +123,8 @@ const BulkCDTrigger = ({
     uniqueReleaseTags,
     runtimeParams,
     setRuntimeParams,
+    bulkDeploymentStrategy,
+    setBulkDeploymentStrategy,
     runtimeParamsErrorState,
     setRuntimeParamsErrorState,
 }: BulkCDTriggerType) => {
@@ -139,7 +146,6 @@ const BulkCDTrigger = ({
     const [showResistanceBox, setShowResistanceBox] = useState(false)
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
     const [skipHibernatedApps, setSkipHibernatedApps] = useState<boolean>(false)
-    const [bulkDeploymentStrategy, setBulkDeploymentStrategy] = useState<DeploymentStrategyTypeWithDefault>('DEFAULT')
     const [showStrategyFeasibilityPage, setShowStrategyFeasibilityPage] = useState<boolean>(false)
     const [pipelineIdVsStrategyMap, setPipelineIdVsStrategyMap] = useState<PipelineIdsVsDeploymentStrategyMap>({})
 
@@ -1002,7 +1008,7 @@ const BulkCDTrigger = ({
                         bulkDeploymentStrategy={bulkDeploymentStrategy}
                         pipelineIdVsStrategyMap={pipelineIdVsStrategyMap}
                         setPipelineIdVsStrategyMap={setPipelineIdVsStrategyMap}
-                        appList={getSelectedAppListForBulkStrategy(appList)}
+                        appList={getSelectedAppListForBulkStrategy(appList, feasiblePipelineIds)}
                     />
                 ) : (
                     <>

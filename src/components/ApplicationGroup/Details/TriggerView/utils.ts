@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { CommonNodeAttr, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
 
 import { BulkCDDetailType, BulkCIDetailType } from '../../AppGroup.types'
@@ -46,5 +48,20 @@ export const getIsImageApprovedByDeployerSelected = (appList: BulkCDDetailType[]
         )
     })
 
-export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[]) =>
-    appList.map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))
+export const getSelectedCDNode = (bulkTriggerType: DeploymentNodeType, _cdNode: CommonNodeAttr) => {
+    if (bulkTriggerType === DeploymentNodeType.PRECD) {
+        return _cdNode.preNode
+    }
+    if (bulkTriggerType === DeploymentNodeType.CD) {
+        return _cdNode
+    }
+    if (bulkTriggerType === DeploymentNodeType.POSTCD) {
+        return _cdNode.postNode
+    }
+    return null
+}
+
+export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[], feasiblePipelineIds: Set<number>) =>
+    appList
+        .map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))
+        .filter(({ pipelineId }) => feasiblePipelineIds.has(pipelineId))
