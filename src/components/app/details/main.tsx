@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -35,6 +35,7 @@ import { MultiValue } from 'react-select'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,
+    importComponentFromFELibrary,
     setAppGroupFilterInLocalStorage,
     sortOptionsByLabel,
 } from '../../common'
@@ -59,6 +60,8 @@ const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
 const AppDetails = lazy(() => import('./appDetails/AppDetails'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
+const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
+
 export default function AppDetailsPage() {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
@@ -80,6 +83,8 @@ export default function AppDetailsPage() {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
+
+    const parentRef = useRef<HTMLDivElement>(null)
 
     const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
 
@@ -344,7 +349,7 @@ export default function AppDetailsPage() {
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
 
     return (
-        <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
+        <div ref={parentRef} className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             <AppHeader
                 appName={appName}
                 appMetaInfo={appMetaInfo}
@@ -379,6 +384,8 @@ export default function AppDetailsPage() {
                     closeConfirmationModal={closeDeleteGroup}
                 />
             )}
+
+            {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && (<AIChat parentRef={parentRef} />)}
 
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
