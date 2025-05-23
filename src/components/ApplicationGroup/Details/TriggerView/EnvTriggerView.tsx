@@ -1515,7 +1515,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
                             : {}),
                         skipIfHibernated,
-                        ...(strategy ? { strategy } : {}),
+                        // strategy DEFAULT means custom chart
+                        ...(strategy && strategy !== 'DEFAULT' ? { strategy } : {}),
                     }),
                 )
             } else {
