@@ -1453,7 +1453,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 const _selectedNode: CommonNodeAttr | undefined = getSelectedCDNode(bulkTriggerType, _cdNode)
             
                 const selectedArtifacts = _selectedNode?.[materialType]?.filter((artifact) => artifact.isSelected) ?? []
-                if (selectedArtifacts?.length > 0) {
+                if (selectedArtifacts.length > 0) {
                     return { node: _selectedNode, wf }
                 }
                 return null
