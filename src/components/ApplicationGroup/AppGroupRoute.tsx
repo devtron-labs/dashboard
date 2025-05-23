@@ -26,10 +26,11 @@ export default function AppGroupRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentEnvironmentName, setCurrentEnvironmentName] = useState<string>('')
+    const [aiAgentContext, setAIAgentContext] = useState(null)
 
     return (
         <AppContext.Provider
-            value={{ environmentId, setEnvironmentId, currentEnvironmentName, setCurrentEnvironmentName }}
+            value={{ environmentId, setEnvironmentId, currentEnvironmentName, setCurrentEnvironmentName, aiAgentContext, setAIAgentContext }}
         >
             <Switch>
                 <Route path={`${path}/${URLS.APP_LIST}`}>

@@ -205,6 +205,20 @@ const Details: React.FC<DetailsType> = ({
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     const { replace } = useHistory()
+    const { path, url } = useRouteMatch()
+
+    const { setAIAgentContext } = useAppContext()
+
+    useEffect(() => {
+        setAIAgentContext({
+            path,
+            context: {
+                ...params,
+                environmentName: appDetails?.environmentName ?? '',
+                appName: appDetails?.appName ?? '',
+            },
+        })
+    }, [appDetails?.environmentName, appDetails?.appName, url])
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 

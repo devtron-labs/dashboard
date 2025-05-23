@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, PropsWithChildren, ReactNode, Suspense, useEffect, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -38,6 +38,7 @@ import {
     importComponentFromFELibrary,
     setAppGroupFilterInLocalStorage,
     sortOptionsByLabel,
+    useAppContext,
 } from '../../common'
 import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
@@ -62,6 +63,18 @@ const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
 const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 
+const AIAgentContextSetterWrapper = ({ children, appName }: PropsWithChildren<{ appName: string }>) => {
+    const { setAIAgentContext } = useAppContext()
+    const params = useParams()
+    const { path, url } = useRouteMatch()
+
+    useEffect(() => {
+        setAIAgentContext({ path, context: { appName, ...params }})
+    }, [path, url])
+
+    return <>{children}</>
+}
+
 export default function AppDetailsPage() {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
@@ -83,6 +96,8 @@ export default function AppDetailsPage() {
     const [isPopupBox, setIsPopupBox] = useState(false)
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
+
+    const { aiAgentContext } = useAppContext()
 
     const parentRef = useRef<HTMLDivElement>(null)
 
@@ -385,7 +400,7 @@ export default function AppDetailsPage() {
                 />
             )}
 
-            {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && (<AIChat parentRef={parentRef} />)}
+            {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && <AIChat parentRef={parentRef} {...aiAgentContext} />}
 
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
@@ -404,10 +419,16 @@ export default function AppDetailsPage() {
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_TRIGGER}`}
-                            render={(props) => <TriggerView filteredEnvIds={_filteredEnvIds} />}
+                            render={() => (
+                                <AIAgentContextSetterWrapper appName={appName}>
+                                    <TriggerView filteredEnvIds={_filteredEnvIds} />
+                                </AIAgentContextSetterWrapper>
+                            )}
                         />
                         <Route path={`${path}/${URLS.APP_CI_DETAILS}/:pipelineId(\\d+)?/:buildId(\\d+)?`}>
-                            <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
+                            <AIAgentContextSetterWrapper appName={appName}>
+                                <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
+                            </AIAgentContextSetterWrapper>
                         </Route>
                         <Route
                             path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
@@ -426,7 +447,9 @@ export default function AppDetailsPage() {
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                         >
-                            <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
+                            <AIAgentContextSetterWrapper appName={appName}>
+                                <CDDetails key={appId} filteredEnvIds={_filteredEnvIds} />
+                            </AIAgentContextSetterWrapper>
                         </Route>
                         <Route path={`${path}/${CommonURLS.APP_CONFIG}`}>
                             <AppConfig
