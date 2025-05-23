@@ -338,9 +338,9 @@ export enum CLUSTER_PROD_TYPE {
 }
 
 export const TAINTS_TABLE_HEADERS: TaintsTableType['headers'] = [
-    { key: TaintsTableHeaderKeys.KEY, label: 'Key', width: '1fr' },
-    { key: TaintsTableHeaderKeys.VALUE, label: 'Value', width: '1fr' },
-    { key: TaintsTableHeaderKeys.EFFECT, label: 'Effect', width: '250px' },
+    { key: TaintsTableHeaderKeys.KEY, label: 'KEY', width: '1fr' },
+    { key: TaintsTableHeaderKeys.VALUE, label: 'VALUE', width: '1fr' },
+    { key: TaintsTableHeaderKeys.EFFECT, label: 'TAINT EFFECT', width: '250px' },
 ]
 
 export const CLUSTER_CONFIG_POLLING_INTERVAL = 1000 * 30 // half a minute

@@ -32,6 +32,8 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import ImgEmptyChartGroup from '@Images/ic-empty-chartgroup@2x.png'
+
 import { updateTaints } from '../clusterNodes.service'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINTS_TABLE_HEADERS } from '../constants'
 import { EditTaintsModalType, EditTaintsRequest, TaintsTableHeaderKeys, TaintsTableType } from '../types'
@@ -95,7 +97,11 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
 
     const handleDeleteTaint: TaintsTableType['onRowDelete'] = (row) => {
         const filteredTaintList = taintList.filter(({ id }) => id !== row.id)
+        const updatedTaintCellError = structuredClone(taintCellError)
+        delete updatedTaintCellError[row.id]
+
         setTaintList(filteredTaintList)
+        setTaintCellError(updatedTaintCellError)
     }
 
     const handleEditTaint: TaintsTableType['onRowEdit'] = (row, headerKey, value) => {
@@ -149,8 +155,8 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
     return (
         <Drawer position="right" width="100%" minWidth="800px" maxWidth="1024px" onEscape={onClose}>
             <div className="flexbox-col bg__primary h-100 flex-grow-1 mh-0">
-                <div className="flex flex-align-center flex-justify bg__primary pt-16 pr-20 pb-16 pl-20 dc__border-bottom">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0 cn-9 dc__truncate">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
+                <div className="flex flex-align-center flex-justify bg__primary px-20 pt-12 pb-11 border__primary--bottom">
+                    <h2 className="fs-16 fw-6 lh-1-5 m-0 cn-9 dc__truncate">{`${EDIT_TAINTS_MODAL_MESSAGING.titlePrefix} '${name}'`}</h2>
                     <Button
                         dataTestId="edit-taints-modal-close"
                         ariaLabel="edit-taints-modal-close"
@@ -167,6 +173,7 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
                         <GenericEmptyState
                             title={EDIT_TAINTS_MODAL_MESSAGING.emptyState.title}
                             subTitle={EDIT_TAINTS_MODAL_MESSAGING.emptyState.subTitle}
+                            image={ImgEmptyChartGroup}
                             isButtonAvailable
                             renderButton={() => (
                                 <Button
@@ -209,12 +216,13 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
                                 onRowEdit={handleEditTaint}
                                 cellError={taintCellError}
                                 isAdditionNotAllowed
+                                shouldAutoFocusOnMount
                             />
                         </>
                     )}
                 </div>
                 {!isTaintListEmpty && (
-                    <div className="dc__border-top flex right p-16 dc__gap-8">
+                    <div className="dc__border-top flex right p-16 dc__gap-12">
                         <Button
                             dataTestId="edit-taints-modal-cancel"
                             variant={ButtonVariantType.secondary}
