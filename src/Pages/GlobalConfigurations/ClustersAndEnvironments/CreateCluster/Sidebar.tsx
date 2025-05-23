@@ -16,7 +16,7 @@
 
 import { generatePath, NavLink, useParams, useRouteMatch } from 'react-router-dom'
 
-import { Icon, IconName, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, IconName, ModalSidebarPanel, SERVER_MODE, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { DOCUMENTATION } from '@Config/constants'
@@ -28,6 +28,7 @@ const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 
 
 const Sidebar = () => {
     const { path } = useRouteMatch()
+    const { serverMode } = useMainContext()
     const { type } = useParams<CreateClusterParams>()
 
     const selectedSidebarElement = SIDEBAR_CONFIG[type]
@@ -35,40 +36,45 @@ const Sidebar = () => {
     return (
         <div className="w-250 p-20 flexbox-col dc__gap-24 dc__no-shrink dc__overflow-auto">
             <div className="flexbox-col">
-                {Object.entries(SIDEBAR_CONFIG).map(([key, { title, iconName, isEnterprise, dataTestId }]) => {
-                    const isSelected = type.toLowerCase() === key.toLowerCase()
+                {Object.entries(SIDEBAR_CONFIG).map(
+                    ([key, { title, iconName, isEnterprise, dataTestId, hideInEAMode }]) => {
+                        if (hideInEAMode && serverMode === SERVER_MODE.EA_ONLY) {
+                            return null
+                        }
+                        const isSelected = type.toLowerCase() === key.toLowerCase()
 
-                    return (
-                        <NavLink
-                            data-testid={dataTestId}
-                            key={key}
-                            className={`dc__transparent flex left dc__gap-8 py-6 px-8 br-4 ${isSelected ? 'bcb-1' : 'dc__hover-n50'}`}
-                            to={generatePath(path, { type: key })}
-                        >
-                            <span className="dc__fill-available-space dc__no-shrink icon-dim-16">
-                                <Icon name={iconName as IconName} color={isSelected ? 'B500' : 'N600'} />
-                            </span>
-
-                            <span
-                                className={`fs-13 lh-20 dc__truncate flex-grow-1 ${isSelected ? 'cb-5 fw-6' : 'cn-9'}`}
+                        return (
+                            <NavLink
+                                data-testid={dataTestId}
+                                key={key}
+                                className={`dc__transparent flex left dc__gap-8 py-6 px-8 br-4 ${isSelected ? 'bcb-1' : 'dc__hover-n50'}`}
+                                to={generatePath(path, { type: key })}
                             >
-                                {title}
-                            </span>
+                                <span className="dc__fill-available-space dc__no-shrink icon-dim-16">
+                                    <Icon name={iconName as IconName} color={isSelected ? 'B500' : 'N600'} />
+                                </span>
 
-                            {isEnterprise && !isFELibAvailable && (
-                                <Icon
-                                    name="ic-enterprise-feat"
-                                    color="Y700"
-                                    tooltipProps={{
-                                        content: 'This is an enterprise only feature',
-                                        placement: 'right',
-                                        alwaysShowTippyOnHover: true,
-                                    }}
-                                />
-                            )}
-                        </NavLink>
-                    )
-                })}
+                                <span
+                                    className={`fs-13 lh-20 dc__truncate flex-grow-1 ${isSelected ? 'cb-5 fw-6' : 'cn-9'}`}
+                                >
+                                    {title}
+                                </span>
+
+                                {isEnterprise && !isFELibAvailable && (
+                                    <Icon
+                                        name="ic-enterprise-feat"
+                                        color="Y700"
+                                        tooltipProps={{
+                                            content: 'This is an enterprise only feature',
+                                            placement: 'right',
+                                            alwaysShowTippyOnHover: true,
+                                        }}
+                                    />
+                                )}
+                            </NavLink>
+                        )
+                    },
+                )}
             </div>
 
             <div className="divider__secondary--horizontal" />
