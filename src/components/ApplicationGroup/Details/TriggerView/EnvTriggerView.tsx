@@ -130,6 +130,7 @@ import { RenderCDMaterialContentProps } from './types'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
+import { getSelectedCDNode } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -1449,17 +1450,10 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 )
                 if (!_cdNode) return null
 
-                let _selectedNode: CommonNodeAttr | undefined
-                if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                    _selectedNode = _cdNode.preNode
-                } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                    _selectedNode = _cdNode
-                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.postNode
-                }
-
+                const _selectedNode: CommonNodeAttr | undefined = getSelectedCDNode(bulkTriggerType, _cdNode)
+            
                 const selectedArtifacts = _selectedNode?.[materialType]?.filter((artifact) => artifact.isSelected) ?? []
-                if (_selectedNode && selectedArtifacts.length > 0) {
+                if (selectedArtifacts?.length > 0) {
                     return { node: _selectedNode, wf }
                 }
                 return null
