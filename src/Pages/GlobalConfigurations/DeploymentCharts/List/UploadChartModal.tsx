@@ -199,7 +199,7 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                 2. Image descriptor template file - .image_descriptor_template.json.
             </div>
             <div className="cn-7 fw-4 fs-14 cn-7 mb-20">3. Custom chart packaged in the *.tgz format.</div>
-            <div className="flexbox-col dc__align-start">
+            <div className="flexbox-col dc__align-start pt-20">
                 <div className="fw-6 fs-13 cn-9 mb-8">
                     📙 Need help?&nbsp;
                     <DocLink
