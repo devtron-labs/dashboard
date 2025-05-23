@@ -27,6 +27,7 @@ import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/Dyn
 
 import { URLS } from '../../../config'
 import { K8ResourceComponent } from './k8Resource/K8Resource.component'
+import { NodeDetailTab } from './k8Resource/nodeDetail/nodeDetail.type'
 import { getApplicationsGAEvent } from './k8Resource/utils'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
@@ -73,6 +74,31 @@ const NodeTreeDetailTab = ({
         identifier: 'node-tree-detail-tab',
     })
 
+    // TODO: Framer
+    const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3
+
+    const smoothScrollToTop = () => {
+        // We are going to scroll stickyElementRef.current.parentElement up px by px for 10s 1s for 2pxx
+        const scrollContainer = stickyElementRef.current.parentElement
+        const start = scrollContainer.scrollTop
+        const change = stickyElementRef.current.offsetTop - start
+        const startTime = performance.now()
+
+        function animateScroll(currentTime: number) {
+            const elapsed = currentTime - startTime
+            const progress = Math.min(elapsed / 300, 1)
+            const easedProgress = easeOutCubic(progress)
+
+            scrollContainer.scrollTop = start + change * easedProgress
+
+            if (progress < 1) {
+                requestAnimationFrame(animateScroll)
+            }
+        }
+
+        requestAnimationFrame(animateScroll)
+    }
+
     const dynamicTabsBackgroundClass = isDynamicTabsStuck ? 'bg__tertiary' : 'bg__primary'
 
     useEffect(() => {
@@ -106,13 +132,25 @@ const NodeTreeDetailTab = ({
         })
     }
 
+    // Check not in RB?
+    const isManifestTabView = location.pathname.includes(NodeDetailTab.MANIFEST.toLowerCase())
+
+    const handleStickDynamicTabsToTop = () => {
+        if (isDynamicTabsStuck) {
+            return
+        }
+        if (stickyElementRef.current) {
+            smoothScrollToTop() // or your scroll container
+        }
+    }
+
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
         showContent && (
             <div
                 ref={stickyElementRef}
-                className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
+                className="flex-grow-1 dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
             >
                 <div className={`${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}>
                     <DynamicTabs
@@ -141,7 +179,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className="flexbox-col w-100 flex-grow-1 dc__overflow-hidden">
+                <div className={`flexbox-col w-100 flex-grow-1 ${isManifestTabView ? '' : 'dc__overflow-hidden'}`}>
                     <Switch>
                         <Route
                             path={[
@@ -179,6 +217,9 @@ const NodeTreeDetailTab = ({
                                         setLogSearchTerms,
                                         isExternalApp,
                                         lowercaseKindToResourceGroupMap: {},
+                                        isResourceBrowserView: false,
+                                        isDynamicTabsStuck,
+                                        handleStickDynamicTabsToTop,
                                     }}
                                 />
                             )}

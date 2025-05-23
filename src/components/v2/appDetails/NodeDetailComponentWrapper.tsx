@@ -63,7 +63,16 @@ const NodeDetailComponentWrapper = ({
             .catch(noop)
     }, [podName, nodeType, tabId])
 
-    return <NodeDetailComponent key={tabId} {...nodeDetailComponentProps} updateTabUrl={handleUpdateTabUrl} />
+    return (
+        <NodeDetailComponent
+            key={tabId}
+            {...nodeDetailComponentProps}
+            isResourceBrowserView={false}
+            isDynamicTabsStuck={nodeDetailComponentProps.isDynamicTabsStuck}
+            updateTabUrl={handleUpdateTabUrl}
+            handleStickDynamicTabsToTop={nodeDetailComponentProps.handleStickDynamicTabsToTop}
+        />
+    )
 }
 
 export default NodeDetailComponentWrapper
