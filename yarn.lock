@@ -1124,10 +1124,10 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@devtron-labs/devtron-fe-common-lib@1.14.1":
-  version "1.14.1"
-  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.14.1.tgz#f47995e25e32600866aea0332394b01df53603a6"
-  integrity sha512-9ebIua7+Dgu+9GKUpK7tbYD38ftUGpNIByJwTZV2MldfSLtuJMHv8Jyxxmsyp9OUk5b87D59zQ6jleYk1V6ssA==
+"@devtron-labs/devtron-fe-common-lib@1.14.1-gpu-workload":
+  version "1.14.1-gpu-workload"
+  resolved "https://registry.yarnpkg.com/@devtron-labs/devtron-fe-common-lib/-/devtron-fe-common-lib-1.14.1-gpu-workload.tgz#7a61b339a346ad4c7834e0c5efb92bc7b7c3546b"
+  integrity sha512-hkl+7NPnHFUPtUwQ76pd9hC0mE//1sy+WzBeuPIc+hGqi5KvCQpMUcUTpkvqX/LiZu4GEOzJQFmcxBCZJ6JP8g==
   dependencies:
     "@codemirror/lang-json" "6.0.1"
     "@codemirror/lang-yaml" "6.1.2"
