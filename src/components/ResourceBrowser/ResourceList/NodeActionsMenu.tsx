@@ -19,7 +19,7 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { TaintType } from '@Components/ClusterNodes/types'
 import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
