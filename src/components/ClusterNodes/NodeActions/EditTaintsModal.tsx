@@ -127,6 +127,10 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
         const { isValid, taintCellError: updatedTaintCellError } = getTaintTableValidateState({ taintList })
         setTaintCellError(updatedTaintCellError)
         if (!isValid) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please resolve errors and try again',
+            })
             return
         }
 

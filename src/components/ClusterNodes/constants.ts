@@ -110,9 +110,9 @@ export const EDIT_TAINTS_MODAL_MESSAGING = {
     description: {
         title: 'A taint consists of a key, value, and effect.',
         messageList: [
-            'Key: The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots,and underscores, up to 253 characters. Optionally, the key can begin with a DNS subdomain prefix and a single &apos;/&apos;, like example.com/my-app.',
+            "Key: The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots,and underscores, up to 253 characters. Optionally, the key can begin with a DNS subdomain prefix and a single '/', like example.com/my-app.",
             'Value(Optional): If given, it must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters.',
-            'Combination of &lt;key, effect&gt; must be unique',
+            'Combination of <key, effect> must be unique',
         ],
     },
     emptyState: {

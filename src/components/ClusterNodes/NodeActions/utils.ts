@@ -89,19 +89,28 @@ export const getTaintsTableCellValidateState = (
         if (value.indexOf('/') !== -1) {
             const keyArr = value.split('/')
 
-            if (keyArr.length > 2) {
-                return { errorMessages: ['Maximum one ( / ) allowed'], isValid: false }
-            }
-
-            if (!keyPrefixRegex.test(keyArr[0])) {
-                return { errorMessages: ['Invalid prefix in key'], isValid: false }
+            if (keyArr.length > 2 || !keyPrefixRegex.test(keyArr[0])) {
+                return {
+                    errorMessages: ["The key can begin with a DNS subdomain prefix and a single '/'"],
+                    isValid: false,
+                }
             }
 
             if (!keyNameRegex.test(keyArr[1])) {
-                return { errorMessages: ['Invalid name in key'], isValid: false }
+                return {
+                    errorMessages: [
+                        'The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores',
+                    ],
+                    isValid: false,
+                }
             }
         } else if (!keyNameRegex.test(value)) {
-            return { errorMessages: ['Invalid key'], isValid: false }
+            return {
+                errorMessages: [
+                    'The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores',
+                ],
+                isValid: false,
+            }
         }
     }
 
@@ -112,7 +121,12 @@ export const getTaintsTableCellValidateState = (
             return { errorMessages: ['Maximum 63 chars are allowed'], isValid: false }
         }
         if (!valueRegex.test(value)) {
-            return { errorMessages: ['Invalid value'], isValid: false }
+            return {
+                errorMessages: [
+                    'The value must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores',
+                ],
+                isValid: false,
+            }
         }
     }
 
@@ -139,7 +153,7 @@ export const validateUniqueTaintKey = ({
 
         return acc
     }, {})
-    const uniqueKeyErrorMsg = 'Key and effect must be a unique combination.'
+    const uniqueKeyErrorMsg = 'Key and effect must be a unique combination'
 
     taintList.forEach(({ id, data }) => {
         const key = getTaintUniqueKey(data)
