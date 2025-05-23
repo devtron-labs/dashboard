@@ -173,6 +173,7 @@ if (!window || !window._env_) {
         FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
         FEATURE_AI_APP_DETAILS_ENABLE: false,
+        FEATURE_REDFISH_NODE_ENABLE: false,
     }
 }
 

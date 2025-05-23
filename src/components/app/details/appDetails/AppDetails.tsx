@@ -27,6 +27,7 @@ import {
     DeploymentAppTypes,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
+    DocLink,
     GenericEmptyState,
     getAppDetailsURL,
     getAppsInfoForEnv,
@@ -53,7 +54,6 @@ import {
     DEFAULT_STATUS,
     DEPLOYMENT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
-    DOCUMENTATION,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
@@ -157,9 +157,7 @@ export const AppNotConfigured = ({
                 subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
-                            {APP_DETAILS.NEED_HELP}
-                        </a>
+                        <DocLink text={APP_DETAILS.NEED_HELP} docLinkKey="APP_CREATE" dataTestId="app-details-empty" />
                     </>
                 )
             }
