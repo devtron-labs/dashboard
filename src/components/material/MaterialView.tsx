@@ -55,7 +55,7 @@ import {
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
-import { AuthenticationType } from '../cluster/cluster.type'
+import { AuthenticationType } from '../../Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import {
     INCLUDE_EXCLUDE_COMMIT_TIPPY,
     INCLUDE_EXCLUDE_COMMIT_INFO,

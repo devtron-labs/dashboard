@@ -17,9 +17,9 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvListMinDTO, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SERVER_MODE_TYPE } from '../../config'
+import { ClusterEnvironmentCategoryType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/types'
 
 export const POLLING_INTERVAL = 30000
 
@@ -112,6 +112,28 @@ export interface ClusterComponentType {
     status: ClusterComponentStatusType
 }
 
+export interface ClusterMetadataTypes {
+    id: number
+    cluster_name: string
+    active: boolean
+    errorInConnecting?: string
+    isVirtualCluster?: boolean
+    agentInstallationStage: ClusterInstallStage
+    clusterCategory: ClusterEnvironmentCategoryType
+    isProd: boolean
+    remoteConnectionConfig: RemoteConnectionConfig
+    insecureSkipTlsVerify: boolean
+    installationId: number
+    server_url: string
+    prometheus_url: string
+    prometheusAuth: any
+    proxyUrl: string
+    toConnectWithSSHTunnel: boolean
+    sshTunnelConfig: any
+    environments: EnvListMinDTO[]
+    description: string
+}
+
 export interface ClusterComponentModalProps {
     agentInstallationStage: ClusterInstallStage
     components: ClusterComponentType[] | null
@@ -139,8 +161,7 @@ export interface UserInfos {
     config: ConfigCluster
 }
 
-export interface ClusterListProps extends RouteComponentProps<{}> {
-    serverMode: SERVER_MODE_TYPE
+export interface ClusterProps extends RouteComponentProps<{}> {
     isSuperAdmin: boolean
 }
 
@@ -193,6 +214,8 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
+    clusterCategoriesList: ClusterEnvironmentCategoryType[]
+    clusterCategory: ClusterEnvironmentCategoryType
 }
 
 export type ClusterFormProps = { reload: () => void } & (
@@ -216,14 +239,50 @@ export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
 }
 
-export interface DeleteClusterConfirmationModalProps {
-    clusterId: string
+export interface ClusterListProps {
     clusterName: string
+    isVirtualCluster: boolean
+    environments: any[]
+    reload: () => void
+    sshTunnelConfig: any
+    isProd: boolean
+    serverURL: string
+    prometheusURL: string
+    prometheusAuth: any
+    proxyUrl: string
+    insecureSkipTlsVerify: boolean
+    installationId: number
+    clusterCategory: ClusterEnvironmentCategoryType
+    toConnectWithSSHTunnel: boolean
+    clusterCategoriesList: ClusterEnvironmentCategoryType[]
+}
+
+export interface ClusterEnvironmentListProps
+    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName'> {
+    clusterId: string
+    newEnvs: any[]
+    environmentCategoryList?: ClusterEnvironmentCategoryType[]
+}
+
+export type AssignCategorySelectTypes = {
+    selectedCategory: OptionType<number, string>
+    setSelectedCategory: Dispatch<SetStateAction<OptionType<number, string>>>
+    categoriesList: ClusterEnvironmentCategoryType[]
+}
+
+export interface DeleteClusterConfirmationModalProps
+    extends Pick<ClusterListProps, 'clusterName' | 'reload'>,
+        Pick<ClusterEnvironmentListProps, 'clusterId'> {
     handleClose: () => void
-    installationId?: string
-    reload?: () => void
+    installationId: string
 }
 
 export interface DeleteClusterPayload {
     id: number
+}
+
+export interface UserNameDropDownListProps {
+    clusterDetail: DataListType
+    selectedUserNameOptions: Record<string, any>
+    onChangeUserName: (selectedOption: any, clusterDetail: DataListType) => void
 }
