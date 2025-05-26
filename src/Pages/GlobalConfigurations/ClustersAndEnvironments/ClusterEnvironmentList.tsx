@@ -11,6 +11,7 @@ import {
 
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 
@@ -33,7 +34,7 @@ export const ClusterEnvironmentList = ({
 
     const hasCategory = ManageCategoryButton
 
-    const baseTableClassName = `dc__grid dc__column-gap-12 cluster-env-list_table${hasCategory ? '--with-category' : ''} lh-20 px-16`
+    const baseTableClassName = `dc__grid dc__column-gap-12 cluster-env-list_table${hasCategory ? '--with-category' : ''} dc__align-item-center lh-20 px-16`
 
     const showWindowModal = () => setShowWindow(true)
 
@@ -144,8 +145,8 @@ export const ClusterEnvironmentList = ({
                             {hasCategory && (
                                 <div>
                                     {category && (
-                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content">
-                                            {category?.name}
+                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content dc__truncate dc__mxw-inherit">
+                                            <InteractiveCellText text={category?.name} />
                                         </span>
                                     )}
                                 </div>

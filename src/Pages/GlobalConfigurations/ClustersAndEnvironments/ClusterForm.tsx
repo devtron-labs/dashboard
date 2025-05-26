@@ -369,7 +369,11 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        category: selectedCategory,
+        category: {
+            name: selectedCategory.label,
+            id: selectedCategory.value,
+            description: selectedCategory.description,
+        },
     })
 
     const onValidation = async (state) => {
@@ -1459,7 +1463,7 @@ const ClusterForm = ({
                                 dataTestId="save_cluster_after_entering_cluster_details"
                                 onClick={handleOnSubmit}
                                 isLoading={loader}
-                                text="Save Cluster"
+                                text={id ? 'Update cluster' : 'Save Cluster'}
                                 buttonProps={{
                                     type: 'submit',
                                 }}

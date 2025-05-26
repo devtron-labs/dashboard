@@ -187,7 +187,7 @@ export const ClusterList = ({
                     </Drawer>
                 ) : (
                     <VirtualClusterForm
-                        id={clusterId}
+                        id={+clusterId}
                         clusterName={clusterName}
                         handleModalClose={handleModalClose}
                         reload={reload}

@@ -161,7 +161,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
-            category: { id: category?.id, name: category?.name },
+            category,
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
@@ -284,7 +284,7 @@ export const ClusterEnvironmentDrawer = ({
     )
 
     const handleSelectedCategory = (_selectedCategory) => {
-        setSelectedCategory(_selectedCategory)
+        setSelectedCategory(selectedCategory ? _selectedCategory : { label: '', value: '' })
         register('category').onChange({
             target: { name: 'category', value: { id: _selectedCategory.value, name: _selectedCategory.label } },
         })
