@@ -28,8 +28,9 @@ import {
     ComponentSizeType,
     getHandleOpenURL,
     OptionType,
+    getDocumentationUrl
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DEVTRON_IFRAME_PRIMARY, DOCUMENTATION } from '@Config/constants'
+import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
 import { createGroupedItemsByKey } from '../../common'
 import ConfigureLinkAction from './ConfigureLinkAction'
 import { getExternalLinks, saveExternalLinks, updateExternalLink } from '../ExternalLinks.service'
@@ -320,7 +321,7 @@ export default function AddExternalLink({
                         style={ButtonStyleType.neutral}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.small}
-                        onClick={getHandleOpenURL(DOCUMENTATION.EXTERNAL_LINKS)}
+                        onClick={getHandleOpenURL(getDocumentationUrl({docLinkKey : "EXTERNAL_LINKS"}))}
                         showAriaLabelInTippy={false}
                         showTooltip
                         tooltipProps={{

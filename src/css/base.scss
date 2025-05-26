@@ -3665,6 +3665,10 @@ button.anchor {
     line-height: 24px;
 }
 
+.lh-26 {
+    line-height: 26px;
+}
+
 .lh-34 {
     line-height: 34px;
 }
@@ -5197,4 +5201,15 @@ details[open] {
             border-color: var(--N50);
         }
     }
+}
+
+.sr-only {
+    clip: rect(1px, 1px, 1px, 1px);
+    clip-path: inset(50%);
+    height: 1px;
+    width: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
 }

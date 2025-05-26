@@ -13,11 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import { getDocumentationUrl, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
 import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { INLINE_PLUGIN_TEXT } from './Constants'
 
@@ -38,7 +37,7 @@ const CustomScriptCard = () => (
 
                 <div className="flexbox dc__gap-4 dc__visible-hover--child dc__align-items-center">
                     <a
-                        href={DOCUMENTATION.EXECUTE_CUSTOM_SCRIPT}
+                        href={getDocumentationUrl({ docLinkKey: 'EXECUTE_CUSTOM_SCRIPT' })}
                         className="anchor fs-12 fw-6 lh-20"
                         target="_blank"
                         rel="noopener noreferrer"

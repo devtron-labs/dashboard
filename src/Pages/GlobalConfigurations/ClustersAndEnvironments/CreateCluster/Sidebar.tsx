@@ -19,7 +19,6 @@ import { generatePath, NavLink, useParams, useRouteMatch } from 'react-router-do
 import { Icon, IconName, ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { SIDEBAR_CONFIG } from './constants'
 import { CreateClusterParams } from './types'
@@ -75,7 +74,7 @@ const Sidebar = () => {
 
             <ModalSidebarPanel
                 heading={selectedSidebarElement.documentationHeader ?? selectedSidebarElement.title}
-                documentationLink={DOCUMENTATION.CLUSTER_AND_ENVIRONMENT}
+                documentationLink="GLOBAL_CONFIG_CLUSTER"
                 rootClassName="w-100 dc__no-background-imp"
             >
                 <div className="flexbox-col dc__gap-24">{selectedSidebarElement.body}</div>

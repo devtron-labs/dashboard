@@ -37,6 +37,7 @@ import {
     ButtonVariantType,
     ActionTypes,
     InfoBlock,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -52,7 +53,7 @@ import {
     getUserRole,
     createOrUpdateUser,
 } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
-import { DOCUMENTATION, MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
+import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
@@ -472,14 +473,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderTokenSection = (): JSX.Element | null => {
         if (!isSuperAdmin) {
             return (
-                <a
-                    className="dc__link dc__no-decor fs-13 fw-4"
-                    href={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                >
-                    How to generate API tokens?
-                </a>
+                <DocLink
+                    docLinkKey="GLOBAL_CONFIG_API_TOKEN"
+                    text="How to generate API tokens?"
+                    dataTestId="learn-more-about-generating-api-tokens"
+                />
             )
         }
         return !showTokenSection ? (

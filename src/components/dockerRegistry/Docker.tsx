@@ -26,6 +26,7 @@ import {
     not,
     CHECKBOX_VALUE,
     Checkbox,
+    DOCUMENTATION,
     REGISTRY_TYPE_MAP,
     ConditionalWrap,
     RepositoryAction,
@@ -63,7 +64,6 @@ import {
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
-    DOCUMENTATION,
     RegistryTypeName,
     OCIRegistryConfigConstants,
     OCIRegistryStorageConfigType,
@@ -208,7 +208,7 @@ export default function Docker({ ...props }) {
                             ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
-                    documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                    documentationLink="GLOBAL_CONFIG_DOCKER"
                     iconClassName="icon-dim-20 ml-4"
                 />
             </div>
