@@ -96,7 +96,7 @@ export const ClusterEnvironmentDrawer = ({
         error: null,
     })
 
-    const [selectedEnvironmentCategory, setSelectedEnvironmentCategory] = useState<SelectPickerOptionType>({
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>({
         label: category?.name,
         value: category?.id,
     })
@@ -284,7 +284,7 @@ export const ClusterEnvironmentDrawer = ({
     )
 
     const handleSelectedCategory = (_selectedCategory) => {
-        setSelectedEnvironmentCategory(_selectedCategory)
+        setSelectedCategory(_selectedCategory)
         register('category').onChange({
             target: { name: 'category', value: { id: _selectedCategory.value, name: _selectedCategory.label } },
         })
@@ -370,12 +370,14 @@ export const ClusterEnvironmentDrawer = ({
                             </div>
                         </div>
                     )}
-                    <div className="w-250">
-                        <AssignCategorySelect
-                            selectedCategory={selectedEnvironmentCategory}
-                            setSelectedCategory={handleSelectedCategory}
-                        />
-                    </div>
+                    {AssignCategorySelect && (
+                        <div className="w-250">
+                            <AssignCategorySelect
+                                selectedCategory={selectedCategory}
+                                setSelectedCategory={handleSelectedCategory}
+                            />
+                        </div>
+                    )}
 
                     {EnvironmentLabels && !isVirtual && (
                         <div className="dc__border-top-n1 pt-16">

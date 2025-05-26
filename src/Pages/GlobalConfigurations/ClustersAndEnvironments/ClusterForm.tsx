@@ -770,12 +770,15 @@ const ClusterForm = ({
                     <RadioGroupItem value="true">Production</RadioGroupItem>
                     <RadioGroupItem value="false">Non - Production</RadioGroupItem>
                 </RadioGroup>
-                <div className="w-250">
-                    <AssignCategorySelect
-                        selectedCategory={selectedCategory}
-                        setSelectedCategory={setSelectedCategory}
-                    />
-                </div>
+
+                {AssignCategorySelect && (
+                    <div className="w-250">
+                        <AssignCategorySelect
+                            selectedCategory={selectedCategory}
+                            setSelectedCategory={setSelectedCategory}
+                        />
+                    </div>
+                )}
 
                 {id !== DEFAULT_CLUSTER_ID && RemoteConnectionRadio && (
                     <>
@@ -1009,7 +1012,7 @@ const ClusterForm = ({
             <div className="api-token__list en-2 bw-0 bg__primary br-8 flexbox-col flex-grow-1 dc__overflow-auto">
                 <div
                     data-testid="cluster_list_page_after_selection"
-                    className="saved-cluster-list-row cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
+                    className="saved-cluster-list-row cluster-env-list_table dc__grid dc__column-gap-12 fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20  dc__border-bottom-n1"
                 >
                     <div data-testid="cluster_validate">CLUSTER</div>
                     <div data-testid="status_validate">STATUS</div>
@@ -1023,7 +1026,7 @@ const ClusterForm = ({
                             <div
                                 // eslint-disable-next-line react/no-array-index-key
                                 key={`api_${index}`}
-                                className="saved-cluster-list-row cluster-env-list_table flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
+                                className="saved-cluster-list-row cluster-env-list_table dc__grid dc__column-gap-12 flex-align-center fw-4 cn-9 fs-13 pr-16 pl-16 pt-6 pb-6"
                             >
                                 <div
                                     data-testid={`validate-cluster-${clusterListDetail.clusterName}`}
@@ -1189,7 +1192,7 @@ const ClusterForm = ({
                                     borderRadiusConfig={{ top: false, right: false }}
                                     description={renderKubeConfigClusterCountInfo(validCluster())}
                                 />
-                                <div className="cluster-list-row-1 border__secondary--bottom cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
+                                <div className="cluster-list-row-1 border__secondary--bottom cluster-env-list_table dc__grid dc__column-gap-12 fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-16 pr-16 dc__border-top dc__border-bottom">
                                     <div data-testid="select_all_cluster_checkbox">
                                         <Checkbox
                                             rootClassName={`form__checkbox-label--ignore-cache mb-0 flex${

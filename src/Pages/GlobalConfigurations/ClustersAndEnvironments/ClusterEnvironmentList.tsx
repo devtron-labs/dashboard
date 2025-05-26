@@ -10,12 +10,15 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 
 import { deleteEnvironment } from './cluster.service'
 import { ClusterEnvironmentListProps } from './cluster.type'
 import { CONFIGURATION_TYPES } from './constants'
+
+const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
 
 export const ClusterEnvironmentList = ({
     clusterId,
@@ -27,6 +30,10 @@ export const ClusterEnvironmentList = ({
     const [environment, setEnvironment] = useState(null)
     const [confirmation, setConfirmation] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
+
+    const hasCategory = ManageCategoryButton
+
+    const baseTableClassName = `dc__grid dc__column-gap-12 cluster-env-list_table ${hasCategory ? '--with-category' : ''} lh-20 px-16`
 
     const showWindowModal = () => setShowWindow(true)
 
@@ -93,7 +100,7 @@ export const ClusterEnvironmentList = ({
                     id && (
                         <div
                             data-testid={`env-container-${environmentName}`}
-                            className="cluster-env-list_table dc__hover-n50 flex left lh-20 pt-8 pb-8 fs-13 fw-4 pl-16 pr-16 h-44 dc__visible-hover dc__visible-hover--parent"
+                            className={`${baseTableClassName} dc__hover-n50 py-8 fs-13 fw-4 h-44 dc__visible-hover dc__visible-hover--parent`}
                             key={id}
                             onClick={() =>
                                 setEnvironment({
@@ -150,11 +157,11 @@ export const ClusterEnvironmentList = ({
 
     return (
         <div className="pb-8">
-            <div className="cluster-env-list_table fs-12 pt-6 pb-6 fw-6 flex left lh-20 pl-20 pr-20 dc__border-top dc__border-bottom-n1">
+            <div className={`${baseTableClassName} fs-12 py-6 fw-6 dc__border-top dc__border-bottom-n1`}>
                 <div />
                 <div>{CONFIGURATION_TYPES.ENVIRONMENT}</div>
                 <div>{CONFIGURATION_TYPES.NAMESPACE}</div>
-                <div>{CONFIGURATION_TYPES.CATEGORY}</div>
+                {hasCategory && <div>{CONFIGURATION_TYPES.CATEGORY}</div>}
                 <div>{CONFIGURATION_TYPES.DESCRIPTION}</div>
                 <div />
             </div>
@@ -176,7 +183,7 @@ export const ClusterEnvironmentList = ({
                     {...environment}
                     hideClusterDrawer={hideClusterDrawer}
                     isVirtual={isVirtualCluster}
-                    category={environment?.category} // TODO remove optional later
+                    category={environment?.category}
                 />
             )}
         </div>
