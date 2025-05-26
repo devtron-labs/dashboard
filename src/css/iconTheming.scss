@@ -136,6 +136,10 @@ $svg-fill-hex-to-var: (
             background-image: url('../assets/icons/dark/ic-checkbox-selected.svg');
         }
 
+        .form__checkbox.error:checked[value='CHECKED'] ~ .form__checkbox-container {
+            background-image: url('../assets/icons/dark/ic-checkbox-selected-error.svg');
+        }
+
         .form__checkbox:checked[value='BULK_CHECKED']~.form__checkbox-container {
             background-image: url('../assets/icons/dark/ic-bulk-check.svg');
         }
