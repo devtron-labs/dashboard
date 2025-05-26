@@ -369,7 +369,7 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        category: selectedCategory.value,
+        category: selectedCategory,
     })
 
     const onValidation = async (state) => {

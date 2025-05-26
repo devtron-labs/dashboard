@@ -817,7 +817,7 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
                 {title}
                 {tag && <span className="tag">{tag}</span>}
                 {category && (
-                    <span className="dc__border bg__secondary px-6 fs-12 lh-20 br-4 dc_width-max-content ml-8">
+                    <span className="dc__border bg__secondary px-6 fs-12 lh-20 br-4 ml-8 fw-4">
                         {category}
                     </span>
                 )}
