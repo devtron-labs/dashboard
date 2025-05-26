@@ -25,9 +25,8 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                 <h2 className="m-0 fs-16 lh-1-5 fw-6 cn-9 flex-grow-1">Documentation</h2>
                 <div className="flex dc__gap-8">
                     <Button
-                        dataTestId="side-doc-open-link"
-                        ariaLabel="side-doc-open-link"
-                        showAriaLabelInTippy={false}
+                        dataTestId="open-in-new-tab-button"
+                        ariaLabel="Open in new tab"
                         icon={<Icon name="ic-arrow-square-out" color={null} />}
                         variant={ButtonVariantType.borderLess}
                         style={ButtonStyleType.neutral}
@@ -38,8 +37,8 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         }}
                     />
                     <Button
-                        dataTestId="side-doc-close-btn"
-                        ariaLabel="side-doc-close-btn"
+                        dataTestId="close-side-panel-button"
+                        ariaLabel="close-side-panel-button"
                         showAriaLabelInTippy={false}
                         icon={<Icon name="ic-close-large" color={null} />}
                         variant={ButtonVariantType.borderLess}
@@ -58,6 +57,8 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         src={`${docLink}&theme=${appTheme}`}
                         width="100%"
                         height="100%"
+                        sandbox="allow-same-origin allow-scripts"
+                        referrerPolicy="no-referrer"
                     />
                 )}
             </div>

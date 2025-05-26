@@ -79,6 +79,7 @@ const UpdateConfirmationDialog = ({
                         docLinkKey="GLOBAL_CONFIG_GITOPS"
                         text="Know more"
                         dataTestId="know-more-about-git-ops-link"
+                        fullWidth={false}
                     />
                 </p>
 

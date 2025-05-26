@@ -454,6 +454,7 @@ export const Sidebar = ({
                         docLinkKey={helpData.docLink}
                         text={helpData.helpText}
                         dataTestId="learn-more-about-ci-pipeline-workflow-editor-link"
+                        openInNewTab
                     />
                 </div>
             )}

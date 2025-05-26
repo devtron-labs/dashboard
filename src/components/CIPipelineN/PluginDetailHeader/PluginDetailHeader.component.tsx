@@ -111,7 +111,8 @@ const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderPro
                     interactive
                     documentationLink={docLink as keyof typeof DOCUMENTATION}
                     documentationLinkText="View documentation"
-                    isExternalLink
+                    isExternalLink={stepType !== PluginType.INLINE}
+                    openInNewTab
                 >
                     <button
                         type="button"
