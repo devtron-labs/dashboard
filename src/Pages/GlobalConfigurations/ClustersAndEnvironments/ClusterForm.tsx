@@ -106,7 +106,7 @@ const ClusterForm = ({
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
-    clusterCategory,
+    category,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -147,8 +147,8 @@ const ClusterForm = ({
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
     const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>({
-        label: clusterCategory?.name,
-        value: clusterCategory?.id,
+        label: category?.name,
+        value: category?.id,
     })
 
     useEffect(
@@ -369,7 +369,7 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        clusterCategory: selectedCategory.value,
+        category: selectedCategory.value,
     })
 
     const onValidation = async (state) => {
@@ -452,7 +452,7 @@ const ClusterForm = ({
             endpoint: { value: prometheusUrl || '', error: '' },
             authType: { value: authenTicationType, error: '' },
             isProd: { value: isProd.toString(), error: '' },
-            clusterCategory: { value: clusterCategory, error: '' },
+            category: { value: category, error: '' },
         },
         {
             cluster_name: {

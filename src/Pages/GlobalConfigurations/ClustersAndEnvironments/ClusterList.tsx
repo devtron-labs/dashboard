@@ -44,7 +44,7 @@ export const ClusterList = ({
     proxyUrl,
     insecureSkipTlsVerify,
     installationId,
-    clusterCategory,
+    category,
     toConnectWithSSHTunnel,
 }: ClusterListProps) => {
     const [editMode, toggleEditMode] = useState(false)
@@ -115,12 +115,13 @@ export const ClusterList = ({
                         subtitle={subTitle}
                         className="fw-6 dc__mxw-400 dc__truncate-text"
                         tag={isProd ? 'Prod' : null}
+                        category={category && category?.name}
                     />
-                    {clusterCategory && (
-                        <span className="dc__truncate-text dc__border bg__secondary eb-5 px-6 fs-12 lh-20 br-4 flex dc_width-max-content flex top cb-5 h-100">
-                            {clusterCategory.name}
+                    {/* {category && (
+                        <span className="dc__truncate-text dc__border bg__secondary px-6 fs-12 lh-20 br-4 flex dc_width-max-content flex top h-100">
+                            {category.name}
                         </span>
-                    )}
+                    )} */}
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16">
                             <Button
@@ -180,7 +181,7 @@ export const ClusterList = ({
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}
-                                clusterCategory={clusterCategory}
+                                category={category}
                             />
                         </div>
                     </Drawer>

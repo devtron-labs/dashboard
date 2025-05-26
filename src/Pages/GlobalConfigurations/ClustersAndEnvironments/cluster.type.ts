@@ -115,14 +115,30 @@ export interface ClusterComponentType {
     status: ClusterComponentStatusType
 }
 
-export interface ClusterMetadataTypes {
+export interface ClusterListProps {
+    clusterName: string
+    isVirtualCluster: boolean
+    environments: any[]
+    reload: () => void
+    sshTunnelConfig: any
+    isProd: boolean
+    serverURL: string
+    prometheusURL: string
+    prometheusAuth: any
+    proxyUrl: string
+    insecureSkipTlsVerify: boolean
+    installationId: number
+    category: ClusterEnvironmentCategoryType
+    toConnectWithSSHTunnel: boolean
+}
+
+export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'> {
     id: number
     cluster_name: string
     active: boolean
     errorInConnecting?: string
     isVirtualCluster?: boolean
     agentInstallationStage: ClusterInstallStage
-    clusterCategory: ClusterEnvironmentCategoryType
     isProd: boolean
     remoteConnectionConfig: RemoteConnectionConfig
     insecureSkipTlsVerify: boolean
@@ -202,7 +218,7 @@ export interface ClusterFormType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
-export type EditClusterFormProps = {
+export type EditClusterFormProps = Pick<ClusterListProps, 'category'> & {
     id: number
     toggleEditMode: Dispatch<SetStateAction<boolean>>
     isProd?: boolean
@@ -217,7 +233,6 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-    clusterCategory: ClusterEnvironmentCategoryType
 }
 
 export type ClusterFormProps = { reload: () => void } & (
@@ -239,23 +254,6 @@ export interface AddClusterFormPrefilledInfoType {
 
 export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
-}
-
-export interface ClusterListProps {
-    clusterName: string
-    isVirtualCluster: boolean
-    environments: any[]
-    reload: () => void
-    sshTunnelConfig: any
-    isProd: boolean
-    serverURL: string
-    prometheusURL: string
-    prometheusAuth: any
-    proxyUrl: string
-    insecureSkipTlsVerify: boolean
-    installationId: number
-    clusterCategory: ClusterEnvironmentCategoryType
-    toConnectWithSSHTunnel: boolean
 }
 
 export interface ClusterEnvironmentListProps

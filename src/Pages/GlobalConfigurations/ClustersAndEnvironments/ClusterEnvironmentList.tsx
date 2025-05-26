@@ -33,7 +33,7 @@ export const ClusterEnvironmentList = ({
 
     const hasCategory = ManageCategoryButton
 
-    const baseTableClassName = `dc__grid dc__column-gap-12 cluster-env-list_table ${hasCategory ? '--with-category' : ''} lh-20 px-16`
+    const baseTableClassName = `dc__grid dc__column-gap-12 cluster-env-list_table${hasCategory ? '--with-category' : ''} lh-20 px-16`
 
     const showWindowModal = () => setShowWindow(true)
 
@@ -141,14 +141,16 @@ export const ClusterEnvironmentList = ({
                                 )}
                             </div>
                             <div className="dc__truncate-text">{namespace}</div>
-                            <div>
-                                {category?.name ||
-                                    (environmentCategory?.name && (
+                            {hasCategory && (
+                                <div>
+                                    {category && (
                                         <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content">
-                                            {category?.name || environmentCategory?.name}
+                                            {category?.name}
                                         </span>
-                                    ))}
-                            </div>
+                                    )}
+                                </div>
+                            )}
+
                             <div className="cluster-list__description dc__truncate-text">{description}</div>
                             {renderActionButton(environmentName)}
                         </div>

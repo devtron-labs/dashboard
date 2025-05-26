@@ -154,7 +154,9 @@ export default function GlobalConfiguration(props) {
     }
 
     return (
-        <main className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}>
+        <main
+            className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}
+        >
             {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
@@ -808,11 +810,17 @@ const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     )
 }
 
-const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
+const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', category = '' }) => {
     return (
         <div className="flex column left">
             <div className={`list__title ${className}`} style={style}>
-                {title} {tag && <span className="tag">{tag}</span>}
+                {title}
+                {tag && <span className="tag">{tag}</span>}
+                {category && (
+                    <span className="dc__border bg__secondary px-6 fs-12 lh-20 br-4 dc_width-max-content ml-8">
+                        {category}
+                    </span>
+                )}
             </div>
             {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
         </div>

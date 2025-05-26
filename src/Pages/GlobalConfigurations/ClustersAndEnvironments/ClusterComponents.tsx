@@ -214,7 +214,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             proxyUrl={cluster.proxyUrl}
                             insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
                             installationId={cluster.installationId}
-                            clusterCategory={cluster.clusterCategory}
+                            category={cluster.category}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
                         />
                     ),
