@@ -34,11 +34,6 @@ export interface AppContextType {
      */
     currentEnvironmentName?: string
     setCurrentEnvironmentName?: (currentEnvironmentName: string) => void
-    aiAgentContext: {
-        path: string
-        context: Record<string, string>
-    }
-    setAIAgentContext: (aiAgentContext: AppContextType['aiAgentContext']) => void
 }
 export const AppContext = createContext<AppContextType>({
     environmentId: null,
@@ -47,8 +42,6 @@ export const AppContext = createContext<AppContextType>({
     setCurrentAppName: noop,
     currentEnvironmentName: '',
     setCurrentEnvironmentName: noop,
-    aiAgentContext: null,
-    setAIAgentContext: noop,
 })
 
 export function useAppContext() {

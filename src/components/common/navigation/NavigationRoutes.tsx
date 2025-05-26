@@ -106,6 +106,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
+const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
     userPreferences: UserPreferencesType
@@ -121,6 +122,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const location = useLocation()
     const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
+    const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -142,8 +144,9 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
         setHelpGettingStartedClicked(true)
     }
     const [environmentId, setEnvironmentId] = useState(null)
-    const [aiAgentContext, setAIAgentContext] = useState(null)
-    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId, aiAgentContext, setAIAgentContext }), [environmentId])
+    const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
+
+    const parentRef = useRef<HTMLDivElement>(null)
 
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
@@ -491,9 +494,11 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
+                aiAgentContext,
+                setAIAgentContext,
             }}
         >
-            <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
+            <main ref={parentRef} className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
                 {showThemeSwitcherDialog && (
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}
@@ -501,6 +506,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
+                {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && <AIChat parentRef={parentRef} {...aiAgentContext} />}
                 {renderAboutDevtronDialog()}
                 {!_isOnboardingPage && (
                     <Navigation
@@ -659,11 +665,10 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
     const { path } = useRouteMatch()
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentAppName, setCurrentAppName] = useState<string>('')
-    const [aiAgentContext, setAIAgentContext] = useState<AppContextType['aiAgentContext']>(null)
 
     return (
         <ErrorBoundary>
-            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName, aiAgentContext, setAIAgentContext }}>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
                 <Switch>
                     <Route
                         path={`${path}/${URLS.APP_LIST}`}

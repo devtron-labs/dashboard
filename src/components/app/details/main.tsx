@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, PropsWithChildren, ReactNode, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, PropsWithChildren, Suspense, useEffect, useRef, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -38,7 +38,6 @@ import {
     importComponentFromFELibrary,
     setAppGroupFilterInLocalStorage,
     sortOptionsByLabel,
-    useAppContext,
 } from '../../common'
 import { APP_TYPE, URLS } from '../../../config'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
@@ -61,10 +60,8 @@ const CIDetails = lazy(() => import('./cIDetails/CIDetails'))
 const AppDetails = lazy(() => import('./appDetails/AppDetails'))
 const CDDetails = lazy(() => import('./cdDetails/CDDetails'))
 
-const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
-
 const AIAgentContextSetterWrapper = ({ children, appName }: PropsWithChildren<{ appName: string }>) => {
-    const { setAIAgentContext } = useAppContext()
+    const { setAIAgentContext } = useMainContext()
     const params = useParams()
     const { path, url } = useRouteMatch()
 
@@ -78,7 +75,7 @@ const AIAgentContextSetterWrapper = ({ children, appName }: PropsWithChildren<{ 
 export default function AppDetailsPage() {
     const { path } = useRouteMatch()
     const { appId } = useParams<{ appId }>()
-    const { setIntelligenceConfig } = useMainContext()
+    const { setIntelligenceConfig, setAIAgentContext } = useMainContext()
     const [appName, setAppName] = useState('')
     const [appMetaInfo, setAppMetaInfo] = useState<AppMetaInfo>()
     const [reloadMandatoryProjects, setReloadMandatoryProjects] = useState<boolean>(true)
@@ -97,7 +94,7 @@ export default function AppDetailsPage() {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
-    const { aiAgentContext } = useAppContext()
+    const { aiAgentContext } = useMainContext()
 
     const parentRef = useRef<HTMLDivElement>(null)
 
@@ -156,6 +153,7 @@ export default function AppDetailsPage() {
             setSelectedGroupFilter([])
             setAppListOptions([])
             setIntelligenceConfig(null)
+            setAIAgentContext(null)
         }
     }, [appId])
 
@@ -399,8 +397,6 @@ export default function AppDetailsPage() {
                     closeConfirmationModal={closeDeleteGroup}
                 />
             )}
-
-            {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && <AIChat parentRef={parentRef} {...aiAgentContext} />}
 
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
