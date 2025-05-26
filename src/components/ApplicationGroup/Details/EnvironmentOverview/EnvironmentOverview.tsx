@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -56,6 +56,7 @@ import {
 import { GROUP_LIST_HEADER } from '@Components/ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '@Components/common'
 import { Moment12HourFormat } from '@Config/constants'
+import { URLS } from '@Config/routes'
 import {
     EnvironmentOverviewBulkSelectionWidget,
     EnvironmentOverviewTable,
@@ -74,7 +75,7 @@ const processDeploymentWindowAppGroupOverviewMap = importComponentFromFELibrary(
     null,
     'function',
 )
-const AppGroupManageTrafficDrawer = importComponentFromFELibrary('AppGroupManageTrafficDrawer', null, 'function')
+const BulkManageTrafficDrawer = importComponentFromFELibrary('BulkManageTrafficDrawer', null, 'function')
 const ManageTrafficButton = importComponentFromFELibrary('ManageTrafficButton', null, 'function')
 const ClonePipelineMenuButton = importComponentFromFELibrary('ClonePipelineMenuButton', null, 'function')
 const ClonePipelineModal = importComponentFromFELibrary('ClonePipelineModal', null, 'function')
@@ -83,6 +84,8 @@ const getManageTrafficMenuButtonConfig = importComponentFromFELibrary(
     null,
     'function',
 )
+
+const ENV_OVERVIEW_PATH = `${URLS.APPLICATION_GROUP}/:envId/${URLS.APP_OVERVIEW}`
 
 const EnvironmentOverview = ({
     appGroupListData,
@@ -116,10 +119,12 @@ const EnvironmentOverview = ({
         Record<string, { type: string; excludedUserEmails: string[]; userActionState: ACTION_STATE; isActive: boolean }>
     >({})
     const [restartLoader, setRestartLoader] = useState<boolean>(false)
-    const [isManageTrafficDrawerOpen, setIsManageTrafficDrawerOpen] = useState(false)
 
     // HOOKS
-    const { envId } = useParams<{ envId: string }>()
+    const {
+        path,
+        params: { envId },
+    } = useRouteMatch<{ envId: string }>()
     const history = useHistory()
     const location = useLocation()
     const { searchParams } = useSearchString()
@@ -291,9 +296,15 @@ const EnvironmentOverview = ({
 
     const handleBulkSelectionWidgetClose = () => setSelectedAppDetailsList([])
 
-    const handleOpenManageTrafficDrawer = () => setIsManageTrafficDrawerOpen(true)
+    const getManageTrafficPath = () => generatePath(`${ENV_OVERVIEW_PATH}/${URLS.MANAGE_TRAFFIC}`, { envId })
 
-    const handleCloseManageTrafficDrawer = () => setIsManageTrafficDrawerOpen(false)
+    const handleOpenManageTrafficDrawer = () => {
+        history.push(getManageTrafficPath())
+    }
+
+    const handleCloseManageTrafficDrawer = () => {
+        history.push(generatePath(ENV_OVERVIEW_PATH, { envId }))
+    }
 
     // CONFIGS
     const environmentOverviewTableRows = (appListData?.appInfoList ?? []).map<EnvironmentOverviewTableRow>(
@@ -431,164 +442,169 @@ const EnvironmentOverview = ({
     }
 
     return environmentOverviewTableRows.length > 0 ? (
-        <div
-            ref={parentRef}
-            className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bg__primary p-20 dc__position-rel"
-        >
-            {/* SIDE INFO COLUMN */}
-            <aside className="flexbox-col dc__gap-16">
-                <div className="flexbox-col dc__gap-12">
-                    <div>
-                        <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
-                            <div className="flex dc__border-radius-8-imp mw-48 h-48 bcb-1">
-                                <GridIconBlue className="w-32 h-32" />
+        <>
+            <Switch>
+                {BulkManageTrafficDrawer && (
+                    <Route path={`${path}/${URLS.MANAGE_TRAFFIC}`}>
+                        <BulkManageTrafficDrawer
+                            envId={+envId}
+                            envName={appListData.environment}
+                            appInfoList={appListData?.appInfoList}
+                            initialSelectedAppList={selectedAppDetailsList}
+                            onClose={handleCloseManageTrafficDrawer}
+                        />
+                    </Route>
+                )}
+            </Switch>
+            <div
+                ref={parentRef}
+                className="env-overview-container flex-grow-1 dc__overflow-auto dc__content-center bg__primary p-20 dc__position-rel"
+            >
+                {/* SIDE INFO COLUMN */}
+                <aside className="flexbox-col dc__gap-16">
+                    <div className="flexbox-col dc__gap-12">
+                        <div>
+                            <div className="mxh-64 dc__mxw-120 mh-40 w-100 h-100 flexbox">
+                                <div className="flex dc__border-radius-8-imp mw-48 h-48 bcb-1">
+                                    <GridIconBlue className="w-32 h-32" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">
+                            {appGroupListData.environmentName}
+                        </div>
+                        <EditableTextArea
+                            emptyState="Write a short description for this environment"
+                            placeholder="Write a short description for this environment"
+                            initialText={description}
+                            updateContent={handleSaveDescription}
+                            validations={{
+                                maxLength: {
+                                    value: BIO_MAX_LENGTH,
+                                    message: BIO_MAX_LENGTH_ERROR,
+                                },
+                            }}
+                        />
+                    </div>
+                    <div className="dc__border-top-n1" />
+                    <div className="flexbox-col dc__gap-12">
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Type</div>
+                            <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
+                                {appGroupListData.environmentType}
+                            </div>
+                        </div>
+
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Namespace</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                                <span>{appGroupListData.namespace}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Cluster</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                                <span>{appGroupListData.clusterName}</span>
+                            </div>
+                        </div>
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
+                                {appGroupListData.createdOn
+                                    ? moment(appGroupListData.createdOn).format(Moment12HourFormat)
+                                    : '-'}
+                            </div>
+                        </div>
+                        <div>
+                            <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
+                            <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
+                                <div
+                                    className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
+                                    style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
+                                >
+                                    {appGroupListData.createdBy[0]}
+                                </div>
+                                {appGroupListData.createdBy}
                             </div>
                         </div>
                     </div>
+                </aside>
 
-                    <div className="fs-16 fw-7 lh-24 cn-9 dc__word-break font-merriweather">
-                        {appGroupListData.environmentName}
+                {/* OVERVIEW TABLE */}
+                <div className="mw-none">
+                    <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
+                        <span className="flex">
+                            <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
+                        </span>
+                        {window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE && ManageTrafficButton && (
+                            <ManageTrafficButton to={getManageTrafficPath()} />
+                        )}
                     </div>
-                    <EditableTextArea
-                        emptyState="Write a short description for this environment"
-                        placeholder="Write a short description for this environment"
-                        initialText={description}
-                        updateContent={handleSaveDescription}
-                        validations={{
-                            maxLength: {
-                                value: BIO_MAX_LENGTH,
-                                message: BIO_MAX_LENGTH_ERROR,
-                            },
-                        }}
+                    <EnvironmentOverviewTable
+                        rows={environmentOverviewTableRows}
+                        isVirtualEnv={isVirtualEnv}
+                        onCheckboxSelect={handleCheckboxSelect}
                     />
                 </div>
-                <div className="dc__border-top-n1" />
-                <div className="flexbox-col dc__gap-12">
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Type</div>
-                        <div className="flexbox flex-justify flex-align-center dc__gap-10 fs-13 fw-6 lh-20 cn-9">
-                            {appGroupListData.environmentType}
-                        </div>
-                    </div>
+                {/* MODALS */}
+                {renderOverviewModal()}
 
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Namespace</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
-                            <span>{appGroupListData.namespace}</span>
+                {/* BULK SELECTION WIDGET */}
+                {!!selectedAppDetailsList.length && (
+                    <EnvironmentOverviewBulkSelectionWidget
+                        parentRef={parentRef}
+                        count={selectedAppDetailsList.length}
+                        onClose={handleBulkSelectionWidgetClose}
+                        popUpMenuItems={[
+                            ...(window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE && getManageTrafficMenuButtonConfig
+                                ? [getManageTrafficMenuButtonConfig({ onClick: handleOpenManageTrafficDrawer })]
+                                : []),
+                            ...(ClonePipelineMenuButton && appListData.environment
+                                ? [
+                                      <ClonePipelineMenuButton
+                                          sourceEnvironmentName={appListData.environment}
+                                          onClick={() => {
+                                              setOpenClonePipelineConfig(true)
+                                          }}
+                                      />,
+                                  ]
+                                : []),
+                        ]}
+                    >
+                        <div className="flex dc__gap-4">
+                            <Button
+                                icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                dataTestId="environment-overview-action-widget-restart-workloads"
+                                style={ButtonStyleType.neutral}
+                                variant={ButtonVariantType.borderLess}
+                                ariaLabel="Restart Workloads"
+                                size={ComponentSizeType.small}
+                                onClick={onClickShowBulkRestartModal}
+                            />
+                            <Button
+                                icon={<Icon name="ic-hibernate-circle" color={null} />}
+                                dataTestId="environment-overview-action-widget-hibernate"
+                                style={ButtonStyleType.neutral}
+                                variant={ButtonVariantType.borderLess}
+                                ariaLabel="Hibernate Applications"
+                                size={ComponentSizeType.small}
+                                onClick={openHibernateModalPopup}
+                            />
+                            <Button
+                                icon={<Icon name="ic-sun" color={null} />}
+                                dataTestId="environment-overview-action-widget-unhibernate"
+                                style={ButtonStyleType.neutral}
+                                variant={ButtonVariantType.borderLess}
+                                ariaLabel="Unhibernate Applications"
+                                size={ComponentSizeType.small}
+                                onClick={openUnHibernateModalPopup}
+                            />
                         </div>
-                    </div>
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Cluster</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
-                            <span>{appGroupListData.clusterName}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created on</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break">
-                            {appGroupListData.createdOn
-                                ? moment(appGroupListData.createdOn).format(Moment12HourFormat)
-                                : '-'}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created by</div>
-                        <div className="fs-13 fw-6 lh-20 cn-9 dc__word-break flexbox flex-align-center dc__gap-8">
-                            <div
-                                className="icon-dim-20 mw-20 flexbox flex-justify-center flex-align-center dc__border-radius-50-per dc__uppercase cn-0 fw-4"
-                                style={{ backgroundColor: getRandomColor(appGroupListData.createdBy) }}
-                            >
-                                {appGroupListData.createdBy[0]}
-                            </div>
-                            {appGroupListData.createdBy}
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            {/* OVERVIEW TABLE */}
-            <div className="mw-none">
-                <div className="dc__align-self-stretch flex dc__content-space left fs-14 h-30 fw-6 lh-20 cn-9 mb-12">
-                    <span className="flex">
-                        <GridIcon className="icon-dim-20 mr-8 scn-9" /> {GROUP_LIST_HEADER.APPLICATIONS}
-                    </span>
-                    {window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE && ManageTrafficButton && (
-                        <ManageTrafficButton onClick={handleOpenManageTrafficDrawer} />
-                    )}
-                </div>
-                <EnvironmentOverviewTable
-                    rows={environmentOverviewTableRows}
-                    isVirtualEnv={isVirtualEnv}
-                    onCheckboxSelect={handleCheckboxSelect}
-                />
+                    </EnvironmentOverviewBulkSelectionWidget>
+                )}
             </div>
-            {/* MODALS */}
-            {renderOverviewModal()}
-
-            {AppGroupManageTrafficDrawer && isManageTrafficDrawerOpen && (
-                <AppGroupManageTrafficDrawer
-                    envId={+envId}
-                    envName={appListData.environment}
-                    appInfoList={appListData?.appInfoList}
-                    initialSelectedAppList={selectedAppDetailsList}
-                    onClose={handleCloseManageTrafficDrawer}
-                />
-            )}
-
-            {/* BULK SELECTION WIDGET */}
-            {!!selectedAppDetailsList.length && (
-                <EnvironmentOverviewBulkSelectionWidget
-                    parentRef={parentRef}
-                    count={selectedAppDetailsList.length}
-                    onClose={handleBulkSelectionWidgetClose}
-                    popUpMenuItems={[
-                        ...(window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE && getManageTrafficMenuButtonConfig
-                            ? [getManageTrafficMenuButtonConfig({ onClick: handleOpenManageTrafficDrawer })]
-                            : []),
-                        ...(ClonePipelineMenuButton && appListData.environment
-                            ? [
-                                  <ClonePipelineMenuButton
-                                      sourceEnvironmentName={appListData.environment}
-                                      onClick={() => {
-                                          setOpenClonePipelineConfig(true)
-                                      }}
-                                  />,
-                              ]
-                            : []),
-                    ]}
-                >
-                    <div className="flex dc__gap-4">
-                        <Button
-                            icon={<Icon name="ic-arrows-clockwise" color={null} />}
-                            dataTestId="environment-overview-action-widget-restart-workloads"
-                            style={ButtonStyleType.neutral}
-                            variant={ButtonVariantType.borderLess}
-                            ariaLabel="Restart Workloads"
-                            size={ComponentSizeType.small}
-                            onClick={onClickShowBulkRestartModal}
-                        />
-                        <Button
-                            icon={<Icon name="ic-hibernate-circle" color={null} />}
-                            dataTestId="environment-overview-action-widget-hibernate"
-                            style={ButtonStyleType.neutral}
-                            variant={ButtonVariantType.borderLess}
-                            ariaLabel="Hibernate Applications"
-                            size={ComponentSizeType.small}
-                            onClick={openHibernateModalPopup}
-                        />
-                        <Button
-                            icon={<Icon name="ic-sun" color={null} />}
-                            dataTestId="environment-overview-action-widget-unhibernate"
-                            style={ButtonStyleType.neutral}
-                            variant={ButtonVariantType.borderLess}
-                            ariaLabel="Unhibernate Applications"
-                            size={ComponentSizeType.small}
-                            onClick={openUnHibernateModalPopup}
-                        />
-                    </div>
-                </EnvironmentOverviewBulkSelectionWidget>
-            )}
-        </div>
+        </>
     ) : null
 }
 
