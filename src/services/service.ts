@@ -525,8 +525,17 @@ export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
     return get(URL)
 }
 
-export function dashboardAccessed() {
-    return get(Routes.DASHBOARD_ACCESSED)
+export const dashboardAccessed = async () => {
+    try {
+        const isDashboardAccessed = localStorage.getItem('isDashboardAccessed')
+        if (isDashboardAccessed === 'true') {
+            return
+        }
+        await get(Routes.DASHBOARD_ACCESSED)
+        localStorage.setItem('isDashboardAccessed', 'true')
+    } catch {
+        // do noting
+    }
 }
 
 export function dashboardLoggedIn() {
