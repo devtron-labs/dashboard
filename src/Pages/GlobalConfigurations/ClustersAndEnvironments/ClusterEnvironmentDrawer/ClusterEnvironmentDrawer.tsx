@@ -45,7 +45,6 @@ import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
-import { AssignCategorySelect } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/AssignCategorySelect'
 import { getNamespaceFromLocalStorage } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
@@ -59,6 +58,7 @@ import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNames
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')
 const EnvironmentLabels = importComponentFromFELibrary('EnvironmentLabels', null, 'function')
+const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect', null, 'function')
 
 const getVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
 
@@ -73,7 +73,6 @@ export const ClusterEnvironmentDrawer = ({
     hideClusterDrawer,
     isVirtual,
     clusterName,
-    categoryList,
     category,
 }: ClusterEnvironmentDrawerProps) => {
     // STATES
@@ -375,7 +374,6 @@ export const ClusterEnvironmentDrawer = ({
                         <AssignCategorySelect
                             selectedCategory={selectedEnvironmentCategory}
                             setSelectedCategory={handleSelectedCategory}
-                            categoriesList={categoryList}
                         />
                     </div>
 

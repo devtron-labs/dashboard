@@ -58,7 +58,6 @@ import { RemoteConnectionType } from '../../../components/dockerRegistry/dockerT
 import { getModuleInfo } from '../../../components/v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../components/v2/devtronStackManager/DevtronStackManager.type'
 import { AppCreationType, CLUSTER_COMMAND, MODES, ModuleNameMap } from '../../../config'
-import { AssignCategorySelect } from './AssignCategorySelect'
 import { saveCluster, saveClusters, updateCluster, validateCluster } from './cluster.service'
 import {
     AuthenticationType,
@@ -85,6 +84,7 @@ import './cluster.scss'
 
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
+const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect', null, 'function')
 
 const ClusterForm = ({
     id = null,
@@ -106,7 +106,6 @@ const ClusterForm = ({
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
-    clusterCategoriesList,
     clusterCategory,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
@@ -775,7 +774,6 @@ const ClusterForm = ({
                     <AssignCategorySelect
                         selectedCategory={selectedCategory}
                         setSelectedCategory={setSelectedCategory}
-                        categoriesList={clusterCategoriesList}
                     />
                 </div>
 

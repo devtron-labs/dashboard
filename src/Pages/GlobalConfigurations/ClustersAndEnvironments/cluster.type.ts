@@ -17,9 +17,12 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { EnvListMinDTO, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ClusterEnvironmentCategoryType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/types'
+import {
+    ClusterEnvironmentCategoryType,
+    EnvListMinDTO,
+    OptionType,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const POLLING_INTERVAL = 30000
 
@@ -214,7 +217,6 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-    clusterCategoriesList: ClusterEnvironmentCategoryType[]
     clusterCategory: ClusterEnvironmentCategoryType
 }
 
@@ -254,21 +256,13 @@ export interface ClusterListProps {
     installationId: number
     clusterCategory: ClusterEnvironmentCategoryType
     toConnectWithSSHTunnel: boolean
-    categoryList: ClusterEnvironmentCategoryType[]
 }
 
 export interface ClusterEnvironmentListProps
-    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName' | 'categoryList'> {
+    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName'> {
     clusterId: string
     newEnvs: any[]
 }
-
-export type AssignCategorySelectTypes = {
-    selectedCategory: SelectPickerOptionType
-    setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
-    categoriesList: ClusterEnvironmentCategoryType[]
-}
-
 export interface DeleteClusterConfirmationModalProps
     extends Pick<ClusterListProps, 'clusterName' | 'reload'>,
         Pick<ClusterEnvironmentListProps, 'clusterId'> {

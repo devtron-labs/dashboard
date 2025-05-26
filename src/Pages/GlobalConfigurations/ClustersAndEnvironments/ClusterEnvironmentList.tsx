@@ -23,7 +23,6 @@ export const ClusterEnvironmentList = ({
     isVirtualCluster,
     newEnvs,
     clusterName,
-    categoryList,
 }: ClusterEnvironmentListProps) => {
     const [environment, setEnvironment] = useState(null)
     const [confirmation, setConfirmation] = useState(false)
@@ -177,7 +176,6 @@ export const ClusterEnvironmentList = ({
                     {...environment}
                     hideClusterDrawer={hideClusterDrawer}
                     isVirtual={isVirtualCluster}
-                    categoryList={categoryList}
                     category={environment?.category} // TODO remove optional later
                 />
             )}

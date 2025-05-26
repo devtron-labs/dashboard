@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { DeleteConfirmationModalProps, TagType } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ClusterListProps } from '../cluster.type'
-import { ClusterEnvironmentCategoryType } from '../ManageCategories/types'
+import {
+    ClusterEnvironmentCategoryType,
+    DeleteConfirmationModalProps,
+    TagType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
@@ -27,9 +28,7 @@ export interface ClusterEnvironmentDrawerFormProps {
     category: ClusterEnvironmentCategoryType
 }
 
-export interface ClusterEnvironmentDrawerProps
-    extends ClusterEnvironmentDrawerFormProps,
-        Pick<ClusterListProps, 'categoryList'> {
+export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
     id: string
     clusterId: number
     reload: () => void
