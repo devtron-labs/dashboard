@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { generatePath } from 'react-router-dom'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -27,7 +28,7 @@ import {
     Drawer,
     GenericEmptyState,
     noop,
-    Progressing,
+    SelectPickerOptionType,
     ServerErrors,
     showError,
     stopPropagation,
@@ -35,7 +36,6 @@ import {
     ToastManager,
     ToastVariantType,
     Tooltip,
-    useAsync,
     useForm,
     UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -52,7 +52,6 @@ import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurati
 import { deleteEnvironment, saveEnvironment, updateEnvironment } from '../cluster.service'
 import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
-import { getEnvironmentCategoryList } from '../ManageCategories/service'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
 import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
 import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNamespaceLabels } from './utils'
@@ -74,7 +73,8 @@ export const ClusterEnvironmentDrawer = ({
     hideClusterDrawer,
     isVirtual,
     clusterName,
-    environmentCategory,
+    categoryList,
+    category,
 }: ClusterEnvironmentDrawerProps) => {
     // STATES
     // Manages the loading state for create and update actions
@@ -97,8 +97,10 @@ export const ClusterEnvironmentDrawer = ({
         error: null,
     })
 
-    const [environmentCategoryLoader, environmentCategoryList, environmentCategoryListError] =
-        useAsync(getEnvironmentCategoryList)
+    const [selectedEnvironmentCategory, setSelectedEnvironmentCategory] = useState<SelectPickerOptionType>({
+        label: category?.name,
+        value: category?.id,
+    })
 
     const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
@@ -160,7 +162,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
-            category: { label: environmentCategory?.name, value: environmentCategory?.id },
+            category: { id: category?.id, name: category?.name },
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
@@ -205,7 +207,7 @@ export const ClusterEnvironmentDrawer = ({
                 hideClusterDrawer()
             } catch (err) {
                 setCrudLoading(false)
-                if (err.code === 409) {
+                if (err.code === API_STATUS_CODES.CONFLICT) {
                     ToastManager.showToast({
                         variant: ToastVariantType.error,
                         title: 'Namespace manifest changed',
@@ -283,7 +285,10 @@ export const ClusterEnvironmentDrawer = ({
     )
 
     const handleSelectedCategory = (_selectedCategory) => {
-        register('category').onChange({ target: { name: 'category', value: _selectedCategory } })
+        setSelectedEnvironmentCategory(_selectedCategory)
+        register('category').onChange({
+            target: { name: 'category', value: { id: _selectedCategory.value, name: _selectedCategory.label } },
+        })
     }
 
     const renderContent = () => {
@@ -294,19 +299,6 @@ export const ClusterEnvironmentDrawer = ({
                     subTitle="Please add cluster before adding an environment."
                     isButtonAvailable
                     renderButton={renderCreateClusterButton}
-                />
-            )
-        }
-
-        if (environmentCategoryLoader) {
-            return <Progressing pageLoader />
-        }
-
-        if (environmentCategoryListError) {
-            return (
-                <GenericEmptyState
-                    title="Failed to load environment categories"
-                    subTitle="Failed to load environment categories"
                 />
             )
         }
@@ -381,9 +373,9 @@ export const ClusterEnvironmentDrawer = ({
                     )}
                     <div className="w-250">
                         <AssignCategorySelect
-                            selectedCategory={data.category}
+                            selectedCategory={selectedEnvironmentCategory}
                             setSelectedCategory={handleSelectedCategory}
-                            categoriesList={environmentCategoryList?.environmentCategories}
+                            categoriesList={categoryList}
                         />
                     </div>
 

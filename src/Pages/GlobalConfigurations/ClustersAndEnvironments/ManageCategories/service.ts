@@ -1,6 +1,6 @@
-import { get, ROUTES, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, ROUTES, showError } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ManageClusterCategoryDTO, ManageEnvironmentCategoryDTO } from './types'
+import { ManageClusterCategoryDTO } from './types'
 
 export const getClusterCategoryList = async (): Promise<ManageClusterCategoryDTO> => {
     try {
@@ -12,9 +12,9 @@ export const getClusterCategoryList = async (): Promise<ManageClusterCategoryDTO
     }
 }
 
-export const getEnvironmentCategoryList = async (): Promise<ManageEnvironmentCategoryDTO> => {
+export const updateCategoryList = async (request): Promise<ManageClusterCategoryDTO[]> => {
     try {
-        const response = await get(`${ROUTES.ENVIRONMENT_CATEGORIES}`)
+        const response = await post(`${'cluster/category'}`, request)
         return response.result
     } catch (err) {
         showError(err)

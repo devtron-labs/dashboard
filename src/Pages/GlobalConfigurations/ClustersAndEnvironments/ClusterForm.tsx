@@ -34,10 +34,10 @@ import {
     InfoBlock,
     NewClusterFormProps,
     noop,
-    OptionType,
     PasswordField,
     RadioGroup,
     RadioGroupItem,
+    SelectPickerOptionType,
     showError,
     Textarea,
     ToastManager,
@@ -146,7 +146,8 @@ const ClusterForm = ({
     const areSomeEntriesSelected = Object.values(isClusterSelected).some((_selected) => _selected)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
-    const [selectedCategory, setSelectedCategory] = useState<OptionType<number, string>>({
+
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>({
         label: clusterCategory?.name,
         value: clusterCategory?.id,
     })
@@ -369,7 +370,7 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        category: selectedCategory.value,
+        clusterCategory: selectedCategory.value,
     })
 
     const onValidation = async (state) => {
@@ -452,6 +453,7 @@ const ClusterForm = ({
             endpoint: { value: prometheusUrl || '', error: '' },
             authType: { value: authenTicationType, error: '' },
             isProd: { value: isProd.toString(), error: '' },
+            clusterCategory: { value: clusterCategory, error: '' },
         },
         {
             cluster_name: {

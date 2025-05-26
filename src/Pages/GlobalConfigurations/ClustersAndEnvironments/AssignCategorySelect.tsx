@@ -1,4 +1,4 @@
-import { ComponentSizeType, OptionType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, SelectPicker, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterEnvironmentCategoryType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/types'
 
@@ -10,6 +10,7 @@ export const getClusterCategoryOptions = (clusterCategory: ClusterEnvironmentCat
     clusterCategory?.map((category) => ({
         label: category.name,
         value: category.id,
+        description: category.description,
     }))
 
 export const AssignCategorySelect = ({
@@ -17,7 +18,7 @@ export const AssignCategorySelect = ({
     setSelectedCategory,
     categoriesList,
 }: AssignCategorySelectTypes) => {
-    const handleCategoryChange = (selected: OptionType<number, string>) => {
+    const handleCategoryChange = (selected: SelectPickerOptionType) => {
         setSelectedCategory(selected)
     }
 

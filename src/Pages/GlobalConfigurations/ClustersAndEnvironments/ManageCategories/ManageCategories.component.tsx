@@ -24,6 +24,7 @@ import emptyFolder from '@Images/no-artifact.webp'
 import { URLS } from '@Config/routes'
 
 import { CATEGORIES_TABLE_HEADERS } from './constants'
+import { updateCategoryList } from './service'
 import { CategoriesDataRowType, CategoriesTableColumnsType, ManageCategoriesProps } from './types'
 import { getEmptyCategoriesDataRow, getInitialCategoryListData } from './utils'
 
@@ -37,6 +38,17 @@ const ManageCategories = ({
 
     const [rows, setRows] = useState<CategoriesDataRowType[]>([getEmptyCategoriesDataRow()])
     const { push } = useHistory()
+
+    const updateCategories = async () => {
+        const payload = rows.map((row) => ({
+            id: +row.id,
+            name: row.data.categories.value,
+            description: row.data.description.value,
+        }))
+
+        await updateCategoryList({ clusterCategories: payload })
+        reloadCategoryList()
+    }
 
     useEffect(() => {
         if (clusterCategoriesList) {
@@ -157,11 +169,11 @@ const ManageCategories = ({
                 onClick={handleModalClose}
             />
             <Button
-                text="Save"
+                text={clusterCategoriesList?.length === 0 ? 'Save' : 'Update'}
                 dataTestId="save-category-btn"
                 isLoading={categoryLoader}
                 disabled={categoryLoader}
-                onClick={handleModalClose}
+                onClick={updateCategories}
                 buttonProps={{
                     type: 'submit',
                 }}

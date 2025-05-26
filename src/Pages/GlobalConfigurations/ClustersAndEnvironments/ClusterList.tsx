@@ -46,7 +46,7 @@ export const ClusterList = ({
     installationId,
     clusterCategory,
     toConnectWithSSHTunnel,
-    clusterCategoriesList,
+    categoryList,
 }: ClusterListProps) => {
     const [editMode, toggleEditMode] = useState(false)
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
@@ -159,6 +159,7 @@ export const ClusterList = ({
                     newEnvs={newEnvs}
                     isVirtualCluster={isVirtualCluster}
                     clusterName={clusterName}
+                    categoryList={categoryList}
                 />
             ) : (
                 clusterId && renderNoEnvironmentTab()
@@ -181,7 +182,7 @@ export const ClusterList = ({
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}
-                                clusterCategoriesList={clusterCategoriesList}
+                                clusterCategoriesList={categoryList}
                                 clusterCategory={clusterCategory}
                             />
                         </div>

@@ -32,17 +32,18 @@ export const getClusterEnvironmentUpdatePayload = ({
               IsVirtualEnvironment: true,
               cluster_id: clusterId,
               description: data.description || '',
+              category: data.category,
           }
         : {
               id,
               environment_name: data.environmentName,
-              cluster_id: clusterId,
+              cluster_id: +clusterId,
               namespace: data.namespace || '',
               active: true,
               default: data.isProduction,
               description: data.description || '',
               updateLabels: !!namespaceLabels,
-              category: data.category?.value,
+              category: data.category,
               ...(namespaceLabels
                   ? {
                         namespaceResourceVersion: resourceVersion,

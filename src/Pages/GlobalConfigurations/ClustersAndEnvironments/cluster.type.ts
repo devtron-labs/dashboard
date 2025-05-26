@@ -254,19 +254,18 @@ export interface ClusterListProps {
     installationId: number
     clusterCategory: ClusterEnvironmentCategoryType
     toConnectWithSSHTunnel: boolean
-    clusterCategoriesList: ClusterEnvironmentCategoryType[]
+    categoryList: ClusterEnvironmentCategoryType[]
 }
 
 export interface ClusterEnvironmentListProps
-    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName'> {
+    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName' | 'categoryList'> {
     clusterId: string
     newEnvs: any[]
-    environmentCategoryList?: ClusterEnvironmentCategoryType[]
 }
 
 export type AssignCategorySelectTypes = {
-    selectedCategory: OptionType<number, string>
-    setSelectedCategory: Dispatch<SetStateAction<OptionType<number, string>>>
+    selectedCategory: SelectPickerOptionType
+    setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
     categoriesList: ClusterEnvironmentCategoryType[]
 }
 

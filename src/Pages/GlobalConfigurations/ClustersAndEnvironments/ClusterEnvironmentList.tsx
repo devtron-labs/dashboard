@@ -23,7 +23,7 @@ export const ClusterEnvironmentList = ({
     isVirtualCluster,
     newEnvs,
     clusterName,
-    environmentCategoryList,
+    categoryList,
 }: ClusterEnvironmentListProps) => {
     const [environment, setEnvironment] = useState(null)
     const [confirmation, setConfirmation] = useState(false)
@@ -89,6 +89,7 @@ export const ClusterEnvironmentList = ({
                     environmentCategory,
                     default: isProduction,
                     description,
+                    category,
                 }) =>
                     id && (
                         <div
@@ -102,9 +103,13 @@ export const ClusterEnvironmentList = ({
                                     prometheusEndpoint,
                                     clusterId,
                                     namespace,
-                                    category: { label: environmentCategory.name, value: environmentCategory.id },
+                                    environmentCategory: {
+                                        label: environmentCategory?.name,
+                                        value: environmentCategory?.id,
+                                    },
                                     default: isProduction,
                                     description,
+                                    category,
                                 })
                             }
                         >
@@ -131,11 +136,12 @@ export const ClusterEnvironmentList = ({
                             </div>
                             <div className="dc__truncate-text">{namespace}</div>
                             <div>
-                                {environmentCategory.name && (
-                                    <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content">
-                                        {environmentCategory.name || 'category'}
-                                    </span>
-                                )}
+                                {category?.name ||
+                                    (environmentCategory?.name && (
+                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content">
+                                            {category?.name || environmentCategory?.name}
+                                        </span>
+                                    ))}
                             </div>
                             <div className="cluster-list__description dc__truncate-text">{description}</div>
                             {renderActionButton(environmentName)}
@@ -167,10 +173,12 @@ export const ClusterEnvironmentList = ({
                 <ClusterEnvironmentDrawer
                     reload={reload}
                     clusterName={clusterName}
+                    clusterId={clusterId}
                     {...environment}
                     hideClusterDrawer={hideClusterDrawer}
                     isVirtual={isVirtualCluster}
-                    environmentCategoriesList={environmentCategoryList}
+                    categoryList={categoryList}
+                    category={environment?.category} // TODO remove optional later
                 />
             )}
         </div>

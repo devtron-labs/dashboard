@@ -30,7 +30,6 @@ import {
     Reload,
     showError,
     sortCallback,
-    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -40,11 +39,11 @@ import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAn
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import ManageCategories from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/ManageCategories.component'
-import { getClusterCategoryList } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ManageCategories/service'
 
 import { getClusterList, getEnvironmentList } from './cluster.service'
 import { ClusterMetadataTypes, ClusterProps, POLLING_INTERVAL } from './cluster.type'
 import { ClusterList } from './ClusterList'
+import { useCategoryList } from './useCategoryList'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 
@@ -57,7 +56,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
 
     const history = useHistory()
 
-    const [categoryLoader, categoryList, categoryListError, reloadCategoryList] = useAsync(getClusterCategoryList)
+    const { categoryLoader, categoryList, categoryListError, reloadCategoryList } = useCategoryList()
 
     const pollClusterList = useCallback(async () => {
         try {
@@ -227,7 +226,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             installationId={cluster.installationId}
                             clusterCategory={cluster.clusterCategory}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
-                            clusterCategoriesList={categoryList?.clusterCategories}
+                            categoryList={categoryList?.clusterCategories}
                         />
                     ),
             )}
@@ -266,7 +265,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             hideClusterDrawer={handleRedirectToClusterList}
                             isVirtual={isVirtualCluster}
                             category={null}
-                            environmentCategory={null}
+                            categoryList={categoryList?.clusterCategories}
                         />
                     )
                 }}

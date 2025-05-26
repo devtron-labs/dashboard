@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { DeleteConfirmationModalProps, OptionType, TagType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModalProps, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ClusterListProps } from '../cluster.type'
 import { ClusterEnvironmentCategoryType } from '../ManageCategories/types'
 
 export interface ClusterEnvironmentDrawerFormProps {
@@ -23,17 +24,18 @@ export interface ClusterEnvironmentDrawerFormProps {
     namespace: string
     isProduction: boolean
     description: string
-    category: OptionType<number, string>
+    category: ClusterEnvironmentCategoryType
 }
 
-export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
+export interface ClusterEnvironmentDrawerProps
+    extends ClusterEnvironmentDrawerFormProps,
+        Pick<ClusterListProps, 'categoryList'> {
     id: string
     clusterId: number
     reload: () => void
     hideClusterDrawer: () => void
     isVirtual: boolean
     clusterName: string
-    environmentCategory: ClusterEnvironmentCategoryType
 }
 
 export type GetClusterEnvironmentUpdatePayloadType = Pick<

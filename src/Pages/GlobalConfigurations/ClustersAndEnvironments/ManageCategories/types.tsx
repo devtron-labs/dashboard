@@ -19,15 +19,11 @@ import { DynamicDataTableRowType, ServerErrors } from '@devtron-labs/devtron-fe-
 export interface ClusterEnvironmentCategoryDTO {
     id: number
     name: string
-    description: string
+    description?: string // TODO: remove optional later
 }
 
 export interface ManageClusterCategoryDTO {
     clusterCategories: ClusterEnvironmentCategoryDTO[]
-}
-
-export interface ManageEnvironmentCategoryDTO {
-    environmentCategories: ClusterEnvironmentCategoryDTO[]
 }
 
 export interface ClusterEnvironmentCategoryType extends ClusterEnvironmentCategoryDTO {}
