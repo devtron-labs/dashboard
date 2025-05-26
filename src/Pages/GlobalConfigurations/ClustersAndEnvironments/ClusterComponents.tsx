@@ -20,7 +20,6 @@ import { generatePath, Route, useHistory } from 'react-router-dom'
 import {
     Button,
     ButtonComponentType,
-    ButtonVariantType,
     ComponentSizeType,
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
@@ -30,6 +29,7 @@ import {
     Reload,
     showError,
     sortCallback,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -44,7 +44,8 @@ import { ClusterMetadataTypes, ClusterProps, POLLING_INTERVAL } from './cluster.
 import { ClusterList } from './ClusterList'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
-const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
+const ManageCategories = importComponentFromFELibrary('ManageCategories')
+const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton')
 
 const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
@@ -180,15 +181,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                     additionalContainerClasses="mb-20"
                 />
                 <div className="flexbox dc__gap-8">
-                    <Button
-                        dataTestId="manage_categories_button"
-                        linkProps={{ to: URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES }}
-                        component={ButtonComponentType.link}
-                        startIcon={<Icon name="ic-shapes" color={null} />}
-                        size={ComponentSizeType.medium}
-                        text="Manage Categories"
-                        variant={ButtonVariantType.secondary}
-                    />
+                    {ManageCategoryButton && <ManageCategoryButton />}
                     <Button
                         dataTestId="add_cluster_button"
                         linkProps={{
@@ -227,9 +220,11 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                     ),
             )}
 
-            <Route path={URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>
-                <ManageCategories />
-            </Route>
+            {ManageCategories && (
+                <Route path={CommonURLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>
+                    <ManageCategories />
+                </Route>
+            )}
 
             <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
                 <CreateCluster handleReloadClusterList={initialize} />

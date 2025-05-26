@@ -10,12 +10,12 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { CONFIGURATION_TYPES } from '@Config/constants'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EnvironmentDeleteComponent'
 
 import { deleteEnvironment } from './cluster.service'
 import { ClusterEnvironmentListProps } from './cluster.type'
+import { CONFIGURATION_TYPES } from './constants'
 
 export const ClusterEnvironmentList = ({
     clusterId,

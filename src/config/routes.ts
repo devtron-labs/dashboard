@@ -76,7 +76,6 @@ export const URLS = {
     GLOBAL_CONFIG_DOCKER: '/global-config/docker',
     GLOBAL_CONFIG_CLUSTER: '/global-config/cluster-env',
     GLOBAL_CONFIG_CREATE_CLUSTER: `/global-config/cluster-env/${CREATE_CLUSTER_PATH}`,
-    GLOBAL_CONFIG_MANAGE_CATEGORIES: `/global-config/cluster-env/manage-categories`,
     GLOBAL_CONFIG_CHART: '/global-config/chart-repo',
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
     GLOBAL_CONFIG_AUTH_USER_PERMISSION: '/global-config/auth/users',
