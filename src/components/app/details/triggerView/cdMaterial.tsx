@@ -1752,7 +1752,7 @@ const CDMaterial = ({
 
         return (
             <div
-                className={`trigger-modal__trigger dc__position-sticky ${
+                className={`trigger-modal__trigger dc__position-sticky dc__zi-10 ${
                     (!state.isRollbackTrigger && !state.isSelectImageTrigger) ||
                     showConfigDiffView ||
                     stageType === DeploymentNodeType.PRECD ||

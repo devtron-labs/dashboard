@@ -1326,7 +1326,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
-
+        setBulkDeploymentStrategy('DEFAULT')
         setRuntimeParams({})
         setRuntimeParamsErrorState({})
 
