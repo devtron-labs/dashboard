@@ -15,6 +15,7 @@ export type SidebarConfigType = Record<
         dataTestId: string
         documentationHeader?: string
         isEnterprise?: true
+        hideInEAMode?: true
     }
 >
 
