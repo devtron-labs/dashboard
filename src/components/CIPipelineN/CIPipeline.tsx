@@ -833,7 +833,7 @@ export default function CIPipeline({
                 <pipelineContext.Provider value={contextValue}>
                     <div className={`${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
-                            <div className="sidebar-container pt-20">
+                            <div className="sidebar-container">
                                 <Sidebar
                                     isJobView={isJobView}
                                     isJobCI={isJobCI}
