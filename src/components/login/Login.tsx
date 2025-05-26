@@ -43,7 +43,6 @@ import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { dashboardAccessed } from '../../services/service'
 import { LOGIN_CARD_ANIMATION_VARIANTS, SSOProvider } from './constants'
-import { SSOConfigLoginList } from './login.types'
 import { LoginForm } from './LoginForm'
 
 import './login.scss'
@@ -54,13 +53,14 @@ const getTermsAndConditions = importComponentFromFELibrary('getTermsAndCondition
 
 const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
-    const [loginList, setLoginList] = useState<SSOConfigLoginList[]>([])
 
     const { searchParams } = useSearchString()
     const location = useLocation()
     const history = useHistory()
 
     const [ssoListLoading, ssoListResponse] = useAsync(getSSOConfigList, [])
+
+    const loginList = ssoListResponse?.result ?? []
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -99,12 +99,6 @@ const Login = () => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         dashboardAccessed()
     }, [])
-
-    useEffect(() => {
-        if (ssoListResponse?.result && !ssoListLoading) {
-            setLoginList(ssoListResponse.result as SSOConfigLoginList[])
-        }
-    }, [ssoListLoading, ssoListResponse])
 
     const onClickSSO = () => {
         if (typeof Storage !== 'undefined') {
