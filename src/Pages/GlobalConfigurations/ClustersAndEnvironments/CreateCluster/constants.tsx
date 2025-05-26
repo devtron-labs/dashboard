@@ -44,5 +44,6 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
             </>
         ),
         isEnterprise: true,
+        hideInEAMode: true,
     },
 } as const
