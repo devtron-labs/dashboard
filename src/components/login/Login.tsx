@@ -60,7 +60,7 @@ const Login = () => {
     const location = useLocation()
     const history = useHistory()
 
-    const [initLoading, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
+    const [ssoListLoading, ssoListResponse] = useAsync(getSSOConfigList, [])
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -96,25 +96,15 @@ const Login = () => {
 
     useEffect(() => {
         setLoginNavigationURL()
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        dashboardAccessed()
     }, [])
 
     useEffect(() => {
-        if (initResult && !initLoading) {
-            const [ssoLoginListResponse, dashboardAccessesResponse] = initResult
-            if (ssoLoginListResponse.status === 'fulfilled' && ssoLoginListResponse.value.result) {
-                setLoginList(ssoLoginListResponse.value.result as SSOConfigLoginList[])
-            }
-
-            if (
-                typeof Storage !== 'undefined' &&
-                !localStorage.getItem('isDashboardAccessed') &&
-                dashboardAccessesResponse.status === 'fulfilled' &&
-                dashboardAccessesResponse.value.result
-            ) {
-                localStorage.setItem('isDashboardAccessed', 'true')
-            }
+        if (ssoListResponse?.result && !ssoListLoading) {
+            setLoginList(ssoListResponse.result as SSOConfigLoginList[])
         }
-    }, [initLoading, initResult])
+    }, [ssoListLoading, ssoListResponse])
 
     const onClickSSO = () => {
         if (typeof Storage !== 'undefined') {
@@ -127,7 +117,7 @@ const Login = () => {
 
     const renderSSOLoginPage = () => (
         <div className="flexbox-col dc__gap-12 p-36">
-            {initLoading && !loginList.length && (
+            {ssoListLoading && !loginList.length && (
                 <Button
                     variant={ButtonVariantType.secondary}
                     text="Checking SSO"
