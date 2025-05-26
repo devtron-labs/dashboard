@@ -528,7 +528,7 @@ export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
 export const dashboardAccessed = async () => {
     try {
         const isDashboardAccessed = localStorage.getItem('isDashboardAccessed')
-        if (isDashboardAccessed === 'true') {
+        if (isDashboardAccessed) {
             return
         }
         await get(Routes.DASHBOARD_ACCESSED)
