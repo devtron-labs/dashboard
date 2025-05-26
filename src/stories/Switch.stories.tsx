@@ -17,13 +17,12 @@
 import { useState } from 'react'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import {
-    ComponentSizeType,
-    DTSwitch,
-    DTSwitchProps,
-    iconMap,
-    SWITCH_VARIANTS,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, DTSwitch, DTSwitchProps, iconMap } from '@devtron-labs/devtron-fe-common-lib'
+
+const SWITCH_VARIANTS: Readonly<Record<DTSwitchProps['variant'], null>> = {
+    theme: null,
+    positive: null,
+}
 
 type BaseComponentPropsType = Omit<DTSwitchProps, 'onChange' | 'isChecked'>
 
