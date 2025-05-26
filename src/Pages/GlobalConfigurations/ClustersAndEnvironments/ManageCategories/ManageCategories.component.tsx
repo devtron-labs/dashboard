@@ -124,14 +124,6 @@ const ManageCategories = ({
         </header>
     )
 
-    if (categoryListError) {
-        return <ErrorScreenManager code={categoryListError?.code} reload={reloadCategoryList} />
-    }
-
-    if (categoryLoader) {
-        return <Progressing pageLoader />
-    }
-
     const renderAddCategoryButton = () => (
         <Button
             dataTestId="manage_categories_button"
@@ -201,6 +193,35 @@ const ManageCategories = ({
         )
     }
 
+    const renderContent = () => {
+        if (categoryListError) {
+            return <ErrorScreenManager code={categoryListError?.code} reload={reloadCategoryList} />
+        }
+
+        if (categoryLoader) {
+            return <Progressing pageLoader />
+        }
+
+        if (clusterCategoriesList?.length === 0) {
+            return (
+                <GenericEmptyState
+                    title="No categories added"
+                    subTitle="Create categories (example: Stage, Dev, QA etc)  and assign it to Cluster or Environments"
+                    renderButton={renderAddCategoryButton}
+                    isButtonAvailable
+                    image={emptyFolder}
+                />
+            )
+        }
+
+        return (
+            <>
+                {renderSearchBar()}
+                {renderList()}
+            </>
+        )
+    }
+
     return (
         <Drawer position="right" width="1024px" onEscape={handleModalClose} onClose={handleModalClose}>
             <div
@@ -208,21 +229,7 @@ const ManageCategories = ({
                 onClick={stopPropagation}
             >
                 {renderHeader()}
-
-                {clusterCategoriesList?.length === 0 ? (
-                    <GenericEmptyState
-                        title="No categories added"
-                        subTitle="Create categories (example: Stage, Dev, QA etc)  and assign it to Cluster or Environments"
-                        renderButton={renderAddCategoryButton}
-                        isButtonAvailable
-                        image={emptyFolder}
-                    />
-                ) : (
-                    <>
-                        {renderSearchBar()}
-                        {renderList()}
-                    </>
-                )}
+                {renderContent()}
             </div>
         </Drawer>
     )
