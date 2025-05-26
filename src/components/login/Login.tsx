@@ -38,9 +38,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
+import { getSSOConfigList } from '@Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 
 import { TOKEN_COOKIE_NAME, URLS } from '../../config'
-import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { dashboardAccessed } from '../../services/service'
 import { LOGIN_CARD_ANIMATION_VARIANTS, SSOProvider } from './constants'
 import { SSOConfigLoginList } from './login.types'

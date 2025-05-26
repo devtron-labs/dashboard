@@ -69,7 +69,7 @@ import {
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
-import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
+import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'

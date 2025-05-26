@@ -33,8 +33,9 @@ import {
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getClusterTerminalParamsData } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
+
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
-import { getClusterTerminalParamsData } from '../../Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 import { clusterImageDescription, convertToOptionsList } from '../common'
 import { URLParams } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'

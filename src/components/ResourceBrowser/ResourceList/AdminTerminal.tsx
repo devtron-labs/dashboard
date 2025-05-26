@@ -19,7 +19,8 @@ import { useParams } from 'react-router-dom'
 
 import { ErrorScreenManager, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { createTaintsList } from '../../../Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
+import { createTaintsList } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
+
 import { getHostURLConfiguration } from '../../../services/service'
 import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
 import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
