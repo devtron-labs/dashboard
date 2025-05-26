@@ -1809,12 +1809,15 @@ const ChartValuesView = ({
                                 />
                             )}
                         </div>
-                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
-                            <ToggleSecurityScan
-                                isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                handleToggleSecurityScan={handleToggleSecurityScan}
-                            />
-                        )}
+                        {!isExternalApp &&
+                            serverMode === SERVER_MODE.FULL &&
+                            (isDeployChartView || isUpdateAppView) &&
+                            ToggleSecurityScan && (
+                                <ToggleSecurityScan
+                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                    handleToggleSecurityScan={handleToggleSecurityScan}
+                                />
+                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(
