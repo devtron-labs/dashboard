@@ -44,8 +44,8 @@ import { ClusterMetadataTypes, ClusterProps, POLLING_INTERVAL } from './cluster.
 import { ClusterList } from './ClusterList'
 
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
-const ManageCategories = importComponentFromFELibrary('ManageCategories')
-const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton')
+const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
+const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
 
 const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
