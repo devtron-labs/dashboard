@@ -62,6 +62,7 @@ const AppDetailsCDButton = ({
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const mode = queryParams.get('mode')
+    // deriving from URL and not props as on app details multiple instances exist, but we are rendering only one at a time
     const materialType = queryParams.get('materialType')
 
     const onClickDeployButton = (event) => {
@@ -69,6 +70,7 @@ const AppDetailsCDButton = ({
         const newParams = {
             ...searchParams,
             mode: URL_PARAM_MODE_TYPE.LIST,
+            // setting materialType from props acc to rollback or input material list
             materialType: isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList,
         }
 
