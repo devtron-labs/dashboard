@@ -18,6 +18,9 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
         sidePanelConfig: { docLink },
     } = useMainContext()
 
+    // CONSTANTS
+    const iframeSrc = `${docLink}&theme=${appTheme}`
+
     return (
         <>
             <div className="px-16 pt-14 pb-13 border__primary--bottom flex dc__gap-12">
@@ -51,14 +54,15 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
             <div className="flex-grow-1">
                 {docLink && (
                     <iframe
-                        key={appTheme}
+                        key={iframeSrc}
                         title="side-panel-documentation"
                         loading="lazy"
                         className="dc__no-border"
-                        src={`${docLink}&theme=${appTheme}`}
+                        src={iframeSrc}
                         width="100%"
                         height="100%"
-                        sandbox="allow-same-origin allow-scripts clipboard-read"
+                        allow="clipboard-read; clipboard-write"
+                        sandbox="allow-same-origin allow-scripts"
                         referrerPolicy="no-referrer"
                     />
                 )}
