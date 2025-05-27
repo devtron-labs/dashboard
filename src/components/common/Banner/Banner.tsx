@@ -24,13 +24,12 @@ import {
     ComponentSizeType,
     Icon,
     InfoBlockVariant,
+    InstallationType,
     MotionDiv,
     noop,
     setActionWithExpiry,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'

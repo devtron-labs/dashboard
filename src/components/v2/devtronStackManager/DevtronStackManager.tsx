@@ -25,6 +25,7 @@ import {
     AppStatusModal,
     AppStatusModalTabType,
     noop,
+    InstallationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, importComponentFromFELibrary, useInterval } from '../../common'
@@ -39,7 +40,6 @@ import {
 import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
 import {
     AllModuleInfoResponse,
-    InstallationType,
     LogPodNameResponse,
     ModuleDetails,
     ModuleInfo,

@@ -16,7 +16,7 @@
 
 import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
-import { AppType, ModuleStatus } from '@devtron-labs/devtron-fe-common-lib'
+import { AppType, InstallationType, ModuleStatus } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
 import { ReactComponent as DevtronIcon } from '../../../assets/icons/ic-devtron.svg'
 import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
@@ -25,7 +25,6 @@ import { CLAIR_TOOL_VERSION_V4, ModuleNameMap, TRIVY_TOOL_VERSION, URLS } from '
 import { handleError } from './DevtronStackManager.component'
 import { executeModuleAction, executeModuleEnableAction, executeServerAction } from './DevtronStackManager.service'
 import {
-    InstallationType,
     ModuleActionRequest,
     ModuleActions,
     ModuleDetails,
