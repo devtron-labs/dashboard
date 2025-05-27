@@ -25,7 +25,7 @@ import {
     Icon,
     InfoBlockVariant,
     InstallationType,
-    MotionDiv,
+    motion,
     noop,
     setActionWithExpiry,
     useMainContext,
@@ -178,7 +178,7 @@ export const Banner = () => {
     return (
         <AnimatePresence custom={!!bannerVariant}>
             {bannerVariant && config && (
-                <MotionDiv
+                <motion.div
                     layout
                     key={bannerVariant}
                     variants={bannerVariants}
@@ -217,7 +217,7 @@ export const Banner = () => {
                             showAriaLabelInTippy={false}
                         />
                     )}
-                </MotionDiv>
+                </motion.div>
             )}
         </AnimatePresence>
     )
