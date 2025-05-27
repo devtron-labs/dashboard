@@ -45,6 +45,8 @@ import {
     motion,
     SidePanelConfig,
     InstallationType,
+    useMotionValue,
+    useMotionTemplate,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -151,8 +153,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
 
-    const [asideWidth, setAsideWidth] = useState(350)
     const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({ open: false })
+    const asideWidth = useMotionValue(0)
 
     const {
         userPreferences,
@@ -410,10 +412,16 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
         }
     }, [location.pathname])
 
-    const isOnboardingPage = () => {
+    const getIsOnboardingPage = () => {
         const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
         return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
     }
+
+    const isOnboardingPage = getIsOnboardingPage()
+
+    const gridTemplateColumns = !isOnboardingPage
+        ? useMotionTemplate`56px 1fr ${asideWidth}px`
+        : useMotionTemplate`1fr ${asideWidth}px`
 
     if (pageState === ViewType.LOADING) {
         return (
@@ -422,11 +430,11 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
             </div>
         )
     }
+
     if (pageState === ViewType.ERROR) {
         // 100vh is required for covering the full height of the page as this is the top level component
         return <Reload className="h-100vh bg__tertiary" />
     }
-    const _isOnboardingPage = isOnboardingPage()
 
     const handleOpenLicenseInfoDialog = (
         initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE,
@@ -498,14 +506,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
             }}
         >
-            <motion.main
-                id={DEVTRON_BASE_MAIN_ID}
-                animate={{
-                    gridTemplateColumns: `${!_isOnboardingPage ? '56px' : ''} 1fr ${sidePanelConfig.open ? `14px ${asideWidth}px` : '0px 0px'}`,
-                }}
-                style={{ gridTemplateColumns: `${!_isOnboardingPage ? '56px 1fr 0px 0px' : '1fr 0px 0px'}` }}
-                transition={{ duration: 0.2, type: 'spring', stiffness: 300, damping: 30 }}
-            >
+            <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                 {showThemeSwitcherDialog && (
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}
@@ -514,7 +515,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                     />
                 )}
                 {renderAboutDevtronDialog()}
-                {!_isOnboardingPage && (
+                {!isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
                         history={history}
@@ -675,7 +676,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                                 </Suspense>
                             </div>
                         </div>
-                        <SidePanel asideWidth={asideWidth} setAsideWidth={setAsideWidth} />
+                        <SidePanel asideWidth={asideWidth} />
                     </>
                 )}
             </motion.main>

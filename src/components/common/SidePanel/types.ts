@@ -1,8 +1,7 @@
-import { Dispatch, SetStateAction } from 'react'
+import { useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SidePanelProps {
-    asideWidth: number
-    setAsideWidth: Dispatch<SetStateAction<number>>
+    asideWidth: ReturnType<typeof useMotionValue<number>>
 }
 
 export interface SidePanelDocumentationProps {
