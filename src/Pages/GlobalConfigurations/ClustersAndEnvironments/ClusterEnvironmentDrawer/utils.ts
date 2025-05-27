@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getEmptyCategoryPayload } from '../cluster.util'
 import { ClusterNamespacesDTO, GetClusterEnvironmentUpdatePayloadType } from './types'
 
 export const getClusterEnvironmentUpdatePayload = ({
@@ -32,7 +33,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               IsVirtualEnvironment: true,
               cluster_id: clusterId,
               description: data.description || '',
-              category: data.category,
+              category: data.category?.id ? data.category : getEmptyCategoryPayload(),
           }
         : {
               id,
@@ -43,7 +44,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               default: data.isProduction,
               description: data.description || '',
               updateLabels: !!namespaceLabels,
-              category: data.category,
+              category: data.category?.id ? data.category : getEmptyCategoryPayload(),
               ...(namespaceLabels
                   ? {
                         namespaceResourceVersion: resourceVersion,

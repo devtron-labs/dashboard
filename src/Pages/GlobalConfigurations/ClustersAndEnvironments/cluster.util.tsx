@@ -165,3 +165,9 @@ export const renderNoEnvironmentTab = () => (
         </div>
     </div>
 )
+
+export const getEmptyCategoryPayload = () => ({
+    id: 0,
+    name: '',
+    description: '',
+})

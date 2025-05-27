@@ -70,6 +70,7 @@ import {
     UserDetails,
 } from './cluster.type'
 import {
+    getEmptyCategoryPayload,
     getServerURLFromLocalStorage,
     PrometheusRequiredFieldInfo,
     PrometheusWarningInfo,
@@ -369,11 +370,13 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        category: {
-            name: selectedCategory.label,
-            id: selectedCategory.value,
-            description: selectedCategory.description,
-        },
+        category: selectedCategory.value
+            ? {
+                  name: selectedCategory.label,
+                  id: selectedCategory.value,
+                  description: selectedCategory.description,
+              }
+            : getEmptyCategoryPayload(),
     })
 
     const onValidation = async (state) => {
