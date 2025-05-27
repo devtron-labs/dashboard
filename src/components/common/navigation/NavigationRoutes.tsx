@@ -44,6 +44,7 @@ import {
     IntelligenceConfig,
     motion,
     SidePanelConfig,
+    InstallationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -494,6 +495,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 setIntelligenceConfig,
                 sidePanelConfig,
                 setSidePanelConfig,
+                isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
             }}
         >
             <motion.main
