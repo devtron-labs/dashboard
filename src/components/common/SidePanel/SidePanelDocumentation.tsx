@@ -51,13 +51,14 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
             <div className="flex-grow-1">
                 {docLink && (
                     <iframe
+                        key={appTheme}
                         title="side-panel-documentation"
                         loading="lazy"
                         className="dc__no-border"
                         src={`${docLink}&theme=${appTheme}`}
                         width="100%"
                         height="100%"
-                        sandbox="allow-same-origin allow-scripts"
+                        sandbox="allow-same-origin allow-scripts clipboard-read"
                         referrerPolicy="no-referrer"
                     />
                 )}
