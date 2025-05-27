@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
-import { EnvResourceType, noop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType, noop, smoothScrollToTop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
 import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
@@ -74,29 +74,8 @@ const NodeTreeDetailTab = ({
         identifier: 'node-tree-detail-tab',
     })
 
-    // TODO: Framer
-    const easeOutCubic = (t: number): number => 1 - (1 - t) ** 3
-
-    const smoothScrollToTop = () => {
-        // We are going to scroll stickyElementRef.current.parentElement up px by px for 10s 1s for 2pxx
-        const scrollContainer = stickyElementRef.current.parentElement
-        const start = scrollContainer.scrollTop
-        const change = stickyElementRef.current.offsetTop - start
-        const startTime = performance.now()
-
-        function animateScroll(currentTime: number) {
-            const elapsed = currentTime - startTime
-            const progress = Math.min(elapsed / 300, 1)
-            const easedProgress = easeOutCubic(progress)
-
-            scrollContainer.scrollTop = start + change * easedProgress
-
-            if (progress < 1) {
-                requestAnimationFrame(animateScroll)
-            }
-        }
-
-        requestAnimationFrame(animateScroll)
+    const handleScrollToTop = () => {
+        smoothScrollToTop(stickyElementRef.current.parentElement, stickyElementRef.current.offsetTop)
     }
 
     const dynamicTabsBackgroundClass = isDynamicTabsStuck ? 'bg__tertiary' : 'bg__primary'
@@ -140,7 +119,7 @@ const NodeTreeDetailTab = ({
             return
         }
         if (stickyElementRef.current) {
-            smoothScrollToTop() // or your scroll container
+            handleScrollToTop() // or your scroll container
         }
     }
 
