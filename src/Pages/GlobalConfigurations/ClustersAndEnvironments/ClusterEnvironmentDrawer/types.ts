@@ -14,19 +14,14 @@
  * limitations under the License.
  */
 
-import {
-    ClusterEnvironmentCategoryType,
-    DeleteConfirmationModalProps,
-    SelectPickerOptionType,
-    TagType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModalProps, SelectPickerOptionType, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
     namespace: string
     isProduction: boolean
     description: string
-    category: ClusterEnvironmentCategoryType
+    category: SelectPickerOptionType
 }
 
 export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {

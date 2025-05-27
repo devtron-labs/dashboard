@@ -28,7 +28,6 @@ import {
     Drawer,
     GenericEmptyState,
     noop,
-    SelectPickerOptionType,
     ServerErrors,
     showError,
     stopPropagation,
@@ -95,15 +94,6 @@ export const ClusterEnvironmentDrawer = ({
         data: null,
         error: null,
     })
-
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(
-        category
-            ? {
-                  label: category.name,
-                  value: category.id,
-              }
-            : null,
-    )
 
     const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
@@ -190,7 +180,6 @@ export const ClusterEnvironmentDrawer = ({
                 namespaceLabels: namespaceLabels.labels,
                 resourceVersion: namespaceLabels.resourceVersion,
                 isVirtual,
-                selectedCategory,
             })
 
             let api
@@ -268,7 +257,6 @@ export const ClusterEnvironmentDrawer = ({
             clusterId,
             id,
             isVirtual,
-            selectedCategory,
         })
         await deleteEnvironment(payload)
         redirectToListAfterReload()
@@ -288,13 +276,6 @@ export const ClusterEnvironmentDrawer = ({
             text="Add cluster"
         />
     )
-
-    const handleSelectedCategory = (_selectedCategory: SelectPickerOptionType) => {
-        setSelectedCategory(_selectedCategory)
-        register('category').onChange({
-            target: { name: 'category', value: { id: _selectedCategory?.value, name: _selectedCategory?.label } },
-        })
-    }
 
     const renderContent = () => {
         if (!clusterId) {
@@ -379,8 +360,8 @@ export const ClusterEnvironmentDrawer = ({
                     {AssignCategorySelect && (
                         <div className="w-250">
                             <AssignCategorySelect
-                                selectedCategory={selectedCategory}
-                                setSelectedCategory={handleSelectedCategory}
+                                selectedCategory={data.category}
+                                setSelectedCategory={register('category', { isCustomComponent: true }).onChange}
                             />
                         </div>
                     )}
