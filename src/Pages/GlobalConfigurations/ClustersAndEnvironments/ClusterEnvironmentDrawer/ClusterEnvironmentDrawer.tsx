@@ -190,6 +190,7 @@ export const ClusterEnvironmentDrawer = ({
                 namespaceLabels: namespaceLabels.labels,
                 resourceVersion: namespaceLabels.resourceVersion,
                 isVirtual,
+                selectedCategory,
             })
 
             let api

@@ -186,6 +186,7 @@ export const ClusterList = ({
                         clusterName={clusterName}
                         handleModalClose={handleModalClose}
                         reload={reload}
+                        category={category}
                     />
                 ))}
         </article>

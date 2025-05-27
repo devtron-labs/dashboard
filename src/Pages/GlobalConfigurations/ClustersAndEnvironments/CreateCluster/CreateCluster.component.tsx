@@ -90,6 +90,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         newClusterFormProps={{ apiCallInProgress, setApiCallInProgress, FooterComponent }}
                         handleModalClose={handleModalClose}
                         reload={handleReloadClusterList}
+                        category={null}
                     />
                 )
             default:
