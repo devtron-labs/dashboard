@@ -1,3 +1,3 @@
-export const SIDE_PANEL_MIN_ASIDE_WIDTH = 364
+export const SIDE_PANEL_MIN_ASIDE_WIDTH = 362
 
 export const SIDE_PANEL_MAX_ASIDE_WIDTH = 525

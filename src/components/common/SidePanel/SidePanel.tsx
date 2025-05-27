@@ -85,7 +85,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                         onStart={handleDragStart}
                         onStop={handleDragStop}
                     >
-                        <div className="aside-drag flex px-7 dc__cursor-col-resize dc__zi-10">
+                        <div className="aside-drag flex px-5 dc__cursor-col-resize dc__zi-10">
                             <div className="aside-drag__handle px-1 br-1" />
                         </div>
                     </Draggable>
