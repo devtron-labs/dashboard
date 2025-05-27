@@ -380,7 +380,7 @@ export const SourceInfo = ({
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
                   environment && (
-                      <div className="flex left w-100">
+                      <div className="flex left w-100 flex-wrap dc__row-gap-16">
                           {status && (
                               <AppStatusCard
                                   // TODO: Fix and remove
