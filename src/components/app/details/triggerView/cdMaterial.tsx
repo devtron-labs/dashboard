@@ -102,7 +102,6 @@ import {
     RuntimeParamsErrorState,
 } from './types'
 import close from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Check } from '../../../../assets/icons/ic-check-circle.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
 import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'

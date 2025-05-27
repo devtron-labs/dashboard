@@ -60,7 +60,6 @@ import {
     updateLoginCount,
 } from '../../../services/service'
 import { Configurations } from '@Pages/Releases/Detail'
-import { EnvType } from '../../v2/appDetails/appDetails.type'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getAllModulesInfo,
