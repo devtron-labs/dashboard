@@ -60,7 +60,7 @@ import {
 } from '@Components/common'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-import { DOCUMENTATION, HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
+import { HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
@@ -833,7 +833,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                         <FeatureTitleWithInfo
                             title={HEADER_TEXT.SSO_LOGIN.title}
                             renderDescriptionContent={() => HEADER_TEXT.SSO_LOGIN.description}
-                            docLink={DOCUMENTATION.GLOBAL_CONFIG_SSO}
+                            docLink="GLOBAL_CONFIG_SSO"
                             showInfoIconTippy
                             dataTestId="sso-login-heading"
                         />

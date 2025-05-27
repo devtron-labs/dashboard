@@ -52,13 +52,9 @@ src/components/CIPipelineN/ciPipeline.utils.tsx
 src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
-src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
-src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
-src/components/ClusterNodes/NodeActions/validationRules.ts
 src/components/ClusterNodes/NodeDetails.tsx
 src/components/ClusterNodes/__tests__/ClusterManifest.test.tsx
 src/components/ClusterNodes/__tests__/NodeList.test.tsx
-src/components/ClusterNodes/constants.ts
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx

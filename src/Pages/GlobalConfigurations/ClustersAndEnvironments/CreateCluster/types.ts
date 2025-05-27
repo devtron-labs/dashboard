@@ -1,4 +1,4 @@
-import { IconName } from '@devtron-labs/devtron-fe-common-lib/dist'
+import { IconName } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum CreateClusterTypeEnum {
     CONNECT_CLUSTER = 'connect-cluster',
@@ -15,6 +15,7 @@ export type SidebarConfigType = Record<
         dataTestId: string
         documentationHeader?: string
         isEnterprise?: true
+        hideInEAMode?: true
     }
 >
 

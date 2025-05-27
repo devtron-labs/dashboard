@@ -183,6 +183,7 @@ if (!window || !window._env_) {
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
         FEATURE_AI_INTEGRATION_ENABLE: false,
         LOGIN_PAGE_IMAGE: '',
+        FEATURE_REDFISH_NODE_ENABLE: false,
     }
 }
 

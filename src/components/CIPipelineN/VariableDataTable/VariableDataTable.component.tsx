@@ -568,6 +568,7 @@ export const VariableDataTable = ({ type, isCustomTask = false }: VariableDataTa
                     onRowDelete={handleRowDelete}
                     onRowAdd={handleRowAdd}
                     addBtnTooltip={VARIABLE_DATA_TABLE_ADD_BUTTON_TIPPY_MAP[type]}
+                    shouldAutoFocusOnMount
                     {...(isFELibAvailable && isInputPluginVariable
                         ? {
                               actionButtonConfig: {

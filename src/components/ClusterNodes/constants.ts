@@ -17,7 +17,7 @@
 import { ClusterFiltersType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { DescriptionDataType, EFFECT_TYPE } from './types'
+import { DescriptionDataType, EFFECT_TYPE, TaintsTableHeaderKeys, TaintsTableType } from './types'
 
 export const clusterSelectStyle = {
     ...multiSelectStyles,
@@ -30,7 +30,7 @@ export const clusterSelectStyle = {
         backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
-    control: (base, state) => ({
+    control: (base) => ({
         ...base,
         borderColor: 'transparent',
         backgroundColor: 'transparent',
@@ -38,7 +38,7 @@ export const clusterSelectStyle = {
         height: '28px',
         minHeight: '28px',
     }),
-    singleValue: (base, state) => ({
+    singleValue: (base) => ({
         ...base,
         fontWeight: 600,
         color: 'var(--N900)',
@@ -46,11 +46,11 @@ export const clusterSelectStyle = {
         textAlign: 'left',
         marginLeft: '2px',
     }),
-    indicatorsContainer: (base, state) => ({
+    indicatorsContainer: (base) => ({
         ...base,
         height: '28px',
     }),
-    valueContainer: (base, state) => ({
+    valueContainer: (base) => ({
         ...base,
         height: '28px',
         padding: '0 6px',
@@ -67,7 +67,7 @@ export const CLUSTER_STATUS = {
 export const NODE_DETAILS_TABS = {
     summary: 'Summary',
     yaml: 'YAML',
-    nodeConditions: 'Node conditions',
+    nodeConditions: 'Node Conditions',
     debug: 'Debug',
 }
 
@@ -104,18 +104,21 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
 
 export const EDIT_TAINTS_MODAL_MESSAGING = {
     titlePrefix: 'Edit taints for node ',
+    infoTitle: 'Taints',
     infoText:
-        'Add taints to nodes so that pods are not scheduled to the nodes or not scheduled to the nodes if possible. After you add taints to nodes, you can set tolerations on a pod to allow the pod to be scheduled to nodes with certain taints.',
-    infoLinkText: 'Check taint validations.',
-    tippyTitle: 'Taint validations',
-    tippyDescription: {
-        message: 'A taint consists of a key, value, and effect.',
+        'Add taints to nodes to prevent or discourage pods from being scheduled on them. Use tolerations on pods to let them run on nodes with matching taints.',
+    description: {
+        title: 'A taint consists of a key, value, and effect.',
         messageList: [
-            `1. Key: The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 253 characters.`,
-            `Optionally, the key can begin with a DNS subdomain prefix and a single '/', like example.com/my-app.`,
-            `2. Value(Optional) :If given, it must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters.`,
-            `3. Combination of <key, effect> must be unique.`,
+            "Key: The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots,and underscores, up to 253 characters. Optionally, the key can begin with a DNS subdomain prefix and a single '/', like example.com/my-app.",
+            'Value(Optional): If given, it must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores, up to 63 characters.',
+            'Combination of <key, effect> must be unique',
         ],
+    },
+    emptyState: {
+        title: 'Manage node taints',
+        subTitle:
+            'Add taints to nodes to prevent or discourage pods from being scheduled on them. Use tolerations on pods to let them run on nodes with matching taints.',
     },
     addTaint: 'Add taint',
     Actions: {
@@ -156,7 +159,7 @@ export const AUTO_SELECT = { label: 'Auto select', value: 'autoSelectNode' }
 
 export const clusterImageSelect = {
     ...clusterSelectStyle,
-    menu: (base, state) => ({
+    menu: (base) => ({
         ...base,
         zIndex: 9999,
         textAlign: 'left',
@@ -165,8 +168,8 @@ export const clusterImageSelect = {
         backgroundColor: 'var(--bg-menu-primary)',
         border: '1px solid var(--N200)',
     }),
-    control: (base, state) => ({
-        ...clusterSelectStyle.control(base, state),
+    control: (base) => ({
+        ...clusterSelectStyle.control(base),
         maxWidth: '300px',
     }),
 }
@@ -330,10 +333,15 @@ export enum ClusterMapListSortableTitle {
 }
 
 export enum CLUSTER_PROD_TYPE {
-    PRODUCTION= 'Production',
-    NON_PRODUCTION= 'Non Production',
-
+    PRODUCTION = 'Production',
+    NON_PRODUCTION = 'Non Production',
 }
+
+export const TAINTS_TABLE_HEADERS: TaintsTableType['headers'] = [
+    { key: TaintsTableHeaderKeys.KEY, label: 'KEY', width: '1fr' },
+    { key: TaintsTableHeaderKeys.VALUE, label: 'VALUE', width: '1fr' },
+    { key: TaintsTableHeaderKeys.EFFECT, label: 'TAINT EFFECT', width: '250px' },
+]
 
 export const CLUSTER_CONFIG_POLLING_INTERVAL = 1000 * 30 // half a minute
 

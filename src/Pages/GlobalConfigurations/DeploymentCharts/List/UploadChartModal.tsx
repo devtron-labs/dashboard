@@ -19,6 +19,7 @@ import { useRef, useState } from 'react'
 import {
     ButtonWithLoader,
     CustomInput,
+    DocLink,
     noop,
     showError,
     Textarea,
@@ -30,7 +31,7 @@ import {
 import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import errorImage from '@Images/ic_upload_chart_error.png'
-import { DOCUMENTATION, SERVER_ERROR_CODES } from '@Config/constants'
+import { SERVER_ERROR_CODES } from '@Config/constants'
 
 import uploadingImage from '../../../../assets/gif/uploading.gif'
 import { ChartUploadResponse, ChartUploadType, UPLOAD_STATE, UploadChartModalType } from '../types'
@@ -198,17 +199,14 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                 2. Image descriptor template file - .image_descriptor_template.json.
             </div>
             <div className="cn-7 fw-4 fs-14 cn-7 mb-20">3. Custom chart packaged in the *.tgz format.</div>
-            <div className="sidebar-action-container pr-20">
+            <div className="flexbox-col dc__align-start pt-20">
                 <div className="fw-6 fs-13 cn-9 mb-8">
                     📙 Need help?&nbsp;
-                    <a
-                        className="dc__link fw-6"
-                        href={DOCUMENTATION.CUSTOM_CHART_PRE_REQUISITES}
-                        target="_blank"
-                        rel="noreferrer noopener"
-                    >
-                        View documentation
-                    </a>
+                    <DocLink
+                        docLinkKey="GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES"
+                        text="View documentation"
+                        dataTestId="learn-more-about-custom-chart-pre-requisites-link"
+                    />
                 </div>
             </div>
         </>

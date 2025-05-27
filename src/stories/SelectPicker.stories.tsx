@@ -373,7 +373,7 @@ export const WithLabelHelperTippy: Story = {
         labelTippyCustomizedConfig: {
             heading: 'Heading',
             infoText: 'Info text',
-            documentationLink: 'https://www.devtron.ai',
+            documentationLink: 'HOME_PAGE',
             documentationLinkText: 'Documentation',
         },
     },
