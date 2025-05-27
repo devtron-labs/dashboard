@@ -96,10 +96,14 @@ export const ClusterEnvironmentDrawer = ({
         error: null,
     })
 
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>({
-        label: category?.name,
-        value: category?.id,
-    })
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(
+        category
+            ? {
+                  label: category.name,
+                  value: category.id,
+              }
+            : null,
+    )
 
     const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
@@ -263,6 +267,7 @@ export const ClusterEnvironmentDrawer = ({
             clusterId,
             id,
             isVirtual,
+            selectedCategory,
         })
         await deleteEnvironment(payload)
         redirectToListAfterReload()

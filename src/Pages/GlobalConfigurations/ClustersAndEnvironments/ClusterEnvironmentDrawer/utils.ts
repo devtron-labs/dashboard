@@ -24,6 +24,7 @@ export const getClusterEnvironmentUpdatePayload = ({
     namespaceLabels,
     resourceVersion,
     isVirtual = false,
+    selectedCategory,
 }: GetClusterEnvironmentUpdatePayloadType) =>
     isVirtual
         ? {
@@ -33,7 +34,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               IsVirtualEnvironment: true,
               cluster_id: clusterId,
               description: data.description || '',
-              category: data.category?.id ? data.category : getEmptyCategoryPayload(),
+              category: selectedCategory?.value ? data.category : getEmptyCategoryPayload(),
           }
         : {
               id,
@@ -44,7 +45,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               default: data.isProduction,
               description: data.description || '',
               updateLabels: !!namespaceLabels,
-              category: data.category?.id ? data.category : getEmptyCategoryPayload(),
+              category: selectedCategory?.value ? data.category : getEmptyCategoryPayload(),
               ...(namespaceLabels
                   ? {
                         namespaceResourceVersion: resourceVersion,

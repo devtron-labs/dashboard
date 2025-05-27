@@ -147,10 +147,14 @@ const ClusterForm = ({
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>({
-        label: category?.name,
-        value: category?.id,
-    })
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(
+        category
+            ? {
+                  label: category.name,
+                  value: category.id,
+              }
+            : null,
+    )
 
     useEffect(
         () => () => {

@@ -17,6 +17,7 @@
 import {
     ClusterEnvironmentCategoryType,
     DeleteConfirmationModalProps,
+    SelectPickerOptionType,
     TagType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -44,6 +45,7 @@ export type GetClusterEnvironmentUpdatePayloadType = Pick<
     Partial<Pick<ClusterNamespacesDTO, 'resourceVersion'>> & {
         data: ClusterEnvironmentDrawerFormProps
         namespaceLabels?: TagType[]
+        selectedCategory?: SelectPickerOptionType
     }
 
 export interface ClusterNamespacesLabel {
