@@ -121,7 +121,9 @@ export interface ResourceBrowserActionMenuType {
     clusterId: string
     resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    handleResourceClick: (e: {
+        currentTarget: Pick<React.MouseEvent<HTMLButtonElement>['currentTarget'], 'dataset'>
+    }) => void
     handleClearBulkSelection: () => void
     removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>

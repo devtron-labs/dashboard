@@ -116,6 +116,7 @@ const K8sResourceListTableCellComponent = ({
         const handleOpenContextMenu = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
                 contextMenuRef.current?.click()
+                contextMenuRef.current?.focus()
             }
         }
 

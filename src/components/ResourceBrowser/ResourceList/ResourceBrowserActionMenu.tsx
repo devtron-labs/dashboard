@@ -17,10 +17,16 @@
 import React, { forwardRef, useState } from 'react'
 
 import {
+    ActionMenu,
+    ActionMenuItemType,
+    ActionMenuProps,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     GetResourceScanDetailsPayloadType,
     ModuleNameMap,
     Nodes,
-    PopupMenu,
     ResponseType,
     ScanResultDTO,
     SecurityModal,
@@ -30,18 +36,12 @@ import {
 
 import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
 
-import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
-import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as ManifestIcon } from '../../../assets/icons/ic-file-code.svg'
-import { ReactComponent as LogAnalyzerIcon } from '../../../assets/icons/ic-logs.svg'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../common'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
 import DeleteResourcePopup from './DeleteResourcePopup'
 
-const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
 const getResourceScanDetails: ({
     name,
     namespace,
@@ -109,82 +109,103 @@ const ResourceBrowserActionMenu = forwardRef(
             installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
         )
 
+        const onActionMenuClick: ActionMenuProps['onClick'] = (item) => {
+            switch (item.id) {
+                case RESOURCE_ACTION_MENU.manifest:
+                case RESOURCE_ACTION_MENU.Events:
+                case RESOURCE_ACTION_MENU.logs:
+                case RESOURCE_ACTION_MENU.terminal:
+                    handleResourceClick({
+                        currentTarget: {
+                            dataset: {
+                                ...resourceData,
+                                kind: selectedResource.gvk.Kind,
+                                tab: item.id,
+                            },
+                        },
+                    })
+                    return
+                case RESOURCE_ACTION_MENU.delete:
+                    toggleDeleteDialog()
+                    return
+                case 'vulnerability':
+                    handleShowVulnerabilityModal()
+                    return
+                default:
+                    // eslint-disable-next-line no-console
+                    console.warn(`No action defined for menu item: ${item.id}`)
+            }
+        }
+
+        const id = JSON.stringify(resourceData)
+
         return (
             <>
-                <PopupMenu autoClose>
-                    <PopupMenu.Button ref={forwardedRef} rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
-                        <MenuDots className="fcn-7 icon-dim-16" data-testid="popup-menu-button" />
-                    </PopupMenu.Button>
-                    <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
-                        <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">
-                            <span
-                                data-name={resourceData.name}
-                                data-tab={RESOURCE_ACTION_MENU.manifest}
-                                data-namespace={resourceData.namespace}
-                                data-kind={resourceData.kind}
-                                className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                onClick={handleResourceClick}
-                                data-testid="manifest-option-link"
-                            >
-                                <ManifestIcon className="icon-dim-16 scn-6 mr-8 dc__no-shrink" />
-                                <span className="cn-9">{RESOURCE_ACTION_MENU.manifest}</span>
-                            </span>
-                            <span
-                                data-name={resourceData.name}
-                                data-tab={RESOURCE_ACTION_MENU.Events}
-                                data-namespace={resourceData.namespace}
-                                data-kind={resourceData.kind}
-                                className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                onClick={handleResourceClick}
-                                data-testid="events-option-link"
-                            >
-                                <CalendarIcon className="icon-dim-16 mr-8 fcn-6" />
-                                <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
-                            </span>
-                            {selectedResource?.gvk?.Kind === Nodes.Pod && (
-                                <>
-                                    <span
-                                        data-name={resourceData.name}
-                                        data-tab={RESOURCE_ACTION_MENU.logs}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
-                                        className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                        onClick={handleResourceClick}
-                                        data-testid="logs-option-link"
-                                    >
-                                        <LogAnalyzerIcon className="icon-dim-16 mr-8 fcn-6" />
-                                        <span className="cn-9">{RESOURCE_ACTION_MENU.logs}</span>
-                                    </span>
-                                    <span
-                                        data-name={resourceData.name}
-                                        data-tab={RESOURCE_ACTION_MENU.terminal}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
-                                        className="flex left h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
-                                        onClick={handleResourceClick}
-                                        data-testid="terminal-option-link"
-                                    >
-                                        <TerminalIcon className="icon-dim-16 mr-8 fcn-6" />
-                                        <span className="cn-9">{RESOURCE_ACTION_MENU.terminal}</span>
-                                    </span>
-                                </>
-                            )}
-                            {showResourceScanModal && OpenSecurityModalButton && (
-                                <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
-                            )}
-                            {!hideDeleteResource && (
-                                <span
-                                    className="flex left h-32 cursor pl-12 pr-12 cr-5 dc__hover-n50"
-                                    onClick={toggleDeleteDialog}
-                                    data-testid="delete-option-link"
-                                >
-                                    <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                                    {RESOURCE_ACTION_MENU.delete}
-                                </span>
-                            )}
-                        </div>
-                    </PopupMenu.Body>
-                </PopupMenu>
+                <ActionMenu
+                    id={id}
+                    onClick={onActionMenuClick}
+                    position="right"
+                    options={[
+                        {
+                            items: [
+                                {
+                                    id: RESOURCE_ACTION_MENU.manifest,
+                                    label: RESOURCE_ACTION_MENU.manifest,
+                                    startIcon: { name: 'ic-file-code' },
+                                },
+                                {
+                                    id: RESOURCE_ACTION_MENU.Events,
+                                    label: RESOURCE_ACTION_MENU.Events,
+                                    startIcon: { name: 'ic-calendar' },
+                                },
+                                ...(selectedResource?.gvk?.Kind === Nodes.Pod
+                                    ? [
+                                          {
+                                              id: RESOURCE_ACTION_MENU.logs,
+                                              label: RESOURCE_ACTION_MENU.logs,
+                                              startIcon: { name: 'ic-logs' },
+                                          } as ActionMenuItemType,
+                                          {
+                                              id: RESOURCE_ACTION_MENU.terminal,
+                                              label: RESOURCE_ACTION_MENU.terminal,
+                                              startIcon: { name: 'ic-terminal-fill' },
+                                          } as ActionMenuItemType,
+                                      ]
+                                    : []),
+                                ...(showResourceScanModal && SecurityModal
+                                    ? [
+                                          {
+                                              id: 'vulnerability',
+                                              label: 'Check vulnerabilities',
+                                              startIcon: { name: 'ic-bug' },
+                                          } as ActionMenuItemType,
+                                      ]
+                                    : []),
+                                ...(!hideDeleteResource
+                                    ? [
+                                          {
+                                              id: RESOURCE_ACTION_MENU.delete,
+                                              label: RESOURCE_ACTION_MENU.delete,
+                                              type: 'negative',
+                                              startIcon: { name: 'ic-delete' },
+                                          } as ActionMenuItemType,
+                                      ]
+                                    : []),
+                            ],
+                        },
+                    ]}
+                >
+                    <Button
+                        buttonRef={forwardedRef}
+                        dataTestId={`node-actions-button-${id}`}
+                        icon={<MenuDots className="fcn-7" />}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Open action menu"
+                        style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.small}
+                    />
+                </ActionMenu>
+
                 {showDeleteDialog && (
                     <DeleteResourcePopup
                         clusterId={clusterId}
