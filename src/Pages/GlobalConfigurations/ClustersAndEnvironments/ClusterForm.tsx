@@ -370,7 +370,7 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        category: selectedCategory.value
+        category: selectedCategory?.value
             ? {
                   name: selectedCategory.label,
                   id: selectedCategory.value,
