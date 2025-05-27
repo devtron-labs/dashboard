@@ -115,7 +115,7 @@ export const ClusterList = ({
                         subtitle={subTitle}
                         className="fw-6 dc__mxw-400 dc__truncate-text"
                         tag={isProd ? 'Prod' : null}
-                        category={category && category?.name}
+                        category={category && category.name}
                     />
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16">

@@ -885,7 +885,7 @@ const ClusterForm = ({
                     </>
                 )}
                 {isGrafanaModuleInstalled && (
-                    <div className={`${getGrafanaModuleSectionClassName()}`}>
+                    <div className={getGrafanaModuleSectionClassName()}>
                         <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
                             <div className="w-32 h-20">

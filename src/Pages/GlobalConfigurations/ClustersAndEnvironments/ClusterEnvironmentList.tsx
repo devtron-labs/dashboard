@@ -32,7 +32,7 @@ export const ClusterEnvironmentList = ({
     const [confirmation, setConfirmation] = useState(false)
     const [showWindow, setShowWindow] = useState(false)
 
-    const hasCategory = ManageCategoryButton
+    const hasCategory = !!ManageCategoryButton
 
     const baseTableClassName = `dc__grid dc__column-gap-12 cluster-env-list_table${hasCategory ? '--with-category' : ''} dc__align-item-center lh-20 px-16`
 
