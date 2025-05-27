@@ -290,9 +290,9 @@ export const ClusterEnvironmentDrawer = ({
     )
 
     const handleSelectedCategory = (_selectedCategory: SelectPickerOptionType) => {
-        setSelectedCategory(selectedCategory ? _selectedCategory : { label: '', value: '' })
+        setSelectedCategory(_selectedCategory)
         register('category').onChange({
-            target: { name: 'category', value: { id: _selectedCategory.value, name: _selectedCategory.label } },
+            target: { name: 'category', value: { id: _selectedCategory?.value, name: _selectedCategory?.label } },
         })
     }
 
