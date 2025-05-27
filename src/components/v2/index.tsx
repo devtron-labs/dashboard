@@ -101,11 +101,19 @@ const RouterComponent = () => {
     )
 
     useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>
+
         if (checkIfToRefetchData(location)) {
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 abortPreviousRequests(() => _getAndSetAppDetail(true), abortControllerRef)
                 deleteRefetchDataFromUrl(history, location)
             }, 5000)
+        }
+
+        return () => {
+            if (timer) {
+                clearTimeout(timer)
+            }
         }
     }, [location.search])
 
