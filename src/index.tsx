@@ -55,7 +55,7 @@ const root = document.getElementById('root')
 
 initializeFaro({
   // required: the URL of the Grafana collector
-  url: 'https://devtron-ent-7.devtron.info/faro',
+  url: 'http://shared-faro.devtron.info/collect',
 
   // required: the identification label of your application
   app: {
