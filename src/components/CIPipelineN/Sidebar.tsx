@@ -403,7 +403,7 @@ export const Sidebar = ({
                     )}
                 </div>
             ) : (
-                <div className="flexbox-col dc__gap-4">
+                <div className="sidebar-action-container flexbox-col dc__gap-4">
                     <div className="dc__uppercase fw-6 fs-12 cn-6">Trigger {isJobCard ? 'JOB' : 'BUILD'} PIPELINE</div>
                     <div>
                         <RadioGroup
