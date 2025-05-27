@@ -14,7 +14,6 @@ import {
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { clusterId } from '@Components/ClusterNodes/__mocks__/clusterAbout.mock'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
@@ -46,9 +45,10 @@ export const ClusterList = ({
     installationId,
     category,
     toConnectWithSSHTunnel,
+    clusterId,
 }: ClusterListProps) => {
-    const [editMode, toggleEditMode] = useState(false)
-    const [prometheusAuth, setPrometheusAuth] = useState(undefined)
+    const [editMode, setEditMode] = useState(false)
+    const [prometheusAuth, setPrometheusAuth] = useState(null)
 
     const drawerRef = useRef(null)
 
@@ -58,7 +58,7 @@ export const ClusterList = ({
     })
 
     const handleModalClose = () => {
-        toggleEditMode(false)
+        setEditMode(false)
     }
 
     const newEnvs = clusterId ? [{ id: null }].concat(environments || []) : environments || []
@@ -67,7 +67,7 @@ export const ClusterList = ({
         try {
             const { result } = await getCluster(+clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            toggleEditMode((t) => !t)
+            setEditMode((t) => !t)
         } catch (err) {
             showError(err)
         }
@@ -75,12 +75,12 @@ export const ClusterList = ({
 
     const editModeToggle = (): void => {
         if (!clusterId) {
-            toggleEditMode((t) => !t)
+            setEditMode((t) => !t)
         }
     }
 
     const handleToggleEditMode = (): void => {
-        toggleEditMode((t) => !t)
+        setEditMode((t) => !t)
     }
 
     const subTitle: string = isVirtualCluster ? 'Isolated cluster' : serverURL
@@ -117,11 +117,6 @@ export const ClusterList = ({
                         tag={isProd ? 'Prod' : null}
                         category={category && category?.name}
                     />
-                    {/* {category && (
-                        <span className="dc__truncate-text dc__border bg__secondary px-6 fs-12 lh-20 br-4 flex dc_width-max-content flex top h-100">
-                            {category.name}
-                        </span>
-                    )} */}
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16">
                             <Button
@@ -154,7 +149,7 @@ export const ClusterList = ({
             </List>
             {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                 <ClusterEnvironmentList
-                    clusterId={clusterId}
+                    clusterId={String(clusterId)}
                     reload={reload}
                     newEnvs={newEnvs}
                     isVirtualCluster={isVirtualCluster}
@@ -177,7 +172,7 @@ export const ClusterList = ({
                                 prometheusAuth={prometheusAuth}
                                 proxyUrl={proxyUrl}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
-                                toggleEditMode={toggleEditMode}
+                                setEditMode={setEditMode}
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}

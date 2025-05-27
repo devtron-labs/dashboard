@@ -216,6 +216,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             installationId={cluster.installationId}
                             category={cluster.category}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
+                            clusterId={cluster.id}
                         />
                     ),
             )}

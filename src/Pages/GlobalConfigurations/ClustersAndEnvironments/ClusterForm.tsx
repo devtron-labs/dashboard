@@ -90,7 +90,7 @@ const ClusterForm = ({
     id = null,
     clusterName,
     serverUrl,
-    toggleEditMode = noop,
+    setEditMode = noop,
     reload = noop,
     prometheusUrl = '',
     prometheusAuth,
@@ -428,7 +428,7 @@ const ClusterForm = ({
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
             reload()
-            toggleEditMode((e) => !e)
+            setEditMode((e) => !e)
         } catch (err) {
             showError(err)
         } finally {
@@ -631,7 +631,7 @@ const ClusterForm = ({
         if (id) {
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
-            toggleEditMode((e) => !e)
+            setEditMode((e) => !e)
             return
         }
         if (isKubeConfigFile) {

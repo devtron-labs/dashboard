@@ -130,6 +130,7 @@ export interface ClusterListProps {
     installationId: number
     category: ClusterEnvironmentCategoryType
     toConnectWithSSHTunnel: boolean
+    clusterId: number
 }
 
 export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'> {
@@ -197,30 +198,11 @@ export interface ClusterTerminalParamsType {
     selectedShell: OptionType
 }
 
-export interface ClusterFormType {
-    id: number
-    cluster_name: string
-    server_url: string
-    active: boolean
-    config: any
-    toggleEditMode: boolean
-    reload: any
-    prometheus_url: any
-    prometheusAuth: any
-    defaultClusterComponent: any
-    isGrafanaModuleInstalled: boolean
-    isTlsConnection: boolean
-    isClusterSelect: boolean
-    isClusterDetails: boolean
-    toggleCheckTlsConnection: () => void
-    isDrawer: boolean
-}
-
 export const RemoteConnectionTypeCluster = 'cluster'
 
 export type EditClusterFormProps = Pick<ClusterListProps, 'category'> & {
     id: number
-    toggleEditMode: Dispatch<SetStateAction<boolean>>
+    setEditMode: Dispatch<SetStateAction<boolean>>
     isProd?: boolean
     clusterName: string
     serverUrl: string
