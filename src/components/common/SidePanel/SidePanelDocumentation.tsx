@@ -1,3 +1,5 @@
+import { useRef } from 'react'
+
 import {
     Button,
     ButtonComponentType,
@@ -18,12 +20,15 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
         sidePanelConfig: { docLink },
     } = useMainContext()
 
+    // REFS
+    const iframeRef = useRef<HTMLIFrameElement | null>(null)
+
     // CONSTANTS
     const iframeSrc = `${docLink}&theme=${appTheme}`
 
     return (
         <>
-            <div className="px-16 pt-14 pb-13 border__primary--bottom flex dc__gap-12">
+            <div className="px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12">
                 <Icon name="ic-book-open" color="N900" />
                 <h2 className="m-0 fs-16 lh-1-5 fw-6 cn-9 flex-grow-1">Documentation</h2>
                 <div className="flex dc__gap-8">
@@ -36,7 +41,10 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         size={ComponentSizeType.xs}
                         component={ButtonComponentType.anchor}
                         anchorProps={{
-                            href: docLink,
+                            href:
+                                iframeRef.current?.contentDocument?.referrer ??
+                                iframeRef.current?.contentWindow?.location?.href ??
+                                docLink,
                         }}
                     />
                     <Button
@@ -55,6 +63,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                 {docLink && (
                     <iframe
                         key={iframeSrc}
+                        ref={iframeRef}
                         title="side-panel-documentation"
                         loading="lazy"
                         className="dc__no-border"
@@ -62,7 +71,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         width="100%"
                         height="100%"
                         allow="clipboard-read; clipboard-write"
-                        sandbox="allow-same-origin allow-scripts"
+                        sandbox="allow-same-origin allow-scripts allow-popups"
                         referrerPolicy="no-referrer"
                     />
                 )}
