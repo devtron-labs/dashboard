@@ -206,6 +206,7 @@ const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
                         docLinkKey="GLOBAL_CONFIG_CUSTOM_CHART_PRE_REQUISITES"
                         text="View documentation"
                         dataTestId="learn-more-about-custom-chart-pre-requisites-link"
+                        openInNewTab
                     />
                 </div>
             </div>
