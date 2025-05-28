@@ -680,7 +680,7 @@ const ManifestComponent = ({
             noop()
         }
 
-        handleStickDynamicTabsToTop()
+        handleStickDynamicTabsToTop?.()
     }
 
     const renderContent = () => {
