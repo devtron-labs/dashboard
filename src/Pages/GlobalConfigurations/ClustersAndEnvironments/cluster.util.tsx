@@ -21,43 +21,10 @@ import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
 import {
     AddClusterFormPrefilledInfoType,
     AddEnvironmentFormPrefilledInfoType,
-    ClusterComponentStatus,
-    ClusterComponentStatusType,
-    ClusterComponentType,
     ClusterTerminalParamsType,
     emptyClusterTerminalParamsData,
 } from './cluster.type'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
-
-export function getEnvName(components: ClusterComponentType[], agentInstallationStage): string {
-    let nonTerminatingStatus: ClusterComponentStatusType[] = []
-    if (agentInstallationStage === 1) {
-        // progressing
-        nonTerminatingStatus = [
-            ClusterComponentStatus.REQUEST_ACCEPTED,
-            ClusterComponentStatus.ENQUEUED,
-            ClusterComponentStatus.DEPLOY_INIT,
-            ClusterComponentStatus.GIT_SUCCESS,
-            ClusterComponentStatus.ACD_SUCCESS,
-        ]
-    } else if (agentInstallationStage === 2) {
-        // success
-        nonTerminatingStatus = [ClusterComponentStatus.DEPLOY_SUCCESS]
-    } else if (agentInstallationStage === 3) {
-        // failed
-        nonTerminatingStatus = [
-            ClusterComponentStatus.QUE_ERROR,
-            ClusterComponentStatus.DEQUE_ERROR,
-            ClusterComponentStatus.TRIGGER_ERROR,
-            ClusterComponentStatus.GIT_ERROR,
-            ClusterComponentStatus.ACD_ERROR,
-        ]
-    }
-
-    const str = nonTerminatingStatus.join('')
-    const c = components?.find((component) => str.search(component.status) >= 0)
-    return c?.envName
-}
 
 export function getClusterTerminalParamsData(
     params: URLSearchParams,

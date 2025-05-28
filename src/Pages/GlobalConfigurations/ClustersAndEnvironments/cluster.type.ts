@@ -104,8 +104,6 @@ export enum ClusterComponentStatus {
 
 export type ClusterComponentStatusType = keyof typeof ClusterComponentStatus
 
-export type ClusterInstallStage = -1 | 0 | 1 | 2 | 3
-
 export interface ClusterComponentType {
     name: string
     appId: number
@@ -139,7 +137,6 @@ export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'>
     active: boolean
     errorInConnecting?: string
     isVirtualCluster?: boolean
-    agentInstallationStage: ClusterInstallStage
     isProd: boolean
     remoteConnectionConfig: RemoteConnectionConfig
     insecureSkipTlsVerify: boolean
@@ -155,7 +152,6 @@ export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'>
 }
 
 export interface ClusterComponentModalProps {
-    agentInstallationStage: ClusterInstallStage
     components: ClusterComponentType[] | null
     environmentName: string
     redirectToChartDeployment: (appId, envId) => void
@@ -164,7 +160,6 @@ export interface ClusterComponentModalProps {
 }
 
 export interface ClusterInstallStatusProps {
-    agentInstallationStage: ClusterInstallStage
     envName: string | undefined
     onClick: (...args) => void
 }

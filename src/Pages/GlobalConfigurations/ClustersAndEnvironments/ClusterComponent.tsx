@@ -24,7 +24,6 @@ import {
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
     Icon,
-    noop,
     Progressing,
     Reload,
     showError,
@@ -40,66 +39,19 @@ import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/C
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { getClusterList, getEnvironmentList } from './cluster.service'
-import { ClusterMetadataTypes, ClusterProps, POLLING_INTERVAL } from './cluster.type'
+import { ClusterMetadataTypes, ClusterProps } from './cluster.type'
 import { ClusterList } from './ClusterList'
 
-const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
 const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
 
 const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
     const [clusters, setClusters] = useState<ClusterMetadataTypes[]>([])
-    const [clusterEnvMap, setClusterEnvMap] = useState({})
 
     const timerRef = useRef(null)
 
     const history = useHistory()
-
-    const pollClusterList = useCallback(async () => {
-        try {
-            const { result } = await getClusterList()
-            let updatedClusters = result
-                ? result.map((c) => ({
-                      ...c,
-                      environments: clusterEnvMap[c.id],
-                  }))
-                : []
-
-            updatedClusters = updatedClusters.concat({
-                id: null,
-                cluster_name: '',
-                server_url: '',
-                proxyUrl: '',
-                sshTunnelConfig: {
-                    user: '',
-                    password: '',
-                    authKey: '',
-                    sshServerAddress: '',
-                },
-                active: true,
-                config: {},
-                environments: [],
-                insecureSkipTlsVerify: true,
-                isVirtualCluster: false,
-                remoteConnectionConfig: getRemoteConnectionConfig(),
-                installationId: 0,
-            })
-
-            updatedClusters = updatedClusters.sort((a, b) => sortCallback('cluster_name', a, b))
-            setClusters(updatedClusters)
-
-            const stillPolling = updatedClusters.find(
-                (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
-            )
-            if (!stillPolling && timerRef.current) {
-                clearInterval(timerRef.current)
-            }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (err) {
-            // silent fail or optional error toast
-        }
-    }, [clusterEnvMap])
 
     const initialize = useCallback(() => {
         if (timerRef.current) {
@@ -125,15 +77,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                 clustersList = clustersList.sort((a, b) => sortCallback('cluster_name', a, b))
 
                 setClusters(clustersList)
-                setClusterEnvMap(clusterEnvironmentMap)
                 setView(ViewType.FORM)
-
-                const pollingCluster = clustersList.find(
-                    (c) => c.agentInstallationStage === 1 || c.agentInstallationStage === 3,
-                )
-                if (pollingCluster) {
-                    timerRef.current = setInterval(pollClusterList, POLLING_INTERVAL)
-                }
             })
             .catch((error) => {
                 showError(error)
