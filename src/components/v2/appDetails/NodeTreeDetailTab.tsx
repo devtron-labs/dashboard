@@ -27,7 +27,6 @@ import { DynamicTabsProps, DynamicTabsVariantType } from '@Components/common/Dyn
 
 import { URLS } from '../../../config'
 import { K8ResourceComponent } from './k8Resource/K8Resource.component'
-import { NodeDetailTab } from './k8Resource/nodeDetail/nodeDetail.type'
 import { getApplicationsGAEvent } from './k8Resource/utils'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
 import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
@@ -111,9 +110,6 @@ const NodeTreeDetailTab = ({
         })
     }
 
-    // Check not in RB?
-    const isManifestTabView = location.pathname.includes(NodeDetailTab.MANIFEST.toLowerCase())
-
     const handleStickDynamicTabsToTop = () => {
         if (isDynamicTabsStuck) {
             return
@@ -158,7 +154,7 @@ const NodeTreeDetailTab = ({
                         }}
                     />
                 </div>
-                <div className={`flexbox-col w-100 flex-grow-1 ${isManifestTabView ? '' : 'dc__overflow-hidden'}`}>
+                <div className="flexbox-col w-100 flex-grow-1 dc__overflow-hidden">
                     <Switch>
                         <Route
                             path={[
