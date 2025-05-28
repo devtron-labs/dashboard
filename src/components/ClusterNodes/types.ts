@@ -290,6 +290,7 @@ export interface ClusterErrorType {
 export interface ClusterOverviewProps {
     selectedCluster: ClusterOptionType
     addTab: UseTabsReturnType['addTab']
+    markTabActiveById: UseTabsReturnType['markTabActiveById']
 }
 
 export interface ClusterMapInitialStatusType {

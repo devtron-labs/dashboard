@@ -46,6 +46,7 @@ import {
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     RESOURCE_BROWSER_ROUTES,
+    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
@@ -116,7 +117,7 @@ const LoadingMetricCard = () => (
     </div>
 )
 
-function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
+function ClusterOverview({ selectedCluster, addTab, markTabActiveById }: ClusterOverviewProps) {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const history = useHistory()
@@ -199,14 +200,15 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
         pollClusterConfig(clusterName)
     }
 
-    useEffect(
-        () => () => {
+    useEffect(() => {
+        markTabActiveById(ResourceBrowserTabsId.cluster_overview).catch(noop)
+
+        return () => {
             requestAbortControllerRef.current.abort()
             clearTimeout(clusterConfigPollTimeoutRef.current)
             getClusterConfigAbortControllerRef.current.abort()
-        },
-        [],
-    )
+        }
+    }, [])
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'

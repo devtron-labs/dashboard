@@ -252,11 +252,6 @@ export const RESOURCE_PAGE_SIZE_OPTIONS = [
     { value: 150, selected: false },
     { value: 200, selected: false },
 ]
-export const NODE_DETAILS_PAGE_SIZE_OPTIONS = [
-    { value: 20, selected: true },
-    { value: 40, selected: false },
-    { value: 50, selected: false },
-]
 
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
 export const TAKING_LONGER_TO_CONNECT =

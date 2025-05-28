@@ -16,6 +16,7 @@
 
 import { ComponentProps, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { SelectInstance } from 'react-select'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -26,6 +27,7 @@ import {
     SegmentedControl,
     SegmentedControlProps,
     SelectPicker,
+    SelectPickerOptionType,
     useAsync,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -64,6 +66,7 @@ const ResourceFilterOptions = ({
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
+    const namespaceFilterRef = useRef<SelectInstance<SelectPickerOptionType>>(null)
 
     const isEventListing = selectedResource?.gvk?.Kind === Nodes.Event
 
@@ -94,14 +97,21 @@ const ResourceFilterOptions = ({
         setShowFilterModal(true)
     }
 
+    const handleFocusNamespaceFilter = () => {
+        namespaceFilterRef.current?.focus()
+        namespaceFilterRef.current?.openMenu('first')
+    }
+
     useEffect(() => {
         if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleInputShortcut })
             registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
+            registerShortcut({ keys: ['N'], callback: handleFocusNamespaceFilter })
         }
         return (): void => {
             unregisterShortcut(['F'])
             unregisterShortcut(['R'])
+            unregisterShortcut(['N'])
         }
     }, [])
 
@@ -150,15 +160,15 @@ const ResourceFilterOptions = ({
                             segments={[
                                 {
                                     icon: 'ic-warning',
-                                    ariaLabel: 'Only show warning events',
+                                    ariaLabel: 'Warning Events',
                                     value: 'warning',
-                                    tooltipProps: { content: 'Only show warning events' },
+                                    tooltipProps: { content: 'Warning Events' },
                                 },
                                 {
                                     icon: 'ic-info-filled-color',
-                                    ariaLabel: 'Only show normal events',
+                                    ariaLabel: 'Normal Events',
                                     value: 'normal',
-                                    tooltipProps: { content: 'Only show normal events' },
+                                    tooltipProps: { content: 'Normal Events' },
                                 },
                             ]}
                             onChange={handleOnEventTypeChange}
@@ -197,6 +207,7 @@ const ResourceFilterOptions = ({
                             />
                         )}
                         <SelectPicker
+                            selectRef={namespaceFilterRef}
                             inputId="resource-filter-select"
                             placeholder="Select Namespace"
                             options={namespaceOptions}

@@ -37,7 +37,7 @@ import {
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
-import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
+import { NODE_LIST_HEADERS_TO_KEY_MAP, RESOURCE_PAGE_SIZE_OPTIONS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import Cache from './Cache'
@@ -176,7 +176,8 @@ export const K8SResourceList = ({
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
                         isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
-                        horizontallySticky: header === 'name',
+                        horizontallySticky:
+                            header === 'name' || (isEventListing && (header === 'message' || header === 'type')),
                     }) as TableColumnType,
             ) ?? [],
         [resourceList?.headers],
@@ -221,6 +222,14 @@ export const K8SResourceList = ({
         return isSearchMatch
     }
 
+    const getDefaultSortKey = () => {
+        if (isEventListing) {
+            return 'last seen'
+        }
+
+        return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
+    }
+
     return (
         <Table
             key={JSON.stringify(selectedResource)}
@@ -263,7 +272,11 @@ export const K8SResourceList = ({
             paginationVariant={PaginationEnum.PAGINATED}
             areColumnsConfigurable={isNodeListing}
             id="table__gvk-resource-list"
-            additionalFilterProps={{ parseSearchParams: parseK8sResourceListSearchParams }}
+            additionalFilterProps={{
+                parseSearchParams: parseK8sResourceListSearchParams,
+                defaultPageSize: RESOURCE_PAGE_SIZE_OPTIONS[0].value,
+                initialSortKey: getDefaultSortKey(),
+            }}
             ViewWrapper={K8SResourceListViewWrapper}
             filter={tableFilter}
             additionalProps={{
@@ -277,6 +290,7 @@ export const K8SResourceList = ({
                 lowercaseKindToResourceGroupMap,
                 reloadResourceListData: handleClearCacheAndReload,
             }}
+            pageSizeOptions={!isNodeListing ? RESOURCE_PAGE_SIZE_OPTIONS : undefined}
         />
     )
 }

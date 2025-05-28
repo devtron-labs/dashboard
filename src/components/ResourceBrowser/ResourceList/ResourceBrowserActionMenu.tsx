@@ -120,6 +120,7 @@ const ResourceBrowserActionMenu = forwardRef(
                             dataset: {
                                 ...resourceData,
                                 kind: selectedResource.gvk.Kind,
+                                group: selectedResource.gvk.Group,
                                 tab: item.id,
                             },
                         },
@@ -203,6 +204,7 @@ const ResourceBrowserActionMenu = forwardRef(
                         ariaLabel="Open action menu"
                         style={ButtonStyleType.neutral}
                         size={ComponentSizeType.small}
+                        showAriaLabelInTippy={false}
                     />
                 </ActionMenu>
 

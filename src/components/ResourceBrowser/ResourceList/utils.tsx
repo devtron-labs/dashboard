@@ -248,7 +248,7 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
                 range: {
                     maxWidth: 800,
                     minWidth: 180,
-                    startWidth: 400,
+                    startWidth: 460,
                 },
             }
         case 'type':
@@ -268,7 +268,7 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
                 range: {
                     maxWidth: 300,
                     minWidth: 80,
-                    startWidth: 80,
+                    startWidth: 100,
                 },
             }
     }

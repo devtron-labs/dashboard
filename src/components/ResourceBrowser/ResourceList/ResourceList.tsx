@@ -57,13 +57,13 @@ import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
+import MonitoringDashboardWrapper from './MonitoringDashboardWrapper'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
 import { getClusterOptions } from './utils'
 
-const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
 const ResourceList = () => {
@@ -313,10 +313,14 @@ const ResourceList = () => {
                     }}
                 />
                 <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
-                    <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
+                    <ClusterOverview
+                        selectedCluster={selectedCluster}
+                        addTab={addTab}
+                        markTabActiveById={markTabActiveById}
+                    />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD} exact>
-                    <MonitoringDashboard />
+                    <MonitoringDashboardWrapper markTabActiveById={markTabActiveById} />
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
                     <AdminTerminalDummy
