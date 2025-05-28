@@ -110,6 +110,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
     userPreferences: UserPreferencesType
@@ -504,6 +505,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 sidePanelConfig,
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
+                isFELibAvailable: !!isFELibAvailable,
             }}
         >
             <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
