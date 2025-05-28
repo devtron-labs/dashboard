@@ -108,7 +108,7 @@ export const ClusterList = ({
                 )}
                 <div className="flex left dc__gap-16">
                     {clusterId && (
-                        <Icon name={isVirtualCluster ? 'ic-virtual-cluster' : 'ic-cluster'} color="B500" size={24} />
+                        <Icon name={isVirtualCluster ? 'ic-cluster-isolated' : 'ic-cluster'} color="B500" size={24} />
                     )}
                     <List.Title
                         title={clusterName || 'Add cluster'}

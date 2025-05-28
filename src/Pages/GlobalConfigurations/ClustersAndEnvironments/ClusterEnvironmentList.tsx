@@ -91,14 +91,13 @@ export const ClusterEnvironmentList = ({
                 ({
                     id,
                     environment_name: environmentName,
-                    prometheusEndpoint,
+                    prometheus_url: prometheusEndpoint,
                     namespace,
-                    environmentCategory,
                     default: isProduction,
                     description,
                     category,
                 }) =>
-                    id && (
+                    environmentName && (
                         <div
                             data-testid={`env-container-${environmentName}`}
                             className={`${baseTableClassName} dc__hover-n50 py-8 fs-13 fw-4 h-44 dc__visible-hover dc__visible-hover--parent`}
@@ -110,13 +109,12 @@ export const ClusterEnvironmentList = ({
                                     prometheusEndpoint,
                                     clusterId,
                                     namespace,
-                                    environmentCategory: {
-                                        label: environmentCategory?.name,
-                                        value: environmentCategory?.id,
+                                    category: {
+                                        label: category?.name,
+                                        value: category?.id,
                                     },
-                                    default: isProduction,
+                                    isProduction,
                                     description,
-                                    category,
                                 })
                             }
                         >
