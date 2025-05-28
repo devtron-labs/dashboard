@@ -49,6 +49,7 @@ import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/Plugi
 import { getShouldHidePageHeaderAndSidebar } from './utils'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { ListProps } from './types'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
@@ -817,7 +818,7 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
                 {title}
                 {tag && <span className="tag">{tag}</span>}
                 {category && (
-                    <span className="dc__border bg__secondary px-6 fs-12 lh-20 br-4 ml-8 fw-4 mw-200">
+                    <span className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18">
                         {category}
                     </span>
                 )}

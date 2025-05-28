@@ -143,7 +143,7 @@ export const ClusterEnvironmentList = ({
                             {hasCategory && (
                                 <div>
                                     {category && (
-                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 flex dc_width-max-content dc__truncate dc__mxw-inherit">
+                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 dc__mxw-150 flex dc__truncate">
                                             <InteractiveCellText text={category?.name} />
                                         </span>
                                     )}
