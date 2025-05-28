@@ -369,7 +369,7 @@ const NodeDetailComponent = ({
 
     const handleManifestEdit = () => {
         if (manifestFormConfigurationType === ConfigurationType.YAML) {
-            handleStickDynamicTabsToTop()
+            handleStickDynamicTabsToTop?.()
         }
         setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
     }

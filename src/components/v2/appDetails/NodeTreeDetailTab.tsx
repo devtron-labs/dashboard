@@ -115,7 +115,7 @@ const NodeTreeDetailTab = ({
             return
         }
         if (stickyElementRef.current) {
-            handleScrollToTop() // or your scroll container
+            handleScrollToTop()
         }
     }
 

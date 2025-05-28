@@ -767,7 +767,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className="flexbox-col flex-grow-1"
+            className={`flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-auto' : ''}`}
             data-testid="app-manifest-container"
             style={{
                 background: 'var(--terminal-bg)',
