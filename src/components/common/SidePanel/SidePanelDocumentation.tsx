@@ -28,7 +28,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
 
     return (
         <>
-            <div className="px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12">
+            <div className="px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12 dc__no-shrink">
                 <Icon name="ic-book-open" color="N900" />
                 <h2 className="m-0 fs-16 lh-1-5 fw-6 cn-9 flex-grow-1">Documentation</h2>
                 <div className="flex dc__gap-8">
@@ -41,10 +41,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         size={ComponentSizeType.xs}
                         component={ButtonComponentType.anchor}
                         anchorProps={{
-                            href:
-                                iframeRef.current?.contentDocument?.referrer ??
-                                iframeRef.current?.contentWindow?.location?.href ??
-                                docLink,
+                            href: docLink,
                         }}
                     />
                     <Button
