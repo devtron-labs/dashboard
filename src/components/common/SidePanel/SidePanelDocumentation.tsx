@@ -24,7 +24,9 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
     const iframeRef = useRef<HTMLIFrameElement | null>(null)
 
     // CONSTANTS
-    const iframeSrc = `${docLink}&theme=${appTheme}`
+    const iframeSrc = docLink
+        ? `${docLink}${docLink.includes('?') ? `&theme=${appTheme}` : `?theme=${appTheme}`}`
+        : null
 
     return (
         <>
@@ -57,7 +59,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                 </div>
             </div>
             <div className="flex-grow-1">
-                {docLink && (
+                {iframeSrc && (
                     <iframe
                         key={iframeSrc}
                         ref={iframeRef}
@@ -69,7 +71,6 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         height="100%"
                         allow="clipboard-read; clipboard-write"
                         sandbox="allow-same-origin allow-scripts allow-popups"
-                        referrerPolicy="no-referrer"
                     />
                 )}
             </div>
