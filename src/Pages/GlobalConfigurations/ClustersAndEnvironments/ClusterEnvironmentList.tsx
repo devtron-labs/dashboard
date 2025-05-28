@@ -139,7 +139,7 @@ export const ClusterEnvironmentList = ({
                                     </div>
                                 )}
                             </div>
-                            <div className="dc__truncate-text">{namespace}</div>
+                            <div className="dc__truncate-text flex left">{namespace}</div>
                             {hasCategory && (
                                 <div>
                                     {category?.name ? (
@@ -152,7 +152,9 @@ export const ClusterEnvironmentList = ({
                                 </div>
                             )}
 
-                            <div className="cluster-list__description dc__truncate-text">{description || '-'}</div>
+                            <div className="cluster-list__description dc__truncate-text  flex left">
+                                {description || '-'}
+                            </div>
                             {renderActionButton(environmentName)}
                         </div>
                     ),
