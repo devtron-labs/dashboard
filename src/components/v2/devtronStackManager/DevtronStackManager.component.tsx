@@ -787,7 +787,7 @@ export const InstallationWrapper = ({
                         </div>
                         <CloseIcon className="pointer mt-2" onClick={hidePrerequisiteConfirmationModal} />
                     </div>
-                    <div className="p-20">
+                    <div className="p-20 mxh-600 dc__overflow-auto">
                         <div className="fw-6 fs-13 cn-9 mb-12">
                             Please ensure you follow below pre-requisites steps in order.
                         </div>
