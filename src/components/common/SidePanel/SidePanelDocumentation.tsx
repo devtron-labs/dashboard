@@ -70,8 +70,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         width="100%"
                         height="100%"
                         allow="clipboard-read; clipboard-write"
-                        sandbox="allow-same-origin allow-scripts allow-popups"
-                        referrerPolicy="strict-origin"
+                        referrerPolicy="strict-origin-when-cross-origin"
                     />
                 )}
             </div>
