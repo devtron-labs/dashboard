@@ -144,7 +144,7 @@ export const ClusterEnvironmentList = ({
                                 <div>
                                     {category?.name ? (
                                         <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 dc__mxw-fit-content flex dc__truncate">
-                                            <InteractiveCellText text={category.name} />
+                                            <InteractiveCellText text={category.name} fontSize={12} />
                                         </span>
                                     ) : (
                                         '-'
