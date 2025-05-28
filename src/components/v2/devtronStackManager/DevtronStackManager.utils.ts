@@ -77,12 +77,13 @@ export const handleAction = async (
     updateActionTrigger: (isActionTriggered: boolean) => void,
     history: RouteComponentProps['history'],
     location: RouteComponentProps['location'],
+    currentVersion: string,
     moduleType?: string,
 ) => {
     try {
         const actionRequest: ModuleActionRequest = {
             action: isUpgradeView ? ModuleActions.UPGRADE : ModuleActions.INSTALL,
-            version: upgradeVersion,
+            version: isUpgradeView ? upgradeVersion : currentVersion,
             moduleType,
         }
 

@@ -761,6 +761,7 @@ export const InstallationWrapper = ({
                 updateActionTrigger,
                 history,
                 location,
+                serverInfo.currentVersion,
                 moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
             )
         } else {
