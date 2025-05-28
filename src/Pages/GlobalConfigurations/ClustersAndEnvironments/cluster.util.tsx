@@ -104,8 +104,9 @@ export const getServerURLFromLocalStorage = (fallbackServerUrl: string): string 
             const clusterData: AddClusterFormPrefilledInfoType = JSON.parse(stringifiedClusterData)
             const serverURL = clusterData?.serverURL || fallbackServerUrl
             return serverURL
-            // eslint-disable-next-line no-empty
-        } catch {}
+        } catch {
+            // do nothing
+        }
     }
 
     return fallbackServerUrl

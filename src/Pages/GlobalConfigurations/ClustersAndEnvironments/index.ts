@@ -1,7 +1,7 @@
 export * from './cluster.service'
 export * from './cluster.type'
 export * from './cluster.util'
-export { default as ClusterComponents } from './ClusterComponents'
+export { default as ClusterComponents } from './ClusterComponent'
 export * from './ClusterEnvironmentDrawer'
 export * from './ClusterEnvironmentList'
 export * from './ClusterList'

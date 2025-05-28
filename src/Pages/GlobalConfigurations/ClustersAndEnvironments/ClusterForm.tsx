@@ -463,7 +463,6 @@ const ClusterForm = ({
             endpoint: { value: prometheusUrl || '', error: '' },
             authType: { value: authenTicationType, error: '' },
             isProd: { value: isProd.toString(), error: '' },
-            category: { value: category, error: '' },
         },
         {
             cluster_name: {

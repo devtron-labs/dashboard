@@ -144,6 +144,7 @@
     }
 
     .tag {
+        height: 20px; // cases where tag is using in div
         border-radius: 4px;
         border: solid 1px var(--B200);
         background-blend-mode: multiply;
