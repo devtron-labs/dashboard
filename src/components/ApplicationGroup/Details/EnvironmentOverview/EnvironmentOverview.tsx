@@ -33,7 +33,7 @@ import { useHistory, useParams } from 'react-router-dom'
 import { HibernateModal } from './HibernateModal'
 import HibernateStatusListDrawer from './HibernateStatusListDrawer'
 import { RestartWorkloadModal } from './RestartWorkloadModal'
-import { Moment12HourFormat } from '../../../../config'
+import { Moment12HourFormat, URLS } from '../../../../config'
 import { importComponentFromFELibrary } from '../../../common'
 import { getDeploymentStatus } from '../../AppGroup.service'
 import {
@@ -198,9 +198,9 @@ export default function EnvironmentOverview({
     }
 
     const getDeploymentHistoryLink = (appId: number, pipelineId: number) =>
-        `/application-group/${envId}/cd-details/${appId}/${pipelineId}/`
+        `${URLS.APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
 
-    const getAppRedirectLink = (appId: number, envId: number) => `/app/${appId}/details/${envId}`
+    const getAppRedirectLink = (appId: number, envId: number) => `${URLS.APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`
 
     const parseAppListData = (
         data: AppGroupListType,

@@ -19,23 +19,23 @@ import { generatePath, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
+    CMSecretComponentType,
     DeploymentHistoryBaseParamsType,
     EnvResourceType,
     GenericEmptyState,
     getIsApprovalPolicyConfigured,
     Progressing,
-    CMSecretComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
-import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
-import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
-import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
-import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
-
-import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import { URLS } from '@Config/routes'
+import { DeploymentConfigCompare, DeploymentTemplate } from '@Pages/Applications'
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { EnvConfigurationsNav } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/Navigation/EnvConfigurationsNav'
+import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
+import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret'
+
 import { ReleaseConfigurationContextType } from './types'
 
 import './styles.scss'
@@ -139,6 +139,9 @@ export const Configurations = () => {
                         reloadEnvironments={reloadEnvironments}
                         environmentName={selectedEnv.name}
                         clusterId={null}
+                        isExceptionUser={
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.deploymentTemplate].isExceptionUser
+                        }
                         isTemplateView={false}
                     />
                 </div>
@@ -156,6 +159,7 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap],
                         )}
                         clusterId={null}
+                        isExceptionUser={approvalConfigForEnv?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
                         isTemplateView={false}
                     />
                 </div>
@@ -174,6 +178,9 @@ export const Configurations = () => {
                             approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret],
                         )}
                         clusterId={null}
+                        isExceptionUser={
+                            approvalConfigForEnv?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
+                        }
                         isTemplateView={false}
                     />
                 </div>

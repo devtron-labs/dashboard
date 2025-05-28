@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ReactNode } from 'react'
+
 import {
     APIResponseHandler,
     ComponentSizeType,
@@ -30,14 +32,15 @@ import {
     TippyCustomized,
     TippyTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
-import { ReactComponent as ICVisibilityOn } from '@Icons/ic-visibility-on.svg'
+
 import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
+import { ReactComponent as ICLegoBlock } from '@Icons/ic-lego-block.svg'
 import { ReactComponent as ICTag } from '@Icons/ic-tag.svg'
-import { ReactNode } from 'react'
-import { CreatePluginActionType, CreatePluginFormContentProps, CreatePluginFormViewType } from './types'
+import { ReactComponent as ICVisibilityOn } from '@Icons/ic-visibility-on.svg'
+
 import CreatePluginFormField from './CreatePluginFormField'
 import CreatePluginInputVariableContainer from './CreatePluginInputVariableContainer'
+import { CreatePluginActionType, CreatePluginFormContentProps, CreatePluginFormViewType } from './types'
 import { getIsTagValid, getSelectPickerOptionsFromParentPluginList } from './utils'
 
 const CreatePluginFormContent = ({

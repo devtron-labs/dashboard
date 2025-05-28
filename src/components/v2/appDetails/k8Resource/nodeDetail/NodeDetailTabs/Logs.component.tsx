@@ -14,44 +14,47 @@
  * limitations under the License.
  */
 
-import Tippy from '@tippyjs/react'
 import { useEffect, useRef, useState } from 'react'
-import { useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import ReactGA from 'react-ga4'
+import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import Select from 'react-select'
+import Tippy from '@tippyjs/react'
+
 import {
+    AppThemeType,
     Checkbox,
     CHECKBOX_VALUE,
+    getComponentSpecificThemeClass,
     Host,
+    noop,
     Progressing,
+    SearchBar,
+    ToastManager,
+    ToastVariantType,
     useDownload,
     useKeyDown,
-    SearchBar,
-    ToastVariantType,
-    ToastManager,
-    getComponentSpecificThemeClass,
-    AppThemeType,
-    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Select from 'react-select'
-import ReactGA from 'react-ga4'
+
+import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
+import { ReactComponent as Download } from '@Icons/ic-arrow-line-down.svg'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as LinesIcon } from '@Icons/ic-lines.svg'
 import { ReactComponent as PlayButton } from '@Icons/ic-play-filled.svg'
 import { ReactComponent as StopButton } from '@Icons/ic-stop-filled.svg'
-import { ReactComponent as LinesIcon } from '@Icons/ic-lines.svg'
-import { ReactComponent as Download } from '@Icons/ic-arrow-line-down.svg'
-import { ReactComponent as Abort } from '@Icons/ic-abort.svg'
-import { NodeDetailTab } from '../nodeDetail.type'
-import { downloadLogs, getLogsURL } from '../nodeDetail.api'
-import IndexStore from '../../../index.store'
-import WebWorker from '../../../../../app/WebWorker'
-import sseWorker from '../../../../../app/grepSSEworker'
+
+import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { Subject } from '../../../../../../util/Subject'
-import LogViewerComponent from './LogViewer.component'
-import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
-import { LogsComponentProps, Options } from '../../../appDetails.type'
+import { replaceLastOddBackslash } from '../../../../../../util/Util'
+import sseWorker from '../../../../../app/grepSSEworker'
+import WebWorker from '../../../../../app/WebWorker'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { Option } from '../../../../common/ReactSelect.utils'
+import { multiSelectStyles, podsDropdownStyles } from '../../../../common/ReactSelectCustomization'
 import { AppDetailsTabs } from '../../../appDetails.store'
-import { replaceLastOddBackslash } from '../../../../../../util/Util'
+import { LogsComponentProps, Options } from '../../../appDetails.type'
+import IndexStore from '../../../index.store'
+import { downloadLogs, getLogsURL } from '../nodeDetail.api'
+import { NodeDetailTab } from '../nodeDetail.type'
 import {
     flatContainers,
     getFirstOrNull,
@@ -61,10 +64,11 @@ import {
     getPodLogsOptions,
     getSelectedPodList,
 } from '../nodeDetail.util'
-import './nodeDetailTab.scss'
-import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
-import { SelectedCustomLogFilterType } from './node.type'
 import CustomLogsModal from './CustomLogsModal/CustomLogsModal'
+import LogViewerComponent from './LogViewer.component'
+import { SelectedCustomLogFilterType } from './node.type'
+
+import './nodeDetailTab.scss'
 
 const subject: Subject<string> = new Subject()
 const commandLineParser = require('command-line-parser')
@@ -93,9 +97,11 @@ const LogsComponent = ({
         podName: string
         clusterId: string
         nodeType: string
-        node: string
+        name: string
         namespace: string
+        kind?: string
     }>()
+    params.nodeType = params.kind ?? params.nodeType
     const key = useKeyDown()
     const { isDownloading, handleDownload } = useDownload()
     const [logsPaused, setLogsPaused] = useState(false)
@@ -107,7 +113,7 @@ const LogsComponent = ({
     const logsPausedRef = useRef(false)
     const workerRef = useRef(null)
     const appDetails = IndexStore.getAppDetails()
-    const isLogAnalyzer = !params.podName && !params.node
+    const isLogAnalyzer = !params.podName && !params.name
     const [logState, setLogState] = useState(() =>
         getInitialPodContainerSelection(isLogAnalyzer, params, location, isResourceBrowserView, selectedResource),
     )
@@ -383,7 +389,7 @@ const LogsComponent = ({
             ...logSearchTerms,
             [isLogAnalyzer
                 ? AppDetailsTabs.log_analyzer
-                : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`]: searchTerm,
+                : `${params.nodeType}/${isResourceBrowserView ? params.name : params.podName}`]: searchTerm,
         })
     }
 
@@ -436,7 +442,7 @@ const LogsComponent = ({
                 logSearchTerms[
                     isLogAnalyzer
                         ? AppDetailsTabs.log_analyzer
-                        : `${params.nodeType}/${isResourceBrowserView ? params.node : params.podName}`
+                        : `${params.nodeType}/${isResourceBrowserView ? params.name : params.podName}`
                 ]
 
             if (currentSearchTerm) {
@@ -447,7 +453,7 @@ const LogsComponent = ({
             }
         }
         // TODO: reset pauseLog and grepToken
-    }, [params.podName, params.node, params.namespace])
+    }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         // Values are already set once we reach here
@@ -724,7 +730,7 @@ const LogsComponent = ({
                             />
                         ) : (
                             <Tippy className="default-tt" arrow={false} placement="top" content="Download logs">
-                                <span>
+                                <span className="flex">
                                     <Download
                                         className={`icon-dim-16 mr-8 cursor ${
                                             (podContainerOptions?.containerOptions ?? []).length === 0 ||

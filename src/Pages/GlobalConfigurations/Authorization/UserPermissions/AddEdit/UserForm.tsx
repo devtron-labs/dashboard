@@ -14,39 +14,41 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+
 import {
-    showError,
-    ServerErrors,
-    OptionType,
-    UserStatus,
-    useMainContext,
-    UserGroupType,
-    ToastVariantType,
-    ToastManager,
-    ComponentSizeType,
     Button,
     ButtonComponentType,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    OptionType,
     SelectPicker,
     SelectPickerProps,
+    ServerErrors,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
+    UserGroupType,
+    UserStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory } from 'react-router-dom'
-import { validateEmail, deepEqual, importComponentFromFELibrary } from '../../../../../components/common'
-import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
-import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
-import { useAuthorizationContext } from '../../AuthorizationProvider'
+
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as Error } from '../../../../../assets/icons/ic-warning.svg'
+import { deepEqual, importComponentFromFELibrary, validateEmail } from '../../../../../components/common'
+import { API_STATUS_CODES, REQUIRED_FIELDS_MISSING, URLS } from '../../../../../config'
 import { createOrUpdateUser, deleteUser } from '../../authorization.service'
-import { User } from '../../types'
+import { useAuthorizationContext } from '../../AuthorizationProvider'
+import { getDefaultUserStatusAndTimeout } from '../../libUtils'
+import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
+import { User } from '../../types'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
-import { getDefaultUserStatusAndTimeout } from '../../libUtils'
 import { DeleteUserPermission } from '../DeleteUserPermission'
 
 const UserAutoAssignedRoleGroupsTable = importComponentFromFELibrary('UserAutoAssignedRoleGroupsTable')
@@ -266,7 +268,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     return (
         <div className="flexbox-col dc__align-start dc__align-self-stretch flex-grow-1 dc__gap-24 pb-16">
-            <div className="flex pr-20 pl-20 dc__content-space dc__gap-8 w-100">
+            <div className="flex px-20 pt-16 dc__content-space dc__gap-8 w-100">
                 <div className="flex dc__content-start dc__gap-4 fs-16 lh-32 fw-4 dc__ellipsis-right">
                     <Link className="anchor" to={URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION}>
                         User Permissions

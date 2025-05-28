@@ -16,24 +16,27 @@
 
 import { SyntheticEvent } from 'react'
 import { Operation } from 'fast-json-patch'
+
 import {
-    ConfigKeysWithLockType,
-    DeploymentChartVersionType,
-    ChartMetadataType,
-    DeploymentTemplateConfigState,
-    SelectedChartDetailsType,
-    CompareFromApprovalOptionsValuesType,
-    ConfigurationType,
-    ServerErrors,
-    ConfigToolbarPopupNodeType,
-    DryRunEditorMode,
-    ConfigHeaderTabType,
-    ProtectConfigTabsType,
-    DraftMetadataDTO,
-    OverrideMergeStrategyType,
     AppConfigProps,
+    ChartMetadataType,
+    CompareFromApprovalOptionsValuesType,
+    ConfigHeaderTabType,
+    ConfigKeysWithLockType,
+    ConfigToolbarPopupNodeType,
+    ConfigurationType,
+    DeploymentChartVersionType,
+    DeploymentTemplateConfigState,
+    DraftMetadataDTO,
+    DryRunEditorMode,
+    OverrideMergeStrategyType,
     PipelineMigratedFromType,
+    ProtectConfigTabsType,
+    SelectedChartDetailsType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ConfigToolbarProps } from '../types'
 
 export enum ConfigEditorStatesType {
     CURRENT_EDITOR = 'currentEditorTemplateData',
@@ -66,6 +69,7 @@ type EnvOverrideDeploymentTemplateProps = {
 
 export type DeploymentTemplateProps = Required<Pick<AppConfigProps, 'isTemplateView'>> & {
     isApprovalPolicyConfigured: boolean
+    isExceptionUser: boolean
     reloadEnvironments: () => void
     fetchEnvConfig: (environmentId: number) => void
 } & (BaseDeploymentTemplateProps | EnvOverrideDeploymentTemplateProps)
@@ -154,6 +158,10 @@ export interface DeploymentTemplateStateType {
      */
     showSaveChangesModal: boolean
     /**
+     * Would show confirmation modal for express edit when draft is present. (draft will be discarded warning)
+     */
+    showExpressEditConfirmationModal: boolean
+    /**
      * To replace the opened popup menu body in config toolbar
      */
     popupNodeType: ConfigToolbarPopupNodeType
@@ -172,6 +180,8 @@ export interface DeploymentTemplateStateType {
     isLoadingChangedChartDetails: boolean
     showDeleteOverrideDialog: boolean
     showDeleteDraftOverrideDialog: boolean
+    showExpressDeleteDraftDialog: boolean
+
     /**
      * This mode can only be activated when user is in edit mode
      */
@@ -189,6 +199,13 @@ export interface DeploymentTemplateStateType {
      * Readonly flag to show the user that the pipeline is migrated from external app to devtron, and can't change its version or delete override
      */
     migratedFrom: PipelineMigratedFromType
+    /** Whether the express edit view is visible. */
+    isExpressEditView: boolean
+    /** Whether the express edit comparison view is visible. */
+    isExpressEditComparisonView: boolean
+    /** LHS state for Express Edit Comparison View. */
+    expressEditComparisonViewLHS: DeploymentTemplateConfigState
+    showExpressEditPromptTooltip: boolean
 }
 
 export interface HandleFetchDeploymentTemplateReturnType
@@ -216,10 +233,15 @@ export interface DeploymentTemplateOptionsHeaderProps
 export interface DeploymentTemplateFormProps
     extends Pick<DeploymentTemplateProps, 'environmentName'>,
         Pick<DeploymentTemplateConfigState, 'guiSchema' | 'selectedChart' | 'schema' | 'mergeStrategy'>,
-        Pick<DeploymentTemplateEditorDataStateType, 'latestDraft'>,
+        Pick<DeploymentTemplateEditorDataStateType, 'latestDraft' | 'isAppMetricsEnabled'>,
         Pick<
             DeploymentTemplateStateType,
-            'showReadMe' | 'lockedConfigKeysWithLockType' | 'hideLockedKeys' | 'editMode'
+            | 'showReadMe'
+            | 'lockedConfigKeysWithLockType'
+            | 'hideLockedKeys'
+            | 'editMode'
+            | 'isExpressEditComparisonView'
+            | 'expressEditComparisonViewLHS'
         > {
     editorOnChange: (value: string) => void
     readOnly: boolean
@@ -229,6 +251,11 @@ export interface DeploymentTemplateFormProps
     handleChangeToYAMLMode: () => void
     isGuiSupported: boolean
     isUnSet: boolean
+    handleAppMetricsToggle: () => void
+    handleMergeStrategyChange: ConfigToolbarProps['handleMergeStrategyChange']
+    charts: DeploymentTemplateStateType['chartDetails']['charts']
+    handleChartChange: (selectedChart: DeploymentChartVersionType) => void
+    handleExpressEditCompareWithChange: (isDraft: boolean) => void
 }
 
 export interface DeploymentTemplateGUIViewProps
@@ -437,6 +464,8 @@ interface UpdateDTCommonPayloadType {
     saveEligibleChanges: boolean
     readme?: string
     schema?: Record<string, string>
+    resourceName: string
+    isExpressEdit?: boolean
 }
 
 export type UpdateEnvironmentDTPayloadType = UpdateDTCommonPayloadType &

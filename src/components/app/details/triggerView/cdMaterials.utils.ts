@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { CDMaterialType, FilterStates } from '@devtron-labs/devtron-fe-common-lib'
-import { FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
+import { ApprovalRuntimeStateType, CDMaterialType, FilterStates } from '@devtron-labs/devtron-fe-common-lib'
+
 import { LAST_SAVED_CONFIG_OPTION, SPECIFIC_TRIGGER_CONFIG_OPTION } from './TriggerView.utils'
+import { CDMaterialState, FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
 
 export const getInitialState = (materialType: string, material: CDMaterialType[], searchImageTag: string) => () => ({
     isSecurityModuleInstalled: false,
@@ -54,3 +55,25 @@ export const getRegexValue = (material): Record<number, RegexValueType> =>
         },
         {} as Record<number, RegexValueType>,
     )
+
+export const getIsMaterialApproved = (userApprovalMetadata: CDMaterialType['userApprovalMetadata']) => {
+    if (!userApprovalMetadata) {
+        return false
+    }
+
+    const { approvalRuntimeState } = userApprovalMetadata
+    return approvalRuntimeState === ApprovalRuntimeStateType.approved
+}
+
+export const getCanDeployWithoutApproval = (state: CDMaterialState, isExceptionUser: boolean) => {
+    const isMaterialApproved =
+        state.selectedMaterial && getIsMaterialApproved(state.selectedMaterial.userApprovalMetadata)
+
+    return isExceptionUser && !isMaterialApproved
+}
+
+export const getCanImageApproverDeploy = (
+    state: CDMaterialState,
+    canApproverDeploy: boolean,
+    isExceptionUser: boolean,
+) => isExceptionUser && !canApproverDeploy && state.selectedMaterial?.userApprovalMetadata?.hasCurrentUserApproved

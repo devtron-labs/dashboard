@@ -16,16 +16,18 @@
 
 import React, { useMemo } from 'react'
 import { useParams } from 'react-router-dom'
-import { Progressing, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
-import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
-import { createGroupSelectList, filterImageList } from '../../common'
+
+import { ErrorScreenManager, Progressing, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getHostURLConfiguration } from '../../../services/service'
 import { createTaintsList } from '../../cluster/cluster.util'
 import { clusterNamespaceList, getClusterCapacity } from '../../ClusterNodes/clusterNodes.service'
-import { getHostURLConfiguration } from '../../../services/service'
-import { AdminTerminalProps, URLParams } from '../Types'
+import ClusterTerminal from '../../ClusterNodes/ClusterTerminal'
+import { createGroupSelectList, filterImageList } from '../../common'
+import { AdminTerminalProps, ClusterDetailBaseParams } from '../Types'
 
 const AdminTerminal: React.FC<AdminTerminalProps> = ({ updateTerminalTabUrl }: AdminTerminalProps) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const [loading, data, error] = useAsync(
         () =>

@@ -15,14 +15,15 @@
  */
 
 import { useState } from 'react'
+
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
-import K8sPermissionModal from './K8sPermissionModal'
-import { HEADER_OPTIONS } from './utils'
-import { usePermissionConfiguration } from '../PermissionConfigurationForm'
-import { K8sPermissionModalType } from './types'
 import { importComponentFromFELibrary } from '../../../../../../components/common'
 import { K8sPermissionFilter } from '../../../types'
+import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import K8sPermissionModal from './K8sPermissionModal'
 import K8sPermissionRow from './K8sPermissionRow'
+import { K8sPermissionModalType } from './types'
+import { HEADER_OPTIONS } from './utils'
 
 const StatusHeaderCell = importComponentFromFELibrary('StatusHeaderCell', null, 'function')
 

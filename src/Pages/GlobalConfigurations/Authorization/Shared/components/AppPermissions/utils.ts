@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+import { GroupBase, Options, OptionsOrGroups } from 'react-select'
+
 import {
-    OptionType,
     ACCESS_TYPE_MAP,
-    EntityTypes,
-    SelectPickerOptionType,
     DEFAULT_ENV,
-    UserRoleConfig,
-    RoleSelectorOptionType,
+    EntityTypes,
     getCommonSelectStyle,
+    OptionType,
+    RoleSelectorOptionType,
+    SelectPickerOptionType,
+    UserRoleConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { OptionsOrGroups, GroupBase, Options } from 'react-select'
+
 import { APIRoleFilter } from '@Pages/GlobalConfigurations/Authorization/types'
+
 import { createClusterEnvGroup, importComponentFromFELibrary } from '../../../../../../components/common'
 import { SELECT_ALL_VALUE, SERVER_MODE } from '../../../../../../config'
 import {

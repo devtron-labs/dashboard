@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, MouseEventHandler } from 'react'
-import { components, ValueContainerProps, ClearIndicatorProps } from 'react-select'
+import React, { MouseEventHandler, useEffect, useState } from 'react'
+import { ClearIndicatorProps, components, ValueContainerProps } from 'react-select'
+
 import { Button, ButtonVariantType, ComponentSizeType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
+
 import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
+import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
 import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
+
 import { handleUTCTime } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { SidebarChildButtonPropsType } from '../Types'

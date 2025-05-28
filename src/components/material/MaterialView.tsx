@@ -18,7 +18,6 @@ import { Component } from 'react'
 import {
     ConditionalWrap,
     Checkbox,
-    InfoColourBar,
     TippyCustomized,
     TippyTheme,
     stopPropagation,
@@ -37,6 +36,7 @@ import {
     ERROR_STATUS_CODE,
     ButtonComponentType,
     Icon,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
@@ -54,7 +54,6 @@ import {
     DC_MATERIAL_VIEW__ISMULTI_CONFIRMATION_MESSAGE,
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
-import { ReactComponent as Info } from '../../assets/icons/info-filled.svg'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
 import { AuthenticationType } from '../cluster/cluster.type'
 import {
@@ -627,7 +626,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
 
         await deleteMaterial({
             request: deletePayload,
-            isTemplateView: this.props.isTemplateView
+            isTemplateView: this.props.isTemplateView,
         })
         this.props.reload()
     }
@@ -644,11 +643,15 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         return (
             <form
                 key={`${this.props.material.id}`}
-                className={this.props.isCreateAppView ? '' : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'}
+                className={`flexbox-col dc__gap-16
+                    ${this.props.isCreateAppView
+                        ? ''
+                        : 'br-8 py-16 px-20 bg__primary border__secondary mb-16'} `
+                }
             >
                 {!this.props.isCreateAppView && (
                     <div
-                        className="mb-20 cn-9 fs-16 fw-6 white-card__header--form"
+                        className="flexbox cn-9 fs-16 fw-6 white-card__header--form"
                         data-testid={`${this.props.material.id ? 'edit' : 'add'}-git-repository-heading`}
                     >
                         {this.props.material.id ? 'Edit Git Repository' : 'Add Git Repository'}
@@ -667,7 +670,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                         ) : null}
                     </div>
                 )}
-                <div className="flexbox dc__gap-16 mb-16" data-testid="add-git-repository-form">
+                <div className="flexbox dc__gap-16" data-testid="add-git-repository-form">
                     <div className="w-250 dc__no-shrink">
                         <SelectPicker
                             classNamePrefix="material-view__select-project"
@@ -709,12 +712,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                 {!this.props.isCreateAppView && (
                     <>
                         {this.props.material.gitProvider?.authMode === AuthenticationType.ANONYMOUS && (
-                            <InfoColourBar
-                                message="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication."
-                                classname="info_bar cn-9 mb-20 lh-20"
-                                Icon={Info}
-                                iconClass="icon-dim-20"
-                            />
+                            <InfoBlock description="This git account has anonymous read access. Only public repositories can be accessed with anonymous authentication." />
                         )}
                         {!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS && (
                             <>
@@ -724,7 +722,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                         value={CHECKBOX_VALUE.CHECKED}
                                         tabIndex={3}
                                         onChange={this.props.handleExcludeRepoCheckbox}
-                                        rootClassName="fs-14 cn-9 mb-8 flex top dc_max-width__max-content"
+                                        rootClassName="fs-14 cn-9 m-0 flex top dc_max-width__max-content"
                                     >
                                         <div className="ml-12">
                                             <span data-testid="exclude-include-checkbox" className="mt-1 flex left">
@@ -864,8 +862,8 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 )}
                             </>
                         )}
-                        <label>
-                            <div className="pt-16">
+                        <label className="m-0 flexbox-col dc__gap-16">
+                            <div>
                                 <Checkbox
                                     isChecked={this.props.isChecked}
                                     value={CHECKBOX_VALUE.CHECKED}
@@ -918,7 +916,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     </div>
                                 )}
                             </div>
-                            <div className="pt-16 ">
+                            <div>
                                 <Checkbox
                                     isChecked={this.props.material.fetchSubmodules}
                                     value={CHECKBOX_VALUE.CHECKED}
@@ -950,7 +948,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                 </Checkbox>
                             </div>
                         </label>
-                        <div className="flexbox dc__content-space pt-20">
+                        <div className="flexbox dc__content-space">
                             {this.props.material.id && (
                                 <ConditionalWrap
                                     condition={this.props.preventRepoDelete}

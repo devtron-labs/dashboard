@@ -15,7 +15,9 @@
  */
 
 import { copyToClipboard, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as CheckIcon } from '../../../../assets/icons/ic-check.svg'
+
 import 'xterm/css/xterm.css'
 import './nodeDetailTab.scss'
 

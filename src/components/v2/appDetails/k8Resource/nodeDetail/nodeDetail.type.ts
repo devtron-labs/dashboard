@@ -15,14 +15,16 @@
  */
 
 import React from 'react'
+
 import {
-    OptionType,
-    SelectPickerOptionType,
     OptionsBase,
+    OptionType,
     SelectedResourceType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { AppDetails, Options } from '../../appDetails.type'
+
 import { CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
+import { AppDetails, Options } from '../../appDetails.type'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from './NodeDetailTabs/node.type'
 
 export enum NodeDetailTab {
@@ -40,7 +42,7 @@ export interface ParamsType {
     actionName: string
     podName: string
     nodeType: string
-    node: string
+    name: string
     appId?: string
     envId?: string
     namespace?: string
@@ -170,4 +172,14 @@ export interface DeleteEphemeralButtonType {
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     containers: Options[]
     isExternal: boolean
+}
+
+export interface TerminalParamsType {
+    actionName: string
+    podName: string
+    nodeType: string
+    name: string
+    clusterId?: string
+    namespace: string
+    kind?: string
 }

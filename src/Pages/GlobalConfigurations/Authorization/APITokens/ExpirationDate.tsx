@@ -16,11 +16,12 @@
 
 /* eslint-disable react/prop-types */
 import moment from 'moment'
-import { InfoColourBar, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
-import { MomentDateFormat } from '../../../../config'
+
+import { InfoBlock, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SingleDatePickerComponent } from '../../../../components/common'
-import { getOptions, getDateInMilliseconds } from './apiToken.utils'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { MomentDateFormat } from '../../../../config'
+import { getDateInMilliseconds, getOptions } from './apiToken.utils'
 
 const ExpirationDate = ({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) => (
     <div className="w-100">
@@ -59,11 +60,9 @@ const ExpirationDate = ({ selectedExpirationDate, onChangeSelectFormData, handle
         </div>
         {selectedExpirationDate.label === 'No expiration' && (
             <div className="mt-16">
-                <InfoColourBar
-                    classname="warn"
-                    Icon={Warn}
-                    message="Devtron strongly recommends that you set an expiration date for your token to help keep your information secure."
-                    iconClass="warning-icon"
+                <InfoBlock
+                    variant="warning"
+                    description="Devtron strongly recommends that you set an expiration date for your token to help keep your information secure."
                 />
             </div>
         )}

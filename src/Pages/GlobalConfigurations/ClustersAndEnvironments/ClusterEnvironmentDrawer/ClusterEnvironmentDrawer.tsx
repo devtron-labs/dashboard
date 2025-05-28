@@ -15,40 +15,43 @@
  */
 
 import { useEffect, useState } from 'react'
+import { generatePath } from 'react-router-dom'
 
 import {
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
     CustomInput,
+    Drawer,
+    GenericEmptyState,
     noop,
+    ServerErrors,
     showError,
+    stopPropagation,
     TagType,
-    UseFormSubmitHandler,
-    useForm,
     ToastManager,
     ToastVariantType,
-    ServerErrors,
-    Drawer,
-    stopPropagation,
-    GenericEmptyState,
-    ButtonComponentType,
-    ComponentSizeType,
+    Tooltip,
+    useForm,
+    UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { importComponentFromFELibrary } from '@Components/common'
-import { saveEnvironment, updateEnvironment, deleteEnvironment } from '@Components/cluster/cluster.service'
-
+import { deleteEnvironment, saveEnvironment, updateEnvironment } from '@Components/cluster/cluster.service'
 import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
-import { URLS } from '@Config/routes'
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
-import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
-import { getClusterNamespaceByName, getClusterEnvironmentUpdatePayload, getNamespaceLabels } from './utils'
-import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
+import { importComponentFromFELibrary } from '@Components/common'
+import { URLS } from '@Config/routes'
+
+import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
+import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
+import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
+import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNamespaceLabels } from './utils'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')
@@ -61,12 +64,12 @@ export const ClusterEnvironmentDrawer = ({
     namespace,
     id,
     clusterId,
-    prometheusEndpoint,
     isProduction,
     description,
     reload,
     hideClusterDrawer,
     isVirtual,
+    clusterName,
 }: ClusterEnvironmentDrawerProps) => {
     // STATES
     // Manages the loading state for create and update actions
@@ -88,6 +91,8 @@ export const ClusterEnvironmentDrawer = ({
         data: null,
         error: null,
     })
+
+    const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
 
     /**
      * Fetches the list of namespaces from the cluster and updates the state accordingly. \
@@ -169,7 +174,6 @@ export const ClusterEnvironmentDrawer = ({
                 clusterId,
                 id,
                 namespaceLabels: namespaceLabels.labels,
-                prometheusEndpoint,
                 resourceVersion: namespaceLabels.resourceVersion,
                 isVirtual,
             })
@@ -248,7 +252,6 @@ export const ClusterEnvironmentDrawer = ({
             data,
             clusterId,
             id,
-            prometheusEndpoint,
             isVirtual,
         })
         await deleteEnvironment(payload)
@@ -259,7 +262,9 @@ export const ClusterEnvironmentDrawer = ({
         <Button
             dataTestId="add_cluster_button"
             linkProps={{
-                to: URLS.GLOBAL_CONFIG_CREATE_CLUSTER,
+                to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                    type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                }),
             }}
             component={ButtonComponentType.link}
             startIcon={<ICAdd />}
@@ -400,7 +405,12 @@ export const ClusterEnvironmentDrawer = ({
         <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
-                    <h3 className="m-0 fs-16 fw-6 lh-1-43">{id ? 'Edit Environment' : 'Add Environment'}</h3>
+                    {/* NOTE: only in case of add environment, can we have truncation */}
+                    <Tooltip content={addEnvironmentHeaderText}>
+                        <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">
+                            {id ? 'Edit Environment' : addEnvironmentHeaderText}
+                        </h3>
+                    </Tooltip>
                     <button
                         type="button"
                         aria-label="close-btn"

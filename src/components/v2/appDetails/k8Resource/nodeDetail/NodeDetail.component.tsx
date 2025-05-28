@@ -14,37 +14,43 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState, useMemo } from 'react'
-import { Redirect, Route, Switch, useParams, useRouteMatch, useLocation } from 'react-router-dom'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
+    capitalizeFirstLetter,
     Checkbox,
     CHECKBOX_VALUE,
-    OptionType,
+    ComponentSizeType,
+    ConfigurationType,
     DeploymentAppTypes,
+    FormProps,
+    getAIAnalyticsEvents,
+    noop,
+    OptionsBase,
+    OptionType,
+    SegmentedControlProps,
+    showError,
     TabGroup,
     TabProps,
-    ComponentSizeType,
-    capitalizeFirstLetter,
-    ConfigurationType,
-    FormProps,
     ToastManager,
     ToastVariantType,
-    OptionsBase,
-    noop,
-    SegmentedControlProps,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICArrowsLeftRight } from '@Icons/ic-arrows-left-right.svg'
-import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
-import { EDITOR_VIEW } from '@Config/constants'
+import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
-import EventsComponent from './NodeDetailTabs/Events.component'
-import LogsComponent from './NodeDetailTabs/Logs.component'
-import ManifestComponent from './NodeDetailTabs/Manifest.component'
-import TerminalComponent from './NodeDetailTabs/Terminal.component'
-import { NodeDetailTab, ParamsType } from './nodeDetail.type'
+import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
+import { EDITOR_VIEW } from '@Config/constants'
+
+import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
+import { Nodes } from '../../../../app/types'
+import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
+import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
+import MessageUI, { MsgUIType } from '../../../common/message.ui'
 import {
     AppType,
     ManifestActionPropsType,
@@ -56,16 +62,16 @@ import {
     Options,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
-import { getManifestResource } from './nodeDetail.api'
-import MessageUI, { MsgUIType } from '../../../common/message.ui'
-import { Nodes } from '../../../../app/types'
-import './nodeDetail.css'
-import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
+import EventsComponent from './NodeDetailTabs/Events.component'
+import LogsComponent from './NodeDetailTabs/Logs.component'
+import ManifestComponent from './NodeDetailTabs/Manifest.component'
+import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
-import { ReactComponent as EphemeralIcon } from '../../../../../assets/icons/ic-ephemeral.svg'
-import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
-import { CLUSTER_NODE_ACTIONS_LABELS } from '../../../../ClusterNodes/constants'
-import DeleteResourcePopup from '../../../../ResourceBrowser/ResourceList/DeleteResourcePopup'
+import { getManifestResource } from './nodeDetail.api'
+import { NodeDetailTab, ParamsType } from './nodeDetail.type'
+import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
+
+import './nodeDetail.css'
 
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
 const ToggleManifestConfigurationMode = importComponentFromFELibrary(
@@ -87,15 +93,16 @@ const NodeDetailComponent = ({
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<ParamsType>()
+    const params = useParams<ParamsType & K8sResourceDetailURLParams>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState<OptionsBase[]>([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
     const [hideManagedFields, setHideManagedFields] = useState(true)
+    const nodeType = params.kind ?? params.nodeType
     const [fetchingResource, setFetchingResource] = useState(
-        isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
+        isResourceBrowserView && nodeType === Nodes.Pod.toLowerCase(),
     )
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const [showEphemeralContainerDrawer, setShowEphemeralContainerDrawer] = useState<boolean>(false)
@@ -119,12 +126,12 @@ const NodeDetailComponent = ({
     const _selectedResource = useMemo(
         () =>
             lowercaseKindToResourceGroupMap[
-                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`
+                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${nodeType.toLowerCase()}`
             ],
-        [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
+        [lowercaseKindToResourceGroupMap, nodeType, params.group],
     )
 
-    const resourceName = isResourceBrowserView ? params.node : params.podName
+    const resourceName = isResourceBrowserView ? params.name : params.podName
 
     const selectedResource = {
         clusterId: +params.clusterId,
@@ -140,7 +147,7 @@ const NodeDetailComponent = ({
     const currentResource = isResourceBrowserView
         ? selectedResource
         : appDetails.resourceTree.nodes.filter(
-              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
+              (data) => data.name === params.podName && data.kind.toLowerCase() === nodeType,
           )[0]
 
     const showDesiredAndCompareManifest =
@@ -194,32 +201,26 @@ const NodeDetailComponent = ({
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
 
     useEffect(() => {
-        if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
+        if (location.pathname.endsWith('/terminal') && nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
         }
     }, [location])
 
     useEffect(() => {
-        if (params.nodeType) {
-            const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
+        if (nodeType) {
+            const _tabs = getNodeDetailTabs(nodeType as NodeType, true)
             setTabs(_tabs)
         }
-    }, [params.nodeType])
+    }, [nodeType])
 
     const getContainersFromManifest = async () => {
         try {
-            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? resourceName : ''
-            const { result } = (await getManifestResource(
-                appDetails,
-                resourceName,
-                params.nodeType,
-                isResourceBrowserView,
-                {
-                    ...selectedResource,
-                    name: selectedResource.name ? selectedResource.name : nullCaseName,
-                    namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
-                },
-            )) as any
+            const nullCaseName = isResourceBrowserView && nodeType === 'pod' ? resourceName : ''
+            const { result } = (await getManifestResource(appDetails, resourceName, nodeType, isResourceBrowserView, {
+                ...selectedResource,
+                name: selectedResource.name ? selectedResource.name : nullCaseName,
+                namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
+            })) as any
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
@@ -290,7 +291,7 @@ const NodeDetailComponent = ({
             !loadingResources &&
             selectedResource &&
             resourceName &&
-            params.nodeType === Nodes.Pod.toLowerCase()
+            nodeType === Nodes.Pod.toLowerCase()
         ) {
             getContainersFromManifest().catch(noop)
         }
@@ -312,7 +313,7 @@ const NodeDetailComponent = ({
         (!isResourceBrowserView &&
             !(
                 appDetails.resourceTree.nodes?.findIndex(
-                    (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
+                    (node) => node.name === params.podName && node.kind.toLowerCase() === nodeType,
                 ) >= 0
             ))
 
@@ -488,7 +489,7 @@ const NodeDetailComponent = ({
         <>
             <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
                 <div className="flex left">
-                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} alignActiveBorderWithContainer />
+                    <TabGroup tabs={TAB_GROUP_CONFIG} size={ComponentSizeType.medium} />
                     {selectedTabName === NodeDetailTab.TERMINAL && (
                         <>
                             <div className="ml-12 mr-5 tab-cell-border" />
@@ -561,6 +562,11 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
+                            clusterId={isResourceBrowserView ? +params.clusterId : appDetails.clusterId}
+                            aiWidgetEventDetails={getAIAnalyticsEvents(
+                                isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
+                                isResourceBrowserView ? null : appDetails.appType,
+                            )}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>

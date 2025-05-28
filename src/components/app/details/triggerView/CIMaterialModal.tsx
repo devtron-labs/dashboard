@@ -16,19 +16,21 @@
 
 import { useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
+
 import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     Progressing,
-    VisibleModal,
     stopPropagation,
     uploadCIPipelineFile,
     usePrompt,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import CIMaterial from './ciMaterial'
+
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
+import CIMaterial from './ciMaterial'
 import { CIMaterialModalProps, CIMaterialRouterProps } from './types'
 
 export const CIMaterialModal = ({

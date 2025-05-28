@@ -16,17 +16,19 @@
 
 import { useEffect } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import Tippy from '@tippyjs/react'
+
 import {
     CodeEditor,
-    PopupMenu,
-    ScopedVariablesFileViewType,
-    SavedVariablesViewParamsType,
     MODES,
+    PopupMenu,
+    SavedVariablesViewParamsType,
+    ScopedVariablesFileViewType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import Descriptor from './Descriptor'
-import VariablesList from './VariablesList'
-import DescriptorTab from './DescriptionTab'
+
+import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
+import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
+import { importComponentFromFELibrary } from '../common'
 import {
     DOWNLOAD_FILE_NAME,
     DOWNLOAD_FILES_AS,
@@ -34,11 +36,11 @@ import {
     DROPDOWN_ITEMS,
     SCOPED_VARIABLES_TEMPLATE_DATA,
 } from './constants'
-import { downloadData, parseURLViewToValidView } from './utils'
+import DescriptorTab from './DescriptionTab'
+import Descriptor from './Descriptor'
 import { DescriptorTabProps, SavedVariablesContentProps, YAMLEditorDropdownItemProps } from './types'
-import { importComponentFromFELibrary } from '../common'
-import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
-import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
+import { downloadData, parseURLViewToValidView } from './utils'
+import VariablesList from './VariablesList'
 
 const SCOPED_VARIABLES_TEMPLATE = importComponentFromFELibrary(
     'SCOPED_VARIABLES_TEMPLATE_DATA',
@@ -149,19 +151,7 @@ const SavedVariablesContent = ({
                     </PopupMenu>
                 </div>
 
-                <CodeEditor
-                    mode={MODES.YAML}
-                    readOnly
-                    noParsing
-                    codeEditorProps={{
-                        value: scopedVariablesYAML,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: scopedVariablesYAML,
-                        height: 'fitToParent',
-                    }}
-                />
+                <CodeEditor mode={MODES.YAML} readOnly noParsing value={scopedVariablesYAML} height="fitToParent" />
             </div>
         </div>
     )

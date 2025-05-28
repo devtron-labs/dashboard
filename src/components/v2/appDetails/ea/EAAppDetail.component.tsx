@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useHistory } from 'react-router-dom'
 import {
     showError,
@@ -22,6 +22,8 @@ import {
     ErrorScreenManager,
     ServerErrors,
     DeploymentAppTypes,
+    getIsRequestAborted,
+    abortPreviousRequests,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
@@ -38,6 +40,8 @@ import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
 
+let initTimer = null
+
 const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const location = useLocation()
     const history = useHistory()
@@ -49,13 +53,16 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     })
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
 
-    let initTimer = null
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     let isAPICallInProgress = false
 
     // component load
     useEffect(() => {
         _init()
         return (): void => {
+            abortControllerRef.current.abort()
+
             if (initTimer) {
                 clearTimeout(initTimer)
             }
@@ -76,9 +83,6 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         if (!isAPICallInProgress) {
             _getAndSetAppDetail()
         }
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
     }
 
     const _convertToGenericAppDetailModel = (
@@ -117,10 +121,21 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
         return genericAppDetail
     }
 
+    const handleInitiatePolling = () => {
+        if (initTimer) {
+            clearTimeout(initTimer)
+        }
+
+        initTimer = setTimeout(() => {
+            _init()
+        }, window._env_.EA_APP_DETAILS_POLLING_INTERVAL || 30000)
+    }
+
     const _getAndSetAppDetail = () => {
         isAPICallInProgress = true
         setIsReloadResourceTreeInProgress(true)
-        getAppDetail(appId)
+
+        abortPreviousRequests(() => getAppDetail(appId, abortControllerRef), abortControllerRef)
             .then((appDetailResponse: HelmAppDetailResponse) => {
                 IndexStore.publishAppDetails(
                     _convertToGenericAppDetailModel(appDetailResponse.result),
@@ -157,12 +172,18 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
                 }
 
                 setErrorResponseCode(undefined)
+
+                handleInitiatePolling()
             })
             .catch((errors: ServerErrors) => {
-                showError(errors)
-                setErrorResponseCode(errors.code)
                 setIsLoading(false)
                 isAPICallInProgress = false
+
+                if (!getIsRequestAborted(errors)) {
+                    showError(errors)
+                    setErrorResponseCode(errors.code)
+                    handleInitiatePolling()
+                }
             })
             .finally(() => {
                 setIsReloadResourceTreeInProgress(false)

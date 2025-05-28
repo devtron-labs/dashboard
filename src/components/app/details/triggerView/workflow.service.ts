@@ -147,18 +147,16 @@ export const getInitialWorkflows = ({
         })
     }
     if (isJobView) {
-        return Promise.all([getWorkflowList(id, null, false), getCIConfig(id, false)]).then(
-            ([workflow, ciConfig]) => {
-                return processWorkflow(
-                    workflow.result as WorkflowResult,
-                    ciConfig.result as CiPipelineResult,
-                    null,
-                    null,
-                    dimensions,
-                    workflowOffset,
-                )
-            },
-        )
+        return Promise.all([getWorkflowList(id, null, false), getCIConfig(id, false)]).then(([workflow, ciConfig]) => {
+            return processWorkflow(
+                workflow.result as WorkflowResult,
+                ciConfig.result as CiPipelineResult,
+                null,
+                null,
+                dimensions,
+                workflowOffset,
+            )
+        })
     }
     return Promise.all([
         getWorkflowList(id, filteredEnvIds, isTemplateView),
@@ -644,8 +642,10 @@ function webhookToNode(webhookDetails: WebhookDetailsType, dimensions: WorkflowD
         id: String(webhookDetails.id),
         x: 0,
         y: 0,
-        height: dimensions.staticNodeSizes.nodeHeight,
-        width: dimensions.staticNodeSizes.nodeWidth,
+        height: dimensions.webhookNodeSize
+            ? dimensions.webhookNodeSize.nodeHeight
+            : dimensions.staticNodeSizes.nodeHeight,
+        width: dimensions.webhookNodeSize ? dimensions.webhookNodeSize.nodeWidth : dimensions.staticNodeSizes.nodeWidth,
         title: 'Webhook',
         status: DEFAULT_STATUS,
         type: WorkflowNodeType.WEBHOOK,

@@ -15,6 +15,7 @@
  */
 
 import { createContext, useContext } from 'react'
+
 import { AuthorizationContextProps, AuthorizationProviderProps } from './types'
 
 const AuthorizationContext = createContext<AuthorizationContextProps>({
@@ -25,6 +26,7 @@ const AuthorizationContext = createContext<AuthorizationContextProps>({
         possibleRolesMetaForCluster: {},
     },
     isAutoAssignFlowEnabled: false,
+    authorizationContainerRef: { current: null },
 })
 
 export const AuthorizationProvider = ({ children, value }: AuthorizationProviderProps) => (

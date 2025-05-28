@@ -17,17 +17,19 @@
 // Disabling for ReactSelect
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { FunctionComponent, useEffect, useState } from 'react'
+
 import {
-    CustomInput,
-    OptionType,
-    InfoIconTippy,
-    SelectPicker,
     ComponentSizeType,
+    CustomInput,
+    InfoIconTippy,
+    OptionType,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { renderOptionIcon } from './CIBuildpackBuildOptions'
-import { BuildContextProps } from './types'
+
 import { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
+import { renderOptionIcon } from './CIBuildpackBuildOptions'
 import { RootBuildContext } from './ciConfigConstant'
+import { BuildContextProps } from './types'
 
 const getBuildContextAdditionalContent = () => (
     <div className="p-12 fs-13">

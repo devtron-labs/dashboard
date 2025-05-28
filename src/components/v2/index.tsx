@@ -14,37 +14,42 @@
  * limitations under the License.
  */
 
-import React, { Suspense, useEffect, useRef, useState } from 'react'
-import { useRouteMatch, useParams, Redirect, useLocation, useHistory, Switch, Route } from 'react-router-dom'
-import { ErrorScreenManager, DetailsProgressing, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
+import {
+    abortPreviousRequests,
+    DetailsProgressing,
+    ErrorScreenManager,
+    getIsRequestAborted,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import ValuesComponent from './values/ChartValues.component'
-import AppHeaderComponent from './headers/AppHeader.component'
-import ChartHeaderComponent from './headers/ChartHeader.component'
-import {
-    getInstalledAppDetail,
-    getInstalledChartDetail,
-    getInstalledChartResourceTree,
-} from './appDetails/appDetails.api'
+import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
+import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
+import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
+import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
+import { getInstalledChartDetail, getInstalledChartResourceTree } from './appDetails/appDetails.api'
 import AppDetailsComponent from './appDetails/AppDetails.component'
 import { AppDetails, AppType, EnvType } from './appDetails/appDetails.type'
 import IndexStore from './appDetails/index.store'
-import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
 import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHistory.component'
-import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
-import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
-import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
+import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
+import ValuesComponent from './values/ChartValues.component'
 
 let initTimer = null
 
-const RouterComponent = ({ envType }) => {
+const RouterComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
     const { path } = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const abortControllerRef = useRef<AbortController>(new AbortController())
+
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
     const [externalLinksAndTools, setExternalLinksAndTools] = useState<ExternalLinksAndToolsType>({
         externalLinks: [],
@@ -52,7 +57,6 @@ const RouterComponent = ({ envType }) => {
     })
     const [loadingDetails, setLoadingDetails] = useState(false)
     const [loadingResourceTree, setLoadingResourceTree] = useState(false)
-    const [helmAppPackageName, setHelmAppPackageName] = useState('')
     // NOTE: this might seem like a duplicate of loadingResourceTree
     // but its not since loadingResourceTree runs a loader on the whole page
     // maybe we can rename loadingResourceTree
@@ -62,7 +66,7 @@ const RouterComponent = ({ envType }) => {
     const isVirtualRef = useRef(false)
 
     useEffect(() => {
-        IndexStore.setEnvDetails(envType, +params.appId, +params.envId)
+        IndexStore.setEnvDetails(EnvType.CHART, +params.appId, +params.envId)
         setLoadingDetails(true)
         setLoadingResourceTree(true)
 
@@ -78,33 +82,42 @@ const RouterComponent = ({ envType }) => {
         }
     }, [params.appId, params.envId])
 
+    useEffect(
+        () => () => {
+            abortControllerRef.current.abort()
+        },
+        [],
+    )
+
     // clearing the timer on component unmount
-    useEffect(() => {
-        return (): void => {
+    useEffect(
+        () => (): void => {
             if (initTimer) {
                 clearTimeout(initTimer)
             }
             IndexStore.clearAppDetails() // Cleared out the data on unmount
-        }
-    }, [])
+        },
+        [],
+    )
 
     useEffect(() => {
         if (checkIfToRefetchData(location)) {
             setTimeout(() => {
-                _getAndSetAppDetail(true)
+                abortPreviousRequests(() => _getAndSetAppDetail(true), abortControllerRef)
                 deleteRefetchDataFromUrl(history, location)
             }, 5000)
         }
     }, [location.search])
 
     const _init = (fetchExternalLinks?: boolean) => {
-        _getAndSetAppDetail(fetchExternalLinks)
-        initTimer = setTimeout(() => {
-            _init()
-        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+        abortPreviousRequests(() => _getAndSetAppDetail(fetchExternalLinks), abortControllerRef)
     }
 
     const handleAppDetailsCallError = (e: any) => {
+        if (getIsRequestAborted(e)) {
+            return
+        }
+
         setErrorResponseCode(e.code)
         if (e.code === 404 && initTimer) {
             clearTimeout(initTimer)
@@ -121,57 +134,87 @@ const RouterComponent = ({ envType }) => {
         setErrorResponseCode(undefined)
     }
 
-    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
-        if (envType === EnvType.CHART) {
-            // Get App Details
-            getInstalledChartDetail(+params.appId, +params.envId)
-                .then((response) => {
-                    handlePublishAppDetails(response)
-                    isVirtualRef.current = response.result?.isVirtualEnvironment
-                    setHelmAppPackageName(response.result?.helmPackageName)
-                    if (fetchExternalLinks) {
-                        getExternalLinksAndTools(response.result?.clusterId)
-                    }
-                })
-                .catch(handleAppDetailsCallError)
-                .finally(() => {
-                    setLoadingDetails(false)
-                })
-
-            // Get App Resource Tree
-            getInstalledChartResourceTree(+params.appId, +params.envId)
-                .then(handlePublishAppDetails)
-                .catch(handleAppDetailsCallError)
-                .finally(() => {
-                    setLoadingResourceTree(false)
-                })
-        } else {
-            try {
-                // Revisit this flow
-                const response = await getInstalledAppDetail(+params.appId, +params.envId)
-                IndexStore.publishAppDetails(response.result, AppType.DEVTRON_APP)
-                setErrorResponseCode(undefined)
-            } catch (e: any) {
-                if (e.code) {
-                    setErrorResponseCode(e.code)
-                }
-            }
+    const handleInitiatePolling = () => {
+        if (initTimer) {
+            clearTimeout(initTimer)
         }
+
+        initTimer = setTimeout(() => {
+            _init()
+        }, window._env_.HELM_APP_DETAILS_POLLING_INTERVAL || 30000)
+    }
+
+    const handleFetchAppDetails = async (fetchExternalLinks: boolean): Promise<{ isAborted: boolean }> => {
+        try {
+            const response = await getInstalledChartDetail(+params.appId, +params.envId, abortControllerRef)
+            handlePublishAppDetails(response)
+            isVirtualRef.current = response.result?.isVirtualEnvironment
+            if (fetchExternalLinks) {
+                getExternalLinksAndTools(response.result?.clusterId)
+            }
+            setLoadingDetails(false)
+        } catch (error) {
+            const isAborted = getIsRequestAborted(error)
+            
+            if (!isAborted) {
+                handleAppDetailsCallError(error)
+            }
+            setLoadingDetails(false)
+
+            return { isAborted }
+        }
+
+        return { isAborted: false }
+    }
+
+    const handleFetchResourceTree = async () => {
+        try {
+            const response = await getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef)
+            handlePublishAppDetails(response)
+            setLoadingResourceTree(false)
+        } catch (error) {
+            const isAborted = getIsRequestAborted(error)
+
+            if (!isAborted) {
+                handleAppDetailsCallError(error)
+            }
+            setLoadingResourceTree(false)
+
+            return { isAborted }
+        }
+
+        return { isAborted: false }
+    }
+
+    const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
+        // Intentionally not setting await since it was not awaited earlier when in thens as well
+        Promise.allSettled([
+            handleFetchAppDetails(fetchExternalLinks),
+            handleFetchResourceTree(),
+        ]).then((results) => {
+            const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
+            if (!isAborted) {
+                handleInitiatePolling()
+            }
+        })
     }
 
     const handleReloadResourceTree = () => {
-        if (envType === EnvType.CHART) {
-            setIsReloadResourceTreeInProgress(true)
-            getInstalledChartResourceTree(+params.appId, +params.envId)
-                .then(handlePublishAppDetails)
-                .catch((err) => {
+        setIsReloadResourceTreeInProgress(true)
+        abortPreviousRequests(
+            () => getInstalledChartResourceTree(+params.appId, +params.envId, abortControllerRef),
+            abortControllerRef,
+        )
+            .then(handlePublishAppDetails)
+            .catch((err) => {
+                if (!getIsRequestAborted(err)) {
                     showError(err)
-                })
-                .finally(() => {
-                    setLoadingResourceTree(false)
-                    setIsReloadResourceTreeInProgress(false)
-                })
-        }
+                }
+            })
+            .finally(() => {
+                setLoadingResourceTree(false)
+                setIsReloadResourceTreeInProgress(false)
+            })
     }
 
     const getExternalLinksAndTools = (clusterId) => {
@@ -198,11 +241,7 @@ const RouterComponent = ({ envType }) => {
         if (errorResponseCode === 404) {
             return (
                 <div className="h-100">
-                    {EnvType.APPLICATION === envType ? (
-                        <AppHeaderComponent />
-                    ) : (
-                        <ChartHeaderComponent errorResponseCode={errorResponseCode} />
-                    )}
+                    <ChartHeaderComponent errorResponseCode={errorResponseCode} />
                     <AppDetailsEmptyState envType={EnvType.CHART} />
                 </div>
             )
@@ -222,7 +261,7 @@ const RouterComponent = ({ envType }) => {
             {renderErrorScreen()}
             {!errorResponseCode && (
                 <>
-                    {EnvType.APPLICATION === envType ? <AppHeaderComponent /> : <ChartHeaderComponent />}
+                    <ChartHeaderComponent />
                     <Suspense fallback={<DetailsProgressing fullHeight loadingText="Please wait…" size={24} />}>
                         <Switch>
                             <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
@@ -253,7 +292,6 @@ const RouterComponent = ({ envType }) => {
                                     isExternal={false}
                                     isLoadingDetails={loadingDetails}
                                     isVirtualEnvironment={isVirtualRef.current}
-                                    helmAppPackageName={helmAppPackageName}
                                 />
                             </Route>
                             <Redirect to={`${path}/${URLS.APP_DETAILS}`} />

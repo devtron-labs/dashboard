@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DOCUMENTATION } from '@Config/constants'
 
 export const PROTECT_BASE_DEPLOYMENT_TEMPLATE_IDENTIFIER_DTO = 'BaseDeploymentTemplate' as const
@@ -71,3 +73,8 @@ export const CHART_NAME_TO_DOC_SEGMENT: Readonly<Record<string, string>> = {
     'Rollout Deployment': 'reference',
     StatefulSet: 'statefulset',
 }
+
+export const APPLICATION_METRICS_DROPDOWN_OPTIONS: SelectPickerOptionType<boolean>[] = [
+    { label: 'Enabled', value: true },
+    { label: 'Disabled', value: false },
+]

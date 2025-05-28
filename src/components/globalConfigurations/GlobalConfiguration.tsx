@@ -283,7 +283,7 @@ const NavItem = ({ serverMode }) => {
             moduleName: ModuleNameMap.NOTIFICATION,
             isAvailableInEA: false,
         },
-        ...(window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE
+        ...(window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates
             ? [
                   {
                       name: 'Application Templates',

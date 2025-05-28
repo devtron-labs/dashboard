@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-import { Routes } from '@Config/constants'
 import {
     AppConfigProps,
     BaseURLParams,
     get,
+    getTemplateAPIRoute,
     GetTemplateAPIRouteType,
+    getUrlWithSearchParams,
     post,
     put,
     ResponseType,
     trash,
-    getTemplateAPIRoute,
+    versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { Routes } from '@Config/constants'
 import { getChartReferencesForAppAndEnv } from '@Services/service'
+
 import {
     DeploymentTemplateConfigDTO,
     EnvironmentOverrideDeploymentTemplateDTO,
@@ -124,18 +128,30 @@ export const getEnvOverrideDeploymentTemplate = async (
     return addGUISchemaIfAbsent(data, chartName)
 }
 
-export function deleteOverrideDeploymentTemplate(
-    id: number,
-    appId: number,
-    envId: number,
-    isTemplateView: AppConfigProps['isTemplateView'],
-) {
+export function deleteOverrideDeploymentTemplate({
+    id,
+    appId,
+    envId,
+    isTemplateView,
+    resourceName,
+    isExpressEdit,
+}: {
+    id: number
+    appId: number
+    envId: number
+    isTemplateView: AppConfigProps['isTemplateView']
+    resourceName?: string
+    isExpressEdit?: boolean
+}) {
     const url = isTemplateView
         ? getTemplateAPIRoute({
               type: GetTemplateAPIRouteType.CONFIG_DEPLOYMENT_TEMPLATE_ENV,
               queryParams: { id: appId, envId, chartRefId: id },
           })
-        : `${Routes.ENVIRONMENT_CONFIG}/reset/${appId}/${envId}/${id}`
+        : getUrlWithSearchParams(`${Routes.ENVIRONMENT_CONFIG}/reset/${appId}/${envId}/${id}`, {
+              isExpressEdit,
+              resourceName,
+          })
 
     return trash(url)
 }
@@ -169,6 +185,9 @@ export const getChartList = async ({
     const chartRefResp = await getChartReferencesForAppAndEnv(+appId, +envId, isTemplateView)
 
     const { chartRefs, latestAppChartRef, latestChartRef, latestEnvChartRef, chartMetadata } = chartRefResp.result
+    // Sorting chartRefs by version
+    chartRefs?.sort((a, b) => versionComparatorBySortOrder(a.version, b.version))
+
     // Adding another layer of security
     const envChartRef = envId ? latestEnvChartRef : null
 

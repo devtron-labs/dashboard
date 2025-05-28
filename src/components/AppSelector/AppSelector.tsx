@@ -14,58 +14,117 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
-import {
-    abortPreviousRequests,
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
-    AppSelectorNoOptionsMessage,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { Props as SelectProps, SelectInstance } from 'react-select'
-import AsyncSelect from 'react-select/async'
-import { appListOptions } from './AppSelectorUtil'
+import { useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
+import { ActionMeta } from 'react-select'
 
-interface AppSelectorType {
-    onChange: ({ label, value }) => void
-    appId: number
-    appName: string
-    isJobView?: boolean
-}
+import {
+    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
+    BaseAppMetaData,
+    ComponentSizeType,
+    getNoMatchingResultText,
+    ResourceKindType,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerProps,
+    SelectPickerVariantType,
+    useAsync,
+    UserPreferenceResourceActions,
+    useUserPreferences,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
+import { appListOptions } from './AppSelectorUtil'
+import { APP_DETAILS_GA_EVENTS } from './constants'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
-    const selectRef = useRef<SelectInstance>(null)
-
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const defaultOptions = [{ value: appId, label: appName }]
-    const loadAppListOptions = (inputValue: string) =>
-        abortPreviousRequests(
-            () => appListOptions(inputValue, isJobView, abortControllerRef.current.signal),
-            abortControllerRef,
-        )
+    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
+    const [inputValue, setInputValue] = useState('')
 
-    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
-        if (event.key === 'Escape') {
-            selectRef.current?.inputRef.blur()
+    const recentlyVisitedDevtronApps =
+        userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
+            UserPreferenceResourceActions.RECENTLY_VISITED
+        ] || ([] as BaseAppMetaData[])
+
+    const isAppDataAvailable = !!appId && !!appName
+    const shouldFetchAppOptions = isJobView ? true : !!recentlyVisitedDevtronApps.length
+
+    const [loading, selectOptions] = useAsync(
+        () =>
+            appListOptions({
+                inputValue,
+                isJobView,
+                signal: abortControllerRef.current.signal,
+                recentlyVisitedDevtronApps,
+            }),
+        [inputValue, isJobView],
+        isAppDataAvailable && shouldFetchAppOptions,
+    )
+
+    // fetching recently visited apps only in case of devtron apps
+    useAsync(
+        () => fetchRecentlyVisitedParsedApps({ appId, appName }),
+        [appId, appName],
+        isAppDataAvailable && !isJobView,
+    )
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+    }
+
+    const customSelect: SelectPickerProps['filterOption'] = (option, searchText: string) => {
+        const label = option.data.label as string
+        return option.data.value === 0 || label.toLowerCase().includes(searchText.toLowerCase())
+    }
+
+    const getDisabledOptions = (option: RecentlyVisitedOptions): SelectPickerProps['isDisabled'] => option.isDisabled
+
+    const noOptionsMessage = () =>
+        isJobView
+            ? appSelectorNoOptionsMessage({
+                  inputValue,
+              })
+            : getNoMatchingResultText()
+
+    const _selectOption = selectOptions?.map((section) => ({
+        ...section,
+        options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
+    }))
+
+    const handleChange = (
+        selectedOption: RecentlyVisitedOptions,
+        actionMeta: ActionMeta<SelectPickerOptionType<string | number>>,
+    ) => {
+        if (selectedOption.label === appName) return
+
+        onChange(selectedOption, actionMeta)
+
+        if (!isJobView) {
+            ReactGA.event(
+                selectedOption.isRecentlyVisited
+                    ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
+                    : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
+            )
         }
     }
 
     return (
-        <AsyncSelect
-            ref={selectRef}
-            blurInputOnSelect
-            onKeyDown={handleOnKeyDown}
-            defaultOptions
-            loadOptions={loadAppListOptions}
-            noOptionsMessage={AppSelectorNoOptionsMessage}
-            onChange={onChange}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            value={defaultOptions[0]}
-            styles={APP_SELECTOR_STYLES}
+        <SelectPicker
+            inputId={`${isJobView ? 'job' : 'app'}-name`}
+            options={_selectOption || []}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            isLoading={loading}
+            noOptionsMessage={noOptionsMessage}
+            onChange={handleChange}
+            value={{ value: appId, label: appName }}
+            variant={SelectPickerVariantType.BORDER_LESS}
+            placeholder={appName}
+            isOptionDisabled={getDisabledOptions}
+            size={ComponentSizeType.xl}
+            filterOption={customSelect}
         />
     )
 }

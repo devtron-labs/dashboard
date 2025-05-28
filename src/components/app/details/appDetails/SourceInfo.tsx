@@ -16,6 +16,7 @@
 
 import { useMemo, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import ReactGA from 'react-ga4'
 import moment from 'moment'
 import {
     Button,
@@ -26,14 +27,16 @@ import {
     DATE_TIME_FORMATS,
     DeploymentAppTypes,
     handleUTCTime,
+    logExceptionToSentry,
+    Icon,
     Progressing,
     ReleaseMode,
     showError,
     Tooltip,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
-import { URLS } from '../../../../config'
-import { EnvSelector } from './AppDetails'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../../../config'
 import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { Nodes, SourceInfoType } from '../../types'
 import DeploymentStatusCard from './DeploymentStatusCard'
@@ -51,6 +54,8 @@ import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots
 import { ReactComponent as ScaleDown } from '../../../../assets/icons/ic-scale-down.svg'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 import { HibernationModalTypes } from './appDetails.type'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
+import AppEnvSelector from './AppDetails.components'
 
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindowStatusCard')
@@ -79,12 +84,16 @@ export const SourceInfo = ({
     filteredEnvIds,
     deploymentUserActionState,
     setHibernationPatchChartName,
+    applications,
+    isAppView,
 }: SourceInfoType) => {
+    const params = useParams<{ appId: string; envId?: string }>()
+
     const [hibernationPatchResponseLoading, setHibernationPatchResponseLoading] = useState<boolean>(false)
+
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
-    const params = useParams<{ appId: string; envId?: string }>()
     const conditions = appDetails?.resourceTree?.conditions
     let message = null
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
@@ -151,7 +160,11 @@ export const SourceInfo = ({
         return <div className="flex left mb-16">{loadingCards}</div>
     }
 
-    const renderDevtronAppsEnvironmentSelector = (environment) => {
+    const onClickSliderVerticalButton = () => {
+        ReactGA.event(isAppView ? DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration: AG_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
+    }
+
+    const renderDevtronAppsEnvironmentSelector = () => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
         const isApprovalConfigured = appDetails?.isApprovalPolicyApplicable ?? false
         const relativeSnapshotTime = appDetails?.resourceTree?.lastSnapshotTime
@@ -160,7 +173,7 @@ export const SourceInfo = ({
 
         return (
             <div className="flex left w-100">
-                <EnvSelector environments={environments} />
+                <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
                         placement="top"
@@ -256,7 +269,7 @@ export const SourceInfo = ({
                                         showTooltip={isApprovalConfigured}
                                         tooltipProps={{
                                             content: 'Application deployment requiring approval cannot be hibernated.',
-                                            placement: 'bottom-end',
+                                            placement: 'bottom',
                                         }}
                                     />
                                 )}
@@ -274,10 +287,30 @@ export const SourceInfo = ({
                                         showTooltip={isApprovalConfigured}
                                         tooltipProps={{
                                             content: 'Application deployment requiring approval cannot be hibernated.',
-                                            placement: 'bottom-end',
+                                            placement: 'bottom',
                                         }}
                                     />
                                 )}
+                                <Button
+                                    dataTestId="app-details-env-config-button"
+                                    size={ComponentSizeType.small}
+                                    icon={<Icon name="ic-sliders-vertical" color={null} />}
+                                    variant={ButtonVariantType.secondary}
+                                    onClick={onClickSliderVerticalButton}
+                                    component={ButtonComponentType.link}
+                                    style={ButtonStyleType.neutral}
+                                    ariaLabel="Go to Environment Configuration"
+                                    showTooltip
+                                    tooltipProps={{
+                                        content: 'Go to Environment Config',
+                                        placement: 'bottom',
+                                    }}
+                                    linkProps={{
+                                        to: isAppView
+                                            ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
+                                            : `${URLS.APPLICATION_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
+                                    }}
+                                />
                                 {window._env_.FEATURE_SWAP_TRAFFIC_ENABLE &&
                                     SwapTraffic &&
                                     !!appDetails.pcoId &&
@@ -303,8 +336,8 @@ export const SourceInfo = ({
                                         parentEnvironmentName: appDetails.parentEnvironmentName,
                                         deploymentUserActionState: deploymentUserActionState,
                                         triggerType: appDetails.triggerType,
-                                        isRedirectedFromAppDetails: true,
                                     }}
+                                    isAppView={isAppView}
                                 />
                             </div>
                         )}
@@ -318,10 +351,14 @@ export const SourceInfo = ({
     const cardLoading = useMemo(() => loadingDetails || loadingResourceTree, [loadingDetails, loadingResourceTree])
 
     const renderGeneratedManifestDownloadCard = (): JSX.Element => {
+        if (!appDetails?.helmPackageName) {
+            logExceptionToSentry(new Error('Cannot find helm package name in appDetails while downloading'))
+        }
+
         const paramsId = {
             appId: +params.appId,
             envId: +params.envId,
-            appName: `${appDetails?.appName}-${appDetails?.environmentName}-${appDetails?.imageTag}`,
+            appName: appDetails?.helmPackageName || 'helm-package',
         }
         if (AppDetailsDownloadCard) {
             return <AppDetailsDownloadCard params={paramsId} />
@@ -330,7 +367,7 @@ export const SourceInfo = ({
 
     return (
         <div className="flex left w-100 column source-info-container dc__gap-16">
-            {renderDevtronAppsEnvironmentSelector(environment)}
+            {renderDevtronAppsEnvironmentSelector()}
             {loadingDetails
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
@@ -395,13 +432,14 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
-                          {!appDetails?.deploymentAppDeleteRequest && !appMigratedFromExternalSourceAndIsNotTriggered && (
-                              <SecurityVulnerabilityCard
-                                  cardLoading={cardLoading}
-                                  appId={params.appId}
-                                  envId={params.envId}
-                              />
-                          )}
+                          {!appDetails?.deploymentAppDeleteRequest &&
+                              !appMigratedFromExternalSourceAndIsNotTriggered && (
+                                  <SecurityVulnerabilityCard
+                                      cardLoading={cardLoading}
+                                      appId={params.appId}
+                                      envId={params.envId}
+                                  />
+                              )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>

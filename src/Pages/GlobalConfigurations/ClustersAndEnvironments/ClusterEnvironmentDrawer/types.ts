@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { TagType } from '@devtron-labs/devtron-fe-common-lib'
-import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
+import { DeleteConfirmationModalProps, TagType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterEnvironmentDrawerFormProps {
     environmentName: string
@@ -27,15 +26,15 @@ export interface ClusterEnvironmentDrawerFormProps {
 export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
     id: string
     clusterId: number
-    prometheusEndpoint: string
     reload: () => void
     hideClusterDrawer: () => void
     isVirtual: boolean
+    clusterName: string
 }
 
 export type GetClusterEnvironmentUpdatePayloadType = Pick<
     ClusterEnvironmentDrawerProps,
-    'clusterId' | 'id' | 'prometheusEndpoint' | 'isVirtual'
+    'clusterId' | 'id' | 'isVirtual'
 > &
     Partial<Pick<ClusterNamespacesDTO, 'resourceVersion'>> & {
         data: ClusterEnvironmentDrawerFormProps

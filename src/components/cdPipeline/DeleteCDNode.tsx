@@ -20,9 +20,10 @@ import {
     DeploymentAppTypes,
     ForceDeleteConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DELETE_ACTION } from '../../config'
-import { DeleteCDNodeProps, DeleteDialogType } from './types'
 import { handleDeleteCDNodePipeline, handleDeletePipeline } from './cdpipeline.util'
+import { DeleteCDNodeProps, DeleteDialogType } from './types'
 
 const DeleteCDNode = ({
     deleteDialog,

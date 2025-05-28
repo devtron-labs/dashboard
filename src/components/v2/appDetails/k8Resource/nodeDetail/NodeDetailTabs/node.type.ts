@@ -15,7 +15,9 @@
  */
 
 import { Moment } from 'moment'
+
 import { SelectedResourceType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 
@@ -49,9 +51,10 @@ export interface TerminalViewProps {
 export interface EventTableType {
     loading: boolean
     eventsList: any[]
-    isResourceBrowserView?: boolean
     reconnect?: () => void
     errorValue?: PodEventsType
+    clusterId: number
+    aiWidgetAnalyticsEvent: string
 }
 
 export interface PodEventsType {

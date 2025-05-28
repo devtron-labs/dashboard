@@ -15,6 +15,8 @@
  */
 
 import { useState } from 'react'
+import type { Meta, StoryObj } from '@storybook/react'
+
 import {
     Button,
     ButtonVariantType,
@@ -24,7 +26,6 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import type { Meta, StoryObj } from '@storybook/react'
 
 const TITLE = 'Title'
 const SUB_TITLE = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam nec purus.'

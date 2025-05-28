@@ -14,32 +14,33 @@
  * limitations under the License.
  */
 
+import { RefObject } from 'react'
+
 import {
+    APIOptions,
     ApiResourceType,
+    ClusterDetail,
     get,
-    ResponseType,
-    getK8sResourceList,
     getIsRequestAborted,
-    showError,
-    getUrlWithSearchParams,
+    getK8sResourceList,
     getK8sResourceListPayload,
+    getNamespaceListMin,
+    getUrlWithSearchParams,
+    Nodes,
+    ResponseType,
+    showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RefObject } from 'react'
+
+import {
+    getClusterListMinWithInstalledClusters,
+    getClusterListWithInstalledClusters,
+} from '@Components/ClusterNodes/clusterNodes.service'
+
 import { Routes } from '../../config'
-import { ClusterListResponse } from '../../services/service.types'
-import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { SIDEBAR_KEYS } from './Constants'
-import { parseNodeList } from './Utils'
-
-export const getClusterList = async (): Promise<ClusterListResponse> => {
-    const response = await get<ClusterListResponse['result']>(Routes.CLUSTER_LIST_PERMISSION)
-
-    return {
-        ...response,
-        result: (response?.result ?? []).sort((a, b) => stringComparatorBySortOrder(a.cluster_name, b.cluster_name)),
-    }
-}
+import { ClusterDetailBaseParams, GetResourceDataType, NodeRowDetail } from './Types'
+import { parseNodeList, removeDefaultForStorageClass } from './Utils'
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -59,9 +60,14 @@ export const getNodeList = (
     clusterId: string,
     abortControllerRef: RefObject<AbortController>,
 ): Promise<ResponseType<NodeRowDetail[]>> =>
-    get(getUrlWithSearchParams<keyof URLParams>(Routes.NODE_LIST, { clusterId: Number(clusterId) }), {
-        abortControllerRef,
-    })
+    get(
+        getUrlWithSearchParams<keyof ClusterDetailBaseParams>(Routes.NODE_LIST, {
+            clusterId: Number(clusterId),
+        }),
+        {
+            abortControllerRef,
+        },
+    )
 
 export const getResourceData = async ({
     selectedResource,
@@ -70,17 +76,69 @@ export const getResourceData = async ({
     filters,
     abortControllerRef,
 }: GetResourceDataType) => {
+    const idPrefix = `${clusterId}${JSON.stringify(selectedResource)}${JSON.stringify(filters)}${selectedNamespace}`
+
     try {
         if (selectedResource.gvk.Kind === SIDEBAR_KEYS.nodeGVK.Kind) {
             const response = await getNodeList(clusterId, abortControllerRef)
 
-            return parseNodeList(response)
+            return parseNodeList(response, idPrefix)
         }
 
-        return await getK8sResourceList(
-            getK8sResourceListPayload(clusterId, selectedNamespace.value.toLowerCase(), selectedResource, filters),
-            abortControllerRef.current.signal,
-        )
+        const isNamespaceList = selectedResource.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase()
+
+        const [k8sResponse, namespaceListResponse] = await Promise.allSettled([
+            getK8sResourceList(
+                getK8sResourceListPayload(clusterId, selectedNamespace.toLowerCase(), selectedResource, filters),
+                abortControllerRef.current.signal,
+            ),
+            isNamespaceList ? getNamespaceListMin(clusterId, abortControllerRef) : null,
+        ])
+
+        const response = k8sResponse.status === 'fulfilled' ? k8sResponse.value : null
+
+        if (isNamespaceList && namespaceListResponse?.status === 'fulfilled') {
+            const { result } = namespaceListResponse.value
+            const [{ environments }] = result
+
+            const namespaceToEnvironmentMap = environments.reduce(
+                (acc, { environmentName, namespace, environmentId }) => {
+                    if (environmentId === 0) {
+                        return acc
+                    }
+
+                    acc[namespace] = environmentName
+                    return acc
+                },
+                {},
+            )
+
+            return {
+                headers: [...response.result.headers, 'environment'],
+                data: response.result.data.map((data, index) => ({
+                    ...data,
+                    environment: namespaceToEnvironmentMap[data.name as string],
+                    id: `${idPrefix}${index}`,
+                })),
+            }
+        }
+
+        if (!response) {
+            return null
+        }
+
+        const data =
+            selectedResource.gvk.Kind === Nodes.StorageClass
+                ? removeDefaultForStorageClass(response.result.data)
+                : response.result.data
+
+        return {
+            ...response.result,
+            data: data.map((entry, index) => ({
+                ...entry,
+                id: `${idPrefix}${index}`,
+            })),
+        }
     } catch (err) {
         if (!getIsRequestAborted(err)) {
             showError(err)
@@ -88,5 +146,23 @@ export const getResourceData = async ({
         }
 
         return null
+    }
+}
+
+export const getClusterListing = async (
+    minified: boolean,
+    abortControllerRef?: APIOptions['abortControllerRef'],
+): Promise<ClusterDetail[]> => {
+    try {
+        const { result: clusterList } = await (
+            minified ? getClusterListMinWithInstalledClusters : getClusterListWithInstalledClusters
+        )(abortControllerRef)
+
+        return clusterList
+    } catch (err) {
+        if (!getIsRequestAborted(err)) {
+            showError(err)
+        }
+        throw err
     }
 }

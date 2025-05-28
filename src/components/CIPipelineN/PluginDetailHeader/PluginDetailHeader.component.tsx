@@ -15,24 +15,27 @@
  */
 
 import { useContext } from 'react'
+
 import {
+    PluginDetailType,
+    PluginImageContainer,
+    PluginTagsContainer,
+    PluginType,
     TippyCustomized,
     TippyTheme,
-    PluginTagsContainer,
-    PluginImageContainer,
-    PluginDetailType,
-    PluginType,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+
 import { ReactComponent as ICBookOpen } from '@Icons/ic-book-open.svg'
-import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
 import { ReactComponent as ICCDStage } from '@Icons/ic-cd-stage.svg'
+import { ReactComponent as ICHelp } from '@Icons/ic-help.svg'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
 import { DOCUMENTATION } from '@Config/constants'
-import PluginVersionSelect from './PluginVersionSelect'
-import CreatePluginButton from './CreatePluginButton'
-import { PluginDetailHeaderProps } from '../types'
+
 import { INLINE_PLUGIN_TEXT } from '../Constants'
+import { PluginDetailHeaderProps } from '../types'
+import CreatePluginButton from './CreatePluginButton'
+import PluginVersionSelect from './PluginVersionSelect'
 
 const PluginDetailHeader = ({ handlePluginVersionChange }: PluginDetailHeaderProps) => {
     const { formData, activeStageName, selectedTaskIndex, pluginDataStore } = useContext(pipelineContext)

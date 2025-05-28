@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { FilterParentType, GroupFilterType, GroupOptionType } from '@Components/ApplicationGroup/AppGroup.types'
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 import { MultiValue } from 'react-select'
+
+import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { FilterParentType, GroupFilterType, GroupOptionType } from '@Components/ApplicationGroup/AppGroup.types'
 
 export enum FILE_EXTENSION {
     JSON = 'json',

@@ -22,10 +22,12 @@ import {
     Drawer,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
+
 import { ConfigurationsTabTypes } from './constants'
-import { ConfigurationTabDrawerModalProps } from './types'
 import { getTabText } from './notifications.util'
+import { ConfigurationTabDrawerModalProps } from './types'
 
 export const ConfigurationTabDrawerModal = ({
     renderContent,

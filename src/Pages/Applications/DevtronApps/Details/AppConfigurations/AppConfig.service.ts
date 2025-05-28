@@ -17,10 +17,11 @@
 import {
     AppConfigProps,
     get,
-    trash,
-    ROUTES as CommonRoutes,
     getUrlWithSearchParams,
+    ROUTES as CommonRoutes,
+    trash,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../../../../config'
 
 export const getGitProviderMin = () => {

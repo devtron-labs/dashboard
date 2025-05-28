@@ -20,10 +20,12 @@ import {
     UserListFilterParams,
     UserListSortableKeys,
     UserStatus,
-    UseUrlFiltersReturnType,
     UserTypeToFetchType,
+    UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ExportToCsvProps } from '@Components/common/ExportToCsv/types'
+
 import { getUserList } from '../../authorization.service'
 import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../Shared/components/BulkSelection'
 import { User } from '../../types'

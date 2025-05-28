@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { get, showError, ResponseType, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
-import { LinkedCIAppDto, LinkedCIAppListFilterParams, CIPpelineEnviromentList } from './types'
+import { get, getUrlWithSearchParams, ResponseType, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes, SELECT_ALL_VALUE } from '../../../config'
+import { CIPpelineEnviromentList, LinkedCIAppDto, LinkedCIAppListFilterParams } from './types'
 
 export const getLinkedCIPipelineEnvironmentList = async (ciPipelineId: string): Promise<CIPpelineEnviromentList> => {
     try {

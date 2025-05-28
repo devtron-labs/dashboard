@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
+
 import {
+    CMSecretComponentType,
     CompareFromApprovalOptionsValuesType,
     ConfigHeaderTabType,
     ConfigToolbarPopupMenuConfigType,
@@ -23,13 +26,12 @@ import {
     DeploymentTemplateConfigState,
     DraftMetadataDTO,
     OverrideMergeStrategyType,
+    PipelineMigratedFromType,
     ProtectConfigTabsType,
     SelectPickerOptionType,
     ServerErrors,
-    CMSecretComponentType,
-    PipelineMigratedFromType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { FunctionComponent, MutableRefObject, ReactNode } from 'react'
+
 import { DeploymentTemplateStateType } from './DeploymentTemplate/types'
 
 export interface ConfigHeaderProps {
@@ -93,70 +95,82 @@ type ConfigToolbarReadMeProps =
 export type ConfigToolbarProps = Pick<
     DraftMetadataDTO,
     'draftId' | 'draftVersionId' | 'userApprovalMetadata' | 'requestedUserId'
-> & {
-    configHeaderTab: ConfigHeaderTabType
-    handleToggleScopedVariablesView: () => void
-    resolveScopedVariables: boolean
-    /**
-     * Route for redirection to base configurations shown in case configHeaderTab is inherited
-     */
-    baseConfigurationURL: string
-    /**
-     * Will feed the selected tab in the protection tab group
-     */
-    selectedProtectionViewTab: ProtectConfigTabsType
-    handleProtectionViewTabChange: (tab: ProtectConfigTabsType) => void
+> &
+    Pick<GetConfigToolbarPopupConfigProps, 'isExceptionUser' | 'isExpressEditView'> & {
+        configHeaderTab: ConfigHeaderTabType
+        handleToggleScopedVariablesView: () => void
+        resolveScopedVariables: boolean
+        /**
+         * Route for redirection to base configurations shown in case configHeaderTab is inherited
+         */
+        baseConfigurationURL: string
+        /**
+         * Will feed the selected tab in the protection tab group
+         */
+        selectedProtectionViewTab: ProtectConfigTabsType
+        handleProtectionViewTabChange: (tab: ProtectConfigTabsType) => void
 
-    handleToggleCommentsView: () => void
-    /**
-     * Would show red dot on comments icon if comments are present
-     */
-    areCommentsPresent: boolean
+        handleToggleCommentsView: () => void
+        /**
+         * Would show red dot on comments icon if comments are present
+         */
+        areCommentsPresent: boolean
 
-    showMergePatchesButton: boolean
-    shouldMergeTemplateWithPatches: boolean
-    handleToggleShowTemplateMergedWithPatch: () => void
+        showMergePatchesButton: boolean
+        shouldMergeTemplateWithPatches: boolean
+        handleToggleShowTemplateMergedWithPatch: () => void
 
-    mergeStrategy: OverrideMergeStrategyType
-    handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
-    hidePatchOption?: boolean
-    isMergeStrategySelectorDisabled?: boolean
+        mergeStrategy: OverrideMergeStrategyType
+        handleMergeStrategyChange: (strategy: OverrideMergeStrategyType) => void
+        hidePatchOption?: boolean
+        isMergeStrategySelectorDisabled?: boolean
 
-    /**
-     * Used to place toggle editor view and chart selectors in deployment template
-     */
-    children?: ReactNode
-    /**
-     * If provided, will show popup menu on click three dots button
-     * If empty/null, will not show the button
-     */
-    popupConfig?: ConfigToolbarPopupConfigType
-    /**
-     * @default false
-     */
-    isApprovalPolicyConfigured?: boolean
-    /**
-     * @default false
-     */
-    isApprovalPending?: boolean
-    isDraftPresent?: boolean
-    /**
-     * @default - false
-     * If given would disable all the actions
-     */
-    disableAllActions?: boolean
-    parsingError: string
-    restoreLastSavedYAML: () => void
-    /**
-     * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
-     * @default - true
-     * If false we will hide all the action in toolbar.
-     */
-    isPublishedConfigPresent?: boolean
-    headerMessage?: string
-    showDeleteOverrideDraftEmptyState: boolean
-    handleReload: () => void
-} & ConfigToolbarReadMeProps
+        /**
+         * Used to place toggle editor view and chart selectors in deployment template
+         */
+        children?: ReactNode
+        /**
+         * If provided, will show popup menu on click three dots button
+         * If empty/null, will not show the button
+         */
+        popupConfig?: ConfigToolbarPopupConfigType
+        /**
+         * @default false
+         */
+        isApprovalPolicyConfigured?: boolean
+        /**
+         * @default false
+         */
+        isApprovalPending?: boolean
+        isDraftPresent?: boolean
+        isUnpublished?: boolean
+        /**
+         * @default - false
+         * If given would disable all the actions
+         */
+        disableAllActions?: boolean
+        parsingError: string
+        restoreLastSavedYAML: () => void
+        /**
+         * This key means if have saved a draft and have not proposed it yet, and we are creating a new entity like override.
+         * @default - true
+         * If false we will hide all the action in toolbar.
+         */
+        isPublishedConfigPresent?: boolean
+        headerMessage?: string
+        showDeleteOverrideDraftEmptyState: boolean
+        handleReload: () => void
+
+        /**
+         * Config for exception user.
+         */
+        expressEditButtonConfig?: {
+            showPromptTooltip: boolean
+            onClick: () => void
+            onClose: () => void
+            onDoNotShowAgainClose: () => void
+        }
+    } & ConfigToolbarReadMeProps
 
 interface ConfigToolbarPopupMenuLockedConfigDataType {
     /**
@@ -193,6 +207,9 @@ export interface GetConfigToolbarPopupConfigProps {
     isDeleteDisabled?: boolean
     deleteDisabledTooltip?: string
     migratedFrom?: PipelineMigratedFromType
+    isExceptionUser?: boolean
+    isExpressEditView?: boolean
+    handleExpressDeleteDraft?: () => void
 }
 
 type ConfigDryRunManifestProps =
@@ -323,6 +340,8 @@ export interface BaseConfigurationNavigationProps {
 
 export interface NoPublishedVersionEmptyStateProps {
     isOverride?: boolean
+    showRedirectButton?: boolean
+    onRedirectClick?: () => void
 }
 
 export type SelectMergeStrategyProps = {

@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
     Button,
     ButtonStyleType,
@@ -28,17 +31,21 @@ import {
     validateTagKeyValue,
     validateTagValue,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useEffect, useMemo, useState } from 'react'
-import { getHostURLConfiguration } from '@Services/service'
+
+import { ReactComponent as ICAppTemplate } from '@Icons/ic-app-template.svg'
+import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
-import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
-import { useHistory } from 'react-router-dom'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
-import { importComponentFromFELibrary } from '@Components/common'
-import { ReactComponent as ICBack } from '@Icons/ic-caret-left-small.svg'
-import { ReactComponent as ICAppTemplate } from '@Icons/ic-app-template.svg'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
+import { getHostURLConfiguration } from '@Services/service'
 
+import ApplicationInfoForm from './ApplicationInfoForm'
+import { createAppInitialFormErrorState, createAppInitialFormState } from './constants'
+import HeaderSection from './HeaderSection'
+import { createApp } from './service'
+import Sidebar from './Sidebar'
 import {
     ApplicationInfoFormProps,
     CreateAppFormErrorStateType,
@@ -47,13 +54,8 @@ import {
     CreateAppModalProps,
     CreationMethodType,
 } from './types'
-import { createAppInitialFormErrorState, createAppInitialFormState } from './constants'
-import { getCreateMethodConfig, validateAppName, validateCloneApp, validateProject } from './utils'
-import { createApp } from './service'
-import ApplicationInfoForm from './ApplicationInfoForm'
-import HeaderSection from './HeaderSection'
-import Sidebar from './Sidebar'
 import UpdateTemplateConfig from './UpdateTemplateConfig'
+import { getCreateMethodConfig, validateAppName, validateCloneApp, validateProject } from './utils'
 
 import './styles.scss'
 

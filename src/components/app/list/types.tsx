@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
+import { MutableRefObject } from 'react'
+
 import {
     AppType,
     EnvironmentListHelmResult,
     EnvListMinDTO,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { MutableRefObject } from 'react'
+
 import { AppListFilterConfig, AppListSortableKeys } from '../list-new/AppListType'
 
 export interface App {

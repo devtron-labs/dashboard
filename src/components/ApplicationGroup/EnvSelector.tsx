@@ -16,12 +16,14 @@
 
 import { useRef } from 'react'
 import AsyncSelect from 'react-select/async'
+
 import {
     abortPreviousRequests,
-    AppSelectorNoOptionsMessage,
-    AppSelectorDropdownIndicator,
     APP_SELECTOR_STYLES,
+    AppSelectorDropdownIndicator,
+    AppSelectorNoOptionsMessage,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
 

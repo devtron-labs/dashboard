@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
-import { TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT, CONNECTION_TIMEOUT_TIME } from '../Constants'
-import { ConnectingToClusterStateProps, URLParams } from '../Types'
+
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.svg'
-import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { URLS } from '../../../config'
+import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
+import { CONNECTION_TIMEOUT_TIME, TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
+import { ClusterDetailBaseParams, ConnectingToClusterStateProps } from '../Types'
 
 const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     loader,
@@ -30,7 +31,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
     requestAbortController,
 }) => {
     const { replace } = useHistory()
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const [infoText, setInfoText] = useState(TRYING_TO_CONNECT)
     const [showCancel, setShowCancel] = useState(false)
     const [resetProgress, setResetProgress] = useState(false)

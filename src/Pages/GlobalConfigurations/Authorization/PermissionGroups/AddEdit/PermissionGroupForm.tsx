@@ -14,35 +14,37 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { Link, useHistory } from 'react-router-dom'
+
 import {
-    showError,
-    CustomInput,
-    useMainContext,
-    ToastVariantType,
-    ToastManager,
+    Button,
     ButtonComponentType,
+    ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ButtonStyleType,
-    Button,
+    CustomInput,
+    showError,
     Textarea,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory } from 'react-router-dom'
+
 import { ReactComponent as ICDeleteInteractive } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
-import { deepEqual } from '../../../../../components/common'
 
+import { deepEqual } from '../../../../../components/common'
 import { URLS } from '../../../../../config'
-import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { createOrUpdatePermissionGroup, deletePermissionGroup } from '../../authorization.service'
+import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
 import {
     PermissionConfigurationForm,
     usePermissionConfiguration,
 } from '../../Shared/components/PermissionConfigurationForm'
-import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
-import { excludeKeyAndClusterValue } from '../../Shared/components/K8sObjectPermissions/utils'
+import { PermissionGroup, PermissionGroupCreateOrUpdatePayload } from '../../types'
 import { DeleteUserPermission } from '../../UserPermissions/DeleteUserPermission'
+import { getIsSuperAdminPermission, getRolesAndAccessRoles, validateDirectPermissionForm } from '../../utils'
 
 const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const { serverMode } = useMainContext()
@@ -154,7 +156,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
 
     return (
         <div className="flexbox-col dc__align-start dc__align-self-stretch flex-grow-1 dc__gap-24 pb-16">
-            <div className="flex dc__content-space dc__gap-8 pr-20 pl-20 w-100">
+            <div className="flex dc__content-space dc__gap-8 px-20 pt-16 w-100">
                 <div className="flex dc__content-start dc__gap-4 fs-16 lh-32 fw-4 dc__ellipsis-right">
                     <Link className="anchor" to={URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS}>
                         Permission Groups

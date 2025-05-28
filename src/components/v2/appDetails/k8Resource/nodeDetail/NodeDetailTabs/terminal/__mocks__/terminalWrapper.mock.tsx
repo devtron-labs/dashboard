@@ -15,10 +15,12 @@
  */
 
 import { useRef } from 'react'
-import { MainContextProvider, MainContext } from '@devtron-labs/devtron-fe-common-lib'
+
+import { MainContext, MainContextProvider } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SERVER_MODE } from '../../../../../../../../config'
 import { nodeSelect, SocketConnectionType } from '../../../../../../../ClusterNodes/constants'
-import { TerminalWrapperType, TERMINAL_TEXT } from '../constants'
+import { TERMINAL_TEXT, TerminalWrapperType } from '../constants'
 import { TerminalSelectionListDataType } from '../terminal.type'
 
 export const selectionListData: TerminalSelectionListDataType = {

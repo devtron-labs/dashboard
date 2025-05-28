@@ -14,22 +14,34 @@
  * limitations under the License.
  */
 
+import { useEffect, useMemo } from 'react'
+import { useParams, useRouteMatch } from 'react-router-dom'
+
 import {
     CollapsibleList,
     ErrorScreenManager,
+    FiltersTypeEnum,
     GenericEmptyState,
     ImageType,
     noop,
+    PaginationEnum,
     Progressing,
+    Table,
+    TableColumnType,
     useSearchString,
-    ALL_NAMESPACE_OPTION,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
+
+import emptyCustomChart from '@Images/empty-noresult@2x.png'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
-import BaseResourceList from './BaseResourceList'
-import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
+
+import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
+import { ClusterDetailBaseParams } from '../Types'
+import ClusterUpgradeCompatibilityInfoTableCellComponent from './ClusterUpgradeCompatibilityInfoTableCellComponent'
+import ClusterUpgradeCompatibilityInfoTableWrapper from './ClusterUpgradeCompatibilityInfoTableWrapper'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
+import { dynamicSort, getUpgradeCompatibilityTippyConfig } from './utils'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
     'useClusterUpgradeCompatibilityInfo',
@@ -38,15 +50,17 @@ const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
 )
 
 const ClusterUpgradeCompatibilityInfo = ({
-    clusterId,
-    clusterName,
-    selectedCluster,
     updateTabUrl,
+    clusterName,
+    markTabActiveById,
     addTab,
+    getTabId,
     lowercaseKindToResourceGroupMap,
-    handleResourceClick,
 }: ClusterUpgradeCompatibilityInfoProps) => {
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
+
+    const { url } = useRouteMatch()
 
     const {
         isLoading,
@@ -61,6 +75,56 @@ const ClusterUpgradeCompatibilityInfo = ({
         clusterId,
         updateTabUrl,
     })
+
+    useEffect(() => {
+        const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
+
+        markTabActiveById(
+            getTabId(UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX, UPGRADE_CLUSTER_CONSTANTS.NAME, upgradeClusterLowerCaseKind),
+        )
+            .then((found) => {
+                if (!found) {
+                    addTab({
+                        idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+                        kind: upgradeClusterLowerCaseKind,
+                        name: UPGRADE_CLUSTER_CONSTANTS.NAME,
+                        url,
+                        dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`,
+                        tippyConfig: getUpgradeCompatibilityTippyConfig({
+                            targetK8sVersion,
+                        }),
+                    }).catch(noop)
+                }
+            })
+            .catch(noop)
+    }, [])
+
+    const { columns, rows } = useMemo(
+        () => ({
+            columns: resourceListForCurrentData.headers.map(
+                (header: string) =>
+                    ({
+                        field: header,
+                        label: header,
+                        size: {
+                            range: {
+                                maxWidth: 600,
+                                minWidth: header === 'name' ? 200 : 180,
+                                startWidth: header === 'name' ? 300 : 200,
+                            },
+                        },
+                        comparator: dynamicSort(header),
+                        isSortable: true,
+                        CellComponent: ClusterUpgradeCompatibilityInfoTableCellComponent,
+                    }) as TableColumnType,
+            ),
+            rows: resourceListForCurrentData.data.map((row: Record<string, string | number | object>) => ({
+                data: row,
+                id: JSON.stringify(row),
+            })),
+        }),
+        [resourceListForCurrentData],
+    )
 
     if (isLoading) {
         return (
@@ -102,39 +166,28 @@ const ClusterUpgradeCompatibilityInfo = ({
     }
 
     return (
-        <div className="resource-browser">
-            <div className="dc__overflow-auto p-8">
+        <div className="flexbox h-100 dc__overflow-hidden">
+            <div className="dc__overflow-auto p-8 w-220 dc__no-shrink">
                 <CollapsibleList tabType="navLink" config={sidebarConfig} onCollapseBtnClick={onCollapseBtnClick} />
             </div>
-            <BaseResourceList
-                searchPlaceholder="Search"
-                areFiltersHidden
-                isLoading={false}
-                resourceListError={null}
-                resourceList={resourceListForCurrentData}
-                clusterId={clusterId}
-                clusterName={clusterName}
-                selectedResource={{
-                    gvk: SIDEBAR_KEYS.upgradeClusterGVK,
-                    namespaced: false,
+
+            <Table
+                columns={columns}
+                rows={rows}
+                emptyStateConfig={{
+                    noRowsConfig: {
+                        image: emptyCustomChart,
+                        title: 'No resources found',
+                        subTitle: `No resources found in this cluster for upgrade compatibility check`,
+                    },
                 }}
-                selectedNamespace={ALL_NAMESPACE_OPTION}
-                selectedCluster={selectedCluster}
-                isOpen
-                reloadResourceListData={refetchCompatibilityList}
-                setSelectedNamespace={noop}
-                renderRefreshBar={noop}
-                updateK8sResourceTab={noop}
-                setWidgetEventDetails={noop}
-                nodeType={null}
-                group={null}
-                showGenericNullState
-                addTab={addTab}
-                hideDeleteResource
-                hideBulkSelection
-                shouldOverrideSelectedResourceKind
-                lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                handleResourceClick={handleResourceClick}
+                filtersVariant={FiltersTypeEnum.URL}
+                id="table__cluster-upgrade-compatibility-info"
+                paginationVariant={PaginationEnum.PAGINATED}
+                ViewWrapper={ClusterUpgradeCompatibilityInfoTableWrapper}
+                additionalProps={{
+                    lowercaseKindToResourceGroupMap,
+                }}
             />
         </div>
     )

@@ -15,14 +15,16 @@
  */
 
 import React, { useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
-    noop,
-    ResourceListPayloadType,
+    DeleteConfirmationModal,
     deleteResource,
     ForceDeleteOption,
-    DeleteConfirmationModal,
+    noop,
+    ResourceListPayloadType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
+
 import { DeleteResourcePopupType } from '../Types'
 
 const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({

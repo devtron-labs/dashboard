@@ -14,37 +14,49 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
-import { useAsync, abortPreviousRequests, ErrorScreenManager } from '@devtron-labs/devtron-fe-common-lib'
-import { K8SResourceTabComponentProps, URLParams } from '../Types'
+
+import { abortPreviousRequests, ErrorScreenManager, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+
+import { K8S_EMPTY_GROUP, ResourceBrowserTabsId } from '../Constants'
 import { getResourceGroupList } from '../ResourceBrowser.service'
-import Sidebar from './Sidebar'
-import { K8SResourceList } from './K8SResourceList'
+import { K8SResourceTabComponentProps } from '../Types'
+import Cache from './Cache'
 import ConnectingToClusterState from './ConnectingToClusterState'
+import { K8SResourceList } from './K8SResourceList'
+import Sidebar from './Sidebar'
+import { K8sResourceListURLParams } from './types'
 
 const K8SResourceTabComponent = ({
-    selectedResource,
-    setSelectedResource,
+    markTabActiveById,
     selectedCluster,
     renderRefreshBar,
     addTab,
-    isOpen,
     updateK8sResourceTab,
-    updateK8sResourceTabLastSyncMoment,
-    setWidgetEventDetails,
-    handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
 
     const abortControllerRef = useRef(new AbortController())
+
+    useEffect(() => {
+        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
+    }, [])
+
+    const selectedResource = useMemo(
+        () => lowercaseKindToResourceGroupMap?.[`${group === K8S_EMPTY_GROUP ? '' : group}-${kind}`.toLowerCase()],
+        [lowercaseKindToResourceGroupMap, kind, group],
+    )
 
     const [loading, k8SObjectMap, error, reload] = useAsync(
         () =>
             abortPreviousRequests(
-                () => getResourceGroupList(clusterId, abortControllerRef.current?.signal),
+                () =>
+                    Cache.get(`${clusterId}/k8s-object-map`, () =>
+                        getResourceGroupList(clusterId, abortControllerRef.current?.signal),
+                    ),
                 abortControllerRef,
             ),
         [clusterId],
@@ -73,21 +85,15 @@ const K8SResourceTabComponent = ({
             <Sidebar
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
-                setSelectedResource={setSelectedResource}
-                isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
-                updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
             />
             <K8SResourceList
                 clusterName={clusterName}
                 selectedResource={selectedResource}
                 selectedCluster={selectedCluster}
                 addTab={addTab}
-                isOpen={isOpen}
                 renderRefreshBar={renderRefreshBar}
                 updateK8sResourceTab={updateK8sResourceTab}
-                setWidgetEventDetails={setWidgetEventDetails}
-                handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
             />
         </div>

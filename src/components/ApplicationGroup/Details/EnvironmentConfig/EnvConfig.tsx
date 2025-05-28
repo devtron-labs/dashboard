@@ -21,21 +21,21 @@ import {
     BASE_CONFIGURATION_ENV_ID,
     EnvResourceType,
     GenericEmptyState,
+    noop,
     Progressing,
     ResourceIdToResourceApprovalPolicyConfigMapType,
-    noop,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { importComponentFromFELibrary } from '@Components/common'
+import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
+import { URLS } from '@Config/routes'
+import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
+import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
+import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
 import { getEnvConfig } from '@Pages/Applications/DevtronApps/service'
 import EnvironmentOverride from '@Pages/Shared/EnvironmentOverride/EnvironmentOverride'
-import { ENV_CONFIG_PATH_REG } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.constants'
-import { DeploymentConfigCompare } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentConfigCompare'
 
-import { EnvConfigType } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
-import { DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE } from '@Config/constants'
 import { getConfigAppList } from '../../AppGroup.service'
 import { AppGroupDetailDefaultType, ApplicationRouteType, ConfigAppList } from '../../AppGroup.types'
 import ApplicationRoute from './ApplicationRoutes'

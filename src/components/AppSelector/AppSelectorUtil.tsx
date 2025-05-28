@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-import { getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getAppListMin } from '../../services/service'
+import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
+import { AllApplicationsMetaData } from './constants'
 
 let timeoutId
 
-export const appListOptions = (inputValue: string, isJobView?: boolean, signal?: AbortSignal): Promise<[]> => {
+export const appListOptions = ({
+    inputValue,
+    isJobView = false,
+    signal,
+    recentlyVisitedDevtronApps,
+}: AppListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> => {
     const options = signal ? { signal } : null
 
     return new Promise((resolve) => {
@@ -28,29 +36,47 @@ export const appListOptions = (inputValue: string, isJobView?: boolean, signal?:
         }
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
-                resolve([])
-                return
-            }
-            getAppListMin(null, options, inputValue, isJobView ?? false)
-                .then((response) => {
-                    let appList = []
-                    if (response.result) {
-                        appList = response.result.map((res) => ({
-                            value: res.id,
-                            label: res.name,
-                            ...res,
-                        }))
-                    }
-                    resolve(appList as [])
-                })
-                .catch((errors: ServerErrors) => {
-                    if (!getIsRequestAborted(errors)) {
-                        resolve([])
-                        if (errors.code) {
-                            showError(errors)
+                resolve(
+                    recentlyVisitedDevtronApps?.length && !isJobView
+                        ? [
+                              {
+                                  label: 'Recently Visited',
+                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
+                                      label: app.appName,
+                                      value: app.appId,
+                                      isRecentlyVisited: true,
+                                  })) as RecentlyVisitedOptions[],
+                              },
+                              AllApplicationsMetaData,
+                          ]
+                        : [],
+                )
+            } else {
+                getAppListMin(null, options, inputValue, isJobView ?? false)
+                    .then((response) => {
+                        const appList = response.result
+                            ? ([
+                                  {
+                                      label: `All ${isJobView ? 'Jobs' : 'Applications'}`,
+                                      options: response.result.map((res) => ({
+                                          value: res.id,
+                                          label: res.name,
+                                      })) as RecentlyVisitedOptions[],
+                                  },
+                              ] as RecentlyVisitedGroupedOptionsType[])
+                            : []
+
+                        resolve(appList)
+                    })
+                    .catch((errors: ServerErrors) => {
+                        if (!getIsRequestAborted(errors)) {
+                            resolve([])
+                            if (errors.code) {
+                                showError(errors)
+                            }
                         }
-                    }
-                })
+                    })
+            }
         }, 300)
     })
 }

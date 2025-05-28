@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-export * from './DeploymentTemplate'
-export { default as ConfigDryRun } from './ConfigDryRun'
-export { default as ConfigToolbar } from './ConfigToolbar'
-export { default as NoOverrideEmptyState } from './NoOverrideEmptyState'
-export { default as ConfigHeader } from './ConfigHeader'
-export { default as NoPublishedVersionEmptyState } from './NoPublishedVersionEmptyState'
 export { default as CompareConfigView } from './CompareConfigView'
+export { default as ConfigDryRun } from './ConfigDryRun'
+export { default as ConfigHeader } from './ConfigHeader'
+export { default as ConfigToolbar } from './ConfigToolbar'
 export * from './DeploymentConfigCompare'
+export * from './DeploymentTemplate'
+export { default as NoOverrideEmptyState } from './NoOverrideEmptyState'
+export { default as NoPublishedVersionEmptyState } from './NoPublishedVersionEmptyState'
 export { default as SelectMergeStrategy } from './SelectMergeStrategy'
-
-export type { ConfigToolbarProps, CompareConfigViewProps } from './types'
+export type { CompareConfigViewProps, ConfigToolbarProps } from './types'

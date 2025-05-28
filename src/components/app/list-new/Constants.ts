@@ -15,7 +15,9 @@
  */
 
 import { OptionType, SelectPickerOptionType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '@Config/routes'
+
 import { AppStatuses, AppStatusesDTO, FluxCDTemplateType } from './AppListType'
 
 export const APP_LIST_HEADERS = {

@@ -14,51 +14,33 @@
  * limitations under the License.
  */
 
-import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
 import {
+    ClusterDetail,
+    logExceptionToSentry,
+    numberComparatorBySortOrder,
+    stringComparatorBySortOrder,
+    versionComparatorBySortOrder,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
+
+import {
+    NODE_K8S_VERSION_FILTER_KEY,
+    NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
-    LOCAL_STORAGE_EXISTS,
-    LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
-    OPTIONAL_NODE_LIST_HEADERS,
 } from '../Constants'
-import { ResourceListUrlFiltersType } from './types'
-import { K8SResourceListType } from '../Types'
+import { ClusterOptionType, K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
+import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
+
+const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
+    'getFilterOptionsFromSearchParams',
+    null,
+    'function',
+)
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     targetK8sVersion: searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY),
 })
-
-export const getAppliedColumnsFromLocalStorage = () => {
-    if (!LOCAL_STORAGE_EXISTS) {
-        // NOTE: show all headers by default
-        return [...OPTIONAL_NODE_LIST_HEADERS]
-    }
-
-    try {
-        const appliedColumns = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS))
-
-        if (!Array.isArray(appliedColumns) || !appliedColumns.every((column) => typeof column === 'string')) {
-            throw new Error()
-        }
-
-        return appliedColumns
-    } catch {
-        // NOTE: show all headers by default
-        return [...OPTIONAL_NODE_LIST_HEADERS]
-    }
-}
-
-export const saveAppliedColumnsInLocalStorage = (appliedColumns: string[]) => {
-    if (!LOCAL_STORAGE_EXISTS || !Array.isArray(appliedColumns)) {
-        return
-    }
-
-    try {
-        localStorage.setItem(LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS, JSON.stringify(appliedColumns))
-    } catch {
-        noop()
-    }
-}
 
 export const getUpgradeCompatibilityTippyConfig = ({
     targetK8sVersion,
@@ -87,3 +69,210 @@ export const getFirstResourceFromKindResourceMap = (
         (resourceGroup) => resourceGroup.gvk.Kind?.toLowerCase() === kind?.toLowerCase(),
     )
 }
+
+export const getClusterOptions = (clusterList: ClusterDetail[]): ClusterOptionType[] =>
+    clusterList
+        ? sortObjectArrayAlphabetically(clusterList, 'name')
+              .filter(({ isVirtualCluster }) => !isVirtualCluster)
+              .map(({ name, id, nodeErrors, isProd, installationId }) => ({
+                  label: name,
+                  value: String(id ?? '0'),
+                  description: nodeErrors,
+                  installationId,
+                  isProd,
+                  isClusterInCreationPhase: !!installationId && !id,
+              }))
+        : []
+
+export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: string, value: string) => {
+    if (!aiButtonConfig || columnName !== aiButtonConfig.column) {
+        return false
+    }
+    if (aiButtonConfig.includeValues) {
+        return aiButtonConfig.includeValues.has(value)
+    }
+    return !aiButtonConfig.excludeValues.has(value)
+}
+
+export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
+    const namespace = searchParams.get('namespace')
+    const eventType = searchParams.get('eventType') ?? 'warning'
+
+    return {
+        ...(namespace ? { selectedNamespace: namespace } : {}),
+        ...(getFilterOptionsFromSearchParams ? getFilterOptionsFromSearchParams(searchParams) : {}),
+        ...Object.values(NODE_SEARCH_KEYS).reduce((acc, key) => {
+            const value = searchParams.get(key)
+            if (value) {
+                acc[key] = value
+            }
+            return acc
+        }, {}),
+        ...(searchParams.get(NODE_K8S_VERSION_FILTER_KEY)
+            ? { [NODE_K8S_VERSION_FILTER_KEY]: searchParams.get(NODE_K8S_VERSION_FILTER_KEY) }
+            : {}),
+        eventType,
+    }
+}
+
+const numberInStringComparator = <T extends string>(a: T, b: T) =>
+    numberComparatorBySortOrder(a ? parseInt(a.match(/^\d+/)[0], 10) : 0, b ? parseInt(b.match(/^\d+/)[0], 10) : 0)
+
+const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
+
+const propertyComparatorMap = {
+    age: durationComparator,
+    duration: durationComparator,
+    'last schedule': durationComparator,
+    'last seen': durationComparator,
+    capacity: numberInStringComparator,
+    cpu: numberInStringComparator,
+    memory: numberInStringComparator,
+    window: durationComparator,
+    errors: numberInStringComparator,
+    'k8s version': versionComparatorBySortOrder,
+    taints: numberInStringComparator,
+    'cpu usage (%)': numberInStringComparator,
+    'cpu allocatable': numberInStringComparator,
+    'mem usage (%)': numberInStringComparator,
+    'mem allocatable': numberInStringComparator,
+    'cpu usage (absolute)': numberInStringComparator,
+}
+
+/**
+ * Dynamically sorts an array of objects based on a specified property and sorting order.
+ * @param  property - The property by which to sort the objects.
+ * @param  sortOrder - The sorting order ('ASC' for ascending, 'DESC' for descending).
+ * @returns A sorting function.
+ */
+export const dynamicSort = (property: string) => (valueA: unknown, valueB: unknown) => {
+    // Special cases handling where the property is not in sortable format.
+    if (Object.keys(propertyComparatorMap).includes(property)) {
+        return propertyComparatorMap[property](valueA, valueB)
+    }
+
+    // Handling of numbers and if one property is number and the other is string.
+    if (typeof valueA === 'number' || typeof valueB === 'number') {
+        return numberComparatorBySortOrder(
+            typeof valueA === 'number' ? valueA : 0,
+            typeof valueB === 'number' ? valueB : 0,
+        )
+    }
+
+    // Handling of strings and numbers in string type.
+    if (typeof valueA === 'string' && typeof valueB === 'string') {
+        if (!Number.isNaN(Number(valueA)) && !Number.isNaN(Number(valueB))) {
+            return numberComparatorBySortOrder(Number(valueA), Number(valueB))
+        }
+        return stringComparatorBySortOrder(valueA, valueB)
+    }
+
+    return 0
+}
+
+export const isItemASearchMatchForNodeListing = (item: Record<string, any>, searchParams: Record<string, any>) => {
+    const isK8sVersionFilterAppliedAndMatchFound =
+        !searchParams[NODE_K8S_VERSION_FILTER_KEY] ||
+        item[NODE_K8S_VERSION_FILTER_KEY] === searchParams[NODE_K8S_VERSION_FILTER_KEY]
+
+    if (!isK8sVersionFilterAppliedAndMatchFound) {
+        return false
+    }
+
+    const doesAnyNodeSearchKeyExists = Object.values(NODE_SEARCH_KEYS).some((key) => Object.hasOwn(searchParams, key))
+
+    const doesItemHaveAnyMatchingSearchKey =
+        !doesAnyNodeSearchKeyExists ||
+        Object.values(NODE_SEARCH_KEYS).reduce((isFound, searchKey) => {
+            if (!searchParams[searchKey]) {
+                return isFound
+            }
+
+            const searchTextFromSearchKey = searchParams[searchKey]
+
+            return !!searchTextFromSearchKey?.split(',').some((text) => {
+                const trimmedText = text.trim()
+                const objectKey = NODE_SEARCH_KEYS_TO_OBJECT_KEYS[searchKey]
+
+                // NOTE: if corresponding value in data is anything other than primitives like string, or number
+                // handle it appropriately likewise
+                if (searchKey === NODE_SEARCH_KEYS.LABEL) {
+                    const [searchKeyFromLabelText, searchValueFromLabelText] = trimmedText.split('=')
+
+                    return (
+                        !!item[objectKey]?.some(
+                            ({ key, value }) => key === searchKeyFromLabelText && value === searchValueFromLabelText,
+                        ) && isFound
+                    )
+                }
+
+                return String(item[objectKey] ?? '').includes(trimmedText) && isFound
+            })
+        }, true)
+
+    return isK8sVersionFilterAppliedAndMatchFound && doesItemHaveAnyMatchingSearchKey
+}
+
+export const getClassNameForColumn = (name: string, isNodeUnschedulable: boolean) => {
+    if (name === 'message') {
+        return 'dc__word-break'
+    }
+
+    return name === 'status' && isNodeUnschedulable ? 'dc__no-shrink' : 'dc__truncate'
+}
+
+export const getStatusClass = (status: string, isNodeListing: boolean) => {
+    let statusPostfix = status?.toLowerCase()
+
+    if (statusPostfix && (statusPostfix.includes(':') || statusPostfix.includes('/') || statusPostfix.includes(' '))) {
+        statusPostfix = statusPostfix.replace(':', '__').replace('/', '__').replace(' ', '__')
+    }
+
+    return `f-${statusPostfix} ${isNodeListing ? 'dc__capitalize' : ''}`
+}
+
+export const getColumnSize = (field: string, isEventListing: boolean) => {
+    if (!isEventListing) {
+        return {
+            range: {
+                maxWidth: 600,
+                minWidth: field === 'name' ? 200 : 180,
+                startWidth: field === 'name' ? 300 : 200,
+            },
+        }
+    }
+
+    switch (field) {
+        case 'message':
+            return {
+                range: {
+                    maxWidth: 800,
+                    minWidth: 180,
+                    startWidth: 400,
+                },
+            }
+        case 'type':
+            return { fixed: 20 }
+        case 'namespace':
+        case 'involved object':
+        case 'source':
+            return {
+                range: {
+                    maxWidth: 600,
+                    minWidth: 80,
+                    startWidth: 140,
+                },
+            }
+        default:
+            return {
+                range: {
+                    maxWidth: 300,
+                    minWidth: 80,
+                    startWidth: 80,
+                },
+            }
+    }
+}
+
+export const getColumnComparator = (field: string, isEventListing: boolean) =>
+    field === 'message' && isEventListing ? null : dynamicSort(field)

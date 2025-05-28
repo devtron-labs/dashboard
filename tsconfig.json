@@ -2,24 +2,12 @@
     "compilerOptions": {
         "baseUrl": ".",
         "paths": {
-            "@Icons/*": [
-                "./src/assets/icons/*"
-            ],
-            "@Images/*": [
-                "./src/assets/img/*"
-            ],
-            "@Components/*": [
-                "./src/components/*"
-            ],
-            "@Config/*": [
-                "./src/config/*"
-            ],
-            "@Pages/*": [
-                "./src/Pages/*"
-            ],
-            "@Services/*": [
-                "./src/services/*"
-            ],
+            "@Icons/*": ["./src/assets/icons/*"],
+            "@Images/*": ["./src/assets/img/*"],
+            "@Components/*": ["./src/components/*"],
+            "@Config/*": ["./src/config/*"],
+            "@Pages/*": ["./src/Pages/*"],
+            "@Services/*": ["./src/services/*"]
         },
         "target": "ES2020",
         "lib": ["dom", "dom.iterable", "ES2022", "WebWorker"],
@@ -29,7 +17,6 @@
         "skipLibCheck": true,
         "esModuleInterop": false,
         "allowSyntheticDefaultImports": true,
-        // @TODO: Enable strict when we have a better solution for the type issues
         "strict": false,
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
@@ -38,7 +25,7 @@
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,
-        "jsx": "react-jsx",
+        "jsx": "react-jsx"
     },
     "include": ["src", "./src/custom.d.ts", "./src/vite-env.d.ts"],
     "exclude": ["node_modules", "**/*.test.tsx", "dist"]

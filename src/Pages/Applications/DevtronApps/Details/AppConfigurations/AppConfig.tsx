@@ -14,46 +14,50 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react'
-import { useParams, useLocation, useRouteMatch, useHistory } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    useAsync,
-    ResourceKindType,
-    ToastManager,
-    ToastVariantType,
-    ResourceIdToResourceApprovalPolicyConfigMapType,
     AppConfigProps,
     ConfirmationModal,
     ConfirmationModalVariantType,
+    ErrorScreenManager,
     noop,
+    Progressing,
+    ResourceIdToResourceApprovalPolicyConfigMapType,
+    ResourceKindType,
+    showError,
+    ToastManager,
+    ToastVariantType,
     URLS as CommonUrls,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
-import { URLS, getAppComposeURL, APP_COMPOSE_STAGE, ViewType } from '../../../../../config'
+
 import { importComponentFromFELibrary } from '../../../../../components/common'
+import { APP_COMPOSE_STAGE, getAppComposeURL, URLS, ViewType } from '../../../../../config'
 import { getAppOtherEnvironmentMin, getJobOtherEnvironmentMin, getWorkflowList } from '../../../../../services/service'
-import './appConfig.scss'
+import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
+import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
+import { getAppConfigStatus, getEnvConfig } from '../../service'
+import { AppConfigStatusItemType } from '../../service.types'
+import AppComposeRouter from './MainContent/AppComposeRouter'
+import { AppNavigation } from './Navigation/AppNavigation'
+import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
+import { deleteApp } from './AppConfig.service'
 import {
     AppConfigState,
     AppStageUnlockedType,
-    STAGE_NAME,
     DEFAULT_LANDING_STAGE,
     EnvConfigType,
+    STAGE_NAME,
 } from './AppConfig.types'
-import { getUserRole } from '../../../../GlobalConfigurations/Authorization/authorization.service'
-import { isCIPipelineCreated, isCDPipelineCreated, getNavItems, isUnlocked } from './AppConfig.utils'
-import AppComposeRouter from './MainContent/AppComposeRouter'
-import { UserRoleType } from '../../../../GlobalConfigurations/Authorization/constants'
-import { AppNavigation } from './Navigation/AppNavigation'
-import { AppConfigStatusItemType } from '../../service.types'
-import { getAppConfigStatus, getEnvConfig } from '../../service'
-import { deleteApp } from './AppConfig.service'
+import { getNavItems, isCDPipelineCreated, isCIPipelineCreated, isUnlocked } from './AppConfig.utils'
 import { AppConfigurationProvider } from './AppConfiguration.provider'
-import { ENV_CONFIG_PATH_REG } from './AppConfig.constants'
+
+import './appConfig.scss'
 
 const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')

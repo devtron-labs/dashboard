@@ -15,27 +15,31 @@
  */
 
 import React from 'react'
+import { generatePath, useLocation } from 'react-router-dom'
+import moment from 'moment'
 import queryString from 'query-string'
-import { useLocation } from 'react-router-dom'
+
 import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
-    K8sResourceDetailType,
     ResponseType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { URLS, LAST_SEEN } from '../../config'
+
+import { LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
+    DUMMY_RESOURCE_GVK_VERSION,
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
+    MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
-    MONITORING_DASHBOARD_TAB_ID,
+    RESOURCE_BROWSER_ROUTES,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -43,8 +47,8 @@ import {
     GetTabsBasedOnRoleParamsType,
     K8SObjectChildMapType,
     K8SObjectMapType,
-    K8SObjectType,
     K8sObjectOptionType,
+    K8SObjectType,
     NodeRowDetail,
 } from './Types'
 
@@ -267,58 +271,52 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
-    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-
-export const getTabsBasedOnRole = ({
-    selectedCluster,
-    namespace,
-    dynamicTabData,
-    isTerminalSelected = false,
-    isOverviewSelected = false,
-    isMonitoringDashBoardSelected = false,
-}: GetTabsBasedOnRoleParamsType): InitTabType[] => {
+export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
     const tabs: InitTabType[] = [
         {
             id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
-            isSelected: isOverviewSelected,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.OVERVIEW, { clusterId }),
+            isSelected: false,
             showNameOnSelect: false,
             type: 'fixed',
         },
         {
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
-            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+                clusterId,
+                kind: 'node',
+                group: K8S_EMPTY_GROUP,
+                version: DUMMY_RESOURCE_GVK_VERSION,
+            }),
+            isSelected: true,
             type: 'fixed',
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
             shouldRemainMounted: true,
         },
-        ...(getMonitoringDashboardTabConfig
-            ? [
-                  getMonitoringDashboardTabConfig(
-                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
-                      isMonitoringDashBoardSelected,
-                      MONITORING_DASHBOARD_TAB_ID,
-                  ),
-              ]
-            : []),
+        getMonitoringDashboardTabConfig(
+            generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
+                clusterId,
+            }),
+            false,
+            MONITORING_DASHBOARD_TAB_ID,
+        ),
         {
             id: ResourceBrowserTabsId.terminal,
             name: AppDetailsTabs.terminal,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-            isSelected: isTerminalSelected,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
+                clusterId,
+            }),
+            isSelected: false,
             type: 'fixed',
             showNameOnSelect: true,
-            isAlive: isTerminalSelected,
+            isAlive: false,
             dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
         },
-        ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 
     return tabs
@@ -339,20 +337,34 @@ export const getRenderNodeButton =
     (
         resourceData: K8sResourceDetailDataType,
         columnName: string,
-        handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
+        onClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
         <button
             type="button"
             className="dc__unset-button-styles dc__no-decor flex"
             data-name={resourceData[columnName]}
-            onClick={handleNodeClick}
+            onClick={onClick}
             aria-label={`Select ${resourceData[columnName]}`}
         >
             <span className="dc__link">{children}</span>
         </button>
     )
 
+export const getRenderInvolvedObjectButton =
+    (value: string, onClick: (e: React.MouseEvent<HTMLButtonElement>) => void) => () => {
+        const [kind, name] = value.split('/')
+        return (
+            <button
+                type="button"
+                className="dc__unset-button-styles dc__no-decor flex"
+                onClick={onClick}
+                aria-label={`Goto ${kind} ${name}`}
+            >
+                <span className="dc__link dc__truncate">{value}</span>
+            </button>
+        )
+    }
 export const renderResourceValue = (value: string) => {
     const isDateValue = moment(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
 
@@ -387,22 +399,29 @@ const flattenObject = (ob: object): Record<string, any> => {
 }
 
 // NOTE: Please understand the big comment on @flattenObject to understand this
-export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
-    ...response,
-    result: {
-        headers: [...NODE_LIST_HEADERS] as string[],
-        data: response.result.map((data) => {
-            const _flattenNodeData = flattenObject(data)
-            const meta: Record<string, any> = {}
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix: string) => ({
+    headers: [...NODE_LIST_HEADERS] as string[],
+    data: response.result.map((data, index) => {
+        const _flattenNodeData = flattenObject(data)
+        const meta: Record<string, any> = {}
 
-            if (data.errors) {
-                meta.errorCount = String(Object.keys(data.errors).length || '')
-            }
+        if (data.errors) {
+            meta.errorCount = String(Object.keys(data.errors).length || '')
+        }
 
-            meta.taintCount =
-                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+        meta.taintCount =
+            Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
 
-            return { ..._flattenNodeData, ...meta }
-        }),
-    },
+        return { ..._flattenNodeData, ...meta, id: `${idPrefix}${index}` }
+    }),
 })
+
+export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
+    shouldRedirectToInstallationStatus
+        ? `${CommonURLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+              clusterId: id,
+              group: K8S_EMPTY_GROUP,
+              kind: 'node',
+              version: DUMMY_RESOURCE_GVK_VERSION,
+          })

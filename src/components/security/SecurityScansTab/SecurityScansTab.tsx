@@ -14,48 +14,51 @@
  * limitations under the License.
  */
 
+import { useMemo, useRef, useState } from 'react'
 import dayjs from 'dayjs'
+
 import {
+    abortPreviousRequests,
     ComponentSizeType,
     DATE_TIME_FORMATS,
     DEFAULT_BASE_PAGE_SIZE,
+    EMPTY_STATE_STATUS,
     ErrorScreenManager,
+    FilterChips,
+    FilterSelectPicker,
     GenericEmptyState,
+    GenericFilterEmptyState,
+    getIsRequestAborted,
+    OptionType,
     Pagination,
     SearchBar,
+    SecurityModal,
     SelectPicker,
+    SelectPickerOptionType,
+    SortableTableHeaderCell,
     useAsync,
     useUrlFilters,
     ZERO_TIME_STRING,
-    EMPTY_STATE_STATUS,
-    GenericFilterEmptyState,
-    OptionType,
-    FilterChips,
-    SortableTableHeaderCell,
-    abortPreviousRequests,
-    getIsRequestAborted,
-    SecurityModal,
-    FilterSelectPicker,
-    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useMemo, useRef, useState } from 'react'
-import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
+
 import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
+import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
+
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
+import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
+import { SecurityScanType } from '../security.types'
+import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import {
     ScanDetailsType,
-    SearchType,
+    ScanListPayloadType,
     ScanListUrlFiltersType,
+    SearchType,
     SecurityListSortableKeys,
     SecurityScansTabMultiFilterKeys,
-    ScanListPayloadType,
     SeverityFilterValues,
 } from './types'
 import { getSearchLabelFromValue, getSeverityFilterLabelFromValue, parseSearchParams } from './utils'
-import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
-import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
-import { SecurityScanType } from '../security.types'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 

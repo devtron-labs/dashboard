@@ -49,6 +49,7 @@ import {
     getCDPipelineURL,
     getCIPipelineURL,
     importComponentFromFELibrary,
+    InValidHostUrlWarningBlock,
     preventBodyScroll,
     sortObjectArrayAlphabetically,
     withAppContext,
@@ -68,17 +69,10 @@ import {
 } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getHostURLConfiguration } from '../../../../services/service'
-import { ReactComponent as ICError } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { getCIWebhookRes } from './ciWebhook.service'
 import { TriggerViewContext } from './config'
-import {
-    DEFAULT_ENV,
-    HOST_ERROR_MESSAGE,
-    TIME_STAMP_ORDER,
-    TRIGGER_VIEW_PARAMS,
-    TRIGGER_VIEW_GA_EVENTS,
-} from './Constants'
+import { DEFAULT_ENV, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import {
     APP_DETAILS,
     CI_CONFIGURED_GIT_MATERIAL_ERROR,
@@ -95,6 +89,8 @@ import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { CIMaterialModal } from './CIMaterialModal'
 import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -103,6 +99,7 @@ const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponent
     'function',
 )
 const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')
+const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
@@ -146,6 +143,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             searchImageTag: '',
             resourceFilters: [],
             runtimeParams: [],
+            selectedWebhookNodeId: null,
         }
         this.refreshMaterial = this.refreshMaterial.bind(this)
         this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
@@ -1141,6 +1139,17 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ selectedEnv: _selectedEnv })
     }
 
+    getWebhookDetails = () =>
+        getExternalCIConfig(this.props.match.params.appId, this.state.selectedWebhookNodeId, false)
+
+    handleWebhookAddImageClick = (webhookId: number) => {
+        this.setState({ selectedWebhookNodeId: webhookId })
+    }
+
+    handleWebhookAddImageModalClose = () => {
+        this.setState({ selectedWebhookNodeId: null })
+    }
+
     getCINode = (): CommonNodeAttr => {
         let nd: CommonNodeAttr
         if (this.state.ciNodeId) {
@@ -1314,7 +1323,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                         <CloseIcon />
                                     </button>
                                 </div>
-                                <div className='flex-grow-1'>
+                                <div className="flex-grow-1">
                                     <Progressing pageLoader size={32} />
                                 </div>
                             </>
@@ -1351,6 +1360,23 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
+    renderWebhookAddImageModal() {
+        if (
+            WebhookAddImageModal &&
+            shouldRenderWebhookAddImageModal(this.props.location) &&
+            this.state.selectedWebhookNodeId
+        ) {
+            return (
+                <WebhookAddImageModal
+                    getWebhookDetails={this.getWebhookDetails}
+                    onClose={this.handleWebhookAddImageModalClose}
+                />
+            )
+        }
+
+        return null
+    }
+
     handleModalClose = () => {
         this.props.history.push(this.props.match.url)
     }
@@ -1378,10 +1404,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             filteredCIPipelines={this.state.filteredCIPipelines}
                             environmentLists={this.state.environmentLists}
                             appId={+this.props.match.params.appId}
+                            handleWebhookAddImageClick={this.handleWebhookAddImageClick}
                         />
                     )
                 })}
                 <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
+                {this.renderWebhookAddImageModal()}
             </>
         )
     }
@@ -1389,15 +1417,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     renderHostErrorMessage() {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return (
-                <div className="br-4 bw-1 er-2 pt-10 pb-10 pl-16 pr-16 bcr-1 mb-16 flex left">
-                    <ICError className="icon-dim-20 mr-8" />
-                    <div className="cn-9 fs-13">
-                        {HOST_ERROR_MESSAGE.NotConfigured}
-                        &nbsp;
-                        <NavLink className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
-                            {HOST_ERROR_MESSAGE.Review}
-                        </NavLink>
-                    </div>
+                <div className="mb-16">
+                    <InValidHostUrlWarningBlock />
                 </div>
             )
         }
@@ -1425,7 +1446,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         }
         if (!this.state.workflows.length) {
             return (
-                <div className='flex-grow-1'>
+                <div className="flex-grow-1">
                     {this.props.isJobView ? (
                         <AppNotConfigured
                             title={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title}

@@ -118,15 +118,13 @@ export class CreateMaterial extends Component<CreateMaterialProps, CreateMateria
         }
 
         const res = this.props.providers?.filter((provider) => provider?.id == selectedId) || []
-        if (res[0]?.authMode != 'SSH') {
-            if (!url.startsWith('https')) {
-                return "Git Repo URL must start with 'https:'"
-            }
+
+        if (res[0]?.authMode != 'SSH' && !url.startsWith('http')) {
+            return "Git Repo URL must start with 'http' or 'https'"
         }
-        if (res[0]?.authMode === 'SSH') {
-            if (!url.startsWith('git@')) {
-                return "Git Repo URL must start with 'git@'"
-            }
+
+        if (res[0]?.authMode === 'SSH' && !url.includes('@')) {
+            return "URL must contain @"
         }
         return undefined
     }

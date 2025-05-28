@@ -16,22 +16,22 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import {
+    DevtronProgressing,
     ErrorScreenManager,
+    HeaderWithCreateButton,
+    ServerErrors,
     showError,
     stopPropagation,
-    ServerErrors,
-    DevtronProgressing,
-    HeaderWithCreateButton,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CreateAppModal } from '@Pages/App/CreateAppModal'
+
 import { URLS } from '../../../config'
 import { INITIAL_EMPTY_MASTER_FILTERS, JobListViewType } from '../Constants'
-import JobListContainer from './JobListContainer'
-import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import { getJobsInitFilters } from '../Service'
-import '../../app/list/list.scss'
 import {
     JobListFilterConfig,
     JobListUrlFilters,
@@ -39,6 +39,10 @@ import {
     JobsListSortableKeys,
     JobsMasterFilters,
 } from '../Types'
+import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
+import JobListContainer from './JobListContainer'
+
+import '../../app/list/list.scss'
 
 const JobsList = () => {
     const { path } = useRouteMatch()

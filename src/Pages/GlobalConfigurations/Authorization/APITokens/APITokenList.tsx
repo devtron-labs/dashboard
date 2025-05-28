@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-import moment from 'moment'
 import { useState } from 'react'
 import { useHistory } from 'react-router-dom'
+import moment from 'moment'
+
 import {
-    GenericFilterEmptyState,
-    FeatureTitleWithInfo,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    FeatureTitleWithInfo,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
+
+import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
 import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
+import { HEADER_TEXT, MomentDateFormat } from '../../../../config'
 import { APITokenListType, TokenListType } from './apiToken.type'
 import { isTokenExpired } from './apiToken.utils'
 import DeleteAPITokenModal from './DeleteAPITokenModal'
+
 import './apiToken.scss'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
@@ -66,7 +69,7 @@ const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType
 
     return (
         <div className="bg__primary">
-            <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 pb-16">
+            <div data-testid="api-token-page-header" className="flex dc__content-space pl-20 pr-20 py-16">
                 <FeatureTitleWithInfo
                     title={HEADER_TEXT.API_TOKEN.title}
                     renderDescriptionContent={() => HEADER_TEXT.API_TOKEN.description}

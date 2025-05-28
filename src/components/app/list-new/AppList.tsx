@@ -15,50 +15,44 @@
  */
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React, { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import {
-    Switch,
-    Route,
-    useHistory,
-    useParams,
-    useRouteMatch,
-    useLocation,
     Redirect,
     RedirectProps,
+    Route,
+    Switch,
+    useHistory,
+    useLocation,
+    useParams,
+    useRouteMatch,
 } from 'react-router-dom'
+
 import {
+    AppListConstants,
+    FilterChips,
+    getNamespaceListMin,
+    handleUTCTime,
+    HeaderWithCreateButton,
+    ModuleNameMap,
     Progressing,
     stopPropagation,
-    useAsync,
-    useMainContext,
-    HeaderWithCreateButton,
-    AppListConstants,
-    useUrlFilters,
     TabGroup,
     TabProps,
-    FilterChips,
-    handleUTCTime,
-    ModuleNameMap,
-    getNamespaceListMin,
+    useAsync,
+    useMainContext,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
-import { CreateAppModal } from '@Pages/App/CreateAppModal'
-import { useAppContext } from '../../common'
+
 import { SERVER_MODE } from '../../../config'
-import HelmAppList from './HelmAppList'
-import { AppListPropType } from '../list/types'
-import '../list/list.scss'
-import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import { useAppContext } from '../../common'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import {
-    getAppStatusFormattedValue,
-    getChangeAppTabURL,
-    getFilterChipConfig,
-    getFormattedFilterLabel,
-    parseSearchParams,
-} from './list.utils'
-import GenericAppList from './GenericAppList'
+import DevtronAppList from '../list/DevtronAppListContainer'
+import { AppListPropType } from '../list/types'
+import AppListFilters from './AppListFilters'
 import {
     AppListFilterConfig,
     AppListSortableKeys,
@@ -66,8 +60,18 @@ import {
     AppListUrlFiltersType,
     FluxCDTemplateType,
 } from './AppListType'
-import DevtronAppList from '../list/DevtronAppListContainer'
-import AppListFilters from './AppListFilters'
+import { APP_LIST_LOCAL_STORAGE_KEY, APP_LISTING_URLS, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import GenericAppList from './GenericAppList'
+import HelmAppList from './HelmAppList'
+import {
+    getAppStatusFormattedValue,
+    getChangeAppTabURL,
+    getFilterChipConfig,
+    getFormattedFilterLabel,
+    parseSearchParams,
+} from './list.utils'
+
+import '../list/list.scss'
 
 let interval
 
@@ -393,8 +397,8 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         )
 
         return (
-            <div className="app-tabs-wrapper px-20">
-                <TabGroup tabs={tabs} rightComponent={rightComponent} alignActiveBorderWithContainer />
+            <div className="px-20 border__primary--bottom">
+                <TabGroup tabs={tabs} rightComponent={rightComponent} />
             </div>
         )
     }

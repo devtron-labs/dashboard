@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, KeyboardEvent, ChangeEvent, useMemo, useRef, RefCallback } from 'react'
-import { useLocation, useHistory, useParams } from 'react-router-dom'
-import { ParsedQuery, parse as parseQueryString, stringify as stringifyQueryString } from 'query-string'
+import { ChangeEvent, KeyboardEvent, RefCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
+
 import { OptionType, SelectPicker, useAsync, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICSearch } from '@Icons/ic-search.svg'
+
 import { ReactComponent as ICClear } from '@Icons/ic-error.svg'
+import { ReactComponent as ICSearch } from '@Icons/ic-search.svg'
 import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
-import ColumnSelector from './ColumnSelector'
-import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
+
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import {
     DEFAULT_NODE_K8S_VERSION,
@@ -30,14 +31,16 @@ import {
     NODE_SEARCH_KEY_OPTIONS,
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
+import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
+import ColumnSelector from './ColumnSelector'
 
 const NodeListSearchFilter = ({
     visibleColumns,
     setVisibleColumns,
-    isOpen,
     searchParams,
+    allColumns,
 }: NodeListSearchFilterType) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
         if (searchParams[key]) {
@@ -103,7 +106,7 @@ const NodeListSearchFilter = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
+        if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleFocusInput })
             registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
         }
@@ -112,7 +115,7 @@ const NodeListSearchFilter = ({
             unregisterShortcut(['R'])
             unregisterShortcut(['Escape'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {
@@ -313,6 +316,7 @@ const NodeListSearchFilter = ({
                 {...{
                     setVisibleColumns,
                     visibleColumns,
+                    allColumns,
                 }}
             />
         </div>

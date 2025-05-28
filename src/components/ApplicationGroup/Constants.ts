@@ -69,24 +69,28 @@ export const BULK_VIRTUAL_RESPONSE_STATUS = {
     [BulkResponseStatus.PASS]: 'Succeeded',
     [BulkResponseStatus.FAIL]: 'Failed',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorised',
+    [BulkResponseStatus.SKIP]: 'Skipped',
 }
 
 export const BULK_CI_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Build triggered',
     [BulkResponseStatus.FAIL]: 'Build not triggered',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+    [BulkResponseStatus.SKIP]: 'Skipped',
 }
 
 export const BULK_CD_RESPONSE_STATUS_TEXT = {
     [BulkResponseStatus.PASS]: 'Deployment triggered',
     [BulkResponseStatus.FAIL]: 'Deployment not triggered',
     [BulkResponseStatus.UNAUTHORIZE]: 'Not authorized',
+    [BulkResponseStatus.SKIP]: 'Skipped',
 }
 
 export const responseListOrder = {
     [BulkResponseStatus.FAIL]: 0,
     [BulkResponseStatus.UNAUTHORIZE]: 1,
-    [BulkResponseStatus.PASS]: 2,
+    [BulkResponseStatus.SKIP]: 2,
+    [BulkResponseStatus.PASS]: 3,
 }
 
 export const BULK_HIBERNATE_ERROR_MESSAGE = {
@@ -156,6 +160,10 @@ export const ENV_APP_GROUP_GA_EVENTS = {
     OverviewClicked: {
         category: 'Environment',
         action: 'Overview Clicked',
+    },
+    EnvDetailsClicked: {
+        category: 'Environment',
+        action: 'App group App Details Clicked',
     },
     BuildDeployClicked: {
         category: 'Environment',

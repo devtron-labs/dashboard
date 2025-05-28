@@ -14,24 +14,42 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
+
 import {
     Checkbox,
     CHECKBOX_VALUE,
+    ComponentSizeType,
     get,
+    NodeTaintType,
+    noop,
     OptionType,
+    ResponseType,
+    SelectPickerOptionType,
     ServerErrors,
     showError,
-    noop,
-    ResponseType,
     TabGroup,
-    ComponentSizeType,
     TabProps,
-    NodeTaintType,
-    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useLocation, useParams, useHistory } from 'react-router-dom'
+
+import { K8sResourceListURLParams } from '@Components/ResourceBrowser/ResourceList/types'
+
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
+import { getClusterTerminalParamsData } from '../cluster/cluster.util'
+import { clusterImageDescription, convertToOptionsList } from '../common'
+import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
+import {
+    EditModeType,
+    TERMINAL_STATUS,
+    TERMINAL_TEXT,
+    TerminalWrapperType,
+} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
+import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
+import { menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
+import ClusterEvents from './ClusterEvents'
+import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
 import {
     clusterDisconnectAndRetry,
     clusterManifestEdit,
@@ -41,17 +59,12 @@ import {
     clusterTerminalTypeUpdate,
     clusterTerminalUpdate,
 } from './clusterNodes.service'
-import { menuComponentForImage, Option } from '../v2/common/ReactSelect.utils'
-import { clusterImageDescription, convertToOptionsList } from '../common'
-import ClusterManifest, { ManifestPopupMenu } from './ClusterManifest'
-import ClusterEvents from './ClusterEvents'
-import { ClusterTerminalType } from './types'
 import {
     AUTO_SELECT,
-    clusterImageSelect,
-    clusterSelectStyle,
     CLUSTER_STATUS,
     CLUSTER_TERMINAL_MESSAGING,
+    clusterImageSelect,
+    clusterSelectStyle,
     ErrorMessageType,
     IMAGE_LIST,
     POD_LINKS,
@@ -59,17 +72,7 @@ import {
     SELECT_TITLE,
     SocketConnectionType,
 } from './constants'
-import { getClusterTerminalParamsData } from '../cluster/cluster.util'
-import TerminalWrapper from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/TerminalWrapper.component'
-import {
-    TERMINAL_STATUS,
-    TERMINAL_TEXT,
-    EditModeType,
-    TerminalWrapperType,
-} from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
-import { TerminalSelectionListDataType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/terminal.type'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { URLParams } from '../ResourceBrowser/Types'
+import { ClusterTerminalType } from './types'
 
 let clusterTimeOut
 
@@ -81,7 +84,7 @@ const ClusterTerminal = ({
     taints,
     updateTerminalTabUrl,
 }: ClusterTerminalType) => {
-    const { nodeType } = useParams<URLParams>()
+    const { kind } = useParams<K8sResourceListURLParams>()
     const { replace } = useHistory()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
@@ -152,11 +155,7 @@ const ClusterTerminal = ({
     }
 
     useEffect(() => {
-        if (
-            nodeType !== AppDetailsTabs.terminal ||
-            queryParamsData.selectedNode.value === selectedNodeName.value ||
-            !update
-        ) {
+        if (kind !== 'terminal' || queryParamsData.selectedNode.value === selectedNodeName.value || !update) {
             return
         }
         /* NOTE: update selectedNodeName */
@@ -182,7 +181,7 @@ const ClusterTerminal = ({
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
         updateTerminalTabUrl(queryParams.toString())
-        if (nodeType === AppDetailsTabs.terminal) {
+        if (kind === AppDetailsTabs.terminal) {
             replace({ search: queryParams.toString() })
         }
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
@@ -702,7 +701,11 @@ const ClusterTerminal = ({
             </div>
             {selectedTabIndex === 1 && (
                 <div className="flex-grow-1 flexbox-col dc__overflow-auto">
-                    <ClusterEvents terminalAccessId={terminalAccessIdRef.current} reconnectStart={reconnectStart} />
+                    <ClusterEvents
+                        terminalAccessId={terminalAccessIdRef.current}
+                        reconnectStart={reconnectStart}
+                        clusterId={clusterId}
+                    />
                 </div>
             )}
             {selectedTabIndex === 2 && (
@@ -1012,7 +1015,7 @@ const ClusterTerminal = ({
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: selectedTabIndex === 0 && nodeType === AppDetailsTabs.terminal,
+                isTerminalTab: selectedTabIndex === 0 && kind === 'terminal',
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },

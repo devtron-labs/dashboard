@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useMemo, useState } from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -25,9 +27,10 @@ import {
     SelectPickerOptionType,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICArrowLeft } from '@Icons/ic-arrow-left.svg'
-import { useMemo, useState } from 'react'
 import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+
 import { DynamicTabsSelectProps } from './types'
 
 const DynamicTabsSelect = ({

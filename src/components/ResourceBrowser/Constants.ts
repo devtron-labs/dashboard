@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-import { Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { NO_MATCHING_RESULT, Nodes, URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
+
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { RBSidebarKeysType, NODE_SEARCH_KEYS } from './Types'
+import { NODE_SEARCH_KEYS, RBSidebarKeysType, ShowAIButtonConfig } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -233,7 +235,7 @@ export const RESOURCE_LIST_ERROR_STATE = {
 }
 
 export const RESOURCE_LIST_EMPTY_STATE = {
-    title: 'No matching results',
+    title: NO_MATCHING_RESULT,
     subTitle: (kind: string): string => `We could not find any matching ${kind || 'resource'}.`,
 }
 
@@ -349,8 +351,6 @@ export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
 
 export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
 
-export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
-
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
@@ -363,3 +363,42 @@ export enum ResourceBrowserTabsId {
     terminal = 'cluster_terminal',
     cluster_overview = 'overview',
 }
+
+export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.freeze({
+    'v1/Node': {
+        column: 'status',
+        excludeValues: new Set(['Ready']),
+    },
+    'v1/Namespace': {
+        column: 'status',
+        excludeValues: new Set(['Active']),
+    },
+    'v1/Pod': {
+        column: 'status',
+        excludeValues: new Set(['Running', 'Completed']),
+    },
+    'v1/PersistentVolumeClaim': {
+        column: 'status',
+        excludeValues: new Set(['Bound']),
+    },
+    'v1/PersistentVolume': {
+        column: 'status',
+        excludeValues: new Set(['Bound']),
+    },
+    'certificates.k8s.io/v1/CertificateSigningRequest': {
+        column: 'condition',
+        excludeValues: new Set(['Approved,Issued']),
+    },
+})
+
+export const RESOURCE_BROWSER_ROUTES = {
+    OVERVIEW: `${URLS.RESOURCE_BROWSER}/:clusterId/overview`,
+    MONITORING_DASHBOARD: `${URLS.RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`,
+    TERMINAL: `${URLS.RESOURCE_BROWSER}/:clusterId/terminal`,
+    CLUSTER_UPGRADE: `${URLS.RESOURCE_BROWSER}/:clusterId/cluster-upgrade`,
+    NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
+    K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
+    K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
+} as const
+
+export const DUMMY_RESOURCE_GVK_VERSION = 'v1'

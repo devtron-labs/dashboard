@@ -15,22 +15,30 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { Prompt, useHistory, useLocation } from 'react-router-dom'
+
 import {
-    CHECKBOX_VALUE,
+    ApiQueuingWithBatch,
+    Button,
     Checkbox,
+    CHECKBOX_VALUE,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
-    InfoColourBar,
+    InfoBlock,
     MODAL_TYPE,
     stopPropagation,
     usePrompt,
     useSearchString,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
-    ApiQueuingWithBatch,
-    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Prompt, useHistory, useLocation } from 'react-router-dom'
+
+import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
+import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
+import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
+import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
+import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
+import { importComponentFromFELibrary } from '../../../common'
 import {
     AppInfoMetaDataDTO,
     BulkRotatePodsMetaData,
@@ -39,19 +47,12 @@ import {
     ResourcesMetaDataMap,
     RestartWorkloadModalProps,
 } from '../../AppGroup.types'
-import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
-import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './service'
-import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
-import './envOverview.scss'
-import { RestartStatusListDrawer } from './RestartStatusListDrawer'
-import { importComponentFromFELibrary } from '../../../common'
 import { AllExpandableDropdown } from './AllExpandableDropdown'
-import { ReactComponent as Warn } from '../../../../assets/icons/ic-warning.svg'
+import { APP_DETAILS_TEXT, URL_SEARCH_PARAMS } from './constants'
+import { RestartStatusListDrawer } from './RestartStatusListDrawer'
+import { getRestartWorkloadRotatePods, postRestartWorkloadRotatePods } from './service'
+
+import './envOverview.scss'
 
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 
@@ -447,23 +448,17 @@ export const RestartWorkloadModal = ({
                     subTitle={APP_DETAILS_TEXT.APP_GROUP_RESTART_WORKLOAD_SUBTITLE}
                     SvgImage={MechanicalIcon}
                 >
-                    <InfoColourBar
-                        message={APP_DETAILS_TEXT.APP_GROUP_EMPTY_WORKLOAD_INFO_BAR}
-                        classname="warn cn-9 lh-2 w-100"
-                        Icon={Warn}
-                        iconClass="warning-icon h-100-imp"
-                        iconSize={20}
-                    />
+                    <InfoBlock variant="warning" description={DEFAULT_ROUTE_PROMPT_MESSAGE} />
                 </GenericEmptyState>
             )
         }
 
         return (
             <div className="flexbox-col dc__overflow-auto">
-                <InfoColourBar
-                    message={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
-                    classname="info_bar dc__no-border-radius dc__no-top-border"
-                    Icon={InfoIcon}
+                <InfoBlock
+                    borderConfig={{ top: false, right: false, left: false }}
+                    borderRadiusConfig={{ top: false, right: false, bottom: false, left: false }}
+                    description={APP_DETAILS_TEXT.APP_GROUP_INFO_TEXT}
                 />
                 {renderWorkloadTableHeader()}
                 {renderRestartWorkloadModalListItems()}

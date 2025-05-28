@@ -15,19 +15,21 @@
  */
 
 import { useState } from 'react'
-import {
-    showError,
-    ToastVariantType,
-    ToastManager,
-    drainNodeCapacity,
-    DRAIN_NODE_MODAL_MESSAGING,
-    NodeDrainRequest,
-    ConfirmationModal,
-    ButtonStyleType,
-    ConfirmationModalVariantType,
-    NodeDrainOptions,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
+
+import {
+    ButtonStyleType,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+    DRAIN_NODE_MODAL_MESSAGING,
+    drainNodeCapacity,
+    NodeDrainOptions,
+    NodeDrainRequest,
+    showError,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { NodeActionModalPropType } from '../types'
 
 const DrainNodeModal = ({ name, version, kind, closePopup }: NodeActionModalPropType) => {

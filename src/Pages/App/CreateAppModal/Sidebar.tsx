@@ -15,7 +15,9 @@
  */
 
 import { ModalSidebarPanel } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DOCUMENTATION } from '@Config/constants'
+
 import { CreationMethodType, SidebarProps } from './types'
 
 const Sidebar = ({

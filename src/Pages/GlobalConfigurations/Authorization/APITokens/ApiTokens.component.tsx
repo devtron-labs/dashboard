@@ -15,22 +15,26 @@
  */
 
 import { useEffect, useState } from 'react'
-import './apiToken.scss'
+import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
     ErrorScreenManager,
     GenericEmptyState,
+    Progressing,
     SearchBar,
+    showError,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+
 import emptyGeneratToken from '@Images/ic-empty-generate-token.png'
 import { EMPTY_STATE_STATUS } from '@Config/constantMessaging'
-import { getGeneratedAPITokenList } from './service'
+
+import { TokenListType, TokenResponseType } from './apiToken.type'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
-import { TokenListType, TokenResponseType } from './apiToken.type'
+import { getGeneratedAPITokenList } from './service'
+
+import './apiToken.scss'
 
 const ApiTokens = () => {
     const { path } = useRouteMatch()

@@ -15,33 +15,37 @@
  */
 
 import { useMemo, useState } from 'react'
-import {
-    GenericEmptyState,
-    APIResponseHandler,
-    useAsync,
-    Tooltip,
-    EMPTY_STATE_STATUS,
-    URLS,
-    SortableTableHeaderCell,
-    getAlphabetIcon,
-    useUrlFilters,
-    GenericFilterEmptyState,
-    highlightSearchText,
-} from '@devtron-labs/devtron-fe-common-lib'
 import DOMPurify from 'dompurify'
-import { DOCUMENTATION } from '@Config/constants'
-import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
-import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
+
+import {
+    APIResponseHandler,
+    EMPTY_STATE_STATUS,
+    GenericEmptyState,
+    GenericFilterEmptyState,
+    getAlphabetIcon,
+    highlightSearchText,
+    SortableTableHeaderCell,
+    Tooltip,
+    URLS,
+    useAsync,
+    useUrlFilters,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
+import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
+import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { importComponentFromFELibrary } from '@Components/common'
-import UploadChartModal from './UploadChartModal'
-import { getChartList } from './service'
-import DeploymentChartsListHeader from './DeploymentChartsListHeader'
-import UploadButton from './UploadButton'
-import DownloadChartButton from './DownloadChartButton'
-import './styles.scss'
+import { DOCUMENTATION } from '@Config/constants'
+
 import { DeploymentChartsListSortableKeys } from '../types'
+import DeploymentChartsListHeader from './DeploymentChartsListHeader'
+import DownloadChartButton from './DownloadChartButton'
+import { getChartList } from './service'
+import UploadButton from './UploadButton'
+import UploadChartModal from './UploadChartModal'
 import { sortChartList } from './utils'
+
+import './styles.scss'
 
 const DeploymentChartActionButton = importComponentFromFELibrary('DeploymentChartActionButton', null, 'function')
 

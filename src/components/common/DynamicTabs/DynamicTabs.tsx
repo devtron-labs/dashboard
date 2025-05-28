@@ -18,23 +18,27 @@ import React, { cloneElement, RefCallback, useMemo, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
+
 import {
-    ConditionalWrap,
-    noop,
-    DynamicTabType,
     Button,
+    ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    ButtonStyleType,
+    ConditionalWrap,
+    DynamicTabType,
     logExceptionToSentry,
+    noop,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { checkIfDataIsStale, getClassNameForVariant } from './utils'
-import { DynamicTabsProps } from './types'
+import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
+
 import Timer from './DynamicTabs.timer'
 import DynamicTabsSelect from './DynamicTabsSelect'
+import { DynamicTabsProps } from './types'
+import { checkIfDataIsStale, getClassNameForVariant } from './utils'
+
 import './DynamicTabs.scss'
 
 export const timerTransition = (): JSX.Element => (

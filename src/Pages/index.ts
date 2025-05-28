@@ -14,5 +14,5 @@
  * limitations under the License.
  */
 
-export * from './GlobalConfigurations'
 export * from './Applications'
+export * from './GlobalConfigurations'

@@ -15,11 +15,12 @@
  */
 
 import { FilterSelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+
 import {
-    ExternalLinkFiltersProps,
     ExternalLinkFilters,
-    IdentifierOptionType,
+    ExternalLinkFiltersProps,
     ExternalLinkIdentifierType,
+    IdentifierOptionType,
 } from './ExternalLinks.type'
 
 export const ExternalLinkFilter = ({

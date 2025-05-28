@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useParams } from 'react-router-dom'
+
 import {
     BaseURLParams,
     Button,
@@ -21,8 +23,9 @@ import {
     DTApplicationMetricsFormField,
     InvalidYAMLTippyWrapper,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams } from 'react-router-dom'
+
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
+
 import { DeploymentTemplateCTAProps } from './types'
 
 // For protect we will have a separate component

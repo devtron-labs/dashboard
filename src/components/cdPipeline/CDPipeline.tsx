@@ -279,6 +279,8 @@ export default function CDPipeline({
 
     const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
+    const areMandatoryPluginPossible = !!processPluginData && !isTemplateView
+
     const handleHideScopedVariableWidgetUpdate: PipelineContext['handleHideScopedVariableWidgetUpdate'] = (
         hideScopedVariableWidgetValue: boolean,
     ) => {
@@ -312,7 +314,7 @@ export default function CDPipeline({
         const postBuildPluginIds = getPluginIdsFromBuildStage(form.postBuildStage)
         const uniquePluginIds = Array.from(new Set([...preBuildPluginIds, ...postBuildPluginIds]))
 
-        if (processPluginData) {
+        if (areMandatoryPluginPossible) {
             await getMandatoryPluginData(form, uniquePluginIds)
             return
         }
@@ -354,7 +356,13 @@ export default function CDPipeline({
                 })
                 sortObjectArrayAlphabetically(list, 'name')
                 form.environments = list
-                setFormData(form)
+                setFormData((prevState) => {
+                    return {
+                        ...form,
+                        // Can retain the release mode since this method is called only when creating a new pipeline
+                        releaseMode: prevState.releaseMode,
+                    }
+                })
                 setPageState(ViewType.FORM)
                 setIsAdvanced(false)
             })
@@ -448,7 +456,7 @@ export default function CDPipeline({
     }
 
     const getMandatoryPluginData: BuildCDProps['getMandatoryPluginData'] = async (form, requiredPluginIds = []) => {
-        if (!processPluginData || isTemplateView) {
+        if (!areMandatoryPluginPossible) {
             return
         }
 
@@ -696,7 +704,10 @@ export default function CDPipeline({
         }
 
         // Have to enforce type like this otherwise pipeline variable would have taken type from MigrateArgoAppToCDPipelineRequiredPayloadType and would throw error in case of virtual env.
-        const migrateToDevtronRequiredPayload: Omit<MigrateArgoAppToCDPipelineRequiredPayloadType, 'deploymentAppType'> & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
+        const migrateToDevtronRequiredPayload: Omit<
+            MigrateArgoAppToCDPipelineRequiredPayloadType,
+            'deploymentAppType'
+        > & { deploymentAppType: DeploymentAppTypes } = isMigratingFromExternalApp
             ? getMigrateToDevtronRequiredPayload(migrateToDevtronFormState)
             : null
 
@@ -822,6 +833,9 @@ export default function CDPipeline({
         setSelectedTaskIndex(_formData[activeStageName].steps.length - 1)
     }
 
+    /**
+     * @description This method is called only in case when we render basic view, i.e, CD creation first modal
+     */
     const handleStrategy = (value: string): void => {
         let newSelection
         newSelection = {}
@@ -833,10 +847,10 @@ export default function CDPipeline({
         newSelection['jsonStr'] = JSON.stringify(allStrategies.current[value], null, 4)
         newSelection['yamlStr'] = YAMLStringify(allStrategies.current[value])
 
-        const _form = { ...formData }
-        _form.savedStrategies.push(newSelection)
-        _form.savedStrategies = [newSelection]
-        setFormData(_form)
+        setFormData((prevState) => ({
+            ...prevState,
+            savedStrategies: [newSelection],
+        }))
     }
 
     const handleValidateMandatoryPlugins: PipelineContext['handleValidateMandatoryPlugins'] = ({
@@ -954,7 +968,7 @@ export default function CDPipeline({
                     buttonProps: getConfigureGitOpsCredentialsButtonProps({
                         size: ComponentSizeType.small,
                         style: ButtonStyleType.neutral,
-                    })
+                    }),
                 })
 
                 return
@@ -999,9 +1013,12 @@ export default function CDPipeline({
         try {
             const promiseArr = cdPipelineId
                 ? [updateCDPipeline(request, isTemplateView), null]
-                : [saveCDPipeline(request, {
-                        isTemplateView
-                    }), isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null]
+                : [
+                      saveCDPipeline(request, {
+                          isTemplateView,
+                      }),
+                      isMigratingFromExternalApp ? getEnvironmentListMinPublic(true) : null,
+                  ]
             const [response, environmentRes] = await Promise.all(promiseArr)
             if (response.result) {
                 const pipelineConfigFromRes = response.result.pipelines[0]
@@ -1299,7 +1316,6 @@ export default function CDPipeline({
                                 getNavLink(`post-build`, BuildStageVariable.PostBuild),
                             ]}
                             hideTopPadding
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}
@@ -1369,7 +1385,10 @@ export default function CDPipeline({
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
             if (isMigratingFromExternalApp) {
-                const isLinkable = migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
+                const isLinkable =
+                    migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM
+                        ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable
+                        : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
                 if (!isLinkable) {
                     return 'Please resolve errors before proceeding'
                 }
@@ -1401,7 +1420,7 @@ export default function CDPipeline({
                     </button>
                 </div>
 
-                {!isAdvanced && (
+                {!isAdvanced && !isTemplateView && (
                     <div className="px-20">
                         <TabGroup
                             tabs={[
@@ -1416,7 +1435,7 @@ export default function CDPipeline({
                                     },
                                 },
                                 {
-                                    tabType: 'button',
+                                    tabType: 'button' as const,
                                     active: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
                                     label: 'Migrate to Devtron',
                                     id: ReleaseMode.MIGRATE_EXTERNAL_APPS,
@@ -1426,7 +1445,6 @@ export default function CDPipeline({
                                     },
                                 },
                             ]}
-                            alignActiveBorderWithContainer
                         />
                     </div>
                 )}

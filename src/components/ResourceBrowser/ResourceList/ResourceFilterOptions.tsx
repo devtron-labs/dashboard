@@ -14,23 +14,32 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState, useMemo, ComponentProps, KeyboardEvent } from 'react'
-import { useLocation, useParams, useHistory } from 'react-router-dom'
+import { ComponentProps, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
+
 import {
-    useAsync,
-    useRegisterShortcut,
+    ALL_NAMESPACE_OPTION,
+    ComponentSizeType,
+    Nodes,
     OptionType,
     SearchBar,
+    SegmentedControl,
+    SegmentedControlProps,
     SelectPicker,
-    ALL_NAMESPACE_OPTION,
+    useAsync,
+    useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
-import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
-import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
-import { namespaceListByClusterId } from '../ResourceBrowser.service'
+
 import { URLS } from '../../../config'
+import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
+import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
+import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import { namespaceListByClusterId } from '../ResourceBrowser.service'
+import { ResourceFilterOptionsProps } from '../Types'
+import Cache from './Cache'
+import { K8sResourceListURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
@@ -38,32 +47,44 @@ const ResourceFilterOptions = ({
     selectedResource,
     selectedNamespace,
     selectedCluster,
-    setSelectedNamespace,
     searchText,
-    isOpen,
     setSearchText,
     isSearchInputDisabled,
     renderRefreshBar,
     updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
+    eventType = 'warning',
+    updateSearchParams,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, namespace, group } = useParams<URLParams>()
+    const { clusterId, group } = useParams<K8sResourceListURLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
 
+    const isEventListing = selectedResource?.gvk?.Kind === Nodes.Event
+
     const showShortcutKey = !isInputFocused && !searchText
 
-    const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
+    const [, namespaceByClusterIdList] = useAsync(
+        () => Cache.get(`${clusterId}/namespaces`, () => namespaceListByClusterId(clusterId)),
+        [clusterId],
+    )
 
     const namespaceOptions = useMemo(
         () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result?.sort() || [])],
         [namespaceByClusterIdList],
     )
+
+    const selectedNamespaceOption = useMemo(() => {
+        if (selectedResource?.namespaced) {
+            return namespaceOptions.find((option) => option.value === selectedNamespace)
+        }
+        return NAMESPACE_NOT_APPLICABLE_OPTION
+    }, [selectedNamespace, selectedResource?.namespaced, namespaceOptions])
 
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
@@ -74,7 +95,7 @@ const ResourceFilterOptions = ({
     }
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
+        if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleInputShortcut })
             registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
         }
@@ -82,7 +103,7 @@ const ResourceFilterOptions = ({
             unregisterShortcut(['F'])
             unregisterShortcut(['R'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleFilterKeyUp = (e: KeyboardEvent): void => {
         if (e.key === 'Escape' || e.key === 'Esc') {
@@ -98,51 +119,72 @@ const ResourceFilterOptions = ({
     }
 
     const handleNamespaceChange = (selected: OptionType): void => {
-        if (selected.value === selectedNamespace?.value) {
+        if (selected.value === selectedNamespace) {
             return
         }
-        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selected.value}/${selectedResource.gvk.Kind.toLowerCase()}/${group}${location.search}`
+        const parsedUrlSearchParams = new URLSearchParams(location.search)
+        parsedUrlSearchParams.set('namespace', selected.value)
+        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1?${parsedUrlSearchParams.toString()}`
         updateK8sResourceTab({ url })
         replace(url)
-        setSelectedNamespace(selected)
     }
-
-    useEffect(() => {
-        if (!isOpen || namespace === selectedNamespace.value || namespaceOptions.length === 1) {
-            return
-        }
-        const matchedOption = namespaceOptions.find((option) => option.value === namespace)
-        handleNamespaceChange(!matchedOption ? (ALL_NAMESPACE_OPTION as any) : matchedOption)
-    }, [namespace, namespaceOptions])
 
     const handleInputBlur = () => setIsInputFocused(false)
 
     const handleInputFocus = () => setIsInputFocused(true)
 
+    const handleOnEventTypeChange: SegmentedControlProps['onChange'] = ({ value }) => {
+        updateSearchParams({ eventType: value })
+    }
+
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="resource-filter-options-container__search-box dc__position-rel">
-                    <SearchBar
-                        inputProps={{
-                            placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
-                            disabled: isSearchInputDisabled,
-                            onBlur: handleInputBlur,
-                            onFocus: handleInputFocus,
-                            ref: searchInputRef,
-                            onKeyUp: handleFilterKeyUp,
-                        }}
-                        handleSearchChange={handleOnChangeSearchText}
-                        initialSearchText={searchText}
-                    />
-                    {showShortcutKey && (
-                        <ShortcutKeyBadge
-                            shortcutKey="r"
-                            rootClassName="resource-search-shortcut-key"
-                            onClick={handleInputShortcut}
+                <div className="flexbox dc__gap-8">
+                    {isEventListing && (
+                        <SegmentedControl
+                            name="event-type-control"
+                            value={eventType}
+                            size={ComponentSizeType.small}
+                            segments={[
+                                {
+                                    icon: 'ic-warning',
+                                    ariaLabel: 'Only show warning events',
+                                    value: 'warning',
+                                    tooltipProps: { content: 'Only show warning events' },
+                                },
+                                {
+                                    icon: 'ic-info-filled-color',
+                                    ariaLabel: 'Only show normal events',
+                                    value: 'normal',
+                                    tooltipProps: { content: 'Only show normal events' },
+                                },
+                            ]}
+                            onChange={handleOnEventTypeChange}
                         />
                     )}
+                    <div className="resource-filter-options-container__search-box dc__position-rel">
+                        <SearchBar
+                            inputProps={{
+                                placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
+                                disabled: isSearchInputDisabled,
+                                onBlur: handleInputBlur,
+                                onFocus: handleInputFocus,
+                                ref: searchInputRef,
+                                onKeyUp: handleFilterKeyUp,
+                            }}
+                            handleSearchChange={handleOnChangeSearchText}
+                            initialSearchText={searchText}
+                        />
+                        {showShortcutKey && (
+                            <ShortcutKeyBadge
+                                shortcutKey="r"
+                                rootClassName="resource-search-shortcut-key"
+                                onClick={handleInputShortcut}
+                            />
+                        )}
+                    </div>
                 </div>
                 {!areFiltersHidden && (
                     <div className="flexbox dc__gap-8 dc__zi-3">
@@ -158,7 +200,7 @@ const ResourceFilterOptions = ({
                             inputId="resource-filter-select"
                             placeholder="Select Namespace"
                             options={namespaceOptions}
-                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
+                            value={selectedNamespaceOption}
                             onChange={handleNamespaceChange}
                             isDisabled={!selectedResource?.namespaced}
                             icon={<NamespaceIcon className="fcn-6" />}

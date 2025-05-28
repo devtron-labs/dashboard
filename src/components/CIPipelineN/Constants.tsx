@@ -14,43 +14,7 @@
  * limitations under the License.
  */
 
-import { GroupHeading, groupStyle } from '../v2/common/ReactSelect.utils'
-
-export const groupHeading = (props) => <GroupHeading {...props} />
-
-export const buildStageStyles = {
-    ...groupStyle(),
-    control: (base) => ({
-        ...base,
-        border: '1px solid var(--N200)',
-        minHeight: '20px',
-        height: '30px',
-        marginTop: '4px',
-    }),
-    valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
-    indicatorsContainer: (base) => ({ ...base, height: '28px' }),
-    menu: (base) => ({ ...base, width: '240px' }),
-}
-
-export const triggerStageStyles = {
-    ...groupStyle(),
-    container: (base) => ({ ...base }),
-    control: (base) => ({
-        ...base,
-        border: 'none',
-        borderRadius: '0px',
-        minHeight: '20px',
-        height: '32px',
-        width: '199px',
-    }),
-    valueContainer: (base) => ({ ...base, height: '28px', padding: '0px 8px' }),
-    indicatorsContainer: (base) => ({ ...base, height: '30px' }),
-    singleValue: (base) => ({
-        ...base,
-        fontWeight: 600,
-        color: 'var(--B500)',
-    }),
-}
+import { ConditionContainerType, ConditionType } from '@Components/ciPipeline/types'
 
 export const TIPPY_VAR_MSG = 'This is a variable. It will be replaced with the value during execution.'
 
@@ -59,4 +23,9 @@ export const excludeVariables = ['DOCKER_IMAGE_TAG', 'DOCKER_IMAGE']
 export const INLINE_PLUGIN_TEXT = {
     TITLE: 'Execute custom task',
     DESCRIPTION: 'Write a script to perform custom task or create custom plugin',
+}
+
+export const CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP = {
+    [ConditionContainerType.TRIGGER_SKIP]: [ConditionType.TRIGGER, ConditionType.SKIP],
+    [ConditionContainerType.PASS_FAILURE]: [ConditionType.PASS, ConditionType.FAIL],
 }

@@ -16,8 +16,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
-import { get, showError } from '@devtron-labs/devtron-fe-common-lib'
-import { NodeDetailTab } from '../nodeDetail.type'
+import { get, showError, OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { NodeDetailTab, TerminalParamsType } from '../nodeDetail.type'
 import IndexStore from '../../../index.store'
 import MessageUI from '../../../../common/message.ui'
 import {
@@ -25,14 +25,13 @@ import {
     getGroupedContainerOptions,
 } from '../nodeDetail.util'
 import { shellTypes } from '../../../../../../config/constants'
-import { OptionType } from '../../../../../app/types'
-import { AppType, TerminalComponentProps, Options } from '../../../appDetails.type'
+import { AppType, TerminalComponentProps } from '../../../appDetails.type'
 import './nodeDetailTab.scss'
 import TerminalWrapper from './terminal/TerminalWrapper.component'
 import { TerminalSelectionListDataType } from './terminal/terminal.type'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 import { TerminalWrapperType } from './terminal/constants'
-import { getAppId, generateDevtronAppIdentiferForK8sRequest, deleteEphemeralUrl } from '../nodeDetail.api'
+import { getAppId, generateDevtronAppIdentiferForK8sRequest } from '../nodeDetail.api'
 
 let clusterTimeOut
 
@@ -50,14 +49,7 @@ const TerminalComponent = ({
     setContainers,
     showTerminal,
 }: TerminalComponentProps) => {
-    const params = useParams<{
-        actionName: string
-        podName: string
-        nodeType: string
-        node: string
-        clusterId?: string
-        namespace: string
-    }>()
+    const params = useParams<TerminalParamsType>()
     const { url } = useRouteMatch()
     const terminalRef = useRef(null)
     const podMetaData = !isResourceBrowserView && IndexStore.getMetaDataForPod(params.podName)
@@ -70,7 +62,7 @@ const TerminalComponent = ({
     const connectTerminal: boolean =
         socketConnection === SocketConnectionType.CONNECTING || socketConnection === SocketConnectionType.CONNECTED
     const appDetails = IndexStore.getAppDetails()
-    const nodeName = isResourceBrowserView ? params.node : params.podName
+    const nodeName = isResourceBrowserView ? params.name : params.podName
     const selectedNamespace = appDetails.resourceTree?.nodes?.find(
         (nd) => nd.name === params.podName || nd.name === params.podName,
     )?.namespace
@@ -135,7 +127,7 @@ const TerminalComponent = ({
     useEffect(() => {
         selectedTab(NodeDetailTab.TERMINAL, url)
         handleAbort()
-    }, [params.podName, params.node, params.namespace])
+    }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (showTerminal) {
@@ -158,7 +150,7 @@ const TerminalComponent = ({
         } else if (selectedContainerName.value) {
             setSocketConnection(SocketConnectionType.CONNECTING)
         }
-    }, [selectedTerminalType, selectedContainerName.value, params.podName, params.node, params.namespace])
+    }, [selectedTerminalType, selectedContainerName.value, params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (socketConnection === SocketConnectionType.CONNECTING) {
@@ -220,7 +212,7 @@ const TerminalComponent = ({
                     setContainers,
                     isResourceBrowserView ? selectedResource.namespace : selectedNamespace,
                     isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-                    isResourceBrowserView ? params.node : params.podName,
+                    isResourceBrowserView ? params.name : params.podName,
                     switchSelectedContainer,
                     params,
                 ),

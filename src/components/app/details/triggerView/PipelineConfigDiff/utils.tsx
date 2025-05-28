@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OptionsOrGroups, GroupBase } from 'react-select'
+import { GroupBase, OptionsOrGroups } from 'react-select'
 
 import {
     AppEnvDeploymentConfigDTO,

@@ -33,7 +33,6 @@ import { PipelineSelect } from './PipelineSelect'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { WebhookNode } from './nodes/WebhookNode'
 import WebhookTippyCard from './nodes/WebhookTippyCard'
-import DeprecatedPipelineWarning from './DeprecatedPipelineWarning'
 import { GIT_BRANCH_NOT_CONFIGURED, URLS } from '../../config'
 import {
     CommonNodeAttr,
@@ -47,7 +46,7 @@ import {
     ChangeCIPayloadType,
     CIPipelineNodeType,
     URLS as CommonURLS,
-    AppConfigProps
+    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -65,7 +64,8 @@ const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
 )
 
 export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>, Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
     nodes: CommonNodeAttr[]
     id: number
     name: string
@@ -536,7 +536,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         )
     }
 
-
     getEdges({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
         return nodesWithBufferHeight.reduce((edgeList, node) => {
             node.downstreams.forEach((downStreamNodeId) => {
@@ -684,6 +683,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 )
             }
         }
+
         return edgeList
     }
 
@@ -782,16 +782,15 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
         ciPipelineId = ciPipeline ? +ciPipeline.id : ciPipelineId
         const configDiffView = this.props.cdWorkflowList?.length > 0
-        const isExternalCiWorkflow = nodesWithBufferHeight.some(
-            (node) => node.isExternalCI && !node.isLinkedCI && node.type === WorkflowNodeType.CI,
-        )
 
         // If no node is present in workflow then disable change CI button
         const isChangeCIEnabled = !this.props.isOffendingPipelineView && nodesWithBufferHeight.length > 0
 
         return (
             <ConditionalWrap
-                condition={!this.props.isOffendingPipelineView && !this.props.isTemplateView && this.props.showWebhookTippy}
+                condition={
+                    !this.props.isOffendingPipelineView && !this.props.isTemplateView && this.props.showWebhookTippy
+                }
                 wrap={(children) => (
                     <Tippy
                         placement="top-start"
@@ -888,7 +887,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                             </div>
                         )}
                     </div>
-                    {!this.props.isOffendingPipelineView && isExternalCiWorkflow && <DeprecatedPipelineWarning />}
                     <div
                         className={
                             configDiffView

@@ -15,18 +15,20 @@
  */
 
 import React, { useMemo } from 'react'
+
 import {
-    OptionType,
-    Checkbox,
-    noop,
-    CHECKBOX_VALUE,
-    SelectPicker,
-    ComponentSizeType,
     ActionTypes,
+    Checkbox,
+    CHECKBOX_VALUE,
+    ComponentSizeType,
+    noop,
+    OptionType,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
+import { CHART_PERMISSION_OPTIONS, ChartPermissionValues } from './constants'
 import { ChartPermissionRow } from './types'
-import { ChartPermissionValues, CHART_PERMISSION_OPTIONS } from './constants'
 
 const PERMISSION_LABEL_CLASS = 'fw-6 fs-12 cn-7 dc__uppercase'
 

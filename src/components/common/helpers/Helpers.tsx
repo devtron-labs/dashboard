@@ -29,6 +29,7 @@ import {
     SeverityCount,
     useMainContext,
     SelectPickerOptionType,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -47,10 +48,9 @@ import { AUTO_SELECT } from '../../ClusterNodes/constants'
 import { PATTERNS } from '../../../config/constants'
 import { AppEnvLocalStorageKeyType, FilterParentType } from '@Components/ApplicationGroup/AppGroup.types'
 import { APP_GROUP_LOCAL_STORAGE_KEY, ENV_GROUP_LOCAL_STORAGE_KEY } from '@Components/ApplicationGroup/Constants'
-import {
-    GetAndSetAppGroupFiltersParamsType,
-    SetFiltersInLocalStorageParamsType,
-} from './types'
+import { GetAndSetAppGroupFiltersParamsType, SetFiltersInLocalStorageParamsType } from './types'
+import { URLS } from '@Config/routes'
+import { HOST_ERROR_MESSAGE } from '@Config/constantMessaging'
 
 let module
 export type IntersectionChangeHandler = (entry: IntersectionObserverEntry) => void
@@ -390,27 +390,6 @@ export function deepEqual(configA: any, configB: any): boolean {
         showError(err)
         return true
     }
-}
-
-export function useOnline() {
-    const [online, setOnline] = useState(navigator.onLine)
-    useEffect(() => {
-        function handleOnline(e) {
-            setOnline(true)
-        }
-
-        function handleOffline(e) {
-            setOnline(false)
-        }
-        window.addEventListener('online', handleOnline)
-        window.addEventListener('offline', handleOffline)
-        return () => {
-            window.removeEventListener('online', handleOnline)
-            window.removeEventListener('offline', handleOffline)
-        }
-    }, [])
-
-    return online
 }
 
 /**
@@ -785,6 +764,11 @@ export const convertToOptionsList = (
 }
 
 export const importComponentFromFELibrary = (componentName: string, defaultComponent?, type?: 'function') => {
+    // Adding this check as we do not want to import the component if flag is off
+    // Using this as a hack, to be removed soon
+    if (!window._env_?.FEATURE_AI_INTEGRATION_ENABLE && componentName === 'ExplainWithAIButton') {
+        return null
+    }
     try {
         let component = defaultComponent || null
         if (!module) {
@@ -1032,10 +1016,6 @@ export const parsePassword = (password: string): string => {
     return password === DEFAULT_SECRET_PLACEHOLDER ? '' : password.trim()
 }
 
-export const reloadLocation = () => {
-    window.location.reload()
-}
-
 /**
  * @deprecated
  */
@@ -1235,4 +1215,17 @@ export const setAppGroupFilterInLocalStorage = ({
     } catch {
         localStorage.setItem(localStorageKey, '')
     }
+}
+
+const renderHostURLWarning = () => (
+    <div className="flexbox dc__content-space">
+        {HOST_ERROR_MESSAGE.NotConfigured} &nbsp;
+        <Link className="dc__link-bold" to={URLS.GLOBAL_CONFIG_HOST_URL}>
+            {HOST_ERROR_MESSAGE.Review}
+        </Link>
+    </div>
+)
+
+export const InValidHostUrlWarningBlock = () => {
+    return <InfoBlock variant="error" description={renderHostURLWarning()} />
 }

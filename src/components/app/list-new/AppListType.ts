@@ -21,8 +21,10 @@ import {
     SortingOrder,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Cluster } from '@Services/service.types'
+
 import { getCommonAppFilters } from '@Services/service'
+import { Cluster } from '@Services/service.types'
+
 import { DevtronAppListProps } from '../list/types'
 
 export enum FluxCDTemplateType {

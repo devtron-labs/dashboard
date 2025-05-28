@@ -14,17 +14,40 @@
  * limitations under the License.
  */
 
+import { InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
+
 import { GUIViewProps } from './types'
 
-export const getRenderActionButton =
+const renderGUIText =
     ({ handleChangeToYAMLMode }: Pick<GUIViewProps, 'handleChangeToYAMLMode'>) =>
     () => (
-        <button
-            type="button"
-            className="dc__unset-button-styles"
-            onClick={handleChangeToYAMLMode}
-            data-testid="base-deployment-template-switchtoadvanced-button"
-        >
-            <span className="cb-5 cursor fw-6">Switch to Advanced</span>
-        </button>
+        <div className="flex left dc__gap-6">
+            <span> To modify additional configurations</span>
+            <button
+                type="button"
+                className="dc__unset-button-styles"
+                onClick={handleChangeToYAMLMode}
+                data-testid="base-deployment-template-switchtoadvanced-button"
+            >
+                <span className="cb-5 cursor fw-6">Switch to Advanced</span>
+            </button>
+        </div>
     )
+
+export const GUIInfoBlock = ({ handleChangeToYAMLMode }: Pick<GUIViewProps, 'handleChangeToYAMLMode'>) => (
+    <InfoBlock
+        variant="help"
+        description={renderGUIText({ handleChangeToYAMLMode })()}
+        borderConfig={{
+            left: false,
+            right: false,
+            top: false,
+        }}
+        borderRadiusConfig={{
+            left: false,
+            right: false,
+            top: false,
+            bottom: false,
+        }}
+    />
+)

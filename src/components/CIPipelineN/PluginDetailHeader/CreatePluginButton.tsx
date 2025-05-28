@@ -17,9 +17,12 @@
 import { useContext, useState } from 'react'
 import ReactGA from 'react-ga4'
 import Tippy from '@tippyjs/react'
-import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
-import { ReactComponent as ICSave } from '@Icons/ic-save.svg'
+
 import { RefVariableType, ToastManager, ToastVariantType, VariableType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as ICSave } from '@Icons/ic-save.svg'
+import { pipelineContext } from '@Components/workflowEditor/workflowEditor'
+
 import { CreatePluginModal } from '../CreatePluginModal'
 
 const CreatePluginButton = () => {

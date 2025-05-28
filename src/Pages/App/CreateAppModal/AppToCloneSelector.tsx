@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { useState } from 'react'
+
 import {
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
     ComponentSizeType,
@@ -21,8 +23,9 @@ import {
     SelectPicker,
     SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { appListOptions } from '@Components/AppSelector/AppSelectorUtil'
-import { useState } from 'react'
+
 import { AppToCloneSelectorProps } from './types'
 
 const AppToCloneSelector = ({ isJobView, error, handleCloneIdChange }: AppToCloneSelectorProps) => {
@@ -33,7 +36,7 @@ const AppToCloneSelector = ({ isJobView, error, handleCloneIdChange }: AppToClon
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
         setAreOptionsLoading(true)
-        const fetchedOptions = await appListOptions(val, isJobView)
+        const fetchedOptions = await appListOptions({ inputValue: val, isJobView })
         setAreOptionsLoading(false)
         setOptions(fetchedOptions)
     }

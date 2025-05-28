@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
+import { useRouteMatch } from 'react-router-dom'
+
+import { Button, ButtonComponentType, ButtonVariantType, noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from '@Components/app/details/triggerView/Constants'
 import { URLS } from '@Config/routes'
-import { Button, ButtonComponentType, ButtonVariantType, noop } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch } from 'react-router-dom'
+
 import { ReceivedWebhookRedirectButtonType } from './types'
 
 export const ReceivedWebhookRedirectButton = ({ setIsWebhookBulkCI, isBulk }: ReceivedWebhookRedirectButtonType) => {

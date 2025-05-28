@@ -15,35 +15,37 @@
  */
 
 import { useState } from 'react'
-import {
-    handleUTCTime,
-    getRandomColor,
-    ConditionalWrap,
-    Checkbox,
-    CHECKBOX_VALUE,
-    BulkSelectionEvents,
-    Button,
-    ButtonComponentType,
-    ComponentSizeType,
-    ButtonVariantType,
-    ButtonStyleType,
-} from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 
-import { UserPermissionRowProps } from './types'
-import { DEFAULT_USER_TOOLTIP_CONTENT } from './constants'
-import { getIsAdminOrSystemUser } from '../utils'
-import { deleteUser } from '../../authorization.service'
+import {
+    BulkSelectionEvents,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    Checkbox,
+    CHECKBOX_VALUE,
+    ComponentSizeType,
+    ConditionalWrap,
+    getRandomColor,
+    handleUTCTime,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import { ReactComponent as Lock } from '@Icons/ic-locked.svg'
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+
 import { importComponentFromFELibrary } from '../../../../../components/common'
 import { Moment12HourFormat } from '../../../../../config'
-import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
+import { deleteUser } from '../../authorization.service'
 import { useAuthorizationBulkSelection } from '../../Shared/components/BulkSelection'
+import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
 import { DeleteUserPermission } from '../DeleteUserPermission'
+import { getIsAdminOrSystemUser } from '../utils'
+import { DEFAULT_USER_TOOLTIP_CONTENT } from './constants'
+import { UserPermissionRowProps } from './types'
 
 const StatusCell = importComponentFromFELibrary('StatusCell', null, 'function')
 const UserGroupCell = importComponentFromFELibrary('UserGroupCell', null, 'function')

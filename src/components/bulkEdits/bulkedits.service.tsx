@@ -15,6 +15,7 @@
  */
 
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
 
 export function updateBulkList(request): Promise<any> {

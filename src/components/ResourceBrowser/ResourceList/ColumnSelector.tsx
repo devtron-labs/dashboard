@@ -14,29 +14,39 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, useRef } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { MultiValue, SelectInstance } from 'react-select'
-import { ButtonVariantType, Icon, SelectPicker, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    ButtonVariantType,
+    Icon,
+    SelectPicker,
+    SelectPickerOptionType,
+    TableColumnType,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'
-import { saveAppliedColumnsInLocalStorage } from './utils'
 
-const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorType) => {
-    const columnOptions = useMemo(
-        () =>
-            OPTIONAL_NODE_LIST_HEADERS.map((header) => ({
-                value: header,
-                label: header,
-            })),
-        [],
-    )
+const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: ColumnSelectorType) => {
+    const columnOptions = useMemo(() => {
+        const headerToColumnMap = allColumns.reduce((acc, column) => {
+            acc[column.label] = column
+            return acc
+        }, {})
+
+        return OPTIONAL_NODE_LIST_HEADERS.map((header) => ({
+            value: headerToColumnMap[header],
+            label: header,
+        }))
+    }, [])
 
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<SelectPickerOptionType<string>>>(
-        visibleColumns.map((column) => ({ value: column, label: column })),
+    const [selectedColumns, setSelectedColumns] = useState<MultiValue<SelectPickerOptionType<TableColumnType>>>(
+        visibleColumns.map((column) => ({ value: column, label: column.label })),
     )
 
-    const selectRef = useRef<SelectInstance<SelectPickerOptionType<string>, true>>(null)
+    const selectRef = useRef<SelectInstance<SelectPickerOptionType<TableColumnType>, true>>(null)
 
     const handleMenuOpen = () => {
         setIsMenuOpen(true)
@@ -53,9 +63,14 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns }: ColumnSelectorTyp
     const handleApplySelectedColumns = (): void => {
         setIsMenuOpen(false)
 
-        const newVisibleColumns = selectedColumns.map((option) => option.value)
-
-        saveAppliedColumnsInLocalStorage(newVisibleColumns)
+        const columnFieldMap = selectedColumns.reduce((acc, { value: column }) => {
+            acc[column.label] = column
+            return acc
+        }, {})
+        const optionalNodeListHeadersSet = new Set(OPTIONAL_NODE_LIST_HEADERS as string[])
+        const newVisibleColumns = allColumns.filter(
+            (column) => !optionalNodeListHeadersSet.has(column.label) || columnFieldMap[column.label],
+        )
 
         selectRef.current?.blur()
 

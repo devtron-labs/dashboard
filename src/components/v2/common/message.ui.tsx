@@ -15,12 +15,14 @@
  */
 
 import React from 'react'
+
 import { Progressing } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg'
-import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg'
-import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg'
+
 import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
 import { Pod as PodIcon } from '../../common'
+import { ReactComponent as FilledInfoIcon } from '../assets/icons/ic-info-filled.svg'
+import { ReactComponent as InfoIcon } from '../assets/icons/ic-info-outline-gray.svg'
+import { ReactComponent as MultipleContainer } from '../assets/icons/ic-select-container.svg'
 
 export enum MsgUIType {
     LOADING = 'loading',

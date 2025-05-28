@@ -14,68 +14,71 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState, useMemo, useRef, useCallback, SyntheticEvent } from 'react'
+import React, { SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { generatePath, Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    noop,
-    DeploymentAppTypes,
-    useAsync,
-    MODAL_TYPE,
     ACTION_STATE,
-    processDeploymentStatusDetailsData,
     aggregateNodes,
+    AppStatusModal,
     ArtifactInfoModal,
-    ReleaseMode,
-    ToastVariantType,
-    ToastManager,
-    SelectPicker,
-    ServerErrors,
-    getIsRequestAborted,
     Button,
+    DeploymentAppTypes,
     GenericEmptyState,
-    ButtonComponentType,
+    getAppsInfoForEnv,
+    getIsRequestAborted,
+    MODAL_TYPE,
+    noop,
+    processDeploymentStatusDetailsData,
+    Progressing,
+    ReleaseMode,
+    ServerErrors,
+    showError,
+    stringComparatorBySortOrder,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useHistory, useRouteMatch, generatePath, Route, useLocation } from 'react-router-dom'
-import AppNotDeployedIcon from '@Images/app-not-deployed.svg'
-import AppNotConfiguredIcon from '@Images/app-not-configured.png'
+
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
-import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
+import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
+import AppNotConfiguredIcon from '@Images/app-not-configured.png'
+import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
+
 import {
-    URLS,
-    getAppDetailsURL,
-    getAppTriggerURL,
-    DOCUMENTATION,
     DEFAULT_STATUS,
-    DEPLOYMENT_STATUS_QUERY_PARAM,
+    DEFAULT_STATUS_TEXT,
     DEPLOYMENT_STATUS,
+    DEPLOYMENT_STATUS_QUERY_PARAM,
+    DOCUMENTATION,
+    getAppDetailsURL,
     HELM_DEPLOYMENT_STATUS_TEXT,
     RESOURCES_NOT_FOUND,
-    DEFAULT_STATUS_TEXT,
 } from '../../../../config'
-import { useAppContext } from '../../../common'
+import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
 import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
-import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-dots.svg'
-import { SourceInfo } from './SourceInfo'
-import { Application, AggregatedNodes } from '../../types'
-import { NoParamsNoEnvContext, NoParamsWithEnvContext, ParamsNoEnvContext, ParamsAndEnvContext } from './utils'
-import { AppMetrics } from './AppMetrics'
-import IndexStore from '../../../v2/appDetails/index.store'
-import {
-    importComponentFromFELibrary,
-    sortObjectArrayAlphabetically,
-    sortOptionsByValue,
-} from '../../../common/helpers/Helpers'
+import { useAppContext } from '../../../common'
+import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
+import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
+import { importComponentFromFELibrary, sortOptionsByValue } from '../../../common/helpers/Helpers'
 import { AppLevelExternalLinks } from '../../../externalLinks/ExternalLinks.component'
 import { getExternalLinks } from '../../../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../../../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../../../externalLinks/ExternalLinks.utils'
-import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
-import noGroups from '../../../../assets/img/ic-feature-deploymentgroups@3x.png'
 import { AppType, EnvType } from '../../../v2/appDetails/appDetails.type'
-import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
+import IndexStore from '../../../v2/appDetails/index.store'
+import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
+import NodeTreeDetailTab from '../../../v2/appDetails/NodeTreeDetailTab'
+import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
+import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
+import { TriggerUrlModal } from '../../list/TriggerUrl'
+import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
+import { AggregatedNodes } from '../../types'
+import { renderCIListHeader } from '../cdDetails/utils'
+import AppEnvSelector from './AppDetails.components'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
+    AppDetailProps,
     DeletedAppComponentType,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
@@ -83,22 +86,16 @@ import {
     ErrorItem,
     HibernationModalTypes,
 } from './appDetails.type'
-import { TriggerUrlModal } from '../../list/TriggerUrl'
-import AppStatusDetailModal from '../../../v2/appDetails/sourceInfo/environmentStatus/AppStatusDetailModal'
-import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
-import { AppDetailsEmptyState } from '../../../common/AppDetailsEmptyState'
-import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
-import { EmptyK8sResourceComponent } from '../../../v2/appDetails/k8Resource/K8Resource.component'
-import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/RotatePodsModal.component'
-import IssuesListingModal from './IssuesListingModal'
-import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
-import { renderCIListHeader } from '../cdDetails/utils'
+import AppDetailsCDButton from './AppDetailsCDButton'
+import { AppMetrics } from './AppMetrics'
+import DeploymentStatusDetailModal from './DeploymentStatusDetailModal'
 import HibernateModal from './HibernateModal'
+import IssuesListingModal from './IssuesListingModal'
+import { SourceInfo } from './SourceInfo'
 
 const VirtualAppDetailsEmptyState = importComponentFromFELibrary('VirtualAppDetailsEmptyState')
 const DeploymentWindowStatusModal = importComponentFromFELibrary('DeploymentWindowStatusModal')
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
-const ConfigDriftModalRoute = importComponentFromFELibrary('ConfigDriftModalRoute', null, 'function')
 const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     'processVirtualEnvironmentDeploymentData',
     null,
@@ -112,20 +109,23 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'function',
 )
 
+const ConfigDriftModal = importComponentFromFELibrary('ConfigDriftModal', null, 'function')
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
+
 export const AppNotConfigured = ({
     image,
     title,
     subtitle,
     buttonTitle,
-    appConfigTabs = '',
     isJobView,
+    renderCustomButton,
 }: {
     image?: any
     title?: string
     subtitle?: React.ReactNode
     buttonTitle?: string
-    appConfigTabs?: string
     isJobView?: boolean
+    renderCustomButton?: () => JSX.Element
 }) => {
     const { appId } = useParams<{ appId: string }>()
     const { push } = useHistory()
@@ -133,11 +133,8 @@ export const AppNotConfigured = ({
     const handleEditApp = () => {
         getAppConfigStatus(+appId, isJobView, false)
             .then(() => {
-                const _urlPrefix = `/${isJobView ? 'job' : 'app'}/${appId}`
-                let url = `${_urlPrefix}/edit`
-                if (appConfigTabs) {
-                    url = `${_urlPrefix}/${appConfigTabs}`
-                }
+                const url = `/${isJobView ? 'job' : 'app'}/${appId}/edit`
+
                 push(url)
             })
             .catch(noop)
@@ -169,127 +166,8 @@ export const AppNotConfigured = ({
                 )
             }
             isButtonAvailable
-            renderButton={renderButton}
+            renderButton={renderCustomButton ?? renderButton}
         />
-    )
-}
-
-const EnvironmentNotConfigured = ({ environments }: Record<string, any>) => {
-    const environmentsMap = Array.isArray(environments)
-        ? environments.reduce((agg, curr) => {
-              // eslint-disable-next-line no-param-reassign
-              agg[curr.environmentId] = curr.environmentName
-              return agg
-          }, {})
-        : {}
-    const { envId, appId } = useParams<{ appId; envId }>()
-
-    const renderButton = () => (
-        <Button
-            dataTestId="go-to-trigger"
-            component={ButtonComponentType.link}
-            text="Go to Trigger"
-            linkProps={{
-                to: getAppTriggerURL(appId),
-            }}
-        />
-    )
-
-    return (
-        <GenericEmptyState
-            image={environmentsMap[+envId] ? AppNotDeployedIcon : AppNotConfiguredIcon}
-            title={
-                environmentsMap[+envId]
-                    ? `This app is not deployed on ${environmentsMap[+envId]}`
-                    : `Please select an environment to view app details`
-            }
-            isButtonAvailable={environmentsMap[+envId]}
-            renderButton={renderButton}
-        />
-    )
-}
-
-export const EnvSelector = ({ environments }: { environments: any }) => {
-    const { push } = useHistory()
-    const { path } = useRouteMatch()
-    const { appId, envId } = useParams<{ appId: string; envId?: string }>()
-    function selectEnvironment(newEnvId) {
-        const newUrl = generatePath(path, { appId, envId: newEnvId })
-        push(newUrl)
-    }
-
-    const environmentsMap = Array.isArray(environments)
-        ? environments.reduce((agg, curr) => {
-              // eslint-disable-next-line no-param-reassign
-              agg[curr.environmentId] = curr.environmentName
-              return agg
-          }, {})
-        : {}
-    const environmentName = environmentsMap[+envId]
-
-    const sortedEnvironments =
-        environments && !environments.deploymentAppDeleteRequest
-            ? sortObjectArrayAlphabetically(environments, 'environmentName')
-            : environments
-
-    const groupList =
-        sortedEnvironments?.reduce((acc, env) => {
-            const Option = {
-                label: env.environmentName,
-                value: env.environmentId,
-                description: env.description,
-            }
-            const key = env.isVirtualEnvironment ? 'Isolated environments' : ''
-            const found = acc.find((item) => item.label === key)
-
-            if (found) {
-                found.options.push(Option)
-            } else {
-                acc.push({
-                    label: key,
-                    options: [Option],
-                })
-            }
-
-            return acc
-        }, []) || []
-
-    // Pushing the virtual environment group to the end of the list
-    if (groupList[0]?.label === 'Isolated environments' && groupList.length === 2) {
-        groupList.reverse()
-    }
-
-    return (
-        <>
-            <div style={{ width: 'clamp( 100px, 30%, 100px )', height: '100%', position: 'relative' }}>
-                <svg
-                    viewBox="0 0 200 40"
-                    preserveAspectRatio="none"
-                    style={{ width: '100%', height: '100%', display: 'flex' }}
-                >
-                    <path d="M0 20 L200 20 Z" strokeWidth="1" stroke="var(--B500)" />
-                    <path d="M0 10 L0, 30" strokeWidth="2" stroke="var(--B500)" />
-                </svg>
-                <div
-                    className="bcb-5 br-10 cn-0 pl-8 pr-8"
-                    style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' }}
-                >
-                    ENV
-                </div>
-            </div>
-            <div data-testid="app-deployed-env-name" className="app-details__selector w-200 dc__zi-12">
-                <SelectPicker
-                    inputId="app-environment-select"
-                    placeholder="Select Environment"
-                    options={groupList}
-                    value={envId ? { value: +envId, label: environmentName } : null}
-                    onChange={(selected) => selectEnvironment((selected as any).value)}
-                    closeMenuOnSelect
-                    isSearchable
-                    classNamePrefix="app-environment-select"
-                />
-            </div>
-        </>
     )
 }
 
@@ -310,7 +188,7 @@ const DeletedAppComponent: React.FC<DeletedAppComponentType> = ({
     return <AppDetailsEmptyState envType={EnvType.APPLICATION} />
 }
 
-export const Details: React.FC<DetailsType> = ({
+const Details: React.FC<DetailsType> = ({
     appDetailsAPI,
     setAppDetailResultInParent,
     environment,
@@ -325,10 +203,14 @@ export const Details: React.FC<DetailsType> = ({
     deploymentUserActionState,
     appDetails,
     setAppDetails,
+    isAppView,
+    applications,
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
-    const { path } = useRouteMatch()
     const location = useLocation()
+
+    const appDetailsFromIndexStore = IndexStore.getAppDetails()
+
     // fixme: the state is not being set anywhere and just being drilled down
     const [detailedStatus, toggleDetailedStatus] = useState<boolean>(false)
     const [resourceTreeFetchTimeOut, setResourceTreeFetchTimeOut] = useState<boolean>(false)
@@ -345,6 +227,8 @@ export const Details: React.FC<DetailsType> = ({
         monitoringTools: [],
     })
 
+    const primaryResourceList = isAppView ? environments : applications
+
     // NOTE: this might seem like a duplicate of loadingResourceTree
     // but its not since loadingResourceTree runs a loader on the whole page
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
@@ -356,7 +240,6 @@ export const Details: React.FC<DetailsType> = ({
     const [errorsList, setErrorsList] = useState<ErrorItem[]>([])
     const appDetailsRef = useRef(null)
     const appDetailsRequestRef = useRef(null)
-    const { envId } = useParams<{ appId: string; envId?: string }>()
     const pollResourceTreeRef = useRef(true)
     const appDetailsAbortRef = useRef<AbortController>(null)
     const shouldFetchTimelineRef = useRef(false)
@@ -369,7 +252,7 @@ export const Details: React.FC<DetailsType> = ({
             deploymentStatus: DEFAULT_STATUS,
             deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
-    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModalRoute
+    const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
     const isExternalToolAvailable: boolean =
         externalLinksAndTools.externalLinks.length > 0 && externalLinksAndTools.monitoringTools.length > 0
     const interval = Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL) || 30000
@@ -471,7 +354,7 @@ export const Details: React.FC<DetailsType> = ({
         return () => {
             appDetailsAbortRef.current.abort()
         }
-    }, [params.envId])
+    }, [params.envId, params.appId])
 
     const handleAppDetailsCallError = (error) => {
         if (error.code === 404 || appDetailsRequestRef.current) {
@@ -590,20 +473,21 @@ export const Details: React.FC<DetailsType> = ({
             const response = await appDetailsAPI(params.appId, params.envId, interval - 5000, appDetailsAbortRef)
             // eslint-disable-next-line no-param-reassign
             isVirtualEnvRef.current = response.result?.isVirtualEnvironment
-            // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
-            if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
-                setResourceTreeFetchTimeOut(false)
-                setLoadingResourceTree(false)
-                setAppDetails(null)
-                pollResourceTreeRef.current = false
-                return
-            }
+
             appDetailsRef.current = {
                 ...appDetailsRef.current,
                 ...response.result,
             }
             IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_APP)
             setAppDetails(appDetailsRef.current)
+
+            // This means the CD is not triggered and the app is not helm migrated i.e. Empty State
+            if (!response.result.isPipelineTriggered && response.result.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
+                setResourceTreeFetchTimeOut(false)
+                setLoadingResourceTree(false)
+                pollResourceTreeRef.current = false
+                return
+            }
 
             if (fetchExternalLinks && response.result?.clusterId) {
                 getExternalLinksAndTools(response.result.clusterId)
@@ -643,11 +527,11 @@ export const Details: React.FC<DetailsType> = ({
 
     useEffect(() => {
         clearPollingInterval()
-        if (isPollingRequired) {
+        if (isPollingRequired && params.appId && params.envId) {
             appDetailsIntervalID = setInterval(callAppDetailsAPI, interval)
             callAppDetailsAPI(true).catch(noop)
         }
-    }, [isPollingRequired])
+    }, [isPollingRequired, params.appId, params.envId])
 
     const handleHibernate = async () => {
         try {
@@ -677,6 +561,28 @@ export const Details: React.FC<DetailsType> = ({
         toggleDetailedStatus(true)
     }
 
+    const renderAppDetailsCDButton = () =>
+        appDetails && (
+            <AppDetailsCDButton
+                appId={appDetails.appId}
+                environmentId={appDetails.environmentId}
+                environmentName={appDetails.environmentName}
+                isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                deploymentAppType={appDetails.deploymentAppType}
+                loadingDetails={loadingDetails}
+                cdModal={{
+                    cdPipelineId: appDetails.cdPipelineId,
+                    ciPipelineId: appDetails.ciPipelineId,
+                    parentEnvironmentName: appDetails.parentEnvironmentName,
+                    deploymentUserActionState,
+                    triggerType: appDetails.triggerType,
+                }}
+                isForEmptyState
+                handleSuccess={callAppDetailsAPI}
+                isAppView={isAppView}
+            />
+        )
+
     if (
         !loadingResourceTree &&
         (!appDetails?.resourceTree || !appDetails.resourceTree.nodes?.length) &&
@@ -684,9 +590,11 @@ export const Details: React.FC<DetailsType> = ({
     ) {
         return (
             <>
-                {environments?.length > 0 && (
+                {primaryResourceList.length && (
                     <div className="flex left ml-20 mt-16">
-                        <EnvSelector environments={environments} />
+                        <AppEnvSelector
+                            {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })}
+                        />
                         {isAppDeleted && appDetails?.deploymentAppDeleteRequest && (
                             <div data-testid="deleteing-argocd-pipeline" className="flex left">
                                 <Trash className="icon-dim-16 mr-8 ml-12" />
@@ -706,22 +614,14 @@ export const Details: React.FC<DetailsType> = ({
                         image={noGroups}
                         title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
                         subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
-                        buttonTitle={ERROR_EMPTY_SCREEN.GO_TO_DEPLOY}
-                        appConfigTabs={URLS.APP_TRIGGER}
+                        renderCustomButton={renderAppDetailsCDButton}
                     />
                 )}
             </>
         )
     }
 
-    const environmentsMap = Array.isArray(environments)
-        ? environments.reduce((agg, curr) => {
-              // eslint-disable-next-line no-param-reassign
-              agg[curr.environmentId] = curr.environmentName
-              return agg
-          }, {})
-        : {}
-    const environmentName = environmentsMap[+envId]
+    const environmentName = environments.find((env) => env.environmentId === +params.envId)?.environmentName
 
     const renderAppDetails = (): JSX.Element => {
         if (!appDetails.resourceTree && isVirtualEnvRef.current && VirtualAppDetailsEmptyState) {
@@ -794,6 +694,7 @@ export const Details: React.FC<DetailsType> = ({
                     appDetails={appDetails}
                     setDetailed={toggleDetailedStatus}
                     environment={environment}
+                    isAppView={isAppView}
                     environments={environments}
                     showCommitInfo={showCommitInfo}
                     showUrlInfo={setUrlInfo}
@@ -810,6 +711,7 @@ export const Details: React.FC<DetailsType> = ({
                     setErrorsList={setErrorsList}
                     deploymentUserActionState={deploymentUserActionState}
                     setHibernationPatchChartName={setHibernationPatchChartName}
+                    applications={applications}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
@@ -840,10 +742,14 @@ export const Details: React.FC<DetailsType> = ({
                 renderAppDetails()
             )}
             {detailedStatus && (
-                <AppStatusDetailModal
-                    close={hideAppDetailsStatus}
-                    showAppStatusMessage={false}
-                    showConfigDriftInfo={isConfigDriftEnabled}
+                <AppStatusModal
+                    titleSegments={[appDetailsFromIndexStore.appName, appDetailsFromIndexStore.environmentName]}
+                    handleClose={hideAppDetailsStatus}
+                    type="devtron-app"
+                    appDetails={appDetailsFromIndexStore}
+                    isConfigDriftEnabled={isConfigDriftEnabled}
+                    configDriftModal={ConfigDriftModal}
+                    debugWithAIButton={ExplainWithAIButton}
                 />
             )}
             {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
@@ -879,72 +785,88 @@ export const Details: React.FC<DetailsType> = ({
             )}
             {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
-            {isConfigDriftEnabled && !isVirtualEnvRef.current && <ConfigDriftModalRoute path={path} />}
         </>
     )
 }
 
-const AppDetail = ({ filteredEnvIds }: { filteredEnvIds?: string }) => {
-    const params = useParams<{ appId: string; envId?: string }>()
-    const { push } = useHistory()
+const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
+    const params = useParams<{ appId: string; envId: string }>()
+    const { replace } = useHistory()
     const { path } = useRouteMatch()
     const { environmentId, setEnvironmentId } = useAppContext() // global state for app to synchronise environments
     const [isAppDeleted, setIsAppDeleted] = useState(false)
+
+    const isAppView = detailsType === 'app'
+
     const [otherEnvsLoading, otherEnvsResult] = useAsync(
         () => getAppOtherEnvironmentMin(params.appId, false),
         [params.appId],
+        !!params.appId,
     )
+
+    const [, otherAppsResult] = useAsync(
+        () => getAppsInfoForEnv({ envId: +params.envId }),
+        [params.envId],
+        !!params.envId && !isAppView,
+    )
+
     const [commitInfo, showCommitInfo] = useState<boolean>(false)
     const [deploymentUserActionState, setDeploymentUserActionState] = useState<ACTION_STATE>(ACTION_STATE.ALLOWED)
     const isVirtualEnvRef = useRef(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
     const [appDetails, setAppDetails] = useState(undefined)
 
-    const envList = useMemo(() => {
-        if (otherEnvsResult?.result?.length > 0) {
-            const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
-            const _envList =
-                otherEnvsResult.result
-                    .filter((env) => !filteredEnvMap || filteredEnvMap.get(env.environmentId))
-                    ?.sort((a, b) => (a.environmentName > b.environmentName ? 1 : -1)) || []
+    const filteredEntityMap = filteredResourceIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
 
-            if (_envList.length > 0) {
-                let selector
-                if (!params.envId && !environmentId) {
-                    selector = new NoParamsNoEnvContext()
-                } else if (!params.envId && environmentId) {
-                    selector = new NoParamsWithEnvContext()
-                } else if (params.envId && !environmentId) {
-                    selector = new ParamsNoEnvContext()
-                } else if (params.envId && environmentId) {
-                    selector = new ParamsAndEnvContext()
-                }
+    const envList = useMemo(
+        () =>
+            (otherEnvsResult?.result ?? [])
+                .filter((env) => !isAppView || !filteredEntityMap || filteredEntityMap.get(env.environmentId))
+                .sort((a, b) => stringComparatorBySortOrder(a.environmentName, b.environmentName)),
+        [filteredResourceIds, otherEnvsResult],
+    )
 
-                const selectedEnvId = selector.resolveEnvironmentId(params, environmentId, _envList, setEnvironmentId)
-
-                // Set the URL and push to navigation stack
-                if (selectedEnvId) {
-                    if (String(selectedEnvId) !== String(params.envId)) {
-                        const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
-                        push(newUrl)
-                    }
-                } else {
-                    setEnvironmentId(null)
-                }
-            } else {
-                setEnvironmentId(null)
-            }
-            // Return the filtered and sorted environment list
-            return _envList
-        }
-        return []
-    }, [filteredEnvIds, otherEnvsResult])
+    const appList = useMemo(
+        () =>
+            (otherAppsResult?.apps ?? [])
+                .filter((app) => !filteredEntityMap || filteredEntityMap.get(app.appId))
+                .sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName)),
+        [filteredResourceIds, otherAppsResult],
+    )
 
     useEffect(() => {
-        if (!params.envId) {
+        if (isAppView) {
+            const userDefinedEnvId = +params.envId || environmentId
+            const selectedEnvId =
+                userDefinedEnvId && envList.some((env) => env.environmentId === userDefinedEnvId)
+                    ? userDefinedEnvId
+                    : envList[0]?.environmentId
+
+            if (envList.length && selectedEnvId && selectedEnvId !== +params.envId) {
+                const newUrl = getAppDetailsURL(params.appId, selectedEnvId)
+                replace(newUrl)
+                return
+            }
             return
         }
-        setEnvironmentId(Number(params.envId))
+
+        const selectedAppId =
+            +params.appId && appList.some((app) => app.appId === +params.appId) ? +params.appId : appList[0]?.appId
+
+        if (appList.length && selectedAppId !== +params.appId) {
+            const newUrl = generatePath(path, { appId: selectedAppId, envId: params.envId })
+            replace(newUrl)
+        }
+    }, [filteredResourceIds, otherEnvsResult, otherAppsResult])
+
+    useEffect(() => {
+        if (!params.envId || !params.appId) {
+            return
+        }
+        // Setting environmentId in app context only in case of app details and not env details
+        if (isAppView) {
+            setEnvironmentId(Number(params.envId))
+        }
         setIsAppDeleted(false)
         if (getDeploymentWindowProfileMetaData) {
             getDeploymentWindowProfileMetaData(params.appId, params.envId).then(({ userActionState }) => {
@@ -956,12 +878,17 @@ const AppDetail = ({ filteredEnvIds }: { filteredEnvIds?: string }) => {
                 }
             })
         }
-    }, [params.envId])
+    }, [params.appId, params.envId])
 
     const renderAppNotConfigured = () => (
         <>
             {envList.length === 0 && !isAppDeleted && <AppNotConfigured />}
-            {!params.envId && envList.length > 0 && <EnvironmentNotConfigured environments={envList} />}
+            {!params.envId && envList.length > 0 && (
+                <GenericEmptyState
+                    image={AppNotConfiguredIcon}
+                    title="Please select an environment to view app details"
+                />
+            )}
         </>
     )
 
@@ -984,10 +911,11 @@ const AppDetail = ({ filteredEnvIds }: { filteredEnvIds?: string }) => {
                                 environments={envList}
                                 environment={environment}
                                 refetchDeploymentStatus={noop}
+                                isAppView={isAppView}
                             />
                         </div>
                     )}
-                    {!params.envId && otherEnvsLoading && <Progressing pageLoader fullHeight />}
+                    {!params.envId && otherEnvsLoading && <Progressing pageLoader />}
                     <Route path={`${path.replace(':envId(\\d+)?', ':envId(\\d+)')}`}>
                         <Details
                             key={`${params.appId}-${params.envId}`}
@@ -1001,10 +929,11 @@ const AppDetail = ({ filteredEnvIds }: { filteredEnvIds?: string }) => {
                             isAppDeleted={isAppDeleted}
                             isVirtualEnvRef={isVirtualEnvRef}
                             isDeploymentBlocked={showDeploymentWindowConfirmation}
-                            filteredEnvIds={filteredEnvIds}
                             deploymentUserActionState={deploymentUserActionState}
                             appDetails={appDetails}
                             setAppDetails={setAppDetails}
+                            applications={appList}
+                            isAppView={isAppView}
                         />
                     </Route>
                     {otherEnvsResult && !otherEnvsLoading && !isVirtualEnvRef.current && renderAppNotConfigured()}
@@ -1018,57 +947,6 @@ const AppDetail = ({ filteredEnvIds }: { filteredEnvIds?: string }) => {
             />
         </>
     )
-}
-
-export const SyncStatusMessage = (app: Application) => {
-    const { spec, status } = app
-    let message = spec.source.targetRevision || 'HEAD'
-    if (status.sync.revision) {
-        if (spec.source?.chart) {
-            message += ` (${status.sync.revision})`
-        } else if (status.sync.revision.length >= 7 && !status.sync.revision.startsWith(spec.source.targetRevision)) {
-            message += ` (${status.sync.revision.substr(0, 7)})`
-        }
-    }
-    switch (status.sync.status) {
-        case 'Synced':
-            return <span>To {message}</span>
-        case 'OutOfSync':
-            return <span>From {message}</span>
-        default:
-            return <span>{message}</span>
-    }
-}
-
-export const getAppOperationState = (app: Application) => {
-    if (app.metadata.deletionTimestamp) {
-        return {
-            phase: 'Running',
-            startedAt: app.metadata.deletionTimestamp,
-        }
-    }
-    if (app.operation) {
-        return {
-            phase: 'Running',
-            startedAt: new Date().toISOString(),
-            operation: {
-                sync: {},
-            },
-        }
-    }
-    return app.status.operationState
-}
-
-export const getOperationType = (application: Application) => {
-    if (application.metadata.deletionTimestamp) {
-        return 'Delete'
-    }
-    const operation =
-        application.operation || (application.status.operationState && application.status.operationState.operation)
-    if (operation && operation.sync) {
-        return 'Sync'
-    }
-    return 'Unknown'
 }
 
 export default AppDetail

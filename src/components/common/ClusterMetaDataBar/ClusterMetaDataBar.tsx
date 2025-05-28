@@ -15,20 +15,23 @@
  */
 
 import { useHistory } from 'react-router-dom'
+
 import {
     AppThemeType,
     getComponentSpecificThemeClass,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ClusterMetaDataBarProps } from './types'
-import { URLS } from '../../../config'
-import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
-import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+
 import { ReactComponent as ArrowLeft } from '../../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-resource.svg'
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
+import { URLS } from '../../../config'
 import { NodeDetailTabs } from '../../app/types'
+import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
+import { ClusterMetaDataBarProps } from './types'
+
 import './ClusterMetaData.scss'
 
 export const ClusterMetaDataBar = ({

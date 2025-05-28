@@ -21,7 +21,7 @@ import {
     K8sResourcePayloadAppType,
     YAMLStringify,
     OptionsBase,
-    SelectedResourceType
+    SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     AppType,
@@ -112,7 +112,7 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
 
 export function getPodContainerOptions(
     isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string; node: string },
+    params: { actionName: string; podName: string; nodeType: string; name: string },
     location: any,
     logState: LogState,
     isResourceBrowserView?: boolean,
@@ -145,7 +145,7 @@ export function getPodContainerOptions(
 
         return {
             containerOptions,
-            podOptions: [{ name: isResourceBrowserView ? params.node : params.podName, selected: true }],
+            podOptions: [{ name: isResourceBrowserView ? params.name : params.podName, selected: true }],
         }
     }
     // build pod options
@@ -191,7 +191,7 @@ export function getPodContainerOptions(
 
 export function getInitialPodContainerSelection(
     isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string; node: string },
+    params: { actionName: string; podName: string; nodeType: string; name: string },
     location: any,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
@@ -216,7 +216,7 @@ export function getInitialPodContainerSelection(
             containers[0].name
         return {
             selectedContainerOption: _selectedContainerName,
-            selectedPodOption: isResourceBrowserView ? params.node : params.podName,
+            selectedPodOption: isResourceBrowserView ? params.name : params.podName,
         }
     }
     const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
@@ -294,7 +294,17 @@ export const getDurationUnits = () => [
     { label: 'Hours', value: 'hours' },
 ]
 
-export const getGroupedContainerOptions = (containers: Options[],isTerminal?, isResourceBrowserView?, setContainers?, selectedNamespace?, selectedClusterId?, selectedPodName?, switchSelectedContainer?, params?) => {
+export const getGroupedContainerOptions = (
+    containers: Options[],
+    isTerminal?,
+    isResourceBrowserView?,
+    setContainers?,
+    selectedNamespace?,
+    selectedClusterId?,
+    selectedPodName?,
+    switchSelectedContainer?,
+    params?,
+) => {
     const containerOptions = []
     const initContainerOptions = []
     const ephemeralContainerOptions = [] as EphemeralContainerOptionsType[]
@@ -410,4 +420,18 @@ export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sRes
         return K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     return K8sResourcePayloadDeploymentType.FLUXCD_INSTALLED
+}
+
+export const manifestBorderConfig = {
+    borderConfig: {
+        top: false,
+        left: false,
+        right: false,
+    },
+    borderRadiusConfig: {
+        top: false,
+        left: false,
+        right: false,
+        bottom: false,
+    },
 }

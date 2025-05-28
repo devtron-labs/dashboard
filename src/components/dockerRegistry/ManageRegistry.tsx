@@ -14,20 +14,17 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
+import { useState } from 'react'
 import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
 import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
 import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import Select, { components } from 'react-select'
-import { ReactComponent as Warn } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
 import { ReactComponent as ArrowDown } from '../../assets/icons/ic-chevron-down.svg'
 import {
-    InfoColourBar,
     ClearIndicator,
     multiSelectStyles,
     MultiValueRemove,
@@ -36,9 +33,11 @@ import {
     ReactSelectInputAction,
     StyledRadioGroup as RadioGroup,
     InfoIconTippy,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { DOCUMENTATION } from '../../config'
+import { Link } from 'react-router-dom'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -107,28 +106,28 @@ const ManageRegistry = ({
     }
 
     const renderActionButton = (): JSX.Element => {
-        return <Close className="cursor icon-dim-16" onClick={onClickHideAlertInfo} />
+        return <Close className="cursor icon-dim-16 flex" onClick={onClickHideAlertInfo} />
     }
 
     const renderAlertMessage = (): JSX.Element => {
         return (
-            <>
-                If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
-                <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
-                    Confirm to edit
-                </span>
-            </>
+            <div className="flexbox dc__content-space center">
+                <div>
+                    If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
+                    <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
+                        Confirm to edit
+                    </span>
+                </div>
+                {renderActionButton()}
+            </div>
         )
     }
 
     const renderEditAlert = (): JSX.Element => {
         return (
-            <InfoColourBar
-                classname="warn"
-                Icon={Warn}
-                message={renderAlertMessage()}
-                iconClass="warning-icon"
-                renderActionButton={renderActionButton}
+            <InfoBlock
+                variant="warning"
+                description={renderAlertMessage()}
             />
         )
     }
@@ -321,13 +320,13 @@ const ManageRegistry = ({
 
     const renderImagepullSecretMessage = () => {
         return (
-            <>
+            <div className="flex left">
                 Use the&nbsp;
-                <a className="dc__link" href={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET} target="_blank" rel="noreferrer">
+                <Link to={DOCUMENTATION.SPECIFY_IMAGE_PULL_SECRET} target="_blank" className="anchor">
                     image pull secret name created via CLI
-                </a>
+                </Link>
                 . The secret must be present in the namespaces you're deploying to.
-            </>
+            </div>
         )
     }
 
@@ -393,22 +392,11 @@ const ManageRegistry = ({
                     </RadioGroup>
                 </div>
                 {credentialsType === CredentialType.SAME_AS_REGISTRY && (
-                    <InfoColourBar
-                        message="Clusters will be auto-injected with the provided registry credentials."
-                        classname="info_bar"
-                        Icon={InfoIcon}
-                        iconClass="icon-dim-20"
-                        renderActionButton={renderActionButton}
-                    />
+                    <InfoBlock description="Clusters will be auto-injected with the provided registry credentials." />
                 )}
                 {credentialsType === CredentialType.NAME && (
                     <>
-                        <InfoColourBar
-                            message={renderImagepullSecretMessage()}
-                            classname="info_bar"
-                            Icon={InfoIcon}
-                            iconClass="icon-dim-20"
-                        />
+                        <InfoBlock description={renderImagepullSecretMessage()} />
                         <div className="mt-8">
                             <CustomInput
                                 placeholder="Enter image pull secret separated by comma"

@@ -15,6 +15,7 @@
  */
 
 import { getGitProviderIcon } from '@Components/common'
+
 import { MaterialOptionType } from './types'
 
 export const getGitRepositoryOptions = (sourceMaterials: MaterialOptionType[]) =>

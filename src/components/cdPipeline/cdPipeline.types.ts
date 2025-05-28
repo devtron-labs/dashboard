@@ -15,16 +15,17 @@
  */
 
 import { SyntheticEvent } from 'react'
+
 import {
+    CDFormType,
     DeploymentAppTypes,
     DeploymentStrategy,
     Environment,
-    TriggerType,
-    SavedDeploymentStrategy,
-    VariableType,
     NodeStatusDTO,
-    CDFormType,
+    SavedDeploymentStrategy,
     SelectPickerOptionType,
+    TriggerType,
+    VariableType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export const CD_PATCH_ACTION = {

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { useState } from 'react'
+import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 
 import { ComponentSizeType, SegmentedControl, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
-import { action } from '@storybook/addon-actions'
-import { useState } from 'react'
 
 const SEGMENTED_CONTROL_SIZE_MAP: Record<SegmentedControlProps['size'], null> = {
     xs: null,

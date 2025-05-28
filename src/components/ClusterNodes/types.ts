@@ -15,19 +15,23 @@
  */
 
 import {
-    ResponseType,
-    K8sResourceDetailDataType,
-    ResourceDetail,
+    APIOptions,
     ClusterCapacityType,
     ClusterDetail,
-    NodeTaintType,
+    K8sResourceDetailDataType,
     NodeActionRequest,
+    NodeTaintType,
+    OptionType,
+    ResourceDetail,
+    ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { UpdateTabUrlParamsType, UseTabsReturnType } from '@Components/common/DynamicTabs/types'
-import { LabelTag, OptionType } from '../app/types'
-import { CLUSTER_PAGE_TAB } from './constants'
-import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+
+import { LabelTag } from '../app/types'
 import { ClusterOptionType, K8SResourceListType, ResourceBrowserActionMenuType } from '../ResourceBrowser/Types'
+import { EditModeType } from '../v2/appDetails/k8Resource/nodeDetail/NodeDetailTabs/terminal/constants'
+import { CLUSTER_PAGE_TAB } from './constants'
 
 export enum ERROR_TYPE {
     VERSION_ERROR = 'K8s Version diff',
@@ -214,7 +218,7 @@ export interface ClusterImageList {
     imageList: ImageList[]
 }
 
-export interface ClusterEventsType {
+export interface ClusterEventsType extends Pick<ClusterTerminalType, 'clusterId'> {
     terminalAccessId: number
     reconnectStart?: () => void
 }
@@ -290,4 +294,10 @@ export interface ClusterOverviewProps {
 
 export interface ClusterMapInitialStatusType {
     errorInNodeListing: string
+}
+
+export interface GetClusterOverviewDetailsProps {
+    clusterId: string
+    requestAbortControllerRef: APIOptions['abortControllerRef']
+    fetchClusterConfig: (clusterName: string) => Promise<void>
 }

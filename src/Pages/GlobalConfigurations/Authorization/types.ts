@@ -15,25 +15,27 @@
  */
 
 import { ReactNode } from 'react'
+
 import {
-    UserStatusDto,
-    UserListFilterParams,
-    BaseFilterQueryParams,
-    OptionType,
-    UserStatus,
-    UserRoleGroup,
-    UserGroupType,
-    UserGroupDTO,
     ACCESS_TYPE_MAP,
-    EntityTypes,
-    CustomRoleAndMeta,
-    ResourceKindType,
-    K8sResourceListPayloadType,
-    UserRoleConfig,
-    APIOptions,
     ActionTypes,
+    APIOptions,
+    BaseFilterQueryParams,
+    CustomRoleAndMeta,
+    DeleteConfirmationModalProps,
+    EntityTypes,
+    K8sResourceListPayloadType,
+    OptionType,
+    ResourceKindType,
+    UserGroupDTO,
+    UserGroupType,
+    UserListFilterParams,
+    UserRoleConfig,
+    UserRoleGroup,
+    UserStatus,
+    UserStatusDto,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeleteConfirmationModalProps } from '@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/ConfirmationModal/types'
+
 import { SERVER_MODE } from '../../../config'
 import { PermissionType, UserRoleType } from './constants'
 
@@ -253,6 +255,7 @@ export type PermissionGroupBulkDeletePayload =
 export interface AuthorizationContextProps {
     customRoles: CustomRoleAndMeta
     isAutoAssignFlowEnabled: boolean
+    authorizationContainerRef: React.RefObject<HTMLDivElement>
 }
 
 export interface AuthorizationProviderProps {

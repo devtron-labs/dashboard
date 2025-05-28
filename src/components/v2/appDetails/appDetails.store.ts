@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { URLS } from '@Config/routes'
 import { InitTabType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/routes'
 
 export const AppDetailsTabs = {
     k8s_Resources: 'K8s Resources',

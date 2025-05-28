@@ -16,28 +16,34 @@
 
 import { useEffect, useState } from 'react'
 import { useParams, useRouteMatch } from 'react-router-dom'
+
 import { showError } from '@devtron-labs/devtron-fe-common-lib'
-import IndexStore from '../../../index.store'
-import { NodeDetailTab } from '../nodeDetail.type'
-import { getEvent } from '../nodeDetail.api'
-import { ResourceInfoActionPropsType } from '../../../appDetails.type'
-import MessageUI from '../../../../common/message.ui'
-import { EventsTable } from './EventsTable'
+
 import { MESSAGING_UI } from '../../../../../../config/constants'
+import MessageUI from '../../../../common/message.ui'
+import { ResourceInfoActionPropsType } from '../../../appDetails.type'
+import IndexStore from '../../../index.store'
+import { getEvent } from '../nodeDetail.api'
+import { NodeDetailTab } from '../nodeDetail.type'
+import { EventsTable } from './EventsTable'
 
 const EventsComponent = ({
     selectedTab,
     isDeleted,
     isResourceBrowserView,
     selectedResource,
+    clusterId,
+    aiWidgetEventDetails,
 }: ResourceInfoActionPropsType) => {
     const params = useParams<{
         actionName: string
         podName: string
         nodeType: string
-        node: string
+        name: string
         namespace: string
+        kind?: string
     }>()
+    params.nodeType = params.kind ?? params.nodeType
     const { url } = useRouteMatch()
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
@@ -45,7 +51,7 @@ const EventsComponent = ({
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS, url)
-    }, [params.podName, params.node, params.namespace])
+    }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (isDeleted) {
@@ -79,7 +85,7 @@ const EventsComponent = ({
             setEvents([])
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType, params.namespace])
+    }, [params.podName, params.name, params.nodeType, params.namespace])
 
     const renderContent = () => {
         if (isDeleted) {
@@ -87,7 +93,14 @@ const EventsComponent = ({
         }
 
         if (events.length) {
-            return <EventsTable loading={loading} eventsList={events} isResourceBrowserView={isResourceBrowserView} />
+            return (
+                <EventsTable
+                    loading={loading}
+                    eventsList={events}
+                    clusterId={clusterId}
+                    aiWidgetAnalyticsEvent={aiWidgetEventDetails}
+                />
+            )
         }
 
         return <MessageUI msg={MESSAGING_UI.NO_EVENTS} size={24} />

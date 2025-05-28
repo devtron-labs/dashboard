@@ -15,23 +15,26 @@
  */
 
 import { useRef, useState } from 'react'
+
 import {
+    ButtonWithLoader,
     CustomInput,
     noop,
     showError,
-    VisibleModal,
-    ButtonWithLoader,
-    ToastVariantType,
-    ToastManager,
     Textarea,
+    ToastManager,
+    ToastVariantType,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-filled.svg'
 import errorImage from '@Images/ic_upload_chart_error.png'
 import { DOCUMENTATION, SERVER_ERROR_CODES } from '@Config/constants'
-import { uploadChart, validateChart } from './service'
-import { ChartUploadResponse, ChartUploadType, UploadChartModalType, UPLOAD_STATE } from '../types'
+
 import uploadingImage from '../../../../assets/gif/uploading.gif'
+import { ChartUploadResponse, ChartUploadType, UPLOAD_STATE, UploadChartModalType } from '../types'
+import { uploadChart, validateChart } from './service'
 
 const UploadChartModal = ({ closeUploadPopup }: UploadChartModalType) => {
     const inputFileRef = useRef(null)

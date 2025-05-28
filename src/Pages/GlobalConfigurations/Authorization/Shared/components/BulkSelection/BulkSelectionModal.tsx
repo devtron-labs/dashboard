@@ -15,10 +15,11 @@
  */
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
-import BulkSelectionClearConfirmationModal from './BulkSelectionClearConfirmationModal'
+
 import BulkDeleteModal from './BulkDeleteModal'
-import { BulkSelectionModalProps } from './types'
+import BulkSelectionClearConfirmationModal from './BulkSelectionClearConfirmationModal'
 import { BulkSelectionModalTypes } from './constants'
+import { BulkSelectionModalProps } from './types'
 
 const BulkSelectionModal = ({
     type,

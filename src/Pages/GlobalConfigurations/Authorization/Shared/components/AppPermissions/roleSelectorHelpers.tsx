@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { noop, RadioGroup, Tooltip, UserRoleConfig } from '@devtron-labs/devtron-fe-common-lib'
-import { importComponentFromFELibrary } from '@Components/common'
 import { components } from 'react-select'
+
+import { noop, RadioGroup, Tooltip, UserRoleConfig } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
+
+import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 import {
     RoleSelectorGroupHeaderProps,
     RoleSelectorGroupHeadingParams,
     RoleSelectorGroupParams,
     RoleSelectorOptionParams,
 } from './types'
-import { ACCESS_ROLE_OPTIONS_CONTAINER_ID } from './constants'
 
 const ToggleEnableRole = importComponentFromFELibrary('ToggleEnableRole', null, 'function')
 

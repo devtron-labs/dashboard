@@ -15,21 +15,23 @@
  */
 
 import type { Meta, StoryObj } from '@storybook/react'
+
 import {
+    ButtonVariantType,
     ComponentSizeType,
     InfoBlock,
     InfoBlockProps,
+    InfoBlockVariant,
     noop,
-    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const componentVariantMap: Record<InfoBlockProps['variant'], null> = {
-    error: null,
-    help: null,
-    information: null,
-    success: null,
-    warning: null,
-    neutral: null,
+    [InfoBlockVariant.ERROR]: null,
+    [InfoBlockVariant.HELP]: null,
+    [InfoBlockVariant.INFORMATION]: null,
+    [InfoBlockVariant.SUCCESS]: null,
+    [InfoBlockVariant.WARNING]: null,
+    [InfoBlockVariant.NEUTRAL]: null,
 }
 
 const layoutMap: Record<InfoBlockProps['layout'], null> = {
@@ -50,7 +52,7 @@ const DEFAULT_TITLE = 'Title'
 const DEFAULT_DESCRIPTION = 'Description'
 const INFO_BLOCK_TEMPLATE: Story = {
     args: {
-        variant: 'information',
+        variant: InfoBlockVariant.INFORMATION,
         heading: DEFAULT_TITLE,
         description: DEFAULT_DESCRIPTION,
         size: ComponentSizeType.large,

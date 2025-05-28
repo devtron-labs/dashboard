@@ -16,11 +16,14 @@
 
 import { FunctionComponent } from 'react'
 import Tippy from '@tippyjs/react'
+
 import { SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { getGitProviderIcon } from '@Components/common'
+
+import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 import { CREATE_DOCKER_FILE_LANGUAGE_OPTIONS_TEXT } from './ciConfigConstant'
 import { CreateDockerFileLanguageOptionsProps, ResetEditorChangesProps } from './types'
-import { ReactComponent as Reset } from '../../assets/icons/ic-arrow-anticlockwise.svg'
 
 const Title: FunctionComponent = () => (
     <Tippy

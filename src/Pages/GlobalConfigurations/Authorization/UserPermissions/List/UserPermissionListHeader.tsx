@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
+import { useRouteMatch } from 'react-router-dom'
+
 import {
-    SearchBar,
-    InfoIconTippy,
-    useMainContext,
     Button,
     ButtonComponentType,
     ComponentSizeType,
+    InfoIconTippy,
+    SearchBar,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useRouteMatch } from 'react-router-dom'
-import { DOCUMENTATION } from '../../../../../config'
+
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
-
-import { UserPermissionListHeaderProps } from './types'
-import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
 import { importComponentFromFELibrary } from '../../../../../components/common'
+import { DOCUMENTATION } from '../../../../../config'
+import ExportUserPermissionsToCsv from './ExportUserPermissionsToCsv'
+import { UserPermissionListHeaderProps } from './types'
 
 const StatusFilterDropdown = importComponentFromFELibrary('StatusFilterDropdown', null, 'function')
 
@@ -46,7 +47,7 @@ const UserPermissionListHeader = ({
     const { isSuperAdmin } = useMainContext()
 
     return (
-        <div className="flex dc__content-space px-20 dc__zi-2">
+        <div className="flex dc__content-space px-20 dc__zi-2 pt-16">
             <div className="flex dc__gap-8">
                 <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">User Permissions</h2>
                 <InfoIconTippy

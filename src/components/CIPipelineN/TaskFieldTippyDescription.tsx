@@ -15,6 +15,7 @@
  */
 
 import Tippy from '@tippyjs/react'
+
 import { TaskFieldLabel } from '../ciPipeline/types'
 
 interface TippyDescriptionType {

@@ -18,17 +18,15 @@ import React, { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { SourceTypeMap, URLS } from '../../config'
 import git from '../../assets/icons/git/git.svg'
-import { ReactComponent as Info } from '../../assets/icons/ic-info-outline-purple.svg'
 import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
 import {
     CustomInput,
-    InfoColourBar,
     ConditionalWrap,
     SelectPicker,
     ComponentSizeType,
     SelectPickerProps,
+    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 
@@ -255,11 +253,7 @@ export const SourceMaterials: React.FC<SourceMaterialsProps> = (props) => {
                         </div>
                         {isBranchRegex && (
                             <div className={`${errorObj && !errorObj.isValid ? 'mt-16' : ''}`}>
-                                <InfoColourBar
-                                    message="Branch Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline."
-                                    classname="info_bar"
-                                    Icon={InfoIcon}
-                                />
+                                <InfoBlock description="Branch Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline." />
                             </div>
                         )}
 

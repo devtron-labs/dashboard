@@ -16,12 +16,15 @@
 
 import { useEffect } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
+
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
+
 import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
+
 import NodeDetailComponent from './k8Resource/nodeDetail/NodeDetail.component'
 import { ParamsType } from './k8Resource/nodeDetail/nodeDetail.type'
-import { NodeDetailComponentWrapperProps } from './appDetails.type'
 import { AppDetailsTabs } from './appDetails.store'
+import { NodeDetailComponentWrapperProps } from './appDetails.type'
 
 const NodeDetailComponentWrapper = ({
     markTabActiveById,

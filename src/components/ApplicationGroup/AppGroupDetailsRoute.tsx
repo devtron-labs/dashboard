@@ -40,6 +40,8 @@ import {
     ToastVariantType,
     URLS as CommonURLS,
     DeleteConfirmationModal,
+    useMainContext,
+    OptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -57,7 +59,7 @@ import EnvironmentOverview from './Details/EnvironmentOverview/EnvironmentOvervi
 import { EnvSelector } from './EnvSelector'
 import EmptyFolder from '../../assets/img/empty-folder.webp'
 import { AppFilterTabs, EMPTY_LIST_MESSAGING, ENV_APP_GROUP_GA_EVENTS, NO_ACCESS_TOAST_MESSAGE } from './Constants'
-import { ReactComponent as Settings } from '../../assets/icons/ic-settings.svg'
+import { ReactComponent as ICSlidersVertical } from '@Icons/ic-sliders-vertical.svg'
 import {
     deleteEnvGroup,
     getAppGroupList,
@@ -77,13 +79,14 @@ import {
     FilterParentType,
     GroupOptionType,
 } from './AppGroup.types'
-import { EditDescRequest, OptionType } from '../app/types'
+import { EditDescRequest } from '../app/types'
 import AppGroupAppFilter from './AppGroupAppFilter'
 import EnvCIDetails from './Details/EnvCIDetails/EnvCIDetails'
 import EnvCDDetails from './Details/EnvCDDetails/EnvCDDetails'
 import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
 import CreateAppGroup from './CreateAppGroup'
+import AppDetail from '@Components/app/details/appDetails/AppDetails'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -97,6 +100,7 @@ export function useAppGroupAppFilterContext() {
 
 export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType) {
     const { path } = useRouteMatch()
+    const { setIntelligenceConfig } = useMainContext()
     const { envId } = useParams<{ envId: string }>()
     const [envName, setEnvName] = useState<string>('')
     const [showEmpty, setShowEmpty] = useState<boolean>(false)
@@ -159,6 +163,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             setAppListOptions([])
             setAppGroupListData(null)
             setDescription('')
+            setIntelligenceConfig(null)
         }
     }, [envId])
 
@@ -422,9 +427,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
             <ErrorBoundary>
                 <Suspense fallback={<Progressing pageLoader />}>
                     <Switch>
-                        <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                            <div>Env detail</div>
-                        </Route>
                         <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
                             <EnvironmentOverview
                                 filteredAppIds={_filteredAppsIds}
@@ -434,6 +436,9 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                                 handleSaveDescription={handleSaveDescription}
                                 description={description}
                             />
+                        </Route>
+                        <Route path={`${path}${URLS.DETAILS}/:appId(\\d+)?`}>
+                            <AppDetail detailsType="app-group" filteredResourceIds={_filteredAppsIds} />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
@@ -631,6 +636,16 @@ export const EnvHeader = ({
                 },
             },
             {
+                id: 'env-app-details-tab',
+                label: 'App Details',
+                tabType: 'navLink',
+                props: {
+                    to: `${match.url}${URLS.DETAILS}`,
+                    onClick: (event) =>
+                        handleEventRegistration(event, ENV_APP_GROUP_GA_EVENTS.EnvDetailsClicked.action),
+                },
+            },
+            {
                 id: 'build-&-deploy-tab',
                 label: 'Build & Deploy',
                 tabType: 'navLink',
@@ -664,7 +679,7 @@ export const EnvHeader = ({
                 id: 'group-configurations-tab',
                 label: 'Configurations',
                 tabType: 'navLink',
-                icon: Settings,
+                icon: ICSlidersVertical,
                 props: {
                     to: `${match.url}/${CommonURLS.APP_CONFIG}`,
                     onClick: (event) =>
@@ -674,7 +689,7 @@ export const EnvHeader = ({
             },
         ]
 
-        return <TabGroup tabs={tabs} hideTopPadding alignActiveBorderWithContainer />
+        return <TabGroup tabs={tabs} hideTopPadding />
     }
 
     const renderBreadcrumbs = () => {

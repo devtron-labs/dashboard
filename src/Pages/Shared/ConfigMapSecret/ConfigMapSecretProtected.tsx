@@ -19,29 +19,28 @@ import YAML from 'yaml'
 
 import {
     applyCompareDiffOnUneditedDocument,
+    CM_SECRET_STATE,
+    CMSecretConfigData,
     CompareFromApprovalOptionsValuesType,
+    ConfigMapSecretReadyOnly,
     DraftAction,
     DraftState,
-    noop,
+    getConfigMapSecretPayload,
+    getConfigMapSecretReadOnlyValues,
+    isNullOrUndefined,
     OverrideMergeStrategyType,
     Progressing,
     ProtectConfigTabsType,
     SelectPickerOptionType,
-    CM_SECRET_STATE,
-    CMSecretConfigData,
-    getConfigMapSecretPayload,
-    getConfigMapSecretReadOnlyValues,
-    ConfigMapSecretReadyOnly,
-    isNullOrUndefined,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { importComponentFromFELibrary } from '@Components/common'
-
+import { CompareConfigView, CompareConfigViewProps, NoPublishedVersionEmptyState } from '@Pages/Applications'
 import { DEFAULT_MERGE_STRATEGY } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/constants'
-import { ConfigMapSecretProtectedProps } from './types'
+
 import { ConfigMapSecretForm } from './ConfigMapSecretForm'
 import { ConfigMapSecretNullState } from './ConfigMapSecretNullState'
+import { ConfigMapSecretProtectedProps } from './types'
 
 const ConfigMapSecretApproveButton = importComponentFromFELibrary('ConfigMapSecretApproveButton', null, 'function')
 
@@ -60,9 +59,14 @@ export const ConfigMapSecretProtected = ({
     inheritedConfigMapSecretData,
     areScopeVariablesResolving,
     onSubmit,
+    onCancel,
     updateCMSecret,
     shouldMergeTemplateWithPatches,
     useFormProps,
+    isExpressEditView,
+    isExpressEditComparisonView,
+    handleMergeStrategyChange,
+    handleNoPublishedStateRedirectClick,
 }: ConfigMapSecretProtectedProps) => {
     // HOOKS
     const { data: formData } = useFormProps
@@ -228,6 +232,8 @@ export const ConfigMapSecretProtected = ({
         <ConfigMapSecretForm
             configMapSecretData={configMapSecretData}
             inheritedConfigMapSecretData={inheritedConfigMapSecretData}
+            publishedConfigMapSecretData={publishedConfigMapSecretData}
+            draftData={draftData}
             isCreateView={isNullOrUndefined(id)}
             componentType={componentType}
             cmSecretStateLabel={
@@ -241,11 +247,14 @@ export const ConfigMapSecretProtected = ({
             appChartRef={appChartRef}
             isApprovalPolicyConfigured
             isDraft
+            isExpressEditView={isExpressEditView}
+            isExpressEditComparisonView={isExpressEditComparisonView}
             disableDataTypeChange={disableDataTypeChange}
             isSubmitting={false}
-            onCancel={noop}
+            onCancel={onCancel}
             onSubmit={onSubmit}
             areScopeVariablesResolving={areScopeVariablesResolving}
+            handleMergeStrategyChange={handleMergeStrategyChange}
             useFormProps={useFormProps}
         />
     )
@@ -280,7 +289,13 @@ export const ConfigMapSecretProtected = ({
         switch (selectedProtectionViewTab) {
             case ProtectConfigTabsType.PUBLISHED:
                 if (cmSecretStateLabel === CM_SECRET_STATE.UNPUBLISHED || !publishedConfigMapSecretData) {
-                    return <NoPublishedVersionEmptyState isOverride={false} />
+                    return (
+                        <NoPublishedVersionEmptyState
+                            isOverride={false}
+                            showRedirectButton
+                            onRedirectClick={handleNoPublishedStateRedirectClick}
+                        />
+                    )
                 }
 
                 if (cmSecretStateLabel === CM_SECRET_STATE.INHERITED) {

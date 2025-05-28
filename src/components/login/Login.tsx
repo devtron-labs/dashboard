@@ -15,32 +15,38 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Switch, Redirect, Route, useLocation, useHistory } from 'react-router-dom'
+import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+
 import {
+    AnimatePresence,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     getCookie,
     Host,
-    URLS as CommonURL,
-    ToastVariantType,
-    ToastManager,
-    Button,
-    ComponentSizeType,
-    ButtonComponentType,
-    ButtonVariantType,
-    ButtonStyleType,
-    useSearchString,
-    useAsync,
-    SSOProviderIcon,
     Icon,
     LoginBanner,
+    MotionDiv,
+    SSOProviderIcon,
+    ToastManager,
+    ToastVariantType,
+    URLS as CommonURL,
+    useAsync,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS, TOKEN_COOKIE_NAME } from '../../config'
-import { dashboardAccessed } from '../../services/service'
-import './login.scss'
+
+import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
+import { dashboardAccessed } from '../../services/service'
+import { LOGIN_CARD_ANIMATION_VARIANTS, SSOProvider } from './constants'
 import { SSOConfigLoginList } from './login.types'
-import { SSOProvider } from './constants'
 import { LoginForm } from './LoginForm'
+
+import './login.scss'
 
 const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
@@ -121,10 +127,22 @@ const Login = () => {
 
     const renderSSOLoginPage = () => (
         <div className="flexbox-col dc__gap-12 p-36">
+            {initLoading && !loginList.length && (
+                <Button
+                    variant={ButtonVariantType.secondary}
+                    text="Checking SSO"
+                    dataTestId="checking-sso"
+                    style={ButtonStyleType.neutral}
+                    startIcon={<Icon name="ic-circle-loader" color={null} />}
+                    fullWidth
+                    size={ComponentSizeType.xl}
+                    disabled
+                />
+            )}
             {loginList
                 .filter((sso) => sso.active)
                 .map((item) => (
-                    <div className="login-button" key={item.name}>
+                    <div key={item.name}>
                         <Button
                             variant={ButtonVariantType.secondary}
                             text={`Login with ${item.name}`}
@@ -167,7 +185,7 @@ const Login = () => {
     )
 
     const renderLoginContent = () => (
-        <Switch>
+        <Switch location={location}>
             <Route path={URLS.LOGIN_SSO} component={renderSSOLoginPage} />
             <Route path={URLS.LOGIN_ADMIN} component={renderAdminLoginPage} />
             <Redirect to={URLS.LOGIN_SSO} />
@@ -175,15 +193,36 @@ const Login = () => {
     )
 
     return (
-        <div className="full-height-width login dc__grid-half bg__secondary">
+        <div className="full-height-width dc__grid-half bg__secondary">
             <div className="flexbox p-12">
-                <LoginBanner />
+                {window._env_.LOGIN_PAGE_IMAGE ? (
+                    <div
+                        style={{
+                            backgroundImage: `url(${window._env_.LOGIN_PAGE_IMAGE})`,
+                        }}
+                        className="login-image-container flex br-12 border__primary bg__primary h-100 w-100"
+                    />
+                ) : (
+                    <LoginBanner />
+                )}
             </div>
             <div className="flex">
-                <div className="login-card__wrapper dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
+                <div className="shadow__overlay dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
-                        {renderLoginContent()}
+                        <AnimatePresence>
+                            <MotionDiv
+                                key={location.pathname}
+                                variants={LOGIN_CARD_ANIMATION_VARIANTS}
+                                initial="initial"
+                                animate="animate"
+                                exit="exit"
+                                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                                className="dc__overflow-hidden"
+                            >
+                                {renderLoginContent()}
+                            </MotionDiv>
+                        </AnimatePresence>
                     </div>
                     {getTermsAndConditions && getTermsAndConditions()}
                 </div>

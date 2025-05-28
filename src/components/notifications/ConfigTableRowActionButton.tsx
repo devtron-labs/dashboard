@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { Trash } from '@Components/common'
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
+import { Trash } from '@Components/common'
+
 import { ConfigTableRowActionButtonProps } from './types'
 
 export const ConfigTableRowActionButton = ({

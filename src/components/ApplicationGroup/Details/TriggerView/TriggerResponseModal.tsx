@@ -15,6 +15,7 @@
  */
 
 import React from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -22,6 +23,7 @@ import {
     Progressing,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as RetryIcon } from '../../../../assets/icons/ic-arrow-clockwise.svg'
 import { TriggerResponseModalBodyProps, TriggerResponseModalFooterProps } from '../../AppGroup.types'
 import { BulkResponseStatus } from '../../Constants'
@@ -31,7 +33,9 @@ export const TriggerResponseModalFooter = ({
     closePopup,
     isLoading,
     responseList,
+    skipHibernatedApps,
     onClickRetryBuild,
+    onClickRetryDeploy,
 }: TriggerResponseModalFooterProps) => {
     const isShowRetryButton = responseList?.some((response) => response.status === BulkResponseStatus.FAIL)
 
@@ -43,7 +47,12 @@ export const TriggerResponseModalFooter = ({
                 appsToRetry[response.appId] = true
             }
         })
-        onClickRetryBuild(appsToRetry)
+
+        if (onClickRetryBuild) {
+            onClickRetryBuild(appsToRetry)
+        } else {
+            onClickRetryDeploy(skipHibernatedApps, appsToRetry)
+        }
     }
 
     return (
@@ -68,12 +77,7 @@ export const TriggerResponseModalFooter = ({
     )
 }
 
-const TriggerResponseModalBody = ({
-    responseList,
-    isLoading,
-    isVirtualEnv,
-    envName,
-}: TriggerResponseModalBodyProps) => {
+const TriggerResponseModalBody = ({ responseList, isLoading, isVirtualEnv }: TriggerResponseModalBodyProps) => {
     if (isLoading) {
         return <Progressing pageLoader />
     }
@@ -95,7 +99,6 @@ const TriggerResponseModalBody = ({
                         rowData={response}
                         index={index}
                         isVirtualEnv={isVirtualEnv}
-                        envName={envName}
                     />
                 ))}
         </div>

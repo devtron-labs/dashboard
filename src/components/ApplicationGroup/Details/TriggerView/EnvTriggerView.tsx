@@ -55,6 +55,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED, URLS, ViewType } from '../../../../config'
@@ -109,6 +110,7 @@ import {
     BulkCIDetailType,
     ProcessWorkFlowStatusType,
     ResponseRowType,
+    TriggerVirtualEnvResponseRowType,
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
@@ -125,6 +127,8 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import CIMaterialModal from '../../../app/details/triggerView/CIMaterialModal'
 import { RenderCDMaterialContentProps } from './types'
 import { WebhookReceivedPayloadModal } from '@Components/app/details/triggerView/WebhookReceivedPayloadModal'
+import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
+import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
@@ -145,6 +149,7 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     'function',
 )
 const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
+const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 
 // FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
@@ -192,6 +197,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
     const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
+    const [selectedWebhookNode, setSelectedWebhookNode] = useState<{ appId: number; id: number }>(null)
 
     const selectedWorkflows = filteredWorkflows.filter((wf) => wf.isSelected)
 
@@ -917,7 +923,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const nodes = workflow.nodes.map((node) => {
                 if (cdNodeId == node.id && node.type === nodeType) {
                     // TODO: Ig not using this, can remove it
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    if (node.type === WorkflowNodeType.CD) {
+                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
+                    }
                     _selectedNode = node
                     _workflowId = workflow.id
                     _appID = workflow.appId
@@ -1398,6 +1406,8 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 }
                 wf.appReleaseTags = _materialData?.appReleaseTagNames
                 wf.tagsEditable = _materialData?.tagsEditable
+                wf.canApproverDeploy = _materialData?.canApproverDeploy ?? false
+                wf.isExceptionUser = _materialData?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
             }
 
             return wf
@@ -1429,7 +1439,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         return true
     }
 
-    const onClickTriggerBulkCD = (appsToRetry?: Record<string, boolean>) => {
+    const onClickTriggerBulkCD = (skipIfHibernated: boolean, appsToRetry?: Record<string, boolean>) => {
         if (isCDLoading || !validateBulkRuntimeParams()) {
             return
         }
@@ -1482,6 +1492,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                         ...(getRuntimeParamsPayload
                             ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
                             : {}),
+                        skipIfHibernated,
                     }),
                 )
             } else {
@@ -1534,6 +1545,18 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.PASS],
                             BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
                         )
+
+                        const virtualEnvResponseRowType: TriggerVirtualEnvResponseRowType =
+                            [DeploymentNodeType.CD, DeploymentNodeType.POSTCD, DeploymentNodeType.PRECD].includes(
+                                bulkTriggerType,
+                            ) && isVirtualEnv
+                                ? {
+                                      isVirtual: true,
+                                      helmPackageName: response.value?.result?.helmPackageName,
+                                      cdWorkflowType: bulkTriggerType,
+                                  }
+                                : {}
+
                         _responseList.push({
                             appId: triggeredAppList[index].appId,
                             appName: triggeredAppList[index].appName,
@@ -1541,22 +1564,23 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             status: BulkResponseStatus.PASS,
                             envId: triggeredAppList[index].envId,
                             message: '',
+                            ...virtualEnvResponseRowType,
                         })
                     } else {
                         const errorReason = response.reason
-                        if (errorReason.code === 409) {
+                        if (errorReason.code === API_STATUS_CODES.EXPECTATION_FAILED) {
                             const statusType = filterStatusType(
                                 type,
-                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
-                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL],
-                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
+                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP],
+                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.SKIP],
+                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP],
                             )
                             _responseList.push({
                                 appId: triggeredAppList[index].appId,
                                 appName: triggeredAppList[index].appName,
                                 statusText: statusType,
-                                status: BulkResponseStatus.FAIL,
-                                message: errorReason.errors[0].internalMessage,
+                                status: BulkResponseStatus.SKIP,
+                                message: errorReason.errors[0].userMessage,
                             })
                         } else if (errorReason.code === 403 || errorReason.code === 422) {
                             // Adding 422 to handle the unauthorized state due to deployment window
@@ -1790,6 +1814,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                                 ? `${stageText} is blocked`
                                 : '',
                         triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
+                        isExceptionUser: wf.isExceptionUser,
                     })
                 } else {
                     let warningMessage = ''
@@ -1941,7 +1966,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
     if (!filteredWorkflows.length) {
         return (
-            <div className='flex-grow-1'>
+            <div className="flex-grow-1">
                 <AppNotConfigured />
             </div>
         )
@@ -2099,7 +2124,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         )
     }
 
-    const renderBulkSourchChange = (): JSX.Element | null => {
+    const renderBulkSourceChange = (): JSX.Element | null => {
         if (!showBulkSourceChangeModal) {
             return null
         }
@@ -2381,6 +2406,31 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         history.push(match.url)
     }
 
+    const getWebhookDetails = () => getExternalCIConfig(selectedWebhookNode.appId, selectedWebhookNode.id, false)
+
+    const handleWebhookAddImageClick = (appId: number) => (id: number) => {
+        setSelectedWebhookNode({ appId, id })
+    }
+
+    const handleWebhookAddImageModalClose = () => {
+        setSelectedWebhookNode(null)
+    }
+
+    const renderWebhookAddImageModal = () => {
+        if (
+            WebhookAddImageModal &&
+            shouldRenderWebhookAddImageModal(location) &&
+            !location.pathname.includes('bulk-deploy/request') &&
+            selectedWebhookNode
+        ) {
+            return (
+                <WebhookAddImageModal getWebhookDetails={getWebhookDetails} onClose={handleWebhookAddImageModalClose} />
+            )
+        }
+
+        return null
+    }
+
     const renderWorkflow = (): JSX.Element => {
         return (
             <>
@@ -2403,10 +2453,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                             location={location}
                             match={match}
                             index={index}
+                            handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                         />
                     )
                 })}
                 <LinkedCIDetail workflows={filteredWorkflows} handleClose={handleModalClose} />
+                {renderWebhookAddImageModal()}
             </>
         )
     }
@@ -2452,12 +2504,12 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     {renderBulkCDMaterial()}
                     {renderBulkCIMaterial()}
                     {renderApprovalMaterial()}
-                    {renderBulkSourchChange()}
+                    {renderBulkSourceChange()}
                 </TriggerViewContext.Provider>
                 <div />
             </div>
             {!!selectedAppList.length && (
-                <div className="flexbox dc__gap-8 dc__content-space dc__border-top w-100 bg__primary pt-12 pr-20 pb-12 pl-20">
+                <div className="flexbox dc__gap-8 dc__content-space dc__border-top w-100 bg__primary px-20 py-12">
                     {renderSelectedApps()}
                     {renderBulkTriggerActionButtons()}
                 </div>

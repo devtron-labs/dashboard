@@ -36,13 +36,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICChoicesDropdown } from '@Icons/ic-choices-dropdown.svg'
+import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import { ReactComponent as ICInfoOutlineGrey } from '@Icons/ic-info-outline-grey.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { FILE_UPLOAD_SIZE_UNIT_OPTIONS, FORMAT_OPTIONS_MAP } from './constants'
+import { ConfigOverlayProps, VariableDataTableActionType } from './types'
 import { VariableDataTablePopupMenu } from './VariableDataTablePopupMenu'
 
 const AskValueAtRuntimeCheckbox = importComponentFromFELibrary('AskValueAtRuntimeCheckbox', null, 'function')

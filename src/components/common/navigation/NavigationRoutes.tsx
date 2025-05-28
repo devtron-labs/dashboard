@@ -35,12 +35,14 @@ import {
     ViewIsPipelineRBACConfiguredRadioTabs,
     EnvironmentDataValuesDTO,
     UserPreferencesType,
-    getUserPreferences,
     MODES,
     useTheme,
     AppThemeType,
     LicenseInfoDialogType,
     DevtronLicenseInfo,
+    useUserPreferences,
+    AboutDevtronDialog,
+    IntelligenceConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -72,33 +74,20 @@ import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.u
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 
-// Monaco Editor worker dependency
-import 'monaco-editor'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import YamlWorker from '../../../yaml.worker.js?worker'
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
-import { DEFAULT_GIT_OPS_FEATURE_FLAGS } from './constants'
-import { ParsedTabsData, ParsedTabsDataV1 } from '../DynamicTabs/types'
+import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
+import { ParsedTabsData } from '../DynamicTabs/types'
 import { SwitchThemeDialog } from '@Pages/Shared'
 import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
-import { getShowStackManager } from 'src/utils'
-
-// Monaco Editor worker initialization
-self.MonacoEnvironment = {
-    getWorker(_, label) {
-        if (label === MODES.YAML) {
-            return new YamlWorker()
-        }
-        return new editorWorker()
-    },
-}
+import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+import { Banner } from '../Banner/Banner'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
 const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
 const AppDetailsPage = lazy(() => import('../../app/details/main'))
 const NewAppList = lazy(() => import('../../app/list-new/AppList'))
-const V2Details = lazy(() => import('../../v2/index'))
+const DevtronChartRouter = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -125,11 +114,13 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const EnterpriseLicenseBar = importComponentFromFELibrary('EnterpriseLicenseBar', null, 'function')
+const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 
-export default function NavigationRoutes() {
+export default function NavigationRoutes({ reloadVersionConfig }: Readonly<NavigationRoutesTypes> ) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
+    const navRouteRef = useRef<HTMLDivElement>()
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -152,32 +143,28 @@ export default function NavigationRoutes() {
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
-    const [environmentDataState, setEnvironmentDataState] = useState<
-        Pick<
-            MainContext,
-            'isAirgapped' | 'isManifestScanningEnabled' | 'canOnlyViewPermittedEnvOrgLevel' | 'featureGitOpsFlags'
-        >
-    >({
-        isAirgapped: false,
-        isManifestScanningEnabled: false,
-        canOnlyViewPermittedEnvOrgLevel: false,
-        featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-    })
-    const [userPreferences, setUserPreferences] = useState<UserPreferencesType>(null)
-    const [userPreferencesError, setUserPreferencesError] = useState<ServerErrors>(null)
-    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
-    const {
-        showThemeSwitcherDialog,
-        handleThemeSwitcherDialogVisibilityChange,
-        handleThemePreferenceChange,
-        appTheme,
-    } = useTheme()
 
-    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel } = environmentDataState
+    const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
+
+    const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
+    const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
+    const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
+
+    const {
+        userPreferences,
+        userPreferencesError,
+        handleFetchUserPreferences,
+        handleUpdateUserThemePreference,
+        handleUpdatePipelineRBACViewSelectedTab,
+    } = useUserPreferences({ migrateUserPreferences })
+
+    const { isAirgapped, isManifestScanningEnabled, canOnlyViewPermittedEnvOrgLevel, devtronManagedLicensingEnabled } =
+        environmentDataState
 
     const handleCloseLicenseInfoDialog = () => {
         setLicenseInfoDialogType(null)
     }
+
 
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
@@ -337,58 +324,34 @@ export default function NavigationRoutes() {
     }
 
     const getEnvironmentDataValues = async (): Promise<EnvironmentDataValuesDTO> => {
-        const fallbackResponse: EnvironmentDataValuesDTO = {
-            isAirGapEnvironment: false,
-            isManifestScanningEnabled: false,
-            canOnlyViewPermittedEnvOrgLevel: false,
-            featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
-        }
-
         if (!getEnvironmentData) {
-            return fallbackResponse
+            return ENVIRONMENT_DATA_FALLBACK
         }
 
         try {
             const { result } = await getEnvironmentData()
-            const parsedFeatureGitOpsFlags: typeof fallbackResponse.featureGitOpsFlags = {
+            const parsedFeatureGitOpsFlags: typeof ENVIRONMENT_DATA_FALLBACK.featureGitOpsFlags = {
                 isFeatureArgoCdMigrationEnabled: result.featureGitOpsFlags?.isFeatureArgoCdMigrationEnabled || false,
                 isFeatureGitOpsEnabled: result.featureGitOpsFlags?.isFeatureGitOpsEnabled || false,
                 isFeatureUserDefinedGitOpsEnabled:
                     result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
             }
             return {
-                isAirGapEnvironment: result.isAirGapEnvironment,
-                isManifestScanningEnabled: result.isManifestScanningEnabled,
-                canOnlyViewPermittedEnvOrgLevel: result.canOnlyViewPermittedEnvOrgLevel,
+                isAirGapEnvironment: result.isAirGapEnvironment ?? ENVIRONMENT_DATA_FALLBACK['isAirGapEnvironment'],
+                isManifestScanningEnabled:
+                    result.isManifestScanningEnabled ?? ENVIRONMENT_DATA_FALLBACK['isManifestScanningEnabled'],
+                canOnlyViewPermittedEnvOrgLevel:
+                    result.canOnlyViewPermittedEnvOrgLevel ??
+                    ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
+                canFetchHelmAppStatus:
+                    result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
+                devtronManagedLicensingEnabled:
+                    result.devtronManagedLicensingEnabled ??
+                    ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
             }
         } catch {
-            return fallbackResponse
-        }
-    }
-
-    const handleInitializeUserPreferencesFromResponse = (userPreferencesResponse: UserPreferencesType) => {
-        if (!userPreferencesResponse?.themePreference) {
-            handleThemeSwitcherDialogVisibilityChange(true)
-        } else if (userPreferencesResponse?.themePreference) {
-            handleThemePreferenceChange(userPreferencesResponse?.themePreference)
-        }
-
-        setUserPreferences(userPreferencesResponse)
-    }
-
-    const handleFetchUserPreferences = async () => {
-        try {
-            setUserPreferencesError(null)
-            const userPreferencesResponse = await getUserPreferences()
-            if (migrateUserPreferences) {
-                const migratedUserPreferences = await migrateUserPreferences(userPreferencesResponse)
-                handleInitializeUserPreferencesFromResponse(migratedUserPreferences)
-            } else {
-                handleInitializeUserPreferencesFromResponse(userPreferencesResponse)
-            }
-        } catch (error) {
-            setUserPreferencesError(error)
+            return ENVIRONMENT_DATA_FALLBACK
         }
     }
 
@@ -408,6 +371,8 @@ export default function NavigationRoutes() {
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
                 canOnlyViewPermittedEnvOrgLevel: environmentDataResponse.canOnlyViewPermittedEnvOrgLevel,
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
+                canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
+                devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -431,19 +396,10 @@ export default function NavigationRoutes() {
         const persistedTabs = localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
         if (persistedTabs) {
             try {
-                const parsedTabsData: ParsedTabsData | ParsedTabsDataV1 = JSON.parse(persistedTabs)
-                if (parsedTabsData.version === 'v1') {
-                    if (
-                        location.pathname === parsedTabsData.key ||
-                        !location.pathname.startsWith(`${parsedTabsData.key}/`)
-                    ) {
-                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-                    }
-                } else {
-                    const keys = Object.keys(parsedTabsData.data)
-                    if (keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))) {
-                        localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
-                    }
+                const parsedTabsData: ParsedTabsData = JSON.parse(persistedTabs)
+                const keys = Object.keys(parsedTabsData.data)
+                if (keys.every((key) => location.pathname !== key && !location.pathname.startsWith(`${key}/`))) {
+                    localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
                 }
             } catch {
                 localStorage.removeItem(TAB_DATA_LOCAL_STORAGE_KEY)
@@ -454,21 +410,6 @@ export default function NavigationRoutes() {
     const isOnboardingPage = () => {
         const _pathname = location.pathname.endsWith('/') ? location.pathname.slice(0, -1) : location.pathname
         return _pathname === `/${URLS.GETTING_STARTED}` || _pathname === `/dashboard/${URLS.GETTING_STARTED}`
-    }
-
-    // To handle in case through browser prompt user cancelled the refresh
-    const handleUpdatePipelineRBACViewSelectedTab = (selectedTab: ViewIsPipelineRBACConfiguredRadioTabs) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            pipelineRBACViewSelectedTab: selectedTab,
-        }))
-    }
-
-    const handleUpdateUserThemePreference = (themePreference: UserPreferencesType['themePreference']) => {
-        setUserPreferences((prev) => ({
-            ...prev,
-            themePreference,
-        }))
     }
 
     if (pageState === ViewType.LOADING) {
@@ -484,11 +425,30 @@ export default function NavigationRoutes() {
     }
     const _isOnboardingPage = isOnboardingPage()
 
-    const handleOpenLicenseInfoDialog = (initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE) => {
+    const handleOpenLicenseInfoDialog = (
+        initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE,
+    ) => {
         setLicenseInfoDialogType(initialDialogTab || LicenseInfoDialogType.ABOUT)
     }
 
-    const showStackManager = getShowStackManager(currentServerInfo.serverInfo?.installationType, !!licenseData)
+    const showStackManager = !devtronManagedLicensingEnabled
+
+    const renderAboutDevtronDialog = () => {
+        if (!licenseInfoDialogType) {
+            return null
+        }
+        return licenseData && LicenseInfoDialog ? (
+            <LicenseInfoDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                initialDialogType={licenseInfoDialogType}
+            />
+        ) : (
+            <AboutDevtronDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                isFELibAvailable={!!LicenseInfoDialog}
+            />
+        )
+    }
 
     return (
         <MainContextProvider
@@ -526,6 +486,10 @@ export default function NavigationRoutes() {
                 handleOpenLicenseInfoDialog,
                 licenseData,
                 setLicenseData,
+                canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                reloadVersionConfig,
+                intelligenceConfig,
+                setIntelligenceConfig,
             }}
         >
             <main className={_isOnboardingPage ? 'no-nav' : ''} id={DEVTRON_BASE_MAIN_ID}>
@@ -533,17 +497,10 @@ export default function NavigationRoutes() {
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}
                         handleClose={handleCloseSwitchThemeDialog}
-                        currentUserPreferences={userPreferences}
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
-                {licenseInfoDialogType && LicenseInfoDialog && (
-                    <LicenseInfoDialog
-                        handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
-                        currentVersion={currentServerInfo.serverInfo?.currentVersion}
-                        initialDialogType={licenseInfoDialogType}
-                    />
-                )}
+                {renderAboutDevtronDialog()}
                 {!_isOnboardingPage && (
                     <Navigation
                         currentServerInfo={currentServerInfo}
@@ -561,9 +518,9 @@ export default function NavigationRoutes() {
                 {serverMode && (
                     <div
                         className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} m-8 br-6 dc__overflow-hidden`}
+                        ref={navRouteRef}
                     >
-                        {/* To be replaced with Announcement Banner */}
-                        {EnterpriseLicenseBar && <EnterpriseLicenseBar />}
+                        <Banner />
                         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                             <Suspense
                                 fallback={
@@ -684,6 +641,9 @@ export default function NavigationRoutes() {
                                             />
                                         </Route>
                                     </Switch>
+                                    {AIResponseWidget && intelligenceConfig && (
+                                        <AIResponseWidget parentRef={navRouteRef} />
+                                    )}
                                 </ErrorBoundary>
                             </Suspense>
                         </div>
@@ -725,10 +685,9 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
                     )}
                     <Route
                         path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={(props) => <V2Details envType={EnvType.CHART} />}
+                        render={(props) => <DevtronChartRouter />}
                     />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage isV2={false} />} />
-                    <Route path={`${path}/v2/:appId(\\d+)`} render={() => <AppDetailsPage isV2 />} />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
 
                     <Route exact path="">
                         <RedirectToAppList />
@@ -769,6 +728,7 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
     const { pathname } = useLocation()
     const { serverMode } = useMainContext()
     useEffect(() => {
+
         if (pathname && pathname !== '/') {
             Sentry.captureMessage(
                 `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,

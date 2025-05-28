@@ -14,10 +14,30 @@
  * limitations under the License.
  */
 
-import { MainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvironmentDataValuesDTO, MainContext } from '@devtron-labs/devtron-fe-common-lib'
 
-export const DEFAULT_GIT_OPS_FEATURE_FLAGS: MainContext['featureGitOpsFlags'] = {
+import { EnvironmentDataStateType } from './types'
+
+const DEFAULT_GIT_OPS_FEATURE_FLAGS: MainContext['featureGitOpsFlags'] = {
     isFeatureArgoCdMigrationEnabled: false,
     isFeatureGitOpsEnabled: false,
     isFeatureUserDefinedGitOpsEnabled: false,
+}
+
+const COMMON_ENV_FALLBACK: Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'> = {
+    isManifestScanningEnabled: false,
+    canOnlyViewPermittedEnvOrgLevel: false,
+    featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
+    canFetchHelmAppStatus: false,
+    devtronManagedLicensingEnabled: false,
+}
+
+export const ENVIRONMENT_DATA_FALLBACK: EnvironmentDataValuesDTO = {
+    ...COMMON_ENV_FALLBACK,
+    isAirGapEnvironment: false,
+}
+
+export const INITIAL_ENV_DATA_STATE: EnvironmentDataStateType = {
+    ...COMMON_ENV_FALLBACK,
+    isAirgapped: structuredClone(ENVIRONMENT_DATA_FALLBACK).isAirGapEnvironment,
 }

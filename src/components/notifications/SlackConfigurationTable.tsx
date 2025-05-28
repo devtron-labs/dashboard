@@ -14,16 +14,19 @@
  * limitations under the License.
  */
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory } from 'react-router-dom'
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
-import { ConfigurationTableProps } from './types'
+import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
+import { DeleteComponentsName } from '@Config/constantMessaging'
+
+import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 import { ConfigurationsTabTypes } from './constants'
 import { getConfigTabIcons } from './notifications.util'
+import { ConfigurationTableProps } from './types'
+
 import './notifications.scss'
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
 
 const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { searchParams } = useSearchString()

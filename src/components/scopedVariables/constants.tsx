@@ -15,6 +15,7 @@
  */
 
 import { ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { FileReaderStatus } from '../common/hooks/types'
 
 export const UPLOAD_DESCRIPTION_L1 = 'Upload file to add'

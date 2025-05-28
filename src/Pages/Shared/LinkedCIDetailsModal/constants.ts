@@ -15,8 +15,9 @@
  */
 
 import { getCommonSelectStyle, TriggerType } from '@devtron-labs/devtron-fe-common-lib'
-import { LinkedCIApp } from './types'
+
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS, DEPLOYMENT_STATUS, SELECT_ALL_VALUE } from '../../../config'
+import { LinkedCIApp } from './types'
 
 export const appListLoading: LinkedCIApp[] = Array.from(Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys()).map(
     (index) => ({

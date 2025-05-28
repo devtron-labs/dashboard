@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NavLink, generatePath } from 'react-router-dom'
+import { generatePath, NavLink } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -31,19 +31,19 @@ import { ResourceConfigStage, ResourceConfigState } from '@Pages/Applications/De
 
 import {
     CustomNavItemsType,
+    EnvConfigObjectKey,
     EnvConfigRouteParams,
     EnvConfigType,
     ExtendedCollapsibleListItem,
-    EnvConfigObjectKey,
 } from '../AppConfig.types'
 import { RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP } from './constants'
 
 const renderNavItemIcon = (isLocked: boolean, isApprovalPolicyConfigured: boolean, dataTestId: string) => {
     if (isLocked) {
-        return <Lock className="icon-dim-20 dc__no-shrink" data-testid={`${dataTestId}-lockicon`} />
+        return <Lock className="icon-dim-20 dc__no-shrink p-2" data-testid={`${dataTestId}-lockicon`} />
     }
     if (isApprovalPolicyConfigured) {
-        return <ICStamp className="icon-dim-20 scv-5 dc__no-shrink" data-testid={`${dataTestId}-protectedicon`} />
+        return <ICStamp className="icon-dim-20 scv-5 dc__no-shrink p-2" data-testid={`${dataTestId}-protectedicon`} />
     }
     return null
 }
@@ -102,7 +102,7 @@ const getIcon = (
 ): CollapsibleListItem<'navLink'>['iconConfig'] => {
     const isApprovalPolicyConfigured = getIsApprovalPolicyConfigured(approvalConfig)
 
-    if (isApprovalPolicyConfigured && configState !== ResourceConfigState.Unnamed) {
+    if (isApprovalPolicyConfigured) {
         const { Icon, tippyContent, iconClass } = RESOURCE_CONFIG_STATE_TO_ICON_CONFIG_MAP[configState]
 
         return {
@@ -183,3 +183,17 @@ export const getEnvConfiguration = (
             secrets: [],
         },
     )
+
+export const getUnnamedIconConfig = (
+    approvalConfig: Record<ApprovalConfigDataKindType, ApprovalConfigDataType>,
+    resourceType: EnvResourceType,
+) => ({
+    iconConfig: getIcon(
+        ResourceConfigState.Unnamed,
+        approvalConfig?.[
+            resourceType === EnvResourceType.ConfigMap
+                ? ApprovalConfigDataKindType.configMap
+                : ApprovalConfigDataKindType.configSecret
+        ],
+    ),
+})

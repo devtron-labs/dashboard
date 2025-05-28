@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { ReactComponent as Upload } from '@Icons/ic-upload.svg'
 import { Button, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Upload } from '@Icons/ic-upload.svg'
+
 import { UploadButtonProps } from '../types'
 
 const UploadButton = ({ handleOpenUploadChartModal }: UploadButtonProps) => (

@@ -16,14 +16,14 @@
 
 import { noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import MaterialList from '@Components/material/MaterialList'
 import CIConfig from '@Components/ciConfig/CIConfig'
 import { CIConfigProps } from '@Components/ciConfig/types'
 import { DockerConfigOverrideKeys } from '@Components/ciPipeline/types'
 import { MaterialListProps } from '@Components/material/material.types'
+import MaterialList from '@Components/material/MaterialList'
 
-import { Workflow, WorkflowProps } from './Workflow'
 import { CreateAppFormStateActionType, UpdateTemplateConfigProps } from './types'
+import { Workflow, WorkflowProps } from './Workflow'
 
 const parentState: CIConfigProps['parentState'] = {
     loadingState: null,
@@ -109,7 +109,7 @@ const UpdateTemplateConfig = ({
     return (
         <>
             <div className="divider__secondary--horizontal" />
-            <div className="br-8 border__secondary bg__primary p-20 pb-0-imp flexbox-col dc__gap-16">
+            <div className="br-8 border__secondary bg__primary p-20 flexbox-col dc__gap-16">
                 <h4 className="fs-14 fw-6 lh-20 cn-9 m-0">Code Source</h4>
                 <MaterialList
                     isCreateAppView

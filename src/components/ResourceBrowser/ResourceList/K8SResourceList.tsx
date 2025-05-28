@@ -14,28 +14,94 @@
  * limitations under the License.
  */
 
-import {
-    useAsync,
-    abortPreviousRequests,
-    Nodes,
-    getIsRequestAborted,
-    ALL_NAMESPACE_OPTION,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { useMemo, useRef, useState } from 'react'
-import { useParams, useLocation } from 'react-router-dom'
-import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
-import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
-import { SIDEBAR_KEYS } from '../Constants'
-import { K8SResourceListType, URLParams } from '../Types'
-import { sortEventListData, removeDefaultForStorageClass } from '../Utils'
-import BaseResourceList from './BaseResourceList'
-import { getResourceData } from '../ResourceBrowser.service'
+import { useEffect, useMemo, useRef } from 'react'
+import { useLocation, useParams } from 'react-router-dom'
 
-const PodRestart = importComponentFromFELibrary('PodRestart')
-const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
-    'getFilterOptionsFromSearchParams',
+import {
+    abortPreviousRequests,
+    FiltersTypeEnum,
+    Nodes,
+    PaginationEnum,
+    SelectAllDialogStatus,
+    Table,
+    TableColumnType,
+    TableProps,
+    useAsync,
+    useUrlFilters,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import emptyCustomChart from '@Images/empty-noresult@2x.png'
+import { importComponentFromFELibrary } from '@Components/common'
+import {
+    getManifestResource,
+    updateManifestResourceHelmApps,
+} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
+
+import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
+import { getResourceData } from '../ResourceBrowser.service'
+import { K8SResourceListType } from '../Types'
+import Cache from './Cache'
+import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
+import NodeListSearchFilter from './NodeListSearchFilter'
+import ResourceFilterOptions from './ResourceFilterOptions'
+import { K8sResourceListFilterType, K8sResourceListURLParams, K8SResourceListViewWrapperProps } from './types'
+import {
+    getColumnComparator,
+    getColumnSize,
+    isItemASearchMatchForNodeListing,
+    parseK8sResourceListSearchParams,
+} from './utils'
+
+const RESOURCE_FILTER_KEYS: Record<string, unknown> = importComponentFromFELibrary(
+    'RESOURCE_FILTER_KEYS',
     null,
     'function',
+)
+const RBBulkSelectionActions = importComponentFromFELibrary('RBBulkSelectionActions', null, 'function')
+const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
+
+const K8SResourceListViewWrapper = ({
+    children,
+    handleSearch,
+    renderRefreshBar,
+    updateK8sResourceTab,
+    searchKey,
+    selectedCluster,
+    selectedNamespace,
+    selectedResource,
+    visibleColumns,
+    isNodeListing,
+    allColumns,
+    setVisibleColumns,
+    updateSearchParams,
+    eventType,
+    ...restProps
+}: K8SResourceListViewWrapperProps) => (
+    <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
+        {isNodeListing ? (
+            <NodeListSearchFilter
+                visibleColumns={visibleColumns}
+                setVisibleColumns={setVisibleColumns}
+                allColumns={allColumns}
+                searchParams={restProps as Record<string, string>}
+            />
+        ) : (
+            <ResourceFilterOptions
+                selectedResource={selectedResource}
+                selectedNamespace={selectedNamespace}
+                selectedCluster={selectedCluster}
+                searchText={searchKey}
+                setSearchText={handleSearch}
+                isSearchInputDisabled={false}
+                renderRefreshBar={renderRefreshBar}
+                updateK8sResourceTab={updateK8sResourceTab}
+                areFiltersHidden={false}
+                updateSearchParams={updateSearchParams}
+                eventType={eventType}
+            />
+        )}
+        {children}
+    </div>
 )
 
 export const K8SResourceList = ({
@@ -43,95 +109,174 @@ export const K8SResourceList = ({
     selectedCluster,
     addTab,
     renderRefreshBar,
-    isOpen,
     updateK8sResourceTab,
-    setWidgetEventDetails,
-    handleResourceClick,
-    clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
-    const { clusterId, nodeType, group } = useParams<URLParams>()
+    const { clusterId } = useParams<K8sResourceListURLParams>()
 
     // STATES
-    const [selectedNamespace, setSelectedNamespace] = useState(ALL_NAMESPACE_OPTION)
+    const { selectedNamespace = 'all', ...filters } = useUrlFilters<string, K8sResourceListFilterType>({
+        parseSearchParams: parseK8sResourceListSearchParams,
+    })
 
     // REFS
     const abortControllerRef = useRef(new AbortController())
 
-    /* NOTE: _filters is an object */
-    const _filters = getFilterOptionsFromSearchParams?.(location.search)
-    const filters = useMemo(() => _filters, [JSON.stringify(_filters)])
+    const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
+    const isEventListing = selectedResource?.gvk.Kind === Nodes.Event
 
-    const [resourceListLoader, _resourceList, _resourceListDataError, reloadResourceListData] = useAsync(
+    const resourceFilters = RESOURCE_FILTER_KEYS
+        ? Object.entries(filters).reduce((acc, [key, value]) => {
+              if (Object.values(RESOURCE_FILTER_KEYS).includes(key)) {
+                  acc[key] = value
+              }
+              return acc
+          }, {})
+        : null
+
+    const [resourceListLoader, resourceList, , reloadResourceList] = useAsync(
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
-                    return getResourceData({
-                        selectedResource,
-                        selectedNamespace,
-                        clusterId,
-                        filters,
-                        abortControllerRef,
-                    })
+                    return Cache.get(`${location.pathname}${location.search}`, () =>
+                        getResourceData({
+                            selectedResource,
+                            selectedNamespace,
+                            clusterId,
+                            filters: resourceFilters,
+                            abortControllerRef,
+                        }),
+                    )
                 }
 
                 return null
             }, abortControllerRef),
-        [selectedResource, clusterId, selectedNamespace, filters],
+        [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
+        true,
+        { resetOnChange: false },
     )
 
-    const resourceListDataError = getIsRequestAborted(_resourceListDataError) ? null : _resourceListDataError
+    useEffect(
+        () => () => {
+            abortControllerRef.current?.abort()
+        },
+        [],
+    )
 
-    const resourceList = useMemo(() => {
-        if (!_resourceList) {
-            return null
+    const columns: TableColumnType[] = useMemo(
+        () =>
+            resourceList?.headers.map(
+                (header) =>
+                    ({
+                        field: isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[header] : header,
+                        label: header === 'type' && isEventListing ? '' : header,
+                        size: getColumnSize(header, isEventListing),
+                        CellComponent: K8sResourceListTableCellComponent,
+                        comparator: getColumnComparator(header, isEventListing),
+                        isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
+                        horizontallySticky: header === 'name',
+                    }) as TableColumnType,
+            ) ?? [],
+        [resourceList?.headers],
+    )
+
+    const rows: TableProps['rows'] = useMemo(
+        () =>
+            resourceList?.data.map((row) => {
+                const { id, ...rest } = row
+                return {
+                    data: rest,
+                    id,
+                } as TableProps['rows'][number]
+            }) ?? null,
+        [resourceList?.data],
+    )
+
+    const handleClearCacheAndReload = () => {
+        Cache.clear()
+        reloadResourceList()
+    }
+
+    const tableFilter: TableProps['filter'] = (row, filterData) => {
+        if (isNodeListing) {
+            return isItemASearchMatchForNodeListing(row.data, filterData)
         }
-        const result = structuredClone(_resourceList.result)
-        switch (selectedResource?.gvk.Kind) {
-            case SIDEBAR_KEYS.eventGVK.Kind:
-                result.data = sortEventListData(result.data)
-                break
-            case Nodes.StorageClass:
-                result.data = removeDefaultForStorageClass(result.data)
-                break
-            default:
-                break
+
+        const isSearchMatch =
+            !filterData.searchKey ||
+            Object.entries(row.data).some(
+                ([key, value]) =>
+                    key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+            )
+
+        if (isEventListing) {
+            return (
+                (row.data.type as string)?.toLowerCase() ===
+                    (filterData as unknown as K8sResourceListFilterType).eventType && isSearchMatch
+            )
         }
-        // NOTE: for namespaced resource name+namespace will be unique
-        // while for non-namespaced resources name will be unique
-        result.data = (result.data ?? []).map((data, index) => ({
-            id: `${selectedResource?.gvk?.Kind}-${data.name}-${data.namespace}-${index}`,
-            ...data,
-        }))
-        return result
-    }, [_resourceList])
+
+        return isSearchMatch
+    }
 
     return (
-        <BaseResourceList
-            isLoading={resourceListLoader}
-            resourceListError={resourceListDataError}
-            resourceList={resourceList}
-            clusterId={clusterId}
-            clusterName={clusterName}
-            selectedResource={selectedResource}
-            reloadResourceListData={reloadResourceListData}
-            selectedNamespace={selectedNamespace}
-            setSelectedNamespace={setSelectedNamespace}
-            selectedCluster={selectedCluster}
-            isOpen={isOpen}
-            renderRefreshBar={renderRefreshBar}
-            updateK8sResourceTab={updateK8sResourceTab}
-            nodeType={nodeType}
-            group={group}
-            addTab={addTab}
-            hideBulkSelection={!getFilterOptionsFromSearchParams} // NOTE: hideBulkSelection if fe-lib not linked
-            setWidgetEventDetails={setWidgetEventDetails}
-            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-            handleResourceClick={handleResourceClick}
-        >
-            {PodRestart && <PodRestart rbacPayload={getPodRestartRBACPayload()} />}
-        </BaseResourceList>
+        <Table
+            key={JSON.stringify(selectedResource)}
+            loading={resourceListLoader || !resourceList}
+            columns={columns}
+            rows={rows}
+            {...(RBBulkSelectionActions && !isEventListing
+                ? {
+                      bulkSelectionConfig: {
+                          BulkActionsComponent: RBBulkSelectionActions,
+                          getSelectAllDialogStatus: () => SelectAllDialogStatus.CLOSED,
+                          BulkOperationModal: RBBulkOperations,
+                          bulkOperationModalData: {
+                              selectedResource,
+                              isNodeListing,
+                              getManifestResource,
+                              updateManifestResourceHelmApps,
+                              clusterId,
+                              clusterName: selectedCluster?.label ?? '',
+                              handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
+                          },
+                          bulkActionsData: {
+                              showBulkRestartOption:
+                                  window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                                      .map((feat: string) => feat.trim().toUpperCase())
+                                      .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1,
+                              showNodeListingOptions: isNodeListing,
+                          },
+                      },
+                  }
+                : {})}
+            emptyStateConfig={{
+                noRowsConfig: {
+                    image: emptyCustomChart,
+                    title: 'No resources found',
+                    subTitle: `We could not find any ${selectedResource?.gvk.Kind ?? 'Resource'}. Try selecting a different cluster or namespace.`,
+                },
+            }}
+            filtersVariant={FiltersTypeEnum.URL}
+            paginationVariant={PaginationEnum.PAGINATED}
+            areColumnsConfigurable={isNodeListing}
+            id="table__gvk-resource-list"
+            additionalFilterProps={{ parseSearchParams: parseK8sResourceListSearchParams }}
+            ViewWrapper={K8SResourceListViewWrapper}
+            filter={tableFilter}
+            additionalProps={{
+                renderRefreshBar,
+                updateK8sResourceTab,
+                selectedResource,
+                selectedCluster,
+                addTab,
+                isNodeListing,
+                isEventListing,
+                lowercaseKindToResourceGroupMap,
+                reloadResourceListData: handleClearCacheAndReload,
+            }}
+        />
     )
 }

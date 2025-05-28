@@ -15,8 +15,9 @@
  */
 
 import { getAppEnvDeploymentConfig, TemplateListDTO } from '@devtron-labs/devtron-fe-common-lib'
-import { getManifestData } from './service.utils'
+
 import { AppEnvDeploymentConfigQueryParamsType } from '../../AppConfig.types'
+import { getManifestData } from './service.utils'
 
 type ManifestComparisonDataType = {
     isManifestComparison: true

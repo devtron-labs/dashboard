@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { ACCESS_TYPE_MAP, SelectPicker, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 import { useMemo } from 'react'
+
+import { ACCESS_TYPE_MAP, ComponentSizeType, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ALL_ENVIRONMENTS_OPTION, DirectPermissionFieldName } from './constants'
 import { DirectPermissionRowProps } from './types'
 import { getDisplayTextByName, getEnvironmentDisplayText } from './utils'

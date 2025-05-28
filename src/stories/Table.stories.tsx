@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
-import { Meta, StoryObj } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
+import { Meta, StoryObj } from '@storybook/react'
+
 import {
     Button,
     ButtonComponentType,
@@ -12,13 +13,15 @@ import {
     SearchBar,
     SelectAllDialogStatus,
     Table,
+    TableBulkOperationModalProps,
     TableCellComponentProps,
     TableProps,
-    TableViewWrapperProps,
     TableSignalEnum,
+    TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICPlay } from '@Icons/ic-play-outline.svg'
+
 import { ReactComponent as ICPause } from '@Icons/ic-pause.svg'
+import { ReactComponent as ICPlay } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning-y6.svg'
 
 const CellComponent = ({ field, value, signals, row, isRowActive }: TableCellComponentProps) => {
@@ -212,6 +215,15 @@ const ViewWrapper = ({ children, handleSearch, searchKey }: TableViewWrapperProp
     </div>
 )
 
+const BulkOperationModal = ({ action: bulkAction, selections, onClose }: TableBulkOperationModalProps) => {
+    useEffect(() => {
+        action(`Applying bulk action: ${bulkAction} on ${selections?.length} selections`)
+        setTimeout(onClose, 1000) // Simulate a delay for the action
+    }, [])
+
+    return null
+}
+
 export const TableTemplate: Story = {
     args: {
         columns: COLUMNS,
@@ -230,9 +242,11 @@ export const TableTemplate: Story = {
             return (row.data as RowDataType).name.toLowerCase().includes(lowerCasedSearchKey)
         },
         bulkSelectionConfig: {
+            bulkActionsData: null,
+            bulkOperationModalData: null,
+            BulkOperationModal,
             BulkActionsComponent,
             getSelectAllDialogStatus: () => SelectAllDialogStatus.CLOSED,
-            onBulkSelectionChanged: () => {},
         },
         stylesConfig: {
             showSeparatorBetweenRows: true,

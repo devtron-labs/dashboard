@@ -29,7 +29,6 @@ import {
     SelectPicker,
     ComponentSizeType,
     MODES,
-    isCodeMirrorEnabled,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useState } from 'react'
 import yamlJsParser from 'yaml'
@@ -181,7 +180,7 @@ const EphemeralContainerDrawer = ({
             <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
-                    <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
+                    <span className="dc__ellipsis-left">{isResourceBrowserView ? params.name : params.podName}</span>
                     <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
@@ -342,7 +341,6 @@ const EphemeralContainerDrawer = ({
                         },
                     ]}
                     hideTopPadding
-                    alignActiveBorderWithContainer
                 />
             </div>
         )
@@ -378,16 +376,9 @@ const EphemeralContainerDrawer = ({
                 <CodeEditor
                     mode={MODES.YAML}
                     readOnly={switchManifest === SwitchItemValues.Sample}
-                    codeEditorProps={{
-                        value: codeEditorBody,
-                        onChange: handleManifestAdvanceConfiguration,
-                        height: '100%',
-                    }}
-                    codeMirrorProps={{
-                        value: codeEditorBody,
-                        onChange: handleManifestAdvanceConfiguration,
-                        height: 'fitToParent',
-                    }}
+                    value={codeEditorBody}
+                    onChange={handleManifestAdvanceConfiguration}
+                    height="fitToParent"
                 >
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">
@@ -395,11 +386,6 @@ const EphemeralContainerDrawer = ({
                                 <SwitchItem value={SwitchItemValues.Configuration}> Manifest </SwitchItem>
                                 <SwitchItem value={SwitchItemValues.Sample}> Sample manifest</SwitchItem>
                             </Switch>
-                            {!isCodeMirrorEnabled() && (
-                                <div style={{ flex: '0 0 60%' }}>
-                                    <CodeEditor.ValidationError />
-                                </div>
-                            )}
                         </div>
                     </CodeEditor.Header>
                 </CodeEditor>
@@ -416,7 +402,7 @@ const EphemeralContainerDrawer = ({
                 : appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName)
                       ?.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-            podName: isResourceBrowserView ? params.node : params.podName,
+            podName: isResourceBrowserView ? params.name : params.podName,
         }
 
         if (ephemeralContainerType === EDITOR_VIEW.BASIC) {

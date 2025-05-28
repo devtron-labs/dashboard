@@ -15,16 +15,19 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
+import { AutoSizer } from 'react-virtualized'
 import { Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
-import * as XtermWebfont from 'xterm-webfont'
 import { SearchAddon } from 'xterm-addon-search'
-import { AutoSizer } from 'react-virtualized'
+import * as XtermWebfont from 'xterm-webfont'
+
 import { Scroller } from '@devtron-labs/devtron-fe-common-lib'
+
+import { Subject } from '../../../../../../util/Subject'
 import CopyToast, { handleSelectionChange } from './CopyToast'
+
 import 'xterm/css/xterm.css'
 import './nodeDetailTab.scss'
-import { Subject } from '../../../../../../util/Subject'
 
 interface logViewerInterface {
     rootClassName?: string

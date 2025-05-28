@@ -68,7 +68,6 @@ const AboutDevtronView = ({
                             onClick: () => handleTabChange(index),
                         },
                     }))}
-                    alignActiveBorderWithContainer
                 />
             </div>
         )

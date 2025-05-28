@@ -16,7 +16,16 @@
 
 import { useEffect, useState } from 'react'
 import { components } from 'react-select'
-import { CIBuildType, ComponentSizeType, CustomInput, InfoIconTippy, SelectPicker, stopPropagation } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIBuildType,
+    ComponentSizeType,
+    CustomInput,
+    getUniqueId,
+    InfoIconTippy,
+    SelectPicker,
+    stopPropagation,
+    OptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import {
     DropdownIndicator,
     getCommonSelectStyle,
@@ -28,7 +37,6 @@ import { ReactComponent as Git } from '../../assets/icons/git/git.svg'
 import { ReactComponent as GitHub } from '../../assets/icons/git/github.svg'
 import { ReactComponent as BitBucket } from '../../assets/icons/git/bitbucket.svg'
 import { getAbsoluteProjectPath } from './CIConfig.utils'
-import { OptionType } from '../app/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import {
     BuilderIdOptionType,
@@ -76,7 +84,6 @@ const menuListComponent = (props): JSX.Element => {
         </components.MenuList>
     )
 }
-
 
 export const repositoryOption = (props): JSX.Element => {
     props.selectProps.styles.option = getCustomOptionSelectionStyle()
@@ -184,7 +191,6 @@ export default function CIBuildpackBuildOptions({
             initBuilderData()
         }
     }, [buildersAndFrameworks.builders])
-
 
     const initBuilderData = () => {
         const _supportedLanguagesList: LanguageOptionType[] = []
@@ -427,10 +433,10 @@ export default function CIBuildpackBuildOptions({
          * - If yes & is init call then push init arg selection to buildEnvArgs array
          * - Else remove empty arg from buildEnvArgs array & proceed
          */
-        if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].k && version !== AUTO_DETECT) {
+        if (_buildEnvArgs.length === 1 && !_buildEnvArgs[0].key && version !== AUTO_DETECT) {
             if (isInitCall && builder.BuilderLangEnvParam) {
-                _buildEnvArgs[0].k = builder.BuilderLangEnvParam
-                _buildEnvArgs[0].v = version
+                _buildEnvArgs[0].key = builder.BuilderLangEnvParam
+                _buildEnvArgs[0].value = version
                 setBuildEnvArgs(_buildEnvArgs)
                 return
             }
@@ -453,7 +459,7 @@ export default function CIBuildpackBuildOptions({
          */
         if (version === AUTO_DETECT && !isInitCall) {
             _buildEnvArgs.forEach((arg, idx) => {
-                if (arg.k === builder.BuilderLangEnvParam) {
+                if (arg.key === builder.BuilderLangEnvParam) {
                     _buildEnvArgs.splice(idx, 1)
                 }
             })
@@ -467,23 +473,22 @@ export default function CIBuildpackBuildOptions({
             _buildEnvArgs.forEach((_arg, idx) => {
                 if (
                     !isArgPresent &&
-                    (currentCIBuildConfig.buildPackConfig.currentBuilderLangEnvParam === _arg.k ||
-                        currentCIBuildConfig.buildPackConfig.builderLangEnvParam === _arg.k ||
-                        builder.BuilderLangEnvParam === _arg.k)
+                    (currentCIBuildConfig.buildPackConfig.currentBuilderLangEnvParam === _arg.key ||
+                        currentCIBuildConfig.buildPackConfig.builderLangEnvParam === _arg.key ||
+                        builder.BuilderLangEnvParam === _arg.key)
                 ) {
                     isArgPresent = true
                     argIdx = idx
-                    _arg.k = builder.BuilderLangEnvParam
-                    _arg.v = version
+                    _arg.key = builder.BuilderLangEnvParam
+                    _arg.value = version
                 }
             })
 
             if (!isArgPresent && builder.BuilderLangEnvParam) {
                 _buildEnvArgs.push({
-                    k: builder.BuilderLangEnvParam,
-                    v: version,
-                    keyError: '',
-                    valueError: '',
+                    key: builder.BuilderLangEnvParam,
+                    value: version,
+                    id: getUniqueId(),
                 })
             } else if (isArgPresent && argIdx >= 0 && !builder.BuilderLangEnvParam) {
                 _buildEnvArgs.splice(argIdx, 1)
@@ -493,10 +498,9 @@ export default function CIBuildpackBuildOptions({
         // At the last step, if _buildEnvArgs is empty then push an empty args option to show empty fields
         if (_buildEnvArgs.length === 0) {
             _buildEnvArgs.push({
-                k: '',
-                v: '',
-                keyError: '',
-                valueError: '',
+                key: '',
+                value: '',
+                id: getUniqueId(),
             })
         }
         setBuildEnvArgs(_buildEnvArgs)
@@ -580,7 +584,6 @@ export default function CIBuildpackBuildOptions({
 
         return _versionOptions
     }
-
 
     return (
         <div className="form-row__docker buildpack-option-wrapper mb-4">

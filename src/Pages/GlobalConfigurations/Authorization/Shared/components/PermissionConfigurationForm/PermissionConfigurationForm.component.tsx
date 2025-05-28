@@ -15,8 +15,10 @@
  */
 
 import { RadioGroup, RadioGroupItem, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
-import { PermissionType, PERMISSION_TYPE_LABEL_MAP } from '../../../constants'
+
+import { PERMISSION_TYPE_LABEL_MAP, PermissionType } from '../../../constants'
 import { getIsSuperAdminPermission } from '../../../utils'
 import { AppPermissions } from '../AppPermissions'
 import SuperAdminInfoBar from '../SuperAdminInfoBar'

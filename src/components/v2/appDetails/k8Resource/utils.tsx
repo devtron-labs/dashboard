@@ -15,6 +15,7 @@
  */
 
 import { AppType, Node, NodeFilters } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ApplicationsGAEvents } from '../constants'
 
 export const doesNodeSatisfiesFilter = (node: Node, filter: string) =>

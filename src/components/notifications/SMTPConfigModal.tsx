@@ -13,26 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
+
 import {
-    showError,
     CustomInput,
+    PasswordField,
+    showError,
     ToastManager,
     ToastVariantType,
-    PasswordField,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useHistory } from 'react-router-dom'
-import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
-import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
-import { SMTPConfigModalProps, SMTPFormType } from './types'
+
 import { ConfigurationTabDrawerModal } from './ConfigurationDrawerModal'
+import { ConfigurationFieldKeys, ConfigurationsTabTypes, DefaultSMTPValidation } from './constants'
+import { DefaultCheckbox } from './DefaultCheckbox'
+import { getSMTPConfiguration, saveEmailConfiguration } from './notifications.service'
 import {
     getSMTPDefaultConfiguration,
     getValidationFormConfig,
     renderErrorToast,
     validateKeyValueConfig,
 } from './notifications.util'
-import { DefaultCheckbox } from './DefaultCheckbox'
+import { SMTPConfigModalProps, SMTPFormType } from './types'
 
 export const SMTPConfigModal = ({
     smtpConfigId,

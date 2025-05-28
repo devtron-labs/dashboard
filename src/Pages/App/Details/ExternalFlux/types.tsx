@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { APIOptions } from '@devtron-labs/devtron-fe-common-lib'
+
 export interface ExternalFluxAppDetailParams {
     clusterId: string
     appName: string
@@ -24,4 +26,10 @@ export interface ExternalFluxAppDetailParams {
 export enum EXTERNAL_FLUX_APP_STATUS {
     READY = 'Ready',
     NOT_READY = 'Not Ready',
+}
+
+export interface GetExternalFluxCDAppDetailsParamsType
+    extends Pick<ExternalFluxAppDetailParams, 'clusterId' | 'namespace' | 'appName'>,
+        Pick<APIOptions, 'abortControllerRef'> {
+    isKustomization: boolean
 }

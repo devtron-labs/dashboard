@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
 import { Dispatch, SetStateAction } from 'react'
-import { SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { RouteComponentProps } from 'react-router-dom'
+
+import { OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { SERVER_MODE_TYPE } from '../../config'
-import { OptionType } from '../app/types'
 
 export const POLLING_INTERVAL = 30000
 
@@ -177,45 +178,34 @@ export interface ClusterFormType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
-export type ClusterFormProps = {
-    /**
-     * @default false
-     */
+export type EditClusterFormProps = {
+    id: number
+    toggleEditMode: Dispatch<SetStateAction<boolean>>
     isProd?: boolean
-    cluster_name: string
-    server_url: string
-    active: boolean
-    config: any
-    reload: () => void
-    prometheus_url: string
+    clusterName: string
+    serverUrl: string
+    prometheusUrl: string
     prometheusAuth: any
-    defaultClusterComponent: any
     proxyUrl: string
     sshUsername: string
     sshPassword: string
     sshAuthKey: string
     sshServerAddress: string
-    isConnectedViaProxy: boolean
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-    toggleCheckTlsConnection: any
-    setTlsConnectionFalse: any
-    toggleKubeConfigFile: any
-    isKubeConfigFile: boolean
-    isClusterDetails: boolean
-    toggleClusterDetails: any
-    isVirtualCluster: boolean
-} & (
-    | {
-          id: number
-          toggleEditMode: Dispatch<SetStateAction<boolean>>
+}
+
+export type ClusterFormProps = { reload: () => void } & (
+    | ({
           handleCloseCreateClusterForm?: never
-      }
-    | {
+          id: number
+          installationId: number
+      } & EditClusterFormProps)
+    | ({
           handleCloseCreateClusterForm: () => void
           id?: never
-          toggleEditMode?: never
-      }
+          installationId?: never
+      } & Partial<Record<keyof EditClusterFormProps, never>>)
 )
 
 export interface AddClusterFormPrefilledInfoType {
@@ -224,4 +214,16 @@ export interface AddClusterFormPrefilledInfoType {
 
 export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
+}
+
+export interface DeleteClusterConfirmationModalProps {
+    clusterId: string
+    clusterName: string
+    handleClose: () => void
+    installationId?: string
+    reload?: () => void
+}
+
+export interface DeleteClusterPayload {
+    id: number
 }

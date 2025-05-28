@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { UserStatus, UserRoleGroup, UserGroupDTO, UserGroupType } from '@devtron-labs/devtron-fe-common-lib'
+import { UserGroupDTO, UserGroupType, UserRoleGroup, UserStatus } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '../../../components/common'
 import { User, UserCreateOrUpdateParamsType, UserCreateOrUpdatePayloadType } from './types'
 

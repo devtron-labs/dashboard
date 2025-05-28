@@ -85,14 +85,12 @@ const ChartDeploymentHistory = ({
     isExternal,
     isVirtualEnvironment,
     isLoadingDetails,
-    helmAppPackageName,
 }: {
     appId: string
     appName?: string
     isExternal: boolean
     isVirtualEnvironment?: boolean
     isLoadingDetails?: boolean
-    helmAppPackageName?: string
 }) => {
     const params = useParams<{ envId: string }>()
     const [isLoading, setIsLoading] = useState(true)
@@ -403,7 +401,6 @@ const ChartDeploymentHistory = ({
                             'data-testid': `nav-bar-option-${index}`,
                         },
                     }))}
-                    alignActiveBorderWithContainer
                 />
             </div>
         )
@@ -479,20 +476,12 @@ const ChartDeploymentHistory = ({
                 noParsing
                 mode={MODES.YAML}
                 readOnly
-                codeEditorProps={{
-                    value:
-                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
-                    height: '100%',
-                }}
-                codeMirrorProps={{
-                    value:
-                        selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
-                            ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
-                            : getEditorValue(selectedDeploymentManifestDetail.manifest),
-                    height: 'fitToParent',
-                }}
+                value={
+                    selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.VALUES_YAML
+                        ? getEditorValue(selectedDeploymentManifestDetail.valuesYaml)
+                        : getEditorValue(selectedDeploymentManifestDetail.manifest)
+                }
+                height="fitToParent"
             />
         )
     }
@@ -503,7 +492,7 @@ const ChartDeploymentHistory = ({
         const paramsData = {
             appId,
             envId: params.envId,
-            appName: helmAppPackageName,
+            appName: deployment.helmPackageName,
             workflowId: deployment.version,
             isHelmApp: true,
         }
@@ -603,7 +592,7 @@ const ChartDeploymentHistory = ({
                     renderCodeEditor()}
                 {selectedDeploymentTabName === DEPLOYMENT_HISTORY_TAB.ARTIFACTS && VirtualHistoryArtifact && (
                     <VirtualHistoryArtifact
-                        titleName={`${helmAppPackageName}.tgz`}
+                        titleName={deployment.helmPackageName}
                         params={paramsData}
                         status={deployment.status}
                     />

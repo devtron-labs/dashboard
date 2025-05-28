@@ -15,6 +15,7 @@
  */
 
 import { useState } from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -25,13 +26,14 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
+
 import { ReactComponent as AddIcon } from '../../../../../../assets/icons/ic-add.svg'
-import K8sListItemCard from './K8sListItemCard'
-import { getPermissionObject } from './utils'
+import { ReactComponent as Close } from '../../../../../../assets/icons/ic-close.svg'
 import { usePermissionConfiguration } from '../PermissionConfigurationForm'
 import { K8sPermissionActionType } from './constants'
+import K8sListItemCard from './K8sListItemCard'
 import { K8sPermissionModalType } from './types'
+import { getPermissionObject } from './utils'
 
 const K8sPermissionModal = ({
     selectedPermissionAction,

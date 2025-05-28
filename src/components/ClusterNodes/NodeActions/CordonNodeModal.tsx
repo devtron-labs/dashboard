@@ -16,18 +16,20 @@
 
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+
 import {
-    showError,
-    ToastVariantType,
-    ToastManager,
-    cordonNodeCapacity,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
     ConfirmationModal,
-    CORDON_NODE_MODAL_MESSAGING,
-    ConfirmationModalVariantType,
     ConfirmationModalProps,
+    ConfirmationModalVariantType,
+    CORDON_NODE_MODAL_MESSAGING,
+    cordonNodeCapacity,
+    showError,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { CordonNodeModalType } from '../types'
 
 const CordonNodeModal = ({ name, version, kind, unschedulable, closePopup }: CordonNodeModalType) => {
