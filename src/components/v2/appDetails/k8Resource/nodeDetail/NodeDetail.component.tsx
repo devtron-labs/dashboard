@@ -580,6 +580,7 @@ const NodeDetailComponent = ({
                                 isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
                                 isResourceBrowserView ? null : appDetails.appType,
                             )}
+                            shouldScroll={isResourceBrowserView || isDynamicTabsStuck}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>

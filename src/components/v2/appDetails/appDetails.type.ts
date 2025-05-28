@@ -436,6 +436,10 @@ export interface ResourceInfoActionPropsType {
     selectedResource?: SelectedResourceType
     clusterId: number
     aiWidgetEventDetails: string
+    /**
+     * @default true
+     */
+    shouldScroll?: boolean
 }
 
 export interface ManifestViewRefType {
