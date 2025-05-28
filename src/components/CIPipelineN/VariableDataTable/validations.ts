@@ -130,14 +130,6 @@ export const validateInputOutputVariableCell = ({
                 isValid: false,
             }
         }
-
-        // test for max length if variable is string
-        if (format === VariableTypeFormat.STRING && variableValue && !!value && value.length > 255) {
-            return {
-                errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.MAX_LENGTH_255],
-                isValid: false,
-            }
-        }
     }
 
     if (isInputVariable && key === 'val') {
@@ -163,6 +155,7 @@ export const validateInputOutputVariableCell = ({
         }
     }
 
+    // test for max length if variable is string
     if (key === 'val' && format === VariableTypeFormat.STRING && variableValue && !!value && value.length > 255) {
         return {
             errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.MAX_LENGTH_255],
