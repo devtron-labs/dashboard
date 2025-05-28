@@ -11,7 +11,7 @@ import {
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SIDE_PANEL_MAX_ASIDE_WIDTH, SIDE_PANEL_MIN_ASIDE_WIDTH } from './constants'
+import { SIDE_PANEL_ASIDE_DRAG_HANDLE, SIDE_PANEL_MAX_ASIDE_WIDTH, SIDE_PANEL_MIN_ASIDE_WIDTH } from './constants'
 import { SidePanelDocumentation } from './SidePanelDocumentation'
 import { SidePanelProps } from './types'
 
@@ -70,8 +70,8 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                     className="flexbox"
                 >
                     <Draggable
-                        handle=".aside-drag"
-                        defaultClassNameDragging="aside-drag--dragging"
+                        handle={`.${SIDE_PANEL_ASIDE_DRAG_HANDLE}`}
+                        defaultClassNameDragging={`${SIDE_PANEL_ASIDE_DRAG_HANDLE}--dragging`}
                         axis="none"
                         position={{
                             x: 0,
@@ -85,7 +85,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                         onStart={handleDragStart}
                         onStop={handleDragStop}
                     >
-                        <div className="aside-drag flex px-5 dc__cursor-col-resize dc__zi-10">
+                        <div className={`${SIDE_PANEL_ASIDE_DRAG_HANDLE} flex px-5 dc__cursor-col-resize dc__zi-10`}>
                             <div className="aside-drag__handle px-1 br-1" />
                         </div>
                     </Draggable>
