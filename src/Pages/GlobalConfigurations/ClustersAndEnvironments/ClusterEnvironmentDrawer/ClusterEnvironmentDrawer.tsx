@@ -155,7 +155,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
-            category,
+            category: category?.value ? category : null,
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
@@ -360,7 +360,7 @@ export const ClusterEnvironmentDrawer = ({
                     {AssignCategorySelect && (
                         <div className="w-250">
                             <AssignCategorySelect
-                                selectedCategory={data.category?.value ? data.category : null}
+                                selectedCategory={data.category}
                                 setSelectedCategory={register('category', { isCustomComponent: true }).onChange}
                             />
                         </div>
