@@ -672,7 +672,7 @@ export default function BuildCD({
     }
 
     const renderAdvancedDeploymentStrategy = () => {
-        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
+        if (noStrategyAvailable.current) {
             return null
         }
 
