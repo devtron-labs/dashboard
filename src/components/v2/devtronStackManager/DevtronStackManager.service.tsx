@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, post, refresh, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    getUrlWithSearchParams,
+    InstallationType,
+    post,
+    refresh,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
-    InstallationType,
     LogPodNameResponse,
     ModuleActionRequest,
     ModuleActionResponse,

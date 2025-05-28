@@ -160,6 +160,7 @@ const BuilderTippy = () => {
             documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
             documentationLink="APP_CI_CONFIG_BUILD_WITHOUT_DOCKER"
             iconClassName="icon-dim-16 fcn-6 ml-4"
+            openInNewTab
         />
     )
 }

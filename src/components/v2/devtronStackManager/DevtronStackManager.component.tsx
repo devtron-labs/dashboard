@@ -35,10 +35,10 @@ import {
     RAISE_ISSUE,
     getDocumentationUrl,
     DISCORD_LINK,
+    InstallationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
-    InstallationType,
     InstallationWrapperType,
     ModuleDetails,
     ModuleDetailsCardType,

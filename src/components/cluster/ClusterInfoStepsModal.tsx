@@ -107,6 +107,7 @@ export default function ClusterInfoStepsModal({ subTitle, command, clusterName }
                     text="View documentation"
                     dataTestId="cluster-info-step-view-documentation"
                     showExternalIcon
+                    openInNewTab
                 />
             </div>
         </div>
