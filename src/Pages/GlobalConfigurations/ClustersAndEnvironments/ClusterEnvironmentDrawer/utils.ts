@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { getEmptyCategoryPayload } from '../cluster.util'
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { ClusterNamespacesDTO, GetClusterEnvironmentUpdatePayloadType } from './types'
+
+const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 
 export const getClusterEnvironmentUpdatePayload = ({
     id,
@@ -33,13 +36,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               IsVirtualEnvironment: true,
               cluster_id: +clusterId,
               description: data.description || '',
-              category: data.category?.value
-                  ? {
-                        id: data.category.value,
-                        name: data.category.label,
-                        description: data.category.description,
-                    }
-                  : getEmptyCategoryPayload(),
+              ...(getCategoryPayload ? getCategoryPayload(data.category) : null),
           }
         : {
               id,
@@ -50,13 +47,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               default: data.isProduction,
               description: data.description || '',
               updateLabels: !!namespaceLabels,
-              category: data.category?.value
-                  ? {
-                        id: data.category.value,
-                        name: data.category.label,
-                        description: data.category.description,
-                    }
-                  : getEmptyCategoryPayload(),
+              ...(getCategoryPayload ? getCategoryPayload(data.category) : null),
               ...(namespaceLabels
                   ? {
                         namespaceResourceVersion: resourceVersion,

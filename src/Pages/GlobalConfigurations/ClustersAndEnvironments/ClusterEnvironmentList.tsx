@@ -48,7 +48,7 @@ export const ClusterEnvironmentList = ({
         const deletePayload = {
             id: environment.id,
             environment_name: environment.environmentName,
-            cluster_id: environment.clusterId,
+            cluster_id: +environment.clusterId,
             prometheus_endpoint: environment.prometheusEndpoint,
             namespace: environment.namespace || '',
             active: true,

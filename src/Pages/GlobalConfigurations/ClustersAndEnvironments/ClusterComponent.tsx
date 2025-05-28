@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { generatePath, Route, useHistory } from 'react-router-dom'
 
 import {
@@ -49,15 +49,9 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
     const [clusters, setClusters] = useState<ClusterMetadataTypes[]>([])
 
-    const timerRef = useRef(null)
-
     const history = useHistory()
 
-    const initialize = useCallback(() => {
-        if (timerRef.current) {
-            clearInterval(timerRef.current)
-        }
-
+    const initialize = () => {
         Promise.all([getClusterList(), window._env_.K8S_CLIENT ? { result: undefined } : getEnvironmentList()])
             .then(([clusterRes, envResponse]) => {
                 const environments = envResponse.result || []
@@ -83,7 +77,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                 showError(error)
                 setView(ViewType.ERROR)
             })
-    }, [])
+    }
 
     const handleRedirectToClusterList = () => {
         history.push(URLS.GLOBAL_CONFIG_CLUSTER)
@@ -93,13 +87,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
         if (isSuperAdmin) {
             initialize()
         }
-
-        return () => {
-            if (timerRef.current) {
-                clearInterval(timerRef.current)
-            }
-        }
-    }, [initialize, isSuperAdmin])
+    }, [isSuperAdmin])
 
     if (!isSuperAdmin) {
         return (
@@ -158,7 +146,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             proxyUrl={cluster.proxyUrl}
                             insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
                             installationId={cluster.installationId}
-                            category={cluster?.category}
+                            category={cluster.category}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
                             clusterId={cluster.id}
                         />

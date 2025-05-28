@@ -116,7 +116,7 @@ export const ClusterEnvironmentDrawer = ({
 
         try {
             // Fetch namespaces from the cluster
-            const { result } = await getClusterNamespaces(clusterId)
+            const { result } = await getClusterNamespaces(+clusterId)
 
             // Update clusterNamespaces state with fetched data
             setClusterNamespaces({
@@ -175,7 +175,7 @@ export const ClusterEnvironmentDrawer = ({
         async (formData) => {
             const payload = getClusterEnvironmentUpdatePayload({
                 data: formData,
-                clusterId,
+                clusterId: +clusterId,
                 id,
                 namespaceLabels: namespaceLabels.labels,
                 resourceVersion: namespaceLabels.resourceVersion,

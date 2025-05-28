@@ -70,7 +70,6 @@ import {
     UserDetails,
 } from './cluster.type'
 import {
-    getEmptyCategoryPayload,
     getServerURLFromLocalStorage,
     PrometheusRequiredFieldInfo,
     PrometheusWarningInfo,
@@ -86,6 +85,7 @@ import './cluster.scss'
 const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect', null, 'function')
+const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 
 const ClusterForm = ({
     id = null,
@@ -374,13 +374,7 @@ const ClusterForm = ({
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
-        category: selectedCategory?.value
-            ? {
-                  name: selectedCategory.label,
-                  id: selectedCategory.value,
-                  description: selectedCategory.description,
-              }
-            : getEmptyCategoryPayload(),
+        ...(getCategoryPayload ? getCategoryPayload(selectedCategory) : null),
     })
 
     const onValidation = async (state) => {
