@@ -285,7 +285,7 @@ const ResourceList = () => {
             return <ErrorScreenManager code={error.code} />
         }
 
-        if (loading || !tabs.length) {
+        if (loading || !tabs.length || rawGVKLoader) {
             return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
         }
 
