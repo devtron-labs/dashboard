@@ -109,8 +109,10 @@ const ClusterInfoStepsModal = ({ subTitle, command, clusterName }: ClusterStepMo
                 text="View documentation"
                 dataTestId="cluster-info-step-view-documentation"
                 showExternalIcon
+                openInNewTab
             />
         </div>
     </div>
 )
+
 export default ClusterInfoStepsModal

@@ -28,7 +28,7 @@ import {
     Host,
     Icon,
     LoginBanner,
-    MotionDiv,
+    motion,
     SSOProviderIcon,
     ToastManager,
     ToastVariantType,
@@ -195,7 +195,7 @@ const Login = () => {
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
                         <AnimatePresence>
-                            <MotionDiv
+                            <motion.div
                                 key={location.pathname}
                                 variants={LOGIN_CARD_ANIMATION_VARIANTS}
                                 initial="initial"
@@ -205,7 +205,7 @@ const Login = () => {
                                 className="dc__overflow-hidden"
                             >
                                 {renderLoginContent()}
-                            </MotionDiv>
+                            </motion.div>
                         </AnimatePresence>
                     </div>
                     {getTermsAndConditions && getTermsAndConditions()}

@@ -477,6 +477,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                     docLinkKey="GLOBAL_CONFIG_API_TOKEN"
                     text="How to generate API tokens?"
                     dataTestId="learn-more-about-generating-api-tokens"
+                    openInNewTab
                 />
             )
         }
