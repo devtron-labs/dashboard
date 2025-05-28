@@ -712,7 +712,7 @@ const ManifestComponent = ({
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                     theme={AppThemeType.dark}
                     height={isResourceBrowserView || isDynamicTabsStuck ? 'fitToParent' : '100%'}
-                    onOpenSearchPanel={handleStickDynamicTabsToTopWrapper}
+                    onSearchPanelOpen={handleStickDynamicTabsToTopWrapper}
                     onSearchBarAction={handleStickDynamicTabsToTopWrapper}
                     {...(showManifestCompareView
                         ? {
