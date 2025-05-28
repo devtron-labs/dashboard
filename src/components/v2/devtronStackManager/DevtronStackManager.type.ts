@@ -17,7 +17,7 @@
 import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { InstallationType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ActionResponse } from '../../external-apps/ExternalAppService'
 
@@ -41,12 +41,6 @@ export enum ModuleStatus {
 export enum ModuleActions {
     INSTALL = 'install',
     UPGRADE = 'upgrade',
-}
-
-export enum InstallationType {
-    OSS_KUBECTL = 'oss_kubectl',
-    OSS_HELM = 'oss_helm',
-    ENTERPRISE = 'enterprise',
 }
 
 export interface StackDetailsType {
