@@ -144,17 +144,16 @@
     }
 
     .tag {
-        height: 20px;
         border-radius: 4px;
         border: solid 1px var(--B200);
         background-blend-mode: multiply;
         background-image: linear-gradient(to bottom, var(--B50), var(--B50));
         color: var(--B500);
-        font-size: 11px;
-        font-weight: 600;
+        font-size: 12px;
         padding: 0 6px;
         margin-left: 8px;
-        line-height: 23px;
+        line-height: 18px;
+        font-weight: 400;
     }
 }
 

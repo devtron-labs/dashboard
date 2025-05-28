@@ -142,15 +142,17 @@ export const ClusterEnvironmentList = ({
                             <div className="dc__truncate-text">{namespace}</div>
                             {hasCategory && (
                                 <div>
-                                    {category && (
-                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 dc__mxw-150 flex dc__truncate">
-                                            <InteractiveCellText text={category?.name} />
+                                    {category?.name ? (
+                                        <span className="bg__secondary dc__border px-6 fs-12 lh-20 cn-7 br-4 dc__mxw-fit-content flex dc__truncate">
+                                            <InteractiveCellText text={category.name} />
                                         </span>
+                                    ) : (
+                                        '-'
                                     )}
                                 </div>
                             )}
 
-                            <div className="cluster-list__description dc__truncate-text">{description}</div>
+                            <div className="cluster-list__description dc__truncate-text">{description || '-'}</div>
                             {renderActionButton(environmentName)}
                         </div>
                     ),

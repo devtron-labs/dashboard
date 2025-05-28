@@ -360,7 +360,7 @@ export const ClusterEnvironmentDrawer = ({
                     {AssignCategorySelect && (
                         <div className="w-250">
                             <AssignCategorySelect
-                                selectedCategory={data.category}
+                                selectedCategory={data.category?.value ? data.category : null}
                                 setSelectedCategory={register('category', { isCustomComponent: true }).onChange}
                             />
                         </div>
