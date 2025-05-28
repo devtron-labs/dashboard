@@ -729,20 +729,16 @@ export const InstallationWrapper = ({
     }, [releaseNotes])
 
     const fetchPreRequisiteListFromReleaseNotes = () => {
-        const _preRequisiteList = []
-        for (let index = 0; index < releaseNotes.length; index++) {
-            const element = releaseNotes[index]
-            if (element.releaseName === serverInfo?.currentVersion) {
-                break
-            }
-            if (element.prerequisite && element.prerequisiteMessage) {
-                _preRequisiteList.push({
-                    version: element.releaseName,
-                    prerequisiteMessage: element.prerequisiteMessage,
-                    tagLink: element.tagLink,
-                })
-            }
-        }
+        const _preRequisiteList = releaseNotes
+            .filter(
+                ({ releaseName, prerequisite, prerequisiteMessage }) =>
+                    releaseName !== serverInfo?.currentVersion && prerequisite && prerequisiteMessage,
+            )
+            .map(({ releaseName, prerequisiteMessage, tagLink }) => ({
+                version: releaseName,
+                prerequisiteMessage,
+                tagLink,
+            }))
         setPreRequisiteList(_preRequisiteList.reverse())
     }
 
