@@ -30,7 +30,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
 
     return (
         <>
-            <div className="px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12 dc__no-shrink">
+            <div className="side-panel-documentation__header px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12">
                 <Icon name="ic-book-open" color="N900" />
                 <h2 className="m-0 fs-16 lh-1-5 fw-6 cn-9 flex-grow-1">Documentation</h2>
                 <div className="flex dc__gap-8">
