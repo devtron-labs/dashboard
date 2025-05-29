@@ -5213,3 +5213,9 @@ details[open] {
     padding: 0;
     position: absolute;
 }
+
+.dc__contain {
+    &--paint {
+        contain: paint;
+    }
+}
