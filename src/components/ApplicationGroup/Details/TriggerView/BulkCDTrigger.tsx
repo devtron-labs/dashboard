@@ -566,7 +566,6 @@ const BulkCDTrigger = ({
                     responseList={responseList}
                     isLoading={isLoading}
                     isVirtualEnv={isVirtualEnv}
-                    envName={selectedApp.envName}
                 />
             )
         }

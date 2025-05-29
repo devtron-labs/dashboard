@@ -28,6 +28,7 @@ import {
     FilterConditionsListType,
     GVKType,
     MODAL_TYPE,
+    OptionType,
     PipelineIdsVsDeploymentStrategyMap,
     ResponseType,
     RuntimePluginVariables,
@@ -44,7 +45,7 @@ import {
     EnvConfigurationState,
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
-import { EditDescRequest, Nodes, NodeType, OptionType } from '../app/types'
+import { EditDescRequest, Nodes, NodeType } from '../app/types'
 import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/scaleWorkloadsModal.type'
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
@@ -101,15 +102,26 @@ export interface BulkCDDetailType
     isExceptionUser?: boolean
 }
 
-export interface ResponseRowType {
+export type TriggerVirtualEnvResponseRowType =
+    | {
+          isVirtual: true
+          helmPackageName: string
+          cdWorkflowType: DeploymentNodeType
+      }
+    | {
+          isVirtual?: never
+          helmPackageName?: never
+          cdWorkflowType?: DeploymentNodeType
+      }
+
+export type ResponseRowType = {
     appId: number
     appName: string
     status: BulkResponseStatus
     statusText: string
     message: string
-    isVirtual?: boolean
     envId?: number
-}
+} & TriggerVirtualEnvResponseRowType
 
 interface BulkRuntimeParamsType {
     runtimeParams: Record<string, RuntimePluginVariables[]>
@@ -195,7 +207,6 @@ export interface TriggerResponseModalBodyProps {
     responseList: ResponseRowType[]
     isLoading: boolean
     isVirtualEnv?: boolean
-    envName?: string
 }
 
 type RetryFailedType =
@@ -220,7 +231,6 @@ export interface TriggerModalRowType {
     rowData: ResponseRowType
     index: number
     isVirtualEnv?: boolean
-    envName?: string
 }
 
 export interface WorkflowNodeSelectionType {

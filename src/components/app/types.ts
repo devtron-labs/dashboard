@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, ReactNode, SetStateAction } from 'react'
-import { RouteComponentProps } from 'react-router-dom'
+import React, { Dispatch, SetStateAction } from 'react'
 import {
     ACTION_STATE,
     DeploymentAppTypes,
@@ -25,63 +24,14 @@ import {
     ReleaseMode,
     AppEnvironment,
     HelmReleaseStatus,
-    DynamicDataTableRowType,
-    TagsTableColumnsType,
-    DynamicDataTableCellErrorType,
     BaseAppMetaData,
+    DeploymentStatusDetailsBreakdownDataType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DeploymentStatusDetailsBreakdownDataType, DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
+import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
 import { CDMaterialProps } from './details/triggerView/types'
-
-export interface AddNewAppProps extends RouteComponentProps<{}> {
-    close: (e) => void
-    isJobView?: boolean
-}
-
-export interface OptionType {
-    label: string
-    value: string
-}
-
-export interface NumberOptionType {
-    label: string
-    value: number
-}
-
-export interface LabelTags {
-    tags: OptionType[]
-    inputTagValue: string
-    tagError: string
-}
-
-export interface AddNewAppState {
-    view: string
-    code: number
-    disableForm: boolean
-    projects: OptionType[]
-    appNameErrors: boolean
-    showErrors: boolean
-    form: {
-        appName: string
-        description: string
-        appId: number
-        projectId: number
-        cloneId: number
-        appCreationType: string
-    }
-    tags: DynamicDataTableRowType<TagsTableColumnsType>[]
-    tagsError: DynamicDataTableCellErrorType<TagsTableColumnsType>
-    isValid: {
-        projectId: boolean
-        appName: boolean
-        cloneAppId: boolean
-        description: boolean
-    }
-    createAppLoader: boolean
-}
 
 interface CDModalProps {
     cdPipelineId?: number
@@ -140,7 +90,7 @@ export interface LabelTag {
     value: string
 }
 
-export interface ChartUsed {
+interface ChartUsed {
     appStoreAppName: string
     appStoreAppVersion: string
     appStoreChartId: number
@@ -508,12 +458,6 @@ export interface EditAppRequest {
     description: AppMetaInfo['description']
 }
 
-export interface LabelTagsType {
-    tags: OptionType[]
-    inputTagValue: string
-    tagError: string
-}
-
 export interface AppOverviewProps {
     appMetaInfo: AppMetaInfo
     getAppMetaInfoRes: () => Promise<AppMetaInfo>
@@ -524,13 +468,6 @@ export interface AppOverviewProps {
      * @default 'app'
      */
     appType: APP_TYPE.JOB | APP_TYPE.DEVTRON_APPS | APP_TYPE.HELM_CHART
-}
-
-export interface OverviewConfig {
-    resourceName: string
-    defaultNote: string
-    icon: ReactNode
-    defaultDescription: string
 }
 
 export interface AboutAppInfoModalProps extends Pick<AppOverviewProps, 'appType'> {
@@ -579,7 +516,6 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     loadingResourceTree?: boolean
     isVirtualEnvironment?: boolean
     setRotateModal?: React.Dispatch<React.SetStateAction<boolean>>
-    refetchDeploymentStatus: (showTimeline?: boolean) => void
     toggleIssuesModal?: React.Dispatch<React.SetStateAction<boolean>>
     envId?: number | string
     ciArtifactId?: number

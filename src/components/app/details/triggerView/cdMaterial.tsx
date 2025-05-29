@@ -23,7 +23,6 @@ import {
     abortPreviousRequests,
     ACTION_STATE,
     AnimatedDeployButton,
-    AnnouncementBanner,
     ApprovalRuntimeStateType,
     ArtifactInfo,
     ArtifactInfoProps,
@@ -1880,10 +1879,6 @@ const CDMaterial = ({
                 </button>
             </div>
 
-            {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
-            )}
-
             {/* FIXME: This material.length>1 needs to be optimised */}
             {isApprovalConfigured &&
                 !isExceptionUser &&
@@ -2000,9 +1995,6 @@ const CDMaterial = ({
     if (material.length > 0) {
         return isFromBulkCD ? (
             <>
-                {!showConfigDiffView && window?._env_?.ANNOUNCEMENT_BANNER_MSG && (
-                    <AnnouncementBanner parentClassName="cd-trigger-announcement" isCDMaterial />
-                )}
                 {renderTriggerBody(isApprovalConfigured)}
             </>
         ) : (

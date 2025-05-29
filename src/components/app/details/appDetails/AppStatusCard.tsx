@@ -17,12 +17,11 @@
 import React, { useMemo } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { AppStatus, AppType, StatusType, LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, AppType, StatusType, LoadingCard, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import './appDetails.scss'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getAIAnalyticsEvents } from 'src/Shared'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
@@ -100,7 +99,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                         </Tippy>
                     </div>
                     <div className="flex fs-12 fw-4">
-                        <div className={`fs-13 fw-6 lh-20 f-${status.toLowerCase()}`}>
+                        <div className={`fs-13 fw-6 lh-20 app-summary__status-name f-${status.toLowerCase()}`}>
                             {isHibernated ? 'Hibernating' : status}
                         </div>
                     </div>

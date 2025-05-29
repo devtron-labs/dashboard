@@ -55,10 +55,6 @@ export const getInstalledChartDetailWithResourceTree = (
         abortControllerRef,
     })
 
-export const getInstalledAppDetail = (_appId: number, _envId: number) => {
-    return get(`app/detail?app-id=${_appId}&env-id=${_envId}`)
-}
-
 export const getSaveTelemetry = (appId: string) => {
     return get(`${Routes.HELM_RELEASE_APP_DETAIL_API}/save-telemetry/?appId=${appId}`)
 }
