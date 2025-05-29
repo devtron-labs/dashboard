@@ -211,7 +211,7 @@ export type EditClusterFormProps = {
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
     selectedCategory: SelectPickerOptionType
-    setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
+    setSelectedCategory?: Dispatch<SetStateAction<SelectPickerOptionType>>
 }
 
 export type ClusterFormProps = { reload: () => void } & (
