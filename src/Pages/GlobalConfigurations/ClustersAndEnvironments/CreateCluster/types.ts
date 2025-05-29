@@ -36,4 +36,5 @@ export enum FooterComponentChildKey {
 export interface EnterpriseTrialDialogProps {
     featureTitle: string
     featureDescription: string
+    showBorder?: boolean
 }

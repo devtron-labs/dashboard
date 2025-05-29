@@ -12,8 +12,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SIDE_PANEL_ASIDE_DRAG_HANDLE, SIDE_PANEL_MAX_ASIDE_WIDTH, SIDE_PANEL_MIN_ASIDE_WIDTH } from './constants'
-import { SidePanelDocumentation } from './SidePanelDocumentation'
-import { SidePanelProps } from './types'
+import { SidePanelContent } from './SidePanelContent'
+import { SidePanelProps, SidePanelTab } from './types'
 
 import './SidePanel.scss'
 
@@ -93,7 +93,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                         className={`flex-grow-1 dc__position-rel mt-8 mr-8 mb-8 br-6 bg__primary flexbox-col dc__overflow-hidden ${appTheme === AppThemeType.dark ? 'border__primary-translucent' : ''}`}
                     >
                         {contentOverlay && <div className="dc__position-abs w-100 h-100 dc__zi-1" />}
-                        <SidePanelDocumentation onClose={handleClose} />
+                        <SidePanelContent onClose={handleClose} initialTab={SidePanelTab.DOCUMENTATION} />
                     </div>
                 </motion.aside>
             )}

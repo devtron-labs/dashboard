@@ -53,7 +53,7 @@ import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
-import { ErrorBoundary, AppContext } from '..'
+import { ErrorBoundary, AppContext, AppContextType } from '..'
 import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { Security } from '../../security/Security'
 import {
@@ -110,6 +110,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
+const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
@@ -125,6 +126,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const location = useLocation()
     const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
+    const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -147,6 +149,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     }
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
+
+    const parentRef = useRef<HTMLDivElement>(null)
 
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
@@ -502,13 +506,15 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
+                aiAgentContext,
+                setAIAgentContext,
                 sidePanelConfig,
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
             }}
         >
-            <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+            <motion.main ref={parentRef} id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                 {showThemeSwitcherDialog && (
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}
@@ -516,6 +522,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
+                {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && <AIChat parentRef={parentRef} {...aiAgentContext} />}
                 {renderAboutDevtronDialog()}
                 {!isOnboardingPage && (
                     <Navigation
