@@ -814,14 +814,15 @@ const Logo = ({ src = '', style = {}, className = '', children = null }) => {
 const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', category = '' }) => {
     return (
         <div className="flex column left">
-            <div className={`list__title ${className}`} style={style}>
-                {title}
-                {tag && <span className="tag">{tag}</span>}
+            <div className={`list__title ${className} flex`} style={style}>
+                <div className='dc__no-shrink dc__mxw-480 dc__truncate'><InteractiveCellText text={title} /></div>
+                {tag && <div className="tag dc__no-shrink">{tag}</div>}
                 {category && (
-                    <span className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18">
-                        {category}
-                    </span>
+                    <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate">
+                        <InteractiveCellText text={category} fontSize={12} />
+                    </div>
                 )}
+
             </div>
             {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
         </div>

@@ -113,12 +113,12 @@ export const ClusterList = ({
                     <List.Title
                         title={clusterName || 'Add cluster'}
                         subtitle={subTitle}
-                        className="fw-6 dc__mxw-400 dc__truncate-text"
+                        className="fw-6"
                         tag={isProd ? 'Prod' : null}
                         category={category && category.name}
                     />
                     {clusterName && (
-                        <div className="flex dc__align-right dc__gap-16">
+                        <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
                             <Button
                                 dataTestId={`add-environment-button-${clusterName}`}
                                 component={ButtonComponentType.link}
