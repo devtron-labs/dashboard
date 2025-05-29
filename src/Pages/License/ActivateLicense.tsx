@@ -5,13 +5,13 @@ import {
     ActivateLicenseDialog,
     API_STATUS_CODES,
     Button,
+    ButtonComponentType,
     ButtonVariantType,
     CONTACT_SUPPORT_LINK,
     DevtronLicenseCard,
     DevtronProgressing,
     ENTERPRISE_SUPPORT_LINK,
     ErrorScreenManager,
-    getHandleOpenURL,
     ICDevtronWithBorder,
     Icon,
     InfoBlock,
@@ -93,9 +93,10 @@ const ActivateLicense = () => {
                     buttonProps={{
                         text: 'Contact Support',
                         variant: ButtonVariantType.text,
-                        onClick: getHandleOpenURL(CONTACT_SUPPORT_LINK),
+                        component: ButtonComponentType.anchor,
                         dataTestId: 'contact-support',
                         startIcon: <Icon name="ic-chat-circle-dots" color="B500" size={16} />,
+                        anchorProps: { href: CONTACT_SUPPORT_LINK },
                     }}
                     layout="column"
                 />

@@ -168,9 +168,11 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
                         icon={<ICArrowOut />}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.xs}
-                        component={ButtonComponentType.button}
+                        component={ButtonComponentType.anchor}
                         style={ButtonStyleType.neutral}
-                        onClick={getHandleOpenURL(selectedExternalLink.externalLinkURL)}
+                        anchorProps={{
+                            href: selectedExternalLink.externalLinkURL,
+                        }}
                         showAriaLabelInTippy={false}
                     />
                     <Button
