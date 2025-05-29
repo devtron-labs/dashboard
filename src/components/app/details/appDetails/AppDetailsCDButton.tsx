@@ -78,11 +78,13 @@ const AppDetailsCDButton = ({
             search: new URLSearchParams(newParams).toString(),
         })
 
-        if (!isForRollback) {
-            ReactGA.event(
-                isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
-            )
+        if (isForRollback) {
+            ReactGA.event(DA_APP_DETAILS_GA_EVENTS.RollbackButtonClicked)
+            return
         }
+        ReactGA.event(
+            isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
+        )
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
