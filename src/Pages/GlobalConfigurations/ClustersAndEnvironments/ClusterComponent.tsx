@@ -92,6 +92,14 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
         }
     }, [isSuperAdmin])
 
+    const getParsedSelectedCategory = (category) =>
+        category?.name
+            ? {
+                  label: category.name,
+                  value: category.id,
+              }
+            : null
+
     if (!isSuperAdmin) {
         return (
             <div className="dc__align-reload-center">
@@ -152,7 +160,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             category={cluster.category}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
                             clusterId={cluster.id}
-                            selectedCategory={selectedCategory}
+                            selectedCategory={getParsedSelectedCategory(cluster.category)}
                             setSelectedCategory={setSelectedCategory}
                         />
                     ),

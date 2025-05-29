@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 import {
     Button,
@@ -58,17 +58,6 @@ export const ClusterList = ({
         containerSelector: '.global-configuration__component-wrapper',
         identifier: `cluster-list__${clusterName}`,
     })
-
-    useEffect(() => {
-        setSelectedCategory(
-            category?.name
-                ? {
-                      label: category.name,
-                      value: category.id,
-                  }
-                : null,
-        )
-    }, [category])
 
     const handleModalClose = () => {
         setEditMode(false)
