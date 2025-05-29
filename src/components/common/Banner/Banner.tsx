@@ -24,13 +24,12 @@ import {
     ComponentSizeType,
     Icon,
     InfoBlockVariant,
-    MotionDiv,
+    InstallationType,
+    motion,
     noop,
     setActionWithExpiry,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
@@ -179,7 +178,7 @@ export const Banner = () => {
     return (
         <AnimatePresence custom={!!bannerVariant}>
             {bannerVariant && config && (
-                <MotionDiv
+                <motion.div
                     layout
                     key={bannerVariant}
                     variants={bannerVariants}
@@ -218,7 +217,7 @@ export const Banner = () => {
                             showAriaLabelInTippy={false}
                         />
                     )}
-                </MotionDiv>
+                </motion.div>
             )}
         </AnimatePresence>
     )
