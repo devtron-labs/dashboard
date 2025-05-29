@@ -37,7 +37,6 @@ import {
     PasswordField,
     RadioGroup,
     RadioGroupItem,
-    SelectPickerOptionType,
     showError,
     Textarea,
     ToastManager,
@@ -107,7 +106,8 @@ const ClusterForm = ({
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
-    category,
+    selectedCategory,
+    setSelectedCategory,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -146,15 +146,6 @@ const ClusterForm = ({
     const areSomeEntriesSelected = Object.values(isClusterSelected).some((_selected) => _selected)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
-
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(
-        category
-            ? {
-                  label: category.name,
-                  value: category.id,
-              }
-            : null,
-    )
 
     useEffect(
         () => () => {

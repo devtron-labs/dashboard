@@ -10,6 +10,7 @@ import {
     getClassNameForStickyHeaderWithShadow,
     Icon,
     noop,
+    SelectPickerOptionType,
     showError,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -49,6 +50,15 @@ export const ClusterList = ({
 }: ClusterListProps) => {
     const [editMode, setEditMode] = useState(false)
     const [prometheusAuth, setPrometheusAuth] = useState(null)
+
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(
+        category
+            ? {
+                  label: category.name,
+                  value: category.id,
+              }
+            : null,
+    )
 
     const drawerRef = useRef(null)
 
@@ -176,7 +186,8 @@ export const ClusterList = ({
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}
-                                category={category}
+                                selectedCategory={selectedCategory}
+                                setSelectedCategory={setSelectedCategory}
                             />
                         </div>
                     </Drawer>
@@ -186,7 +197,7 @@ export const ClusterList = ({
                         clusterName={clusterName}
                         handleModalClose={handleModalClose}
                         reload={reload}
-                        category={category}
+                        category={selectedCategory}
                     />
                 ))}
         </article>

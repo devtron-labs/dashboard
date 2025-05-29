@@ -195,7 +195,7 @@ export interface ClusterTerminalParamsType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
-export type EditClusterFormProps = Pick<ClusterListProps, 'category'> & {
+export type EditClusterFormProps = {
     id: number
     setEditMode: Dispatch<SetStateAction<boolean>>
     isProd?: boolean
@@ -210,6 +210,8 @@ export type EditClusterFormProps = Pick<ClusterListProps, 'category'> & {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
+    selectedCategory: SelectPickerOptionType
+    setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
 }
 
 export type ClusterFormProps = { reload: () => void } & (
