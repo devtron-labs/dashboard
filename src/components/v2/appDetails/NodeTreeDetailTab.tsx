@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
-import { EnvResourceType, noop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
+import { EnvResourceType, noop, smoothScrollToTop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICLogs } from '@Icons/ic-logs.svg'
 import { ReactComponent as ICObject } from '@Icons/ic-object.svg'
@@ -73,6 +73,10 @@ const NodeTreeDetailTab = ({
         identifier: 'node-tree-detail-tab',
     })
 
+    const handleScrollToTop = () => {
+        smoothScrollToTop(stickyElementRef.current.parentElement, stickyElementRef.current.offsetTop)
+    }
+
     const dynamicTabsBackgroundClass = isDynamicTabsStuck ? 'bg__tertiary' : 'bg__primary'
 
     useEffect(() => {
@@ -106,13 +110,22 @@ const NodeTreeDetailTab = ({
         })
     }
 
+    const handleStickDynamicTabsToTop = () => {
+        if (isDynamicTabsStuck) {
+            return
+        }
+        if (stickyElementRef.current) {
+            handleScrollToTop()
+        }
+    }
+
     // NOTE: don't render any of the components before tabs are initialized
     // this is cuz, the components mark their own corresponding tabs as the selected tabs on mount
     return (
         showContent && (
             <div
                 ref={stickyElementRef}
-                className="dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
+                className="flex-grow-1 dc__position-sticky dc__top-0 h-100 dc__no-shrink flexbox-col node-tree-details-wrapper"
             >
                 <div className={`${dynamicTabsBackgroundClass} dc__transition--background pt-7 dc__no-shrink`}>
                     <DynamicTabs
@@ -179,6 +192,9 @@ const NodeTreeDetailTab = ({
                                         setLogSearchTerms,
                                         isExternalApp,
                                         lowercaseKindToResourceGroupMap: {},
+                                        isResourceBrowserView: false,
+                                        isDynamicTabsStuck,
+                                        handleStickDynamicTabsToTop,
                                     }}
                                 />
                             )}
