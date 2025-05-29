@@ -20,7 +20,7 @@ import { URLS } from '@Config/routes'
 import { List } from '../../../components/globalConfigurations/GlobalConfiguration'
 import { getCluster } from './cluster.service'
 import { ClusterListProps, EditClusterFormProps } from './cluster.type'
-import { renderNoEnvironmentTab } from './cluster.util'
+import { getSelectParsedCategory, renderNoEnvironmentTab } from './cluster.util'
 import { ClusterEnvironmentList } from './ClusterEnvironmentList'
 import ClusterForm from './ClusterForm'
 
@@ -43,11 +43,9 @@ export const ClusterList = ({
     proxyUrl,
     insecureSkipTlsVerify,
     installationId,
-    category,
     toConnectWithSSHTunnel,
     clusterId,
-    selectedCategory,
-    setSelectedCategory,
+    category,
 }: ClusterListProps) => {
     const [editMode, setEditMode] = useState(false)
     const [prometheusAuth, setPrometheusAuth] = useState(null)
@@ -117,7 +115,7 @@ export const ClusterList = ({
                         subtitle={subTitle}
                         className="fw-6"
                         tag={isProd ? 'Prod' : null}
-                        category={category && category.name}
+                        category={category?.name}
                     />
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
@@ -178,8 +176,7 @@ export const ClusterList = ({
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}
-                                selectedCategory={selectedCategory}
-                                setSelectedCategory={setSelectedCategory}
+                                category={category}
                             />
                         </div>
                     </Drawer>
@@ -189,7 +186,7 @@ export const ClusterList = ({
                         clusterName={clusterName}
                         handleModalClose={handleModalClose}
                         reload={reload}
-                        category={selectedCategory}
+                        category={getSelectParsedCategory(category)}
                     />
                 ))}
         </article>

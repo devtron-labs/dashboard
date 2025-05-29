@@ -26,7 +26,6 @@ import {
     Icon,
     Progressing,
     Reload,
-    SelectPickerOptionType,
     showError,
     sortCallback,
     URLS as CommonURLS,
@@ -49,8 +48,6 @@ const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton'
 const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
     const [clusters, setClusters] = useState<ClusterMetadataTypes[]>([])
-
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(null)
 
     const history = useHistory()
 
@@ -91,14 +88,6 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
             initialize()
         }
     }, [isSuperAdmin])
-
-    const getParsedSelectedCategory = (category) =>
-        category?.name
-            ? {
-                  label: category.name,
-                  value: category.id,
-              }
-            : null
 
     if (!isSuperAdmin) {
         return (
@@ -160,8 +149,6 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                             category={cluster.category}
                             toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
                             clusterId={cluster.id}
-                            selectedCategory={getParsedSelectedCategory(cluster.category)}
-                            setSelectedCategory={setSelectedCategory}
                         />
                     ),
             )}
@@ -173,11 +160,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
             )}
 
             <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                <CreateCluster
-                    handleReloadClusterList={initialize}
-                    selectedCategory={selectedCategory}
-                    setSelectedCategory={setSelectedCategory}
-                />
+                <CreateCluster handleReloadClusterList={initialize} />
             </Route>
 
             <Route

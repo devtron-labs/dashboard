@@ -37,6 +37,7 @@ import {
     PasswordField,
     RadioGroup,
     RadioGroupItem,
+    SelectPickerOptionType,
     showError,
     Textarea,
     ToastManager,
@@ -69,6 +70,7 @@ import {
     UserDetails,
 } from './cluster.type'
 import {
+    getSelectParsedCategory,
     getServerURLFromLocalStorage,
     PrometheusRequiredFieldInfo,
     PrometheusWarningInfo,
@@ -106,8 +108,7 @@ const ClusterForm = ({
     handleModalClose = noop,
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
-    selectedCategory,
-    setSelectedCategory,
+    category,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -117,6 +118,8 @@ const ClusterForm = ({
     const [isKubeConfigFile, toggleKubeConfigFile] = useState(false)
     const [isClusterDetails, toggleClusterDetails] = useState(false)
     const authenTicationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
+
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(getSelectParsedCategory(category))
 
     const isConnectedViaProxy = !!proxyUrl
 

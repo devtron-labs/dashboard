@@ -1,7 +1,5 @@
 import { IconName } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterListProps } from '../cluster.type'
-
 export enum CreateClusterTypeEnum {
     CONNECT_CLUSTER = 'connect-cluster',
     CREATE_EKS_CLUSTER = 'create-eks-cluster',
@@ -25,7 +23,7 @@ export interface CreateClusterParams {
     type: CreateClusterTypeEnum
 }
 
-export interface CreateClusterProps extends Pick<ClusterListProps, 'selectedCategory' | 'setSelectedCategory'> {
+export interface CreateClusterProps {
     handleReloadClusterList: () => void
     handleRedirectOnModalClose?: () => void
 }

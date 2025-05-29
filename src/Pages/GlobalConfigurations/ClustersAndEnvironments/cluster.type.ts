@@ -126,11 +126,9 @@ export interface ClusterListProps {
     proxyUrl: string
     insecureSkipTlsVerify: boolean
     installationId: number
-    category: ClusterEnvironmentCategoryType
     toConnectWithSSHTunnel: boolean
     clusterId: number
-    selectedCategory: SelectPickerOptionType
-    setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
+    category: ClusterEnvironmentCategoryType
 }
 
 export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'> {
@@ -214,10 +212,7 @@ export type EditClusterFormProps = {
     isTlsConnection: boolean
 }
 
-export type ClusterFormProps = { reload: () => void } & Pick<
-    ClusterListProps,
-    'selectedCategory' | 'setSelectedCategory'
-> &
+export type ClusterFormProps = { reload: () => void } & Pick<ClusterListProps, 'category'> &
     (
         | ({
               handleCloseCreateClusterForm?: never

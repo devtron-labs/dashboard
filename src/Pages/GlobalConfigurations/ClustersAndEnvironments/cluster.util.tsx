@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { Icon, NodeTaintType, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterEnvironmentCategoryType,
+    Icon,
+    NodeTaintType,
+    OptionType,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
 
@@ -134,3 +140,11 @@ export const renderNoEnvironmentTab = () => (
         </div>
     </div>
 )
+
+export const getSelectParsedCategory = (category: ClusterEnvironmentCategoryType): SelectPickerOptionType =>
+    category?.name
+        ? {
+              label: category.name,
+              value: category.id,
+          }
+        : null
