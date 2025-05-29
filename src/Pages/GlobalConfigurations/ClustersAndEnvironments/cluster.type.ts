@@ -129,6 +129,8 @@ export interface ClusterListProps {
     category: ClusterEnvironmentCategoryType
     toConnectWithSSHTunnel: boolean
     clusterId: number
+    selectedCategory: SelectPickerOptionType
+    setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
 }
 
 export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'> {
@@ -210,22 +212,24 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-    selectedCategory: SelectPickerOptionType
-    setSelectedCategory?: Dispatch<SetStateAction<SelectPickerOptionType>>
 }
 
-export type ClusterFormProps = { reload: () => void } & (
-    | ({
-          handleCloseCreateClusterForm?: never
-          id: number
-          installationId: number
-      } & EditClusterFormProps)
-    | ({
-          handleCloseCreateClusterForm: () => void
-          id?: never
-          installationId?: never
-      } & Partial<Record<keyof EditClusterFormProps, never>>)
-)
+export type ClusterFormProps = { reload: () => void } & Pick<
+    ClusterListProps,
+    'selectedCategory' | 'setSelectedCategory'
+> &
+    (
+        | ({
+              handleCloseCreateClusterForm?: never
+              id: number
+              installationId: number
+          } & EditClusterFormProps)
+        | ({
+              handleCloseCreateClusterForm: () => void
+              id?: never
+              installationId?: never
+          } & Partial<Record<keyof EditClusterFormProps, never>>)
+    )
 
 export interface AddClusterFormPrefilledInfoType {
     serverURL: string

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
     Button,
@@ -10,7 +10,6 @@ import {
     getClassNameForStickyHeaderWithShadow,
     Icon,
     noop,
-    SelectPickerOptionType,
     showError,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -47,18 +46,11 @@ export const ClusterList = ({
     category,
     toConnectWithSSHTunnel,
     clusterId,
+    selectedCategory,
+    setSelectedCategory,
 }: ClusterListProps) => {
     const [editMode, setEditMode] = useState(false)
     const [prometheusAuth, setPrometheusAuth] = useState(null)
-
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(
-        category
-            ? {
-                  label: category.name,
-                  value: category.id,
-              }
-            : null,
-    )
 
     const drawerRef = useRef(null)
 
@@ -66,6 +58,17 @@ export const ClusterList = ({
         containerSelector: '.global-configuration__component-wrapper',
         identifier: `cluster-list__${clusterName}`,
     })
+
+    useEffect(() => {
+        setSelectedCategory(
+            category?.name
+                ? {
+                      label: category.name,
+                      value: category.id,
+                  }
+                : null,
+        )
+    }, [category])
 
     const handleModalClose = () => {
         setEditMode(false)

@@ -45,7 +45,12 @@ const VirtualClusterForm = importComponentFromFELibrary(
     'function',
 )
 
-const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: CreateClusterProps) => {
+const CreateCluster = ({
+    handleReloadClusterList,
+    handleRedirectOnModalClose,
+    selectedCategory,
+    setSelectedCategory,
+}: CreateClusterProps) => {
     const { type } = useParams<CreateClusterParams>()
 
     const [apiCallInProgress, setApiCallInProgress] = useState(false)
@@ -72,6 +77,8 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         reload={handleReloadClusterList}
                         handleModalClose={handleModalClose}
                         FooterComponent={FooterComponent}
+                        selectedCategory={selectedCategory}
+                        setSelectedCategory={setSelectedCategory}
                     />
                 )
             case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:

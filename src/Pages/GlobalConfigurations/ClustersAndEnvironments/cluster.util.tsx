@@ -87,8 +87,9 @@ export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string 
             const envData: AddEnvironmentFormPrefilledInfoType = JSON.parse(stringifiedEnvData)
             const namespace = envData?.namespace || fallbackNamespace
             return namespace
-            // eslint-disable-next-line no-empty
-        } catch {}
+        } catch {
+            // do nothing
+        }
     }
     return fallbackNamespace
 }
