@@ -18,7 +18,7 @@ import { useState } from 'react'
 import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { ActionMenu, ActionMenuProps, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenu, ActionMenuProps, ButtonStyleType, Icon } from '@devtron-labs/devtron-fe-common-lib'
 
 type ActionMenuItems =
     | 'value-1'
@@ -26,6 +26,7 @@ type ActionMenuItems =
     | 'value-3'
     | 'value-4'
     | 'value-5'
+    | 'value-6'
     | 'group-value-1'
     | 'group-value-2'
     | 'group-value-3'
@@ -157,6 +158,22 @@ const BaseComponent = (props: BaseComponentPropsType) => {
                         content: 'Tooltip content for value 5',
                     },
                     label: "Trailing Item: 'counter'",
+                    description:
+                        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
+                },
+                {
+                    id: 'value-6',
+                    trailingItem: {
+                        type: 'button',
+                        config: {
+                            icon: <Icon name="ic-cube" color={null} />,
+                            ariaLabel: 'action-menu-item-trailing-item-button',
+                            dataTestId: 'action-menu-item-trailing-item-button',
+                            showAriaLabelInTippy: false,
+                            style: ButtonStyleType.negativeGrey,
+                        },
+                    },
+                    label: "Trailing Item: 'button'",
                     description:
                         'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
                 },
