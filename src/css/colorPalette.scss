@@ -247,9 +247,9 @@ $black: 0, 0, 0;
     --shadow-modal: 0px 1px 1px 0px rgba(#{$black}, 0.04), 0px 2px 8px 0px rgba(#{$black}, 0.04), 0px 3px 17px 0px rgba(#{$black}, 0.04), 0px 4px 30px 0px rgba(#{$black}, 0.13);
     --shadow-overlay: 0px 1px 1px 0px rgba(#{$black}, 0.04), 0px 2px 6px 0px rgba(#{$black}, 0.04), 0px 4px 12px 0px rgba(#{$black}, 0.1);
     --shadow-drawer: 0px 1px 1px 0px rgba(#{$black}, 0.04), 0px 2px 8px 0px rgba(#{$black}, 0.04), 0px 3px 17px 0px rgba(#{$black}, 0.04), 0px 4px 30px 0px rgba(#{$black}, 0.13);
-    --shadow-card-primary: 0px 1px 2px 0px rgba(1, 87, 173, 0.1);
-    --shadow-card-secondary: 0px 0px 8px 0px rgba(#{$black}, 0.1);
-    --shadow-card-tertiary: 0 8px 12px 0 rgba(30, 35, 96, 0.1), 0 1px 4px 0 rgba(#{$black}, 0.1);
+    --shadow-10: 0px 0px 4px 0px var(--black-20);
+    --shadow-20: 0px 0px 7px 0px var(--black-20);
+    --shadow-30: 0px 0px 10px 0px var(--black-20);
 
     &.theme {
         &__light {

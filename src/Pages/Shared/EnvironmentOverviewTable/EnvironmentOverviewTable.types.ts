@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { FunctionComponent, MouseEvent, ReactElement, SVGProps } from 'react'
+import { MouseEvent, MutableRefObject, PropsWithChildren, ReactElement } from 'react'
+
+import { IconName } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EnvironmentOverviewTableHeaderKeys } from './EnvironmentOverview.constants'
 
@@ -32,15 +34,14 @@ export interface EnvironmentOverviewTableRowData {
 export type EnvironmentOverviewTablePopUpMenuItem =
     | {
           label: string
-          Icon?: FunctionComponent<SVGProps<SVGSVGElement>>
-          iconType?: 'fill' | 'stroke'
+          iconName?: IconName
           disabled?: boolean
           onClick?: (event: MouseEvent<HTMLButtonElement>) => void
       }
     | ReactElement
 
 export interface EnvironmentOverviewTableRow {
-    environment: EnvironmentOverviewTableRowData
+    app: EnvironmentOverviewTableRowData
     isChecked?: boolean
     onLastDeployedImageClick: (event: MouseEvent<HTMLButtonElement>) => void
     onCommitClick: (event: MouseEvent<HTMLButtonElement>) => void
@@ -54,3 +55,11 @@ export interface EnvironmentOverviewTableProps {
     isVirtualEnv?: boolean
     onCheckboxSelect: (id: EnvironmentOverviewTableRowData['id'], isChecked: boolean, isAllChecked: boolean) => void
 }
+
+export interface EnvironmentOverviewBulkSelectionWidgetProps
+    extends PropsWithChildren<{
+            count: number
+            onClose: () => void
+            parentRef: MutableRefObject<HTMLDivElement>
+        }>,
+        Pick<EnvironmentOverviewTableRow, 'popUpMenuItems'> {}

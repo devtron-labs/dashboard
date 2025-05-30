@@ -681,6 +681,7 @@ const Details: React.FC<DetailsType> = ({
                     deploymentUserActionState={deploymentUserActionState}
                     setHibernationPatchChartName={setHibernationPatchChartName}
                     applications={applications}
+                    isResourceTreeReloading={isReloadResourceTreeInProgress}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (

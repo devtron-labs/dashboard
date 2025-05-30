@@ -34,6 +34,7 @@ import {
     showError,
     Tooltip,
     URLS as CommonURLS,
+    LoadingCard,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../../../config'
@@ -46,7 +47,6 @@ import DeployedCommitCard from './DeployedCommitCard'
 import IssuesCard from './IssuesCard'
 import SecurityVulnerabilityCard from './SecurityVulnerabilityCard'
 import AppStatusCard from './AppStatusCard'
-import LoadingCard from './LoadingCard'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
@@ -62,6 +62,7 @@ const DeploymentWindowStatusCard = importComponentFromFELibrary('DeploymentWindo
 const ConfigSyncStatusButton = importComponentFromFELibrary('ConfigSyncStatusButton', null, 'function')
 const SwapTraffic = importComponentFromFELibrary('SwapTraffic', null, 'function')
 const getHibernationPatchConfig = importComponentFromFELibrary('getHibernationPatchConfig', null, 'function')
+const DeploymentStrategyCard = importComponentFromFELibrary('DeploymentStrategyCard', null, 'function')
 
 export const SourceInfo = ({
     appDetails,
@@ -85,6 +86,7 @@ export const SourceInfo = ({
     setHibernationPatchChartName,
     applications,
     isAppView,
+    isResourceTreeReloading,
 }: SourceInfoType) => {
     const params = useParams<{ appId: string; envId?: string }>()
 
@@ -160,8 +162,33 @@ export const SourceInfo = ({
     }
 
     const onClickSliderVerticalButton = () => {
-        ReactGA.event(isAppView ? DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration: AG_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration)
+        ReactGA.event(
+            isAppView
+                ? DA_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration
+                : AG_APP_DETAILS_GA_EVENTS.GoToEnvironmentConfiguration,
+        )
     }
+
+    const renderAppDetailsCDButton = (isForRollback?: boolean) => (
+        <AppDetailsCDButton
+            appId={appDetails.appId}
+            appName={appDetails.appName}
+            environmentId={appDetails.environmentId}
+            environmentName={appDetails.environmentName}
+            isVirtualEnvironment={appDetails.isVirtualEnvironment}
+            deploymentAppType={appDetails.deploymentAppType}
+            loadingDetails={loadingDetails}
+            cdModal={{
+                cdPipelineId: appDetails.cdPipelineId,
+                ciPipelineId: appDetails.ciPipelineId,
+                parentEnvironmentName: appDetails.parentEnvironmentName,
+                deploymentUserActionState: deploymentUserActionState,
+                triggerType: appDetails.triggerType,
+            }}
+            isAppView={isAppView}
+            isForRollback={isForRollback}
+        />
+    )
 
     const renderDevtronAppsEnvironmentSelector = () => {
         // If moving to a component then move getIsApprovalConfigured with it as well with memoization.
@@ -322,22 +349,7 @@ export const SourceInfo = ({
                                             pcoId={appDetails.pcoId}
                                         />
                                     )}
-                                <AppDetailsCDButton
-                                    appId={appDetails.appId}
-                                    environmentId={appDetails.environmentId}
-                                    environmentName={appDetails.environmentName}
-                                    isVirtualEnvironment={appDetails.isVirtualEnvironment}
-                                    deploymentAppType={appDetails.deploymentAppType}
-                                    loadingDetails={loadingDetails}
-                                    cdModal={{
-                                        cdPipelineId: appDetails.cdPipelineId,
-                                        ciPipelineId: appDetails.ciPipelineId,
-                                        parentEnvironmentName: appDetails.parentEnvironmentName,
-                                        deploymentUserActionState: deploymentUserActionState,
-                                        triggerType: appDetails.triggerType,
-                                    }}
-                                    isAppView={isAppView}
-                                />
+                                {renderAppDetailsCDButton()}
                             </div>
                         )}
                     </>
@@ -371,7 +383,7 @@ export const SourceInfo = ({
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
                   environment && (
-                      <div className="flex left w-100">
+                      <div className="flex left w-100 flex-wrap dc__row-gap-12">
                           {status && (
                               <AppStatusCard
                                   // TODO: Fix and remove
@@ -430,6 +442,18 @@ export const SourceInfo = ({
                                   filteredEnvIds={filteredEnvIds}
                               />
                           )}
+                          {window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE &&
+                              !isVirtualEnvironment &&
+                              DeploymentStrategyCard && (
+                                  <DeploymentStrategyCard
+                                      appId={appDetails.appId}
+                                      envId={appDetails.environmentId}
+                                      appName={appDetails.appName}
+                                      envName={appDetails.environmentName}
+                                      renderRollbackButton={() => renderAppDetailsCDButton(true)}
+                                      isResourceTreeReloading={isResourceTreeReloading}
+                                  />
+                              )}
                           {!appDetails?.deploymentAppDeleteRequest &&
                               !appMigratedFromExternalSourceAndIsNotTriggered && (
                                   <SecurityVulnerabilityCard

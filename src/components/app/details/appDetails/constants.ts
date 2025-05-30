@@ -35,6 +35,10 @@ export const DA_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.
         category: 'App Metrics',
         action: 'DA_APP_DETAIL_METRICS_PRESET_TIME_RANGE',
     },
+    RollbackButtonClicked: {
+        category: 'App Details',
+        action: 'DA_APP_DETAILS_ROLLBACK_CLICKED',
+    },
 }
 
 export const AG_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.event>[0]> = {
