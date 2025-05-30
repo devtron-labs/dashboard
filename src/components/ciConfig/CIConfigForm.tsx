@@ -25,7 +25,10 @@ import {
     ConfirmationModalVariantType,
     Button,
     OptionType,
-    getDocumentationUrl,
+    DocLink,
+    Icon,
+    ButtonVariantType,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIPipelineBuildType, DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getGitProviderIcon, useForm } from '../common'
@@ -38,7 +41,6 @@ import {
     SelectedGitMaterialType,
     SourceConfigType,
 } from './types'
-import { ReactComponent as BookOpenIcon } from '../../assets/icons/ic-book-open.svg'
 import { ReactComponent as NextIcon } from '../../assets/icons/ic-arrow-right.svg'
 import CIConfigDiffView from './CIConfigDiffView'
 import CIContainerRegistryConfig from './CIContainerRegistryConfig'
@@ -356,15 +358,14 @@ export default function CIConfigForm({
                             <h2 className="form__title m-0-imp" data-testid="build-configuration-heading">
                                 Build Configuration
                             </h2>
-                            <a
-                                className="flex right dc__link"
-                                rel="noreferrer noopener"
-                                target="_blank"
-                                href={getDocumentationUrl({ docLinkKey: 'APP_CREATE_CI_CONFIG' })}
-                            >
-                                <BookOpenIcon className="icon-dim-16 mr-8" />
-                                <span>View documentation</span>
-                            </a>
+                            <DocLink
+                                dataTestId="build-configuration-documentation"
+                                docLinkKey="APP_CREATE_CI_CONFIG"
+                                startIcon={<Icon name="ic-book-open" color={null} />}
+                                variant={ButtonVariantType.borderLess}
+                                text="View documentation"
+                                size={ComponentSizeType.xs}
+                            />
                         </div>
                     )}
                     <CIContainerRegistryConfig

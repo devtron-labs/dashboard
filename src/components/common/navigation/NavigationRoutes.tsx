@@ -154,7 +154,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
 
-    const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({ open: false })
+    const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({ open: false, docLink: null, reinitialize: false })
     const asideWidth = useMotionValue(0)
 
     const {

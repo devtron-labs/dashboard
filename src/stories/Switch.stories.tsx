@@ -29,7 +29,7 @@ type BaseComponentPropsType = Omit<DTSwitchProps, 'onChange' | 'isChecked'>
 const BaseComponent = (props: BaseComponentPropsType) => {
     const [isChecked, setIsChecked] = useState<boolean>(false)
 
-    const handleChange = () => {
+    const handleChange: DTSwitchProps['onChange'] = () => {
         setIsChecked((prev) => !prev)
     }
 
