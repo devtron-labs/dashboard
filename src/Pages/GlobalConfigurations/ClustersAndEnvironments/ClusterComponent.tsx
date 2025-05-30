@@ -131,29 +131,26 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                 </div>
             </div>
 
-            {clusters.map(
-                (cluster) =>
-                    cluster.id && (
-                        <ClusterList
-                            reload={initialize}
-                            key={cluster.id || Math.random().toString(36).substr(2, 5)}
-                            clusterName={cluster.cluster_name}
-                            isVirtualCluster={cluster.isVirtualCluster}
-                            environments={cluster.environments}
-                            sshTunnelConfig={cluster.sshTunnelConfig}
-                            isProd={cluster.isProd}
-                            serverURL={cluster.server_url}
-                            prometheusURL={cluster.prometheus_url}
-                            prometheusAuth={cluster.prometheusAuth}
-                            proxyUrl={cluster.proxyUrl}
-                            insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
-                            installationId={cluster.installationId}
-                            category={cluster.category}
-                            toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
-                            clusterId={cluster.id}
-                        />
-                    ),
-            )}
+            {clusters.map((cluster) => (
+                <ClusterList
+                    reload={initialize}
+                    key={cluster.id || Math.random().toString(36).substr(2, 5)}
+                    clusterName={cluster.cluster_name}
+                    isVirtualCluster={cluster.isVirtualCluster}
+                    environments={cluster.environments}
+                    sshTunnelConfig={cluster.sshTunnelConfig}
+                    isProd={cluster.isProd}
+                    serverURL={cluster.server_url}
+                    prometheusURL={cluster.prometheus_url}
+                    prometheusAuth={cluster.prometheusAuth}
+                    proxyUrl={cluster.proxyUrl}
+                    insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
+                    installationId={cluster.installationId}
+                    category={cluster.category}
+                    toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
+                    clusterId={cluster.id}
+                />
+            ))}
 
             {ManageCategories && (
                 <Route path={CommonURLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>

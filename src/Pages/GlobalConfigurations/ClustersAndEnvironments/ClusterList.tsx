@@ -94,23 +94,21 @@ export const ClusterList = ({
                         tag={isProd ? 'Prod' : null}
                         category={category?.label ? String(category.label) : ''}
                     />
-                    {clusterName && (
-                        <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
-                            <Button
-                                dataTestId={`add-environment-button-${clusterName}`}
-                                component={ButtonComponentType.link}
-                                linkProps={{
-                                    to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}${URLS.CREATE_ENVIRONMENT}`,
-                                }}
-                                startIcon={<Icon name="ic-add" color={null} />}
-                                text="Add Environment"
-                                variant={ButtonVariantType.text}
-                                size={ComponentSizeType.small}
-                            />
+                    <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
+                        <Button
+                            dataTestId={`add-environment-button-${clusterName}`}
+                            component={ButtonComponentType.link}
+                            linkProps={{
+                                to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}${URLS.CREATE_ENVIRONMENT}`,
+                            }}
+                            startIcon={<Icon name="ic-add" color={null} />}
+                            text="Add Environment"
+                            variant={ButtonVariantType.text}
+                            size={ComponentSizeType.small}
+                        />
 
-                            <div className="dc__divider" />
-                        </div>
-                    )}
+                        <div className="dc__divider" />
+                    </div>
                 </div>
                 <Button
                     dataTestId={`edit_cluster_pencil-${clusterName}`}
