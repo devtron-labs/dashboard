@@ -337,12 +337,14 @@ const ChartDeploymentHistory = ({
                                         gridColumnGap: '12px',
                                     }}
                                 >
-                                    <AppStatus
-                                        status={getDeploymentStatus(deployment)}
-                                        hideMessage
-                                        iconSize={24}
-                                        hideIconTooltip
-                                    />
+                                    <div className="flex icon-dim-24 dc__no-shrink">
+                                        <AppStatus
+                                            status={getDeploymentStatus(deployment)}
+                                            hideMessage
+                                            iconSize={24}
+                                            hideIconTooltip
+                                        />
+                                    </div>
                                     <div className="flex column left dc__ellipsis-right">
                                         <div className="cn-9 fs-14" data-testid="chart-deployment-time">
                                             {moment(new Date(deployment.deployedAt.seconds * 1000)).format(

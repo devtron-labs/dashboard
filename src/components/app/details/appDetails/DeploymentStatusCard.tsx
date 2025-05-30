@@ -18,14 +18,18 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
-import { DEPLOYMENT_STATUS_TEXT_MAP, PROGRESSING_DEPLOYMENT_STATUS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DEPLOYMENT_STATUS_TEXT_MAP,
+    LoadingCard,
+    PROGRESSING_DEPLOYMENT_STATUS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CD } from '../../../../assets/icons/ic-CD.svg'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Rocket } from '../../../../assets/icons/ic-paper-rocket.svg'
+import { ReactComponent as CD } from '@Icons/ic-CD.svg'
+import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
+import { ReactComponent as Rocket } from '@Icons/ic-paper-rocket.svg'
+
 import { DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../../config'
 import { DeploymentStatusCardType } from './appDetails.type'
-import LoadingCard from './LoadingCard'
 import { validateMomentDate } from './utils'
 
 const DeploymentStatusCard = ({
