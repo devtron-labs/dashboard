@@ -54,7 +54,7 @@ import {
     DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
-import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
+import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'

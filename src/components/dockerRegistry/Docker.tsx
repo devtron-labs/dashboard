@@ -26,7 +26,6 @@ import {
     not,
     CHECKBOX_VALUE,
     Checkbox,
-    DOCUMENTATION,
     REGISTRY_TYPE_MAP,
     ConditionalWrap,
     RepositoryAction,
@@ -83,7 +82,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { AuthenticationType } from '../cluster/cluster.type'
+import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,

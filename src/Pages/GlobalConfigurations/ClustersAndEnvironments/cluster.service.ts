@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes } from '../../config'
+import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+
+import { Routes } from '@Config/constants'
+
 import { DeleteClusterPayload } from './cluster.type'
 
 export function getClusterList(): Promise<any> {
@@ -53,12 +55,12 @@ export const getEnvironment = (id: number): Promise<any> => {
     return get(URL)
 }
 
-export const saveEnvironment = (request, id: number): Promise<any> => {
+export const saveEnvironment = (request): Promise<any> => {
     const URL = `${Routes.ENVIRONMENT}`
     return post(URL, request)
 }
 
-export const updateEnvironment = (request, id: number): Promise<any> => {
+export const updateEnvironment = (request): Promise<any> => {
     const URL = `${Routes.ENVIRONMENT}`
     return put(URL, request)
 }

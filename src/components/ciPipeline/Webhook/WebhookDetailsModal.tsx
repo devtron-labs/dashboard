@@ -52,9 +52,9 @@ import './webhookDetails.scss'
 import {
     getUserRole,
     createOrUpdateUser,
-} from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
+} from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
-import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
+import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
     getWebhookTokenListOptions,
@@ -66,13 +66,13 @@ import {
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
-import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { createUserPermissionPayload } from '@Pages/GlobalConfigurations/Authorization/utils'
+import { ChartGroupPermissionsFilter } from '@Pages/GlobalConfigurations/Authorization/types'
+import { PermissionType } from '@Pages/GlobalConfigurations/Authorization/constants'
 import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,
-} from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
+} from '@Pages/GlobalConfigurations/Authorization/libUtils'
 
 export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
