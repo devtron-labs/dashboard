@@ -19,18 +19,15 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
-    ComponentSizeType,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     DeploymentConfigDiffState,
+    DeploymentStrategyType,
     DeploymentWithConfigType,
     EnvResourceType,
     getAppEnvDeploymentConfig,
     getAppEnvDeploymentConfigList,
     getCompareSecretsData,
     getDefaultVersionAndPreviousDeploymentOptions,
-    getSelectPickerOptionByValue,
-    SelectPickerOptionType,
-    SelectPickerVariantType,
     showError,
     useAsync,
     useMainContext,
@@ -46,10 +43,10 @@ import {
     UsePipelineDeploymentConfigProps,
 } from './types'
 import {
-    getComparisonDataBasedOnDeploy,
+    getComparisonDataBasedOnDeployAndStrategy,
     getPipelineDeploymentConfigErrFromPromiseSettled,
     getPipelineDeploymentConfigFromPromiseSettled,
-    getPipelineDeploymentConfigSelectorOptions,
+    getPipelineDeploymentConfigSelectorConfig,
     parseCompareWithSearchParams,
 } from './utils'
 
@@ -61,6 +58,9 @@ export const usePipelineDeploymentConfig = ({
     isRollbackTriggerSelected,
     pipelineId,
     wfrId,
+    deploymentStrategy,
+    setDeploymentStrategy,
+    pipelineStrategyOptions,
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
     const { pathname, search } = useLocation()
@@ -99,16 +99,23 @@ export const usePipelineDeploymentConfig = ({
     // FETCH PIPELINE DEPLOYMENT CONFIG
     const [pipelineDeploymentConfigLoading, pipelineDeploymentConfigRes, , reloadPipelineDeploymentConfig] = useAsync(
         async () => {
+            const lastDeployedConfigWithoutStrategyPayload = {
+                configArea: 'AppConfiguration' as const,
+                appName,
+                envName,
+                configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
+                wfrId: previousDeployments[0]?.wfrId,
+                // NOTE: receiving pipelineId as string even though its type is number
+                pipelineId: Number(pipelineId),
+            }
+
             const payloads = [
-                isLastDeployedConfigAvailable
+                isLastDeployedConfigAvailable ? lastDeployedConfigWithoutStrategyPayload : null,
+                // Last deployed config with strategy
+                isLastDeployedConfigAvailable && deploymentStrategy
                     ? ({
-                          configArea: 'AppConfiguration',
-                          appName,
-                          envName,
-                          configType: AppEnvDeploymentConfigType.PREVIOUS_DEPLOYMENTS,
-                          wfrId: previousDeployments[0].wfrId,
-                          // NOTE: receiving pipelineId as string even tho its type is number
-                          pipelineId: Number(pipelineId),
+                          ...lastDeployedConfigWithoutStrategyPayload,
+                          strategy: deploymentStrategy,
                       } as const)
                     : null,
                 // NOTE: this is to fetch the last saved config
@@ -117,6 +124,7 @@ export const usePipelineDeploymentConfig = ({
                     appName,
                     envName,
                     configType: AppEnvDeploymentConfigType.PUBLISHED_ONLY,
+                    ...(deploymentStrategy ? { strategy: deploymentStrategy } : {}),
                 } as const,
                 // NOTE: this is to fetch the Config deployed at the selected deployment
                 isRollbackTriggerSelected && wfrId
@@ -127,6 +135,7 @@ export const usePipelineDeploymentConfig = ({
                           // NOTE: receiving pipelineId as string even tho its type is number
                           pipelineId: Number(pipelineId),
                           wfrId,
+                          ...(deploymentStrategy ? { strategy: deploymentStrategy } : {}),
                       } as const)
                     : null,
             ] as const
@@ -134,10 +143,12 @@ export const usePipelineDeploymentConfig = ({
             // NOTE: since we can only ever compare against last deployed config
             // in rollback modal; we need 2 sets of comparison:
             // 1. b/w Last deployed & Last saved
-            // 1. b/w Last deployed & Config deployed at selected
+            // 2. b/w Last deployed & Config deployed at selected
+            // 3. b/w last deployed and last deployed (not getting secret for this case as only strategy is changing)
+            // all above with same/ other strategies
             const [secretsData, secretsDataCDRollback, ..._pipelineDeploymentConfigRes] = await Promise.allSettled([
-                !isSuperAdmin && payloads[0] && payloads[1] ? getCompareSecretsData([payloads[0], payloads[1]]) : null,
                 !isSuperAdmin && payloads[0] && payloads[2] ? getCompareSecretsData([payloads[0], payloads[2]]) : null,
+                !isSuperAdmin && payloads[0] && payloads[3] ? getCompareSecretsData([payloads[0], payloads[3]]) : null,
                 ...payloads.map(
                     (payload) =>
                         payload && getAppEnvDeploymentConfig({ params: payload, appId: null, isTemplateView: false }),
@@ -164,36 +175,57 @@ export const usePipelineDeploymentConfig = ({
                 secretsData.status === 'fulfilled' &&
                 secretsData.value?.[1]
             ) {
-                _pipelineDeploymentConfigRes[1].value.result.secretsData = secretsData.value[1].secretsData
+                // we can use 0th secret data it will not impact strategy
+                _pipelineDeploymentConfigRes[1].value.result.secretsData = secretsData.value[0].secretsData
+                _pipelineDeploymentConfigRes[1].value.result.secretsData = secretsData.value[0].secretsData
             }
 
             if (
                 _pipelineDeploymentConfigRes[2].status === 'fulfilled' &&
                 _pipelineDeploymentConfigRes[2].value &&
                 !_pipelineDeploymentConfigRes[2].value.result.isAppAdmin &&
-                secretsDataCDRollback.status === 'fulfilled' &&
-                secretsDataCDRollback.value?.[1]
+                secretsData.status === 'fulfilled' &&
+                secretsData.value?.[2]
             ) {
-                _pipelineDeploymentConfigRes[2].value.result.secretsData = secretsDataCDRollback.value[1].secretsData
+                _pipelineDeploymentConfigRes[2].value.result.secretsData = secretsData.value[1].secretsData
+            }
+
+            if (
+                _pipelineDeploymentConfigRes[3].status === 'fulfilled' &&
+                _pipelineDeploymentConfigRes[3].value &&
+                !_pipelineDeploymentConfigRes[3].value.result.isAppAdmin &&
+                secretsDataCDRollback.status === 'fulfilled' &&
+                secretsDataCDRollback.value?.[3]
+            ) {
+                _pipelineDeploymentConfigRes[3].value.result.secretsData = secretsDataCDRollback.value[2].secretsData
             }
 
             return _pipelineDeploymentConfigRes
         },
-        [isRollbackTriggerSelected && wfrId],
+        [isRollbackTriggerSelected && wfrId, deploymentStrategy],
         !previousDeploymentsLoader && !!previousDeployments && (!isRollbackTriggerSelected || !!wfrId),
     )
 
     // CONSTANTS
-    const { recentDeploymentConfig, latestDeploymentConfig, specificDeploymentConfig } = useMemo(() => {
+    const {
+        recentDeploymentConfigWithoutStrategy,
+        recentDeploymentConfig,
+        latestDeploymentConfig,
+        specificDeploymentConfig,
+    } = useMemo(() => {
         if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
             return {
-                recentDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[0]),
-                latestDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[1]),
-                specificDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[2]),
+                recentDeploymentConfigWithoutStrategy: getPipelineDeploymentConfigFromPromiseSettled(
+                    pipelineDeploymentConfigRes[0],
+                ),
+                recentDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[1]),
+                latestDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[2]),
+                specificDeploymentConfig: getPipelineDeploymentConfigFromPromiseSettled(pipelineDeploymentConfigRes[3]),
             }
         }
 
         return {
+            recentDeploymentConfigWithoutStrategy: null,
             recentDeploymentConfig: null,
             latestDeploymentConfig: null,
             specificDeploymentConfig: null,
@@ -205,7 +237,8 @@ export const usePipelineDeploymentConfig = ({
             return (
                 getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[0]) ||
                 getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[1]) ||
-                getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[2])
+                getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[2]) ||
+                getPipelineDeploymentConfigErrFromPromiseSettled(pipelineDeploymentConfigRes[3])
             )
         }
 
@@ -237,15 +270,16 @@ export const usePipelineDeploymentConfig = ({
 
     const canReviewConfig = () => {
         const hasReviewableConfig =
-            recentDeploymentConfig?.deploymentTemplate &&
+            recentDeploymentConfigWithoutStrategy?.deploymentTemplate &&
             (deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG || isConfigPresent())
 
-        return hasReviewableConfig || !recentDeploymentConfig
+        return hasReviewableConfig || !recentDeploymentConfigWithoutStrategy
     }
 
     const canDeployWithConfig = () => {
         const canDeployLatest =
-            deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && !!recentDeploymentConfig?.deploymentTemplate
+            deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG &&
+            !!recentDeploymentConfigWithoutStrategy?.deploymentTemplate
         return canDeployLatest || isConfigPresent()
     }
 
@@ -254,11 +288,13 @@ export const usePipelineDeploymentConfig = ({
 
     const pipelineDeploymentConfig = useMemo(() => {
         if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
-            const compareData = getComparisonDataBasedOnDeploy({
+            const compareData = getComparisonDataBasedOnDeployAndStrategy({
                 deploy,
                 latestDeploymentConfig,
                 specificDeploymentConfig,
-                recentDeploymentConfig,
+                recentDeploymentConfig: deploymentStrategy
+                    ? recentDeploymentConfig
+                    : recentDeploymentConfigWithoutStrategy,
             })
 
             return getAppEnvDeploymentConfigList({
@@ -268,7 +304,7 @@ export const usePipelineDeploymentConfig = ({
                     secretsData: null,
                     isAppAdmin: false,
                 },
-                compareList: recentDeploymentConfig || {
+                compareList: recentDeploymentConfigWithoutStrategy || {
                     configMapData: null,
                     deploymentTemplate: null,
                     secretsData: null,
@@ -306,41 +342,26 @@ export const usePipelineDeploymentConfig = ({
             (configType === DeploymentWithConfigType.LAST_SAVED_CONFIG && !latestDeploymentConfig?.deploymentTemplate)
         )
 
-    const onDeploymentConfigChange = ({ value }: SelectPickerOptionType) => {
+    const onDeploymentConfigChange = (value: DeploymentWithConfigType) => {
         updateSearchParams({
-            [PipelineConfigDiffQueryParams.DEPLOY]: value as PipelineConfigDiffQueryParamsType['deploy'],
+            [PipelineConfigDiffQueryParams.DEPLOY]: value,
         })
     }
 
-    const isOptionDisabled = ({ value }: SelectPickerOptionType<DeploymentWithConfigType>) => !isConfigAvailable(value)
+    const onStrategyChange = (value: DeploymentStrategyType) => {
+        setDeploymentStrategy(value)
+    }
 
-    const deploymentConfigSelectorOptions = getPipelineDeploymentConfigSelectorOptions(
+    const radioSelectConfig = getPipelineDeploymentConfigSelectorConfig({
         isLastDeployedConfigAvailable,
         isRollbackTriggerSelected,
         isConfigAvailable,
-    )
-
-    const deploymentConfigSelectorProps = {
-        id: 'deployment-config-selector',
-        options: deploymentConfigSelectorOptions,
-        placeholder: 'Select Deployment Config',
-        classNamePrefix: 'deployment-config-selector',
-        inputId: 'deployment-config-selector',
-        name: 'deployment-config-selector',
-        variant: SelectPickerVariantType.COMPACT,
-        isSearchable: false,
-        disableDescriptionEllipsis: true,
-        value: getSelectPickerOptionByValue(
-            deploymentConfigSelectorOptions,
-            deploy,
-            'options' in deploymentConfigSelectorOptions[0]
-                ? deploymentConfigSelectorOptions[0].options[isRollbackTriggerSelected ? 2 : 0]
-                : null,
-        ),
-        onChange: onDeploymentConfigChange,
-        isOptionDisabled,
-        menuSize: ComponentSizeType.large,
-    }
+        deploy,
+        deploymentStrategy,
+        onDeploymentConfigChange,
+        onStrategyChange,
+        pipelineStrategyOptions,
+    })
 
     const scopeVariablesConfig = {
         convertVariables,
@@ -358,7 +379,7 @@ export const usePipelineDeploymentConfig = ({
             code: previousDeploymentsErr?.code || pipelineDeploymentConfigErr?.code,
             reload,
         },
-        deploymentConfigSelectorProps,
+        radioSelectConfig,
         diffFound: pipelineDeploymentConfig?.configList.some(
             ({ diffState }) => diffState !== DeploymentConfigDiffState.NO_DIFF,
         ),
