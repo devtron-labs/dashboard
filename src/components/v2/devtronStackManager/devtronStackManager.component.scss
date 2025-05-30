@@ -118,28 +118,6 @@
 }
 
 .module-details__install-wrapper {
-    .module-details__install-button {
-        width: 100%;
-        height: 36px;
-
-        &.cta {
-            text-transform: none;
-        }
-
-        .module-details__install-icon {
-            transform: rotate(90deg);
-        }
-
-        .module-details__retry-install-icon {
-            path {
-                fill: none;
-            }
-        }
-        &.disabled-state {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-    }
     .module-details__installtion-status {
         width: 100%;
         border: 1px solid var(--N200);
