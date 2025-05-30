@@ -92,7 +92,7 @@ export const ClusterList = ({
                         subtitle={subTitle}
                         className="fw-6"
                         tag={isProd ? 'Prod' : null}
-                        category={String(category?.label)}
+                        category={category?.label ? String(category.label) : ''}
                     />
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
