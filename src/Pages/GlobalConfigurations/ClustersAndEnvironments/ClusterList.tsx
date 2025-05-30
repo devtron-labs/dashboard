@@ -122,7 +122,7 @@ export const ClusterList = ({
                     onClick={handleEdit}
                 />
             </List>
-            {!window._env_.K8S_CLIENT && Array.isArray(environments) && environments.length > 1 ? (
+            {!window._env_.K8S_CLIENT && Array.isArray(environments) && environments.length > 0 ? (
                 <ClusterEnvironmentList
                     clusterId={String(clusterId)}
                     reload={reload}
@@ -131,7 +131,7 @@ export const ClusterList = ({
                     clusterName={clusterName}
                 />
             ) : (
-                clusterId && renderNoEnvironmentTab()
+                renderNoEnvironmentTab()
             )}
             {editMode &&
                 (!isVirtualCluster ? (

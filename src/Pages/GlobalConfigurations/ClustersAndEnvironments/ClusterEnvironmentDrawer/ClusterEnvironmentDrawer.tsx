@@ -420,7 +420,7 @@ export const ClusterEnvironmentDrawer = ({
     }
 
     return (
-        <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
+        <Drawer position="right" width="1024px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
                     {/* NOTE: only in case of add environment, can we have truncation */}

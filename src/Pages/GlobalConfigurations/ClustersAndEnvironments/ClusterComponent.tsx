@@ -66,7 +66,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                 let clustersList = clusterRes.result || []
                 clustersList = clustersList.map((cluster) => ({
                     ...cluster,
-                    environments: clusterEnvironmentMap[cluster.id],
+                    environments: clusterEnvironmentMap[cluster.id] || [],
                     category: getSelectParsedCategory(cluster.category),
                 }))
 
