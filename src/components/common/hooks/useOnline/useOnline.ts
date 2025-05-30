@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { getIsRequestAborted, noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getInternetConnectivity } from '@Services/service'
 
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 
-export const useOnline = ({ onOnline = noop, onOffline = noop }: { onOnline?: () => void; onOffline?: () => void }) => {
+export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const [online, setOnline] = useState(structuredClone(navigator.onLine))
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const timeoutRef = useRef<NodeJS.Timeout>(null)
@@ -24,14 +24,18 @@ export const useOnline = ({ onOnline = noop, onOffline = noop }: { onOnline?: ()
 
         try {
             await getInternetConnectivity(abortControllerRef.current)
-            setOnline(true)
-            if (online) {
-                onOnline()
-            }
-        } catch {
-            setOnline(false)
-        } finally {
+            setOnline((prev) => {
+                if (!prev) {
+                    onOnline()
+                }
+                return true
+            })
             timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+        } catch (error) {
+            setOnline(false)
+            if (!getIsRequestAborted(error)) {
+                timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+            }
         }
     }
     const handleOffline = () => {
@@ -40,9 +44,6 @@ export const useOnline = ({ onOnline = noop, onOffline = noop }: { onOnline?: ()
         }
         abortControllerRef.current.abort()
         setOnline(false)
-        if (onOffline) {
-            onOffline()
-        }
     }
 
     const handleOnline = async () => {
