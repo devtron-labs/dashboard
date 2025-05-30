@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-import { GroupBase, OptionsOrGroups } from 'react-select'
+import { ChangeEvent } from 'react'
 
 import {
     AppEnvDeploymentConfigDTO,
+    DeploymentConfigDiffRadioSelectConfig,
+    DeploymentStrategyType,
     DeploymentWithConfigType,
     ERROR_STATUS_CODE,
     ResponseType,
-    SelectPickerOptionType,
+    STRATEGY_TYPE_TO_TITLE_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { PipelineConfigDiffQueryParams, PipelineConfigDiffQueryParamsType } from './types'
+import { PIPELINE_CONFIG_VS_LABEL_MAP } from './constants'
+import {
+    GetPipelineDeploymentConfigSelectorConfigParams,
+    PipelineConfigDiffQueryParams,
+    PipelineConfigDiffQueryParamsType,
+} from './types'
 
 const tooltipProps = (showTooltip = false) =>
     showTooltip
@@ -41,49 +48,86 @@ const tooltipProps = (showTooltip = false) =>
           }
         : {}
 
-export const getPipelineDeploymentConfigSelectorOptions = (
-    isLastDeployedConfigAvailable: boolean,
-    isRollbackTriggerSelected: boolean,
+export const getPipelineDeploymentConfigSelectorConfig = ({
+    isLastDeployedConfigAvailable,
     isConfigAvailable,
-): OptionsOrGroups<SelectPickerOptionType, GroupBase<SelectPickerOptionType>> => [
-    {
-        label: 'Select a configuration to deploy',
-        options: [
+    isRollbackTriggerSelected,
+    deploy,
+    deploymentStrategy,
+    onDeploymentConfigChange,
+    onStrategyChange,
+    pipelineStrategyOptions,
+}: GetPipelineDeploymentConfigSelectorConfigParams): DeploymentConfigDiffRadioSelectConfig => {
+    const handleChangeStrategy = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        onStrategyChange(value as DeploymentStrategyType)
+    }
+
+    const handleChangeDeploymentConfig = (e: ChangeEvent<HTMLInputElement>) => {
+        const { value } = e.target
+        onDeploymentConfigChange(value as DeploymentWithConfigType)
+    }
+
+    return {
+        triggerElementTitle: `${PIPELINE_CONFIG_VS_LABEL_MAP[deploy]}${deploymentStrategy ? ` with ${STRATEGY_TYPE_TO_TITLE_MAP[deploymentStrategy]} strategy` : ''}`,
+        radioGroupConfig: [
             {
-                label: 'Last saved config',
-                value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
-                description: 'Use last saved configuration to deploy',
-                tooltipProps: tooltipProps(!isConfigAvailable(DeploymentWithConfigType.LAST_SAVED_CONFIG)),
+                title: 'Select a configuration',
+                name: 'select-config',
+                options: [
+                    {
+                        label: PIPELINE_CONFIG_VS_LABEL_MAP[DeploymentWithConfigType.LAST_SAVED_CONFIG],
+                        value: DeploymentWithConfigType.LAST_SAVED_CONFIG,
+                        description: 'Use last saved configuration to deploy',
+                        tooltipProps: tooltipProps(!isConfigAvailable(DeploymentWithConfigType.LAST_SAVED_CONFIG)),
+                    },
+                    ...(isLastDeployedConfigAvailable
+                        ? [
+                              {
+                                  label: PIPELINE_CONFIG_VS_LABEL_MAP[DeploymentWithConfigType.LATEST_TRIGGER_CONFIG],
+                                  value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
+                                  description: 'Retain currently deployed configuration',
+                                  tooltipProps: tooltipProps(
+                                      !isConfigAvailable(DeploymentWithConfigType.LATEST_TRIGGER_CONFIG),
+                                  ),
+                              },
+                          ]
+                        : []),
+                    ...(isRollbackTriggerSelected
+                        ? [
+                              {
+                                  label: PIPELINE_CONFIG_VS_LABEL_MAP[DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG],
+                                  value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
+                                  description: 'Use configuration deployed with selected image',
+                                  tooltipProps: tooltipProps(
+                                      !isConfigAvailable(DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG),
+                                  ),
+                              },
+                          ]
+                        : []),
+                ],
+                onChange: handleChangeDeploymentConfig,
+                groupValue: deploy,
             },
-            ...(isLastDeployedConfigAvailable
+            ...(pipelineStrategyOptions.length && deploymentStrategy
                 ? [
                       {
-                          label: 'Last deployed config',
-                          value: DeploymentWithConfigType.LATEST_TRIGGER_CONFIG,
-                          description: 'Retain currently deployed configuration',
-                          tooltipProps: tooltipProps(
-                              !isConfigAvailable(DeploymentWithConfigType.LATEST_TRIGGER_CONFIG),
-                          ),
-                      },
-                  ]
-                : []),
-            ...(isRollbackTriggerSelected
-                ? [
-                      {
-                          label: 'Config deployed with selected image',
-                          value: DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG,
-                          description: 'Use configuration deployed with selected image',
-                          tooltipProps: tooltipProps(
-                              !isConfigAvailable(DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG),
-                          ),
+                          title: 'Select strategy type',
+                          name: 'select-strategy',
+                          options: pipelineStrategyOptions.map(({ deploymentTemplate }) => ({
+                              label: STRATEGY_TYPE_TO_TITLE_MAP[deploymentTemplate] ?? deploymentTemplate,
+                              value: deploymentTemplate,
+                          })),
+                          onChange: handleChangeStrategy,
+                          groupValue: deploymentStrategy,
                       },
                   ]
                 : []),
         ],
-    },
-]
+    }
+}
 
-export const getComparisonDataBasedOnDeploy = ({
+export const getComparisonDataBasedOnDeployAndStrategy = ({
     deploy,
     latestDeploymentConfig,
     specificDeploymentConfig,
