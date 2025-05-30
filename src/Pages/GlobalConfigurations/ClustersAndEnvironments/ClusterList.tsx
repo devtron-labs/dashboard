@@ -57,8 +57,6 @@ export const ClusterList = ({
         identifier: `cluster-list__${clusterName}`,
     })
 
-    const newEnvs = clusterId ? [{ id: null }].concat(environments || []) : environments || []
-
     const handleEdit = async () => {
         try {
             const { result } = await getCluster(+clusterId)
@@ -82,10 +80,7 @@ export const ClusterList = ({
     return (
         <article
             data-testid={`${clusterName ?? 'create'}-cluster-container`}
-            className={`cluster-list ${
-                // FIXME: clusterId is always truthy, so the below condition is always true
-                clusterId ? 'cluster-list--update' : 'cluster-list--create collapsed-list'
-            }`}
+            className="cluster-list cluster-list--update"
         >
             <List
                 internalRef={stickyElementRef}
@@ -95,15 +90,8 @@ export const ClusterList = ({
                 key={clusterId}
                 onClick={editModeToggle}
             >
-                {!clusterId && (
-                    <List.Logo>
-                        <Icon name="ic-add" color="B500" />
-                    </List.Logo>
-                )}
                 <div className="flex left dc__gap-16">
-                    {clusterId && (
-                        <Icon name={isVirtualCluster ? 'ic-cluster-isolated' : 'ic-cluster'} color="B500" size={24} />
-                    )}
+                    <Icon name={isVirtualCluster ? 'ic-cluster-isolated' : 'ic-cluster'} color="B500" size={24} />
                     <List.Title
                         title={clusterName || 'Add cluster'}
                         subtitle={subTitle}
@@ -129,23 +117,21 @@ export const ClusterList = ({
                         </div>
                     )}
                 </div>
-                {clusterId && (
-                    <Button
-                        dataTestId={`edit_cluster_pencil-${clusterName}`}
-                        ariaLabel="Edit Cluster"
-                        icon={<Icon name="ic-pencil" color={null} />}
-                        size={ComponentSizeType.small}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        onClick={handleEdit}
-                    />
-                )}
+                <Button
+                    dataTestId={`edit_cluster_pencil-${clusterName}`}
+                    ariaLabel="Edit Cluster"
+                    icon={<Icon name="ic-pencil" color={null} />}
+                    size={ComponentSizeType.small}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    onClick={handleEdit}
+                />
             </List>
-            {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
+            {!window._env_.K8S_CLIENT && Array.isArray(environments) && environments.length > 1 ? (
                 <ClusterEnvironmentList
                     clusterId={String(clusterId)}
                     reload={reload}
-                    newEnvs={newEnvs}
+                    newEnvs={environments}
                     isVirtualCluster={isVirtualCluster}
                     clusterName={clusterName}
                 />
