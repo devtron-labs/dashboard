@@ -22,6 +22,7 @@ import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
     DocLink,
+    DocLinkProps,
     Icon,
     PopupMenu,
     ValueContainerWithLoadingShimmer,
@@ -156,17 +157,17 @@ export default ClusterSelector
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {
         text: ERROR_SCREEN_SUBTITLE,
-        link: 'K8S_RESOURCES_PERMISSIONS' as const,
+        link: 'K8S_RESOURCES_PERMISSIONS' as DocLinkProps['docLinkKey'],
         linkText: ERROR_SCREEN_LEARN_MORE,
     }
 
     if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(true)
-        emptyStateData.link = 'K8S_RESOURCES_PERMISSIONS'
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
         emptyStateData.linkText = LEARN_MORE
     } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(false)
-        emptyStateData.link = 'K8S_RESOURCES_PERMISSIONS'
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
         emptyStateData.linkText = LEARN_MORE
     }
 
