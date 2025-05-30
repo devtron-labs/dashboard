@@ -18,11 +18,13 @@ import { useRef } from 'react'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
-import { ReactComponent as DefaultChart } from '../../../../../assets/icons/ic-default-chart.svg'
-import { ReactComponent as File } from '../../../../../assets/icons/ic-file.svg'
+import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as DefaultChart } from '@Icons/ic-default-chart.svg'
+import { ReactComponent as File } from '@Icons/ic-file.svg'
+import { ReactComponent as QuestionIcon } from '@Icons/ic-question.svg'
+
 import { URLS } from '../../../../../config'
-import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
-import { ReactComponent as QuestionIcon } from '../../../assets/icons/ic-question.svg'
 import { ChartToolTipType, ChartUsedCardType } from '../environment.type'
 import { getUsedChartContent } from '../utils'
 

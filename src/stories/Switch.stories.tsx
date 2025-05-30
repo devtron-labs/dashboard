@@ -83,7 +83,6 @@ type Story = StoryObj<typeof meta>
 const COMMON_SWITCH_TEMPLATE: Story = {
     args: {
         name: 'switch-story',
-        dataTestId: 'switch-story',
         variant: 'positive',
         size: ComponentSizeType.medium,
         isDisabled: false,

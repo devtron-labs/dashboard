@@ -818,7 +818,7 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
                 <div className='dc__no-shrink dc__mxw-400 dc__truncate'><InteractiveCellText text={title} /></div>
                 {tag && <div className="tag dc__no-shrink">{tag}</div>}
                 {category && (
-                    <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate">
+                    <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate dc__text-center">
                         <InteractiveCellText text={category} fontSize={12} />
                     </div>
                 )}

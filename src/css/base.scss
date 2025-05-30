@@ -2178,6 +2178,10 @@ button.anchor {
     max-width: none !important;
 }
 
+.dc__mxw-fit-content {
+    max-width: fit-content;
+}
+
 .dc__mxw-66 {
     max-width: 66px;
 }
@@ -3974,6 +3978,10 @@ button.anchor {
     row-gap: 8px;
 }
 
+.dc__row-gap-12 {
+    row-gap: 12px;
+}
+
 .dc__column-gap-8 {
     column-gap: 8px;
 }
@@ -5220,4 +5228,10 @@ details[open] {
     overflow: hidden;
     padding: 0;
     position: absolute;
+}
+
+.dc__contain {
+    &--paint {
+        contain: paint;
+    }
 }

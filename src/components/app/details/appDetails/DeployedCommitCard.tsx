@@ -17,12 +17,17 @@
 import React, { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 
-import { getCITriggerInfo, GitProviderIcon, GitProviderType, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    getCITriggerInfo,
+    GitProviderIcon,
+    GitProviderType,
+    LoadingCard,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { DeployedCommitCardType } from './appDetails.type'
-import LoadingCard from './LoadingCard'
 
 const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifactId }: DeployedCommitCardType) => {
     const [commitId, setCommitId] = useState<string>(null)

@@ -27,5 +27,25 @@
             border-top: 1px solid var(#{$color});
             border-bottom: 1px solid var(#{$color});
         }
+
+        &--dashed {
+            border: 1px dashed var(#{$color});
+
+            &--top {
+                border-top: 1px dashed var(#{$color});
+            }
+
+            &--left {
+                border-left: 1px dashed var(#{$color});
+            }
+
+            &--bottom {
+                border-bottom: 1px dashed var(#{$color});
+            }
+
+            &--right {
+                border-right: 1px dashed var(#{$color});
+            }
+        }
     }
 }
