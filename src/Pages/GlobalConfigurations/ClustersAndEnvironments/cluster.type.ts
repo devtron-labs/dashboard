@@ -16,12 +16,7 @@
 
 import { RouteComponentProps } from 'react-router-dom'
 
-import {
-    ClusterEnvironmentCategoryType,
-    EnvListMinDTO,
-    OptionType,
-    SelectPickerOptionType,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { EnvListMinDTO, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const POLLING_INTERVAL = 30000
 
@@ -127,7 +122,7 @@ export interface ClusterListProps {
     installationId: number
     toConnectWithSSHTunnel: boolean
     clusterId: number
-    category: ClusterEnvironmentCategoryType
+    category: SelectPickerOptionType
 }
 
 export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'> {

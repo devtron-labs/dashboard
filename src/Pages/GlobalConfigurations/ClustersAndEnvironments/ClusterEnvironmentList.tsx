@@ -17,6 +17,7 @@ import { EnvironmentDeleteComponent } from '@Pages/GlobalConfigurations/Clusters
 
 import { deleteEnvironment } from './cluster.service'
 import { ClusterEnvironmentListProps } from './cluster.type'
+import { getSelectParsedCategory } from './cluster.util'
 import { CONFIGURATION_TYPES } from './constants'
 
 const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
@@ -109,10 +110,7 @@ export const ClusterEnvironmentList = ({
                                     prometheusEndpoint,
                                     clusterId,
                                     namespace,
-                                    category: {
-                                        label: category?.name,
-                                        value: category?.id,
-                                    },
+                                    category: getSelectParsedCategory(category),
                                     isProduction,
                                     description,
                                 })

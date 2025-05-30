@@ -70,7 +70,6 @@ import {
     UserDetails,
 } from './cluster.type'
 import {
-    getSelectParsedCategory,
     getServerURLFromLocalStorage,
     PrometheusRequiredFieldInfo,
     PrometheusWarningInfo,
@@ -119,7 +118,7 @@ const ClusterForm = ({
     const [isClusterDetails, toggleClusterDetails] = useState(false)
     const authenTicationType = prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS
 
-    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(getSelectParsedCategory(category))
+    const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(category)
 
     const isConnectedViaProxy = !!proxyUrl
 

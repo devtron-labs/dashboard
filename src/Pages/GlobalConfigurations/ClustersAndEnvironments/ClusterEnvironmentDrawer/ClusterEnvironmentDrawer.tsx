@@ -155,7 +155,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
-            category: category?.value ? category : null,
+            category,
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),

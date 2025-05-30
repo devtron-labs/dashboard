@@ -20,7 +20,7 @@ import { URLS } from '@Config/routes'
 import { List } from '../../../components/globalConfigurations/GlobalConfiguration'
 import { getCluster } from './cluster.service'
 import { ClusterListProps, EditClusterFormProps } from './cluster.type'
-import { getSelectParsedCategory, renderNoEnvironmentTab } from './cluster.util'
+import { renderNoEnvironmentTab } from './cluster.util'
 import { ClusterEnvironmentList } from './ClusterEnvironmentList'
 import ClusterForm from './ClusterForm'
 
@@ -92,7 +92,7 @@ export const ClusterList = ({
                         subtitle={subTitle}
                         className="fw-6"
                         tag={isProd ? 'Prod' : null}
-                        category={category?.name}
+                        category={String(category?.label)}
                     />
                     {clusterName && (
                         <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
@@ -161,7 +161,7 @@ export const ClusterList = ({
                         clusterName={clusterName}
                         handleModalClose={handleModalClose}
                         reload={reload}
-                        category={getSelectParsedCategory(category)}
+                        category={category}
                     />
                 ))}
         </article>

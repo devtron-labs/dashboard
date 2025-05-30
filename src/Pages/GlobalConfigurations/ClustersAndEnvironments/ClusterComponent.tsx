@@ -40,6 +40,7 @@ import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEn
 
 import { getClusterList, getEnvironmentList } from './cluster.service'
 import { ClusterMetadataTypes, ClusterProps } from './cluster.type'
+import { getSelectParsedCategory } from './cluster.util'
 import { ClusterList } from './ClusterList'
 
 const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
@@ -66,6 +67,7 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                 clustersList = clustersList.map((cluster) => ({
                     ...cluster,
                     environments: clusterEnvironmentMap[cluster.id],
+                    category: getSelectParsedCategory(cluster.category),
                 }))
 
                 clustersList = clustersList.sort((a, b) => sortCallback('cluster_name', a, b))
