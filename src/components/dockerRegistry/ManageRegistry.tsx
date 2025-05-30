@@ -35,9 +35,9 @@ import {
     InfoIconTippy,
     InfoBlock,
     DocLink,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { Link } from 'react-router-dom'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -322,6 +322,7 @@ const ManageRegistry = ({
                     docLinkKey="SPECIFY_IMAGE_PULL_SECRET"
                     text="image pull secret name created via CLI"
                     fontWeight="normal"
+                    onClick={stopPropagation}
                 />
                 . The secret must be present in the namespaces you're deploying to.
             </div>

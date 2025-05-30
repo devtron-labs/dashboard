@@ -754,9 +754,10 @@ const ChartListHeader = ({ charts }) => {
                 Select chart to deploy. &nbsp;
                 <DocLink
                     dataTestId="chart-group-link"
-                    docLinkKey="CHART_GROUP"
-                    text="Learn more about chart groups"
+                    docLinkKey="CHART_LIST"
+                    text="Learn how to deploy charts"
                     fontWeight="normal"
+                    size={ComponentSizeType.small}
                 />
             </p>
         </div>
