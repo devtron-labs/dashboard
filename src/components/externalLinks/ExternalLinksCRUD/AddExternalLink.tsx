@@ -26,7 +26,6 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
-    getHandleOpenURL,
     OptionType,
     getDocumentationUrl,
     ButtonComponentType

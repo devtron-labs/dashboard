@@ -30,7 +30,6 @@ import {
     Button,
     ComponentSizeType,
     ButtonVariantType,
-    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'

@@ -34,6 +34,8 @@ import {
     CustomInputProps,
     InfoBlock,
     PasswordField,
+    DocLink,
+    DocLinkProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
     TLSConnectionFormActionType,
@@ -1044,10 +1046,11 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
 
         const initialGitOps = this.state.gitList.find((item) => item.provider === this.state.form.provider)
 
-        const getInputLabelProps = (
+        const getInputLabelProps = <T extends boolean = false>(
             label: string,
-            link: string,
+            link: DocLinkProps<T>['docLinkKey'],
             linkText: string,
+            isExternalLink?: T,
         ): Pick<CustomInputProps, 'labelTippyCustomizedConfig' | 'label' | 'required'> => {
             return {
                 label,
@@ -1055,9 +1058,13 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                 labelTippyCustomizedConfig: {
                     heading: label,
                     infoText: (
-                        <a target="_blank" href={link} className="cursor fs-13 onlink ml-4" rel="noreferrer">
-                            {linkText}
-                        </a>
+                        <DocLink
+                            dataTestId="gitops-configuration-password-doc-link"
+                            docLinkKey={link}
+                            text={linkText}
+                            isExternalLink={isExternalLink}
+                            fontWeight="normal"
+                        />
                     ),
                 },
             }
@@ -1205,6 +1212,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                                     'Bitbucket Workspace ID',
                                     GitLink.BITBUCKET_WORKSPACE,
                                     'How to create workspace in bitbucket?',
+                                    true
                                 )}
                             />
                         </div>
@@ -1222,6 +1230,7 @@ class GitOpsConfiguration extends Component<GitOpsProps & { isFeatureUserDefined
                                 LinkAndLabelSpec[this.state.providerTab].label,
                                 LinkAndLabelSpec[this.state.providerTab].link,
                                 LinkAndLabelSpec[this.state.providerTab].linkText,
+                                true,
                             )}
                         />
                     </div>

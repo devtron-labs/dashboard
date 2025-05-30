@@ -34,7 +34,7 @@ import {
     StyledRadioGroup as RadioGroup,
     InfoIconTippy,
     InfoBlock,
-    getDocumentationUrl,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 import { Link } from 'react-router-dom'
@@ -124,12 +124,7 @@ const ManageRegistry = ({
     }
 
     const renderEditAlert = (): JSX.Element => {
-        return (
-            <InfoBlock
-                variant="warning"
-                description={renderAlertMessage()}
-            />
-        )
+        return <InfoBlock variant="warning" description={renderAlertMessage()} />
     }
 
     const renderNoSelectionView = (): JSX.Element => {
@@ -322,9 +317,12 @@ const ManageRegistry = ({
         return (
             <div className="flex left">
                 Use the&nbsp;
-                <Link to={getDocumentationUrl({docLinkKey: "SPECIFY_IMAGE_PULL_SECRET"})} target="_blank" className="anchor">
-                    image pull secret name created via CLI
-                </Link>
+                <DocLink
+                    dataTestId="specify-image-pull-secret-doc-link"
+                    docLinkKey="SPECIFY_IMAGE_PULL_SECRET"
+                    text="image pull secret name created via CLI"
+                    fontWeight="normal"
+                />
                 . The secret must be present in the namespaces you're deploying to.
             </div>
         )
