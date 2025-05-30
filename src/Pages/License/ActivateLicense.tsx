@@ -46,7 +46,7 @@ const ActivateLicense = () => {
             return
         }
 
-        if (licenseData.licenseStatusError.code === LicensingErrorCodes.LicKeyNotFound) {
+        if (licenseData?.licenseStatusError.code === LicensingErrorCodes.LicKeyNotFound) {
             setShowActivateDialog(true)
         }
     }, [isLoading, licenseData])

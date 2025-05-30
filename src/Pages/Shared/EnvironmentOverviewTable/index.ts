@@ -15,5 +15,6 @@
  */
 
 export { EnvironmentOverviewTableSortableKeys } from './EnvironmentOverview.constants'
+export * from './EnvironmentOverviewBulkSelectionActionWidget'
 export * from './EnvironmentOverviewTable.component'
 export * from './EnvironmentOverviewTable.types'

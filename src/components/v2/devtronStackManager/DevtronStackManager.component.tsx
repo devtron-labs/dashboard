@@ -729,20 +729,16 @@ export const InstallationWrapper = ({
     }, [releaseNotes])
 
     const fetchPreRequisiteListFromReleaseNotes = () => {
-        const _preRequisiteList = []
-        for (let index = 0; index < releaseNotes.length; index++) {
-            const element = releaseNotes[index]
-            if (element.releaseName === serverInfo?.currentVersion) {
-                break
-            }
-            if (element.prerequisite && element.prerequisiteMessage) {
-                _preRequisiteList.push({
-                    version: element.releaseName,
-                    prerequisiteMessage: element.prerequisiteMessage,
-                    tagLink: element.tagLink,
-                })
-            }
-        }
+        const _preRequisiteList = releaseNotes
+            .filter(
+                ({ releaseName, prerequisite, prerequisiteMessage }) =>
+                    releaseName !== serverInfo?.currentVersion && prerequisite && prerequisiteMessage,
+            )
+            .map(({ releaseName, prerequisiteMessage, tagLink }) => ({
+                version: releaseName,
+                prerequisiteMessage,
+                tagLink,
+            }))
         setPreRequisiteList(_preRequisiteList.reverse())
     }
 
@@ -761,6 +757,7 @@ export const InstallationWrapper = ({
                 updateActionTrigger,
                 history,
                 location,
+                serverInfo.currentVersion,
                 moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
             )
         } else {
@@ -790,7 +787,7 @@ export const InstallationWrapper = ({
                         </div>
                         <CloseIcon className="pointer mt-2" onClick={hidePrerequisiteConfirmationModal} />
                     </div>
-                    <div className="p-20">
+                    <div className="p-20 mxh-600 dc__overflow-auto">
                         <div className="fw-6 fs-13 cn-9 mb-12">
                             Please ensure you follow below pre-requisites steps in order.
                         </div>
