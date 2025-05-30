@@ -137,7 +137,6 @@ const BaseComponent = (props: BaseComponentPropsType) => {
                         config: {
                             name: 'action-menu-switch',
                             ariaLabel: 'action-menu-switch',
-                            dataTestId: 'action-menu-switch',
                             isChecked,
                             onChange: handleChange,
                         },
