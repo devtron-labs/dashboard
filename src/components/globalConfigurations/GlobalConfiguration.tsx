@@ -814,7 +814,7 @@ const Logo = ({ src = '', style = {}, className = '', children = null }) => {
 const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', category = '' }) => {
     return (
         <div className="flex column left">
-            <div className={`list__title ${className} flex w-100`} style={style}>
+            <div className={`list__title ${className} flex left w-100`} style={style}>
                 <div className='dc__no-shrink dc__mxw-400 dc__truncate'><InteractiveCellText text={title} /></div>
                 {tag && <div className="tag dc__no-shrink">{tag}</div>}
                 {category && (

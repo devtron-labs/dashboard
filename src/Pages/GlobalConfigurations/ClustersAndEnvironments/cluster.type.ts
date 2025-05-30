@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
@@ -197,7 +196,7 @@ export const RemoteConnectionTypeCluster = 'cluster'
 
 export type EditClusterFormProps = {
     id: number
-    setEditMode: Dispatch<SetStateAction<boolean>>
+    hideEditModal: () => void
     isProd?: boolean
     clusterName: string
     serverUrl: string

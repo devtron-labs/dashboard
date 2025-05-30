@@ -92,7 +92,6 @@ const ClusterForm = ({
     id = null,
     clusterName,
     serverUrl,
-    setEditMode = noop,
     reload = noop,
     prometheusUrl = '',
     prometheusAuth,
@@ -109,6 +108,7 @@ const ClusterForm = ({
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
     category,
+    hideEditModal,
 }: ClusterFormProps & Partial<NewClusterFormProps>) => {
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -423,7 +423,6 @@ const ClusterForm = ({
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
             reload()
-            setEditMode((e) => !e)
         } catch (err) {
             showError(err)
         } finally {
@@ -625,7 +624,7 @@ const ClusterForm = ({
         if (id) {
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
-            setEditMode((e) => !e)
+            hideEditModal()
             return
         }
         if (isKubeConfigFile) {
@@ -759,15 +758,18 @@ const ClusterForm = ({
                         error={state.token.error}
                     />
                 )}
-                <RadioGroup
-                    name="isProd"
-                    className="radio-group-no-border"
-                    value={state.isProd.value}
-                    onChange={handleOnChange}
-                >
-                    <RadioGroupItem value="true">Production</RadioGroupItem>
-                    <RadioGroupItem value="false">Non - Production</RadioGroupItem>
-                </RadioGroup>
+                <div className="flex left dc__gap-24 fs-13">
+                    <div className="dc__required-field cn-7">Type of Clusters</div>
+                    <RadioGroup
+                        name="isProd"
+                        className="radio-group-no-border"
+                        value={state.isProd.value}
+                        onChange={handleOnChange}
+                    >
+                        <RadioGroupItem value="true">Production</RadioGroupItem>
+                        <RadioGroupItem value="false">Non - Production</RadioGroupItem>
+                    </RadioGroup>
+                </div>
 
                 {AssignCategorySelect && (
                     <div className="w-250">
@@ -1331,7 +1333,7 @@ const ClusterForm = ({
                                     data-testid="save_cluster_list_button_after_selection"
                                     className="cta h-36 lh-36"
                                     type="button"
-                                    onClick={() => handleClusterDetailCall()}
+                                    onClick={handleClusterDetailCall}
                                     disabled={!saveClusterList || !isAnyCheckboxSelected}
                                 >
                                     Save

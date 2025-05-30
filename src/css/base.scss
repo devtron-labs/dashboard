@@ -483,6 +483,10 @@ a:focus {
     cursor: default;
 }
 
+.cursor-default-imp {
+    cursor: default !important;
+}
+
 .cursor-wait {
     cursor: wait;
 }

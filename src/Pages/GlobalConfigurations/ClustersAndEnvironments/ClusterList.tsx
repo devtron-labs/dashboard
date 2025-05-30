@@ -67,10 +67,6 @@ export const ClusterList = ({
         }
     }
 
-    const editModeToggle = (): void => {
-        setEditMode((t) => !t)
-    }
-
     const handleModalClose = () => {
         setEditMode(false)
     }
@@ -86,9 +82,8 @@ export const ClusterList = ({
                 internalRef={stickyElementRef}
                 className={`dc__border dc__zi-1 ${getClassNameForStickyHeaderWithShadow(isHeaderStuck)} ${
                     isHeaderStuck ? 'dc__no-border-radius' : ''
-                }`}
+                } cursor-default-imp`}
                 key={clusterId}
-                onClick={editModeToggle}
             >
                 <div className="flex left dc__gap-16">
                     <Icon name={isVirtualCluster ? 'ic-cluster-isolated' : 'ic-cluster'} color="B500" size={24} />
@@ -152,7 +147,7 @@ export const ClusterList = ({
                                 prometheusAuth={prometheusAuth}
                                 proxyUrl={proxyUrl}
                                 isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
-                                setEditMode={setEditMode}
+                                hideEditModal={handleModalClose}
                                 isProd={isProd}
                                 isTlsConnection={!insecureSkipTlsVerify}
                                 installationId={installationId}

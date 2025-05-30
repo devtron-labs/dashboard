@@ -330,7 +330,7 @@ export const ClusterEnvironmentDrawer = ({
                     />
                     {!isVirtual && (
                         <div className="flex left dc__gap-24 fs-13">
-                            <div className="dc__required-field cn-7">Type of cluster</div>
+                            <div className="dc__required-field cn-7">Type of Environment</div>
                             <div className="flex left dc__gap-16">
                                 <label htmlFor="env-production-checkbox mb-0" className="flex cursor">
                                     <input
