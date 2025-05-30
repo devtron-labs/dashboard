@@ -137,6 +137,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
 
 export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> =>
     post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })
+
 export const executeModuleAction = (
     moduleName: string,
     moduleActionRequest: ModuleActionRequest,
@@ -180,9 +181,11 @@ export const getAllModules = (): Promise<AllModuleInfoResponse> =>
         res.json(),
     )
 
-export const getReleasesNotes = async (installationType: InstallationType): Promise<ReleaseNotesResponse> => {
+export const getReleasesNotes = async (installationType: InstallationType, serverVersion: string): Promise<ReleaseNotesResponse> => {
     const url = getUrlWithSearchParams(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`, {
         repo: INSTALLATION_TYPE_TO_REPO_MAP[installationType],
+        serverVersion,
+
     })
     const response = await fetch(url)
     return response.json()
