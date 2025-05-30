@@ -40,7 +40,7 @@ export const ClusterEnvironmentList = ({
 
     const hideClusterDrawer = () => setShowWindow(false)
 
-    const showToggleConfirmation = () => setConfirmation(true)
+    const showConfirmationModal = () => setConfirmation(true)
 
     const hideConfirmationModal = () => setConfirmation(false)
 
@@ -74,7 +74,7 @@ export const ClusterEnvironmentList = ({
                 <Button
                     dataTestId={`env-delete-button-${environmentName}`}
                     icon={<Trash />}
-                    onClick={showToggleConfirmation}
+                    onClick={showConfirmationModal}
                     variant={ButtonVariantType.borderLess}
                     style={ButtonStyleType.negativeGrey}
                     size={ComponentSizeType.xs}

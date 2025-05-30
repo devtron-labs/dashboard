@@ -57,30 +57,24 @@ export const ClusterList = ({
         identifier: `cluster-list__${clusterName}`,
     })
 
-    const handleModalClose = () => {
-        setEditMode(false)
-    }
-
     const newEnvs = clusterId ? [{ id: null }].concat(environments || []) : environments || []
 
     const handleEdit = async () => {
         try {
             const { result } = await getCluster(+clusterId)
             setPrometheusAuth(result.prometheusAuth)
-            setEditMode((t) => !t)
+            setEditMode(true)
         } catch (err) {
             showError(err)
         }
     }
 
     const editModeToggle = (): void => {
-        if (!clusterId) {
-            setEditMode((t) => !t)
-        }
+        setEditMode((t) => !t)
     }
 
-    const handleToggleEditMode = (): void => {
-        setEditMode((t) => !t)
+    const handleModalClose = () => {
+        setEditMode(false)
     }
 
     const subTitle: string = isVirtualCluster ? 'Isolated cluster' : serverURL
@@ -160,7 +154,7 @@ export const ClusterList = ({
             )}
             {editMode &&
                 (!isVirtualCluster ? (
-                    <Drawer position="right" width="1000px" onEscape={handleToggleEditMode}>
+                    <Drawer position="right" width="1000px" onEscape={handleModalClose}>
                         <div className="h-100 bg__primary" ref={drawerRef}>
                             <ClusterForm
                                 {...getSSHConfig(sshTunnelConfig)}
