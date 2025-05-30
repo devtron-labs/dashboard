@@ -33,7 +33,6 @@ import {
     ComponentSizeType,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
-    DeploymentStrategyTypeWithDefault,
     DeploymentWindowProfileMetaData,
     Drawer,
     FilterStates,
