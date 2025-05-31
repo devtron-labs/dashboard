@@ -313,6 +313,7 @@ const ConfigToolbar = ({
                     <InvalidYAMLTippyWrapper parsingError={parsingError} restoreLastSavedYAML={restoreLastSavedYAML}>
                         <div>
                             <ToggleResolveScopedVariables
+                                name="resolve-scoped-variables"
                                 resolveScopedVariables={resolveScopedVariables}
                                 handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                                 isDisabled={isDisabled}
