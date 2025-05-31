@@ -560,11 +560,6 @@ export interface CiPipelineResult {
 // End CI Response
 
 // Start CD response
-export interface Strategy {
-    deploymentTemplate: string
-    config: any
-    default?: boolean
-}
 
 export interface CDStage {
     status: string

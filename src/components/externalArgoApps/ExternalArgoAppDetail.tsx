@@ -59,11 +59,19 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     }, [])
 
     useEffect(() => {
+        let timer: ReturnType<typeof setTimeout>
+
         if (checkIfToRefetchData(location)) {
-            setTimeout(() => {
+            timer = setTimeout(() => {
                 _getAndSetAppDetail()
                 deleteRefetchDataFromUrl(history, location)
             }, 2000)
+        }
+
+        return () => {
+            if (timer) {
+                clearTimeout(timer)
+            }
         }
     }, [location.search])
 
