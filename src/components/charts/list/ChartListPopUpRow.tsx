@@ -142,6 +142,7 @@ const ChartListPopUpRow = ({
                         {isToggleLoading ? (
                             <Progressing size={16} />
                         ) : (
+                            // On click of source
                             <List.Toggle
                                 isButtonDisabled={!list.isEditable}
                                 onSelect={onSelectToggle}
