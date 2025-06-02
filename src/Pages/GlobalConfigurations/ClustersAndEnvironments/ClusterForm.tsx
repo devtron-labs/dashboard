@@ -422,6 +422,7 @@ const ClusterForm = ({
             setRemoteConnectionFalse()
             setTlsConnectionFalse()
             reload()
+            hideEditModal()
         } catch (err) {
             showError(err)
         } finally {
