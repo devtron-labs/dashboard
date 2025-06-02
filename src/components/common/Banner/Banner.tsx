@@ -86,10 +86,7 @@ export const Banner = () => {
     const onlineTimer = useRef<ReturnType<typeof setTimeout>>(null)
 
     const onOnline = () => {
-        if (onlineTimer.current) {
-            clearTimeout(onlineTimer.current)
-        }
-
+        clearTimeout(onlineTimer.current)
         setShowOnlineBanner(true)
         onlineTimer.current = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
     }
