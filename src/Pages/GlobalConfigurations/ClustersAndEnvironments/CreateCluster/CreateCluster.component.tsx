@@ -13,9 +13,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import ClusterForm from '@Components/cluster/ClusterForm'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
+import ClusterForm from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterForm'
 import EnterpriseTrialDialog from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/EnterpriseTrialDialog'
 
 import FooterComponent from './FooterComponent'
@@ -72,6 +72,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         reload={handleReloadClusterList}
                         handleModalClose={handleModalClose}
                         FooterComponent={FooterComponent}
+                        category={null}
                     />
                 )
             case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
@@ -90,6 +91,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         newClusterFormProps={{ apiCallInProgress, setApiCallInProgress, FooterComponent }}
                         handleModalClose={handleModalClose}
                         reload={handleReloadClusterList}
+                        category={null}
                     />
                 )
             default:

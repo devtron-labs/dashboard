@@ -18,7 +18,8 @@ import React, { ImgHTMLAttributes, ReactElement, ReactNode } from 'react'
 
 import { AppDetails as CommonAppDetails, ResponseType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
+import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
+
 import { AppDetails } from '../app/types'
 import { ActionResponse } from '../external-apps/ExternalAppService'
 import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'

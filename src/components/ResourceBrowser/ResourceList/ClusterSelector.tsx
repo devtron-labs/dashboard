@@ -29,10 +29,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
-import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
+import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
+import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,

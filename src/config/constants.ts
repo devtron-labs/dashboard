@@ -670,12 +670,6 @@ export enum MANIFEST_KEY_FIELDS {
     DATA = 'data',
 }
 
-export enum CONFIGURATION_TYPES {
-    ENVIRONMENT = 'ENVIRONMENT',
-    NAMESPACE = 'NAMESPACE',
-    DESCRIPTION = 'DESCRIPTION',
-}
-
 export const RequiredKinds = ['Deployment', 'StatefulSet', 'DemonSet', 'Rollout']
 
 export const POD_ROTATION_INITIATED = 'Pod rotation initiated'

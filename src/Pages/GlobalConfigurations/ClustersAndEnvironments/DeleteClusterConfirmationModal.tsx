@@ -11,7 +11,7 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { DeleteComponentsName } from '../../config/constantMessaging'
+import { DeleteComponentsName } from '../../../config/constantMessaging'
 import { deleteCluster } from './cluster.service'
 import { DeleteClusterConfirmationModalProps } from './cluster.type'
 
