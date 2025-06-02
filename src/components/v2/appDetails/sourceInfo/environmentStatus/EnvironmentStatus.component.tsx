@@ -28,6 +28,7 @@ import {
     AppStatusModal,
     AppStatusModalTabType,
     DeploymentAppTypes,
+    LoadingCard,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
@@ -36,7 +37,6 @@ import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import ChartUsedCard from './ChartUsedCard'
 import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
-import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import IssuesCard from '../../../../app/details/appDetails/IssuesCard'
 import { ErrorItem } from '../../../../app/details/appDetails/appDetails.type'
 import IssuesListingModal from '../../../../app/details/appDetails/IssuesListingModal'

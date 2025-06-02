@@ -32,14 +32,13 @@ import {
     Tooltip,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     savePipeline,
-    getDocumentationUrl,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CIMaterialProps, CIMaterialState, RegexValueType } from './types'
 import { ReactComponent as ICInfoOutline } from '@Icons/ic-info-outline-grey.svg'
 import { ReactComponent as Play } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Info } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { getCIPipelineURL, importComponentFromFELibrary } from '../../../common'
 import { SOURCE_NOT_CONFIGURED } from '../../../../config'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
@@ -135,16 +134,16 @@ class CIMaterial extends Component<CIMaterialProps, CIMaterialState> {
                     <div>
                         <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
                         <div className="fw-4 fs-12 flexbox">
-                            <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
-                            <a
-                                className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                href={getDocumentationUrl({ docLinkKey: 'BLOB_STORAGE' })}
-                                target="_blank"
-                                rel="noreferrer"
-                            >
-                                {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
-                            </a>
-                            <OpenInNew className="icon-dim-16 mt-3 ml-8" />
+                            <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>&nbsp;
+                            <DocLink
+                                dataTestId="trigger-view-blob-storage-configure"
+                                docLinkKey="BLOB_STORAGE"
+                                text={IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
+                                size={ComponentSizeType.small}
+                                fontWeight='normal'
+                                openInNewTab
+                                showExternalIcon
+                            />
                         </div>
                     </div>
                 </div>

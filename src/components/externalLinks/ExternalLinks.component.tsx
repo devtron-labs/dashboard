@@ -62,7 +62,7 @@ import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
-    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" />
+    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight='normal' />
 }
 
 export const NoExternalLinksView = ({
@@ -168,9 +168,11 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
                         icon={<ICArrowOut />}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.xs}
-                        component={ButtonComponentType.button}
+                        component={ButtonComponentType.anchor}
                         style={ButtonStyleType.neutral}
-                        onClick={getHandleOpenURL(selectedExternalLink.externalLinkURL)}
+                        anchorProps={{
+                            href: selectedExternalLink.externalLinkURL,
+                        }}
                         showAriaLabelInTippy={false}
                     />
                     <Button

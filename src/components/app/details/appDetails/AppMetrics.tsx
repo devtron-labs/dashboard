@@ -16,7 +16,8 @@
 
 import React, { useState, useEffect } from 'react'
 import {
-    getDocumentationUrl,
+    ComponentSizeType,
+    DocLink,
     not,
     Progressing,
     ToastManager,
@@ -611,15 +612,13 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                             {(!isConfigured || !isHealthy) && (
                                 <>
                                     <p className="fw-4 fs-12 cn-7 mt-16 mb-0">{subtitle}</p>
-                                    <a
-                                        className="dc__link cta small text pl-0"
-                                        href={getDocumentationUrl({ docLinkKey: 'GLOBAL_CONFIG_CLUSTER' })}
-                                        target="_blank"
-                                        style={{ paddingLeft: '0' }}
-                                        rel="noreferrer"
-                                    >
-                                        See how to fix
-                                    </a>
+                                    <DocLink
+                                        dataTestId="app-metrics-doc-link"
+                                        docLinkKey="GLOBAL_CONFIG_CLUSTER"
+                                        text="See how to fix"
+                                        size={ComponentSizeType.small}
+                                    />
+                                    &nbsp;
                                     <Link
                                         to={URLS.GLOBAL_CONFIG_CLUSTER}
                                         className="cta small text"

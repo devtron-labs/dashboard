@@ -17,10 +17,11 @@
 import React from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
 
+import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ReactComponent as Timer } from '../../../../assets/icons/ic-clock-counterclockwise.svg'
 import { URLS } from '../../../../config'
 import { LastUpdatedCardType } from './appDetails.type'
-import LoadingCard from './LoadingCard'
 import { validateMomentDate } from './utils'
 
 const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: LastUpdatedCardType) => {

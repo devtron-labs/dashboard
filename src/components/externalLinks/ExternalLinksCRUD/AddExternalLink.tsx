@@ -26,9 +26,9 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
-    getHandleOpenURL,
     OptionType,
-    getDocumentationUrl
+    getDocumentationUrl,
+    ButtonComponentType
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DEVTRON_IFRAME_PRIMARY } from '@Config/constants'
 import { createGroupedItemsByKey } from '../../common'
@@ -321,7 +321,8 @@ export default function AddExternalLink({
                         style={ButtonStyleType.neutral}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.small}
-                        onClick={getHandleOpenURL(getDocumentationUrl({docLinkKey : "EXTERNAL_LINKS"}))}
+                        component={ButtonComponentType.anchor}
+                        anchorProps={{href: getDocumentationUrl({docLinkKey : "EXTERNAL_LINKS"}) }}
                         showAriaLabelInTippy={false}
                         showTooltip
                         tooltipProps={{

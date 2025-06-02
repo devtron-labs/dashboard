@@ -29,7 +29,7 @@ type BaseComponentPropsType = Omit<DTSwitchProps, 'onChange' | 'isChecked'>
 const BaseComponent = (props: BaseComponentPropsType) => {
     const [isChecked, setIsChecked] = useState<boolean>(false)
 
-    const handleChange = () => {
+    const handleChange: DTSwitchProps['onChange'] = () => {
         setIsChecked((prev) => !prev)
     }
 
@@ -83,7 +83,6 @@ type Story = StoryObj<typeof meta>
 const COMMON_SWITCH_TEMPLATE: Story = {
     args: {
         name: 'switch-story',
-        dataTestId: 'switch-story',
         variant: 'positive',
         size: ComponentSizeType.medium,
         isDisabled: false,
