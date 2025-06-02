@@ -20,7 +20,7 @@ import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-
 import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY } from '../../config'
 import { PullImageDigestToggleType } from './types'
 
-function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
+const PullImageDigestToggle = ({ formData, setFormData }: PullImageDigestToggleType): JSX.Element => {
     const handleImageDigestToggle = (): void => {
         const _formData = { ...formData }
         _formData.isDigestEnforcedForPipeline = !_formData.isDigestEnforcedForPipeline
@@ -37,7 +37,7 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
         return text
     }
 
-    const renderImageDigestBody = (): JSX.Element => (
+    return (
         <div className="fs-13">
             <div className="flex dc__content-space w-100 cursor flex top">
                 <div className="flex left">
@@ -64,7 +64,5 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
             <hr />
         </div>
     )
-
-    return renderImageDigestBody()
 }
 export default PullImageDigestToggle
