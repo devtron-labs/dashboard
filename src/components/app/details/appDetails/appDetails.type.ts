@@ -194,10 +194,6 @@ export interface DeployedCommitCardType {
     ciArtifactId: number
 }
 
-export interface LoadingCardType {
-    wider?: boolean
-}
-
 export type ErrorItem = {
     error: string
     message: string

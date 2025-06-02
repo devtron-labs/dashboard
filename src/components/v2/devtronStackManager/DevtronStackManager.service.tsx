@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, post, refresh, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    getUrlWithSearchParams,
+    InstallationType,
+    post,
+    refresh,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
     AllModuleInfoResponse,
-    InstallationType,
     LogPodNameResponse,
     ModuleActionRequest,
     ModuleActionResponse,
@@ -130,6 +137,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
 
 export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> =>
     post(`${Routes.MODULE_INFO_API}/enable?name=${moduleName}`, { version: toolVersion })
+
 export const executeModuleAction = (
     moduleName: string,
     moduleActionRequest: ModuleActionRequest,
@@ -173,9 +181,11 @@ export const getAllModules = (): Promise<AllModuleInfoResponse> =>
         res.json(),
     )
 
-export const getReleasesNotes = async (installationType: InstallationType): Promise<ReleaseNotesResponse> => {
+export const getReleasesNotes = async (installationType: InstallationType, serverVersion: string): Promise<ReleaseNotesResponse> => {
     const url = getUrlWithSearchParams(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`, {
         repo: INSTALLATION_TYPE_TO_REPO_MAP[installationType],
+        serverVersion,
+
     })
     const response = await fetch(url)
     return response.json()

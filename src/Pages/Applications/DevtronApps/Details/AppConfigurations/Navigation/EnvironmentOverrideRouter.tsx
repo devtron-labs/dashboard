@@ -55,6 +55,7 @@ const EnvOverridesHelpNote = () => (
             docLinkKey="APP_CREATE_ENVIRONMENT_OVERRIDE"
             dataTestId="env-overrides-learn-more"
             size={ComponentSizeType.xs}
+            fontWeight="normal"
         />
     </div>
 )

@@ -59,6 +59,10 @@ const meta = {
             options: Object.values(ComponentSizeType),
             control: { type: 'radio' },
         },
+        fontWeight: {
+            options: ['bold', 'normal'],
+            control: { type: 'radio' },
+        },
     },
 } satisfies Meta<ButtonProps>
 

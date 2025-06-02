@@ -1975,6 +1975,7 @@ const DockerForm = ({
                             startIcon={<Trash />}
                             dataTestId="delete-container-registry"
                             onClick={showConfirmationModal}
+                            disabled={loading}
                         />
                     )}
                     <div className="flex right w-100 dc__gap-12">
@@ -1984,10 +1985,11 @@ const DockerForm = ({
                             text="Cancel"
                             variant={ButtonVariantType.secondary}
                             size={ComponentSizeType.medium}
+                            disabled={loading}
                         />
                         <Button
                             dataTestId="container-registry-save-button"
-                            disabled={loading}
+                            isLoading={loading}
                             text={id ? 'Update' : 'Save'}
                             size={ComponentSizeType.medium}
                             buttonProps={{

@@ -14,19 +14,183 @@
  * limitations under the License.
  */
 
+import { useState } from 'react'
 import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { ActionMenu, ActionMenuProps, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenu, ActionMenuProps, ButtonStyleType, Icon } from '@devtron-labs/devtron-fe-common-lib'
 
-const Component = (props: ActionMenuProps) => (
-    <div className="flex w-100" style={{ height: '90vh' }}>
-        <ActionMenu {...props} />
-    </div>
-)
+type ActionMenuItems =
+    | 'value-1'
+    | 'value-2'
+    | 'value-3'
+    | 'value-4'
+    | 'value-5'
+    | 'value-6'
+    | 'group-value-1'
+    | 'group-value-2'
+    | 'group-value-3'
+    | 'group-value-4'
+    | 'group-value-5'
+
+type BaseComponentPropsType = Omit<ActionMenuProps<ActionMenuItems>, 'options'>
+
+const BaseComponent = (props: BaseComponentPropsType) => {
+    const [isChecked, setIsChecked] = useState(false)
+
+    const handleChange = () => setIsChecked(!isChecked)
+
+    const options: ActionMenuProps<ActionMenuItems>['options'] = [
+        {
+            items: [
+                {
+                    id: 'value-1',
+                    label: 'Label 1',
+                    startIcon: {
+                        name: 'ic-cube',
+                    },
+                },
+            ],
+        },
+        {
+            groupLabel: 'Group 1',
+            items: [
+                {
+                    id: 'group-value-1',
+                    label: 'Group Label 1',
+                    startIcon: {
+                        name: 'ic-cube',
+                    },
+                    isDisabled: true,
+                },
+                {
+                    id: 'group-value-2',
+                    label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
+                    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+                    tooltipProps: {
+                        content: 'There is an error',
+                    },
+                    type: 'negative',
+                },
+                {
+                    id: 'group-value-3',
+                    label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
+                },
+                {
+                    id: 'group-value-4',
+                    label: 'Group Label 4',
+                },
+                {
+                    id: 'group-value-5',
+                    startIcon: {
+                        name: 'ic-cube',
+                    },
+                    trailingItem: {
+                        type: 'icon',
+                        config: {
+                            name: 'ic-cube',
+                        },
+                    },
+                    tooltipProps: {
+                        content: 'Tooltip content for value 5',
+                    },
+                    label: "Trailing Item: 'icon'",
+                    description:
+                        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
+                },
+            ],
+        },
+        {
+            items: [
+                {
+                    id: 'value-2',
+                    label: "Trailing Item: 'text'",
+                    description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
+                    tooltipProps: {
+                        content: 'There is an error',
+                    },
+                    trailingItem: {
+                        type: 'text',
+                        config: {
+                            value: 'Label',
+                            icon: {
+                                name: 'ic-cube',
+                            },
+                        },
+                    },
+                },
+                {
+                    id: 'value-3',
+                    label: "Trailing Item: 'text'",
+                    trailingItem: {
+                        type: 'text',
+                        config: {
+                            value: 'Label',
+                        },
+                    },
+                },
+                {
+                    id: 'value-4',
+                    label: "Trailing Item: 'switch'",
+                    trailingItem: {
+                        type: 'switch',
+                        config: {
+                            name: 'action-menu-switch',
+                            ariaLabel: 'action-menu-switch',
+                            isChecked,
+                            onChange: handleChange,
+                        },
+                    },
+                },
+                {
+                    id: 'value-5',
+                    startIcon: {
+                        name: 'ic-cube',
+                    },
+                    trailingItem: {
+                        type: 'counter',
+                        config: {
+                            value: 1,
+                        },
+                    },
+                    tooltipProps: {
+                        content: 'Tooltip content for value 5',
+                    },
+                    label: "Trailing Item: 'counter'",
+                    description:
+                        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
+                },
+                {
+                    id: 'value-6',
+                    trailingItem: {
+                        type: 'button',
+                        config: {
+                            icon: <Icon name="ic-cube" color={null} />,
+                            ariaLabel: 'action-menu-item-trailing-item-button',
+                            dataTestId: 'action-menu-item-trailing-item-button',
+                            showAriaLabelInTippy: false,
+                            style: ButtonStyleType.negativeGrey,
+                        },
+                    },
+                    label: "Trailing Item: 'button'",
+                    description:
+                        'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
+                },
+            ],
+        },
+    ]
+
+    const baseProps = { ...props, options } as ActionMenuProps
+
+    return (
+        <div className="flex w-100" style={{ height: '90vh' }}>
+            <ActionMenu {...baseProps} />
+        </div>
+    )
+}
 
 const meta = {
-    component: Component,
+    component: BaseComponent,
     argTypes: {
         position: {
             control: 'radio',
@@ -41,110 +205,15 @@ const meta = {
             type: 'boolean',
         },
     },
-} satisfies Meta<ActionMenuProps>
+} satisfies Meta<BaseComponentPropsType>
 
 export default meta
 
 type Story = StoryObj<typeof meta>
 
-const options: ActionMenuProps['options'] = [
-    {
-        items: [
-            {
-                id: 'value-1',
-                label: 'Label 1',
-                startIcon: {
-                    name: 'ic-cube',
-                },
-            },
-        ],
-    },
-    {
-        groupLabel: 'Group 1',
-        items: [
-            {
-                id: 'group-value-1',
-                label: 'Group Label 1',
-                startIcon: {
-                    name: 'ic-cube',
-                },
-                isDisabled: true,
-            },
-            {
-                id: 'group-value-2',
-                label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
-                description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-                tooltipProps: {
-                    content: 'There is an error',
-                },
-                type: 'negative',
-            },
-            {
-                id: 'group-value-3',
-                label: 'Lorem ipsum dolor sit amet, consectetur adipiscing elitLorem ipsum dolor sit amet, consectetur adipiscing elit',
-            },
-            {
-                id: 'group-value-4',
-                label: 'Group Label 4',
-            },
-            {
-                id: 'group-value-5',
-                startIcon: {
-                    name: 'ic-cube',
-                },
-                endIcon: {
-                    name: 'ic-cube',
-                },
-                tooltipProps: {
-                    content: 'Tooltip content for value 5',
-                },
-                label: 'Group Label 5',
-                description:
-                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
-            },
-        ],
-    },
-    {
-        items: [
-            {
-                id: 'value-2',
-                label: 'Label 2',
-                description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit',
-                tooltipProps: {
-                    content: 'There is an error',
-                },
-            },
-            {
-                id: 'value-3',
-                label: 'Label 3',
-            },
-            {
-                id: 'value-4',
-                label: 'Label 4',
-            },
-            {
-                id: 'value-5',
-                startIcon: {
-                    name: 'ic-cube',
-                },
-                endIcon: {
-                    name: 'ic-cube',
-                },
-                tooltipProps: {
-                    content: 'Tooltip content for value 5',
-                },
-                label: 'Label 5',
-                description:
-                    'Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga enim perspiciatis non praesentium itaque magni, animi doloremque ad beatae voluptas quasi repellat eveniet eaque culpa nemo dolorem, pariatur earum illo.',
-            },
-        ],
-    },
-]
-
 export const WithButtonElement: Story = {
     args: {
         id: 'action-menu-with-button',
-        options,
         position: 'bottom',
         alignment: 'start',
         disableDescriptionEllipsis: false,
@@ -160,7 +229,6 @@ export const WithButtonElement: Story = {
 export const WithIconButtonElement: Story = {
     args: {
         id: 'action-menu-with-icon-button',
-        options,
         position: 'bottom',
         alignment: 'start',
         disableDescriptionEllipsis: false,
@@ -177,7 +245,6 @@ export const WithIconButtonElement: Story = {
 export const WithFooterConfig: Story = {
     args: {
         id: 'action-menu-with-button',
-        options,
         position: 'bottom',
         alignment: 'start',
         disableDescriptionEllipsis: false,

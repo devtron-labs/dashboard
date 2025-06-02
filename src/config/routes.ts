@@ -43,6 +43,7 @@ export const URLS = {
     APP_DIFF_VIEW: 'diff-view',
     APP_TRIGGER: 'trigger',
     APP_OVERVIEW: 'overview',
+    MANAGE_TRAFFIC: 'manage-traffic',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
     APP_DEPLOYMENT_METRICS: 'deployment-metrics',

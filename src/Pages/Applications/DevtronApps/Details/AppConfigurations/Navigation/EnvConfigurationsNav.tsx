@@ -466,6 +466,7 @@ export const EnvConfigurationsNav = ({
                     linkProps={{ to: compareWithHref }}
                     text="Compare with..."
                     onClick={onClickCompareWith}
+                    fullWidth
                 />
             </div>
         )

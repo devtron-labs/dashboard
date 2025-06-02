@@ -21,13 +21,14 @@ import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
-    getDocumentationUrl,
+    DocLink,
+    DocLinkProps,
     Icon,
     PopupMenu,
     ValueContainerWithLoadingShimmer,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
@@ -156,26 +157,29 @@ export default ClusterSelector
 export const unauthorizedInfoText = (nodeType?: string) => {
     const emptyStateData = {
         text: ERROR_SCREEN_SUBTITLE,
-        link: getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' }),
+        link: 'K8S_RESOURCES_PERMISSIONS' as DocLinkProps['docLinkKey'],
         linkText: ERROR_SCREEN_LEARN_MORE,
     }
 
     if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(true)
-        emptyStateData.link = getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' })
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
         emptyStateData.linkText = LEARN_MORE
     } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
         emptyStateData.text = clusterOverviewNodeText(false)
-        emptyStateData.link = getDocumentationUrl({ docLinkKey: 'K8S_RESOURCES_PERMISSIONS' })
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
         emptyStateData.linkText = LEARN_MORE
     }
 
     return (
         <>
             {emptyStateData.text}&nbsp;
-            <a className="dc__link" href={emptyStateData.link} target="_blank" rel="noreferrer noopener">
-                {emptyStateData.linkText}
-            </a>
+            <DocLink
+                dataTestId="rb-permission-error-documentation"
+                docLinkKey={emptyStateData.link}
+                text={emptyStateData.linkText}
+                fontWeight="normal"
+            />
         </>
     )
 }

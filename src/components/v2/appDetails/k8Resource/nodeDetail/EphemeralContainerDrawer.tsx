@@ -187,6 +187,7 @@ const EphemeralContainerDrawer = ({
                         iconClassName="icon-dim-20 fcn-6 ml-8"
                         documentationLink="APP_EPHEMERAL_CONTAINER"
                         documentationLinkText="View Documentation"
+                        openInNewTab
                     />
                 </h2>
                 <button

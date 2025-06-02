@@ -525,8 +525,17 @@ export function getClusterListMinWithoutAuth(): Promise<ClusterListResponse> {
     return get(URL)
 }
 
-export function dashboardAccessed() {
-    return get(Routes.DASHBOARD_ACCESSED)
+export const dashboardAccessed = async () => {
+    try {
+        const isDashboardAccessed = localStorage.getItem('isDashboardAccessed')
+        if (isDashboardAccessed) {
+            return
+        }
+        await get(Routes.DASHBOARD_ACCESSED)
+        localStorage.setItem('isDashboardAccessed', 'true')
+    } catch {
+        // do noting
+    }
 }
 
 export function dashboardLoggedIn() {
@@ -550,7 +559,15 @@ export const getTemplateOptions = (appId: number, envId: number): Promise<Respon
     get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
 
 export const getInternetConnectivity = (controller: AbortController): Promise<any> => {
+    const timeoutId = setTimeout(() => {
+        controller.abort()
+    }, 10000)
+
     return fetch(`${window._env_?.CENTRAL_API_ENDPOINT ?? 'https://api.devtron.ai'}/${Routes.HEALTH}`, {
         signal: controller.signal,
-    }).then((res) => res.json())
+    })
+        .then((res) => res.json())
+        .finally(() => {
+            clearTimeout(timeoutId)
+        })
 }

@@ -40,7 +40,7 @@ import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg
 import { ReactComponent as Trash } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { deleteApplicationRelease } from '../../../external-apps/ExternalAppService'
 import { deleteInstalledChart } from '../../../charts/charts.service'
-import { ReactComponent as Dots } from '@Icons/ic-dot.svg'
+import { ReactComponent as Dots } from '@Icons/ic-more-vertical.svg'
 import { DELETE_ACTION, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
 import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
@@ -231,9 +231,9 @@ const EnvironmentSelectorComponent = ({
     const closeForceConfirmationModal = () => showForceDeleteDialog(false)
 
     return (
-        <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
+        <div className="flexbox flex-justify px-20 py-16">
             <div>
-                <div className="flex left">
+                <div className="flex left h-32">
                     <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
                         <svg
                             viewBox="0 0 200 40"

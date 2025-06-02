@@ -103,7 +103,7 @@ const SelectMergeStrategy = ({
                         {PatchStrategyTooltipInfo && <PatchStrategyTooltipInfo />}
                     </OverrideStrategyTippyContent>
                 }
-                documentationLink="HOME_PAGE"
+                documentationLink="DOC_HOME_PAGE"
             />
 
             {renderContent()}
