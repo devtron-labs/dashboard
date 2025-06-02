@@ -39,10 +39,6 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-const ListToggle = ({ onSelect, enabled = false }) => {
-    return <Toggle onSelect={onSelect} selected={enabled} />
-}
-
 const DropDown = ({ className = '', style = {}, src = null, ...props }) => {
     if (React.isValidElement(src)) {
         return src
@@ -52,7 +48,6 @@ const DropDown = ({ className = '', style = {}, src = null, ...props }) => {
 
 List.Logo = Logo
 List.Title = Title
-List.Toggle = ListToggle
 List.DropDown = DropDown
 
 export default function List({ children = null, className = '', ...props }) {

@@ -15,7 +15,7 @@
  */
 
 import React, { useRef } from 'react'
-import { DTSwitch, DTSwitchProps, getUniqueId, noop, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { DTSwitch, DTSwitchProps, getUniqueId, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { Select, Pencil } from '../common'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
 import { ChartGroupEntry, ChartValuesNativeType, ChartVersionType, MultiChartSummaryProps } from './charts.types'
