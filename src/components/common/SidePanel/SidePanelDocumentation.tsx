@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import {
     Button,
@@ -6,6 +6,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    getUniqueId,
     Icon,
     useMainContext,
     useTheme,
@@ -17,18 +18,34 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink },
+        sidePanelConfig: { docLink, reinitialize },
+        setSidePanelConfig,
     } = useMainContext()
 
     // REFS
     const iframeRef = useRef<HTMLIFrameElement | null>(null)
+    const iframeKeyRef = useRef<string | null>(`${docLink}-${getUniqueId()}`)
 
     // CONSTANTS
-    const iframeSrc = `${docLink}&theme=${appTheme}`
+    const iframeSrc = docLink
+        ? `${docLink}${docLink.includes('?') ? `&theme=${appTheme}` : `?theme=${appTheme}`}`
+        : null
+
+    useEffect(() => {
+        /**
+         * Reinitializes the iframe when the reinitialize flag is set to true. \
+         * This is needed to reload the iframe content whenever doc link is clicked (reinitialize is set to true). \
+         * It generates a new unique key for the iframe which forces React to recreate it.
+         */
+        if (reinitialize) {
+            iframeKeyRef.current = `${docLink}-${getUniqueId()}`
+            setSidePanelConfig((prev) => ({ ...prev, reinitialize: false }))
+        }
+    }, [reinitialize])
 
     return (
         <>
-            <div className="px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12 dc__no-shrink">
+            <div className="side-panel-documentation__header px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12">
                 <Icon name="ic-book-open" color="N900" />
                 <h2 className="m-0 fs-16 lh-1-5 fw-6 cn-9 flex-grow-1">Documentation</h2>
                 <div className="flex dc__gap-8">
@@ -57,9 +74,9 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                 </div>
             </div>
             <div className="flex-grow-1">
-                {docLink && (
+                {iframeSrc && (
                     <iframe
-                        key={iframeSrc}
+                        key={iframeKeyRef.current}
                         ref={iframeRef}
                         title="side-panel-documentation"
                         loading="lazy"
@@ -68,8 +85,7 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
                         width="100%"
                         height="100%"
                         allow="clipboard-read; clipboard-write"
-                        sandbox="allow-same-origin allow-scripts allow-popups"
-                        referrerPolicy="no-referrer"
+                        referrerPolicy="strict-origin-when-cross-origin"
                     />
                 )}
             </div>

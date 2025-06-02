@@ -46,7 +46,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
     // HANDLERS
     const handleClose = () => {
         asideWidth.set(SIDE_PANEL_MIN_ASIDE_WIDTH)
-        setSidePanelConfig({ open: false })
+        setSidePanelConfig({ open: false, docLink: null, reinitialize: false })
     }
 
     const handleDrag: DraggableEventHandler = (_, data) => {
@@ -89,11 +89,13 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                             <div className="aside-drag__handle px-1 br-1" />
                         </div>
                     </Draggable>
-                    <div
-                        className={`flex-grow-1 dc__position-rel mt-8 mr-8 mb-8 br-6 bg__primary flexbox-col dc__overflow-hidden ${appTheme === AppThemeType.dark ? 'border__primary-translucent' : ''}`}
-                    >
-                        {contentOverlay && <div className="dc__position-abs w-100 h-100 dc__zi-1" />}
-                        <SidePanelDocumentation onClose={handleClose} />
+                    <div className="flex-grow-1 py-8 pr-8">
+                        <div
+                            className={`w-100 h-100 dc__position-rel br-6 bg__primary flexbox-col dc__overflow-hidden ${appTheme === AppThemeType.dark ? 'border__primary-translucent' : ''}`}
+                        >
+                            {contentOverlay && <div className="dc__position-abs w-100 h-100 dc__zi-1" />}
+                            <SidePanelDocumentation onClose={handleClose} />
+                        </div>
                     </div>
                 </motion.aside>
             )}

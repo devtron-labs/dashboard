@@ -33,9 +33,9 @@ import {
     MarkDown,
     Button,
     RAISE_ISSUE,
-    getDocumentationUrl,
     DISCORD_LINK,
     InstallationType,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -1151,14 +1151,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                         {isUpgradeView ? (
                             <>
                                 Please refer&nbsp;
-                                <a
-                                    className="cb-5 fw-6"
-                                    href={getDocumentationUrl({ docLinkKey: 'DEVTRON_UPGRADE' })}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    steps to upgrade using CLI
-                                </a>
+                                <DocLink dataTestId='devtron-upgrade-docs-link' docLinkKey='DEVTRON_UPGRADE' text="steps to upgrade using CLI" fontWeight='normal' />
                             </>
                         ) : (
                             'This functionality is available only for Devtron installed via Helm charts'
