@@ -12,13 +12,17 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const timeoutRef = useRef<NodeJS.Timeout>(null)
     const { isAirgapped } = useMainContext()
 
+    const handleClearTimeout = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        abortControllerRef.current.abort()
+    }
+
     const checkConnectivity = async () => {
         if (isAirgapped) return
-        // Cancel any pending request
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort()
-        }
 
+        handleClearTimeout()
         const controller = new AbortController()
         abortControllerRef.current = controller
 
@@ -39,10 +43,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         }
     }
     const handleOffline = () => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current)
-        }
-        abortControllerRef.current.abort()
+        handleClearTimeout()
         setOnline(false)
     }
 
@@ -50,6 +51,11 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         // Verify connectivity when browser reports online
         await checkConnectivity()
     }
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        handleOnline()
+    }, [])
 
     useEffect(() => {
         if (isAirgapped) return null
