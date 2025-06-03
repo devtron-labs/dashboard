@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -339,12 +339,16 @@ const CDMaterial = ({
     const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
     const isExceptionUser = materialsResult?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
 
-    const pipelineStrategyOptions = (pipelineStrategies ?? []).flatMap(({ error, strategies }) => {
-        if (error) {
-            return []
-        }
-        return strategies
-    })
+    const pipelineStrategyOptions = useMemo(
+        () =>
+            (pipelineStrategies ?? []).flatMap(({ error, strategies }) => {
+                if (error) {
+                    return []
+                }
+                return strategies
+            }),
+        [pipelineStrategies],
+    )
 
     const {
         pipelineDeploymentConfigLoading,
