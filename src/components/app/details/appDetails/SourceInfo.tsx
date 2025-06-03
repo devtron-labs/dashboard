@@ -203,7 +203,7 @@ export const SourceInfo = ({
             }
             buttonProps={{
                 dataTestId: 'deploy-button',
-                size: ComponentSizeType.small,
+                size: ComponentSizeType.medium,
                 text: 'Deploy',
                 startIcon: <Icon name={iconName} color={null} />,
                 style: buttonStyle,
@@ -222,7 +222,7 @@ export const SourceInfo = ({
             isForRollback
             buttonProps={{
                 dataTestId: 'rollback-button',
-                size: ComponentSizeType.small,
+                size: ComponentSizeType.medium,
                 variant: isIcon ? ButtonVariantType.secondary : ButtonVariantType.text,
                 ...(isIcon
                     ? {
@@ -310,7 +310,7 @@ export const SourceInfo = ({
                                     {!isVirtualEnvironment && showUrlInfo && (
                                         <Button
                                             dataTestId="app-details-urls"
-                                            size={ComponentSizeType.small}
+                                            size={ComponentSizeType.medium}
                                             variant={ButtonVariantType.secondary}
                                             icon={<LinkIcon />}
                                             onClick={onClickShowUrlInfo}
@@ -324,7 +324,7 @@ export const SourceInfo = ({
                                     {!isVirtualEnvironment && showHibernateModal && (
                                         <Button
                                             dataTestId="app-details-hibernate-modal-button"
-                                            size={ComponentSizeType.small}
+                                            size={ComponentSizeType.medium}
                                             variant={ButtonVariantType.secondary}
                                             isLoading={hibernationPatchResponseLoading}
                                             icon={
@@ -353,7 +353,7 @@ export const SourceInfo = ({
                                         setRotateModal && (
                                             <Button
                                                 dataTestId="app-details-rotate-pods-modal-button"
-                                                size={ComponentSizeType.small}
+                                                size={ComponentSizeType.medium}
                                                 variant={ButtonVariantType.secondary}
                                                 onClick={() => setRotateModal(true)}
                                                 disabled={isApprovalConfigured}
@@ -394,7 +394,7 @@ export const SourceInfo = ({
 
                                 <Button
                                     dataTestId="app-details-env-config-button"
-                                    size={ComponentSizeType.small}
+                                    size={ComponentSizeType.medium}
                                     icon={<Icon name="ic-sliders-vertical" color={null} />}
                                     variant={ButtonVariantType.secondary}
                                     onClick={onClickSliderVerticalButton}
