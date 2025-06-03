@@ -109,7 +109,7 @@ export const getPipelineDeploymentConfigSelectorConfig = ({
                 onChange: handleChangeDeploymentConfig,
                 groupValue: deploy,
             },
-            ...(pipelineStrategyOptions.length && deploymentStrategy
+            ...(pipelineStrategyOptions.length > 1 && deploymentStrategy
                 ? [
                       {
                           title: 'Select strategy type',
