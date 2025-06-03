@@ -222,7 +222,7 @@ export const SourceInfo = ({
             isForRollback
             buttonProps={{
                 dataTestId: 'rollback-button',
-                size: ComponentSizeType.medium,
+                size: isIcon ? ComponentSizeType.medium : ComponentSizeType.small,
                 variant: isIcon ? ButtonVariantType.secondary : ButtonVariantType.text,
                 ...(isIcon
                     ? {
