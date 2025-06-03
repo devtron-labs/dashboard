@@ -304,7 +304,6 @@ export interface CIPipelineDataType {
 export interface CIPipelineState {
     code: number
     view: string
-    showError: boolean
     loadingData: boolean
     form: PipelineFormType
     ciPipeline: CIPipelineDataType
@@ -367,7 +366,6 @@ export interface ValidationRulesType {
 }
 export interface SourceMaterialsProps {
     materials: MaterialType[]
-    showError: boolean
     validationRules?: ValidationRulesType
     selectSourceType?: (event, gitMaterialId) => void
     handleSourceChange?: (event, gitMaterialId: number, type: string) => void
@@ -375,8 +373,6 @@ export interface SourceMaterialsProps {
     ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
     canEditPipeline: boolean
     webhookData?: WebhookCIProps
-    isBranchRegex?: (material) => boolean
-    isAdvanced?: boolean
     handleOnBlur?: () => Promise<void>
 }
 

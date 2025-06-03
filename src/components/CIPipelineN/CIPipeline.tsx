@@ -49,6 +49,8 @@ import {
     FloatingVariablesSuggestions,
     TriggerType,
     DeleteCINodeButton,
+    GenericModal,
+    Button,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -595,6 +597,26 @@ export default function CIPipeline({
         }
     }
 
+    const renderPrimaryButton = () =>
+        formData.ciPipelineEditable && (
+            <Button
+                dataTestId="build-pipeline-button"
+                isLoading={apiInProgress}
+                disabled={
+                    apiInProgress ||
+                    (formData.isDockerConfigOverridden &&
+                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
+                        formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
+                            CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                        (loadingState.loading || loadingState.failed)) ||
+                    formDataErrorObj.customTag.message.length > 0 ||
+                    formDataErrorObj.counterX?.message.length > 0
+                }
+                text={saveOrUpdateButtonTitle}
+                onClick={savePipeline}
+            />
+        )
+
     const savePipeline = () => {
         const isUnique = checkUniqueness(formData)
         if (!isUnique) {
@@ -805,31 +827,37 @@ export default function CIPipeline({
 
     const renderCIPipelineModalContent = () => {
         if (pageState === ViewType.ERROR) {
-            return <ErrorScreenManager code={errorCode} reload={handleOnMountAPICalls} />
+            return (
+                <div className="p-20">
+                    <ErrorScreenManager code={errorCode} reload={handleOnMountAPICalls} />
+                </div>
+            )
         }
 
         return (
             <>
                 {isAdvanced && (
-                    <div className="ml-20 w-90">
-                        <TabGroup
-                            tabs={
-                                isJobCard
-                                    ? [
-                                          getNavLink(`build`, BuildStageVariable.Build),
-                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
-                                      ]
-                                    : [
-                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
-                                          getNavLink(`build`, BuildStageVariable.Build),
-                                          getNavLink(`post-build`, BuildStageVariable.PostBuild),
-                                      ]
-                            }
-                            hideTopPadding
-                        />
-                    </div>
+                    <>
+                        <div className="ml-20 w-90">
+                            <TabGroup
+                                tabs={
+                                    isJobCard
+                                        ? [
+                                              getNavLink(`build`, BuildStageVariable.Build),
+                                              getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                          ]
+                                        : [
+                                              getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                              getNavLink(`build`, BuildStageVariable.Build),
+                                              getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                                          ]
+                                }
+                                hideTopPadding
+                            />
+                        </div>
+                        <hr className="divider m-0" />
+                    </>
                 )}
-                <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
                     <div className={`${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
@@ -872,58 +900,7 @@ export default function CIPipeline({
                         </Switch>
                     </div>
                 </pipelineContext.Provider>
-                {pageState !== ViewType.LOADING && (
-                    <div
-                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                            ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
-                        } `}
-                    >
-                        {renderSecondaryButton()}
-                        {formData.ciPipelineEditable && (
-                            <ButtonWithLoader
-                                rootClassName="cta cta--workflow"
-                                dataTestId="build-pipeline-button"
-                                onClick={savePipeline}
-                                disabled={
-                                    apiInProgress ||
-                                    (formData.isDockerConfigOverridden &&
-                                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
-                                        formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
-                                            CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                                        (loadingState.loading || loadingState.failed)) ||
-                                    formDataErrorObj.customTag.message.length > 0 ||
-                                    formDataErrorObj.counterX?.message.length > 0
-                                }
-                                isLoading={apiInProgress}
-                            >
-                                {saveOrUpdateButtonTitle}
-                            </ButtonWithLoader>
-                        )}
-                    </div>
-                )}
             </>
-        )
-    }
-
-    const renderCIPipelineModal = () => {
-        return (
-            <div
-                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
-                    isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
-                }`}
-            >
-                <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
-                        {title}
-                    </h2>
-
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={handleClose}>
-                        <Close className="icon-dim-24" />
-                    </button>
-                </div>
-
-                {renderCIPipelineModalContent()}
-            </div>
         )
     }
 
@@ -951,15 +928,53 @@ export default function CIPipeline({
         )
     }
 
-    return ciPipelineId || isAdvanced ? (
+    return (
         <>
             {renderFloatingVariablesWidget()}
+            {(ciPipelineId || isAdvanced) && (
+                <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
+                    <div className="modal__body modal__body__ci_new_ui br-0 modal__body--p-0 advanced-option-container">
+                        <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
+                            <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                                {title}
+                            </h2>
 
-            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
-                {renderCIPipelineModal()}
-            </Drawer>
+                            <button type="button" className="dc__transparent flex icon-dim-24" onClick={handleClose}>
+                                <Close className="icon-dim-24" />
+                            </button>
+                        </div>
+
+                        {renderCIPipelineModalContent()}
+                        {pageState !== ViewType.LOADING && (
+                            <div
+                                className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                                    ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
+                                } `}
+                            >
+                                {renderSecondaryButton()}
+                                {renderPrimaryButton()}
+                            </div>
+                        )}
+                    </div>
+                </Drawer>
+            )}
+            <GenericModal
+                name="build-pipeline-modal"
+                open={!ciPipelineId && !isAdvanced}
+                width={800}
+                onClose={handleClose}
+            >
+                <GenericModal.Header title={title} />
+                <GenericModal.Body>{renderCIPipelineModalContent()}</GenericModal.Body>
+                {pageState !== ViewType.LOADING && (
+                    <GenericModal.Footer>
+                        <div className="flex dc__content-space">
+                            {renderSecondaryButton()}
+                            {renderPrimaryButton()}
+                        </div>
+                    </GenericModal.Footer>
+                )}
+            </GenericModal>
         </>
-    ) : (
-        <VisibleModal className="">{renderCIPipelineModal()}</VisibleModal>
     )
 }

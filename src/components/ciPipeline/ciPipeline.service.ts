@@ -31,8 +31,9 @@ import {
     AppConfigProps,
     GetTemplateAPIRouteType,
     getTemplateAPIRoute,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Routes, SourceTypeMap, ViewType } from '../../config'
+import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, PatchAction } from './types'

@@ -54,12 +54,13 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import {

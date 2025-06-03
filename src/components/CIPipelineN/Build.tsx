@@ -15,8 +15,14 @@
  */
 
 import { useContext } from 'react'
-import { Progressing, CiPipelineSourceTypeOption, CustomInput, DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
-import { SourceTypeMap, ViewType } from '../../config'
+import {
+    Progressing,
+    DTSwitch,
+    CiPipelineSourceTypeOption,
+    CustomInput,
+    SourceTypeMap,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
@@ -190,7 +196,6 @@ export const Build = ({
             <>
                 {isAdvanced && renderPipelineName()}
                 <SourceMaterials
-                    showError={showFormError}
                     validationRules={validationRules}
                     materials={formData.materials}
                     selectSourceType={selectSourceType}
@@ -199,7 +204,6 @@ export const Build = ({
                     ciPipelineSourceTypeOptions={formData.ciPipelineSourceTypeOptions}
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
-                    isAdvanced={isAdvanced}
                     handleOnBlur={handleOnBlur}
                 />
             </>
