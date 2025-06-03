@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import ReactGA from 'react-ga4'
+import { UaEventOptions } from 'react-ga4/types/ga4'
 
 export const APP_METRICS_CALENDAR_INPUT_DATE_FORMAT = 'DD-MM-YYYY hh:mm:ss'
 
-export const DA_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.event>[0]> = {
+export const DA_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'category' | 'action'>> = {
     DeployButtonClicked: {
         category: 'App Details',
         action: 'DA_APP_DETAIL_DEPLOY',
@@ -41,7 +41,7 @@ export const DA_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.
     },
 }
 
-export const AG_APP_DETAILS_GA_EVENTS: Record<string, Parameters<typeof ReactGA.event>[0]> = {
+export const AG_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'category' | 'action'>> = {
     DeployButtonClicked: {
         category: 'App Details',
         action: 'AG_APP_DETAIL_DEPLOY',
