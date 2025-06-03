@@ -170,7 +170,6 @@ const App = () => {
                     </Switch>
                     <div id="visible-modal" />
                     <div id="visible-modal-2" />
-                    <div id="animated-dialog-backdrop" />
                 </BreadcrumbStore>
             </ErrorBoundary>
         )
