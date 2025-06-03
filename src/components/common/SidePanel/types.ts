@@ -1,6 +1,6 @@
 import { FunctionComponent } from 'react'
 
-import { IconName, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
+import { IconName, MainContext, SidePanelTab, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SidePanelProps {
     asideWidth: ReturnType<typeof useMotionValue<number>>
@@ -11,13 +11,10 @@ export interface SidePanelContentBaseProps {
 }
 
 export interface SidePanelContentProps {
-    initialTab?: SidePanelTab
+    tab?: SidePanelTab
     onClose: () => void
-}
-
-export enum SidePanelTab {
-    DOCUMENTATION = 'documentation',
-    ASK_DEVTRON = 'ask-devtron',
+    setSidePanelConfig: MainContext['setSidePanelConfig']
+    sidePanelConfig: MainContext['sidePanelConfig']
 }
 
 export interface TabConfig {

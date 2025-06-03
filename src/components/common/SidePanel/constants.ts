@@ -1,4 +1,6 @@
-import { SidePanelTab, TabConfig } from './types'
+import { SidePanelTab } from '@devtron-labs/devtron-fe-common-lib'
+
+import { TabConfig } from './types'
 
 export const SIDE_PANEL_MIN_ASIDE_WIDTH = 362
 

@@ -158,7 +158,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
 
-    const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({ open: false })
+    const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({ state: 'closed' })
     const asideWidth = useMotionValue(0)
 
     const {
@@ -522,7 +522,6 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                         handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                     />
                 )}
-                {AIChat && window._env_?.FEATURE_AI_APP_DETAILS_ENABLE && <AIChat parentRef={parentRef} {...aiAgentContext} />}
                 {renderAboutDevtronDialog()}
                 {!isOnboardingPage && (
                     <Navigation

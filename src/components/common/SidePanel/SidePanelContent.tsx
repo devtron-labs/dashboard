@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { MouseEvent } from 'react'
 
 import {
     Button,
@@ -9,6 +9,7 @@ import {
     Icon,
     ImageType,
     logExceptionToSentry,
+    SidePanelTab,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICMaintenance } from '@Images/ic-maintenance.svg'
@@ -18,7 +19,7 @@ import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { TABS_CONFIG } from './constants'
 import { SidePanelDocumentation } from './SidePanelDocumentation'
 import { SidePanelHeaderActions } from './SidePanelHeaderActions'
-import { SidePanelContentProps, SidePanelTab } from './types'
+import { SidePanelContentProps } from './types'
 import { renderOpenTicketButton } from './utils'
 
 const AIChat = importComponentFromFELibrary(
@@ -33,8 +34,8 @@ const AIChat = importComponentFromFELibrary(
     'function',
 )
 
-export const SidePanelContent = ({ onClose, initialTab = SidePanelTab.DOCUMENTATION }: SidePanelContentProps) => {
-    const [tab, setTab] = useState<SidePanelTab>(initialTab)
+export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig }: SidePanelContentProps) => {
+    const tab = sidePanelConfig.state
 
     const renderContent = () => {
         switch (tab) {
@@ -57,8 +58,27 @@ export const SidePanelContent = ({ onClose, initialTab = SidePanelTab.DOCUMENTAT
                     />
                 )
             default:
-                logExceptionToSentry('Unknown tab in SidePanelContent', tab)
+                logExceptionToSentry(`Unknown ${tab} in SidePanelContent`)
                 return null
+        }
+    }
+
+    const getConfigForTab = (tabId: SidePanelTab) => {
+        if (sidePanelConfig.state === tabId) {
+            return sidePanelConfig
+        }
+
+        switch (tabId) {
+            case SidePanelTab.ASK_DEVTRON:
+                return {
+                    state: SidePanelTab.ASK_DEVTRON,
+                }
+            case SidePanelTab.DOCUMENTATION:
+            default:
+                return {
+                    state: SidePanelTab.DOCUMENTATION,
+                    docLink: null,
+                }
         }
     }
 
@@ -69,8 +89,12 @@ export const SidePanelContent = ({ onClose, initialTab = SidePanelTab.DOCUMENTAT
                     {TABS_CONFIG.map(({ label, iconName, id }) => {
                         const isSelected = tab === id
 
-                        const handleTabClick = () => {
-                            setTab(id)
+                        const handleTabClick = ({
+                            currentTarget: {
+                                dataset: { config },
+                            },
+                        }: MouseEvent<HTMLDivElement>) => {
+                            setSidePanelConfig(() => JSON.parse(config))
                         }
 
                         return (
@@ -81,6 +105,7 @@ export const SidePanelContent = ({ onClose, initialTab = SidePanelTab.DOCUMENTAT
                                 onClick={handleTabClick}
                                 style={{ ...(isSelected ? { boxShadow: '0 1px 0 0 var(--bg-primary)' } : {}) }}
                                 tabIndex={0}
+                                data-config={JSON.stringify(getConfigForTab(id))}
                             >
                                 <Icon name={iconName} color={isSelected ? 'N900' : 'N700'} />
 
