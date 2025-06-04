@@ -31,7 +31,6 @@ import {
     Icon,
     LoadingCard,
     logExceptionToSentry,
-    Progressing,
     ReleaseMode,
     showError,
     Tooltip,
