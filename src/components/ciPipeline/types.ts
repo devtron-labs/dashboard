@@ -384,13 +384,11 @@ export interface WebhookCIProps {
     deleteWebhookCondition: (index: number) => void
     onWebhookConditionSelectorChange: (index: number, selectorId: number) => void
     onWebhookConditionSelectorValueChange: (index: number, value: string) => void
-    copyToClipboard: (text: string, callback) => void
 }
 
 export interface BuildType
     extends Pick<AdvancedConfigOptionsProps, 'appId'>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
-    showFormError: boolean
     isAdvanced: boolean
     ciPipeline: CIPipelineDataType
     pageState: string

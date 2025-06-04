@@ -886,7 +886,6 @@ export default function CIPipeline({
                             <Route path={`${path}/build`}>
                                 <Build
                                     pageState={pageState}
-                                    showFormError={showFormError}
                                     isAdvanced={isAdvanced}
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}

@@ -209,7 +209,7 @@ export const SourceMaterials = ({
                                 )}
                             </div>
                             {includeWebhookEvents && mat.type === SourceTypeMap.WEBHOOK && _selectedWebhookEvent && (
-                                <div>
+                                <div className="mt-16">
                                     <ConfigureWebhook
                                         webhookConditionList={webhookData.webhookConditionList}
                                         gitHost={webhookData.gitHost}

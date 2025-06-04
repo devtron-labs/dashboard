@@ -32,7 +32,6 @@ import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 
 export const Build = ({
-    showFormError,
     isAdvanced,
     ciPipeline,
     pageState,
@@ -163,17 +162,6 @@ export const Build = ({
         setFormData(_form)
     }
 
-    const copyToClipboard = (text: string, callback = () => {}): void => {
-        const textarea = document.createElement('textarea')
-        const main = document.getElementsByClassName('main')[0]
-        main.appendChild(textarea)
-        textarea.value = text
-        textarea.select()
-        document.execCommand('copy')
-        main.removeChild(textarea)
-        callback()
-    }
-
     const handleScanToggle = (): void => {
         const _formData = { ...formData }
         _formData.scanEnabled = !_formData.scanEnabled
@@ -185,7 +173,6 @@ export const Build = ({
             webhookConditionList: formData.webhookConditionList,
             gitHost: formData.gitHost,
             getSelectedWebhookEvent,
-            copyToClipboard,
             addWebhookCondition,
             deleteWebhookCondition,
             onWebhookConditionSelectorChange,

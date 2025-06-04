@@ -59,7 +59,6 @@ import CIPipeline from '../CIPipelineN/CIPipeline'
 import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
-import { ReactComponent as CloseIcon } from '../../assets/icons/ic-cross.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
 import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
@@ -73,6 +72,7 @@ import EmptyWorkflow from './EmptyWorkflow'
 import { WorkflowCreate } from '../app/details/triggerView/config'
 import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
+import { CreateCICDPipeline } from '@Pages/App/Configurations'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -310,21 +310,25 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                   })
                 : `${URLS.APP}/${this.props.match.params.appId}`
         }/edit/workflow/${workflowId}`
+
         switch (type) {
-            case 'CI':
+            case CIPipelineNodeType.CI:
                 link = `${link}/ci-pipeline/0`
                 break
-            case 'EXTERNAL-CI':
+            case CIPipelineNodeType.EXTERNAL_CI:
                 link = `${link}/external-ci`
                 break
-            case 'LINKED-CI':
+            case CIPipelineNodeType.LINKED_CI:
                 link = `${link}/linked-ci`
                 break
-            case 'JOB-CI':
+            case CIPipelineNodeType.JOB_CI:
                 link = `${link}/ci-job/0`
                 break
             case CIPipelineNodeType.LINKED_CD:
                 link = `${link}/${URLS.LINKED_CD}`
+                break
+            case CIPipelineNodeType.CI_CD:
+                link = `${link}/${URLS.APP_CI_CD_CONFIG}`
                 break
         }
         this.props.history.push(link)
@@ -456,6 +460,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.resetChangeCIPayload()
     }
 
+    handleCreateCICDPipelineClose = () => {
+        this.closePipeline()
+    }
+
     renderDeleteDialog = () => {
         const wf = this.state.workflows.find((wf) => wf.id === this.state.workflowId)
         //As delete api gives 200 in case of cannot delete, so we using this component despite of DeleteConfirmationModal
@@ -577,189 +585,186 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     // TODO: dynamic routes for ci-pipeline
     renderRouter() {
         return (
-            <Switch>
-                <Route
-                    path={`${this.props.match.path}/edit`}
-                    render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                        return (
-                            <AddWorkflow
-                                match={match}
-                                history={history}
-                                location={location}
-                                name={this.state.appName}
-                                onClose={this.closeAddWorkflow}
-                                getWorkflows={this.getWorkflows}
-                                isTemplateView={this.props.isTemplateView}
-                            />
-                        )
-                    }}
-                />
-                {this.props.isJobView && (
+            <>
+                {!this.props.isJobView && (
+                    <CreateCICDPipeline
+                        open={this.props.location.pathname.includes(URLS.APP_CI_CD_CONFIG)}
+                        onClose={this.handleCreateCICDPipelineClose}
+                        appId={this.props.match.params.appId}
+                    />
+                )}
+                <Switch>
                     <Route
-                        path={`${this.props.match.path}/empty-workflow`}
+                        path={`${this.props.match.path}/edit`}
                         render={({ location, history, match }: { location: any; history: any; match: any }) => {
                             return (
-                                <EmptyWorkflow
+                                <AddWorkflow
                                     match={match}
                                     history={history}
                                     location={location}
                                     name={this.state.appName}
                                     onClose={this.closeAddWorkflow}
                                     getWorkflows={this.getWorkflows}
-                                />
-                            )
-                        }}
-                    />
-                )}
-                {!this.props.isJobView && (
-                    <Route
-                        path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
-                            (pipeline) =>
-                                `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId`,
-                        )}
-                        render={({ location, match }: { location: any; match: any }) => {
-                            return (
-                                <CDPipeline
-                                    match={match}
-                                    location={location}
-                                    appName={this.state.appName}
-                                    close={this.closePipeline}
-                                    getWorkflows={this.getWorkflows}
-                                    refreshParentWorkflows={this.props.getWorkflows}
-                                    envIds={this.state.envIds}
-                                    isGitOpsInstalledButNotConfigured={this.state.noGitOpsConfiguration}
-                                    noGitOpsModuleInstalledAndConfigured={
-                                        this.state.noGitOpsModuleInstalledAndConfigured
-                                    }
-                                    isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
-                                    changeCIPayload={this.state.changeCIPayload}
-                                    reloadAppConfig={this.props.reloadAppConfig}
-                                    handleDisplayLoader={this.handleDisplayLoader}
                                     isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
                     />
-                )}
-                <Route
-                    path={[URLS.APP_JOB_CI_CONFIG, URLS.APP_CI_CONFIG].map(
-                        (ciPipeline) => `${this.props.match.path}/${ciPipeline}/:ciPipelineId`,
+                    {this.props.isJobView && (
+                        <Route
+                            path={`${this.props.match.path}/empty-workflow`}
+                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                                return (
+                                    <EmptyWorkflow
+                                        match={match}
+                                        history={history}
+                                        location={location}
+                                        name={this.state.appName}
+                                        onClose={this.closeAddWorkflow}
+                                        getWorkflows={this.getWorkflows}
+                                    />
+                                )
+                            }}
+                        />
                     )}
-                    render={({ location, match }: { location: any; match: any }) => {
-                        let isJobCI = false
-                        if (location.pathname.indexOf(URLS.APP_JOB_CI_CONFIG) >= 0) {
-                            isJobCI = true
-                        }
-                        return (
-                            <CIPipeline
-                                appName={this.state.appName}
-                                connectCDPipelines={this.getLen()}
-                                close={this.closePipeline}
-                                getWorkflows={this.getAllWorkflows}
-                                isJobView={this.props.isJobView}
-                                isJobCI={isJobCI}
-                                changeCIPayload={this.state.changeCIPayload}
-                                isTemplateView={this.props.isTemplateView}
-                            />
-                        )
-                    }}
-                />
-                {!this.props.isJobView && [
+                    {!this.props.isJobView && (
+                        <Route
+                            path={[URLS.APP_LINKED_CI_CONFIG, URLS.APP_CI_CONFIG, PipelineType.WEBHOOK].map(
+                                (pipeline) =>
+                                    `${this.props.match.path}/${pipeline}/:ciPipelineId/cd-pipeline/:cdPipelineId`,
+                            )}
+                            render={({ location, match }: { location: any; match: any }) => {
+                                return (
+                                    <CDPipeline
+                                        match={match}
+                                        location={location}
+                                        appName={this.state.appName}
+                                        close={this.closePipeline}
+                                        getWorkflows={this.getWorkflows}
+                                        refreshParentWorkflows={this.props.getWorkflows}
+                                        envIds={this.state.envIds}
+                                        isGitOpsInstalledButNotConfigured={this.state.noGitOpsConfiguration}
+                                        noGitOpsModuleInstalledAndConfigured={
+                                            this.state.noGitOpsModuleInstalledAndConfigured
+                                        }
+                                        isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
+                                        changeCIPayload={this.state.changeCIPayload}
+                                        reloadAppConfig={this.props.reloadAppConfig}
+                                        handleDisplayLoader={this.handleDisplayLoader}
+                                        isTemplateView={this.props.isTemplateView}
+                                    />
+                                )
+                            }}
+                        />
+                    )}
                     <Route
-                        key={`${this.props.match.path}/webhook/`}
-                        path={`${this.props.match.path}/webhook/:webhookId`}
-                    >
-                        <WebhookDetailsModal close={this.closePipeline} isTemplateView={this.props.isTemplateView} />
-                    </Route>,
-                    <Route
-                        key={`${this.props.match.path}/linked-ci/`}
-                        path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
-                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                        path={[URLS.APP_JOB_CI_CONFIG, URLS.APP_CI_CONFIG].map(
+                            (ciPipeline) => `${this.props.match.path}/${ciPipeline}/:ciPipelineId`,
+                        )}
+                        render={({ location, match }: { location: any; match: any }) => {
+                            let isJobCI = false
+                            if (location.pathname.indexOf(URLS.APP_JOB_CI_CONFIG) >= 0) {
+                                isJobCI = true
+                            }
                             return (
-                                <LinkedCIPipelineView
-                                    match={match}
-                                    history={history}
-                                    location={location}
+                                <CIPipeline
                                     appName={this.state.appName}
                                     connectCDPipelines={this.getLen()}
                                     close={this.closePipeline}
                                     getWorkflows={this.getAllWorkflows}
-                                    isTemplateView={this.props.isTemplateView}
-                                />
-                            )
-                        }}
-                    />,
-                    <Route
-                        key={`${this.props.match.path}/linked-ci`}
-                        path={`${this.props.match.path}/linked-ci`}
-                        render={({ location, history, match }: { location: any; history: any; match: any }) => {
-                            return (
-                                <LinkedCIPipeline
-                                    match={match}
-                                    history={history}
-                                    location={location}
-                                    appName={this.state.appName}
-                                    connectCDPipelines={0}
-                                    close={this.closePipeline}
-                                    getWorkflows={this.getWorkflows}
+                                    isJobView={this.props.isJobView}
+                                    isJobCI={isJobCI}
                                     changeCIPayload={this.state.changeCIPayload}
                                     isTemplateView={this.props.isTemplateView}
                                 />
                             )
                         }}
-                    />,
+                    />
+                    {!this.props.isJobView && [
+                        <Route
+                            key={`${this.props.match.path}/webhook/`}
+                            path={`${this.props.match.path}/webhook/:webhookId`}
+                        >
+                            <WebhookDetailsModal
+                                close={this.closePipeline}
+                                isTemplateView={this.props.isTemplateView}
+                            />
+                        </Route>,
+                        <Route
+                            key={`${this.props.match.path}/linked-ci/`}
+                            path={`${this.props.match.path}/linked-ci/:ciPipelineId`}
+                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                                return (
+                                    <LinkedCIPipelineView
+                                        match={match}
+                                        history={history}
+                                        location={location}
+                                        appName={this.state.appName}
+                                        connectCDPipelines={this.getLen()}
+                                        close={this.closePipeline}
+                                        getWorkflows={this.getAllWorkflows}
+                                        isTemplateView={this.props.isTemplateView}
+                                    />
+                                )
+                            }}
+                        />,
+                        <Route
+                            key={`${this.props.match.path}/linked-ci`}
+                            path={`${this.props.match.path}/linked-ci`}
+                            render={({ location, history, match }: { location: any; history: any; match: any }) => {
+                                return (
+                                    <LinkedCIPipeline
+                                        match={match}
+                                        history={history}
+                                        location={location}
+                                        appName={this.state.appName}
+                                        connectCDPipelines={0}
+                                        close={this.closePipeline}
+                                        getWorkflows={this.getWorkflows}
+                                        changeCIPayload={this.state.changeCIPayload}
+                                        isTemplateView={this.props.isTemplateView}
+                                    />
+                                )
+                            }}
+                        />,
 
-                    ...(SyncEnvironment
-                        ? [
-                              <Route
-                                  key={`${this.props.match.path}/${URLS.LINKED_CD}/`}
-                                  path={`${this.props.match.path}/${URLS.LINKED_CD}/`}
-                              >
-                                  <SyncEnvironment
-                                      closeModal={this.closePipeline}
-                                      cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
-                                      blackListedIds={this.state.blackListedCI ?? {}}
-                                      getWorkflows={this.getWorkflows}
-                                      workflows={this.state.workflows}
-                                      isTemplateView={this.props.isTemplateView}
-                                  />
-                              </Route>,
-                          ]
-                        : []),
-                ]}
-            </Switch>
+                        ...(SyncEnvironment
+                            ? [
+                                  <Route
+                                      key={`${this.props.match.path}/${URLS.LINKED_CD}/`}
+                                      path={`${this.props.match.path}/${URLS.LINKED_CD}/`}
+                                  >
+                                      <SyncEnvironment
+                                          closeModal={this.closePipeline}
+                                          cdPipelines={this.state.cachedCDConfigResponse.pipelines ?? []}
+                                          blackListedIds={this.state.blackListedCI ?? {}}
+                                          getWorkflows={this.getWorkflows}
+                                          workflows={this.state.workflows}
+                                          isTemplateView={this.props.isTemplateView}
+                                      />
+                                  </Route>,
+                              ]
+                            : []),
+                    ]}
+                </Switch>
+            </>
         )
     }
 
     renderNewBuildPipelineButton() {
         return (
-            <ConditionalWrap
-                condition={!!this.props.filteredEnvIds}
-                wrap={(children) => (
-                    <Tippy
-                        className="default-tt w-200"
-                        arrow={false}
-                        placement="top"
-                        content="Cannot add new workflow or deployment pipelines when environment filter is applied."
-                    >
-                        {children}
-                    </Tippy>
-                )}
-            >
-                <button
-                    type="button"
-                    className={`cta flexbox dc__align-items-center pt-6 pr-10 pb-6 pl-8 dc__gap-6 h-32 ${
-                        this.props.filteredEnvIds ? 'dc__disabled' : ''
-                    }`}
-                    data-testid="new-workflow-button"
-                    onClick={this.handleNewPipelineModal}
-                >
-                    <div className="flexbox dc__content-space dc__align-items-center h-20">
-                        <ICAddWhite className="icon-dim-18 mr-5" />
-                        <p className="m-0 fs-13 lh-20 cn-0">New workflow</p>
-                    </div>
-                </button>
-            </ConditionalWrap>
+            <Button
+                dataTestId="new-workflow-button"
+                text="New Workflow"
+                disabled={!!this.props.filteredEnvIds}
+                onClick={this.handleNewPipelineModal}
+                startIcon={<Icon name="ic-add" color={null} />}
+                size={ComponentSizeType.medium}
+                showTooltip={!!this.props.filteredEnvIds}
+                tooltipProps={{
+                    content: 'Cannot add new workflow or deployment pipelines when environment filter is applied.',
+                }}
+            />
         )
     }
 
