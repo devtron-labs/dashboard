@@ -47,6 +47,8 @@ import {
     InstallationType,
     useMotionValue,
     useMotionTemplate,
+    SwitchThemeDialogProps,
+    SwitchThemeDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -80,8 +82,6 @@ import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/External
 import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
 import { ParsedTabsData } from '../DynamicTabs/types'
-import { SwitchThemeDialog } from '@Pages/Shared'
-import { SwitchThemeDialogProps } from '@Pages/Shared/SwitchThemeDialog/types'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 import { Banner } from '../Banner/Banner'
 import { SidePanel } from '../SidePanel'

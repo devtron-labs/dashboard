@@ -12,8 +12,8 @@ import {
     ConfirmationModalProvider,
     BaseConfirmationModal,
     useTheme,
+    SwitchThemeDialog,
 } from '@devtron-labs/devtron-fe-common-lib'
-import  { SwitchThemeDialog } from '../src/Pages/Shared'
 import './storybook.css'
 
 const SwitchThemeDialogWrapper = () => {
@@ -46,7 +46,7 @@ const preview: Preview = {
                 <ConfirmationModalProvider>
                     <div id={DEVTRON_BASE_MAIN_ID}>
                         <div className="dc__border-bottom mb-10">
-                            <ThemeSwitcher onChange={noop} />
+                            <ThemeSwitcher />
                         </div>
                         <BrowserRouter>
                             <Story />
