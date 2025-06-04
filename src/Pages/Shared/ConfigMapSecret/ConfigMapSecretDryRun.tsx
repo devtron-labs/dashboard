@@ -225,6 +225,7 @@ export const ConfigMapSecretDryRun = ({
                     )}
                     <div className="dc__border-right-n1 dc__align-self-stretch mt-2 mb-2" />
                     <ToggleResolveScopedVariables
+                        name="resolve-scoped-variables-dry-run-view"
                         resolveScopedVariables={resolveScopedVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         isDisabled={areScopeVariablesResolving}

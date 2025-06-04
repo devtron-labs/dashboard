@@ -154,7 +154,11 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
 
-    const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({ open: false, docLink: null, reinitialize: false })
+    const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({
+        open: false,
+        docLink: null,
+        reinitialize: false,
+    })
     const asideWidth = useMotionValue(0)
 
     const {
@@ -534,7 +538,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 {serverMode && (
                     <>
                         <div
-                            className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} mt-8 mb-8 ml-8 br-6 dc__overflow-hidden`}
+                            className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${!sidePanelConfig.open ? 'mr-8' : ''}`}
                             ref={navRouteRef}
                         >
                             <Banner />
