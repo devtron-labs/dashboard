@@ -21,6 +21,7 @@ import {
     AppEnvDeploymentConfigType,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     DeploymentConfigDiffState,
+    DeploymentHistorySingleValue,
     DeploymentStrategyType,
     DeploymentWithConfigType,
     EnvResourceType,
@@ -297,7 +298,7 @@ export const usePipelineDeploymentConfig = ({
                     : recentDeploymentConfigWithoutStrategy,
             })
 
-            return getAppEnvDeploymentConfigList({
+            const { configList, ...rest } = getAppEnvDeploymentConfigList({
                 currentList: compareData || {
                     configMapData: null,
                     deploymentTemplate: null,
@@ -314,6 +315,28 @@ export const usePipelineDeploymentConfig = ({
                 convertVariables,
                 sortingConfig: { sortBy, sortOrder },
             })
+
+            // filtering out tooltipContent from secondary config, as we are not showing tooltip in right side
+            return {
+                ...rest,
+                configList: configList.map((list) => ({
+                    ...list,
+                    secondaryConfig: {
+                        ...list.secondaryConfig,
+                        list: {
+                            ...list.secondaryConfig.list,
+                            values: {
+                                ...list.secondaryConfig.list.values,
+                                strategy: Object.fromEntries(
+                                    Object.entries(list.secondaryConfig.list.values.strategy ?? {}).filter(
+                                        ([key]) => key !== 'tooltipContent',
+                                    ),
+                                ) as DeploymentHistorySingleValue,
+                            },
+                        },
+                    },
+                })),
+            }
         }
 
         return null
