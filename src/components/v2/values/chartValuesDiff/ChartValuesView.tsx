@@ -1561,22 +1561,19 @@ const ChartValuesView = ({
         })
     }
 
-    const renderConnectToHelmChartInfoBlock = (): JSX.Element => {
-        return (
-            <InfoBlock
-                description={CONNECT_TO_HELM_CHART_TEXTS.Message}
-                layout="column"
-                buttonProps={{
-                    text: 'Connect to helm chart',
-                    onClick: handleConnectToChartClick,
-                    variant: ButtonVariantType.text,
-                    dataTestId: 'connect-to-helm-chart-button',
-                    startIcon: <LinkIcon className="connect-to-chart-icon icon-dim-16" />,
-
-                }}
-            />
-        )
-    }
+    const renderConnectToHelmChartInfoBlock = () => (
+        <InfoBlock
+            description={CONNECT_TO_HELM_CHART_TEXTS.Message}
+            layout="column"
+            buttonProps={{
+                text: 'Connect to helm chart',
+                onClick: handleConnectToChartClick,
+                variant: ButtonVariantType.text,
+                dataTestId: 'connect-to-helm-chart-button',
+                startIcon: <LinkIcon className="connect-to-chart-icon icon-dim-16" />,
+            }}
+        />
+    )
 
     const getHelmAppMetaInfoRes = async (): Promise<void> => {
         try {
