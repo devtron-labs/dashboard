@@ -51,3 +51,6 @@ export const AG_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'cate
         action: 'AG_APP_DETAIL_GO_TO_ENV_CONFIG',
     },
 }
+
+export const ACTION_DISABLED_TEXT =
+    'This application requires deployment approval to perform actions that impact the active deployment.'

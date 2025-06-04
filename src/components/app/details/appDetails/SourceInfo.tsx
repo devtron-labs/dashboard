@@ -54,7 +54,7 @@ import AppEnvSelector from './AppDetails.components'
 import { HibernationModalTypes } from './appDetails.type'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import AppStatusCard from './AppStatusCard'
-import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
+import { ACTION_DISABLED_TEXT, AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import DeployedCommitCard from './DeployedCommitCard'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import IssuesCard from './IssuesCard'
@@ -196,20 +196,23 @@ export const SourceInfo = ({
     const renderAppDetailsCDButton = () => {
         const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState)
         return (
-        <AppDetailsCDButton
-            {...appDetailsCDButtonProps}
-            gaEvent={
-                isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked
-            }
-            buttonProps={{
-                dataTestId: 'deploy-button',
-                size: ComponentSizeType.medium,
-                text: 'Deploy',
-                startIcon: <Icon name={iconName} color={null} />,
-                style: buttonStyle,
-            }}
-        />
-    )}
+            <AppDetailsCDButton
+                {...appDetailsCDButtonProps}
+                gaEvent={
+                    isAppView
+                        ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked
+                        : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked
+                }
+                buttonProps={{
+                    dataTestId: 'deploy-button',
+                    size: ComponentSizeType.medium,
+                    text: 'Deploy',
+                    startIcon: <Icon name={iconName} color={null} />,
+                    style: buttonStyle,
+                }}
+            />
+        )
+    }
 
     const renderRollbackButton = (isIcon?: boolean) => (
         <AppDetailsCDButton
@@ -243,7 +246,7 @@ export const SourceInfo = ({
             : ''
 
         return (
-            <div className="flex left w-100">
+            <div className="flex left w-100 h-40">
                 <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
                 {appDetails?.deploymentAppType && (
                     <Tooltip
@@ -338,8 +341,16 @@ export const SourceInfo = ({
                                             style={ButtonStyleType.neutral}
                                             showTooltip={isApprovalConfigured}
                                             tooltipProps={{
-                                                content:
-                                                    'Application deployment requiring approval cannot be hibernated.',
+                                                content: (
+                                                    <div className="flexbox-col">
+                                                        <span className="fw-6">
+                                                            Cannot {isHibernated ? 'unhibernate' : 'hibernate'}
+                                                        </span>
+                                                        <span className="fw-4 dc__word-break">
+                                                            {ACTION_DISABLED_TEXT}
+                                                        </span>
+                                                    </div>
+                                                ),
                                                 placement: 'bottom',
                                             }}
                                             ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
@@ -361,12 +372,19 @@ export const SourceInfo = ({
                                                 style={ButtonStyleType.neutral}
                                                 showTooltip
                                                 tooltipProps={{
-                                                    content: isApprovalConfigured
-                                                        ? 'Application deployment requiring approval cannot be hibernated.'
-                                                        : 'Restart workloads',
+                                                    content: isApprovalConfigured ? (
+                                                        <div className="flexbox-col">
+                                                            <span className="fw-6">Cannot restart workloads</span>
+                                                            <span className="fw-4 dc__word-break">
+                                                                {ACTION_DISABLED_TEXT}
+                                                            </span>
+                                                        </div>
+                                                    ) : (
+                                                        'Restart workloads'
+                                                    ),
                                                     placement: 'top',
                                                 }}
-                                                ariaLabel="rotate workloads"
+                                                ariaLabel="restart workloads"
                                             />
                                         )}
 
