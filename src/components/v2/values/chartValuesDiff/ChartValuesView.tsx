@@ -22,7 +22,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ConditionalWrap,
-    InfoColourBar,
     ServerErrors,
     GenericEmptyState,
     ResponseType,
@@ -41,6 +40,8 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     ForceDeleteConfirmationModal,
     doesJSONConformToSchema07,
+    InfoBlock,
+    ButtonVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -92,7 +93,6 @@ import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import {
     ChartDeploymentHistoryResponse,
@@ -1561,19 +1561,20 @@ const ChartValuesView = ({
         })
     }
 
-    const hideConnectToChartTippy = () => {
-        dispatch({
-            type: ChartValuesViewActionTypes.showConnectToChartTippy,
-            payload: false,
-        })
-    }
-
-    const renderConnectToHelmChart = (): JSX.Element => {
+    const renderConnectToHelmChartInfoBlock = (): JSX.Element => {
         return (
-            <div className="flex left mt-8">
-                <LinkIcon className="connect-to-chart-icon icon-dim-16 mr-8" />
-                <span className="fs-13 fw-6 lh-20">Connect to helm chart</span>
-            </div>
+            <InfoBlock
+                description={CONNECT_TO_HELM_CHART_TEXTS.Message}
+                layout="column"
+                buttonProps={{
+                    text: 'Connect to helm chart',
+                    onClick: handleConnectToChartClick,
+                    variant: ButtonVariantType.text,
+                    dataTestId: 'connect-to-helm-chart-button',
+                    startIcon: <LinkIcon className="connect-to-chart-icon icon-dim-16" />,
+
+                }}
+            />
         )
     }
 
@@ -1774,15 +1775,8 @@ const ChartValuesView = ({
                             {!isDeployChartView &&
                                 isExternalApp &&
                                 !commonState.installedAppInfo &&
-                                !commonState.showRepoSelector && (
-                                    <InfoColourBar
-                                        message={CONNECT_TO_HELM_CHART_TEXTS.Message}
-                                        classname="connect-to-chart-wrapper info_bar"
-                                        Icon={InfoIcon}
-                                        linkOnClick={handleConnectToChartClick}
-                                        linkText={renderConnectToHelmChart()}
-                                    />
-                                )}
+                                !commonState.showRepoSelector &&
+                                renderConnectToHelmChartInfoBlock()}
                             {renderGeneratedDownloadManifest()}
                             {(!isExternalApp ||
                                 commonState.installedAppInfo ||

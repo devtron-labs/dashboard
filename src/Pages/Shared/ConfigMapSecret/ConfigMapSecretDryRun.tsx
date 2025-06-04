@@ -194,12 +194,13 @@ export const ConfigMapSecretDryRun = ({
                     areScopeVariablesResolving={areScopeVariablesResolving}
                     fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                 />
-                {renderExternalInfo(
-                    dryRunConfigMapSecretData.externalType,
-                    dryRunConfigMapSecretData.external,
-                    componentType,
-                    'mr-16 ml-16',
-                )}
+                <div className="ml-16 mr-16">
+                    {renderExternalInfo(
+                        dryRunConfigMapSecretData.externalType,
+                        dryRunConfigMapSecretData.external,
+                        componentType,
+                    )}
+                </div>
             </>
         )
     }
