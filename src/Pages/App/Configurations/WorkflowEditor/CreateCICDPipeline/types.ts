@@ -1,9 +1,11 @@
 import { Dispatch, ReactNode, SetStateAction } from 'react'
 
-import { GenericModalProps, IconName, PipelineFormType } from '@devtron-labs/devtron-fe-common-lib'
+import { GenericModalProps, IconName, PipelineFormType, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface CreateCICDPipelineProps extends Pick<GenericModalProps, 'open' | 'onClose'> {
+    workflowId: number
     appId: string
+    getWorkflows: () => void
 }
 
 export interface CICDStepperProps {
@@ -15,20 +17,9 @@ export interface CICDStepperProps {
     }[]
 }
 
-export interface CreateCICDPipelineData
-    extends Pick<
-        PipelineFormType,
-        | 'materials'
-        | 'gitHost'
-        | 'webhookEvents'
-        | 'webhookConditionList'
-        | 'ciPipelineEditable'
-        | 'ciPipelineSourceTypeOptions'
-        | 'triggerType'
-        | 'scanEnabled'
-        | 'workflowCacheConfig'
-    > {
+export interface CreateCICDPipelineData extends PipelineFormType {
     isBlobStorageConfigured: boolean
+    isSecurityModuleInstalled: boolean
 }
 
 export type CreateCICDPipelineFormError = Record<
@@ -37,17 +28,24 @@ export type CreateCICDPipelineFormError = Record<
 >
 
 export interface ConfigureWebhookWrapperProps
-    extends Pick<CreateCICDPipelineData, 'gitHost' | 'webhookEvents' | 'webhookConditionList' | 'ciPipelineEditable'> {
+    extends Pick<CreateCICDPipelineData, 'gitHost' | 'webhookConditionList' | 'ciPipelineEditable'> {
     selectedWebhookEvent: CreateCICDPipelineData['webhookEvents'][number]
     setCiCdPipeline: Dispatch<SetStateAction<CreateCICDPipelineData>>
 }
 
-export interface CIStepperContentProps
-    extends Omit<ConfigureWebhookWrapperProps, 'selectedWebhookEvent'>,
-        Pick<CreateCICDPipelineData, 'materials' | 'ciPipelineSourceTypeOptions'> {
+interface CommonStepperContentProps {
     ciCdPipeline: CreateCICDPipelineData
     ciCdPipelineFormError: CreateCICDPipelineFormError
     setCiCdPipelineFormError: Dispatch<SetStateAction<CreateCICDPipelineFormError>>
+    isCreatingWorkflow: boolean
+    cdNodeCreateError: ServerErrors
 }
 
-export interface CDStepperContentProps {}
+export interface CIStepperContentProps
+    extends CommonStepperContentProps,
+        Omit<ConfigureWebhookWrapperProps, 'selectedWebhookEvent'>,
+        Pick<CreateCICDPipelineData, 'materials' | 'ciPipelineSourceTypeOptions' | 'webhookEvents'> {}
+
+export interface CDStepperContentProps extends CommonStepperContentProps {
+    onRetry: () => Promise<void>
+}

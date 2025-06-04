@@ -591,6 +591,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         open={this.props.location.pathname.includes(URLS.APP_CI_CD_CONFIG)}
                         onClose={this.handleCreateCICDPipelineClose}
                         appId={this.props.match.params.appId}
+                        workflowId={this.state.workflowId}
+                        getWorkflows={this.getWorkflows}
                     />
                 )}
                 <Switch>

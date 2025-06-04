@@ -28,9 +28,12 @@ export const CIStepperContent = ({
     setCiCdPipeline,
     ciCdPipelineFormError,
     setCiCdPipelineFormError,
+    isCreatingWorkflow,
+    cdNodeCreateError,
 }: CIStepperContentProps) => {
     // CONSTANTS
     const isMultiGit = materials.length > 1
+    const isFormDisabled = isCreatingWorkflow || !!cdNodeCreateError
 
     // HANDLERS
     /**
@@ -142,7 +145,9 @@ export const CIStepperContent = ({
 
     return (
         <div className="flexbox-col dc__gap-20">
-            <InfoBlock variant="success" description="Build pipeline is created" size={ComponentSizeType.medium} />
+            {!!cdNodeCreateError && (
+                <InfoBlock variant="success" description="Build pipeline is created" size={ComponentSizeType.medium} />
+            )}
             <div>
                 {materials.map((material, index) => {
                     const { id, name, type, isRegex, value, regex, gitMaterialId } = material
@@ -178,7 +183,7 @@ export const CIStepperContent = ({
                                     onChange: handleSourceTypeChange(gitMaterialId),
                                     getOptionValue: (option) => `${option.value}-${option.label}`,
                                     menuListFooterConfig: getMenuListFooterConfig(materials),
-                                    isDisabled: isMultiGitAndWebhook,
+                                    isDisabled: isFormDisabled || isMultiGitAndWebhook,
                                     disabledTippyContent: isMultiGitAndWebhook
                                         ? `Cannot change source type ${selectedWebhookEvent.name} for multi-git applications`
                                         : null,
@@ -194,6 +199,7 @@ export const CIStepperContent = ({
                                         value,
                                         regex,
                                     }),
+                                    disabled: isFormDisabled,
                                     onChange: handleBranchInputChange(gitMaterialId, isBranchRegex),
                                     error: ciCdPipelineFormError[gitMaterialId]?.branch ?? null,
                                     autoFocus: index === 0,

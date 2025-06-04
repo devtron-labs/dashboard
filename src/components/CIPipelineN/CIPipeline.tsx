@@ -109,7 +109,6 @@ export default function CIPipeline({
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
         isJobCard || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
-    const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingState, setLoadingState] = useState<LoadingState>({
         loading: false,
         failed: false,
@@ -432,10 +431,6 @@ export default function CIPipeline({
 
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid && valid && _formDataErrorObj.dockerArgsError.isValid
-
-            if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
-                setShowFormError(true)
-            }
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
@@ -965,7 +960,7 @@ export default function CIPipeline({
             >
                 <GenericModal.Header title={title} />
                 <GenericModal.Body>{renderCIPipelineModalContent()}</GenericModal.Body>
-                {pageState !== ViewType.LOADING && (
+                {pageState === ViewType.FORM && (
                     <GenericModal.Footer>
                         <div className="flex dc__content-space">
                             {renderSecondaryButton()}

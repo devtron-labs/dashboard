@@ -32,6 +32,7 @@ import {
     GetTemplateAPIRouteType,
     getTemplateAPIRoute,
     SourceTypeMap,
+    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
@@ -63,7 +64,9 @@ export function getInitData(
     includeWebhookData: boolean = false,
     isJobCard: boolean,
     isTemplateView: AppConfigProps['isTemplateView'],
-): Promise<any> {
+): Promise<{
+    result: { form: PipelineFormType; loadingData: boolean; isAdvanced: boolean; isBlobStorageConfigured: boolean }
+}> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),

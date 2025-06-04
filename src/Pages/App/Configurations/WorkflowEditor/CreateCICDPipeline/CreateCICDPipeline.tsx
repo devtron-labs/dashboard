@@ -1,12 +1,26 @@
 import { useEffect, useState } from 'react'
 
-import { APIResponseHandler, GenericModal, Icon, TriggerType, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    APIResponseHandler,
+    GenericModal,
+    Icon,
+    ServerErrors,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { saveCIPipeline } from '@Components/ciPipeline/ciPipeline.service'
+import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 
 import { CDStepperContent } from './CDStepperContent'
 import { CICDStepper } from './CICDStepper'
 import { CIStepperContent } from './CIStepperContent'
+import { CREATE_CI_CD_PIPELINE_TOAST_MESSAGES } from './constants'
 import { getCICDPipelineInitData } from './service'
 import { CICDStepperProps, CreateCICDPipelineData, CreateCICDPipelineFormError, CreateCICDPipelineProps } from './types'
+import { getCiCdPipelineDefaultState, getSaveCIPipelineMaterialsPayload, validateCreateCICDPipelineData } from './utils'
 
 import './createCICDPipeline.scss'
 
@@ -17,20 +31,12 @@ const FooterInfo = () => (
     </div>
 )
 
-export const CreateCICDPipeline = ({ open, onClose, appId }: CreateCICDPipelineProps) => {
+export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkflows }: CreateCICDPipelineProps) => {
     // STATES
-    const [ciCdPipeline, setCiCdPipeline] = useState<CreateCICDPipelineData>({
-        materials: [],
-        gitHost: null,
-        webhookEvents: [],
-        ciPipelineSourceTypeOptions: [],
-        webhookConditionList: [],
-        triggerType: TriggerType.Manual,
-        scanEnabled: false,
-        workflowCacheConfig: null,
-        isBlobStorageConfigured: false,
-    })
+    const [ciCdPipeline, setCiCdPipeline] = useState<CreateCICDPipelineData>(getCiCdPipelineDefaultState)
     const [ciCdPipelineFormError, setCiCdPipelineFormError] = useState<CreateCICDPipelineFormError>({})
+    const [isCreatingWorkflow, setIsCreatingWorkflow] = useState(false)
+    const [cdNodeCreateError, setCdNodeCreateError] = useState<ServerErrors | null>(null)
 
     // ASYNC CALLS
     const [isCiCdPipelineLoading, ciCdPipelineRes, ciCdPipelineErr, reloadCiCdPipeline] = useAsync(
@@ -39,14 +45,131 @@ export const CreateCICDPipeline = ({ open, onClose, appId }: CreateCICDPipelineP
         open,
     )
 
+    const resetStateToDefault = () => {
+        setCiCdPipeline(getCiCdPipelineDefaultState)
+        setCiCdPipelineFormError({})
+        setIsCreatingWorkflow(false)
+        setCdNodeCreateError(null)
+    }
+
+    useEffect(() => {
+        if (!open) {
+            resetStateToDefault()
+        }
+    }, [open])
+
     useEffect(() => {
         if (!isCiCdPipelineLoading && ciCdPipelineRes) {
             setCiCdPipeline(ciCdPipelineRes)
         }
     }, [isCiCdPipelineLoading, ciCdPipelineRes])
 
-    const { materials, webhookConditionList, gitHost, webhookEvents, ciPipelineSourceTypeOptions, ciPipelineEditable } =
-        ciCdPipeline
+    const {
+        materials,
+        webhookConditionList,
+        gitHost,
+        webhookEvents,
+        ciPipelineSourceTypeOptions,
+        ciPipelineEditable,
+        scanEnabled,
+        isSecurityModuleInstalled,
+    } = ciCdPipeline
+
+    // HANDLERS
+    const saveCDPipeline = () =>
+        // TODO: Integrate
+        Promise.allSettled([
+            new Promise((_, reject) => {
+                setTimeout(() => reject(new Error('cd node failed')), 2000)
+            }),
+        ])
+
+    const createWorkflow = async ({ shouldCreateCINode }: { shouldCreateCINode: boolean }) => {
+        if (shouldCreateCINode) {
+            const scanValidation = !window._env_.FORCE_SECURITY_SCANNING || !isSecurityModuleInstalled || scanEnabled
+            if (!scanValidation) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: CREATE_CI_CD_PIPELINE_TOAST_MESSAGES.SCAN_VALIDATION_FAILED,
+                })
+                return
+            }
+        }
+
+        const { ciCdPipelineFormError: updatedCiCdPipelineFormError, isValid } =
+            validateCreateCICDPipelineData(ciCdPipeline)
+
+        setCiCdPipelineFormError(updatedCiCdPipelineFormError)
+        if (!isValid) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: CREATE_CI_CD_PIPELINE_TOAST_MESSAGES.FORM_VALIDATION_FAILED,
+            })
+            return
+        }
+
+        setIsCreatingWorkflow(true)
+        setCdNodeCreateError(null)
+
+        try {
+            const materialsPayload = getSaveCIPipelineMaterialsPayload(materials)
+            if (shouldCreateCINode) {
+                await saveCIPipeline(
+                    {
+                        ...ciCdPipeline,
+                        materials: materialsPayload,
+                        scanEnabled: isSecurityModuleInstalled ? scanEnabled : false,
+                    },
+                    {
+                        pipelineType: CIPipelineBuildType.CI_BUILD,
+                    },
+                    materialsPayload,
+                    +appId,
+                    workflowId,
+                    false,
+                    webhookConditionList,
+                    ciPipelineSourceTypeOptions,
+                    null,
+                    false,
+                )
+            }
+            const [cdNodeRes] = await saveCDPipeline()
+
+            setIsCreatingWorkflow(false)
+            await getWorkflows()
+
+            if (cdNodeRes.status === 'rejected') {
+                setCdNodeCreateError(cdNodeRes.reason)
+
+                if (!shouldCreateCINode) {
+                    showError(cdNodeRes.reason)
+                } else {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.warn,
+                        title: 'Partial failed',
+                        description: CREATE_CI_CD_PIPELINE_TOAST_MESSAGES.CREATE_CI_SUCCESS_CD_FAILED,
+                    })
+                }
+            } else if (cdNodeRes.status === 'fulfilled' && cdNodeRes.value) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.success,
+                    description: CREATE_CI_CD_PIPELINE_TOAST_MESSAGES.CREATE_WORKFLOW_SUCCESS,
+                })
+                onClose()
+            }
+        } catch {
+            setIsCreatingWorkflow(false)
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: 'Failed',
+                description: CREATE_CI_CD_PIPELINE_TOAST_MESSAGES.CREATE_WORKFLOW_FAILED,
+            })
+        }
+    }
+
+    const handleCreateWorkflow = () => createWorkflow({ shouldCreateCINode: true })
+
+    const handleRetryCreateWorkflow = () => createWorkflow({ shouldCreateCINode: false })
 
     // CONFIGS
     const stepperConfig: CICDStepperProps['config'] = [
@@ -66,6 +189,8 @@ export const CreateCICDPipeline = ({ open, onClose, appId }: CreateCICDPipelineP
                     setCiCdPipeline={setCiCdPipeline}
                     ciCdPipelineFormError={ciCdPipelineFormError}
                     setCiCdPipelineFormError={setCiCdPipelineFormError}
+                    isCreatingWorkflow={isCreatingWorkflow}
+                    cdNodeCreateError={cdNodeCreateError}
                 />
             ),
         },
@@ -73,7 +198,16 @@ export const CreateCICDPipeline = ({ open, onClose, appId }: CreateCICDPipelineP
             id: 'deploy',
             icon: 'ic-deploy-color',
             title: 'Select environment to deploy',
-            content: <CDStepperContent />,
+            content: (
+                <CDStepperContent
+                    ciCdPipeline={ciCdPipeline}
+                    ciCdPipelineFormError={ciCdPipelineFormError}
+                    setCiCdPipelineFormError={setCiCdPipelineFormError}
+                    isCreatingWorkflow={isCreatingWorkflow}
+                    cdNodeCreateError={cdNodeCreateError}
+                    onRetry={handleRetryCreateWorkflow}
+                />
+            ),
         },
     ]
 
@@ -97,8 +231,11 @@ export const CreateCICDPipeline = ({ open, onClose, appId }: CreateCICDPipelineP
                     leftSideElement={<FooterInfo />}
                     buttonConfig={{
                         primaryButton: {
-                            dataTestId: 'ci-cd-pipeline-create-workflow-button',
-                            text: 'Create Workflow',
+                            dataTestId: 'ci-cd-workflow-create-button',
+                            startIcon: cdNodeCreateError ? <Icon name="ic-arrow-clockwise" color={null} /> : null,
+                            text: cdNodeCreateError ? 'Retry' : 'Create Workflow',
+                            isLoading: isCreatingWorkflow,
+                            onClick: cdNodeCreateError ? handleRetryCreateWorkflow : handleCreateWorkflow,
                         },
                     }}
                 />
