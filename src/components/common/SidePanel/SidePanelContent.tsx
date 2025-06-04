@@ -1,5 +1,3 @@
-import { MouseEvent } from 'react'
-
 import {
     Button,
     ButtonStyleType,
@@ -89,12 +87,8 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                     {TABS_CONFIG.map(({ label, iconName, id }) => {
                         const isSelected = tab === id
 
-                        const handleTabClick = ({
-                            currentTarget: {
-                                dataset: { config },
-                            },
-                        }: MouseEvent<HTMLDivElement>) => {
-                            setSidePanelConfig(() => JSON.parse(config))
+                        const handleTabClick = () => {
+                            setSidePanelConfig((prev) => ({ ...prev, state: id }))
                         }
 
                         return (

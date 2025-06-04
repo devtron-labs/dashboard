@@ -6,6 +6,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    DOCUMENTATION,
     Icon,
     useMainContext,
     useTheme,
@@ -17,7 +18,7 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink },
+        sidePanelConfig: { docLink = DOCUMENTATION.DOC_HOME_PAGE },
     } = useMainContext()
 
     // REFS
