@@ -346,7 +346,7 @@ export default function GenericDescription({
             >
                 {isEditDescriptionView ? (
                     <div className="min-w-500 bg__primary br-4 dc__border-top dc__border-left dc__border-right w-100 dc__border-bottom">
-                        <div className="py-8 px-16 dc__top-radius-4 flex dc__gap-8 bg__secondary dc__border-bottom fs-13">
+                        <div className="py-8 px-16 dc__top-radius-4 flex dc__content-space dc__gap-8 bg__secondary dc__border-bottom fs-13">
                             <div className="fw-6 lh-20 cn-9">Readme</div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
                                 <Tooltip content={`Last updated by ${descriptionUpdatedBy} on ${descriptionUpdatedOn}`}>
