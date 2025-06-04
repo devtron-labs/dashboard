@@ -18,8 +18,10 @@ import { Fragment, useEffect, useState } from 'react'
 import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    ComponentSizeType,
     ConfirmationDialog,
     DeleteConfirmationModal,
+    DocLink,
     EnvResourceType,
     getEnvironmentListMinPublic,
     InfoBlock,
@@ -39,7 +41,7 @@ import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-o
 import warn from '../../../../../../assets/icons/ic-warning.svg'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
-import { DOCUMENTATION, URLS } from '../../../../../../config'
+import { URLS } from '../../../../../../config'
 import { addJobEnvironment, deleteJobEnvironment, getCIConfig } from '../../../../../../services/service'
 import { AppConfigState, JobEnvOverrideRouteProps } from '../AppConfig.types'
 import { useAppConfigurationContext } from '../AppConfiguration.provider'
@@ -49,14 +51,12 @@ const EnvOverridesHelpNote = () => (
     <div className="fs-12 fw-4 lh-18">
         Environment overrides allow you to manage environment specific configurations after you’ve created deployment
         pipelines. &nbsp;
-        <a
-            className="dc__link"
-            href={DOCUMENTATION.APP_CREATE_ENVIRONMENT_OVERRIDE}
-            rel="noreferrer noopener"
-            target="_blank"
-        >
-            Learn more
-        </a>
+        <DocLink
+            docLinkKey="APP_CREATE_ENVIRONMENT_OVERRIDE"
+            dataTestId="env-overrides-learn-more"
+            size={ComponentSizeType.xs}
+            fontWeight="normal"
+        />
     </div>
 )
 
