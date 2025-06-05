@@ -34,6 +34,7 @@ import { LAST_SEEN, URLS } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
+    EMBEDDED_SLOOP_TAB_ID,
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
@@ -56,6 +57,7 @@ const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     null,
     'function',
 )
+const getEmbeddedSloopTabConfig = importComponentFromFELibrary('getEmbeddedSloopTabConfig', null, 'function')
 
 // Converts k8SObjects list to grouped map
 export const getGroupedK8sObjectMap = (
@@ -280,6 +282,7 @@ export const getTabsBasedOnRole = ({
     isTerminalSelected = false,
     isOverviewSelected = false,
     isMonitoringDashBoardSelected = false,
+    isEmbeddedSloopSelected = false,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
@@ -296,7 +299,12 @@ export const getTabsBasedOnRole = ({
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
-            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
+            isSelected:
+                !isTerminalSelected &&
+                !dynamicTabData &&
+                !isOverviewSelected &&
+                !isMonitoringDashBoardSelected &&
+                !isEmbeddedSloopSelected,
             type: 'fixed',
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -308,6 +316,15 @@ export const getTabsBasedOnRole = ({
                       getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
                       isMonitoringDashBoardSelected,
                       MONITORING_DASHBOARD_TAB_ID,
+                  ),
+              ]
+            : []),
+        ...(getEmbeddedSloopTabConfig
+            ? [
+                  getEmbeddedSloopTabConfig(
+                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.embeddedSloopGVK.Kind, clusterId, namespace),
+                      isEmbeddedSloopSelected,
+                      EMBEDDED_SLOOP_TAB_ID,
                   ),
               ]
             : []),

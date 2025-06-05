@@ -24,6 +24,7 @@ import {
     DynamicTabType,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    Icon,
     InitTabType,
     noop,
     useAsync,
@@ -50,6 +51,7 @@ import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import NodeDetailComponent from '../../v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
 import {
+    EMBEDDED_SLOOP_TAB_ID,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
     ResourceBrowserTabsId,
@@ -75,6 +77,7 @@ import {
 } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const EmbeddedSloop = importComponentFromFELibrary('EmbeddedSloop', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
@@ -143,6 +146,7 @@ const ResourceList = () => {
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
+    const isEmbeddedSloopNodeType = nodeType === SIDEBAR_KEYS.embeddedSloopGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
     const isUpgradeClusterNodeType = nodeType === SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
     const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
@@ -203,6 +207,7 @@ const ResourceList = () => {
             isTerminalSelected: isTerminalNodeType,
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
+            isEmbeddedSloopSelected: isEmbeddedSloopNodeType,
         })
         initTabs(_tabs, reInit, null, true)
     }
@@ -265,6 +270,7 @@ const ResourceList = () => {
         const nodeTypeToTabIdMap: Record<string, string> = {
             [SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()]: ResourceBrowserTabsId.cluster_overview,
             [SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()]: MonitoringDashboard ? MONITORING_DASHBOARD_TAB_ID : null,
+            [SIDEBAR_KEYS.embeddedSloopGVK.Kind.toLowerCase()]: EmbeddedSloop ? EMBEDDED_SLOOP_TAB_ID : null,
             [AppDetailsTabs.terminal]: ResourceBrowserTabsId.terminal,
         }
 
@@ -489,6 +495,7 @@ const ResourceList = () => {
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard ? [<MonitoringDashboard />] : []),
+        ...(EmbeddedSloop ? [<EmbeddedSloop />] : []),
         ...(getTabById(ResourceBrowserTabsId.terminal)?.isAlive
             ? [<AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
@@ -537,6 +544,7 @@ const ResourceList = () => {
                         [ResourceBrowserTabsId.cluster_overview]: <ICWorldBlack className="scn-7" />,
                         [ResourceBrowserTabsId.k8s_Resources]: <ICObject className="fcn-7" />,
                         [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
+                        [EMBEDDED_SLOOP_TAB_ID]: <Icon name="ic-cube" color="N700" />,
                     }}
                 />
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}

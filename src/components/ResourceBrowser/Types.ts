@@ -237,6 +237,7 @@ export interface RBSidebarKeysType {
     nodeGVK: GVKType
     overviewGVK: GVKType
     monitoringGVK: GVKType
+    embeddedSloopGVK: GVKType
     upgradeClusterGVK: GVKType
 }
 
@@ -256,6 +257,10 @@ export interface GetTabsBasedOnRoleParamsType {
      * @default false
      */
     isMonitoringDashBoardSelected?: boolean
+    /**
+     * @default false
+     */
+    isEmbeddedSloopSelected?: boolean
 }
 
 export interface NodeRowDetail {
