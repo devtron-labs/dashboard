@@ -20,7 +20,7 @@ import { PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
-import { DOCUMENTATION, SERVER_MODE_TYPE } from '../../config'
+import { SERVER_MODE_TYPE } from '../../config'
 
 interface SecurityProps extends RouteComponentProps<{}> {
     serverMode: SERVER_MODE_TYPE
@@ -87,7 +87,7 @@ export class Security extends Component<SecurityProps> {
                 headerName="Security"
                 tippyProps={{
                     isTippyCustomized: true,
-                    tippyRedirectLink: DOCUMENTATION.SECURITY,
+                    tippyRedirectLink: 'SECURITY',
                     additionalContent: this.getTippyContent(),
                 }}
                 showTabs

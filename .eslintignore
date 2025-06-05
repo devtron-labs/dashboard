@@ -49,13 +49,9 @@ src/components/CIPipelineN/ciPipeline.utils.tsx
 src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
-src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
-src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
-src/components/ClusterNodes/NodeActions/validationRules.ts
 src/components/ClusterNodes/NodeDetails.tsx
 src/components/ClusterNodes/__tests__/ClusterManifest.test.tsx
 src/components/ClusterNodes/__tests__/NodeList.test.tsx
-src/components/ClusterNodes/constants.ts
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
@@ -130,7 +126,6 @@ src/components/app/list/appList.modal.ts
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/service.ts
-src/components/app/types.ts
 src/components/bulkEdits/BulkEdits.tsx
 src/components/bulkEdits/bulkedit.utils.tsx
 src/components/cdPipeline/BuildCD.tsx
@@ -372,7 +367,6 @@ src/components/v2/values/chartValuesDiff/ChartValuesView.reducer.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
 src/components/v2/values/common/chartValues.api.ts
-src/components/workflowEditor/CDSuccessModal.tsx
 src/components/workflowEditor/CreateWorkflow.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx

@@ -27,10 +27,12 @@ import {
     DeploymentAppTypes,
     DeploymentStatusDetailsBreakdownDataType,
     DeploymentStatusDetailsType,
+    DocLink,
     GenericEmptyState,
     getAppDetailsURL,
     getAppsInfoForEnv,
     getIsRequestAborted,
+    Icon,
     MODAL_TYPE,
     noop,
     processDeploymentStatusDetailsData,
@@ -53,7 +55,6 @@ import {
     DEFAULT_STATUS,
     DEPLOYMENT_STATUS,
     DEPLOYMENT_STATUS_QUERY_PARAM,
-    DOCUMENTATION,
     RESOURCES_NOT_FOUND,
 } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
@@ -87,6 +88,7 @@ import {
 } from './appDetails.type'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { AppMetrics } from './AppMetrics'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
@@ -157,9 +159,7 @@ export const AppNotConfigured = ({
                 subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <a href={DOCUMENTATION.APP_CREATE} target="_blank" rel="noreferrer">
-                            {APP_DETAILS.NEED_HELP}
-                        </a>
+                        <DocLink text={APP_DETAILS.NEED_HELP} docLinkKey="APP_CREATE" dataTestId="app-details-empty" />
                     </>
                 )
             }
@@ -526,7 +526,7 @@ const Details: React.FC<DetailsType> = ({
         setShowAppStatusModal(true)
     }
 
-    const renderAppDetailsCDButton = () =>
+    const renderSelectImageButton = () =>
         appDetails && (
             <AppDetailsCDButton
                 appId={appDetails.appId}
@@ -542,9 +542,17 @@ const Details: React.FC<DetailsType> = ({
                     deploymentUserActionState,
                     triggerType: appDetails.triggerType,
                 }}
-                isForEmptyState
                 handleSuccess={callAppDetailsAPI}
-                isAppView={isAppView}
+                gaEvent={
+                    isAppView
+                        ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked
+                        : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked
+                }
+                buttonProps={{
+                    dataTestId: 'select-image-to-deploy',
+                    startIcon: <Icon name="ic-hand-pointing" color={null} />,
+                    text: 'Select Image to deploy',
+                }}
             />
         )
 
@@ -579,7 +587,7 @@ const Details: React.FC<DetailsType> = ({
                         image={noGroups}
                         title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
                         subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
-                        renderCustomButton={renderAppDetailsCDButton}
+                        renderCustomButton={renderSelectImageButton}
                     />
                 )}
             </>

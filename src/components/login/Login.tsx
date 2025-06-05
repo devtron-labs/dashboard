@@ -28,7 +28,7 @@ import {
     Host,
     Icon,
     LoginBanner,
-    MotionDiv,
+    motion,
     SSOProviderIcon,
     ToastManager,
     ToastVariantType,
@@ -43,7 +43,6 @@ import { TOKEN_COOKIE_NAME, URLS } from '../../config'
 import { getSSOConfigList } from '../../Pages/GlobalConfigurations/Authorization/SSOLoginServices/service'
 import { dashboardAccessed } from '../../services/service'
 import { LOGIN_CARD_ANIMATION_VARIANTS, SSOProvider } from './constants'
-import { SSOConfigLoginList } from './login.types'
 import { LoginForm } from './LoginForm'
 
 import './login.scss'
@@ -54,13 +53,14 @@ const getTermsAndConditions = importComponentFromFELibrary('getTermsAndCondition
 
 const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
-    const [loginList, setLoginList] = useState<SSOConfigLoginList[]>([])
 
     const { searchParams } = useSearchString()
     const location = useLocation()
     const history = useHistory()
 
-    const [initLoading, initResult] = useAsync(() => Promise.allSettled([getSSOConfigList(), dashboardAccessed()]), [])
+    const [ssoListLoading, ssoListResponse] = useAsync(getSSOConfigList, [])
+
+    const loginList = ssoListResponse?.result ?? []
 
     const setLoginNavigationURL = () => {
         let queryParam = searchParams.continue
@@ -96,25 +96,9 @@ const Login = () => {
 
     useEffect(() => {
         setLoginNavigationURL()
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        dashboardAccessed()
     }, [])
-
-    useEffect(() => {
-        if (initResult && !initLoading) {
-            const [ssoLoginListResponse, dashboardAccessesResponse] = initResult
-            if (ssoLoginListResponse.status === 'fulfilled' && ssoLoginListResponse.value.result) {
-                setLoginList(ssoLoginListResponse.value.result as SSOConfigLoginList[])
-            }
-
-            if (
-                typeof Storage !== 'undefined' &&
-                !localStorage.getItem('isDashboardAccessed') &&
-                dashboardAccessesResponse.status === 'fulfilled' &&
-                dashboardAccessesResponse.value.result
-            ) {
-                localStorage.setItem('isDashboardAccessed', 'true')
-            }
-        }
-    }, [initLoading, initResult])
 
     const onClickSSO = () => {
         if (typeof Storage !== 'undefined') {
@@ -127,7 +111,7 @@ const Login = () => {
 
     const renderSSOLoginPage = () => (
         <div className="flexbox-col dc__gap-12 p-36">
-            {initLoading && !loginList.length && (
+            {ssoListLoading && !loginList.length && (
                 <Button
                     variant={ButtonVariantType.secondary}
                     text="Checking SSO"
@@ -211,7 +195,7 @@ const Login = () => {
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
                         <AnimatePresence>
-                            <MotionDiv
+                            <motion.div
                                 key={location.pathname}
                                 variants={LOGIN_CARD_ANIMATION_VARIANTS}
                                 initial="initial"
@@ -221,7 +205,7 @@ const Login = () => {
                                 className="dc__overflow-hidden"
                             >
                                 {renderLoginContent()}
-                            </MotionDiv>
+                            </motion.div>
                         </AnimatePresence>
                     </div>
                     {getTermsAndConditions && getTermsAndConditions()}

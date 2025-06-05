@@ -37,10 +37,16 @@ import {
     ConfirmationModalVariantType,
     deleteWorkflow,
     InfoBlock,
+    DocLink,
+    Button,
+    Icon,
+    ComponentSizeType,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
-import { URLS, AppConfigStatus, ViewType, DOCUMENTATION } from '../../config'
+import { URLS, AppConfigStatus, ViewType } from '../../config'
 import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
 import { Workflow } from './Workflow'
 import {
@@ -820,15 +826,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         : 'Workflows consist of pipelines from build to deployment stages of an application.'}
                     <br />
                     {!this.props.isJobView && (
-                        <a
-                            className="dc__link"
-                            data-testid="learn-more-about-creating-workflow-link"
-                            href={DOCUMENTATION.APP_CREATE_WORKFLOW}
-                            target="blank"
-                            rel="noreferrer noopener"
-                        >
-                            Learn about creating workflows
-                        </a>
+                        <DocLink
+                            text="Learn about creating workflows"
+                            docLinkKey="APP_CREATE_WORKFLOW"
+                            dataTestId="learn-more-about-creating-workflow-link"
+                        />
                     )}
                 </p>
                 {this.renderWorkflowControlButton()}
@@ -910,11 +912,17 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 <InfoBlock
                     variant="help"
                     description={
-                        <div className="flex fs-13 fw-4 lh-20 cn-0">
+                        <div className="flex dc__gap-8 fs-13 fw-4 lh-20 cn-9">
                             Open a build pipeline to override
-                            <CloseIcon
-                                className="icon-dim-12 fcn-0 ml-8 cursor"
+                            <Button
+                                dataTestId="close-info-block"
+                                icon={<Icon name="ic-close-small" color={null} />}
+                                ariaLabel="close-info-button"
+                                showAriaLabelInTippy={false}
                                 onClick={this.removeTakeMeThereClickedItem}
+                                size={ComponentSizeType.xxs}
+                                variant={ButtonVariantType.borderLess}
+                                style={ButtonStyleType.negativeGrey}
                             />
                         </div>
                     }
@@ -955,11 +963,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                     ? WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.JOB_VIEW
                                     : WORKFLOW_EDITOR_HEADER_TIPPY.INFO_TEXT.DEFAULT
                             }
-                            documentationLink={
-                                this.props.isJobView
-                                    ? DOCUMENTATION.JOB_WORKFLOW_EDITOR
-                                    : DOCUMENTATION.APP_CREATE_WORKFLOW
-                            }
+                            documentationLink={this.props.isJobView ? 'JOB_WORKFLOW_EDITOR' : 'APP_CREATE_WORKFLOW'}
                             documentationLinkText={WORKFLOW_EDITOR_HEADER_TIPPY.DOCUMENTATION_LINK_TEXT}
                             placement="right"
                         />

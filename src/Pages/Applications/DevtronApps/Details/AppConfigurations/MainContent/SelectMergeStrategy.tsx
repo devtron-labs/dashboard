@@ -16,7 +16,6 @@
 
 import {
     ComponentSizeType,
-    DOCUMENTATION_HOME_PAGE,
     getSelectPickerOptionByValue,
     InfoIconTippy,
     noop,
@@ -104,7 +103,7 @@ const SelectMergeStrategy = ({
                         {PatchStrategyTooltipInfo && <PatchStrategyTooltipInfo />}
                     </OverrideStrategyTippyContent>
                 }
-                documentationLink={DOCUMENTATION_HOME_PAGE}
+                documentationLink="DOC_HOME_PAGE"
             />
 
             {renderContent()}

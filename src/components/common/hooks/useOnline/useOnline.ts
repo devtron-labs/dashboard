@@ -1,54 +1,61 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { getIsRequestAborted, noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getInternetConnectivity } from '@Services/service'
 
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 
-export const useOnline = ({ onOnline = noop, onOffline = noop }: { onOnline?: () => void; onOffline?: () => void }) => {
+export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const [online, setOnline] = useState(structuredClone(navigator.onLine))
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const timeoutRef = useRef<NodeJS.Timeout>(null)
     const { isAirgapped } = useMainContext()
 
+    const handleClearTimeout = () => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        abortControllerRef.current.abort()
+    }
+
     const checkConnectivity = async () => {
         if (isAirgapped) return
-        // Cancel any pending request
-        if (abortControllerRef.current) {
-            abortControllerRef.current.abort()
-        }
 
+        handleClearTimeout()
         const controller = new AbortController()
         abortControllerRef.current = controller
 
         try {
             await getInternetConnectivity(abortControllerRef.current)
-            setOnline(true)
-            if (online) {
-                onOnline()
-            }
-        } catch {
-            setOnline(false)
-        } finally {
+            setOnline((prev) => {
+                if (!prev) {
+                    onOnline()
+                }
+                return true
+            })
             timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+        } catch (error) {
+            setOnline(false)
+            if (!getIsRequestAborted(error)) {
+                timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+            }
         }
     }
     const handleOffline = () => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current)
-        }
-        abortControllerRef.current.abort()
+        handleClearTimeout()
         setOnline(false)
-        if (onOffline) {
-            onOffline()
-        }
     }
 
     const handleOnline = async () => {
         // Verify connectivity when browser reports online
         await checkConnectivity()
     }
+
+    useEffect(() => {
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        handleOnline()
+    }, [])
 
     useEffect(() => {
         if (isAirgapped) return null

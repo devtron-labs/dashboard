@@ -20,6 +20,7 @@ import {
     CIBuildType,
     ComponentSizeType,
     CustomInput,
+    DOCUMENTATION,
     getUniqueId,
     InfoIconTippy,
     SelectPicker,
@@ -46,7 +47,6 @@ import {
     LanguageOptionType,
     VersionsOptionType,
 } from './types'
-import { DOCUMENTATION } from '../../config'
 import {
     AUTO_DETECT,
     BUILDER_SELECT_STYLES,
@@ -158,8 +158,9 @@ const BuilderTippy = () => {
             infoText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.infoText}
             additionalContent={additionalBuilderTippyContent()}
             documentationLinkText={CI_BUILDPACK_OPTION_TEXTS.BuilderTippyContent.documentationLinkText}
-            documentationLink={DOCUMENTATION.APP_CI_CONFIG_BUILD_WITHOUT_DOCKER}
+            documentationLink="APP_CI_CONFIG_BUILD_WITHOUT_DOCKER"
             iconClassName="icon-dim-16 fcn-6 ml-4"
+            openInNewTab
         />
     )
 }

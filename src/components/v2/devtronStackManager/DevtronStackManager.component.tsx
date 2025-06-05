@@ -22,22 +22,22 @@ import {
     VisibleModal,
     Checkbox,
     CHECKBOX_VALUE,
-    Toggle,
     ConfirmationDialog,
     IMAGE_SCAN_TOOL,
     PageHeader,
     GenericFilterEmptyState,
-    useMainContext,
     ToastManager,
     ToastVariantType,
     TOAST_ACCESS_DENIED,
     MarkDown,
     Button,
     RAISE_ISSUE,
-} from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import {
+    DISCORD_LINK,
     InstallationType,
+    DocLink,
+    DTSwitch,
+} from '@devtron-labs/devtron-fe-common-lib'
+import {
     InstallationWrapperType,
     ModuleDetails,
     ModuleDetailsCardType,
@@ -62,7 +62,7 @@ import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
 import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { DOCUMENTATION, MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
+import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
 import Carousel from '../../common/Carousel/Carousel'
 import {
     AboutSection,
@@ -169,12 +169,7 @@ const ModuleDetailsCard = ({
                 {moduleDetails.name === MORE_MODULE_DETAILS.name ? (
                     <>
                         You can&nbsp;
-                        <a
-                            href={RAISE_ISSUE}
-                            className="cb-5 fw-6"
-                            target="_blank"
-                            rel="noreferrer noopener"
-                        >
+                        <a href={RAISE_ISSUE} className="cb-5 fw-6" target="_blank" rel="noreferrer noopener">
                             submit a ticket
                         </a>
                         &nbsp;to request an integration
@@ -540,7 +535,7 @@ const InstallationStatus = ({
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
-                        <div className="flexbox">
+                        <div className="flexbox dc__content-space">
                             <div className="module-details__installtion-success flex left dc__content-space">
                                 <div>
                                     <span className="flexbox column left" data-testid="module-status-installed">
@@ -556,15 +551,13 @@ const InstallationStatus = ({
                                 </div>
                             </div>
                             {moduleNotEnabled ? (
-                                <Tippy className="default-tt" arrow placement="top" content="Enable integration">
-                                    <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
-                                        <Toggle
-                                            dataTestId="toggle-button"
-                                            onSelect={handleToggleButton}
-                                            selected={toggled}
-                                        />
-                                    </div>
-                                </Tippy>
+                                <DTSwitch
+                                    name="toggle-enable-integration"
+                                    ariaLabel="Toggle enable integration"
+                                    tooltipContent="Enable integration"
+                                    isChecked={toggled}
+                                    onChange={handleToggleButton}
+                                />
                             ) : (
                                 ''
                             )}
@@ -643,7 +636,7 @@ const GetHelpCard = (): JSX.Element => {
             <span className="fw-6 mb-10">Facing issues?</span>
             <a
                 className="module-details__help-chat cb-5 flex left"
-                href="https://discord.devtron.ai/"
+                href={DISCORD_LINK}
                 target="_blank"
                 rel="noreferrer noopener"
             >
@@ -733,20 +726,16 @@ export const InstallationWrapper = ({
     }, [releaseNotes])
 
     const fetchPreRequisiteListFromReleaseNotes = () => {
-        const _preRequisiteList = []
-        for (let index = 0; index < releaseNotes.length; index++) {
-            const element = releaseNotes[index]
-            if (element.releaseName === serverInfo?.currentVersion) {
-                break
-            }
-            if (element.prerequisite && element.prerequisiteMessage) {
-                _preRequisiteList.push({
-                    version: element.releaseName,
-                    prerequisiteMessage: element.prerequisiteMessage,
-                    tagLink: element.tagLink,
-                })
-            }
-        }
+        const _preRequisiteList = releaseNotes
+            .filter(
+                ({ releaseName, prerequisite, prerequisiteMessage }) =>
+                    releaseName !== serverInfo?.currentVersion && prerequisite && prerequisiteMessage,
+            )
+            .map(({ releaseName, prerequisiteMessage, tagLink }) => ({
+                version: releaseName,
+                prerequisiteMessage,
+                tagLink,
+            }))
         setPreRequisiteList(_preRequisiteList.reverse())
     }
 
@@ -765,6 +754,7 @@ export const InstallationWrapper = ({
                 updateActionTrigger,
                 history,
                 location,
+                serverInfo.currentVersion,
                 moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
             )
         } else {
@@ -794,7 +784,7 @@ export const InstallationWrapper = ({
                         </div>
                         <CloseIcon className="pointer mt-2" onClick={hidePrerequisiteConfirmationModal} />
                     </div>
-                    <div className="p-20">
+                    <div className="p-20 mxh-600 dc__overflow-auto">
                         <div className="fw-6 fs-13 cn-9 mb-12">
                             Please ensure you follow below pre-requisites steps in order.
                         </div>
@@ -815,7 +805,7 @@ export const InstallationWrapper = ({
                             <span className="cn-9 fs-13 fw-6">Facing issues?</span>
                             <a
                                 className="pre-requisite-modal__help-chat fs-13 cb-5 flex left"
-                                href="https://discord.devtron.ai/"
+                                href={DISCORD_LINK}
                                 target="_blank"
                                 rel="noreferrer noopener"
                             >
@@ -1158,14 +1148,7 @@ export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }):
                         {isUpgradeView ? (
                             <>
                                 Please refer&nbsp;
-                                <a
-                                    className="cb-5 fw-6"
-                                    href={DOCUMENTATION.DEVTRON_UPGRADE}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    steps to upgrade using CLI
-                                </a>
+                                <DocLink dataTestId='devtron-upgrade-docs-link' docLinkKey='DEVTRON_UPGRADE' text="steps to upgrade using CLI" fontWeight='normal' />
                             </>
                         ) : (
                             'This functionality is available only for Devtron installed via Helm charts'

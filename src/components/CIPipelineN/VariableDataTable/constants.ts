@@ -119,6 +119,7 @@ export const VARIABLE_DATA_TABLE_CELL_ERROR_MSGS = {
     VARIABLE_VALUE_REQUIRED: 'Variable value is required',
     VARIABLE_VALUE_NOT_A_NUMBER: 'Variable value is not a number',
     VARIABLE_VALUE_NOT_A_BOOLEAN: 'Variable value is not a boolean',
+    MAX_LENGTH_255: 'Max 255 characters allowed',
 }
 
 export const VARIABLE_DATA_TABLE_CELL_BOOL_VALUES = ['True', 'False', 'true', 'false']

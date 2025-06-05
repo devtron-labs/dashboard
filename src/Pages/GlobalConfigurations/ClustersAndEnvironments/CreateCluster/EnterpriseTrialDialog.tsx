@@ -1,9 +1,9 @@
 import {
     Button,
+    ButtonComponentType,
     ComponentSizeType,
-    DOCUMENTATION,
-    getHandleOpenURL,
     Icon,
+    LICENSE_DASHBOARD_HOME_PAGE,
     TESTIMONIAL_CARD_DATA,
     TestimonialContent,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -31,8 +31,11 @@ const EnterpriseTrialDialog = ({ featureTitle, featureDescription }: EnterpriseT
                         dataTestId="get-free-trial"
                         text="Get free trial"
                         endIcon={<Icon name="ic-arrow-right" color={null} />}
-                        onClick={getHandleOpenURL(DOCUMENTATION.ENTERPRISE_LICENSE)}
+                        component={ButtonComponentType.anchor}
                         size={ComponentSizeType.medium}
+                        anchorProps={{
+                            href: LICENSE_DASHBOARD_HOME_PAGE,
+                        }}
                     />
                 </div>
                 <div className="p-24 flexbox dc__gap-12 br-8 border__primary bg__primary">
