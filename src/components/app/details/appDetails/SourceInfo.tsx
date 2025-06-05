@@ -37,7 +37,6 @@ import {
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as RotateIcon } from '@Icons/ic-arrows_clockwise.svg'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
 import { ReactComponent as LinkIcon } from '@Icons/ic-link.svg'
@@ -367,7 +366,7 @@ export const SourceInfo = ({
                                                 variant={ButtonVariantType.secondary}
                                                 onClick={() => setRotateModal(true)}
                                                 disabled={isApprovalConfigured}
-                                                icon={<RotateIcon />}
+                                                icon={<Icon name="ic-arrows-clockwise" color={null} />}
                                                 style={ButtonStyleType.neutral}
                                                 showTooltip
                                                 tooltipProps={{
