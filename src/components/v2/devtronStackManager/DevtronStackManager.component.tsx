@@ -22,7 +22,6 @@ import {
     VisibleModal,
     Checkbox,
     CHECKBOX_VALUE,
-    Toggle,
     ConfirmationDialog,
     IMAGE_SCAN_TOOL,
     PageHeader,
@@ -36,8 +35,8 @@ import {
     DISCORD_LINK,
     InstallationType,
     DocLink,
+    DTSwitch,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import {
     InstallationWrapperType,
     ModuleDetails,
@@ -536,7 +535,7 @@ const InstallationStatus = ({
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
-                        <div className="flexbox">
+                        <div className="flexbox dc__content-space">
                             <div className="module-details__installtion-success flex left dc__content-space">
                                 <div>
                                     <span className="flexbox column left" data-testid="module-status-installed">
@@ -552,15 +551,13 @@ const InstallationStatus = ({
                                 </div>
                             </div>
                             {moduleNotEnabled ? (
-                                <Tippy className="default-tt" arrow placement="top" content="Enable integration">
-                                    <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
-                                        <Toggle
-                                            dataTestId="toggle-button"
-                                            onSelect={handleToggleButton}
-                                            selected={toggled}
-                                        />
-                                    </div>
-                                </Tippy>
+                                <DTSwitch
+                                    name="toggle-enable-integration"
+                                    ariaLabel="Toggle enable integration"
+                                    tooltipContent="Enable integration"
+                                    isChecked={toggled}
+                                    onChange={handleToggleButton}
+                                />
                             ) : (
                                 ''
                             )}
