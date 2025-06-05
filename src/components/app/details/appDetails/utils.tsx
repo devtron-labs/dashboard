@@ -380,11 +380,7 @@ export const validateMomentDate = (date: string, format: string): string => {
 
 export const getDeployButtonConfig = (
     actionState: ACTION_STATE,
-    isForEmptyState: boolean,
 ): { buttonStyle: ButtonStyleType; iconName: IconsProps['name'] } => {
-    if (isForEmptyState) {
-        return { buttonStyle: ButtonStyleType.default, iconName: 'ic-hand-pointing' }
-    }
     switch (actionState) {
         case ACTION_STATE.BLOCKED:
             return { buttonStyle: ButtonStyleType.negative, iconName: 'ic-info-outline' }
