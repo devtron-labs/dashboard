@@ -238,6 +238,7 @@ export interface RBSidebarKeysType {
     overviewGVK: GVKType
     monitoringGVK: GVKType
     upgradeClusterGVK: GVKType
+    resourceRecommenderGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {
@@ -256,6 +257,10 @@ export interface GetTabsBasedOnRoleParamsType {
      * @default false
      */
     isMonitoringDashBoardSelected?: boolean
+    /**
+     * @default false
+     */
+    isResourceRecommenderSelected?: boolean
 }
 
 export interface NodeRowDetail {
