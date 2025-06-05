@@ -16,8 +16,8 @@
 
 .chart-grid__check {
     position: absolute;
-    right: 16px;
-    top: 16px;
+    right: 20px;
+    top: 20px;
 
     &.chart-grid__check--hidden {
         display: none;
@@ -70,13 +70,16 @@
     font-size: 14px;
     font-weight: 600;
     border: 1px solid var(--N200);
-    border-radius: 2px;
-    display: grid;
-    grid-template-columns: repeat(3, 20px);
+    border-radius: 6px;
     place-items: center;
     grid-column-gap: 0px;
     background-color: var(--bg-primary);
     cursor: default;
+}
+
+.devtron-stepper-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 20px);
 }
 
 .devtron-stepper__item {
@@ -142,6 +145,24 @@
         border: solid 1px var(--B500);
         background-color: var(--B100);
     }
+}
+
+.chart-grid-item:hover {
+    text-decoration: none;
+    box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
+}
+
+
+.chart-grid-item {
+    display: block;
+    padding: 16px;
+    cursor: pointer;
+    position: relative;
+}
+
+.chart-grid-item.flex-list {
+    display: grid;
+    grid-template-columns: 64px 1fr;
 }
 
 .chart-group-item__title {
@@ -294,13 +315,6 @@
     }
 }
 
-.chart-group-deployment__deployed-app {
-    min-height: 52px;
-    display: flex;
-    align-items: center;
-    box-shadow: inset 0 -1px 0 0 var(--N100);
-}
-
 .chart-group-deployment__cell {
     padding: 0 20px;
     white-space: nowrap;
@@ -328,15 +342,6 @@
     flex-basis: 36px;
     padding-right: 0px;
     justify-content: flex-end;
-}
-
-.chart-store__more-option {
-    margin-left: 4px;
-    font-size: 12px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N700);
 }
 
 .chart-group-deployment__expand-row {

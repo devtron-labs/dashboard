@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { ChartGroup, ChartGroupEntry } from '../charts.types'
+import { ChartGroupEntry } from '../charts.types'
 import { getChartGroupURL } from '../charts.helper'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-
-export interface ChartGroupCardProps {
-    chartGroup: ChartGroup
-}
+import { ChartGroupCardProps } from './types'
 
 export default class ChartGroupCard extends Component<ChartGroupCardProps> {
     handleImageError = (e) => {
