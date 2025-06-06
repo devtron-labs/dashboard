@@ -23,9 +23,11 @@ import {
     DevtronProgressing,
     DynamicTabType,
     ErrorScreenManager,
+    getGroupVersionFromApiVersion,
     getResourceGroupListRaw,
     Icon,
     InitTabType,
+    K8sResourceDetailType,
     noop,
     useAsync,
     useBreadcrumb,
@@ -63,12 +65,13 @@ import { getClusterListing } from '../ResourceBrowser.service'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
 import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
+import BaseResourceList from './BaseResourceList'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
-import { ResourceListUrlFiltersType } from './types'
+import { BaseResourceListProps, ResourceListUrlFiltersType } from './types'
 import {
     getClusterOptions,
     getFirstResourceFromKindResourceMap,
@@ -391,15 +394,32 @@ const ResourceList = () => {
     const getRemoveTabByIdentifierForId = (id: string) => () => removeTabByIdentifier(id)
 
     const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
-        const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+        const {
+            name,
+            tab,
+            namespace: currentNamespace,
+            origin,
+            kind: kindFromResource,
+            apiVersion,
+        } = e.currentTarget.dataset
+
         const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
-        let _group: string =
+
+        // TODO: test this by comparing with response of getFirstResourceFromKindResourceMap
+        let _group: string = apiVersion
+            ? getGroupVersionFromApiVersion(apiVersion).group.toLowerCase() || K8S_EMPTY_GROUP
+            : ''
+
+        _group =
+            _group ||
             (shouldOverrideSelectedResourceKind
                 ? getFirstResourceFromKindResourceMap(
                       lowercaseKindToResourceGroupMap,
                       lowercaseKindFromResource,
                   )?.gvk?.Group?.toLowerCase()
-                : selectedResource.gvk.Group.toLowerCase()) || K8S_EMPTY_GROUP
+                : selectedResource?.gvk.Group.toLowerCase()) ||
+            K8S_EMPTY_GROUP
+
         const _namespace = currentNamespace ?? ALL_NAMESPACE_OPTION.value
 
         let resourceParam: string
@@ -478,6 +498,41 @@ const ResourceList = () => {
         )
     }
 
+    const getResourceRecommenderBaseResourceListProps = (
+        resourceList: K8sResourceDetailType,
+        reloadResourceListData: () => void,
+    ): BaseResourceListProps => ({
+        searchPlaceholder: 'Search',
+        hideDeleteResource: true,
+        addTab,
+        isOpen: true,
+        // TODO: Add this later if time permits
+        renderRefreshBar: null,
+        selectedCluster,
+        selectedResource: {
+            gvk: SIDEBAR_KEYS.resourceRecommenderGVK,
+            namespaced: false,
+        },
+        clusterName: selectedCluster.label,
+        handleResourceClick,
+        updateK8sResourceTab: noop,
+        nodeType: null,
+        group: null,
+        // TODO: test
+        isLoading: false,
+        // TODO: test
+        resourceListError: null,
+        resourceList,
+        clusterId,
+        reloadResourceListData,
+        // TODO: Add this later
+        selectedNamespace: ALL_NAMESPACE_OPTION,
+        setSelectedNamespace: noop,
+        showGenericNullState: null,
+        lowercaseKindToResourceGroupMap,
+        shouldOverrideSelectedResourceKind: true,
+    })
+
     const fixedTabComponents = [
         <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />,
         <K8SResourceTabComponent
@@ -498,7 +553,14 @@ const ResourceList = () => {
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard ? [<MonitoringDashboard />] : []),
-        ...(ResourceRecommender ? [<ResourceRecommender />] : []),
+        ...(ResourceRecommender
+            ? [
+                  <ResourceRecommender
+                      getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
+                      baseResourceListComponent={BaseResourceList}
+                  />,
+              ]
+            : []),
         ...(getTabById(ResourceBrowserTabsId.terminal)?.isAlive
             ? [<AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),

@@ -141,6 +141,7 @@ const BaseResourceListContent = ({
     const { searchParams } = useSearchString()
 
     const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+    const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -417,8 +418,9 @@ const BaseResourceListContent = ({
 
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
         const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
-        // Redirection and actions are not possible for Events since the required data for the same is not available
-        const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
+        const shouldShowActionMenu = lowercaseKind !== Nodes.Event.toLowerCase() && !isResourceRecommender
+        const shouldAllowNameNavigation = lowercaseKind !== Nodes.Event.toLowerCase()
+
         const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
         const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
 
@@ -433,12 +435,13 @@ const BaseResourceListContent = ({
                     const aiButtonConfig = AI_BUTTON_CONFIG_MAP[gvkString]
                     const showAIButton =
                         !!ExplainWithAIButton &&
+                        !isResourceRecommender &&
                         getShowAIButton(aiButtonConfig, columnName, resourceData[columnName] as string)
 
                     return columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
+                            className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldAllowNameNavigation ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
                             {!hideBulkSelection && (
@@ -447,23 +450,24 @@ const BaseResourceListContent = ({
                                         !!bulkSelectionState[resourceData.id as string] || isBulkSelectionApplied
                                     }
                                     onChange={getHandleCheckedForId(resourceData)}
-                                    rootClassName="mb-0"
+                                    rootClassName="mb-0 dc__no-shrink"
                                     value={CHECKBOX_VALUE.CHECKED}
                                 />
                             )}
-                            <div className="flex left dc__gap-4">
+                            <div className="flex left dc__gap-4 flex-grow-1">
                                 <Tooltip content={resourceData.name}>
                                     <button
                                         type="button"
-                                        className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldShowRedirectionAndActions ? 'cursor-default' : ''}`}
+                                        className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldAllowNameNavigation ? 'cursor-default' : ''}`}
                                         data-name={resourceData.name}
                                         data-namespace={resourceData.namespace}
                                         data-kind={resourceData.kind}
-                                        onClick={shouldShowRedirectionAndActions ? handleResourceClick : null}
+                                        data-api-version={isResourceRecommender ? resourceData.apiVersion : null}
+                                        onClick={shouldAllowNameNavigation ? handleResourceClick : null}
                                         aria-label={`Select ${resourceData.name}`}
                                     >
                                         <span
-                                            className={shouldShowRedirectionAndActions ? 'dc__link cursor' : ''}
+                                            className={shouldAllowNameNavigation ? 'dc__link cursor' : ''}
                                             // eslint-disable-next-line react/no-danger
                                             dangerouslySetInnerHTML={{
                                                 __html: DOMPurify.sanitize(
@@ -482,7 +486,7 @@ const BaseResourceListContent = ({
                                     rootClassName="p-4 dc__visible-hover--child"
                                 />
                             </div>
-                            {shouldShowRedirectionAndActions &&
+                            {shouldShowActionMenu &&
                                 (!isNodeListing ? (
                                     <ResourceBrowserActionMenu
                                         clusterId={clusterId}
@@ -724,6 +728,7 @@ const BaseResourceListContent = ({
                     isOpen={isOpen}
                 />
             ) : (
+                // Need to add here
                 <ResourceFilterOptions
                     key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}
@@ -746,6 +751,7 @@ const BaseResourceListContent = ({
             {!hideBulkSelection && (
                 <>
                     {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
+                        // TODO: Handle this
                         <RBBulkSelectionActionWidget
                             parentRef={parentRef}
                             count={
@@ -769,6 +775,7 @@ const BaseResourceListContent = ({
                     )}
 
                     {RBBulkOperations && bulkOperationModalState !== 'closed' && (
+                        // TODO: Handle this
                         <RBBulkOperations
                             handleModalClose={getBulkOperationsModalStateSetter('closed')}
                             handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}

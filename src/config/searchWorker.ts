@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isNullOrUndefined } from '@devtron-labs/devtron-fe-common-lib'
+
 /* eslint-disable no-restricted-globals */
 export default () => {
     enum SortingOrder {
@@ -107,6 +109,7 @@ export default () => {
         'mem usage (%)': numberInStringComparator,
         'mem allocatable': numberInStringComparator,
         'cpu usage (absolute)': numberInStringComparator,
+        // Add here as well
     }
 
     /**
@@ -225,7 +228,10 @@ export default () => {
         } else if (searchTextLowerCased !== '' && list?.length) {
             filteredList = list.filter((item) =>
                 Object.entries(item).some(
-                    ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(searchTextLowerCased),
+                    ([key, value]) =>
+                        key !== 'id' &&
+                        !isNullOrUndefined(value) &&
+                        String(value).toLowerCase().includes(searchTextLowerCased),
                 ),
             )
         }
