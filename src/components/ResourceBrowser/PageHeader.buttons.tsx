@@ -17,7 +17,14 @@
 import React, { useState } from 'react'
 import { generatePath, Route, useHistory } from 'react-router-dom'
 
-import { Button, ButtonComponentType, ComponentSizeType, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import {
@@ -29,6 +36,7 @@ import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
+import { getEmbeddedSloopURL } from './Utils'
 
 export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clusterId, closeModal }) => {
     const [showModal, setShowModal] = useState(false)
@@ -69,7 +77,18 @@ export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateCluster
     return (
         isSuperAdmin && (
             <>
-                <div>
+                <div className="flex dc__gap-12">
+                    <Button
+                        dataTestId="cluster-sloop-compare-config"
+                        text="Compare config"
+                        variant={ButtonVariantType.secondary}
+                        size={ComponentSizeType.small}
+                        component={ButtonComponentType.link}
+                        startIcon={<Icon name="ic-arrows-left-right" color={null} />}
+                        linkProps={{
+                            to: getEmbeddedSloopURL(),
+                        }}
+                    />
                     <Button
                         dataTestId="add_cluster_button"
                         text="New Cluster"
@@ -82,7 +101,6 @@ export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateCluster
                             }),
                         }}
                     />
-                    <span className="dc__divider" />
                 </div>
 
                 <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>

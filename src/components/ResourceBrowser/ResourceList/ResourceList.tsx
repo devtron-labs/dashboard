@@ -54,6 +54,7 @@ import {
     EMBEDDED_SLOOP_TAB_ID,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
+    RESOURCE_ACTION_MENU,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
@@ -61,7 +62,7 @@ import {
 import { renderCreateResourceButton } from '../PageHeader.buttons'
 import { getClusterListing } from '../ResourceBrowser.service'
 import { ClusterOptionType, K8SResourceListType, URLParams } from '../Types'
-import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
+import { getClusterChangeRedirectionUrl, getEmbeddedSloopURL, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
@@ -146,7 +147,8 @@ const ResourceList = () => {
 
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
-    const isEmbeddedSloopNodeType = nodeType === SIDEBAR_KEYS.embeddedSloopGVK.Kind.toLowerCase()
+    const showEmbeddedSloop = clusterId === '1'
+    const isEmbeddedSloopNodeType = showEmbeddedSloop && nodeType === SIDEBAR_KEYS.embeddedSloopGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
     const isUpgradeClusterNodeType = nodeType === SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
     const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
@@ -389,6 +391,12 @@ const ResourceList = () => {
 
     const handleResourceClick = (e, shouldOverrideSelectedResourceKind: boolean) => {
         const { name, tab, namespace: currentNamespace, origin, kind: kindFromResource } = e.currentTarget.dataset
+
+        if (tab === RESOURCE_ACTION_MENU.compareConfig) {
+            push(getEmbeddedSloopURL({ namespace, kind: selectedResource?.gvk?.Kind, name }))
+            return
+        }
+
         const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
         let _group: string =
             (shouldOverrideSelectedResourceKind
@@ -495,7 +503,7 @@ const ResourceList = () => {
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard ? [<MonitoringDashboard />] : []),
-        ...(EmbeddedSloop ? [<EmbeddedSloop />] : []),
+        ...(EmbeddedSloop && showEmbeddedSloop ? [<EmbeddedSloop />] : []),
         ...(getTabById(ResourceBrowserTabsId.terminal)?.isAlive
             ? [<AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />]
             : []),
@@ -544,7 +552,7 @@ const ResourceList = () => {
                         [ResourceBrowserTabsId.cluster_overview]: <ICWorldBlack className="scn-7" />,
                         [ResourceBrowserTabsId.k8s_Resources]: <ICObject className="fcn-7" />,
                         [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
-                        [EMBEDDED_SLOOP_TAB_ID]: <Icon name="ic-cube" color="N700" />,
+                        [EMBEDDED_SLOOP_TAB_ID]: <Icon name="ic-arrows-left-right" color="N700" />,
                     }}
                 />
                 {/* NOTE: since the terminal is only visibly hidden; we need to make sure it is rendered at the end of the page */}

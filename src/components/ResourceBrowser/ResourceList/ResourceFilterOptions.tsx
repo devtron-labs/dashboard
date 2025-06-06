@@ -19,6 +19,12 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
+    Button,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    Nodes,
     OptionType,
     SearchBar,
     SelectPicker,
@@ -34,6 +40,7 @@ import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
+import { getEmbeddedSloopURL } from '../Utils'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
@@ -54,7 +61,7 @@ const ResourceFilterOptions = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, namespace, group } = useParams<URLParams>()
+    const { clusterId, namespace, group, nodeType } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -147,29 +154,46 @@ const ResourceFilterOptions = ({
                         />
                     )}
                 </div>
-                {!areFiltersHidden && (
-                    <div className="flexbox dc__gap-8 dc__zi-3">
-                        {FilterButton && (
-                            <FilterButton
-                                clusterName={selectedCluster?.label || ''}
-                                updateTabUrl={updateK8sResourceTab}
-                                showModal={showFilterModal}
-                                setShowModal={setShowFilterModal}
-                            />
-                        )}
-                        <SelectPicker
-                            inputId="resource-filter-select"
-                            placeholder="Select Namespace"
-                            options={namespaceOptions}
-                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
-                            onChange={handleNamespaceChange}
-                            isDisabled={!selectedResource?.namespaced}
-                            icon={<NamespaceIcon className="fcn-6" />}
-                            disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
-                            shouldMenuAlignRight
+                <div className="flexbox dc__gap-8 dc__zi-3">
+                    {clusterId === '1' && nodeType !== Nodes.Event.toLowerCase() && (
+                        <Button
+                            dataTestId="cluster-sloop-compare-config"
+                            variant={ButtonVariantType.secondary}
+                            startIcon={<Icon name="ic-arrows-left-right" color={null} />}
+                            size={ComponentSizeType.medium}
+                            component={ButtonComponentType.link}
+                            text="Compare config"
+                            linkProps={{
+                                to: getEmbeddedSloopURL({ namespace, kind: selectedResource?.gvk.Kind }),
+                            }}
                         />
-                    </div>
-                )}
+                    )}
+                    {!areFiltersHidden && (
+                        <>
+                            {FilterButton && (
+                                <FilterButton
+                                    clusterName={selectedCluster?.label || ''}
+                                    updateTabUrl={updateK8sResourceTab}
+                                    showModal={showFilterModal}
+                                    setShowModal={setShowFilterModal}
+                                />
+                            )}
+                            <SelectPicker
+                                inputId="resource-filter-select"
+                                placeholder="Select Namespace"
+                                options={namespaceOptions}
+                                value={
+                                    selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION
+                                }
+                                onChange={handleNamespaceChange}
+                                isDisabled={!selectedResource?.namespaced}
+                                icon={<NamespaceIcon className="fcn-6" />}
+                                disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
+                                shouldMenuAlignRight
+                            />
+                        </>
+                    )}
+                </div>
             </div>
         </>
     )

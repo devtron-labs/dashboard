@@ -275,6 +275,16 @@ export const updateQueryString = (
 export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
     `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
 
+export const getEmbeddedSloopURL = (params?: {
+    clusterId?: string
+    namespace?: string
+    kind?: string
+    name?: string
+}) => {
+    const { clusterId = '1', namespace = 'all', kind, name } = params ?? {}
+    return `${getURLBasedOnSidebarGVK(SIDEBAR_KEYS.embeddedSloopGVK.Kind, clusterId, namespace)}?namespace=${namespace === 'all' ? '_all' : namespace}${kind ? `&kind=${kind}` : ''}${name ? `&namematch=${name}` : ''}`
+}
+
 export const getTabsBasedOnRole = ({
     selectedCluster,
     namespace,
@@ -319,14 +329,8 @@ export const getTabsBasedOnRole = ({
                   ),
               ]
             : []),
-        ...(getEmbeddedSloopTabConfig
-            ? [
-                  getEmbeddedSloopTabConfig(
-                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.embeddedSloopGVK.Kind, clusterId, namespace),
-                      isEmbeddedSloopSelected,
-                      EMBEDDED_SLOOP_TAB_ID,
-                  ),
-              ]
+        ...(getEmbeddedSloopTabConfig && clusterId === '1'
+            ? [getEmbeddedSloopTabConfig(getEmbeddedSloopURL(), isEmbeddedSloopSelected, EMBEDDED_SLOOP_TAB_ID)]
             : []),
         {
             id: ResourceBrowserTabsId.terminal,

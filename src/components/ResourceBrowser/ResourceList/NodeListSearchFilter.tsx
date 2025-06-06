@@ -18,7 +18,18 @@ import { ChangeEvent, KeyboardEvent, RefCallback, useEffect, useMemo, useRef, us
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
 
-import { OptionType, SelectPicker, useAsync, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonComponentType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    Nodes,
+    OptionType,
+    SelectPicker,
+    useAsync,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClear } from '@Icons/ic-error.svg'
 import { ReactComponent as ICSearch } from '@Icons/ic-search.svg'
@@ -32,6 +43,7 @@ import {
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
 import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
+import { getEmbeddedSloopURL } from '../Utils'
 import ColumnSelector from './ColumnSelector'
 
 const NodeListSearchFilter = ({
@@ -297,8 +309,24 @@ const NodeListSearchFilter = ({
     }
 
     return (
-        <div className="node-listing-search-container pt-16 pr-20 pb-12 pl-20 dc__zi-5">
+        <div
+            className={`node-listing-search-container ${clusterId === '1' ? 'with-compare-config' : ''} pt-16 pr-20 pb-12 pl-20 dc__zi-5`}
+        >
             {renderTextFilter()}
+
+            {clusterId === '1' && (
+                <Button
+                    dataTestId="cluster-sloop-compare-config"
+                    variant={ButtonVariantType.secondary}
+                    startIcon={<Icon name="ic-arrows-left-right" color={null} />}
+                    size={ComponentSizeType.medium}
+                    component={ButtonComponentType.link}
+                    text="Compare config"
+                    linkProps={{
+                        to: getEmbeddedSloopURL({ kind: Nodes.Node }),
+                    }}
+                />
+            )}
 
             <SelectPicker
                 inputId="k8s-version-select"

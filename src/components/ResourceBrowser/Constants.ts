@@ -107,6 +107,7 @@ export const RESOURCE_ACTION_MENU = {
     Events: 'Events',
     logs: 'Logs',
     terminal: 'Terminal',
+    compareConfig: 'Compare Config',
     delete: 'Delete',
 }
 

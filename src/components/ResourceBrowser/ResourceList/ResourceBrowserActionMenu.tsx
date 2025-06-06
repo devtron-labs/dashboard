@@ -18,6 +18,7 @@ import React, { useState } from 'react'
 
 import {
     GetResourceScanDetailsPayloadType,
+    Icon,
     ModuleNameMap,
     Nodes,
     PopupMenu,
@@ -112,7 +113,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                     <MenuDots className="fcn-7 icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">
-                    <div className="fs-13 fw-4 lh-20 w-120 flexbox-col">
+                    <div className="fs-13 fw-4 lh-20 w-150 flexbox-col">
                         <span
                             data-name={resourceData.name}
                             data-tab={RESOURCE_ACTION_MENU.manifest}
@@ -137,6 +138,20 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
                             <CalendarIcon className="icon-dim-16 mr-8 fcn-6" />
                             <span className="cn-9">{RESOURCE_ACTION_MENU.Events}</span>
                         </span>
+                        {clusterId === '1' && (
+                            <span
+                                data-name={resourceData.name}
+                                data-tab={RESOURCE_ACTION_MENU.compareConfig}
+                                data-namespace={resourceData.namespace}
+                                data-kind={resourceData.kind}
+                                className="flex left dc__gap-8 h-32 cursor pl-12 pr-12 dc__hover-n50 dc__no-decor"
+                                onClick={handleResourceClick}
+                                data-testid="compare-config-option-link"
+                            >
+                                <Icon name="ic-arrows-left-right" color="N600" />
+                                <span className="cn-9">{RESOURCE_ACTION_MENU.compareConfig}</span>
+                            </span>
+                        )}
                         {selectedResource?.gvk?.Kind === Nodes.Pod && (
                             <>
                                 <span
