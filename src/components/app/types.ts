@@ -15,22 +15,28 @@
  */
 
 import React, { Dispatch, SetStateAction } from 'react'
+import { UaEventOptions } from 'react-ga4/types/ga4'
+
 import {
     ACTION_STATE,
+    AppEnvironment,
+    BaseAppMetaData,
+    ButtonComponentType,
+    ButtonProps,
     DeploymentAppTypes,
-    TagType,
-    Teams,
+    DeploymentStatusDetailsBreakdownDataType,
+    HelmReleaseStatus,
     PodMetadatum,
     ReleaseMode,
-    AppEnvironment,
-    HelmReleaseStatus,
-    BaseAppMetaData,
-    DeploymentStatusDetailsBreakdownDataType,
+    TagType,
+    Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
-import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
+
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
+
+import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
+import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { CDMaterialProps } from './details/triggerView/types'
 
 interface CDModalProps {
@@ -409,6 +415,7 @@ export enum AggregationKeys {
     'Other Resources' = 'Other Resources',
     Events = 'Events',
     Namespaces = 'Namespaces',
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     Nodes = 'Nodes',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
@@ -531,12 +538,12 @@ export interface AppDetailsCDButtonType
             AppDetails,
             'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
-        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails' | 'isAppView'> {
-    isRedirectedFromAppDetails?: boolean
+        Pick<SourceInfoType, 'loadingDetails'> {
     cdModal: CDModalProps
-    isForEmptyState?: boolean
     isForRollback?: boolean
     appName?: string
+    buttonProps: ButtonProps<ButtonComponentType.button>
+    gaEvent: Pick<UaEventOptions, 'action' | 'category'>
     handleSuccess?: CDMaterialProps['handleSuccess']
 }
 
