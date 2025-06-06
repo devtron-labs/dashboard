@@ -17,7 +17,7 @@
 import { useState } from 'react'
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
-import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, Nodes, noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
@@ -37,11 +37,15 @@ import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
 import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
+import { getEmbeddedSloopURL } from '../Utils'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps) => {
     const history = useHistory()
-    const { url } = useRouteMatch()
+    const {
+        url,
+        params: { clusterId },
+    } = useRouteMatch<{ clusterId: string }>()
     const location = useLocation()
 
     const [showCordonNodeDialog, setShowCordonNodeDialog] = useState(false)
@@ -64,6 +68,10 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
         addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
             .then(() => history.push(_url))
             .catch(noop)
+    }
+
+    const handleCompareConfigAction = () => {
+        history.push(getEmbeddedSloopURL({ name, kind: Nodes.Node }))
     }
 
     const showCordonNodeModal = (): void => {
@@ -216,6 +224,17 @@ const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSel
                             <EditFileIcon className="icon-dim-16 mr-8" />
                             {CLUSTER_NODE_ACTIONS_LABELS.yaml}
                         </button>
+                        {clusterId === '1' && (
+                            <button
+                                type="button"
+                                aria-label="Compare config"
+                                className={`${menuListItemButtonClassName} dc__gap-8`}
+                                onClick={handleCompareConfigAction}
+                            >
+                                <Icon name="ic-arrows-left-right" color="N600" />
+                                {CLUSTER_NODE_ACTIONS_LABELS.compareConfig}
+                            </button>
+                        )}
                         <button
                             type="button"
                             aria-label="Delete the node"

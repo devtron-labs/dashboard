@@ -99,6 +99,7 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
     drain: 'Drain',
     taints: 'Edit taints',
     yaml: 'Edit node config',
+    compareConfig: 'Compare config',
     delete: 'Delete',
 }
 
