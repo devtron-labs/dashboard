@@ -55,6 +55,7 @@ const ResourceFilterOptions = ({
     const location = useLocation()
     const { replace } = useHistory()
     const { clusterId, namespace, group } = useParams<URLParams>()
+    const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
 
@@ -71,11 +72,21 @@ const ResourceFilterOptions = ({
         searchInputRef.current?.focus()
     }
 
+    const handleShowFilterModal = () => {
+        setShowFilterModal(true)
+    }
+
+    const handleCloseFilterModal = () => {
+        setShowFilterModal(false)
+    }
+
     useEffect(() => {
         if (registerShortcut && isOpen) {
             registerShortcut({ keys: ['R'], callback: handleInputShortcut })
+            registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
         }
         return (): void => {
+            unregisterShortcut(['F'])
             unregisterShortcut(['R'])
         }
     }, [isOpen])
@@ -146,7 +157,9 @@ const ResourceFilterOptions = ({
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
                                 updateTabUrl={updateK8sResourceTab}
-                                isOpen={isOpen}
+                                showModal={showFilterModal}
+                                handleShowFilterModal={handleShowFilterModal}
+                                handleCloseFilterModal={handleCloseFilterModal}
                             />
                         )}
                         <SelectPicker
