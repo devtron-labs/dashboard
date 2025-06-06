@@ -38,7 +38,7 @@ export default class ChartGroupCard extends Component<ChartGroupCardProps> {
         const { chartGroup } = this.props
         const chartGroupEntries = this.getChartGroupSubgroup()
         const GROUP_EDIT_LINK = getChartGroupURL(chartGroup.id)
-        const classes = 'chart-grid-item chart-grid-item--chart-group white-card dc__no-decor'
+        const classes = 'chart-grid-item h-200 white-card dc__no-decor'
         return (
             <Link key={chartGroup.id} className={classes} to={GROUP_EDIT_LINK}>
                 <div className="chart-grid-item__chart-icons">

@@ -1898,6 +1898,10 @@ button.anchor {
 .dc__border {
     border: 1px solid var(--border-primary);
 
+    &--b5 {
+        border: 1px solid var(--B500);
+    }
+
     &--n9 {
         border: 1px solid var(--N900);
     }
@@ -4139,29 +4143,38 @@ textarea::placeholder {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     word-break: break-all;
-}
 
-.dc__truncate--clamp-6 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 6;
-}
+    &--clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        word-break: break-all;
+    }
 
-.dc__truncate--clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    word-break: break-word;
-}
+    &--clamp-3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        word-break: break-all;
+    }
 
-.dc__truncate--clamp-4 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    word-break: break-word;
+    &--clamp-4 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        word-break: break-all;
+    }
+
+    &--clamp-6 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 6;
+        word-break: break-all;
+    }
 }
 
 // opacity

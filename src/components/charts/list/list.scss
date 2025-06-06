@@ -434,3 +434,31 @@
 .accordian-add-position {
     top: 350px;
 }
+
+.chart-grid-item {
+    &.chart-grid-item--selected {
+        border: solid 1px var(--B500);
+        background-color: var(--B100);
+    }
+}
+
+.chart-grid-item:hover {
+    text-decoration: none;
+    box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
+
+    &.chart-grid-item__title {
+        color: var(--B500);
+    }
+}
+
+.chart-grid-item.flex-list {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+}
+
+
+.chart-list-view {
+    max-width: 776px;
+    margin-left: auto;
+    margin-right: auto;
+}

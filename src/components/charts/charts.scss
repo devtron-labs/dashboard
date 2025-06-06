@@ -66,8 +66,6 @@
 }
 
 .devtron-stepper {
-    height: 24px;
-    font-size: 14px;
     font-weight: 600;
     border: 1px solid var(--N200);
     border-radius: 6px;
@@ -78,7 +76,6 @@
 }
 
 .devtron-stepper-grid {
-    display: grid;
     grid-template-columns: repeat(3, 20px);
 }
 
@@ -140,31 +137,6 @@
     margin-right: 16px;
 }
 
-.chart-grid-item {
-    &.chart-grid-item--selected {
-        border: solid 1px var(--B500);
-        background-color: var(--B100);
-    }
-}
-
-.chart-grid-item:hover {
-    text-decoration: none;
-    box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
-}
-
-
-.chart-grid-item {
-    display: block;
-    padding: 16px;
-    cursor: pointer;
-    position: relative;
-}
-
-.chart-grid-item.flex-list {
-    display: grid;
-    grid-template-columns: 64px 1fr;
-}
-
 .chart-group-item__title {
     font-size: 14px;
     font-weight: 600;
@@ -181,10 +153,6 @@
     line-height: 1.67;
     letter-spacing: normal;
     color: var(--N700);
-}
-
-.chart-grid-item--chart-group {
-    height: 200px;
 }
 
 .chart-grid-item__chart-icons {
@@ -375,8 +343,7 @@
     }
 }
 
-.chart-list-view {
-    max-width: 776px;
-    margin-left: auto;
-    margin-right: auto;
+.list-view {
+        grid-template-columns: none;
+    grid-gap: 12px;
 }

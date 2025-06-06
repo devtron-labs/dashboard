@@ -18,7 +18,7 @@ import { CHECKBOX_VALUE, Checkbox, SearchBar } from '@devtron-labs/devtron-fe-co
 import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
-import { QueryParams } from './charts.util'
+import { QueryParams } from './constants'
 import { Accordian } from '../common/Accordian/Accordian'
 import { URLS } from '../../config'
 import { CHART_KEYS } from './constants'

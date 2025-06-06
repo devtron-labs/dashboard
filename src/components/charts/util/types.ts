@@ -6,14 +6,14 @@ export interface ChartGroupCardProps {
 
 export interface AllChartSelectProps {
     chart: Chart
-    selectedCount?: number
+    isListView: boolean
+    dataTestId: string
+    selectedCount: number
     showCheckBoxOnHoverOnly: boolean
     onClick?: (chartId: number) => void
     addChart?: (chartId: number) => void
     subtractChart?: (chartId: number) => void
     selectChart?: (chartId: number) => void
-    showDescription?: boolean
-    datatestid?: string
 }
 
 export interface Stepper extends AllChartSelectProps {

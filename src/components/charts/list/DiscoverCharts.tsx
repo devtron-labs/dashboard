@@ -35,7 +35,7 @@ import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt 
 import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import ChartSelect from '../util/ChartSelect'
+import ChartCard from '../ChartCard'
 import ChartGroupList from './ChartGroup'
 import ChartGroupCard from '../util/ChartGroupCard'
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
@@ -50,7 +50,7 @@ import { URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
-import { QueryParams } from '../charts.util'
+import { QueryParams } from '../constants'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
@@ -533,7 +533,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                             {chartList
                                                                 .slice(0, showDeployModal ? 12 : chartList.length)
                                                                 .map((chart, index) => (
-                                                                    <ChartSelect
+                                                                    <ChartCard
                                                                         key={chart.id}
                                                                         chart={chart}
                                                                         selectedCount={
@@ -543,7 +543,6 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                             state.charts.length === 0
                                                                         }
                                                                         addChart={addChart}
-                                                                        showDescription={!isGrid}
                                                                         subtractChart={subtractChart}
                                                                         onClick={(chartId) =>
                                                                             state.charts.length === 0
@@ -552,7 +551,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                                   )
                                                                                 : selectChart(chartId)
                                                                         }
-                                                                        datatestid={`single-${index}`}
+                                                                        dataTestId={`single-${index}`}
+                                                                        isListView={!isGrid}
                                                                     />
                                                                 ))}
                                                             {state.hasMoreCharts && (

@@ -26,7 +26,7 @@ import {
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ChartSelect from './util/ChartSelect'
+import ChartCard from './ChartCard'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
 import MultiChartSummary from './MultiChartSummary'
 import AdvancedConfig from './AdvancedConfig'
@@ -36,7 +36,7 @@ import CreateChartGroup from './modal/CreateChartGroup'
 import { URLS } from '../../config'
 import { ReactComponent as SaveIcon } from '../../assets/icons/ic-save.svg'
 import ChartHeaderFilters from './ChartHeaderFilters'
-import { QueryParams } from './charts.util'
+import { QueryParams } from './constants'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import { sortOptionsByLabel } from '../common'
 
@@ -334,7 +334,7 @@ export default function ChartGroupUpdate({}) {
                                 ) : !chartList.length ? (
                                     <ChartEmptyState onClickViewChartButton={handleViewAllCharts} />
                                 ) : (
-                                    <div className={`${!isGrid ? 'chart-list-view ' : ''}`}>
+                                    <div className={`${!isGrid ? 'chart-list-view' : ''}`}>
                                         <ChartList
                                             availableCharts={state.availableCharts}
                                             addChart={addChart}
@@ -391,15 +391,15 @@ const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart
     return (
         <div className={`chart-grid bg__primary ${!isGrid ? 'list-view' : ''}`}>
             {[...availableCharts.values()].map((chart: Chart, idx) => (
-                <ChartSelect
+                <ChartCard
                     key={chart.id}
                     chart={chart}
                     selectedCount={selectedInstances[chart.id]?.length}
                     addChart={addChart}
                     subtractChart={subtractChart}
                     showCheckBoxOnHoverOnly={false}
-                    showDescription={!isGrid}
-                    datatestid={`${idx}`}
+                    isListView={!isGrid}
+                    dataTestId={String(idx)}
                 />
             ))}
         </div>
