@@ -15,6 +15,7 @@
  */
 
 import React, { useState } from 'react'
+import ReactGA from 'react-ga4'
 import { generatePath, Route, useHistory } from 'react-router-dom'
 
 import { Button, ButtonComponentType, ComponentSizeType, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
@@ -33,7 +34,13 @@ import { CreateResourceButtonType, CreateResourceType } from './Types'
 export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clusterId, closeModal }) => {
     const [showModal, setShowModal] = useState(false)
 
-    const handleModalOpen = () => setShowModal(true)
+    const handleCreateResource = () => {
+        setShowModal(true)
+        ReactGA.event({
+            category: 'RB Create Resource',
+            action: 'RB_CREATE_RESOURCE',
+        })
+    }
 
     const handleModalClose = () => {
         setShowModal(false)
@@ -44,7 +51,7 @@ export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clust
         <>
             <Button
                 dataTestId="create-resource"
-                onClick={handleModalOpen}
+                onClick={handleCreateResource}
                 text="Create resource"
                 startIcon={<Add />}
                 size={ComponentSizeType.small}

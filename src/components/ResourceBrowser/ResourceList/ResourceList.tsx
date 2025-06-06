@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -282,6 +283,10 @@ const ResourceList = () => {
     }, [location.pathname])
 
     const onClusterChange = (selected: ClusterOptionType) => {
+        ReactGA.event({
+            category: 'Resource Browser',
+            action: 'RB_CLUSTER_SWITCH_CLUSTER',
+        })
         if (selected.value === selectedCluster?.value) {
             return
         }

@@ -13,8 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React, { useEffect, useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
 import moment from 'moment'
 import SockJS from 'sockjs-client'
 import { Terminal } from 'xterm'
@@ -53,6 +53,7 @@ const TerminalView = ({
     terminalMessageData,
     clearTerminal,
     dataTestId,
+    isResourceBrowserView,
 }: TerminalViewType) => {
     const socket = useRef(null)
     const termDivRef = useRef(null)
@@ -252,6 +253,12 @@ const TerminalView = ({
     }, [firstMessageReceived, isTerminalTab])
 
     const handleToggleFullscreen = () => {
+        if (isResourceBrowserView) {
+            ReactGA.event({
+                category: 'Cluster Terminal',
+                action: 'RB_TERMINAL_FULLSCREEN',
+            })
+        }
         setFullScreenView((prev) => !prev)
         terminalRef.current?.focus()
     }

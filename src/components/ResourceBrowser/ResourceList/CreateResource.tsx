@@ -15,15 +15,18 @@
  */
 
 import React, { useEffect, useState } from 'react'
+import ReactGA from 'react-ga4'
 
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CodeEditor,
     createNewResource,
     CreateResourceDTO,
     Drawer,
     GenericEmptyState,
     InfoBlock,
-    Progressing,
     showError,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -68,6 +71,10 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     }
 
     const onSave = async (): Promise<void> => {
+        ReactGA.event({
+            category: 'RB Create Resource',
+            action: 'RB_CREATE_RESOURCE_APPLY',
+        })
         try {
             setLoader(true)
             const resourceListPayload: CreateResourcePayload = {
@@ -90,18 +97,21 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
         if (showCodeEditorView) {
             return (
                 <div className="dc__border-top flex right p-16">
-                    <button className="cta cancel h-36 lh-36 mr-12" type="button" disabled={loader} onClick={onClose}>
-                        {CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.cancel}
-                    </button>
-                    <button
-                        type="button"
-                        className="cta h-36 lh-36"
-                        disabled={loader || !resourceYAML}
+                    <Button
+                        dataTestId="cancel-create-resource"
+                        text={CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.cancel}
+                        disabled={loader}
+                        onClick={onClose}
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                    />
+                    <Button
+                        dataTestId="create-kubernetes-resource-button"
+                        text={CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.apply}
+                        disabled={!resourceYAML}
                         onClick={onSave}
-                        data-testid="create-kubernetes-resource-button"
-                    >
-                        {loader ? <Progressing /> : CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.apply}
-                    </button>
+                        isLoading={loader}
+                    />
                 </div>
             )
         }
