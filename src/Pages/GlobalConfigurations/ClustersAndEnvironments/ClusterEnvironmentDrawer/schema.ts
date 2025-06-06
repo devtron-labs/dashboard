@@ -29,7 +29,7 @@ export const clusterEnvironmentDrawerFormValidationSchema = ({
             { message: 'Environment name is required', value: /^.*$/ },
             { message: "Use only lowercase alphanumeric characters or '-'", value: /^[a-z0-9-]+$/ },
             { message: "Cannot start/end with '-'", value: /^(?![-]).*[^-]$/ },
-            { message: 'Minimum 1 and Maximum 16 characters required', value: /^.{1,16}$/ },
+            { message: 'Minimum 1 and Maximum 20 characters required', value: /^.{1,20}$/ },
         ],
     },
     namespace: {

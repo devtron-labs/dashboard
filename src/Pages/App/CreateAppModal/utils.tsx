@@ -17,7 +17,7 @@
 import { Icon, IconsProps, SelectPickerOptionType, ValidationResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { MAX_LENGTH_30 } from '@Config/constantMessaging'
+import { MAX_LENGTH_40 } from '@Config/constantMessaging'
 import { PATTERNS } from '@Config/constants'
 
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
@@ -37,8 +37,8 @@ export const validateAppName = (value: CreateAppFormStateType['name']): Required
         return { isValid: false, message: 'Atleast 3 characters required' }
     }
 
-    if (value.length > 30) {
-        return { isValid: false, message: MAX_LENGTH_30 }
+    if (value.length > 40) {
+        return { isValid: false, message: MAX_LENGTH_40 }
     }
 
     if (!test) {
