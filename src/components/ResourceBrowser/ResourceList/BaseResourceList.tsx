@@ -420,16 +420,18 @@ const BaseResourceListContent = ({
         setShowCreateEnvironmentDrawer(false)
     }
 
+    // Move separately
     const getSeverityChipIconAndClass = (
         delta: number,
         recommendedValue: number,
         currentValue: number,
+        isTooltipView = false,
     ): { class: string; iconProps: IconsProps } => {
         if (delta === 0) {
             return {
-                class: 'severity-chip--unknown',
+                class: isTooltipView ? 'cn-3' : 'severity-chip--unknown',
                 iconProps: {
-                    color: 'N700',
+                    color: isTooltipView ? 'N300' : 'N700',
                     name: 'ic-minus',
                 },
             }
@@ -439,9 +441,9 @@ const BaseResourceListContent = ({
 
         if (parsedDelta > 0) {
             return {
-                class: 'severity-chip--critical',
+                class: isTooltipView ? 'cr-5' : 'severity-chip--critical',
                 iconProps: {
-                    color: 'R700',
+                    color: isTooltipView ? 'R500' : 'R700',
                     name: 'ic-arrow-right',
                     rotateBy: 270,
                 },
@@ -449,9 +451,9 @@ const BaseResourceListContent = ({
         }
 
         return {
-            class: 'severity-chip--passed',
+            class: isTooltipView ? 'cg-5' : 'severity-chip--passed',
             iconProps: {
-                color: 'G700',
+                color: isTooltipView ? 'G500' : 'G700',
                 name: 'ic-arrow-right',
                 rotateBy: 90,
             },
@@ -470,10 +472,67 @@ const BaseResourceListContent = ({
 
             return (
                 <div key={`${resourceData.id}-${columnName}`} className="flexbox-col dc__content-center">
-                    <span className={`severity-chip ${severityChipClass} dc_width-max-content dc__mxw-120`}>
-                        {Math.abs(delta)}%
-                        <Icon {...iconProps} size={14} />
-                    </span>
+                    <Tooltip
+                        alwaysShowTippyOnHover
+                        content={
+                            <div className="flexbox-col">
+                                <div className="flexbox border__white-10--bottom">
+                                    <h6 className="m-0 fs-12 fw-6 lh-18 dc__word-break p-8">
+                                        {RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP[columnName] || columnName}
+                                    </h6>
+                                </div>
+
+                                <div className="flexbox-col dc__gap-4 p-8">
+                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                        <span className="fs-12 fw-4 lh-18">Current</span>
+                                        <span className="fs-12 fw-6 lh-18">
+                                            {current ? `${current.value}${current.unit}` : 'None'}
+                                        </span>
+                                    </div>
+
+                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                        <span className="fs-12 fw-4 lh-18">Recommended</span>
+                                        <span className="fs-12 fw-6 lh-18">
+                                            {recommended ? `${recommended.value}${recommended.unit}` : 'None'}
+                                        </span>
+                                    </div>
+
+                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                        <span className="fs-12 fw-4 lh-18">Change</span>
+                                        <div className="flexbox dc__gap-2 dc__align-items-center">
+                                            <Icon
+                                                {...getSeverityChipIconAndClass(
+                                                    delta,
+                                                    recommended?.value,
+                                                    current?.value,
+                                                    true,
+                                                ).iconProps}
+                                                size={12}
+                                            />
+
+                                            <span
+                                                className={`fs-12 fw-6 lh-18 ${
+                                                    getSeverityChipIconAndClass(
+                                                        delta,
+                                                        recommended?.value,
+                                                        current?.value,
+                                                        true,
+                                                    ).class
+                                                }`}
+                                            >
+                                                {Math.abs(delta)}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    >
+                        <span className={`severity-chip ${severityChipClass} dc_width-max-content dc__mxw-120`}>
+                            {Math.abs(delta)}%
+                            <Icon {...iconProps} size={14} />
+                        </span>
+                    </Tooltip>
                 </div>
             )
         }
