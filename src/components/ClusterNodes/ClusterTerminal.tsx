@@ -15,6 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -642,7 +643,13 @@ const ClusterTerminal = ({
     }
 
     const toggleScreenView = (): void => {
-        setFullScreen(!isFullScreen)
+        if (!isFullScreen) {
+            ReactGA.event({
+                category: 'Cluster Terminal',
+                action: 'RB_TERMINAL_FULLSCREEN',
+            })
+        }
+        setFullScreen((prev) => !prev)
     }
 
     const selectEventsTab = (): void => {
