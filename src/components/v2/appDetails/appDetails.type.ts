@@ -358,16 +358,27 @@ export interface LogAnalyzerProps extends LogSearchTermType {
     handleMarkLogAnalyzerTabSelected: () => void
 }
 
-export interface NodeDetailPropsType
-    extends LogSearchTermType,
-        Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> {
-    loadingResources?: boolean
-    isResourceBrowserView?: boolean
-    selectedResource?: SelectedResourceType
-    removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
-    clusterName?: string
-    isExternalApp?: boolean
-}
+type ResourceBrowserSpecificProps =
+    | {
+          isResourceBrowserView?: false
+          isDynamicTabsStuck: boolean
+          handleStickDynamicTabsToTop: () => void
+      }
+    | {
+          isResourceBrowserView: true
+          isDynamicTabsStuck?: never
+          handleStickDynamicTabsToTop?: never
+      }
+
+export type NodeDetailPropsType = LogSearchTermType &
+    Pick<ClusterListType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl'> &
+    ResourceBrowserSpecificProps & {
+        loadingResources?: boolean
+        selectedResource?: SelectedResourceType
+        removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
+        clusterName?: string
+        isExternalApp?: boolean
+    }
 
 export interface LogsComponentProps
     extends Omit<NodeDetailPropsType, 'lowercaseKindToResourceGroupMap' | 'updateTabUrl' | 'tabs'> {
@@ -425,6 +436,10 @@ export interface ResourceInfoActionPropsType {
     selectedResource?: SelectedResourceType
     clusterId: number
     aiWidgetEventDetails: string
+    /**
+     * @default true
+     */
+    shouldScroll?: boolean
 }
 
 export interface ManifestViewRefType {
@@ -452,23 +467,26 @@ export enum ManifestCodeEditorMode {
     CANCEL = 'cancel',
 }
 
-export interface ManifestActionPropsType
-    extends Omit<ResourceInfoActionPropsType, 'clusterId' | 'aiWidgetEventDetails'> {
-    hideManagedFields: boolean
-    toggleManagedFields: (managedFieldsExist: boolean) => void
-    manifestViewRef: MutableRefObject<ManifestViewRefType>
-    getComponentKey: () => string
-    showManifestCompareView: boolean
-    setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
-    manifestCodeEditorMode: ManifestCodeEditorMode
-    setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
-    handleSwitchToYAMLMode: () => void
-    manifestFormConfigurationType: ConfigurationType
-    handleUpdateUnableToParseManifest: (value: boolean) => void
-    handleManifestGUIErrors: FormProps['onError']
-    manifestGUIFormRef: FormProps['ref']
-    isManifestEditable: boolean
-}
+export type ManifestActionPropsType = Omit<
+    ResourceInfoActionPropsType,
+    'clusterId' | 'aiWidgetEventDetails' | 'isResourceBrowserView'
+> &
+    ResourceBrowserSpecificProps & {
+        hideManagedFields: boolean
+        toggleManagedFields: (managedFieldsExist: boolean) => void
+        manifestViewRef: MutableRefObject<ManifestViewRefType>
+        getComponentKey: () => string
+        showManifestCompareView: boolean
+        setShowManifestCompareView: Dispatch<SetStateAction<boolean>>
+        manifestCodeEditorMode: ManifestCodeEditorMode
+        setManifestCodeEditorMode: Dispatch<SetStateAction<ManifestCodeEditorMode>>
+        handleSwitchToYAMLMode: () => void
+        manifestFormConfigurationType: ConfigurationType
+        handleUpdateUnableToParseManifest: (value: boolean) => void
+        handleManifestGUIErrors: FormProps['onError']
+        manifestGUIFormRef: FormProps['ref']
+        isManifestEditable: boolean
+    }
 
 export interface NodeTreeDetailTabProps {
     appDetails: AppDetails

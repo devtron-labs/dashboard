@@ -112,6 +112,12 @@ export const validateInputOutputVariableCell = ({
                 isValid: false,
             }
         }
+        if (name.length > 255) {
+            return {
+                errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.MAX_LENGTH_255],
+                isValid: false,
+            }
+        }
         if ((keysFrequencyMap[name] ?? 0) > 1) {
             return {
                 errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.UNIQUE_VARIABLE_NAME],
@@ -146,6 +152,14 @@ export const validateInputOutputVariableCell = ({
                 errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.VARIABLE_VALUE_NOT_A_BOOLEAN],
                 isValid: false,
             }
+        }
+    }
+
+    // test for max length if variable is string
+    if (key === 'val' && format === VariableTypeFormat.STRING && variableValue && !!value && value.length > 255) {
+        return {
+            errorMessages: [VARIABLE_DATA_TABLE_CELL_ERROR_MSGS.MAX_LENGTH_255],
+            isValid: false,
         }
     }
 

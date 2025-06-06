@@ -30,13 +30,15 @@ import {
     stringComparatorBySortOrder,
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
+    DocLink,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
 import { LazyImage } from '../../common'
-import { SERVER_MODE, URLS, DOCUMENTATION, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
@@ -64,7 +66,6 @@ import {
     SELECT_CLUSTER_FROM_FILTER_NOTE,
     appListLoadingArray,
 } from './Constants'
-import { LEARN_MORE } from '../../../config/constantMessaging'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
 import AskToClearFilters from './AppListComponents'
@@ -139,7 +140,7 @@ const HelmAppList = ({
     const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
         identifier: 'helm-app-list',
         containerRef: appListContainerRef,
-        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0
+        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0,
     })
 
     // component load
@@ -333,9 +334,10 @@ const HelmAppList = ({
 
     function renderHeaders() {
         return (
-            <div ref={stickyElementRef} className={`app-list__header ${
-                getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')
-            }`}>
+            <div
+                ref={stickyElementRef}
+                className={`app-list__header ${getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')}`}
+            >
                 <div className="app-list__cell--icon" />
                 <div className="app-list__cell app-list__cell--name">
                     {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
@@ -468,17 +470,10 @@ const HelmAppList = ({
                             <span className="mr-8 flex">
                                 <InfoFillPurple className="icon-dim-20" />
                             </span>
-                            <span>
+                            <div className="flexbox">
                                 {SELECT_CLUSTER_FROM_FILTER_NOTE}&nbsp;
-                                <a
-                                    className="dc__link cursor"
-                                    target="_blank"
-                                    href={DOCUMENTATION.HYPERION}
-                                    rel="noreferrer"
-                                >
-                                    {LEARN_MORE}
-                                </a>
-                            </span>
+                                <DocLink docLinkKey="HYPERION" dataTestId="learn-more-about-hyperion-link" size={ComponentSizeType.xs} />
+                            </div>
                         </div>
                     </div>
                 )}

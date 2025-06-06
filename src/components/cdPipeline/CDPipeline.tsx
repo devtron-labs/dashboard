@@ -1418,6 +1418,8 @@ export default function CDPipeline({
             return ''
         }
 
+        const buttonDisableText = getButtonDisabledMessage()
+
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
@@ -1476,15 +1478,17 @@ export default function CDPipeline({
                         {formData && (
                             <>
                                 {renderSecondaryButton()}
-                                <ButtonWithLoader
-                                    rootClassName="cta cta--workflow"
+                                <Button
                                     dataTestId="build-pipeline-button"
+                                    text={text}
                                     onClick={savePipeline}
                                     isLoading={loadingData}
-                                    disabled={!!getButtonDisabledMessage()}
-                                >
-                                    {text}
-                                </ButtonWithLoader>
+                                    disabled={!!buttonDisableText}
+                                    showTooltip={!!buttonDisableText}
+                                    tooltipProps={{
+                                        content: buttonDisableText,
+                                    }}
+                                />
                             </>
                         )}
                     </div>

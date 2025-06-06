@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { ConfirmationDialog, IMAGE_SCAN_TOOL } from '@devtron-labs/devtron-fe-common-lib'
-import React from 'react'
+import { ConfirmationModal, ConfirmationModalVariantType, IMAGE_SCAN_TOOL } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as UpToDateIcon } from '@Icons/ic-celebration.svg'
+
 import { ModuleNameMap } from '../../../config'
 import { SuccessModalType } from './DevtronStackManager.type'
-import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
 
 export const SuccessModalComponent = ({
     moduleDetails,
@@ -73,34 +74,29 @@ export const SuccessModalComponent = ({
         })
         setToggled(false)
     }
-    function handleModuleStatus() {
+
+    const handleModuleStatus = () => {
         setSuccessState(false)
         setSelectedModule({ ...moduleDetails, enabled: true })
         enableModuleState(moduleDetails.name)
     }
+
     const enabledTool =
         moduleDetails.name === ModuleNameMap.SECURITY_CLAIR ? IMAGE_SCAN_TOOL.Clair : IMAGE_SCAN_TOOL.Trivy
+
     return (
-        <ConfirmationDialog>
-            <div className="module-details__upgrade-success">
-                <div className="flex column mb-40 mt-40">
-                    <UpToDateIcon className="icon-dim-48" />
-                </div>
-                <ConfirmationDialog.Body title={`${enabledTool} is enabled`} />
-                <p className="flex left fs-14 cn-7 lh-1-54 mb-24">
-                    {`Devtron will use ${enabledTool} to perform vulnerability scans in the future.`}
-                </p>
-            </div>
-            <div className="flex mt-24">
-                <button
-                    type="button"
-                    className="cta h-36 flex"
-                    onClick={handleModuleStatus}
-                    data-testid="enable-success-okay-button"
-                >
-                    Okay
-                </button>
-            </div>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.custom}
+            Icon={<UpToDateIcon />}
+            title={`${enabledTool} is enabled`}
+            subtitle={`Devtron will use ${enabledTool} to perform vulnerability scans in the future.`}
+            handleClose={handleModuleStatus}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    onClick: handleModuleStatus,
+                    text: 'Okay',
+                },
+            }}
+        />
     )
 }

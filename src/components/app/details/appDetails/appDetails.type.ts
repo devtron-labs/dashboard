@@ -65,12 +65,6 @@ export interface AppDetailsPathParams {
     envId?: string
 }
 
-export interface ModuleConfigResponse extends ResponseType {
-    result?: {
-        enabled: boolean
-    }
-}
-
 export interface DataSourceDetailsDTO {
     id: number
     name: string
@@ -90,18 +84,6 @@ export interface ClusterConnectionResponse extends ResponseType {
         clusterReachable: boolean
         clusterName: string
     }
-}
-
-export type DeleteResponseType = {
-    clusterName: string
-    clusterReachable: boolean
-    deleteInitiated: boolean
-}
-
-export interface DeploymentStatusDetailRowType {
-    type: string
-    hideVerticalConnector?: boolean
-    deploymentDetailedData: DeploymentStatusDetailsBreakdownDataType
 }
 
 export type SocketConnectionType = 'CONNECTED' | 'CONNECTING' | 'DISCONNECTED' | 'DISCONNECTING'

@@ -89,6 +89,8 @@ const NodeDetailComponent = ({
     updateTabUrl,
     isExternalApp,
     clusterName = '',
+    isDynamicTabsStuck,
+    handleStickDynamicTabsToTop,
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
@@ -365,7 +367,12 @@ const NodeDetailComponent = ({
         setManifestCodeEditorMode(ManifestCodeEditorMode.APPLY_CHANGES)
     }
 
-    const handleManifestEdit = () => setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
+    const handleManifestEdit = () => {
+        if (manifestFormConfigurationType === ConfigurationType.YAML) {
+            handleStickDynamicTabsToTop?.()
+        }
+        setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
+    }
 
     const handleManifestCompareWithDesired = () => setShowManifestCompareView(true)
 
@@ -543,7 +550,6 @@ const NodeDetailComponent = ({
                             isDeleted={isDeleted}
                             toggleManagedFields={toggleManagedFields}
                             hideManagedFields={hideManagedFields}
-                            isResourceBrowserView={isResourceBrowserView}
                             selectedResource={selectedResource}
                             manifestViewRef={manifestViewRef}
                             getComponentKey={getComponentKeyFromParams}
@@ -557,6 +563,9 @@ const NodeDetailComponent = ({
                             handleManifestGUIErrors={handleManifestGUIError}
                             manifestGUIFormRef={manifestGUIFormRef}
                             isManifestEditable={isManifestEditable}
+                            {...(isResourceBrowserView
+                                ? { isResourceBrowserView: true }
+                                : { isResourceBrowserView: false, isDynamicTabsStuck, handleStickDynamicTabsToTop })}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.EVENTS}`}>
@@ -571,6 +580,7 @@ const NodeDetailComponent = ({
                                 isResourceBrowserView ? 'AI_RB_EVENT' : 'EVENT',
                                 isResourceBrowserView ? null : appDetails.appType,
                             )}
+                            shouldScroll={isResourceBrowserView || isDynamicTabsStuck}
                         />
                     </Route>
                     <Route path={`${path}/${NodeDetailTab.LOGS}`}>

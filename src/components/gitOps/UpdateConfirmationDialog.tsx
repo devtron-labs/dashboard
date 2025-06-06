@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { ButtonWithLoader, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationModal, ConfirmationModalVariantType, DocLink } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
 
 import { ReactComponent as ICArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { ReactComponent as ICWarning } from '../../assets/icons/ic-warning.svg'
-import { DOCUMENTATION } from '../../config'
 import GitProviderTabIcons from '../common/GitTabs/GitProviderTabIcons'
 import { UpdateConfirmationDialogProps } from './gitops.type'
 
@@ -40,7 +39,7 @@ const UpdateConfirmationDialog = ({
     const renderIconField = () => {
         if (isSwitchingProvider) {
             return (
-                <div className="flexbox dc__align-items-center dc__no-shrink dc__gap-20 pb-24">
+                <div className="flexbox dc__align-items-center dc__no-shrink dc__gap-20">
                     <GitProviderTabIcons provider={lastActiveGitOpsProvider} rootClassName="icon-dim-48" />
                     <ICArrowRight className="dc__no-shrink icon-dim-16 scn-5" />
                     <GitProviderTabIcons provider={providerTab} rootClassName="icon-dim-48" />
@@ -76,14 +75,11 @@ const UpdateConfirmationDialog = ({
             <div className="flexbox-col dc__gap-24">
                 <p className="m-0 cn-8 fs-13 fw-4 lh-20">
                     Changing/Updating GitOps provider details might be disastrous.&nbsp;
-                    <a
-                        href={DOCUMENTATION.GLOBAL_CONFIG_GITOPS}
-                        target="_blank"
-                        className="anchor"
-                        rel="noreferrer noopener"
-                    >
-                        Know more
-                    </a>
+                    <DocLink
+                        docLinkKey="GLOBAL_CONFIG_GITOPS"
+                        text="Know more"
+                        dataTestId="know-more-about-git-ops-link"
+                    />
                 </p>
 
                 <p className="m-0 cn-8 fs-13 fw-4 lh-20">Are you sure to make the changes?</p>
@@ -92,33 +88,26 @@ const UpdateConfirmationDialog = ({
     }
 
     return (
-        <ConfirmationDialog className="w-400">
-            {renderIconField()}
-            <ConfirmationDialog.Body title={renderTitle()}>{renderContent()}</ConfirmationDialog.Body>
-
-            <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="cta cancel h-36 flex"
-                    onClick={handleCancel}
-                    disabled={saveLoading}
-                    data-testid="cancel-git-ops-update"
-                >
-                    Cancel
-                </button>
-
-                <ButtonWithLoader
-                    isLoading={saveLoading}
-                    rootClassName="cta h-36 flex"
-                    onClick={handleUpdate}
-                    type="button"
-                    disabled={saveLoading}
-                    dataTestId="cancel-git-ops-update"
-                >
-                    {isSwitchingProvider ? 'Switch & Save' : 'Save'}
-                </ButtonWithLoader>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.custom}
+            Icon={renderIconField()}
+            title={renderTitle()}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: handleCancel,
+                    disabled: saveLoading,
+                },
+                primaryButtonConfig: {
+                    text: isSwitchingProvider ? 'Switch & Save' : 'Save',
+                    isLoading: saveLoading,
+                    onClick: handleUpdate,
+                },
+            }}
+            handleClose={handleCancel}
+        >
+            {renderContent()}
+        </ConfirmationModal>
     )
 }
 

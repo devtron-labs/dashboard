@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-import { BulkSelectionEvents, ConfirmationDialog } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BulkSelectionEvents,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as CleanBrush } from '../../../../../../assets/icons/ic-clean-brush-medium.svg'
+import { ReactComponent as CleanBrush } from '@Icons/ic-clean-brush-medium.svg'
+
 import { BulkSelectionModalTypes } from './constants'
 import { BulkSelectionClearConfirmationModalProps } from './types'
 import useAuthorizationBulkSelection from './useAuthorizationBulkSelection'
@@ -54,18 +59,23 @@ const BulkSelectionClearConfirmationModal = ({ type, onClose, onSubmit }: BulkSe
     }
 
     return (
-        <ConfirmationDialog className="w-400">
-            <CleanBrush className="icon-dim-48" />
-            <ConfirmationDialog.Body title={title} subtitle={subTitle} />
-            <ConfirmationDialog.ButtonGroup>
-                <button type="button" className="cta cancel" onClick={onClose}>
-                    Cancel
-                </button>
-                <button type="submit" className="cta" onClick={handleSubmit}>
-                    {buttonText}
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.custom}
+            Icon={<CleanBrush />}
+            title={title}
+            subtitle={subTitle}
+            buttonConfig={{
+                primaryButtonConfig: {
+                    onClick: handleSubmit,
+                    text: buttonText,
+                },
+                secondaryButtonConfig: {
+                    onClick: onClose,
+                    text: 'Cancel',
+                },
+            }}
+            handleClose={onClose}
+        />
     )
 }
 

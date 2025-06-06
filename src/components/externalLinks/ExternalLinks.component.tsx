@@ -19,8 +19,7 @@ import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
 import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { DOCUMENTATION, URLS } from '../../config'
+import { URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
     ExpandedExternalLink,
@@ -52,6 +51,7 @@ import {
     ButtonStyleType,
     ImageWithFallback,
     InfoBlock,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '../../Pages/GlobalConfigurations/Authorization/constants'
@@ -62,11 +62,7 @@ import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
-    return (
-        <a href={DOCUMENTATION.EXTERNAL_LINKS} target="_blank" rel="noreferrer noopener">
-            Learn more
-        </a>
-    )
+    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight='normal' />
 }
 
 export const NoExternalLinksView = ({
@@ -97,13 +93,15 @@ export const NoExternalLinksView = ({
 }
 
 const redirectToGlobalConfig = (linkText) => {
-    return <Link
-        to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-        data-testid="info-bar-internal-link"
-        className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
-    >
-        {linkText}
-    </Link>
+    return (
+        <Link
+            to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+            data-testid="info-bar-internal-link"
+            className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
+        >
+            {linkText}
+        </Link>
+    )
 }
 
 const renderInfoDescription = (userRole) => {
@@ -126,9 +124,7 @@ const renderInfoDescription = (userRole) => {
 export const RoleBasedInfoNote = ({ userRole, listingView }: RoleBasedInfoNoteProps) => {
     return (
         <div className="flexbox-col px-20">
-            <InfoBlock
-                description={renderInfoDescription(userRole)}
-            />
+            <InfoBlock description={renderInfoDescription(userRole)} />
         </div>
     )
 }
@@ -172,9 +168,11 @@ const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => 
                         icon={<ICArrowOut />}
                         variant={ButtonVariantType.borderLess}
                         size={ComponentSizeType.xs}
-                        component={ButtonComponentType.button}
+                        component={ButtonComponentType.anchor}
                         style={ButtonStyleType.neutral}
-                        onClick={getHandleOpenURL(selectedExternalLink.externalLinkURL)}
+                        anchorProps={{
+                            href: selectedExternalLink.externalLinkURL,
+                        }}
                         showAriaLabelInTippy={false}
                     />
                     <Button

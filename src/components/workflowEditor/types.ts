@@ -151,7 +151,8 @@ export interface ReloadNoGitOpsRepoConfiguredModalType {
     reload: () => void
 }
 export interface CDNodeProps
-    extends Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
+    extends RouteComponentProps,
+        Pick<WorkflowProps, 'handleDisplayLoader' | 'isOffendingPipelineView'>,
         Pick<CommonNodeAttr, 'showPluginWarning'>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
     id: string

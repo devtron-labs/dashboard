@@ -21,5 +21,5 @@ export interface SSOConfigLoginList extends Pick<SSOConfigDTO, 'id' | 'active' |
 }
 
 export interface LoginFormType {
-    loginList: SSOConfigLoginList[]
+    loginList: SSOConfigDTO[]
 }

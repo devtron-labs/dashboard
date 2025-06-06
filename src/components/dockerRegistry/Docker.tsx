@@ -26,6 +26,7 @@ import {
     not,
     CHECKBOX_VALUE,
     Checkbox,
+    DOCUMENTATION,
     REGISTRY_TYPE_MAP,
     ConditionalWrap,
     RepositoryAction,
@@ -63,7 +64,6 @@ import {
 import { saveRegistryConfig, updateRegistryConfig, deleteDockerReg } from './service'
 import { List } from '../globalConfigurations/GlobalConfiguration'
 import {
-    DOCUMENTATION,
     RegistryTypeName,
     OCIRegistryConfigConstants,
     OCIRegistryStorageConfigType,
@@ -208,7 +208,7 @@ export default function Docker({ ...props }) {
                             ? EA_MODE_REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                             : REGISTRY_TITLE_DESCRIPTION_CONTENT.documentationLinkText
                     }
-                    documentationLink={DOCUMENTATION.GLOBAL_CONFIG_DOCKER}
+                    documentationLink="GLOBAL_CONFIG_DOCKER"
                     iconClassName="icon-dim-20 ml-4"
                 />
             </div>
@@ -1975,6 +1975,7 @@ const DockerForm = ({
                             startIcon={<Trash />}
                             dataTestId="delete-container-registry"
                             onClick={showConfirmationModal}
+                            disabled={loading}
                         />
                     )}
                     <div className="flex right w-100 dc__gap-12">
@@ -1984,10 +1985,11 @@ const DockerForm = ({
                             text="Cancel"
                             variant={ButtonVariantType.secondary}
                             size={ComponentSizeType.medium}
+                            disabled={loading}
                         />
                         <Button
                             dataTestId="container-registry-save-button"
-                            disabled={loading}
+                            isLoading={loading}
                             text={id ? 'Update' : 'Save'}
                             size={ComponentSizeType.medium}
                             buttonProps={{

@@ -19,6 +19,7 @@ import { useState } from 'react'
 import {
     ComponentSizeType,
     DeploymentChartVersionType,
+    DocLink,
     InvalidYAMLTippyWrapper,
     PipelineMigratedFromType,
     PopupMenu,
@@ -181,15 +182,11 @@ const ChartSelectorDropdown = ({
                                             chart.description.substring(0, 250)}
                                         &nbsp;
                                         {CHART_DOCUMENTATION_LINK[chart.name] && (
-                                            <a
-                                                className="dc__no-decor"
-                                                href={CHART_DOCUMENTATION_LINK[chart.name]}
-                                                target="_blank"
-                                                rel="noreferrer noopener"
+                                            <DocLink
+                                                docLinkKey={CHART_DOCUMENTATION_LINK[chart.name]}
+                                                dataTestId="chart-doc-link"
                                                 onClick={stopPropagation}
-                                            >
-                                                Learn more
-                                            </a>
+                                            />
                                         )}
                                     </div>
                                 )}

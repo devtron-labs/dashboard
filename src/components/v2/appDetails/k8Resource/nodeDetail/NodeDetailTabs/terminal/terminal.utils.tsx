@@ -17,7 +17,13 @@
 import CreatableSelect from 'react-select/creatable'
 import Tippy from '@tippyjs/react'
 
-import { InfoIconTippy, SelectPicker, SelectPickerVariantType, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    DTSwitch,
+    InfoIconTippy,
+    SelectPicker,
+    SelectPickerVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -252,9 +258,13 @@ const debugModeToggleButton = (selectData: DebugModeType) => {
                 />
             )}
             <span>Debug Mode</span>
-            <span className="toggle-icon-dim">
-                <Toggle onSelect={selectData.onToggle} dataTestId="toggle-debug-mode" selected={selectData.isEnabled} />
-            </span>
+            <DTSwitch
+                name="toggle-debug-mode"
+                ariaLabel="Toggle debug mode"
+                isChecked={selectData.isEnabled}
+                onChange={selectData.onToggle}
+                size={ComponentSizeType.small}
+            />
         </>
     )
 }

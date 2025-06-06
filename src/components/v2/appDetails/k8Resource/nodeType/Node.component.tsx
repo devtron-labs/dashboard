@@ -303,8 +303,9 @@ const NodeComponent = ({
         return nodes.map((node, index) => {
             const nodeName = `${node.name}.${node.namespace} : ${node.port}`
             const _isSelected = markedNodes.current.get(node.name)
+            const showNodeHeader = showHeader && (index === 0 || _currentNodeHeader !== node.kind)
             // Only render node kind header when it's the first node or it's a different kind header
-            _currentNodeHeader = index === 0 || _currentNodeHeader !== node.kind ? node.kind : ''
+            _currentNodeHeader = node.kind
             const nodeStatus = getNodeStatus(node)
             const showAIButton =
                 ExplainWithAIButton && nodeStatus && !EXPLAIN_AI_EXCLUDED_STATUS.has(nodeStatus.toLowerCase())
@@ -334,7 +335,7 @@ const NodeComponent = ({
             return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Fragment key={`grt${index}`}>
-                    {showHeader && !!_currentNodeHeader && (
+                    {showNodeHeader && (
                         <div className="node-row dc__border-bottom-n1 pt-6 pb-5 pl-18 pr-16">
                             <div className="fw-6">
                                 <SortableTableHeaderCell isSortable={false} title={node.kind} />

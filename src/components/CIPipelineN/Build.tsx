@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
-import { Progressing, Toggle, CiPipelineSourceTypeOption, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
+import { useContext } from 'react'
+import { Progressing, CiPipelineSourceTypeOption, CustomInput, DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
 import { SourceTypeMap, ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
@@ -233,35 +233,30 @@ export const Build = ({
         )
     }
 
-    const renderScanner = () => {
-        return (
-            <>
-                <hr />
-                <div>
-                    <div
-                        className="en-2 bw-1 br-4 pt-12 pb-12 pl-16 pr-12"
-                        style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}
-                    >
-                        <BugScanner />
-                        <div>
-                            <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
-                            <p className="fs-13 lh-18 mb-0 fs-12">
-                                Perform security scan after container image is built.
-                            </p>
-                        </div>
-                        <div className="mt-4" style={{ width: '32px', height: '20px' }}>
-                            <Toggle
-                                disabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
-                                selected={formData.scanEnabled}
-                                onSelect={handleScanToggle}
-                                dataTestId="create-build-pipeline-scan-vulnerabilities-toggle"
-                            />
-                        </div>
+    const renderScanner = () => (
+        <>
+            <hr />
+            <div>
+                <div
+                    className="en-2 bw-1 br-4 pt-12 pb-12 pl-16 pr-12"
+                    style={{ display: 'grid', gridTemplateColumns: '52px auto 32px' }}
+                >
+                    <BugScanner />
+                    <div>
+                        <p className="fs-13 lh-20 fw-6 cn-9 mb-4">Scan for vulnerabilities</p>
+                        <p className="fs-13 lh-18 mb-0 fs-12">Perform security scan after container image is built.</p>
                     </div>
+                    <DTSwitch
+                        isDisabled={window._env_.FORCE_SECURITY_SCANNING && formData.scanEnabled}
+                        ariaLabel="Toggle scan for security vulnerabilities"
+                        isChecked={formData.scanEnabled}
+                        onChange={handleScanToggle}
+                        name="create-build-pipeline-scan-vulnerabilities-toggle"
+                    />
                 </div>
-            </>
-        )
-    }
+            </div>
+        </>
+    )
 
     return pageState === ViewType.LOADING.toString() ? (
         <div style={{ minHeight: '200px' }} className="flex">

@@ -33,7 +33,7 @@ import {
 
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { importComponentFromFELibrary } from '../../../../components/common'
-import { DOCUMENTATION, REQUIRED_FIELDS_MISSING } from '../../../../config'
+import { REQUIRED_FIELDS_MISSING } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser } from '../authorization.service'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
@@ -57,7 +57,7 @@ export const renderQuestionwithTippy = () => (
     <InfoIconTippy
         heading={API_COMPONENTS.TITLE}
         infoText={API_COMPONENTS.QUESTION_ICON_INFO}
-        documentationLink={DOCUMENTATION.GLOBAL_CONFIG_API_TOKEN}
+        documentationLink="GLOBAL_CONFIG_API_TOKEN"
         documentationLinkText="View Documentation"
         iconClassName="icon-dim-20 fcn-9 ml-4"
     />

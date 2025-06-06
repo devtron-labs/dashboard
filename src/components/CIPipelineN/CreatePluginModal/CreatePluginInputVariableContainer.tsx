@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ReactComponent as ICAsterisk } from '@Icons/ic-asterisk.svg'
+import { DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CreatePluginActionType, CreatePluginInputVariableContainerProps, InputVariableItemProps } from './types'
 
@@ -31,17 +29,16 @@ const InputVariableItem = ({ handleChange, index, name, allowEmptyValue }: Input
                 {name}
             </h4>
 
-            <div className="w-28 h-18">
-                <Toggle
-                    selected={!allowEmptyValue}
-                    onSelect={handleAllowEmptyValueToggle}
-                    name={`toggle-${name}-allow-empty-value`}
-                    rootClassName="mb-0 dc__toggle-square-toggle"
-                    Icon={ICAsterisk}
-                    iconClass={`bg__primary ${!allowEmptyValue ? 'fcr-5' : 'fcn-6'}`}
-                    color={!allowEmptyValue ? 'var(--B300)' : 'var(--N200)'}
-                />
-            </div>
+            <DTSwitch
+                name={`toggle-is-${name}-mandatory`}
+                onChange={handleAllowEmptyValueToggle}
+                ariaLabel={`Toggle is ${name} mandatory`}
+                isChecked={!allowEmptyValue}
+                shape="square"
+                variant="theme"
+                iconName="ic-asterisk"
+                iconColor="R500"
+            />
         </div>
     )
 }

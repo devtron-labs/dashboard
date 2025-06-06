@@ -19,7 +19,7 @@ import { HTMLAttributes, MutableRefObject } from 'react'
 import { TippyCustomizedProps } from '@devtron-labs/devtron-fe-common-lib'
 
 export type TippyConfig =
-    | (Omit<TippyCustomizedProps, 'theme' | 'children' | 'placement'> & {
+    | (Omit<TippyCustomizedProps<false>, 'theme' | 'children' | 'placement'> & {
           showTippy: true
           /**
            * The nav link route on which the Tippy should be shown

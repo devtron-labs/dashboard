@@ -231,9 +231,9 @@ const EnvironmentSelectorComponent = ({
     const closeForceConfirmationModal = () => showForceDeleteDialog(false)
 
     return (
-        <div className="flexbox flex-justify pl-20 pr-20 pt-16 pb-16">
+        <div className="flexbox flex-justify px-20 py-16">
             <div>
-                <div className="flex left">
+                <div className="flex left h-32">
                     <div style={{ width: 'clamp( 100px, 30%, 200px )', height: '100%', position: 'relative' }}>
                         <svg
                             viewBox="0 0 200 40"

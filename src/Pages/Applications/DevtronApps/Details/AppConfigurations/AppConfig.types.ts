@@ -19,6 +19,7 @@ import {
     AppEnvDeploymentConfigType,
     AppEnvironment,
     CollapsibleListItem,
+    DocLinkProps,
     EnvResourceType,
     ResourceIdToResourceApprovalPolicyConfigMapType,
     ResourceKindType,
@@ -108,7 +109,7 @@ export interface CustomNavItemsType {
     href?: string
     stage?: string
     isLocked?: boolean
-    supportDocumentURL?: string
+    supportDocumentURL?: DocLinkProps['docLinkKey']
     flowCompletionPercent?: number
     currentStep?: number
     required?: boolean

@@ -33,7 +33,7 @@ import {
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
-import { DOCUMENTATION, SERVER_MODE } from '../../config'
+import { SERVER_MODE } from '../../config'
 import { sortOptionsByLabel, sortOptionsByValue } from '../common'
 import AddExternalLink from './ExternalLinksCRUD/AddExternalLink'
 import { AddLinkButton } from './AddLinkButton'
@@ -264,7 +264,8 @@ const ExternalLinks = ({ isAppConfigView, userRole }: ExternalLinksProps) => {
                         heading="External Links"
                         infoText="Configure links to third-party applications (e.g. Kibana, New Relic) for quick access. Configured
                     links will be available in the App details page."
-                        documentationLink={DOCUMENTATION.EXTERNAL_LINKS}
+                        documentationLink="EXTERNAL_LINKS"
+                        documentationLinkText="View Documentation"
                         iconClassName="icon-dim-20 fcn-6 ml-8"
                     />
                 </h3>

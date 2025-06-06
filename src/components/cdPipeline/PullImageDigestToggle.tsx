@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import Tippy from '@tippyjs/react'
-
-import { ConditionalWrap, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
 import { DIGEST_DISABLE_TOGGLE_MESSAGE_FOR_PIPELINE, DIGEST_DISABLE_TOGGLE_MESSAGE_GLOBAL_ONLY } from '../../config'
 import { PullImageDigestToggleType } from './types'
 
-function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleType): JSX.Element {
+const PullImageDigestToggle = ({ formData, setFormData }: PullImageDigestToggleType): JSX.Element => {
     const handleImageDigestToggle = (): void => {
         const _formData = { ...formData }
         _formData.isDigestEnforcedForPipeline = !_formData.isDigestEnforcedForPipeline
@@ -39,27 +37,7 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
         return text
     }
 
-    const renderDogestToggle = () => (
-        <ConditionalWrap
-            condition={formData.isDigestEnforcedForEnv}
-            wrap={(children) => (
-                <Tippy className="default-tt w-200" content={getContentText()}>
-                    <div>{children}</div>
-                </Tippy>
-            )}
-        >
-            <div className={`w-32 h-20 ${formData.isDigestEnforcedForEnv ? 'dc__opacity-0_4' : ''}`}>
-                <Toggle
-                    selected={formData.isDigestEnforcedForPipeline || formData.isDigestEnforcedForEnv}
-                    onSelect={handleImageDigestToggle}
-                    dataTestId="create-build-pipeline-image-pull-digest-toggle"
-                    disabled={formData.isDigestEnforcedForEnv}
-                />
-            </div>
-        </ConditionalWrap>
-    )
-
-    const renderImageDigestBody = (): JSX.Element => (
+    return (
         <div className="fs-13">
             <div className="flex dc__content-space w-100 cursor flex top">
                 <div className="flex left">
@@ -73,12 +51,18 @@ function PullImageDigestToggle({ formData, setFormData }: PullImageDigestToggleT
                         </div>
                     </div>
                 </div>
-                {renderDogestToggle()}
+
+                <DTSwitch
+                    name="create-build-pipeline-image-pull-digest-toggle"
+                    ariaLabel="Toggle pull image with digest"
+                    isDisabled={formData.isDigestEnforcedForEnv}
+                    tooltipContent={formData.isDigestEnforcedForEnv ? getContentText() : null}
+                    onChange={handleImageDigestToggle}
+                    isChecked={formData.isDigestEnforcedForPipeline || formData.isDigestEnforcedForEnv}
+                />
             </div>
             <hr />
         </div>
     )
-
-    return renderImageDigestBody()
 }
 export default PullImageDigestToggle

@@ -17,6 +17,7 @@
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import {
+    DTSwitch,
     Progressing,
     RegistryIcon,
     RegistryType,
@@ -94,6 +95,14 @@ const ChartListPopUpRow = ({
         }
     }
 
+    const getToggleChartRepoTooltipContent = () => {
+        if (enabled) {
+            return `${list.isEditable ? 'Disable' : "Can't disable"} chart repository`
+        }
+
+        return 'Enable chart repository'
+    }
+
     return (
         <div className="chart-list__row">
             <List key={`chart-row-${index}`}>
@@ -124,32 +133,17 @@ const ChartListPopUpRow = ({
                     </a>
                 </Tippy>
 
-                <Tippy
-                    className="default-tt"
-                    arrow={false}
-                    placement="bottom"
-                    content={
-                        enabled
-                            ? `${list.isEditable ? 'Disable' : "Can't disable"} chart repository`
-                            : 'Enable chart repository'
-                    }
-                >
-                    <span
-                        data-testid={`${'name'}-chart-repo-toggle-button`}
-                        style={{ marginLeft: 'auto' }}
-                        className={`${list.isEditable ? 'cursor-not-allowed' : ''}`}
-                    >
-                        {isToggleLoading ? (
-                            <Progressing size={16} />
-                        ) : (
-                            <List.Toggle
-                                isButtonDisabled={!list.isEditable}
-                                onSelect={onSelectToggle}
-                                enabled={enabled}
-                            />
-                        )}
-                    </span>
-                </Tippy>
+                <div className="ml-auto">
+                    <DTSwitch
+                        name={`${list.name}-chart-repo-toggle-button`}
+                        ariaLabel={`${list.name} chart repository toggle button`}
+                        isDisabled={!list.isEditable}
+                        onChange={onSelectToggle}
+                        isChecked={enabled}
+                        isLoading={isToggleLoading}
+                        tooltipContent={getToggleChartRepoTooltipContent()}
+                    />
+                </div>
             </List>
         </div>
     )

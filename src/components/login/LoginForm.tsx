@@ -23,6 +23,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     CustomInput,
+    getDocumentationUrl,
     Icon,
     PasswordField,
     ServerErrors,
@@ -34,7 +35,6 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { loginAsAdmin } from './login.service'
 import { LoginFormType } from './login.types'
@@ -141,12 +141,11 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
 
                     <div className="flex left dc__gap-4">
                         <Icon name="ic-help-outline" color="B500" size={12} />
-
                         <a
                             className="anchor fs-11 cb-5"
                             rel="noreferrer noopener"
                             target="_blank"
-                            href={DOCUMENTATION.ADMIN_PASSWORD}
+                            href={getDocumentationUrl({ docLinkKey: 'ADMIN_PASSWORD' })}
                         >
                             What is my admin password?
                         </a>

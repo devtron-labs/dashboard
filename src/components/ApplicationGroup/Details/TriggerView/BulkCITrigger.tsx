@@ -42,6 +42,7 @@ import {
     uploadCIPipelineFile,
     UploadFileProps,
     savePipeline,
+    DocLink,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { getCIPipelineURL, getParsedBranchValuesForPlugin, importComponentFromFELibrary } from '../../../common'
@@ -50,13 +51,12 @@ import { ReactComponent as PlayIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Warning } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICError } from '../../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '../../../../assets/icons/ic-storage.svg'
-import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
 import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import externalCiImg from '../../../../assets/img/external-ci.webp'
 import linkedCDBuildCIImg from '../../../../assets/img/linked-cd-bulk-ci.webp'
 import linkedCiImg from '../../../../assets/img/linked-ci.webp'
 import { getModuleConfigured } from '../../../app/details/appDetails/appDetails.service'
-import { DOCUMENTATION, SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
+import { SOURCE_NOT_CONFIGURED, URLS, ViewType } from '../../../../config'
 import MaterialSource from '../../../app/details/triggerView/MaterialSource'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { getCIMaterialList } from '../../../app/service'
@@ -779,16 +779,15 @@ const BulkCITrigger = ({
                         <div>
                             <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
                             <div className="fw-4 fs-12 flexbox">
-                                <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>
-                                <a
-                                    className="fs-12 fw-6 cb-5 dc__no-decor ml-4"
-                                    href={DOCUMENTATION.BLOB_STORAGE}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    {IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
-                                </a>
-                                <OpenInNew className="icon-dim-16 mt-3 ml-8" />
+                                <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>&nbsp;
+                                <DocLink
+                                    dataTestId="blob-storage-doc-link"
+                                    docLinkKey="BLOB_STORAGE"
+                                    text={IGNORE_CACHE_INFO.BlobStorageNotConfigured.configure}
+                                    size={ComponentSizeType.small}
+                                    showExternalIcon
+                                    fontWeight='normal'
+                                />
                             </div>
                         </div>
                     </div>

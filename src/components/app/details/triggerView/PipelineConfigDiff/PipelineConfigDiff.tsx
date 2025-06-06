@@ -28,7 +28,7 @@ import { URLS } from '@Config/routes'
 import { PipelineConfigDiffProps } from './types'
 
 export const PipelineConfigDiff = ({
-    deploymentConfigSelectorProps,
+    radioSelectConfig,
     scopeVariablesConfig,
     urlFilters,
     ...props
@@ -63,8 +63,8 @@ export const PipelineConfigDiff = ({
             },
             {
                 id: 'deployment-config-selector',
-                type: 'selectPicker',
-                selectPickerProps: deploymentConfigSelectorProps,
+                type: 'radio-group',
+                radioSelectConfig,
             },
         ],
         hideDivider: true,

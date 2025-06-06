@@ -25,6 +25,7 @@ import {
     AppStatusModal,
     AppStatusModalTabType,
     noop,
+    InstallationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ModuleNameMap, SERVER_MODE, URLS } from '../../../config'
 import { ErrorBoundary, importComponentFromFELibrary, useInterval } from '../../common'
@@ -39,7 +40,6 @@ import {
 import { getAllModules, getLogPodName, getModuleInfo, getReleasesNotes } from './DevtronStackManager.service'
 import {
     AllModuleInfoResponse,
-    InstallationType,
     LogPodNameResponse,
     ModuleDetails,
     ModuleInfo,
@@ -347,7 +347,7 @@ export default function DevtronStackManager({
         })
 
         // 1. Execute all APIs - get all modules, get logPodName & releaseNotes
-        Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes(serverInfo.installationType)])
+        Promise.allSettled([getAllModules(), getLogPodName(), getReleasesNotes(serverInfo.installationType, serverInfo.currentVersion)])
             .then((responses: { status: string; value?: any; reason?: any }[]) => {
                 const allModulesRes: AllModuleInfoResponse = responses[0].value
                 const allModulesErrorRes = responses[0].reason

@@ -18,7 +18,6 @@ import { useContext, useState } from 'react'
 import {
     CustomInput,
     DeploymentAppTypes,
-    InfoColourBar,
     Progressing,
     TippyCustomized,
     TippyTheme,

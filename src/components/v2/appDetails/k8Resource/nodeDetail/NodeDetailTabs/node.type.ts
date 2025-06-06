@@ -18,6 +18,8 @@ import { Moment } from 'moment'
 
 import { SelectedResourceType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ResourceInfoActionPropsType } from '@Components/v2/appDetails/appDetails.type'
+
 import { CUSTOM_LOGS_FILTER } from '../../../../../../config'
 import { SocketConnectionType } from '../../../../../ClusterNodes/constants'
 
@@ -48,7 +50,7 @@ export interface TerminalViewProps {
     reconnectTerminal?: () => void
 }
 
-export interface EventTableType {
+export interface EventTableType extends Pick<ResourceInfoActionPropsType, 'shouldScroll'> {
     loading: boolean
     eventsList: any[]
     reconnect?: () => void

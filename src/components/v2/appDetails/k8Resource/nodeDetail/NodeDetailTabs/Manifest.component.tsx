@@ -81,12 +81,14 @@ const getLockedManifestKeys = importComponentFromFELibrary('getLockedManifestKey
 const ManifestGUIView = importComponentFromFELibrary('ManifestGUIView', null, 'function')
 const checkForIneligibleChanges = importComponentFromFELibrary('checkForIneligibleChanges', null, 'function')
 const ShowIneligibleChangesModal = importComponentFromFELibrary('ShowIneligibleChangesModal', null, 'function')
+
 const ManifestComponent = ({
     selectedTab,
     hideManagedFields,
     toggleManagedFields,
     isDeleted,
     isResourceBrowserView,
+    isDynamicTabsStuck,
     selectedResource,
     manifestViewRef,
     getComponentKey,
@@ -100,6 +102,7 @@ const ManifestComponent = ({
     handleManifestGUIErrors,
     manifestGUIFormRef,
     isManifestEditable,
+    handleStickDynamicTabsToTop,
 }: ManifestActionPropsType) => {
     const location = useLocation()
     const history = useHistory()
@@ -169,6 +172,8 @@ const ManifestComponent = ({
           )[0]
 
     const isReadOnlyView = showManifestCompareView || !isEditMode
+
+    const showGUIView = !isReadOnlyView && manifestFormConfigurationType === ConfigurationType.GUI
 
     useEffectAfterMount(() => {
         // eslint-disable-next-line no-param-reassign
@@ -670,8 +675,16 @@ const ManifestComponent = ({
         return <InfoBlock variant="error" description={errorText} {...manifestBorderConfig} />
     }
 
+    const handleStickDynamicTabsToTopWrapper = () => {
+        if (isResourceBrowserView) {
+            noop()
+        }
+
+        handleStickDynamicTabsToTop?.()
+    }
+
     const renderContent = () => {
-        if (!isReadOnlyView && manifestFormConfigurationType === ConfigurationType.GUI) {
+        if (showGUIView) {
             return (
                 <>
                     {renderEditorInfo()}
@@ -698,7 +711,9 @@ const ManifestComponent = ({
                     loading={loading}
                     customLoader={<MessageUI msg={loadingMsg} icon={MsgUIType.LOADING} size={24} />}
                     theme={AppThemeType.dark}
-                    height="fitToParent"
+                    height={isResourceBrowserView || isDynamicTabsStuck ? 'fitToParent' : '100%'}
+                    onSearchPanelOpen={handleStickDynamicTabsToTopWrapper}
+                    onSearchBarAction={handleStickDynamicTabsToTopWrapper}
                     {...(showManifestCompareView
                         ? {
                               diffView: true,
@@ -752,7 +767,7 @@ const ManifestComponent = ({
         </div>
     ) : (
         <div
-            className="flexbox-col flex-grow-1 dc__overflow-auto"
+            className={`flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-auto' : ''}`}
             data-testid="app-manifest-container"
             style={{
                 background: 'var(--terminal-bg)',
@@ -763,7 +778,7 @@ const ManifestComponent = ({
                 <div
                     className={`${
                         manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 dc__overflow-hidden`}
+                    } flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-hidden' : ''}`}
                 >
                     {isResourceMissing && !loading && !showManifestCompareView ? (
                         <MessageUI

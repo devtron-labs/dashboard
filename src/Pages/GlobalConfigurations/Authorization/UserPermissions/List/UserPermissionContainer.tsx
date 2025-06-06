@@ -88,11 +88,14 @@ const UserPermissionContainer = ({
     const confirmApplyFilter = () =>
         new Promise((resolve, reject) => {
             if (isBulkSelectionApplied) {
-                setBulkSelectionModalConfig({
-                    type: BulkSelectionModalTypes.clearAllAcrossPages,
-                    onSuccess: () => resolve(null),
-                    onCancel: () => reject(),
-                })
+                // set timeout because confirmation modal opens instantly and registers shortcut
+                setTimeout(() => {
+                    setBulkSelectionModalConfig({
+                        type: BulkSelectionModalTypes.clearAllAcrossPages,
+                        onSuccess: () => resolve(null),
+                        onCancel: () => reject(),
+                    })
+                }, 100)
             } else {
                 resolve(null)
             }

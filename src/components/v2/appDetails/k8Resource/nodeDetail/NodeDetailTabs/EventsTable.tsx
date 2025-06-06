@@ -26,6 +26,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { MESSAGING_UI } from '../../../../../../config/constants'
 import MessageUI, { MsgUIType } from '../../../../common/message.ui'
 import { TERMINAL_STATUS, TERMINAL_TEXT } from './terminal/constants'
+import { EVENT_TABLE_ITEM_CLASS } from './constants'
 import { EventTableType } from './node.type'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
@@ -47,6 +48,7 @@ export const EventsTable = ({
     reconnect,
     clusterId,
     aiWidgetAnalyticsEvent,
+    shouldScroll = true,
 }: EventTableType) => {
     const renderEventsTable = () => {
         if (loading) {
@@ -64,7 +66,7 @@ export const EventsTable = ({
             return (
                 <div
                     data-testid="app-events-container"
-                    className={`text__white flex-grow-1 dc__overflow-auto bg__primary ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
+                    className={`text__white flex-grow-1 bg__primary ${shouldScroll ? 'dc__overflow-auto' : ''} ${getComponentSpecificThemeClass(AppThemeType.dark)}`}
                 >
                     {errorValue?.status === TERMINAL_STATUS.TERMINATED && (
                         <div className="pl-20 h-24 flex left pr-20 w-100 bcr-7 cn-0">
@@ -75,7 +77,7 @@ export const EventsTable = ({
                         </div>
                     )}
                     <div
-                        className={`dc__position-sticky dc__top-0 px-16 py-8 dc__grid dc__gap-16 event-row ${ExplainWithAIButton ? 'ai-widget' : ''}`}
+                        className={`dc__zi-1 dc__position-sticky dc__top-0 px-16 py-8 dc__grid dc__gap-16 event-row ${ExplainWithAIButton ? 'ai-widget' : ''}`}
                     >
                         {EVENTS_TABLE_HEADERS.map((header, idx) => (
                             // eslint-disable-next-line react/no-array-index-key
@@ -102,11 +104,11 @@ export const EventsTable = ({
                                     size={20}
                                     color={isNormalEventType ? 'B500' : null}
                                 />
-                                <span>{reason}</span>
-                                <span>{message}</span>
-                                <span>{count}</span>
-                                <span>{age}</span>
-                                <span>{lastSeen}</span>
+                                <span className={EVENT_TABLE_ITEM_CLASS}>{reason}</span>
+                                <span className={EVENT_TABLE_ITEM_CLASS}>{message}</span>
+                                <span className={EVENT_TABLE_ITEM_CLASS}>{count}</span>
+                                <span className={EVENT_TABLE_ITEM_CLASS}>{age}</span>
+                                <span className={EVENT_TABLE_ITEM_CLASS}>{lastSeen}</span>
                                 {clusterId && ExplainWithAIButton && !isNormalEventType ? (
                                     <ExplainWithAIButton
                                         intelligenceConfig={{
@@ -116,9 +118,7 @@ export const EventsTable = ({
                                             analyticsCategory: aiWidgetAnalyticsEvent,
                                         }}
                                     />
-                                ) : (
-                                    <span />
-                                )}
+                                ) : null}
                             </div>
                         )
                     })}

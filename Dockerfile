@@ -10,6 +10,7 @@ RUN yarn install --frozen-lockfile --network-timeout 600000
 COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html && \
+    echo "" >> .env && \
     echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env && \
     yarn build
 

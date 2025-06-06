@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { DeploymentWithConfigType, Progressing, SelectPicker, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentConfigDiffRadioSelect,
+    DeploymentWithConfigType,
+    Progressing,
+    Tooltip,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
 
@@ -26,11 +31,11 @@ export const PipelineConfigDiffStatusTile = ({
     isLoading,
     hasDiff,
     noLastDeploymentConfig,
-    deploymentConfigSelectorProps,
     onClick,
     canReviewConfig,
     urlFilters,
     renderConfigNotAvailableTooltip,
+    radioSelectConfig,
 }: PipelineConfigDiffStatusTileProps) => {
     const { deploy } = urlFilters
     const lastDeployedOptionSelected = deploy === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG
@@ -84,7 +89,7 @@ export const PipelineConfigDiffStatusTile = ({
         <div className="pipeline-config-diff-tile flex dc__border br-4">
             <div className="px-16 flex dc__gap-4">
                 <span className="cn-9 fs-13 lh-20">Deploy:</span>
-                <SelectPicker<string | number, false> {...deploymentConfigSelectorProps} />
+                <DeploymentConfigDiffRadioSelect radioSelectConfig={radioSelectConfig} position="top" />
             </div>
             <Tooltip
                 alwaysShowTippyOnHover={!isLoading && !lastDeployedOptionSelected && !noLastDeploymentConfig}

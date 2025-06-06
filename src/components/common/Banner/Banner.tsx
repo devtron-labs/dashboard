@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
     AnimatePresence,
@@ -24,13 +24,12 @@ import {
     ComponentSizeType,
     Icon,
     InfoBlockVariant,
-    MotionDiv,
+    InstallationType,
+    motion,
     noop,
     setActionWithExpiry,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { InstallationType } from '@Components/v2/devtronStackManager/DevtronStackManager.type'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { InteractiveCellText } from '../helpers/InteractiveCellText/InteractiveCellText'
@@ -84,36 +83,21 @@ export const Banner = () => {
     const [showAnnouncementBanner, setShowAnnouncementBanner] = useState(
         ANNOUNCEMENT_CONFIG.message ? shouldShowAnnouncementBanner() : false,
     )
-    const hasShownOnlineBanner = useRef(false)
     const onlineTimer = useRef<ReturnType<typeof setTimeout>>(null)
 
-    const onOnline = useCallback(() => {
-        // Only show the online banner if we haven't shown it since the last offline state
-        if (!hasShownOnlineBanner.current) {
-            setShowOnlineBanner(true)
-            hasShownOnlineBanner.current = true
-
-            // Clear any existing timer before setting a new one
-            if (onlineTimer.current) {
-                clearTimeout(onlineTimer.current)
-            }
-
-            onlineTimer.current = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
-        }
-    }, [])
-
-    const onOffline = () => {
-        hasShownOnlineBanner.current = false
+    const onOnline = () => {
+        clearTimeout(onlineTimer.current)
+        setShowOnlineBanner(true)
+        onlineTimer.current = setTimeout(() => setShowOnlineBanner(false), ONLINE_BANNER_TIMEOUT)
     }
 
-    const isOnline = useOnline({ onOnline, onOffline })
+    const isOnline = useOnline({ onOnline })
 
     useEffect(
         () => () => {
             if (onlineTimer.current) {
                 clearTimeout(onlineTimer.current)
             }
-            hasShownOnlineBanner.current = false
         },
         [],
     )
@@ -179,7 +163,7 @@ export const Banner = () => {
     return (
         <AnimatePresence custom={!!bannerVariant}>
             {bannerVariant && config && (
-                <MotionDiv
+                <motion.div
                     layout
                     key={bannerVariant}
                     variants={bannerVariants}
@@ -218,7 +202,7 @@ export const Banner = () => {
                             showAriaLabelInTippy={false}
                         />
                     )}
-                </MotionDiv>
+                </motion.div>
             )}
         </AnimatePresence>
     )

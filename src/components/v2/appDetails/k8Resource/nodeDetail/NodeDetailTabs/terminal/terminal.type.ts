@@ -48,7 +48,7 @@ export interface TerminalWrapperComponentType {
     setTerminalCleared?: () => void
     buttonSelectionState?: string
     setManifestButtonState?: (button: EditModeType) => void
-    onToggle?: (value: boolean) => void
+    onToggle?: () => void
     isEnabled?: boolean
     dataTestId?: string
     classNamePrefix?: string
@@ -176,6 +176,6 @@ export interface EditManifestType {
 export interface DebugModeType {
     hideTerminalStripComponent?: boolean
     showInfoTippy?: boolean
-    onToggle: (value: boolean) => void
+    onToggle: () => void
     isEnabled: boolean
 }
