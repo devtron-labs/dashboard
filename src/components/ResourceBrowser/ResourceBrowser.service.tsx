@@ -26,6 +26,7 @@ import {
     getK8sResourceListPayload,
     getNamespaceListMin,
     getUrlWithSearchParams,
+    K8sResourceDetailDataType,
     Nodes,
     ResponseType,
     showError,
@@ -111,7 +112,7 @@ export const getResourceData = async ({
                 result: {
                     ...response.result,
                     headers: [...response.result.headers, 'environment'],
-                    data: response.result.data.map((data) => ({
+                    data: response.result.data.map<K8sResourceDetailDataType>((data) => ({
                         ...data,
                         environment: namespaceToEnvironmentMap[data.name as string],
                     })),

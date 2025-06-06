@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { RefObject } from 'react'
+import React, { Dispatch, RefObject, SetStateAction } from 'react'
 
 import {
     ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     GVKType,
+    IconName,
     InitTabType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
@@ -68,6 +69,14 @@ export enum CreateResourceStatus {
     updated = 'Updated',
 }
 
+export enum ResourceStatus {
+    HEALTHY = 'Healthy',
+    PENDING = 'Pending',
+    ERROR = 'Error',
+    COMPLETED = 'Completed',
+    UNKNOWN = 'Unknown',
+}
+
 export interface ResourceDetailsPropType extends LogSearchTermType {
     selectedResource: SelectedResourceType
 }
@@ -85,6 +94,8 @@ export interface SidebarType {
     updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
+    selectedResourceStatus: ResourceStatus
+    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatus>>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -121,6 +132,7 @@ export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'a
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
+    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatus>>
 }
 
 export interface ResourceBrowserActionMenuType {
@@ -213,6 +225,7 @@ export interface SidebarChildButtonPropsType {
     namespaced: boolean
     isSelected: boolean
     onClick: React.MouseEventHandler<HTMLButtonElement>
+    icon?: IconName
 }
 
 export interface ClusterSelectorType {

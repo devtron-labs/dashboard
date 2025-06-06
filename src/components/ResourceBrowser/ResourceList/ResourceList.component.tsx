@@ -17,7 +17,7 @@
 import React, { MouseEventHandler, useEffect, useState } from 'react'
 import { ClearIndicatorProps, components, ValueContainerProps } from 'react-select'
 
-import { Button, ButtonVariantType, ComponentSizeType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonVariantType, ComponentSizeType, Icon, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
 import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
@@ -106,10 +106,13 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
     namespaced,
     isSelected,
     onClick,
+    icon,
 }) => (
     <button
         type="button"
-        className="dc__unset-button-styles"
+        className={`dc__unset-button-styles cursor py-6 px-8 flex left dc__content-space dc__gap-4 br-4 ${
+            isSelected ? 'bcb-1 cb-5' : 'cn-9 dc__hover-n50'
+        }`}
         key={text}
         ref={parentRef}
         data-group={group}
@@ -121,13 +124,8 @@ export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
         aria-label={`Select ${text}`}
     >
         <Tooltip content={text} placement="right">
-            <div
-                className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                    isSelected ? 'bcb-1 cb-5' : 'cn-9 dc__hover-n50'
-                }`}
-            >
-                {text}
-            </div>
+            <span className="dc__truncate fs-13 fw-4 lh-20">{text}</span>
         </Tooltip>
+        {icon && <Icon name={icon} color={null} />}
     </button>
 )

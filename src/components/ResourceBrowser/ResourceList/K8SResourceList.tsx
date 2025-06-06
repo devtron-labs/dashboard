@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -31,9 +31,10 @@ import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/n
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
-import { K8SResourceListType, URLParams } from '../Types'
+import { K8SResourceListType, ResourceStatus, URLParams } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
+import { getResourceStatusTypeCount } from './utils'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -52,6 +53,7 @@ export const K8SResourceList = ({
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
+    setSelectedResourceStatus,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
@@ -110,6 +112,12 @@ export const K8SResourceList = ({
         }))
         return result
     }, [_resourceList])
+
+    const resourceStatusTypeCount = useMemo(() => getResourceStatusTypeCount(resourceList), [resourceList])
+
+    useEffect(() => {
+        setSelectedResourceStatus(resourceStatusTypeCount[ResourceStatus.ERROR] > 0 ? ResourceStatus.ERROR : null)
+    }, [resourceStatusTypeCount])
 
     return (
         <BaseResourceList

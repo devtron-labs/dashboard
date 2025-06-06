@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getResourceGroupList } from '../ResourceBrowser.service'
-import { K8SResourceTabComponentProps, URLParams } from '../Types'
+import { K8SResourceTabComponentProps, ResourceStatus, URLParams } from '../Types'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { K8SResourceList } from './K8SResourceList'
 import Sidebar from './Sidebar'
@@ -38,6 +38,8 @@ const K8SResourceTabComponent = ({
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
+    const [selectedResourceStatus, setSelectedResourceStatus] = useState<ResourceStatus | null>(null)
+
     const { clusterId } = useParams<URLParams>()
 
     const abortControllerRef = useRef(new AbortController())
@@ -78,6 +80,8 @@ const K8SResourceTabComponent = ({
                 isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
+                selectedResourceStatus={selectedResourceStatus}
+                setSelectedResourceStatus={setSelectedResourceStatus}
             />
             <K8SResourceList
                 clusterName={clusterName}
@@ -89,6 +93,7 @@ const K8SResourceTabComponent = ({
                 updateK8sResourceTab={updateK8sResourceTab}
                 handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                setSelectedResourceStatus={setSelectedResourceStatus}
             />
         </div>
     )

@@ -39,6 +39,7 @@ import {
     getK8SObjectMapAfterGroupHeadingClick,
 } from '../Utils'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
+import { getSidebarIconBasedOnResourceStatus } from './utils'
 
 const Sidebar = ({
     apiResources,
@@ -47,6 +48,8 @@ const Sidebar = ({
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     isOpen,
+    selectedResourceStatus,
+    setSelectedResourceStatus,
 }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -123,8 +126,11 @@ const Sidebar = ({
             },
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
+
+        setSelectedResourceStatus(null)
         setSelectedResource(_selectedResource)
         updateK8sResourceTabLastSyncMoment()
+
         const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
         if (shouldPushUrl) {
@@ -192,6 +198,7 @@ const Sidebar = ({
                 : selectedResource?.gvk?.Kind === childData.gvk.Kind &&
                   (selectedResource?.gvk?.Group === childData.gvk.Group ||
                       selectedResource?.gvk?.Group === K8S_EMPTY_GROUP)
+
         return (
             <SidebarChildButton
                 parentRef={selectedChildRef}
@@ -202,6 +209,7 @@ const Sidebar = ({
                 namespaced={childData.namespaced}
                 isSelected={isSelected}
                 onClick={selectNode}
+                icon={getSidebarIconBasedOnResourceStatus(nodeName, isSelected, selectedResourceStatus)}
             />
         )
     }
