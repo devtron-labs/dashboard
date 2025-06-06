@@ -106,6 +106,8 @@ const ResourceList = () => {
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
+    const [resourceRecommenderSelectedNamespace, setResourceRecommenderSelectedNamespace] =
+        useState<typeof ALL_NAMESPACE_OPTION>(ALL_NAMESPACE_OPTION)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
     const { setIntelligenceConfig } = useMainContext()
 
@@ -511,7 +513,7 @@ const ResourceList = () => {
         selectedCluster,
         selectedResource: {
             gvk: SIDEBAR_KEYS.resourceRecommenderGVK,
-            namespaced: false,
+            namespaced: true,
         },
         clusterName: selectedCluster.label,
         handleResourceClick,
@@ -525,9 +527,8 @@ const ResourceList = () => {
         resourceList,
         clusterId,
         reloadResourceListData,
-        // TODO: Add this later
-        selectedNamespace: ALL_NAMESPACE_OPTION,
-        setSelectedNamespace: noop,
+        selectedNamespace: resourceRecommenderSelectedNamespace,
+        setSelectedNamespace: setResourceRecommenderSelectedNamespace,
         showGenericNullState: null,
         lowercaseKindToResourceGroupMap,
         shouldOverrideSelectedResourceKind: true,

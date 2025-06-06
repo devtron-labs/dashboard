@@ -742,6 +742,7 @@ const BaseResourceListContent = ({
                 return <GenericFilterEmptyState />
             }
 
+            // Need to fix this as well since since expand value is not a filter
             const isFilterApplied =
                 searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
 
@@ -852,7 +853,6 @@ const BaseResourceListContent = ({
                     isOpen={isOpen}
                 />
             ) : (
-                // Need to add here
                 <ResourceFilterOptions
                     key={`${selectedResource?.gvk.Kind}-${selectedResource?.gvk.Group}`}
                     selectedResource={selectedResource}

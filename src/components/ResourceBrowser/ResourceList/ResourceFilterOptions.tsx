@@ -19,6 +19,7 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
+    Nodes,
     OptionType,
     SearchBar,
     SelectPicker,
@@ -60,6 +61,7 @@ const ResourceFilterOptions = ({
     const searchInputRef = useRef<HTMLInputElement>(null)
 
     const showShortcutKey = !isInputFocused && !searchText
+    const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
 
     const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
@@ -149,7 +151,7 @@ const ResourceFilterOptions = ({
                 </div>
                 {!areFiltersHidden && (
                     <div className="flexbox dc__gap-8 dc__zi-3">
-                        {FilterButton && (
+                        {FilterButton && !isResourceRecommender && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
                                 updateTabUrl={updateK8sResourceTab}
