@@ -41,7 +41,7 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                 return <SidePanelDocumentation SidePanelHeaderActions={SidePanelHeaderActions} />
             case SidePanelTab.ASK_DEVTRON:
                 // NOTE: even if flag is off, for oss clients need to show EnterpriseTrialDialog
-                if (!AIChat || window._env_.FEATURE_AI_APP_DETAILS_ENABLE) {
+                if (!AIChat || window._env_?.FEATURE_ASK_DEVTRON_EXPERT) {
                     return <AIChat SidePanelHeaderActions={SidePanelHeaderActions} />
                 }
 
