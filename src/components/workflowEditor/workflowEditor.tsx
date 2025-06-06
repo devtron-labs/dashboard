@@ -591,8 +591,11 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         open={this.props.location.pathname.includes(URLS.APP_CI_CD_CONFIG)}
                         onClose={this.handleCreateCICDPipelineClose}
                         appId={this.props.match.params.appId}
-                        workflowId={this.state.workflowId}
                         getWorkflows={this.getWorkflows}
+                        noGitOpsModuleInstalledAndConfigured={this.state.noGitOpsModuleInstalledAndConfigured}
+                        isGitOpsInstalledButNotConfigured={this.state.noGitOpsConfiguration}
+                        isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
+                        envIds={this.state.envIds}
                     />
                 )}
                 <Switch>

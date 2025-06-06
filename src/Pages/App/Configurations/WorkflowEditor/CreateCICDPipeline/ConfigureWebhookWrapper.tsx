@@ -13,34 +13,34 @@ export const ConfigureWebhookWrapper = ({
     const addWebhookCondition = () =>
         setCiCdPipeline((prev) => {
             const ciCdPipeline = structuredClone(prev)
-            ciCdPipeline.webhookConditionList.push({ selectorId: 0, value: '' })
+            ciCdPipeline.ci.webhookConditionList.push({ selectorId: 0, value: '' })
             return ciCdPipeline
         })
 
     const deleteWebhookCondition = (index: number) =>
         setCiCdPipeline((prev) => {
             const ciCdPipeline = structuredClone(prev)
-            ciCdPipeline.webhookConditionList.splice(index, 1)
+            ciCdPipeline.ci.webhookConditionList.splice(index, 1)
             return ciCdPipeline
         })
 
     const onWebhookConditionSelectorChange = (index: number, selectorId: number) =>
         setCiCdPipeline((prev) => {
             const ciCdPipeline = structuredClone(prev)
-            ciCdPipeline.webhookConditionList[index].selectorId = selectorId
-            ciCdPipeline.webhookConditionList[index].value = ''
+            ciCdPipeline.ci.webhookConditionList[index].selectorId = selectorId
+            ciCdPipeline.ci.webhookConditionList[index].value = ''
             return ciCdPipeline
         })
 
     const onWebhookConditionSelectorValueChange = (index: number, value: string) =>
         setCiCdPipeline((prev) => {
             const ciCdPipeline = structuredClone(prev)
-            ciCdPipeline.webhookConditionList[index].value = value
+            ciCdPipeline.ci.webhookConditionList[index].value = value
             return ciCdPipeline
         })
 
     return (
-        <div className="mt-16">
+        <div>
             <ConfigureWebhook
                 webhookConditionList={webhookConditionList}
                 gitHost={gitHost}
