@@ -14,26 +14,121 @@
  * limitations under the License.
  */
 
-.chart-grid__check {
-    position: absolute;
-    right: 20px;
-    top: 20px;
+.chart-grid {
+    .chart-grid-item {
+        &.chart-grid-item--selected {
+            border: solid 1px var(--B500);
+            background-color: var(--B100);
+        }
 
-    &.chart-grid__check--hidden {
+        .icon-wrapper {
+            border: 1px solid var(--border-primary);
+            border-radius: 8px;
+            background-color: var(--bg-secondary);
+            padding: 8px;
+            width: fit-content;
+        }
+
+        .chart-icon-dim {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    .chart-grid-item:hover {
+        text-decoration: none;
+        box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
+
+        .chart-grid-item__title {
+            color: var(--B500);
+        }
+
+        .icon-wrapper {
+            border: 1px solid transparent;
+            padding: 0;
+        }
+
+        .chart-icon-dim {
+            width: 48px;
+            height: 48px;
+        }
+    }
+
+    .chart-list-view {
+        max-width: 776px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .chart-grid__check {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+
+        &.chart-grid__check--hidden {
+            display: none;
+        }
+    }
+
+    .chart-grid__check--hide {
         display: none;
     }
-}
 
-.chart-grid__check--hide {
-    display: none;
-}
-
-.show-checkbox-onhover {
-    &:hover {
-        .chart-grid__check {
-            &.devtron-stepper {
-                display: grid;
+    .show-checkbox-onhover {
+        &:hover {
+            .chart-grid__check {
+                &.devtron-stepper {
+                    display: grid;
+                }
             }
+        }
+    }
+
+    .devtron-stepper {
+        font-weight: 600;
+        border: 1px solid var(--N200);
+        border-radius: 6px;
+        place-items: center;
+        grid-column-gap: 0px;
+        background-color: var(--bg-primary);
+        cursor: default;
+    }
+
+    .devtron-stepper-grid {
+        grid-template-columns: repeat(3, 20px);
+    }
+
+    .devtron-stepper__item {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+
+        &:disabled {
+            cursor: not-allowed;
+
+            .fill-color {
+                fill: var(--N600);
+                cursor: not-allowed;
+            }
+        }
+
+        .fill-color {
+            fill: var(--B500);
+        }
+    }
+
+    .chart-group-deployments {
+        padding: 16px 24px;
+        flex: 1;
+    }
+
+    .white-card {
+        &.white-card--chart-store {
+            display: flex;
+            flex-direction: column;
+            padding: 0;
         }
     }
 }
@@ -65,53 +160,6 @@
     }
 }
 
-.devtron-stepper {
-    font-weight: 600;
-    border: 1px solid var(--N200);
-    border-radius: 6px;
-    place-items: center;
-    grid-column-gap: 0px;
-    background-color: var(--bg-primary);
-    cursor: default;
-}
-
-.devtron-stepper-grid {
-    grid-template-columns: repeat(3, 20px);
-}
-
-.devtron-stepper__item {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-
-    &:disabled {
-        cursor: not-allowed;
-
-        .fill-color {
-            fill: var(--N600);
-            cursor: not-allowed;
-        }
-    }
-
-    .fill-color {
-        fill: var(--B500);
-    }
-}
-
-.chart-group-deployments {
-    padding: 16px 24px;
-    flex: 1;
-}
-
-.white-card {
-    &.white-card--chart-store {
-        display: flex;
-        flex-direction: column;
-        padding: 0;
-    }
-}
 
 .deploy-and-details-view {
     display: flex;
@@ -173,19 +221,6 @@
 .chart-grid--chart-group-snapshot {
     height: 228px;
     overflow: hidden;
-}
-
-.chart-group__view-all {
-    padding: 5px 12px;
-    border-radius: 4px;
-    border: solid 1px var(--N200);
-    font-size: 12px;
-    font-weight: 600;
-    line-height: 1.67;
-    letter-spacing: normal;
-    text-align: center;
-    color: var(--N700);
-    background-color: var(--bg-primary);
 }
 
 .deploy-selected-charts__applications-edit {
@@ -344,6 +379,6 @@
 }
 
 .list-view {
-        grid-template-columns: none;
+    grid-template-columns: none;
     grid-gap: 12px;
 }

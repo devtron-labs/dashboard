@@ -72,15 +72,17 @@ const ChartCard = ({
     }
 
     const renderAddIcon = () => (
-        <Button
-            icon={<Icon name="ic-add" size={null} color={null} />}
-            onClick={addChartTab}
-            dataTestId={`chart-add-${dataTestId}`}
-            variant={ButtonVariantType.borderLess}
-            size={ComponentSizeType.small}
-            style={ButtonStyleType.default}
-            ariaLabel="Add charts to deploy"
-        />
+        <div className="dc__visible-hover--child">
+            <Button
+                icon={<Icon name="ic-add" size={null} color={null} />}
+                onClick={addChartTab}
+                dataTestId={`chart-add-${dataTestId}`}
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.small}
+                style={ButtonStyleType.default}
+                ariaLabel="Add charts to deploy"
+            />
+        </div>
     )
 
     const renderRemoveIcon = () => (
@@ -98,9 +100,9 @@ const ChartCard = ({
 
     const renderIcon = () => (
         <div className="px-20 pt-20 pb-16 flexbox-col flex-grow-1">
-            <div className="dc__border p-8 bg__primary br-8 dc__w-fit-content">
+            <div className="icon-wrapper">
                 <LazyImage
-                    className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon icon-dim-32`}
+                    className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim`}
                     src={chart.icon}
                     onError={handleImageError}
                 />
@@ -110,7 +112,12 @@ const ChartCard = ({
 
     const renderCardInfo = () => (
         <div className="flexbox-col flex-grow-1 dc__gap-4 px-20 pb-16">
-            <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
+            <div className="flex left">
+                <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
+                <div className="dc__visible-hover--child">
+                    <Icon name="ic-caret-right" size={16} color="B500" />
+                </div>
+            </div>
             {chart.deprecated && renderDeprecatedWarning()}
 
             <span className={`fw-4 fs-13 lh-20 ${chart.deprecated ? 'dc__truncate' : 'dc__truncate--clamp-2'}`}>
@@ -134,7 +141,7 @@ const ChartCard = ({
     return (
         <div
             key={chart.id}
-            className={`chart-grid-item cursor dc__position-rel br-8 dc__border bg__primary ${isListView ? 'flexbox-col' : ''} ${
+            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent cursor dc__position-rel br-8 dc__border bg__primary ${isListView ? 'flexbox-col' : ''} ${
                 showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''
             } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}
             onClick={onClick ? onClickChartSelect : noop}
