@@ -17,7 +17,7 @@
 import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-eks-cluster|add-isolated-cluster)'
+const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-cluster|add-isolated-cluster)'
 
 export const URLS = {
     CHARTS: '/chart-store',
