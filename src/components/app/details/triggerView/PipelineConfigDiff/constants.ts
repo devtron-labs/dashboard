@@ -1,4 +1,4 @@
-import { DeploymentWithConfigType } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
 
 export const PIPELINE_CONFIG_VS_LABEL_MAP: Record<DeploymentWithConfigType, string> = {
     [DeploymentWithConfigType.LAST_SAVED_CONFIG]: 'Last saved config',
