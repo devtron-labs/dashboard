@@ -40,6 +40,7 @@ import {
     Pagination,
     Progressing,
     SelectAllDialogStatus,
+    SelectPickerOptionType,
     SortableTableHeaderCell,
     Tooltip,
     useBulkSelection,
@@ -77,6 +78,7 @@ import {
     SEARCH_QUERY_PARAM_KEY,
     SIDEBAR_KEYS,
 } from '../Constants'
+import { ResourceStatusFilter } from '../Types'
 import { getRenderNodeButton, renderResourceValue, updateQueryString } from '../Utils'
 import { EventList } from './EventList'
 import NodeListSearchFilter from './NodeListSearchFilter'
@@ -123,6 +125,7 @@ const BaseResourceListContent = ({
     const [resourceListOffset, setResourceListOffset] = useState(0)
     const [bulkOperationModalState, setBulkOperationModalState] = useState<BulkOperationsModalState>('closed')
     const [showCreateEnvironmentDrawer, setShowCreateEnvironmentDrawer] = useState(false)
+    const [resourceStatusFilter, setResourceStatusFilter] = useState<ResourceStatusFilter>(ResourceStatusFilter.ALL)
 
     // NOTE: this is to re-mount node filters component & avoid useEffects inside it
     const [lastTimeStringSinceClearAllFilters, setLastTimeStringSinceClearAllFilters] = useState(null)
@@ -236,6 +239,7 @@ const BaseResourceListContent = ({
                 sortBy,
                 sortOrder,
                 debounceResult,
+                resourceStatusFilter,
                 nodeListingFilters: {
                     isNodeListing,
                     searchParams,
@@ -294,7 +298,7 @@ const BaseResourceListContent = ({
 
         handleFilterChanges(searchText)
         setResourceListOffset(0)
-    }, [resourceList, sortBy, sortOrder, location.search, isOpen])
+    }, [resourceList, sortBy, sortOrder, location.search, isOpen, resourceStatusFilter])
 
     const getHandleCheckedForId = (resourceData: K8sResourceDetailDataType) => () => {
         const { id } = resourceData as Record<'id', string>
@@ -361,6 +365,7 @@ const BaseResourceListContent = ({
         setResourceListOffset(0)
         setSelectedNamespace(ALL_NAMESPACE_OPTION)
         setLastTimeStringSinceClearAllFilters(new Date().toISOString())
+        setResourceStatusFilter(ResourceStatusFilter.ALL)
     }
 
     const getStatusClass = (status: string) => {
@@ -413,6 +418,10 @@ const BaseResourceListContent = ({
 
     const handleCloseCreateEnvironmentDrawer = () => {
         setShowCreateEnvironmentDrawer(false)
+    }
+
+    const handleResourceStatusFilterChange = (selectedFilter: SelectPickerOptionType<ResourceStatusFilter>) => {
+        setResourceStatusFilter(selectedFilter.value)
     }
 
     const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
@@ -619,7 +628,10 @@ const BaseResourceListContent = ({
             }
 
             const isFilterApplied =
-                searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
+                searchText ||
+                location.search ||
+                selectedNamespace.value !== ALL_NAMESPACE_OPTION.value ||
+                resourceStatusFilter !== ResourceStatusFilter.ALL
 
             return isFilterApplied ? (
                 <ResourceListEmptyState
@@ -739,6 +751,9 @@ const BaseResourceListContent = ({
                     updateK8sResourceTab={updateK8sResourceTab}
                     areFiltersHidden={areFiltersHidden}
                     searchPlaceholder={searchPlaceholder}
+                    isResourceStatusFilterEnabled={headers.includes('status')}
+                    resourceStatusFilter={resourceStatusFilter}
+                    onResourceStatusFilterChange={handleResourceStatusFilterChange}
                 />
             )}
             {renderContent()}

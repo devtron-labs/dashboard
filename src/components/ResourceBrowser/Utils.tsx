@@ -24,10 +24,12 @@ import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     GVKType,
+    Icon,
     InitTabType,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     ResponseType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { LAST_SEEN, URLS } from '../../config'
@@ -40,6 +42,8 @@ import {
     MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
+    RESOURCE_STATUS_FILTER_ICON_MAP,
+    RESOURCE_STATUS_FILTER_LABEL_MAP,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -50,6 +54,7 @@ import {
     K8sObjectOptionType,
     K8SObjectType,
     NodeRowDetail,
+    ResourceStatusFilter,
 } from './Types'
 
 const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
@@ -437,3 +442,10 @@ export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatu
         : `${URLS.RESOURCE_BROWSER}/${id}/${
               ALL_NAMESPACE_OPTION.value
           }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+export const getResourceStatusFilterOptions = () =>
+    Object.values(ResourceStatusFilter).map<SelectPickerOptionType<ResourceStatusFilter>>((value) => ({
+        label: RESOURCE_STATUS_FILTER_LABEL_MAP[value],
+        value,
+        startIcon: <Icon name={RESOURCE_STATUS_FILTER_ICON_MAP[value]} color={null} />,
+    }))

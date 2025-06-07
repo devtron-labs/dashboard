@@ -23,8 +23,8 @@ import {
     ButtonComponentType,
     ButtonVariantType,
     ComponentSizeType,
+    getSelectPickerOptionByValue,
     Icon,
-    Nodes,
     OptionType,
     SearchBar,
     SelectPicker,
@@ -37,12 +37,13 @@ import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT, SIDEBAR_KEYS } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { getEmbeddedSloopURL } from '../Utils'
+import { getEmbeddedSloopURL, getResourceStatusFilterOptions } from '../Utils'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
+const RESOURCE_STATUS_FILTER_OPTIONS = getResourceStatusFilterOptions()
 
 const ResourceFilterOptions = ({
     selectedResource,
@@ -57,11 +58,14 @@ const ResourceFilterOptions = ({
     updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
+    isResourceStatusFilterEnabled,
+    resourceStatusFilter,
+    onResourceStatusFilterChange,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, namespace, group, nodeType } = useParams<URLParams>()
+    const { clusterId, namespace, group } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
@@ -155,7 +159,7 @@ const ResourceFilterOptions = ({
                     )}
                 </div>
                 <div className="flexbox dc__gap-8 dc__zi-3">
-                    {clusterId === '1' && nodeType !== Nodes.Event.toLowerCase() && (
+                    {clusterId === '1' && selectedResource?.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind && (
                         <Button
                             dataTestId="cluster-sloop-compare-config"
                             variant={ButtonVariantType.secondary}
@@ -168,6 +172,22 @@ const ResourceFilterOptions = ({
                             }}
                         />
                     )}
+                    <div className="w-120">
+                        <SelectPicker
+                            inputId="cluster-resources-status-filter"
+                            ariaLabel="Cluster resources status filter"
+                            options={RESOURCE_STATUS_FILTER_OPTIONS}
+                            value={getSelectPickerOptionByValue(
+                                RESOURCE_STATUS_FILTER_OPTIONS,
+                                resourceStatusFilter,
+                                null,
+                            )}
+                            onChange={onResourceStatusFilterChange}
+                            isDisabled={!isResourceStatusFilterEnabled}
+                            showSelectedOptionIcon={false}
+                            disabledTippyContent="Resource status filtering is not applicable"
+                        />
+                    </div>
                     {!areFiltersHidden && (
                         <>
                             {FilterButton && (

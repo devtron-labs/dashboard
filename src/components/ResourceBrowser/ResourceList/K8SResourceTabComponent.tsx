@@ -20,7 +20,7 @@ import { useParams } from 'react-router-dom'
 import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getResourceGroupList } from '../ResourceBrowser.service'
-import { K8SResourceTabComponentProps, ResourceStatus, URLParams } from '../Types'
+import { K8SResourceTabComponentProps, ResourceStatusFilter, URLParams } from '../Types'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { K8SResourceList } from './K8SResourceList'
 import Sidebar from './Sidebar'
@@ -38,7 +38,7 @@ const K8SResourceTabComponent = ({
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
-    const [selectedResourceStatus, setSelectedResourceStatus] = useState<ResourceStatus | null>(null)
+    const [selectedResourceStatus, setSelectedResourceStatus] = useState<ResourceStatusFilter | null>(null)
 
     const { clusterId } = useParams<URLParams>()
 

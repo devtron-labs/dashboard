@@ -28,6 +28,7 @@ import {
     OptionType,
     ResourceDetail,
     SelectedResourceType,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
@@ -69,7 +70,8 @@ export enum CreateResourceStatus {
     updated = 'Updated',
 }
 
-export enum ResourceStatus {
+export enum ResourceStatusFilter {
+    ALL = 'All',
     HEALTHY = 'Healthy',
     PENDING = 'Pending',
     ERROR = 'Error',
@@ -94,8 +96,8 @@ export interface SidebarType {
     updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    selectedResourceStatus: ResourceStatus
-    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatus>>
+    selectedResourceStatus: ResourceStatusFilter
+    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatusFilter>>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -125,14 +127,22 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
      * @default undefined
      */
     searchPlaceholder?: string
+
+    isResourceStatusFilterEnabled: boolean
+    resourceStatusFilter: ResourceStatusFilter
+    onResourceStatusFilterChange: (selectedStatus: SelectPickerOptionType<ResourceStatusFilter>) => void
 }
 
-export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
+export interface K8SResourceListType
+    extends Omit<
+        ResourceFilterOptionsProps,
+        'areFiltersHidden' | 'isResourceStatusFilterEnabled' | 'resourceStatusFilter' | 'onResourceStatusFilterChange'
+    > {
     addTab: UseTabsReturnType['addTab']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
-    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatus>>
+    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatusFilter>>
 }
 
 export interface ResourceBrowserActionMenuType {

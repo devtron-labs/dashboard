@@ -21,12 +21,21 @@ export default () => {
         DESC = 'DESC',
     }
 
-    // NOTE!: this is a copy from ResourceBrowser/Types
+    // NOTE!: these are copies from ResourceBrowser/Types
     // imports don't get bundled with the service worker
     enum NODE_SEARCH_KEYS {
         NAME = 'name',
         LABEL = 'label',
         NODE_GROUP = 'nodeGroup',
+    }
+
+    enum ResourceStatusFilter {
+        ALL = 'All',
+        HEALTHY = 'Healthy',
+        PENDING = 'Pending',
+        ERROR = 'Error',
+        COMPLETED = 'Completed',
+        UNKNOWN = 'Unknown',
     }
 
     /**
@@ -207,6 +216,7 @@ export default () => {
         sortBy,
         sortOrder,
         nodeListingFilters: { isNodeListing, searchParams },
+        resourceStatusFilter,
     }: {
         searchText: string
         list: unknown[]
@@ -216,6 +226,7 @@ export default () => {
             isNodeListing: boolean
             searchParams: Record<string, string>
         }
+        resourceStatusFilter: ResourceStatusFilter
     }) => {
         const searchTextLowerCased = searchText.trim().toLowerCase()
         let filteredList = [...list]
@@ -232,6 +243,12 @@ export default () => {
 
         if (sortBy && sortOrder) {
             filteredList.sort(dynamicSort(sortBy, sortOrder, isNodeListing))
+        }
+
+        if (resourceStatusFilter !== ResourceStatusFilter.ALL) {
+            filteredList = filteredList.filter(
+                (item) => (item as Record<string, string>).statusType === resourceStatusFilter,
+            )
         }
 
         self.postMessage(filteredList)

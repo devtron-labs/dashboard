@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-    ClusterDetail,
-    IconName,
-    K8sResourceDetailType,
-    logExceptionToSentry,
-    noop,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterDetail, IconName, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 import { sortObjectArrayAlphabetically } from '@Components/common'
 
@@ -30,7 +24,7 @@ import {
     OPTIONAL_NODE_LIST_HEADERS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
-import { ClusterOptionType, K8SResourceListType, ResourceStatus, ShowAIButtonConfig } from '../Types'
+import { ClusterOptionType, K8SResourceListType, ResourceStatusFilter, ShowAIButtonConfig } from '../Types'
 import { ResourceListUrlFiltersType } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
@@ -121,15 +115,19 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
     return !aiButtonConfig.excludeValues.has(value)
 }
 
-export const getResourceStatusType = (status: string): ResourceStatus => {
-    let normalizedStatus = status?.toLowerCase() || ''
+export const getResourceStatusType = (status: string): ResourceStatusFilter => {
+    if (!status) {
+        return null
+    }
+
+    let normalizedStatus = status.toLowerCase()
 
     if (normalizedStatus && /[:/ ]/.test(normalizedStatus)) {
         normalizedStatus = normalizedStatus.replace(/[:/ ]/g, '__')
     }
 
     if (normalizedStatus.match(/^init__/) && !normalizedStatus.match(/^init__crashloopbackoff/)) {
-        return ResourceStatus.PENDING
+        return ResourceStatusFilter.PENDING
     }
 
     switch (normalizedStatus) {
@@ -143,11 +141,11 @@ export const getResourceStatusType = (status: string): ResourceStatus => {
         case 'created':
         case 'scalingreplicasetdown':
         case 'deployed':
-            return ResourceStatus.HEALTHY
+            return ResourceStatusFilter.HEALTHY
 
         case 'completed':
         case 'complete':
-            return ResourceStatus.COMPLETED
+            return ResourceStatusFilter.COMPLETED
 
         case 'starting':
         case 'initiating':
@@ -165,7 +163,7 @@ export const getResourceStatusType = (status: string): ResourceStatus => {
         case 'initiated':
         case 'updated': // added from waiting
         case 'waiting':
-            return ResourceStatus.PENDING
+            return ResourceStatusFilter.PENDING
 
         case 'degraded':
         case 'oomkilled':
@@ -186,57 +184,24 @@ export const getResourceStatusType = (status: string): ResourceStatus => {
         case 'disconnect':
         case 'syncfail':
         case 'superseded':
-            return ResourceStatus.ERROR
+            return ResourceStatusFilter.ERROR
 
         default:
-            return ResourceStatus.UNKNOWN
+            return ResourceStatusFilter.UNKNOWN
     }
-}
-
-export const getResourceStatusTypeCount = (resourceList: K8sResourceDetailType) => {
-    if (!resourceList) {
-        return {
-            [ResourceStatus.HEALTHY]: 0,
-            [ResourceStatus.ERROR]: 0,
-            [ResourceStatus.PENDING]: 0,
-            [ResourceStatus.COMPLETED]: 0,
-            [ResourceStatus.UNKNOWN]: 0,
-        }
-    }
-
-    return resourceList.data.reduce<{
-        [ResourceStatus.HEALTHY]: number
-        [ResourceStatus.ERROR]: number
-        [ResourceStatus.PENDING]: number
-        [ResourceStatus.COMPLETED]: number
-        [ResourceStatus.UNKNOWN]: number
-    }>(
-        (acc, curr) => {
-            const resourceStatusType = getResourceStatusType(curr.status as string)
-            acc[resourceStatusType] += 1
-            return acc
-        },
-        {
-            [ResourceStatus.HEALTHY]: 0,
-            [ResourceStatus.ERROR]: 0,
-            [ResourceStatus.PENDING]: 0,
-            [ResourceStatus.COMPLETED]: 0,
-            [ResourceStatus.UNKNOWN]: 0,
-        },
-    )
 }
 
 export const getSidebarIconBasedOnResourceStatus = (
     nodeName: string,
     isSelected: boolean,
-    selectedResourceStatus: ResourceStatus,
+    selectedResourceStatus: ResourceStatusFilter,
 ): IconName | null => {
     const showErrorForNodesWhenNotSelected = ['Pod']
     if (
         showErrorForNodesWhenNotSelected.includes(nodeName) &&
-        (!isSelected || (isSelected && selectedResourceStatus !== ResourceStatus.ERROR))
+        (!isSelected || (isSelected && selectedResourceStatus !== ResourceStatusFilter.ERROR))
     ) {
         return 'ic-error'
     }
-    return isSelected && selectedResourceStatus === ResourceStatus.ERROR ? 'ic-error' : null
+    return isSelected && selectedResourceStatus === ResourceStatusFilter.ERROR ? 'ic-error' : null
 }

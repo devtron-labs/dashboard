@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { IconName, NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
 import { AggregationKeys, AggregationKeysType } from '../app/types'
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
-import { NODE_SEARCH_KEYS, RBSidebarKeysType, ShowAIButtonConfig } from './Types'
+import { NODE_SEARCH_KEYS, RBSidebarKeysType, ResourceStatusFilter, ShowAIButtonConfig } from './Types'
 
 export const FILTER_SELECT_COMMON_STYLES = {
     ...multiSelectStyles,
@@ -400,3 +400,21 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
         excludeValues: new Set(['Approved,Issued']),
     },
 })
+
+export const RESOURCE_STATUS_FILTER_LABEL_MAP: Record<ResourceStatusFilter, string> = {
+    [ResourceStatusFilter.ALL]: 'All',
+    [ResourceStatusFilter.HEALTHY]: 'Healthy',
+    [ResourceStatusFilter.ERROR]: 'Error',
+    [ResourceStatusFilter.PENDING]: 'Pending',
+    [ResourceStatusFilter.COMPLETED]: 'Completed',
+    [ResourceStatusFilter.UNKNOWN]: 'Unknown',
+}
+
+export const RESOURCE_STATUS_FILTER_ICON_MAP: Record<ResourceStatusFilter, IconName> = {
+    [ResourceStatusFilter.ALL]: 'ic-cube',
+    [ResourceStatusFilter.HEALTHY]: 'ic-heart-green',
+    [ResourceStatusFilter.ERROR]: 'ic-error',
+    [ResourceStatusFilter.PENDING]: 'ic-in-progress',
+    [ResourceStatusFilter.COMPLETED]: 'ic-success',
+    [ResourceStatusFilter.UNKNOWN]: 'ic-unknown',
+}

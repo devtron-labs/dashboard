@@ -31,10 +31,10 @@ import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/n
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceStatus, URLParams } from '../Types'
+import { K8SResourceListType, ResourceStatusFilter, URLParams } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
-import { getResourceStatusTypeCount } from './utils'
+import { getResourceStatusType } from './utils'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -109,15 +109,21 @@ export const K8SResourceList = ({
         result.data = (result.data ?? []).map((data, index) => ({
             id: `${selectedResource?.gvk?.Kind}-${data.name}-${data.namespace}-${index}`,
             ...data,
+            statusType: getResourceStatusType(data.status as string),
         }))
+
         return result
     }, [_resourceList])
 
-    const resourceStatusTypeCount = useMemo(() => getResourceStatusTypeCount(resourceList), [resourceList])
-
     useEffect(() => {
-        setSelectedResourceStatus(resourceStatusTypeCount[ResourceStatus.ERROR] > 0 ? ResourceStatus.ERROR : null)
-    }, [resourceStatusTypeCount])
+        if (resourceList) {
+            setSelectedResourceStatus(
+                resourceList.data.some(({ statusType }) => statusType === ResourceStatusFilter.ERROR)
+                    ? ResourceStatusFilter.ERROR
+                    : null,
+            )
+        }
+    }, [resourceList])
 
     return (
         <BaseResourceList
