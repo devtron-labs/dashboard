@@ -36,6 +36,7 @@ import {
     highlightSearchText,
     Icon,
     IconsProps,
+    isNullOrUndefined,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     Nodes,
@@ -431,7 +432,9 @@ const BaseResourceListContent = ({
         currentValue: number,
         isTooltipView = false,
     ): { class: string; iconProps: IconsProps } => {
-        if (delta === 0) {
+        const parsedDelta = !delta ? (recommendedValue || 0) - (currentValue || 0) : delta
+
+        if (delta === 0 || parsedDelta === 0) {
             return {
                 class: isTooltipView ? 'cn-3' : 'severity-chip--unknown',
                 iconProps: {
@@ -440,8 +443,6 @@ const BaseResourceListContent = ({
                 },
             }
         }
-
-        const parsedDelta = !delta ? (recommendedValue || 0) - (currentValue || 0) : delta
 
         if (parsedDelta > 0) {
             return {
@@ -524,7 +525,7 @@ const BaseResourceListContent = ({
                                                     ).class
                                                 }`}
                                             >
-                                                {Math.abs(delta)}%
+                                                {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
                                             </span>
                                         </div>
                                     </div>
@@ -533,7 +534,7 @@ const BaseResourceListContent = ({
                         }
                     >
                         <span className={`severity-chip ${severityChipClass} dc_width-max-content dc__mxw-120`}>
-                            {Math.abs(delta)}%
+                            {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
                             <Icon {...iconProps} size={14} />
                         </span>
                     </Tooltip>
@@ -898,6 +899,7 @@ const BaseResourceListContent = ({
                     showAbsoluteValuesInResourceRecommender={showAbsoluteValuesInResourceRecommender}
                     setShowAbsoluteValuesInResourceRecommender={setShowAbsoluteValuesInResourceRecommender}
                     gvkOptions={gvkOptions}
+                    isLoading={isLoading}
                 />
             )}
             {renderContent()}
@@ -905,7 +907,6 @@ const BaseResourceListContent = ({
             {!hideBulkSelection && (
                 <>
                     {RBBulkSelectionActionWidget && (getSelectedIdentifiersCount() > 0 || isBulkSelectionApplied) && (
-                        // TODO: Handle this
                         <RBBulkSelectionActionWidget
                             parentRef={parentRef}
                             count={
@@ -925,11 +926,14 @@ const BaseResourceListContent = ({
                             handleOpenCordonNodeModal={getBulkOperationsModalStateSetter('cordon')}
                             handleOpenUncordonNodeModal={getBulkOperationsModalStateSetter('uncordon')}
                             handleOpenDrainNodeModal={getBulkOperationsModalStateSetter('drain')}
+                            handleOpenApplyResourceRecommendationModal={getBulkOperationsModalStateSetter(
+                                'applyResourceRecommendation',
+                            )}
+                            isResourceRecommendationView={isResourceRecommender}
                         />
                     )}
 
                     {RBBulkOperations && bulkOperationModalState !== 'closed' && (
-                        // TODO: Handle this
                         <RBBulkOperations
                             handleModalClose={getBulkOperationsModalStateSetter('closed')}
                             handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}

@@ -120,6 +120,7 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
     showAbsoluteValuesInResourceRecommender?: boolean
     setShowAbsoluteValuesInResourceRecommender?: React.Dispatch<React.SetStateAction<boolean>>
     gvkOptions?: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
+    isLoading?: boolean
 }
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {

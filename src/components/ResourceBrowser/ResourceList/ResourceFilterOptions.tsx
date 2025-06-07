@@ -61,6 +61,7 @@ const ResourceFilterOptions = ({
     showAbsoluteValuesInResourceRecommender,
     setShowAbsoluteValuesInResourceRecommender,
     gvkOptions,
+    isLoading,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -225,8 +226,7 @@ const ResourceFilterOptions = ({
                             />
                         )}
 
-                        {/* TODO: Add loader */}
-                        {!!gvkOptions?.length && (
+                        {isResourceRecommender && (
                             <SelectPicker<GVKOptionValueType, false>
                                 inputId="resource-filter__gvk-select"
                                 placeholder="Select Resource Kind"
@@ -243,6 +243,7 @@ const ResourceFilterOptions = ({
                                 }}
                                 isOptionSelected={getIsGVKOptionSelected}
                                 onChange={handleGVKFilterChange}
+                                isLoading={isLoading}
                             />
                         )}
 
