@@ -25,9 +25,9 @@ import {
     ErrorScreenManager,
     getGroupVersionFromApiVersion,
     getResourceGroupListRaw,
+    GetResourceRecommenderResourceListPropsType,
     Icon,
     InitTabType,
-    K8sResourceDetailType,
     noop,
     useAsync,
     useBreadcrumb,
@@ -498,10 +498,15 @@ const ResourceList = () => {
         )
     }
 
-    const getResourceRecommenderBaseResourceListProps = (
-        resourceList: K8sResourceDetailType,
-        reloadResourceListData: () => void,
-    ): BaseResourceListProps => ({
+    const getResourceRecommenderBaseResourceListProps = ({
+        resourceList,
+        reloadResourceListData,
+        setShowAbsoluteValuesInResourceRecommender,
+        showAbsoluteValuesInResourceRecommender,
+        gvkOptions,
+        isLoading,
+        resourceListError,
+    }: GetResourceRecommenderResourceListPropsType): BaseResourceListProps => ({
         searchPlaceholder: 'Search',
         hideDeleteResource: true,
         addTab,
@@ -518,10 +523,8 @@ const ResourceList = () => {
         updateK8sResourceTab: noop,
         nodeType: null,
         group: K8S_EMPTY_GROUP,
-        // TODO: test
-        isLoading: false,
-        // TODO: test
-        resourceListError: null,
+        isLoading,
+        resourceListError,
         resourceList,
         clusterId,
         reloadResourceListData,
@@ -529,9 +532,12 @@ const ResourceList = () => {
         selectedNamespace:
             namespace === ALL_NAMESPACE_OPTION.value ? ALL_NAMESPACE_OPTION : { value: namespace, label: namespace },
         setSelectedNamespace: noop,
-        showGenericNullState: null,
+        showGenericNullState: true,
         lowercaseKindToResourceGroupMap,
         shouldOverrideSelectedResourceKind: true,
+        setShowAbsoluteValuesInResourceRecommender,
+        showAbsoluteValuesInResourceRecommender,
+        gvkOptions,
     })
 
     const fixedTabComponents = [

@@ -29,6 +29,7 @@ import {
     CHECKBOX_VALUE,
     ClipboardButton,
     ConditionalWrap,
+    ErrorScreenManager,
     GenericFilterEmptyState,
     getAIAnalyticsEvents,
     GVKType,
@@ -755,26 +756,36 @@ const BaseResourceListContent = ({
         }
 
         if (filteredResourceList?.length === 0 || resourceListError) {
+            if (isResourceRecommender && resourceListError) {
+                return (
+                    <ErrorScreenManager
+                        code={resourceListError?.code}
+                        redirectURL={URLS.RESOURCE_BROWSER}
+                        reload={reloadResourceListData}
+                    />
+                )
+            }
+
             if (showGenericNullState) {
                 return <GenericFilterEmptyState />
             }
 
-            // Need to fix this as well since since expand value is not a filter
             const isFilterApplied =
                 searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
-
-            const emptyStateKindText = isResourceRecommender ? null : selectedResource?.gvk?.Kind
 
             return isFilterApplied ? (
                 <ResourceListEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
-                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(emptyStateKindText)}
+                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
                     actionHandler={emptyStateActionHandler}
                 />
             ) : (
                 <ResourceListEmptyState
-                    title={RESOURCE_EMPTY_PAGE_STATE.title(emptyStateKindText)}
-                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(emptyStateKindText, selectedResource?.namespaced)}
+                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
+                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
+                        selectedResource?.gvk?.Kind,
+                        selectedResource?.namespaced,
+                    )}
                 />
             )
         }
