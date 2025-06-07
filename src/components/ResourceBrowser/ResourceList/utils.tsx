@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ClusterDetail, IconName, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterDetail,
+    IconName,
+    K8sResourceDetailType,
+    logExceptionToSentry,
+    Nodes,
+    noop,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { sortObjectArrayAlphabetically } from '@Components/common'
 
@@ -22,6 +29,7 @@ import {
     LOCAL_STORAGE_EXISTS,
     LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
     OPTIONAL_NODE_LIST_HEADERS,
+    RESOURCE_STATUS_FILTER_ICON_MAP,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
 import { ClusterOptionType, K8SResourceListType, ResourceStatusFilter, ShowAIButtonConfig } from '../Types'
@@ -191,17 +199,39 @@ export const getResourceStatusType = (status: string): ResourceStatusFilter => {
     }
 }
 
+export const getResourcesStatus = (resourceList: K8sResourceDetailType) => {
+    if (resourceList.data.some(({ statusType }) => statusType === ResourceStatusFilter.ERROR)) {
+        return ResourceStatusFilter.ERROR
+    }
+
+    if (resourceList.data.some(({ statusType }) => statusType === ResourceStatusFilter.PENDING)) {
+        return ResourceStatusFilter.PENDING
+    }
+
+    return null
+}
+
 export const getSidebarIconBasedOnResourceStatus = (
     nodeName: string,
     isSelected: boolean,
     selectedResourceStatus: ResourceStatusFilter,
 ): IconName | null => {
-    const showErrorForNodesWhenNotSelected = ['Pod']
+    const showErrorForNodesWhenNotSelected = [Nodes.Pod]
+    const showPendingForNodesWhenNotSelected = [Nodes.PersistentVolumeClaim]
+
     if (
-        showErrorForNodesWhenNotSelected.includes(nodeName) &&
+        showErrorForNodesWhenNotSelected.includes(nodeName as Nodes) &&
         (!isSelected || (isSelected && selectedResourceStatus !== ResourceStatusFilter.ERROR))
     ) {
         return 'ic-error'
     }
-    return isSelected && selectedResourceStatus === ResourceStatusFilter.ERROR ? 'ic-error' : null
+
+    if (
+        showPendingForNodesWhenNotSelected.includes(nodeName as Nodes) &&
+        (!isSelected || (isSelected && selectedResourceStatus !== ResourceStatusFilter.PENDING))
+    ) {
+        return 'ic-in-progress'
+    }
+
+    return isSelected ? RESOURCE_STATUS_FILTER_ICON_MAP[selectedResourceStatus] : null
 }

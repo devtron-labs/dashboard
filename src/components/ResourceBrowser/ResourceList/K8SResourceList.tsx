@@ -31,10 +31,10 @@ import { getPodRestartRBACPayload } from '@Components/v2/appDetails/k8Resource/n
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { SIDEBAR_KEYS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
-import { K8SResourceListType, ResourceStatusFilter, URLParams } from '../Types'
+import { K8SResourceListType, URLParams } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
-import { getResourceStatusType } from './utils'
+import { getResourcesStatus, getResourceStatusType } from './utils'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -117,11 +117,7 @@ export const K8SResourceList = ({
 
     useEffect(() => {
         if (resourceList) {
-            setSelectedResourceStatus(
-                resourceList.data.some(({ statusType }) => statusType === ResourceStatusFilter.ERROR)
-                    ? ResourceStatusFilter.ERROR
-                    : null,
-            )
+            setSelectedResourceStatus(getResourcesStatus(resourceList))
         }
     }, [resourceList])
 
