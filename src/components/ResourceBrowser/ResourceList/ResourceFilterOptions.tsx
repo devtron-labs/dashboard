@@ -19,6 +19,8 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
+    Checkbox,
+    CHECKBOX_VALUE,
     Nodes,
     OptionType,
     SearchBar,
@@ -51,6 +53,8 @@ const ResourceFilterOptions = ({
     updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
+    showAbsoluteValuesInResourceRecommender,
+    setShowAbsoluteValuesInResourceRecommender,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -124,6 +128,10 @@ const ResourceFilterOptions = ({
 
     const handleInputFocus = () => setIsInputFocused(true)
 
+    const handleToggleShowAbsoluteValues = () => {
+        setShowAbsoluteValuesInResourceRecommender((prev) => !prev)
+    }
+
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
@@ -150,7 +158,25 @@ const ResourceFilterOptions = ({
                     )}
                 </div>
                 {!areFiltersHidden && (
-                    <div className="flexbox dc__gap-8 dc__zi-3">
+                    <div className="flexbox dc__gap-8 dc__zi-3 dc__align-items-center">
+                        {isResourceRecommender && (
+                            <>
+                                <div className="flexbox dc__align-items-center p-6">
+                                    <Checkbox
+                                        isChecked={showAbsoluteValuesInResourceRecommender}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                        onChange={handleToggleShowAbsoluteValues}
+                                        dataTestId="resource-recommender-absolute-values-checkbox"
+                                        rootClassName="mb-0 "
+                                    >
+                                        <span className="cn-9 fs-13 fw-4 lh-20">Show absolute values</span>
+                                    </Checkbox>
+                                </div>
+
+                                <div className="dc__divider h-20" />
+                            </>
+                        )}
+
                         {FilterButton && !isResourceRecommender && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}

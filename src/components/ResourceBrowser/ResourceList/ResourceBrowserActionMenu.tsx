@@ -108,7 +108,7 @@ const ResourceBrowserActionMenu: React.FC<ResourceBrowserActionMenuType> = ({
     return (
         <>
             <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
+                <PopupMenu.Button rootClassName="flexbox dc__align-start ml-auto p-4 dc__no-background" isKebab>
                     <MenuDots className="fcn-7 icon-dim-16" data-testid="popup-menu-button" />
                 </PopupMenu.Button>
                 <PopupMenu.Body rootClassName="dc__border pt-4 pb-4">

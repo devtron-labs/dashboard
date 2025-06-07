@@ -121,6 +121,8 @@ const BaseResourceListContent = ({
     shouldOverrideSelectedResourceKind = false,
     lowercaseKindToResourceGroupMap,
     handleResourceClick: onResourceClick,
+    showAbsoluteValuesInResourceRecommender,
+    setShowAbsoluteValuesInResourceRecommender,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -471,7 +473,7 @@ const BaseResourceListContent = ({
             )
 
             return (
-                <div key={`${resourceData.id}-${columnName}`} className="flexbox-col dc__content-center">
+                <div key={`${resourceData.id}-${columnName}`} className="flexbox-col dc__gap-4 py-12">
                     <Tooltip
                         alwaysShowTippyOnHover
                         content={
@@ -533,6 +535,20 @@ const BaseResourceListContent = ({
                             <Icon {...iconProps} size={14} />
                         </span>
                     </Tooltip>
+
+                    {showAbsoluteValuesInResourceRecommender && (
+                        <div className="flexbox dc__align-items-center dc__gap-4 dc__word-break">
+                            <span className="cn-7 fs-12 fw-5 lh-1-5">
+                                {current ? `${current.value}${current.unit}` : 'None'}
+                            </span>
+
+                            <Icon name="ic-arrow-right" color="N700" size={12} />
+
+                            <span className="cn-7 fs-12 fw-5 lh-1-5">
+                                {recommended ? `${recommended.value}${recommended.unit}` : 'None'}
+                            </span>
+                        </div>
+                    )}
                 </div>
             )
         }
@@ -543,7 +559,7 @@ const BaseResourceListContent = ({
         return (
             <div
                 key={`${resourceData.id}-${columnName}`}
-                className={`flexbox dc__align-items-center ${
+                className={`flexbox py-12 ${
                     columnName === 'status'
                         ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
                         : ''
@@ -642,7 +658,7 @@ const BaseResourceListContent = ({
             <div
                 // Added id as the name is not always unique
                 key={`${resourceData.id}-${bulkSelectionState[resourceData.id as string]}-${isBulkSelectionApplied}`}
-                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
+                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
                 {headers.map((columnName) => {
@@ -655,7 +671,7 @@ const BaseResourceListContent = ({
                     return columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldAllowNameNavigation ? '' : 'pr-8'}`}
+                            className={`flexbox dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-12 ${shouldAllowNameNavigation ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
                             {!hideBulkSelection && (
@@ -664,11 +680,11 @@ const BaseResourceListContent = ({
                                         !!bulkSelectionState[resourceData.id as string] || isBulkSelectionApplied
                                     }
                                     onChange={getHandleCheckedForId(resourceData)}
-                                    rootClassName="mb-0 dc__no-shrink"
+                                    rootClassName="mb-0 dc__no-shrink dc__align-start"
                                     value={CHECKBOX_VALUE.CHECKED}
                                 />
                             )}
-                            <div className="flex left dc__gap-4 flex-grow-1">
+                            <div className="flexbox dc__align-start dc__gap-4 flex-grow-1">
                                 <Tooltip content={resourceData.name}>
                                     <button
                                         type="button"
@@ -697,7 +713,7 @@ const BaseResourceListContent = ({
                                 </Tooltip>
                                 <ClipboardButton
                                     content={String(resourceData.name)}
-                                    rootClassName="p-4 dc__visible-hover--child"
+                                    rootClassName="mt-4 dc__visible-hover--child"
                                 />
                             </div>
                             {shouldShowActionMenu &&
@@ -746,19 +762,18 @@ const BaseResourceListContent = ({
             const isFilterApplied =
                 searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
 
+            const emptyStateKindText = isResourceRecommender ? null : selectedResource?.gvk?.Kind
+
             return isFilterApplied ? (
                 <ResourceListEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
-                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
+                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(emptyStateKindText)}
                     actionHandler={emptyStateActionHandler}
                 />
             ) : (
                 <ResourceListEmptyState
-                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
-                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
-                        selectedResource?.gvk?.Kind,
-                        selectedResource?.namespaced,
-                    )}
+                    title={RESOURCE_EMPTY_PAGE_STATE.title(emptyStateKindText)}
+                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(emptyStateKindText, selectedResource?.namespaced)}
                 />
             )
         }
@@ -868,6 +883,8 @@ const BaseResourceListContent = ({
                     updateK8sResourceTab={updateK8sResourceTab}
                     areFiltersHidden={areFiltersHidden}
                     searchPlaceholder={searchPlaceholder}
+                    showAbsoluteValuesInResourceRecommender={showAbsoluteValuesInResourceRecommender}
+                    setShowAbsoluteValuesInResourceRecommender={setShowAbsoluteValuesInResourceRecommender}
                 />
             )}
             {renderContent()}

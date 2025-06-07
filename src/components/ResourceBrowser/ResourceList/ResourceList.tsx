@@ -106,8 +106,6 @@ const ResourceList = () => {
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
-    const [resourceRecommenderSelectedNamespace, setResourceRecommenderSelectedNamespace] =
-        useState<typeof ALL_NAMESPACE_OPTION>(ALL_NAMESPACE_OPTION)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
     const { setIntelligenceConfig } = useMainContext()
 
@@ -519,7 +517,7 @@ const ResourceList = () => {
         handleResourceClick,
         updateK8sResourceTab: noop,
         nodeType: null,
-        group: null,
+        group: K8S_EMPTY_GROUP,
         // TODO: test
         isLoading: false,
         // TODO: test
@@ -527,8 +525,10 @@ const ResourceList = () => {
         resourceList,
         clusterId,
         reloadResourceListData,
-        selectedNamespace: resourceRecommenderSelectedNamespace,
-        setSelectedNamespace: setResourceRecommenderSelectedNamespace,
+        // TODO: Have;nt added description since this component should only expect value instead these setters and all
+        selectedNamespace:
+            namespace === ALL_NAMESPACE_OPTION.value ? ALL_NAMESPACE_OPTION : { value: namespace, label: namespace },
+        setSelectedNamespace: noop,
         showGenericNullState: null,
         lowercaseKindToResourceGroupMap,
         shouldOverrideSelectedResourceKind: true,

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { isNullOrUndefined } from '@devtron-labs/devtron-fe-common-lib'
-
 /* eslint-disable no-restricted-globals */
 export default () => {
     enum SortingOrder {
@@ -231,7 +229,8 @@ export default () => {
                 Object.entries(item).some(
                     ([key, value]) =>
                         key !== 'id' &&
-                        !isNullOrUndefined(value) &&
+                        value !== null &&
+                        value !== undefined &&
                         String(value).toLowerCase().includes(searchTextLowerCased),
                 ),
             )
