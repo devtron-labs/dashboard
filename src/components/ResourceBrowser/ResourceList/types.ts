@@ -50,7 +50,11 @@ export interface BaseResourceListProps
             | 'lowercaseKindToResourceGroupMap'
         >,
         Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<URLParams, 'nodeType' | 'group'> {
+        Pick<URLParams, 'nodeType' | 'group'>,
+        Pick<
+            ResourceFilterOptionsProps,
+            'showAbsoluteValuesInResourceRecommender' | 'setShowAbsoluteValuesInResourceRecommender' | 'gvkOptions'
+        > {
     isLoading: boolean
     resourceListError: ServerErrors
     resourceList: K8sResourceDetailType

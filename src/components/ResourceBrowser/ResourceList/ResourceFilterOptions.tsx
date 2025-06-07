@@ -19,11 +19,19 @@ import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     ALL_NAMESPACE_OPTION,
+    Checkbox,
+    CHECKBOX_VALUE,
+    GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
+    GVK_FILTER_KIND_QUERY_PARAM_KEY,
+    GVKOptionValueType,
+    Nodes,
     OptionType,
     SearchBar,
     SelectPicker,
+    SelectPickerOptionType,
     useAsync,
     useRegisterShortcut,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
@@ -50,16 +58,24 @@ const ResourceFilterOptions = ({
     updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
+    showAbsoluteValuesInResourceRecommender,
+    setShowAbsoluteValuesInResourceRecommender,
+    gvkOptions,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
+    const { searchParams } = useSearchString()
     const { clusterId, namespace, group } = useParams<URLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
 
     const showShortcutKey = !isInputFocused && !searchText
+    const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
+
+    const selectedAPIVersionGVKFilter = searchParams[GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]
+    const selectedKindGVKFilter = searchParams[GVK_FILTER_KIND_QUERY_PARAM_KEY]
 
     const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
@@ -122,6 +138,39 @@ const ResourceFilterOptions = ({
 
     const handleInputFocus = () => setIsInputFocused(true)
 
+    const handleToggleShowAbsoluteValues = () => {
+        setShowAbsoluteValuesInResourceRecommender((prev) => !prev)
+    }
+
+    const getIsGVKOptionSelected = (option: SelectPickerOptionType<GVKOptionValueType>): boolean => {
+        if (!option.value) {
+            return !selectedKindGVKFilter || !selectedAPIVersionGVKFilter
+        }
+
+        return option.value.kind === selectedKindGVKFilter && option.value.apiVersion === selectedAPIVersionGVKFilter
+    }
+
+    const handleGVKFilterChange = (option: SelectPickerOptionType<GVKOptionValueType> | null): void => {
+        if (!option) {
+            return
+        }
+
+        const newSearchParams = new URLSearchParams(location.search)
+        if (!option.value) {
+            newSearchParams.delete(GVK_FILTER_API_VERSION_QUERY_PARAM_KEY)
+            newSearchParams.delete(GVK_FILTER_KIND_QUERY_PARAM_KEY)
+        } else {
+            const { kind, apiVersion } = option.value
+            newSearchParams.set(GVK_FILTER_API_VERSION_QUERY_PARAM_KEY, apiVersion)
+            newSearchParams.set(GVK_FILTER_KIND_QUERY_PARAM_KEY, kind)
+        }
+
+        replace({
+            pathname: location.pathname,
+            search: newSearchParams.toString(),
+        })
+    }
+
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
@@ -148,8 +197,26 @@ const ResourceFilterOptions = ({
                     )}
                 </div>
                 {!areFiltersHidden && (
-                    <div className="flexbox dc__gap-8 dc__zi-3">
-                        {FilterButton && (
+                    <div className="flexbox dc__gap-8 dc__zi-3 dc__align-items-center">
+                        {isResourceRecommender && (
+                            <>
+                                <div className="flexbox dc__align-items-center p-6">
+                                    <Checkbox
+                                        isChecked={showAbsoluteValuesInResourceRecommender}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                        onChange={handleToggleShowAbsoluteValues}
+                                        dataTestId="resource-recommender-absolute-values-checkbox"
+                                        rootClassName="mb-0 "
+                                    >
+                                        <span className="cn-9 fs-13 fw-4 lh-20">Show absolute values</span>
+                                    </Checkbox>
+                                </div>
+
+                                <div className="dc__divider h-20" />
+                            </>
+                        )}
+
+                        {FilterButton && !isResourceRecommender && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
                                 updateTabUrl={updateK8sResourceTab}
@@ -157,6 +224,28 @@ const ResourceFilterOptions = ({
                                 setShowModal={setShowFilterModal}
                             />
                         )}
+
+                        {/* TODO: Add loader */}
+                        {!!gvkOptions?.length && (
+                            <SelectPicker<GVKOptionValueType, false>
+                                inputId="resource-filter__gvk-select"
+                                placeholder="Select Resource Kind"
+                                options={gvkOptions}
+                                value={{
+                                    label: selectedKindGVKFilter || 'All Kinds',
+                                    value:
+                                        selectedKindGVKFilter && selectedAPIVersionGVKFilter
+                                            ? {
+                                                  kind: selectedKindGVKFilter,
+                                                  apiVersion: selectedAPIVersionGVKFilter,
+                                              }
+                                            : null,
+                                }}
+                                isOptionSelected={getIsGVKOptionSelected}
+                                onChange={handleGVKFilterChange}
+                            />
+                        )}
+
                         <SelectPicker
                             inputId="resource-filter-select"
                             placeholder="Select Namespace"

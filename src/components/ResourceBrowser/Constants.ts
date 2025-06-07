@@ -204,6 +204,11 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
         Version: '',
         Kind: Nodes.UpgradeCluster,
     },
+    resourceRecommenderGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.ResourceRecommender,
+    },
 }
 
 export const UPGRADE_CLUSTER_CONSTANTS = {
@@ -356,6 +361,7 @@ export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
+export const RESOURCE_RECOMMENDER_TAB_ID = 'resource_recommender'
 
 // Note: can't change the snake case to camel case since that would be breaking change
 // while reading from local storage in useTabs
