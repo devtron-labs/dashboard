@@ -23,6 +23,7 @@ import {
     ButtonComponentType,
     ButtonVariantType,
     ComponentSizeType,
+    getSelectPickerOptionByValue,
     Icon,
     Nodes,
     OptionType,
@@ -43,14 +44,18 @@ import {
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
 import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
-import { getEmbeddedSloopURL } from '../Utils'
+import { getEmbeddedSloopURL, getResourceStatusFilterOptions } from '../Utils'
 import ColumnSelector from './ColumnSelector'
+
+const RESOURCE_STATUS_FILTER_OPTIONS = getResourceStatusFilterOptions()
 
 const NodeListSearchFilter = ({
     visibleColumns,
     setVisibleColumns,
     isOpen,
     searchParams,
+    resourceStatusFilter,
+    onResourceStatusFilterChange,
 }: NodeListSearchFilterType) => {
     const { clusterId } = useParams<URLParams>()
 
@@ -327,6 +332,16 @@ const NodeListSearchFilter = ({
                     }}
                 />
             )}
+
+            <SelectPicker
+                inputId="cluster-resources-status-filter"
+                ariaLabel="Cluster resources status filter"
+                options={RESOURCE_STATUS_FILTER_OPTIONS}
+                value={getSelectPickerOptionByValue(RESOURCE_STATUS_FILTER_OPTIONS, resourceStatusFilter, null)}
+                onChange={onResourceStatusFilterChange}
+                showSelectedOptionIcon={false}
+                disabledTippyContent="Resource status filtering is not applicable"
+            />
 
             <SelectPicker
                 inputId="k8s-version-select"

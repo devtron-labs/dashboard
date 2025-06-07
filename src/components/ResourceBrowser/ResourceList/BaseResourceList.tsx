@@ -734,6 +734,8 @@ const BaseResourceListContent = ({
                     setVisibleColumns={setVisibleColumns}
                     searchParams={searchParams}
                     isOpen={isOpen}
+                    resourceStatusFilter={resourceStatusFilter}
+                    onResourceStatusFilterChange={handleResourceStatusFilterChange}
                 />
             ) : (
                 <ResourceFilterOptions

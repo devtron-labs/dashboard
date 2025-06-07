@@ -43,6 +43,7 @@ import { ResourceFilterOptionsProps, URLParams } from '../Types'
 import { getEmbeddedSloopURL, getResourceStatusFilterOptions } from '../Utils'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
+
 const RESOURCE_STATUS_FILTER_OPTIONS = getResourceStatusFilterOptions()
 
 const ResourceFilterOptions = ({

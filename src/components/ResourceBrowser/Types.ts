@@ -299,7 +299,8 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
+export interface NodeListSearchFilterType
+    extends Pick<ResourceFilterOptionsProps, 'isOpen' | 'resourceStatusFilter' | 'onResourceStatusFilterChange'> {
     visibleColumns: string[]
     setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
     searchParams: Record<string, string>
