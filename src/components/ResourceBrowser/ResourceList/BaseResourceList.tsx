@@ -123,6 +123,7 @@ const BaseResourceListContent = ({
     handleResourceClick: onResourceClick,
     showAbsoluteValuesInResourceRecommender,
     setShowAbsoluteValuesInResourceRecommender,
+    gvkOptions,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -885,6 +886,7 @@ const BaseResourceListContent = ({
                     searchPlaceholder={searchPlaceholder}
                     showAbsoluteValuesInResourceRecommender={showAbsoluteValuesInResourceRecommender}
                     setShowAbsoluteValuesInResourceRecommender={setShowAbsoluteValuesInResourceRecommender}
+                    gvkOptions={gvkOptions}
                 />
             )}
             {renderContent()}

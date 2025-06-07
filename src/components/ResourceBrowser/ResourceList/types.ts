@@ -53,7 +53,7 @@ export interface BaseResourceListProps
         Pick<URLParams, 'nodeType' | 'group'>,
         Pick<
             ResourceFilterOptionsProps,
-            'showAbsoluteValuesInResourceRecommender' | 'setShowAbsoluteValuesInResourceRecommender'
+            'showAbsoluteValuesInResourceRecommender' | 'setShowAbsoluteValuesInResourceRecommender' | 'gvkOptions'
         > {
     isLoading: boolean
     resourceListError: ServerErrors
