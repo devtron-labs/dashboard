@@ -436,13 +436,11 @@ const BaseResourceListContent = ({
     // Move separately
     const getSeverityChipIconAndClass = (
         delta: number,
-        recommendedValue: number,
-        currentValue: number,
+        recommendedValue: string,
+        currentValue: string,
         isTooltipView = false,
     ): { class: string; iconProps: IconsProps } => {
-        const parsedDelta = !delta ? (recommendedValue || 0) - (currentValue || 0) : delta
-
-        if (delta === 0 || parsedDelta === 0) {
+        if (delta === 0 || (!recommendedValue && !currentValue)) {
             return {
                 class: isTooltipView ? 'cn-3' : 'severity-chip--unknown',
                 iconProps: {
@@ -452,7 +450,7 @@ const BaseResourceListContent = ({
             }
         }
 
-        if (parsedDelta > 0) {
+        if (delta > 0 || (recommendedValue && !currentValue)) {
             return {
                 class: isTooltipView ? 'cr-5' : 'severity-chip--critical',
                 iconProps: {
@@ -503,14 +501,14 @@ const BaseResourceListContent = ({
                                     <div className="flexbox dc__gap-8 dc__content-space w-100">
                                         <span className="fs-12 fw-4 lh-18">Current</span>
                                         <span className="fs-12 fw-6 lh-18">
-                                            {current ? `${current.value}${current.unit}` : 'None'}
+                                            {current ? `${current.value}` : 'None'}
                                         </span>
                                     </div>
 
                                     <div className="flexbox dc__gap-8 dc__content-space w-100">
                                         <span className="fs-12 fw-4 lh-18">Recommended</span>
                                         <span className="fs-12 fw-6 lh-18">
-                                            {recommended ? `${recommended.value}${recommended.unit}` : 'None'}
+                                            {recommended ? `${recommended.value}` : 'None'}
                                         </span>
                                     </div>
 
@@ -553,14 +551,12 @@ const BaseResourceListContent = ({
 
                     {showAbsoluteValuesInResourceRecommender && (
                         <div className="flexbox dc__align-items-center dc__gap-4 dc__word-break">
-                            <span className="cn-7 fs-12 fw-5 lh-1-5">
-                                {current ? `${current.value}${current.unit}` : 'None'}
-                            </span>
+                            <span className="cn-7 fs-12 fw-5 lh-1-5">{current ? `${current.value}` : 'None'}</span>
 
                             <Icon name="ic-arrow-right" color="N700" size={12} />
 
                             <span className="cn-7 fs-12 fw-5 lh-1-5">
-                                {recommended ? `${recommended.value}${recommended.unit}` : 'None'}
+                                {recommended ? `${recommended.value}` : 'None'}
                             </span>
                         </div>
                     )}

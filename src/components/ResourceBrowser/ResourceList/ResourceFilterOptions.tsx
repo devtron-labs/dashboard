@@ -186,7 +186,7 @@ const ResourceFilterOptions = ({
                             resource?.additionalMetadata?.[headerKey as ResourceRecommenderHeaderWithRecommendation]
                         if (metadata) {
                             acc[headerKey] =
-                                `${metadata.current?.value}${metadata.current?.unit} -> ${metadata.recommended?.value}${metadata.recommended?.unit} ${metadata.delta}%`
+                                `${metadata.current?.value} -> ${metadata.recommended?.value} ${metadata.delta}%`
                         } else {
                             acc[headerKey as string] = resource?.[headerKey] || ''
                         }
