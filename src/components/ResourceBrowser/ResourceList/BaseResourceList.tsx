@@ -669,7 +669,7 @@ const BaseResourceListContent = ({
             <div
                 // Added id as the name is not always unique
                 key={`${resourceData.id}-${bulkSelectionState[resourceData.id as string]}-${isBulkSelectionApplied}`}
-                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class dc__gap-16 dc__visible-hover dc__hover-n50"
+                className="scrollable-resource-list__row dc__opacity-hover dc__opacity-hover--parent fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
                 {headers.map((columnName) => {
@@ -731,16 +731,15 @@ const BaseResourceListContent = ({
 
                                 {/* Maybe move to separate */}
                                 {isResourceRecommender && (
-                                    <div className="dc__visible-hover--child">
-                                        <Button
-                                            dataTestId={`apply-recommendation-${resourceData.id as string}`}
-                                            text="Apply"
-                                            endIcon={<Icon name="ic-caret-right" color={null} />}
-                                            onClick={getOpenShowSingleApplyRecommendation(resourceData)}
-                                            size={ComponentSizeType.medium}
-                                            variant={ButtonVariantType.text}
-                                        />
-                                    </div>
+                                    <Button
+                                        dataTestId={`apply-recommendation-${resourceData.id as string}`}
+                                        text="Apply"
+                                        endIcon={<Icon name="ic-caret-right" color={null} />}
+                                        onClick={getOpenShowSingleApplyRecommendation(resourceData)}
+                                        size={ComponentSizeType.medium}
+                                        variant={ButtonVariantType.text}
+                                        isOpacityHoverChild
+                                    />
                                 )}
                             </div>
                             {shouldShowActionMenu &&
