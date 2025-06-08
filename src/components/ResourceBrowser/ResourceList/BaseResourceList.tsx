@@ -28,6 +28,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     ClipboardButton,
+    ComponentSizeType,
     ConditionalWrap,
     ErrorScreenManager,
     GenericFilterEmptyState,
@@ -96,6 +97,11 @@ const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
 const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
+const ApplyResourceRecommendationModal = importComponentFromFELibrary(
+    'ApplyResourceRecommendationModal',
+    null,
+    'function',
+)
 
 const BaseResourceListContent = ({
     isLoading,
@@ -138,6 +144,8 @@ const BaseResourceListContent = ({
 
     // NOTE: this is only being used for node listing currently
     const [visibleColumns, setVisibleColumns] = useState(getAppliedColumnsFromLocalStorage())
+    const [applyResourceRecommendationConfig, setApplyResourceRecommendationConfig] =
+        useState<(typeof resourceList)['data'][number]>(null)
 
     const searchWorkerRef = useRef(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
@@ -465,6 +473,10 @@ const BaseResourceListContent = ({
         }
     }
 
+    const getOpenShowSingleApplyRecommendation = (resourceData: K8sResourceDetailDataType) => () => {
+        setApplyResourceRecommendationConfig(resourceData)
+    }
+
     const renderColumnValue = (resourceData: K8sResourceDetailDataType, columnName: string, showAIButton: boolean) => {
         if (isResourceRecommender && resourceData.additionalMetadata?.[columnName]) {
             const { delta, recommended, current } =
@@ -674,7 +686,7 @@ const BaseResourceListContent = ({
                     return columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-12 ${shouldAllowNameNavigation ? '' : 'pr-8'}`}
+                            className={`flexbox dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-12 ${shouldAllowNameNavigation && !isResourceRecommender ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
                             {!hideBulkSelection && (
@@ -687,37 +699,53 @@ const BaseResourceListContent = ({
                                     value={CHECKBOX_VALUE.CHECKED}
                                 />
                             )}
-                            <div className="flexbox dc__align-start dc__gap-4 flex-grow-1">
-                                <Tooltip content={resourceData.name}>
-                                    <button
-                                        type="button"
-                                        className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldAllowNameNavigation ? 'cursor-default' : ''}`}
-                                        data-name={resourceData.name}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
-                                        data-api-version={isResourceRecommender ? resourceData.apiVersion : null}
-                                        onClick={shouldAllowNameNavigation ? handleResourceClick : null}
-                                        aria-label={`Select ${resourceData.name}`}
-                                    >
-                                        <span
-                                            className={shouldAllowNameNavigation ? 'dc__link cursor' : ''}
-                                            // eslint-disable-next-line react/no-danger
-                                            dangerouslySetInnerHTML={{
-                                                __html: DOMPurify.sanitize(
-                                                    highlightSearchText({
-                                                        searchText,
-                                                        text: String(resourceData.name),
-                                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                                    }),
-                                                ),
-                                            }}
+                            <div className="flexbox dc__align-start dc__content-space dc__gap-4 flex-grow-1">
+                                <div className="flexbox dc__align-start dc__gap-4 flex-grow-1">
+                                    <Tooltip content={resourceData.name}>
+                                        <button
+                                            type="button"
+                                            className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldAllowNameNavigation ? 'cursor-default' : ''}`}
+                                            data-name={resourceData.name}
+                                            data-namespace={resourceData.namespace}
+                                            data-kind={resourceData.kind}
+                                            data-api-version={isResourceRecommender ? resourceData.apiVersion : null}
+                                            onClick={shouldAllowNameNavigation ? handleResourceClick : null}
+                                            aria-label={`Select ${resourceData.name}`}
+                                        >
+                                            <span
+                                                className={shouldAllowNameNavigation ? 'dc__link cursor' : ''}
+                                                // eslint-disable-next-line react/no-danger
+                                                dangerouslySetInnerHTML={{
+                                                    __html: DOMPurify.sanitize(
+                                                        highlightSearchText({
+                                                            searchText,
+                                                            text: String(resourceData.name),
+                                                            highlightClasses: 'p-0 fw-6 bcy-2',
+                                                        }),
+                                                    ),
+                                                }}
+                                            />
+                                        </button>
+                                    </Tooltip>
+                                    <ClipboardButton
+                                        content={String(resourceData.name)}
+                                        rootClassName="mt-4 dc__visible-hover--child"
+                                    />
+                                </div>
+
+                                {/* Maybe move to separate */}
+                                {isResourceRecommender && (
+                                    <div className="dc__visible-hover--child">
+                                        <Button
+                                            dataTestId={`apply-recommendation-${resourceData.id as string}`}
+                                            text="Apply"
+                                            endIcon={<Icon name="ic-caret-right" color={null} />}
+                                            onClick={getOpenShowSingleApplyRecommendation(resourceData)}
+                                            size={ComponentSizeType.medium}
+                                            variant={ButtonVariantType.text}
                                         />
-                                    </button>
-                                </Tooltip>
-                                <ClipboardButton
-                                    content={String(resourceData.name)}
-                                    rootClassName="mt-4 dc__visible-hover--child"
-                                />
+                                    </div>
+                                )}
                             </div>
                             {shouldShowActionMenu &&
                                 (!isNodeListing ? (
@@ -930,6 +958,15 @@ const BaseResourceListContent = ({
                                 'applyResourceRecommendation',
                             )}
                             isResourceRecommendationView={isResourceRecommender}
+                        />
+                    )}
+
+                    {applyResourceRecommendationConfig && (
+                        <ApplyResourceRecommendationModal
+                            handleClose={getOpenShowSingleApplyRecommendation(null)}
+                            clusterId={+clusterId}
+                            resourceList={[applyResourceRecommendationConfig]}
+                            handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
                         />
                     )}
 
