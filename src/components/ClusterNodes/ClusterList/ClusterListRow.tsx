@@ -17,7 +17,6 @@ import {
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
@@ -140,10 +139,12 @@ const ClusterListRow = ({
             <div className="child-shimmer-loading">
                 {errorCount > 0 &&
                     hideDataOnLoad(
-                        <>
-                            <Error className="mr-3 icon-dim-16 dc__position-rel top-3" />
-                            <span className="cr-5">{errorCount}</span>
-                        </>,
+                        <Tooltip alwaysShowTippyOnHover content={`${errorCount} nodes with error`}>
+                            <div className="flex left dc__gap-4">
+                                <Icon name="ic-error" color={null} />
+                                <span className="cr-5">Nodes with error</span>
+                            </div>
+                        </Tooltip>,
                     )}
             </div>
             <div className="flexbox child-shimmer-loading">

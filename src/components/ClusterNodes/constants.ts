@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ClusterFiltersType, ClusterStatusType } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterFiltersType, ClusterStatusType, ResourceDetail } from '@devtron-labs/devtron-fe-common-lib'
 
 import { multiSelectStyles } from '../v2/common/ReactSelectCustomization'
 import { DescriptionDataType, EFFECT_TYPE, TaintsTableHeaderKeys, TaintsTableType } from './types'
@@ -100,6 +100,7 @@ export const CLUSTER_NODE_ACTIONS_LABELS = {
     taints: 'Edit taints',
     yaml: 'Edit node config',
     compareConfig: 'Compare config',
+    editThreshold: 'Edit threshold',
     delete: 'Delete',
 }
 
@@ -351,4 +352,15 @@ export const CLUSTER_DESCRIPTION_DUMMY_DATA: DescriptionDataType = {
     descriptionText: defaultClusterNote,
     descriptionUpdatedBy: '',
     descriptionUpdatedOn: '',
+}
+
+export const NODE_RESOURCE_THRESHOLD_OPERATOR_MAP: Record<ResourceDetail['threshold']['operator'], string> = {
+    greaterThan: '>',
+    lessThan: '<',
+    equalTo: '==',
+}
+
+export const NODE_RESOURCE_DEFAULT_THRESHOLD: ResourceDetail['threshold'] = {
+    operator: 'greaterThan',
+    value: 20,
 }

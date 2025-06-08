@@ -41,6 +41,14 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    Checkbox,
+    SelectPicker,
+    SelectPickerVariantType,
+    stringComparatorBySortOrder,
+    post,
+    useAsync,
+    getSelectPickerOptionByValue,
+    SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -53,8 +61,14 @@ import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
-import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
+    getBackedUpSystemState,
+    getBackedUpSystemStateList,
+    getNodeCapacity,
+    updateNodeManifest,
+} from './clusterNodes.service'
+import {
+    BackupSystemStatePayload,
     ClusterListType,
     NodeDetail,
     NodeDetailResponse,
@@ -75,6 +89,9 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { importComponentFromFELibrary } from '@Components/common'
+import { getIsResourceNamePod, getNodeResourceThreshold } from './utils'
+import { EditThresholdDrawer } from './EditThresholdDrawer'
+import { NodeUsage } from './NodeUsage'
 
 const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
 
@@ -104,6 +121,12 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const [showEditTaints, setShowEditTaints] = useState(false)
     const [isEdit, setIsEdit] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
+    const [isCompareUsageChecked, setIsCompareUsageChecked] = useState(false)
+    const [isEditThresholdOpen, setIsEditThresholdOpen] = useState(false)
+    const [isFetchingBackedUpSystemState, setIsFetchingBackedUpSystemState] = useState(false)
+    const [isBackingUpSystemState, setIsBackingUpSystemState] = useState(false)
+    const [backupSystemStateValue, setBackupSystemStateValue] = useState<number | null>(null)
+
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push, replace } = useHistory()
@@ -115,19 +138,18 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
                     setSortedPodList(response.result.pods?.sort((a, b) => a['name'].localeCompare(b['name'])))
-                    setNodeDetail(response.result)
                     const resourceList = response.result.resources ?? []
-                    for (let index = 0; index < resourceList.length; ) {
-                        if (resourceList[index].name === 'cpu') {
-                            setCpuData(resourceList[index])
-                            resourceList.splice(index, 1)
-                        } else if (resourceList[index].name === 'memory') {
-                            setMemoryData(resourceList[index])
-                            resourceList.splice(index, 1)
-                        } else {
-                            index++
-                        }
-                    }
+
+                    setNodeDetail({
+                        ...response.result,
+                        resources: resourceList
+                            .filter((resource) => resource.name !== 'cpu' && resource.name !== 'memory')
+                            .sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+                    })
+
+                    setCpuData(resourceList.find(({ name }) => name === 'cpu') ?? null)
+                    setMemoryData(resourceList.find(({ name }) => name === 'memory') ?? null)
+
                     let manifestData = JSON.parse(JSON.stringify(response.result.manifest))
                     if (_patchdata?.length) {
                         setPatchData(_patchdata)
@@ -150,6 +172,12 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     useEffect(() => {
         getData(patchData)
     }, [node])
+
+    const [isBackupSystemStateListLoading, backupSystemStateList, , refetchBackupSystemStateList] = useAsync(
+        () => getBackedUpSystemStateList({ clusterId: +clusterId, nodeName: node }),
+        [isCompareUsageChecked],
+        isCompareUsageChecked,
+    )
 
     const getSanitizedNodeTabId = (id: string) => id.toLowerCase().replace(' ', '-')
 
@@ -298,6 +326,78 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             })
         }
     }
+
+    const handleCompareUsageChange = () => {
+        setIsCompareUsageChecked((prev) => !prev)
+    }
+
+    const handleEditThresholdDrawerOpen = () => {
+        setIsEditThresholdOpen(true)
+    }
+
+    const handleEditThresholdDrawerClose = (refreshData = false) => {
+        setIsEditThresholdOpen(false)
+        if (refreshData) {
+            getData([])
+        }
+    }
+
+    const handleBackupSystemState = async () => {
+        setIsBackingUpSystemState(true)
+        try {
+            await post<void, BackupSystemStatePayload>(URLS.BACKUP_SYSTEM_STATE, {
+                clusterId: +clusterId,
+                nodeName: node,
+                data: {
+                    cpu: parseInt(cpuData.usagePercentage, 10),
+                    memory: parseInt(memoryData.usagePercentage, 10),
+                    ...nodeDetail.resources.reduce((acc, curr) => {
+                        acc[curr.name] = parseInt(curr.usagePercentage, 10)
+                        return acc
+                    }, {}),
+                },
+            })
+
+            await refetchBackupSystemStateList()
+
+            ToastManager.showToast({
+                description: 'Node resource usage data saved successfully',
+                variant: ToastVariantType.success,
+            })
+        } catch (err) {
+            showError(err)
+        } finally {
+            setIsBackingUpSystemState(false)
+        }
+    }
+
+    const handleBackupSystemStateValueChange = async ({ value }: SelectPickerOptionType<number>) => {
+        setBackupSystemStateValue(value)
+
+        setIsFetchingBackedUpSystemState(true)
+        try {
+            const { data } = await getBackedUpSystemState(value)
+            setCpuData((prev) => ({ ...prev, prevUsagePercentage: `${data.cpu}%` }))
+            setMemoryData((prev) => ({ ...prev, prevUsagePercentage: `${data.memory}%` }))
+            setNodeDetail((prev) => ({
+                ...prev,
+                resources: prev.resources.map((resource) => ({
+                    ...resource,
+                    prevUsagePercentage: `${data[resource.name]}${!getIsResourceNamePod(resource.name) ? '%' : ''}`,
+                })),
+            }))
+        } catch {
+            // HANDLED IN SERVICE
+        } finally {
+            setIsFetchingBackedUpSystemState(false)
+        }
+    }
+
+    useEffect(() => {
+        if (!isBackingUpSystemState && backupSystemStateList) {
+            handleBackupSystemStateValueChange(backupSystemStateList[0])
+        }
+    }, [isBackupSystemStateListLoading, backupSystemStateList])
 
     const renderNodeDetailsTabs = (): JSX.Element => {
         const tabs = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
@@ -617,52 +717,130 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
         return (
             <div>
-                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                    <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border resource-row dc__border-bottom fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7">
+                <div className="bg__primary dc__position-sticky dc__top-0 dc__zi-1 bg__primary border__primary dc__top-radius-4">
+                    <div className="flex dc__content-space px-20 py-12">
+                        <p className="m-0 fs-14 lh-20 fw-6 cn-9">Node Resources</p>
+                        <div className="flex dc__gap-12">
+                            <Button
+                                dataTestId="backup-system-state-btn"
+                                variant={ButtonVariantType.text}
+                                startIcon={<Icon name="ic-cloud-upload" color={null} />}
+                                text="Backup System State"
+                                isLoading={isBackingUpSystemState}
+                                onClick={handleBackupSystemState}
+                            />
+                            <div className="divider__primary" />
+                            <Checkbox
+                                value="CHECKED"
+                                rootClassName="m-0"
+                                isChecked={isCompareUsageChecked}
+                                disabled={isBackingUpSystemState}
+                                onChange={handleCompareUsageChange}
+                            >
+                                Compare Usage
+                            </Checkbox>
+                            {isCompareUsageChecked && (
+                                <div className="w-150">
+                                    <SelectPicker
+                                        inputId="node-details-system-backup-timestamps"
+                                        options={backupSystemStateList}
+                                        placeholder="Select timestamp"
+                                        variant={SelectPickerVariantType.COMPACT}
+                                        menuSize={ComponentSizeType.xs}
+                                        icon={<Icon name="ic-calendar" color="N700" />}
+                                        value={getSelectPickerOptionByValue(
+                                            backupSystemStateList,
+                                            backupSystemStateValue,
+                                            null,
+                                        )}
+                                        onChange={handleBackupSystemStateValueChange}
+                                        isLoading={isBackupSystemStateListLoading}
+                                        isDisabled={
+                                            isBackupSystemStateListLoading ||
+                                            isFetchingBackedUpSystemState ||
+                                            isBackingUpSystemState
+                                        }
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    <div
+                        className={`resource-row no-hover ${isCompareUsageChecked ? 'compare-usage' : ''} fw-6 fs-13 pt-8 pb-8 pr-20 pl-20 cn-7`}
+                    >
                         <div />
-                        <div>Resource</div>
-                        <div>Requests</div>
-                        <div>Limits</div>
-                        <div>Usage</div>
-                        <div>Allocatable</div>
-                        <div>Capacity</div>
+                        <SortableTableHeaderCell title="Resource" isSortable={false} />
+                        <SortableTableHeaderCell title="Requests" isSortable={false} />
+                        <SortableTableHeaderCell title="Limits" isSortable={false} />
+                        <SortableTableHeaderCell title="Allocatable" isSortable={false} />
+                        <SortableTableHeaderCell title="Capacity" isSortable={false} />
+                        {isCompareUsageChecked && <SortableTableHeaderCell title="Prev Usage" isSortable={false} />}
+                        <SortableTableHeaderCell title="Current Usage" isSortable={false} />
+                        <SortableTableHeaderCell title="Threshold" isSortable={false} />
                     </div>
                 </div>
-                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
+
+                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20 dc__position-rel">
+                    {isBackupSystemStateListLoading || isFetchingBackedUpSystemState ? (
+                        <div className="flex dc__position-abs w-100 h-100 bg__primary dc__zi-1">
+                            <Progressing pageLoader />
+                        </div>
+                    ) : null}
                     {cpuData && (
-                        <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                        <div
+                            className={`resource-row ${isCompareUsageChecked ? 'compare-usage' : ''} dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9`}
+                        >
                             <Icon name="ic-cpu" color={null} size={20} />
                             <div>{cpuData.name || '-'}</div>
                             <div>{cpuData.requestPercentage || '-'}</div>
                             <div>{cpuData.limitPercentage || '-'}</div>
-                            <div>{cpuData.usagePercentage || '-'}</div>
                             <div>{cpuData.allocatable || '-'}</div>
                             <div>{cpuData.capacity || '-'}</div>
+                            <NodeUsage
+                                currentUsage={cpuData.usagePercentage}
+                                prevUsage={cpuData.prevUsagePercentage}
+                                compareWithPrevious={isCompareUsageChecked}
+                            />
+                            <div>{getNodeResourceThreshold(cpuData.threshold)}</div>
                         </div>
                     )}
                     {memoryData && (
-                        <div className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9">
+                        <div
+                            className={`resource-row ${isCompareUsageChecked ? 'compare-usage' : ''} dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9`}
+                        >
                             <Icon name="ic-memory" color={null} size={20} />
                             <div>{memoryData.name || '-'}</div>
                             <div>{memoryData.requestPercentage || '-'}</div>
                             <div>{memoryData.limitPercentage || '-'}</div>
-                            <div>{memoryData.usagePercentage || '-'}</div>
                             <div>{memoryData.allocatable || '-'}</div>
                             <div>{memoryData.capacity || '-'}</div>
+                            <NodeUsage
+                                currentUsage={memoryData.usagePercentage}
+                                prevUsage={memoryData.prevUsagePercentage}
+                                compareWithPrevious={isCompareUsageChecked}
+                            />
+                            <div>{getNodeResourceThreshold(memoryData.threshold)}</div>
                         </div>
                     )}
                     {nodeDetail.resources.map((resource) => (
                         <div
                             key={resource.name}
-                            className="resource-row dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9"
+                            className={`resource-row ${isCompareUsageChecked ? 'compare-usage' : ''} dc__border-bottom-n1 fw-4 fs-13 pt-8 pb-8 pr-20 pl-20 cn-9`}
                         >
                             <Storage className="mt-2 mb-2 icon-dim-20" />
                             <div>{resource.name || '-'}</div>
                             <div>{resource.requestPercentage || '-'}</div>
                             <div>{resource.limitPercentage || '-'}</div>
-                            <div>{resource.usagePercentage || '-'}</div>
                             <div>{resource.allocatable || '-'}</div>
                             <div>{resource.capacity || '-'}</div>
+                            <NodeUsage
+                                currentUsage={resource.usagePercentage}
+                                prevUsage={resource.prevUsagePercentage}
+                                compareWithPrevious={isCompareUsageChecked}
+                            />
+                            <div>
+                                {getNodeResourceThreshold(resource.threshold, !getIsResourceNamePod(resource.name))}
+                            </div>
                         </div>
                     ))}
                 </div>
@@ -908,6 +1086,14 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 />
 
                 <Button
+                    dataTestId="edit-threshold"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    onClick={handleEditThresholdDrawerOpen}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.editThreshold}
+                />
+
+                <Button
                     dataTestId="delete-node"
                     variant={ButtonVariantType.text}
                     style={ButtonStyleType.negative}
@@ -1099,6 +1285,16 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             kind={nodeDetail.kind}
                             taints={nodeDetail.taints}
                             closePopup={hideEditTaintsModal}
+                        />
+                    )}
+                    {isEditThresholdOpen && (
+                        <EditThresholdDrawer
+                            cpuData={cpuData}
+                            memoryData={memoryData}
+                            nodeDetail={nodeDetail}
+                            clusterId={+clusterId}
+                            nodeName={node}
+                            closeDrawer={handleEditThresholdDrawerClose}
                         />
                     )}
                 </>

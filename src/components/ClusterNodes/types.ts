@@ -297,3 +297,22 @@ export interface GetClusterOverviewDetailsProps {
     requestAbortControllerRef: APIOptions['abortControllerRef']
     fetchClusterConfig: (clusterName: string) => Promise<void>
 }
+
+export interface NodeUsageProps {
+    currentUsage: string
+    prevUsage: string
+    compareWithPrevious: boolean
+}
+
+export interface BackupSystemStatePayload {
+    clusterId: number
+    nodeName: string
+    data: Record<string, number | null>
+}
+
+export interface BackupSystemStateListDTO {
+    id: number
+    timestamp: number
+}
+
+export interface BackupSystemStateDTO extends BackupSystemStateListDTO, BackupSystemStatePayload {}

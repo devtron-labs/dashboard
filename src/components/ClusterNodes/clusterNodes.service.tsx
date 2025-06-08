@@ -27,12 +27,15 @@ import {
     put,
     ResponseType,
     ROUTES as COMMON_ROUTES,
+    SelectPickerOptionType,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { Moment12HourFormat, Routes } from '../../config'
+import { Moment12HourFormat, Routes, URLS } from '../../config'
 import { CLUSTER_DESCRIPTION_DUMMY_DATA, defaultClusterShortDescription } from './constants'
 import {
+    BackupSystemStateDTO,
+    BackupSystemStateListDTO,
     ClusteNotePatchRequest,
     ClusterCapacityResponse,
     ClusterDescriptionResponse,
@@ -243,5 +246,34 @@ export const getClusterOverviewClusterCapacity = async ({
             showError(error)
         }
         throw error
+    }
+}
+
+export const getBackedUpSystemStateList = async ({ clusterId, nodeName }: { clusterId: number; nodeName: string }) => {
+    try {
+        const { result } = await get<BackupSystemStateListDTO[]>(
+            getUrlWithSearchParams(URLS.BACKUP_SYSTEM_STATE_LIST, { clusterId, nodeName }),
+        )
+
+        return result.map<SelectPickerOptionType<number>>(({ id, timestamp }) => ({
+            label: `${moment(timestamp * 1000).fromNow()}`,
+            value: id,
+        }))
+    } catch (err) {
+        showError(err)
+        throw err
+    }
+}
+
+export const getBackedUpSystemState = async (id: number) => {
+    try {
+        const { result } = await get<BackupSystemStateDTO>(
+            getUrlWithSearchParams(URLS.BACKUP_SYSTEM_STATE_VALUE, { id }),
+        )
+
+        return result
+    } catch (err) {
+        showError(err)
+        throw err
     }
 }

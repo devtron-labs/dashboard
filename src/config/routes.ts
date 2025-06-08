@@ -126,6 +126,10 @@ export const URLS = {
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
     CREATE_ENVIRONMENT: '/create/environment',
+    SAVE_NODE_THRESHOLD: 'k8s/capacity/save-node-threshold-value',
+    BACKUP_SYSTEM_STATE: 'k8s/capacity/node-data/save-node-resource-usages',
+    BACKUP_SYSTEM_STATE_LIST: 'k8s/capacity/node-data/resource-usages',
+    BACKUP_SYSTEM_STATE_VALUE: 'k8s/capacity/node-data/resource-usage',
 } as const
 
 export enum APP_COMPOSE_STAGE {
@@ -148,7 +152,12 @@ const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
     { stage: APP_COMPOSE_STAGE.ENV_OVERRIDE, path: URLS.APP_ENV_OVERRIDE_CONFIG },
 ]
 
-export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | null, isJobView: boolean | null, isTemplateView: AppConfigProps['isTemplateView']): string => {
+export const getAppComposeURL = (
+    appId: string,
+    appStage: APP_COMPOSE_STAGE | null,
+    isJobView: boolean | null,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): string => {
     const _url = isTemplateView
         ? `${generatePath(COMMON_URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
               appId,

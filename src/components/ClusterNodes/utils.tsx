@@ -18,12 +18,18 @@ import {
     ClusterDetail,
     ClusterFiltersType,
     numberComparatorBySortOrder,
+    ResourceDetail,
     SortingOrder,
     stringComparatorBySortOrder,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CLUSTER_PROD_TYPE, ClusterMapListSortableKeys } from './constants'
+import {
+    CLUSTER_PROD_TYPE,
+    ClusterMapListSortableKeys,
+    NODE_RESOURCE_DEFAULT_THRESHOLD,
+    NODE_RESOURCE_THRESHOLD_OPERATOR_MAP,
+} from './constants'
 
 export const getSortedClusterList = (
     updatedClusterOptions: ClusterDetail[],
@@ -89,3 +95,13 @@ export const getSortedClusterList = (
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     clusterFilter: (searchParams.get('clusterFilter') as ClusterFiltersType) ?? ClusterFiltersType.ALL_CLUSTERS,
 })
+
+export const getNodeResourceThreshold = (threshold: ResourceDetail['threshold'], appendPercentage = true) => {
+    if (!threshold) {
+        return getNodeResourceThreshold(NODE_RESOURCE_DEFAULT_THRESHOLD, appendPercentage)
+    }
+
+    return `${NODE_RESOURCE_THRESHOLD_OPERATOR_MAP[threshold.operator || 'greaterThan']}${threshold.value}${appendPercentage ? '%' : ''}`
+}
+
+export const getIsResourceNamePod = (resource: string) => ['pods', 'pod'].includes(resource)
