@@ -120,10 +120,10 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
     showAbsoluteValuesInResourceRecommender?: boolean
     setShowAbsoluteValuesInResourceRecommender?: React.Dispatch<React.SetStateAction<boolean>>
     gvkOptions?: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
-    isLoading?: boolean
+    isLoading: boolean
 }
 
-export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
+export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'isLoading'> {
     addTab: UseTabsReturnType['addTab']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
