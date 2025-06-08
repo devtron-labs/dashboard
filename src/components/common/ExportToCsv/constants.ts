@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ResourceRecommenderHeaderType } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
@@ -23,6 +25,7 @@ export enum FILE_NAMES {
     Users = 'Devtron Apps Users Data',
     Groups = 'Devtron Apps Permission Groups',
     Jobs = 'Devtron Jobs Data',
+    ResourceRecommendations = 'Devtron Resource Recommendations',
 }
 
 export const APPLIST_EXPORT_HEADERS = [
@@ -125,9 +128,45 @@ export const JOBLIST_EXPORT_HEADERS = [
     { label: 'Last Success At', key: 'lastSuccessAt' },
 ]
 
+export const RESOURCE_RECOMMENDATIONS_HEADERS = [
+    {
+        label: 'Container Name',
+        key: ResourceRecommenderHeaderType.CONTAINER_NAME,
+    },
+    {
+        label: 'Workload Name',
+        key: ResourceRecommenderHeaderType.NAME,
+    },
+    {
+        label: 'Kind',
+        key: ResourceRecommenderHeaderType.KIND,
+    },
+    {
+        label: 'Namespace',
+        key: ResourceRecommenderHeaderType.NAMESPACE,
+    },
+    {
+        label: 'Current → Recommended CPU (Req)',
+        key: ResourceRecommenderHeaderType.CPU_REQUEST,
+    },
+    {
+        label: 'Current → Recommended CPU (Lim)',
+        key: ResourceRecommenderHeaderType.CPU_LIMIT,
+    },
+    {
+        label: 'Current → Recommended memory (Req)',
+        key: ResourceRecommenderHeaderType.MEMORY_REQUEST,
+    },
+    {
+        label: 'Current → Recommended memory (Lim)',
+        key: ResourceRecommenderHeaderType.MEMORY_LIMIT,
+    },
+]
+
 export const CSV_HEADERS = {
     [FILE_NAMES.Apps]: APPLIST_EXPORT_HEADERS,
     [FILE_NAMES.Users]: USER_EXPORT_HEADERS,
     [FILE_NAMES.Groups]: GROUP_EXPORT_HEADERS,
     [FILE_NAMES.Jobs]: JOBLIST_EXPORT_HEADERS,
+    [FILE_NAMES.ResourceRecommendations]: RESOURCE_RECOMMENDATIONS_HEADERS,
 }

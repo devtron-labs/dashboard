@@ -26,6 +26,8 @@ import {
     GVKOptionValueType,
     Nodes,
     OptionType,
+    ResourceRecommenderHeaderType,
+    ResourceRecommenderHeaderWithRecommendation,
     SearchBar,
     SelectPicker,
     SelectPickerOptionType,
@@ -35,6 +37,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
+import { FILE_NAMES, RESOURCE_RECOMMENDATIONS_HEADERS } from '@Components/common/ExportToCsv/constants'
+import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 
 import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
@@ -62,6 +66,7 @@ const ResourceFilterOptions = ({
     setShowAbsoluteValuesInResourceRecommender,
     gvkOptions,
     isLoading,
+    resourceList,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -172,6 +177,27 @@ const ResourceFilterOptions = ({
         })
     }
 
+    const getResourcesToExport = (): Promise<Record<ResourceRecommenderHeaderType, string>[]> =>
+        Promise.resolve(
+            (resourceList?.data || []).map((resource) =>
+                RESOURCE_RECOMMENDATIONS_HEADERS.reduce<Record<ResourceRecommenderHeaderType, string>>(
+                    (acc, { key: headerKey }) => {
+                        const metadata =
+                            resource?.additionalMetadata?.[headerKey as ResourceRecommenderHeaderWithRecommendation]
+                        if (metadata) {
+                            acc[headerKey] =
+                                `${metadata.current?.value}${metadata.current?.unit} -> ${metadata.recommended?.value}${metadata.recommended?.unit} ${metadata.delta}%`
+                        } else {
+                            acc[headerKey as string] = resource?.[headerKey] || ''
+                        }
+
+                        return acc
+                    },
+                    {} as Record<ResourceRecommenderHeaderType, string>,
+                ),
+            ),
+        )
+
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
@@ -214,6 +240,25 @@ const ResourceFilterOptions = ({
                                 </div>
 
                                 <div className="dc__divider h-20" />
+
+                                <SelectPicker<GVKOptionValueType, false>
+                                    inputId="resource-filter__gvk-select"
+                                    placeholder="Select Resource Kind"
+                                    options={gvkOptions}
+                                    value={{
+                                        label: selectedKindGVKFilter || 'All Kinds',
+                                        value:
+                                            selectedKindGVKFilter && selectedAPIVersionGVKFilter
+                                                ? {
+                                                      kind: selectedKindGVKFilter,
+                                                      apiVersion: selectedAPIVersionGVKFilter,
+                                                  }
+                                                : null,
+                                    }}
+                                    isOptionSelected={getIsGVKOptionSelected}
+                                    onChange={handleGVKFilterChange}
+                                    isLoading={isLoading}
+                                />
                             </>
                         )}
 
@@ -223,27 +268,6 @@ const ResourceFilterOptions = ({
                                 updateTabUrl={updateK8sResourceTab}
                                 showModal={showFilterModal}
                                 setShowModal={setShowFilterModal}
-                            />
-                        )}
-
-                        {isResourceRecommender && (
-                            <SelectPicker<GVKOptionValueType, false>
-                                inputId="resource-filter__gvk-select"
-                                placeholder="Select Resource Kind"
-                                options={gvkOptions}
-                                value={{
-                                    label: selectedKindGVKFilter || 'All Kinds',
-                                    value:
-                                        selectedKindGVKFilter && selectedAPIVersionGVKFilter
-                                            ? {
-                                                  kind: selectedKindGVKFilter,
-                                                  apiVersion: selectedAPIVersionGVKFilter,
-                                              }
-                                            : null,
-                                }}
-                                isOptionSelected={getIsGVKOptionSelected}
-                                onChange={handleGVKFilterChange}
-                                isLoading={isLoading}
                             />
                         )}
 
@@ -258,6 +282,15 @@ const ResourceFilterOptions = ({
                             disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
                             shouldMenuAlignRight
                         />
+
+                        {isResourceRecommender && (
+                            <ExportToCsv
+                                fileName={FILE_NAMES.ResourceRecommendations}
+                                showOnlyIcon
+                                disabled={isLoading}
+                                apiPromise={getResourcesToExport}
+                            />
+                        )}
                     </div>
                 )}
             </div>
