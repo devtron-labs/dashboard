@@ -371,23 +371,29 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
+    const updateResourcesPreviousUsage = (data: Record<string, number | null> | null) => {
+        setCpuData((prev) => ({ ...prev, prevUsagePercentage: data?.cpu ? `${data.cpu}%` : null }))
+        setMemoryData((prev) => ({ ...prev, prevUsagePercentage: data?.memory ? `${data.memory}%` : null }))
+        setNodeDetail((prev) => ({
+            ...prev,
+            resources: prev.resources.map((resource) => ({
+                ...resource,
+                prevUsagePercentage: data?.[resource.name]
+                    ? `${data[resource.name]}${!getIsResourceNamePod(resource.name) ? '%' : ''}`
+                    : null,
+            })),
+        }))
+    }
+
     const handleBackupSystemStateValueChange = async ({ value }: SelectPickerOptionType<number>) => {
         setBackupSystemStateValue(value)
 
         setIsFetchingBackedUpSystemState(true)
         try {
             const { data } = await getBackedUpSystemState(value)
-            setCpuData((prev) => ({ ...prev, prevUsagePercentage: `${data.cpu}%` }))
-            setMemoryData((prev) => ({ ...prev, prevUsagePercentage: `${data.memory}%` }))
-            setNodeDetail((prev) => ({
-                ...prev,
-                resources: prev.resources.map((resource) => ({
-                    ...resource,
-                    prevUsagePercentage: `${data[resource.name]}${!getIsResourceNamePod(resource.name) ? '%' : ''}`,
-                })),
-            }))
+            updateResourcesPreviousUsage(data)
         } catch {
-            // HANDLED IN SERVICE
+            updateResourcesPreviousUsage(null)
         } finally {
             setIsFetchingBackedUpSystemState(false)
         }
