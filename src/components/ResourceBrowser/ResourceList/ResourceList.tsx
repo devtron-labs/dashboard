@@ -535,7 +535,7 @@ const ResourceList = () => {
         selectedNamespace:
             namespace === ALL_NAMESPACE_OPTION.value ? ALL_NAMESPACE_OPTION : { value: namespace, label: namespace },
         setSelectedNamespace: noop,
-        showGenericNullState: true,
+        showGenericNullState: false,
         lowercaseKindToResourceGroupMap,
         shouldOverrideSelectedResourceKind: true,
         setShowAbsoluteValuesInResourceRecommender,

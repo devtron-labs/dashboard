@@ -555,7 +555,9 @@ const BaseResourceListContent = ({
                             </div>
                         }
                     >
-                        <span className={`severity-chip ${severityChipClass} dc_width-max-content dc__mxw-120`}>
+                        <span
+                            className={`severity-chip ${severityChipClass} dc__no-border-imp dc_width-max-content dc__mxw-120`}
+                        >
                             {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
                             <Icon {...iconProps} size={14} />
                         </span>
@@ -809,19 +811,18 @@ const BaseResourceListContent = ({
             const isFilterApplied =
                 searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
 
+            const emptyStateKindValue = !isResourceRecommender ? selectedResource?.gvk?.Kind : null
+
             return isFilterApplied ? (
                 <ResourceListEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
-                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
+                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(emptyStateKindValue)}
                     actionHandler={emptyStateActionHandler}
                 />
             ) : (
                 <ResourceListEmptyState
-                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
-                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
-                        selectedResource?.gvk?.Kind,
-                        selectedResource?.namespaced,
-                    )}
+                    title={RESOURCE_EMPTY_PAGE_STATE.title(emptyStateKindValue)}
+                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(emptyStateKindValue, selectedResource?.namespaced)}
                 />
             )
         }
