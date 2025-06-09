@@ -19,7 +19,7 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
         body: (
             <p className="m-0">
                 Use Devtron to easily create Kubernetes clusters on popular cloud providers. Simplify cluster
-                provisioning and management with a guided, user-friendly interface.{' '}
+                provisioning and management with a guided, user-friendly interface.
             </p>
         ),
         isEnterprise: true,
