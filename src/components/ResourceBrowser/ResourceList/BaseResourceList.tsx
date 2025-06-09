@@ -501,15 +501,16 @@ const BaseResourceListContent = ({
                 <div key={`${resourceData.id}-${columnName}`} className="flexbox-col dc__gap-4 py-12">
                     <Tooltip
                         alwaysShowTippyOnHover
+                        className="no-content-padding"
                         content={
                             <div className="flexbox-col">
-                                <div className="flexbox border__white-10--bottom">
+                                <div className="flexbox border__white-10--bottom px-8">
                                     <h6 className="m-0 fs-12 fw-6 lh-18 dc__word-break p-8">
                                         {RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP[columnName] || columnName}
                                     </h6>
                                 </div>
 
-                                <div className="flexbox-col dc__gap-4 p-8">
+                                <div className="flexbox-col dc__gap-4 px-16 py-8">
                                     <div className="flexbox dc__gap-8 dc__content-space w-100">
                                         <span className="fs-12 fw-4 lh-18">Current</span>
                                         <span className="fs-12 fw-6 lh-18">
