@@ -24,8 +24,8 @@
 
             .icon-wrapper {
                 border: 1px solid var(--border-primary);
-                border-radius: 8px;
                 background-color: var(--bg-secondary);
+                border-radius: 8px;
                 padding: 8px;
                 width: fit-content;
             }
@@ -33,6 +33,7 @@
             .chart-icon-dim {
                 width: 32px;
                 height: 32px;
+                transition: transform 0.3s ease-in-out;
             }
         }
 
@@ -46,14 +47,11 @@
 
             .icon-wrapper {
                 border: 1px solid transparent;
-                padding: 0;
                 background-color: transparent;
             }
 
             .chart-icon-dim {
-                width: 48px;
-                height: 48px;
-                transition: transform 0.5s ease-in-out;
+               transform: scale(1.5);
             }
 
             .chart-name__arrow {

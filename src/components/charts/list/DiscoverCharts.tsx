@@ -840,7 +840,7 @@ export const ChartGroupListMin = ({
 
     return (
         <div className="chart-group">
-            <div className="chart-group__header">
+            <div className="px-20 pt-20">
                 <div className="flex dc__content-space dc__gap-8">
                     <FeatureTitleWithInfo
                         title="Chart Groups"

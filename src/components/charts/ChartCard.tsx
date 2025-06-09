@@ -100,7 +100,7 @@ const ChartCard = ({
     )
 
     const renderIcon = () => (
-        <div className="px-20 pt-20 pb-16 flexbox-col flex-grow-1">
+        <div className="px-20 pt-20 pb-16 flexbox-col flex-grow-1 h-86">
             <div className="icon-wrapper">
                 <LazyImage
                     className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim`}
@@ -148,7 +148,7 @@ const ChartCard = ({
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${dataTestId}`}
         >
-            <div>
+            <div className="h-164">
                 {renderIcon()}
                 <div>
                     {serverMode === SERVER_MODE.FULL && addChart && subtractChart ? (
