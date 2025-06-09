@@ -9,7 +9,10 @@ export enum ThresholdTableHeaderKeys {
     OVERRIDE_THRESHOLD = 'override_threshold',
 }
 
-export type ThresholdTableType = DynamicDataTableProps<ThresholdTableHeaderKeys, { isThresholdEditable: boolean }>
+export type ThresholdTableType = DynamicDataTableProps<
+    ThresholdTableHeaderKeys,
+    { isThresholdLinked: boolean; isThresholdButtonHovered: boolean }
+>
 
 export interface EditThresholdDrawerProps {
     cpuData: ResourceDetail

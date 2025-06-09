@@ -104,4 +104,24 @@ export const getNodeResourceThreshold = (threshold: ResourceDetail['threshold'],
     return `${NODE_RESOURCE_THRESHOLD_OPERATOR_MAP[threshold.operator || 'greaterThan']}${threshold.value}${appendPercentage ? '%' : ''}`
 }
 
+export const getHasCurrentUsageBreachedThreshold = ({
+    currentUsage,
+    threshold,
+}: Required<Pick<ResourceDetail, 'threshold'>> & { currentUsage: number }) => {
+    if (!threshold) {
+        return false
+    }
+
+    switch (threshold.operator) {
+        case 'greaterThan':
+            return currentUsage < threshold.value
+        case 'lessThan':
+            return currentUsage > threshold.value
+        case 'equalTo':
+            return currentUsage === threshold.value
+        default:
+            return false
+    }
+}
+
 export const getIsResourceNamePod = (resource: string) => ['pods', 'pod'].includes(resource)

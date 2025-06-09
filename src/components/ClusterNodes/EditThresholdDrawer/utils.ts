@@ -20,7 +20,7 @@ export const getThresholdTableRows =
     (): ThresholdTableType['rows'] =>
         [cpuData, memoryData, ...nodeDetail.resources].map(({ threshold, name }, id) => {
             const isResourceNamePod = getIsResourceNamePod(name)
-            const isThresholdDefault = !threshold || threshold.value === NODE_RESOURCE_DEFAULT_THRESHOLD.value
+            const isThresholdLinked = !threshold || threshold.value === NODE_RESOURCE_DEFAULT_THRESHOLD.value
 
             return {
                 id,
@@ -40,7 +40,7 @@ export const getThresholdTableRows =
                     [ThresholdTableHeaderKeys.OPERATOR]: {
                         type: DynamicDataTableRowDataType.DROPDOWN,
                         value: THRESHOLD_TABLE_OPERATOR_OPTIONS[0].value,
-                        disabled: isThresholdDefault,
+                        disabled: isThresholdLinked,
                         props: {
                             options: THRESHOLD_TABLE_OPERATOR_OPTIONS,
                             menuSize: ComponentSizeType.xs,
@@ -48,13 +48,14 @@ export const getThresholdTableRows =
                     },
                     [ThresholdTableHeaderKeys.OVERRIDE_THRESHOLD]: {
                         type: DynamicDataTableRowDataType.TEXT,
-                        value: `${!isThresholdDefault ? threshold.value : NODE_RESOURCE_DEFAULT_THRESHOLD.value}${!isResourceNamePod ? '%' : ''}`,
-                        disabled: isThresholdDefault,
+                        value: `${!isThresholdLinked ? threshold.value : NODE_RESOURCE_DEFAULT_THRESHOLD.value}${!isResourceNamePod ? '%' : ''}`,
+                        disabled: isThresholdLinked,
                         props: {},
                     },
                 },
                 customState: {
-                    isThresholdEditable: !isThresholdDefault,
+                    isThresholdLinked,
+                    isThresholdButtonHovered: false,
                 },
             }
         })
@@ -107,6 +108,26 @@ export const getThresholdTableCellValidation = (
         isValid: true,
         errorMessages: [],
     }
+}
+
+export const getThresholdValidation = (
+    thresholdRows: ThresholdTableType['rows'],
+): { isValid: boolean } & Pick<ThresholdTableType, 'cellError'> => {
+    let isValid = true
+
+    const cellError = thresholdRows.reduce<ThresholdTableType['cellError']>((acc, curr) => {
+        acc[curr.id] = THRESHOLD_TABLE_HEADERS.reduce((headerAcc, { key }) => {
+            const validationState = getThresholdTableCellValidation(curr, key)
+
+            isValid = isValid && validationState.isValid
+
+            return { ...headerAcc, [key]: validationState }
+        }, {})
+
+        return acc
+    }, {})
+
+    return { isValid, cellError }
 }
 
 export const getSaveNodeThresholdPayloadData = (

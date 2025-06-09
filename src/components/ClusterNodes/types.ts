@@ -298,7 +298,7 @@ export interface GetClusterOverviewDetailsProps {
     fetchClusterConfig: (clusterName: string) => Promise<void>
 }
 
-export interface NodeUsageProps {
+export interface NodeUsageProps extends Pick<ResourceDetail, 'threshold' | 'name'> {
     currentUsage: string
     prevUsage: string
     compareWithPrevious: boolean

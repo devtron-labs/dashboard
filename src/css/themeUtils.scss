@@ -147,6 +147,7 @@
     @include border("secondary-translucent", "--border-secondary-translucent");
     @include border("white", "--white");
     @include border("primary-warning", "--Y200");
+    @include border("white-20", "--white-20");
 }
 
 .divider {

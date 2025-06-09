@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { GroupBase, OptionsOrGroups } from 'react-select'
 import moment from 'moment'
 
 import {
@@ -249,16 +250,27 @@ export const getClusterOverviewClusterCapacity = async ({
     }
 }
 
-export const getBackedUpSystemStateList = async ({ clusterId, nodeName }: { clusterId: number; nodeName: string }) => {
+export const getBackedUpSystemStateList = async ({
+    clusterId,
+    nodeName,
+}: {
+    clusterId: number
+    nodeName: string
+}): Promise<OptionsOrGroups<SelectPickerOptionType<number>, GroupBase<SelectPickerOptionType<number>>>> => {
     try {
         const { result } = await get<BackupSystemStateListDTO[]>(
             getUrlWithSearchParams(URLS.BACKUP_SYSTEM_STATE_LIST, { clusterId, nodeName }),
         )
 
-        return result.map<SelectPickerOptionType<number>>(({ id, timestamp }) => ({
-            label: `${moment(timestamp * 1000).fromNow()}`,
-            value: id,
-        }))
+        return [
+            {
+                label: 'Compare with backup',
+                options: (result ?? []).map<SelectPickerOptionType<number>>(({ id, timestamp }) => ({
+                    label: `${moment(timestamp * 1000).format(Moment12HourFormat)}`,
+                    value: id,
+                })),
+            },
+        ]
     } catch (err) {
         showError(err)
         throw err

@@ -327,10 +327,6 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const handleCompareUsageChange = () => {
-        setIsCompareUsageChecked((prev) => !prev)
-    }
-
     const handleEditThresholdDrawerOpen = () => {
         setIsEditThresholdOpen(true)
     }
@@ -399,9 +395,16 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
+    const handleCompareUsageChange = () => {
+        setIsCompareUsageChecked(!isCompareUsageChecked)
+        if (isCompareUsageChecked) {
+            updateResourcesPreviousUsage(null)
+        }
+    }
+
     useEffect(() => {
-        if (!isBackingUpSystemState && backupSystemStateList) {
-            handleBackupSystemStateValueChange(backupSystemStateList[0])
+        if (!isBackingUpSystemState && backupSystemStateList && 'options' in backupSystemStateList[0]) {
+            handleBackupSystemStateValueChange(backupSystemStateList[0].options[0] ?? null)
         }
     }, [isBackupSystemStateListLoading, backupSystemStateList])
 
@@ -725,8 +728,9 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             <div>
                 <div className="bg__primary dc__position-sticky dc__top-0 dc__zi-1 bg__primary border__primary dc__top-radius-4">
                     <div className="flex dc__content-space px-20 py-12">
-                        <p className="m-0 fs-14 lh-20 fw-6 cn-9">Node Resources</p>
                         <div className="flex dc__gap-12">
+                            <p className="m-0 fs-14 lh-20 fw-6 cn-9">Node Resources</p>
+                            <div className="divider__primary" />
                             <Button
                                 dataTestId="backup-system-state-btn"
                                 variant={ButtonVariantType.text}
@@ -735,7 +739,31 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                                 isLoading={isBackingUpSystemState}
                                 onClick={handleBackupSystemState}
                             />
-                            <div className="divider__primary" />
+                        </div>
+                        <div className="flex dc__gap-12">
+                            {isCompareUsageChecked && (
+                                <SelectPicker
+                                    inputId="node-details-system-backup-timestamps"
+                                    options={backupSystemStateList}
+                                    placeholder="Select timestamp"
+                                    variant={SelectPickerVariantType.COMPACT}
+                                    menuSize={ComponentSizeType.xs}
+                                    icon={<Icon name="ic-calendar" color="N700" />}
+                                    value={getSelectPickerOptionByValue(
+                                        backupSystemStateList,
+                                        backupSystemStateValue,
+                                        null,
+                                    )}
+                                    onChange={handleBackupSystemStateValueChange}
+                                    isLoading={isBackupSystemStateListLoading}
+                                    isDisabled={
+                                        isBackupSystemStateListLoading ||
+                                        isFetchingBackedUpSystemState ||
+                                        isBackingUpSystemState
+                                    }
+                                    noOptionsMessage={() => 'No backup found'}
+                                />
+                            )}
                             <Checkbox
                                 value="CHECKED"
                                 rootClassName="m-0"
@@ -745,30 +773,6 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             >
                                 Compare Usage
                             </Checkbox>
-                            {isCompareUsageChecked && (
-                                <div className="w-150">
-                                    <SelectPicker
-                                        inputId="node-details-system-backup-timestamps"
-                                        options={backupSystemStateList}
-                                        placeholder="Select timestamp"
-                                        variant={SelectPickerVariantType.COMPACT}
-                                        menuSize={ComponentSizeType.xs}
-                                        icon={<Icon name="ic-calendar" color="N700" />}
-                                        value={getSelectPickerOptionByValue(
-                                            backupSystemStateList,
-                                            backupSystemStateValue,
-                                            null,
-                                        )}
-                                        onChange={handleBackupSystemStateValueChange}
-                                        isLoading={isBackupSystemStateListLoading}
-                                        isDisabled={
-                                            isBackupSystemStateListLoading ||
-                                            isFetchingBackedUpSystemState ||
-                                            isBackingUpSystemState
-                                        }
-                                    />
-                                </div>
-                            )}
                         </div>
                     </div>
                     <div
@@ -787,7 +791,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 </div>
 
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20 dc__position-rel">
-                    {isBackupSystemStateListLoading || isFetchingBackedUpSystemState ? (
+                    {isFetchingBackedUpSystemState ? (
                         <div className="flex dc__position-abs w-100 h-100 bg__primary dc__zi-1">
                             <Progressing pageLoader />
                         </div>
@@ -803,9 +807,11 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             <div>{cpuData.allocatable || '-'}</div>
                             <div>{cpuData.capacity || '-'}</div>
                             <NodeUsage
+                                name={cpuData.name}
                                 currentUsage={cpuData.usagePercentage}
                                 prevUsage={cpuData.prevUsagePercentage}
                                 compareWithPrevious={isCompareUsageChecked}
+                                threshold={cpuData.threshold}
                             />
                             <div>{getNodeResourceThreshold(cpuData.threshold)}</div>
                         </div>
@@ -821,9 +827,11 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             <div>{memoryData.allocatable || '-'}</div>
                             <div>{memoryData.capacity || '-'}</div>
                             <NodeUsage
+                                name={memoryData.name}
                                 currentUsage={memoryData.usagePercentage}
                                 prevUsage={memoryData.prevUsagePercentage}
                                 compareWithPrevious={isCompareUsageChecked}
+                                threshold={memoryData.threshold}
                             />
                             <div>{getNodeResourceThreshold(memoryData.threshold)}</div>
                         </div>
@@ -840,9 +848,11 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             <div>{resource.allocatable || '-'}</div>
                             <div>{resource.capacity || '-'}</div>
                             <NodeUsage
+                                name={resource.name}
                                 currentUsage={resource.usagePercentage}
                                 prevUsage={resource.prevUsagePercentage}
                                 compareWithPrevious={isCompareUsageChecked}
+                                threshold={resource.threshold}
                             />
                             <div>
                                 {getNodeResourceThreshold(resource.threshold, !getIsResourceNamePod(resource.name))}

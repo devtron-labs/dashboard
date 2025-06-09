@@ -14,6 +14,7 @@ import {
     stopPropagation,
     ToastManager,
     ToastVariantType,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -31,9 +32,8 @@ import {
     getSaveNodeThresholdPayloadData,
     getThresholdTableCellValidation,
     getThresholdTableRows,
+    getThresholdValidation,
 } from './utils'
-
-import './styles.scss'
 
 export const EditThresholdDrawer = ({
     cpuData,
@@ -60,13 +60,13 @@ export const EditThresholdDrawer = ({
         const rowToUpdateIndex = updatedThresholdRows.findIndex((row) => row.id === id)
         const rowToUpdate = updatedThresholdRows[rowToUpdateIndex]
 
-        const isThresholdEditable = !rowToUpdate.customState.isThresholdEditable
+        const isThresholdLinked = !rowToUpdate.customState.isThresholdLinked
 
-        rowToUpdate.data[ThresholdTableHeaderKeys.OPERATOR].disabled = !isThresholdEditable
-        rowToUpdate.data[ThresholdTableHeaderKeys.OVERRIDE_THRESHOLD].disabled = !isThresholdEditable
-        rowToUpdate.customState.isThresholdEditable = isThresholdEditable
+        rowToUpdate.data[ThresholdTableHeaderKeys.OPERATOR].disabled = isThresholdLinked
+        rowToUpdate.data[ThresholdTableHeaderKeys.OVERRIDE_THRESHOLD].disabled = isThresholdLinked
+        rowToUpdate.customState.isThresholdLinked = isThresholdLinked
 
-        if (!isThresholdEditable) {
+        if (isThresholdLinked) {
             rowToUpdate.data[ThresholdTableHeaderKeys.OPERATOR].value = THRESHOLD_TABLE_OPERATOR_OPTIONS[0].value
             rowToUpdate.data[ThresholdTableHeaderKeys.OVERRIDE_THRESHOLD].value =
                 `${NODE_RESOURCE_DEFAULT_THRESHOLD.value}%`
@@ -96,8 +96,18 @@ export const EditThresholdDrawer = ({
     }
 
     const handleSaveThreshold = async () => {
-        setIsSavingThreshold(true)
+        const { isValid, cellError } = getThresholdValidation(thresholdRows)
+        setThresholdTableCellError(cellError)
 
+        if (!isValid) {
+            ToastManager.showToast({
+                description: 'Please resolve errors before saving',
+                variant: ToastVariantType.error,
+            })
+            return
+        }
+
+        setIsSavingThreshold(true)
         try {
             await post<void, SaveNodeThresholdPayload>(URLS.SAVE_NODE_THRESHOLD, {
                 clusterId,
@@ -118,17 +128,62 @@ export const EditThresholdDrawer = ({
         }
     }
 
+    const handleThresholdLinkUnLinkMouseEnter = (id: ThresholdTableType['rows'][number]['id']) => () => {
+        setThresholdRows((prev) => {
+            const updatedThresholdRows = structuredClone(prev)
+            const rowToUpdateIndex = updatedThresholdRows.findIndex((row) => row.id === id)
+            const rowToUpdate = updatedThresholdRows[rowToUpdateIndex]
+
+            rowToUpdate.customState.isThresholdButtonHovered = true
+            updatedThresholdRows[rowToUpdateIndex] = rowToUpdate
+
+            return updatedThresholdRows
+        })
+    }
+
+    const handleThresholdLinkUnLinkMouseLeave = (id: ThresholdTableType['rows'][number]['id']) => () => {
+        setThresholdRows((prev) => {
+            const updatedThresholdRows = structuredClone(prev)
+            const rowToUpdateIndex = updatedThresholdRows.findIndex((row) => row.id === id)
+            const rowToUpdate = updatedThresholdRows[rowToUpdateIndex]
+
+            rowToUpdate.customState.isThresholdButtonHovered = false
+            updatedThresholdRows[rowToUpdateIndex] = rowToUpdate
+
+            return updatedThresholdRows
+        })
+    }
+
     // RENDERERS
-    const actionButtonRenderer: ThresholdTableType['actionButtonConfig']['renderer'] = ({ id, customState }) => (
-        <button
-            type="button"
-            aria-label="make-threshold-editable"
-            className={`edit-threshold-action-button dc__transparent h-100 flex top py-10 px-8 ${customState.isThresholdEditable ? 'edit-threshold-action-button--editable dc__hover-r50' : 'dc__hover-n50'}`}
-            onClick={handleActionButtonClick(id)}
-        >
-            <Icon name={customState.isThresholdEditable ? 'ic-close-small' : 'ic-swap'} color="N600" />
-        </button>
-    )
+    const actionButtonRenderer: ThresholdTableType['actionButtonConfig']['renderer'] = ({
+        id,
+        customState: { isThresholdButtonHovered, isThresholdLinked },
+    }) => {
+        const showLinkIcon = isThresholdLinked ? !isThresholdButtonHovered : isThresholdButtonHovered
+
+        return (
+            <Tooltip
+                alwaysShowTippyOnHover={isThresholdButtonHovered}
+                content={showLinkIcon ? 'Inherit from cluster' : 'Unlink & Override'}
+            >
+                <div>
+                    <button
+                        type="button"
+                        aria-label="threshold-link-unlink-button"
+                        className="dc__transparent h-100 flex top py-10 px-8 dc__hover-n50"
+                        onClick={handleActionButtonClick(id)}
+                        onMouseEnter={handleThresholdLinkUnLinkMouseEnter(id)}
+                        onMouseLeave={handleThresholdLinkUnLinkMouseLeave(id)}
+                    >
+                        <Icon
+                            name={showLinkIcon ? 'ic-link' : 'ic-link-broken'}
+                            color={isThresholdButtonHovered ? 'N900' : 'N600'}
+                        />
+                    </button>
+                </div>
+            </Tooltip>
+        )
+    }
 
     return (
         <Drawer position="right" width="800px" onEscape={handleClose}>
