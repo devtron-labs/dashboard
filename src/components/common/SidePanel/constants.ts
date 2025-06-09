@@ -16,7 +16,7 @@ export const TABS_CONFIG: TabConfig[] = [
     },
     {
         label: 'Ask',
-        iconName: 'ic-sparkle-color',
+        iconName: 'ic-sparkle-ai-color',
         id: SidePanelTab.ASK_DEVTRON,
     },
 ]

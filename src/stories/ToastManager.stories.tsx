@@ -17,10 +17,9 @@
 import { action } from '@storybook/addon-actions'
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Button, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, Icon, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '@Config/constants'
 
 type ShowToastParameters = Parameters<typeof ToastManager.showToast>
@@ -118,7 +117,7 @@ export const CustomIconAndProgressBar: Story = {
         ...Default.args,
         toastProps: {
             ...Default.args.toastProps,
-            icon: <ICSparkles />,
+            icon: <Icon name="ic-sparkle-color" color={null} />,
             progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
             buttonProps: {
                 ...WithButton.args.toastProps.buttonProps,
