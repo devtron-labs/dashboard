@@ -1795,7 +1795,6 @@ const CDMaterial = ({
                         onClick={() => onClickSetInitialParams('review-config')}
                         noLastDeploymentConfig={noLastDeploymentConfig}
                         canReviewConfig={canReviewConfig()}
-                        urlFilters={urlFilters}
                         renderConfigNotAvailableTooltip={renderTippyContent}
                     />
                 ) : (

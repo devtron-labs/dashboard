@@ -48,7 +48,7 @@ export type PipelineConfigDiffProps = Pick<
 }
 
 export interface PipelineConfigDiffStatusTileProps
-    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'radioSelectConfig' | 'urlFilters'> {
+    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'radioSelectConfig'> {
     hasDiff?: boolean
     noLastDeploymentConfig?: boolean
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
