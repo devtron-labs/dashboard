@@ -45,6 +45,7 @@ import {
     Pagination,
     Progressing,
     RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP,
+    RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP,
     ResourceRecommenderHeaderWithRecommendation,
     SelectAllDialogStatus,
     SortableTableHeaderCell,
@@ -187,11 +188,19 @@ const BaseResourceListContent = ({
         )
     }, [resourceList, visibleColumns, isNodeListing])
 
+    const getColumnWidth = (columnName: string, index: number) => {
+        if (isResourceRecommender && RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP[columnName]) {
+            return RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP[columnName]
+        }
+
+        return index === 0 ? 350 : 180
+    }
+
     const { gridTemplateColumns, handleResize } = useResizableTableConfig({
         headersConfig: headers.map((columnName, index) => ({
             id: columnName,
             minWidth: index === 0 ? 120 : null,
-            width: index === 0 ? 350 : 180,
+            width: getColumnWidth(columnName, index),
         })),
     })
 
