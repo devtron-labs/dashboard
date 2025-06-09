@@ -41,7 +41,7 @@ export const getThresholdTableRows =
                     },
                     [ThresholdTableHeaderKeys.OPERATOR]: {
                         type: DynamicDataTableRowDataType.DROPDOWN,
-                        value: THRESHOLD_TABLE_OPERATOR_OPTIONS[0].value,
+                        value: threshold?.operator ?? THRESHOLD_TABLE_OPERATOR_OPTIONS[0].value,
                         disabled: isThresholdLinked,
                         props: {
                             options: THRESHOLD_TABLE_OPERATOR_OPTIONS,
