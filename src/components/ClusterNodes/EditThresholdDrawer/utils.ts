@@ -20,7 +20,9 @@ export const getThresholdTableRows =
     (): ThresholdTableType['rows'] =>
         [cpuData, memoryData, ...nodeDetail.resources].map(({ threshold, name }, id) => {
             const isResourceNamePod = getIsResourceNamePod(name)
-            const isThresholdLinked = !threshold || threshold.value === NODE_RESOURCE_DEFAULT_THRESHOLD.value
+            const isThresholdLinked =
+                !threshold ||
+                (threshold.value === NODE_RESOURCE_DEFAULT_THRESHOLD.value && threshold.operator === 'greaterThan')
 
             return {
                 id,
