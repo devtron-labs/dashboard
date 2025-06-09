@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 
 import {
     Button,
@@ -7,6 +7,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     DOCUMENTATION,
+    getUniqueId,
     Icon,
     useMainContext,
     useTheme,
@@ -18,14 +19,30 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink = DOCUMENTATION.DOC_HOME_PAGE },
+        sidePanelConfig: { docLink = DOCUMENTATION.DOC_HOME_PAGE, reinitialize },
+        setSidePanelConfig,
     } = useMainContext()
 
     // REFS
     const iframeRef = useRef<HTMLIFrameElement | null>(null)
+    const iframeKeyRef = useRef<string | null>(`${docLink}-${getUniqueId()}`)
 
     // CONSTANTS
-    const iframeSrc = `${docLink}&theme=${appTheme}`
+    const iframeSrc = docLink
+        ? `${docLink}${docLink.includes('?') ? `&theme=${appTheme}` : `?theme=${appTheme}`}`
+        : null
+
+    useEffect(() => {
+        /**
+         * Reinitializes the iframe when the reinitialize flag is set to true. \
+         * This is needed to reload the iframe content whenever doc link is clicked (reinitialize is set to true). \
+         * It generates a new unique key for the iframe which forces React to recreate it.
+         */
+        if (reinitialize) {
+            iframeKeyRef.current = `${docLink}-${getUniqueId()}`
+            setSidePanelConfig((prev) => ({ ...prev, reinitialize: false }))
+        }
+    }, [reinitialize])
 
     return (
         <>
@@ -45,9 +62,9 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
             </SidePanelHeaderActions>
 
             <div className="flex-grow-1">
-                {docLink && (
+                {iframeSrc && (
                     <iframe
-                        key={iframeSrc}
+                        key={iframeKeyRef.current}
                         ref={iframeRef}
                         title="side-panel-documentation"
                         loading="lazy"
@@ -56,8 +73,7 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
                         width="100%"
                         height="100%"
                         allow="clipboard-read; clipboard-write"
-                        sandbox="allow-same-origin allow-scripts allow-popups"
-                        referrerPolicy="no-referrer"
+                        referrerPolicy="strict-origin-when-cross-origin"
                     />
                 )}
             </div>

@@ -30,7 +30,6 @@ import {
     Button,
     ComponentSizeType,
     ButtonVariantType,
-    getDocumentationUrl,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -753,15 +752,13 @@ const ChartListHeader = ({ charts }) => {
             </h3>
             <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
-                <a
-                    href={getDocumentationUrl({ docLinkKey: 'CHART_GROUP' })}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    className="dc__link"
-                    data-testid="chart-group-link"
-                >
-                    Learn more about chart groups
-                </a>
+                <DocLink
+                    dataTestId="chart-group-link"
+                    docLinkKey="CHART_LIST"
+                    text="Learn how to deploy charts"
+                    fontWeight="normal"
+                    size={ComponentSizeType.small}
+                />
             </p>
         </div>
     )
@@ -790,15 +787,12 @@ export const EmptyChartGroup = ({
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
-                    <a
-                        href={getDocumentationUrl({ docLinkKey: 'CHART_GROUP' })}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        data-testid="chart-group-link"
-                    >
-                        Learn more about chart groups
-                    </a>
+                    <DocLink
+                        dataTestId="chart-group-link"
+                        docLinkKey="CHART_GROUP"
+                        text="Learn more about chart groups"
+                        fontWeight="normal"
+                    />
                 )}
                 {typeof onClickViewChartButton === 'function' ? (
                     <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-24">

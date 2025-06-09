@@ -15,7 +15,6 @@
  */
 
 import React from 'react'
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
 import arrowTriangle from '../../../assets/icons/appstatus/ic-chevron-down.svg'
 import './list.scss'
 
@@ -39,10 +38,6 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-const ListToggle = ({ onSelect, enabled = false }) => {
-    return <Toggle onSelect={onSelect} selected={enabled} />
-}
-
 const DropDown = ({ className = '', style = {}, src = null, ...props }) => {
     if (React.isValidElement(src)) {
         return src
@@ -52,7 +47,6 @@ const DropDown = ({ className = '', style = {}, src = null, ...props }) => {
 
 List.Logo = Logo
 List.Title = Title
-List.Toggle = ListToggle
 List.DropDown = DropDown
 
 export default function List({ children = null, className = '', ...props }) {

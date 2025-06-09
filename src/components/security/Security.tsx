@@ -16,7 +16,7 @@
 
 import { Component } from 'react'
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
-import { getDocumentationUrl, PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import { PageHeader, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import './security.scss'
@@ -87,7 +87,7 @@ export class Security extends Component<SecurityProps> {
                 headerName="Security"
                 tippyProps={{
                     isTippyCustomized: true,
-                    tippyRedirectLink: 'SECURITY' ,
+                    tippyRedirectLink: 'SECURITY',
                     additionalContent: this.getTippyContent(),
                 }}
                 showTabs

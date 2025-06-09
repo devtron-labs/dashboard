@@ -20,17 +20,12 @@ import { useHistory, useLocation } from 'react-router-dom'
 
 import {
     Button,
-    ButtonComponentType,
-    ButtonVariantType,
-    ComponentSizeType,
     DeploymentNodeType,
-    Icon,
     stopPropagation,
     useSearchString,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BUTTON_TITLE } from '../../../ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -38,23 +33,22 @@ import { AppDetailsCDButtonType } from '../../types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
 import { MATERIAL_TYPE } from '../triggerView/types'
-import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
-import { getDeployButtonConfig } from './utils'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
 const AppDetailsCDButton = ({
     appId,
+    appName,
     environmentId,
     cdModal,
     deploymentAppType,
     isVirtualEnvironment,
-    deploymentUserActionState,
     loadingDetails,
     environmentName,
-    isForEmptyState = false,
     handleSuccess,
-    isAppView,
+    isForRollback = false,
+    buttonProps,
+    gaEvent,
 }: AppDetailsCDButtonType): JSX.Element => {
     const history = useHistory()
     const { searchParams } = useSearchString()
@@ -62,41 +56,29 @@ const AppDetailsCDButton = ({
     const queryParams = new URLSearchParams(location.search)
     const mode = queryParams.get('mode')
 
+    // deriving from URL and not props as on app details multiple instances exist, but we are rendering only one at a time
+    const materialType = queryParams.get('materialType')
+
     const onClickDeployButton = (event) => {
         stopPropagation(event)
         const newParams = {
             ...searchParams,
             mode: URL_PARAM_MODE_TYPE.LIST,
+            // setting materialType from props acc to rollback or input material list
+            materialType: isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList,
         }
 
         history.push({
             search: new URLSearchParams(newParams).toString(),
         })
 
-        ReactGA.event(
-            isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
-        )
+        ReactGA.event(gaEvent)
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
         stopPropagation(e)
         history.push({ search: '' })
     }
-
-    const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState, isForEmptyState)
-
-    const renderDeployButton = () => (
-        <Button
-            dataTestId="deploy-button"
-            size={isForEmptyState ? ComponentSizeType.large : ComponentSizeType.small}
-            variant={ButtonVariantType.primary}
-            text={isForEmptyState ? 'Select Image to Deploy' : BUTTON_TITLE[DeploymentNodeType.CD]}
-            startIcon={iconName && <Icon name={iconName} color={null} />}
-            onClick={onClickDeployButton}
-            component={ButtonComponentType.button}
-            style={buttonStyle}
-        />
-    )
 
     const node = {
         environmentName,
@@ -110,7 +92,7 @@ const AppDetailsCDButton = ({
             <ApprovalMaterialModal
                 isLoading={loadingDetails}
                 node={node}
-                materialType={MATERIAL_TYPE.inputMaterialList}
+                materialType={materialType}
                 stageType={DeploymentNodeType.CD}
                 closeApprovalModal={closeCDModal}
                 appId={appId}
@@ -126,7 +108,7 @@ const AppDetailsCDButton = ({
             <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
                 <div className="modal-body--cd-material h-100 contains-diff-view flexbox-col" onClick={stopPropagation}>
                     <CDMaterial
-                        materialType={MATERIAL_TYPE.inputMaterialList}
+                        materialType={materialType}
                         appId={appId}
                         envId={environmentId}
                         pipelineId={cdModal.cdPipelineId}
@@ -141,6 +123,7 @@ const AppDetailsCDButton = ({
                         isLoading={loadingDetails}
                         isRedirectedFromAppDetails
                         handleSuccess={handleSuccess}
+                        selectedAppName={appName}
                     />
                 </div>
             </VisibleModal>
@@ -148,7 +131,7 @@ const AppDetailsCDButton = ({
 
     return (
         <>
-            {renderDeployButton()}
+            <Button {...buttonProps} onClick={onClickDeployButton} />
             {renderCDModal()}
             {renderApprovalMaterial()}
         </>

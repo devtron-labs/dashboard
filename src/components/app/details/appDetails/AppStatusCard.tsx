@@ -17,10 +17,9 @@
 import React, { useMemo } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { AppStatus, AppType, StatusType, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
+import { AppStatus, AppType, StatusType, LoadingCard, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
-import LoadingCard from './LoadingCard'
 import './appDetails.scss'
 import { importComponentFromFELibrary } from '@Components/common'
 
