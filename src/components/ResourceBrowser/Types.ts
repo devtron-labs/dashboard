@@ -30,6 +30,7 @@ import {
     ResourceDetail,
     SelectedResourceType,
     SelectPickerOptionType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
@@ -120,7 +121,10 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
     showAbsoluteValuesInResourceRecommender?: boolean
     setShowAbsoluteValuesInResourceRecommender?: React.Dispatch<React.SetStateAction<boolean>>
     gvkOptions?: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
-    isLoading: boolean
+    areGVKOptionsLoading?: boolean
+    reloadGVKOptions?: () => void
+    gvkOptionsError?: ServerErrors
+    isResourceListLoading?: boolean
 }
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'isLoading'> {

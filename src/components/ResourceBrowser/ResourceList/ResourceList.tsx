@@ -504,8 +504,11 @@ const ResourceList = () => {
         setShowAbsoluteValuesInResourceRecommender,
         showAbsoluteValuesInResourceRecommender,
         gvkOptions,
-        isLoading,
+        isResourceListLoading,
         resourceListError,
+        areGVKOptionsLoading,
+        reloadGVKOptions,
+        gvkOptionsError,
     }: GetResourceRecommenderResourceListPropsType): BaseResourceListProps => ({
         searchPlaceholder: 'Search',
         hideDeleteResource: true,
@@ -523,7 +526,7 @@ const ResourceList = () => {
         updateK8sResourceTab: noop,
         nodeType: null,
         group: K8S_EMPTY_GROUP,
-        isLoading,
+        isLoading: isResourceListLoading,
         resourceListError,
         resourceList,
         clusterId,
@@ -538,6 +541,9 @@ const ResourceList = () => {
         setShowAbsoluteValuesInResourceRecommender,
         showAbsoluteValuesInResourceRecommender,
         gvkOptions,
+        areGVKOptionsLoading,
+        reloadGVKOptions,
+        gvkOptionsError,
     })
 
     const fixedTabComponents = [

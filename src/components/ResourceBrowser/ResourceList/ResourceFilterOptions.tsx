@@ -65,8 +65,11 @@ const ResourceFilterOptions = ({
     showAbsoluteValuesInResourceRecommender,
     setShowAbsoluteValuesInResourceRecommender,
     gvkOptions,
-    isLoading,
     resourceList,
+    areGVKOptionsLoading,
+    reloadGVKOptions,
+    gvkOptionsError,
+    isResourceListLoading,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -257,7 +260,9 @@ const ResourceFilterOptions = ({
                                     }}
                                     isOptionSelected={getIsGVKOptionSelected}
                                     onChange={handleGVKFilterChange}
-                                    isLoading={isLoading}
+                                    isLoading={areGVKOptionsLoading}
+                                    optionListError={gvkOptionsError}
+                                    reloadOptionList={reloadGVKOptions}
                                 />
                             </>
                         )}
@@ -287,7 +292,7 @@ const ResourceFilterOptions = ({
                             <ExportToCsv
                                 fileName={FILE_NAMES.ResourceRecommendations}
                                 showOnlyIcon
-                                disabled={isLoading}
+                                disabled={isResourceListLoading}
                                 apiPromise={getResourcesToExport}
                             />
                         )}

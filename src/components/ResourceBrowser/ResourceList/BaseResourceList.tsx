@@ -132,6 +132,9 @@ const BaseResourceListContent = ({
     showAbsoluteValuesInResourceRecommender,
     setShowAbsoluteValuesInResourceRecommender,
     gvkOptions,
+    areGVKOptionsLoading,
+    reloadGVKOptions,
+    gvkOptionsError,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -922,7 +925,10 @@ const BaseResourceListContent = ({
                     showAbsoluteValuesInResourceRecommender={showAbsoluteValuesInResourceRecommender}
                     setShowAbsoluteValuesInResourceRecommender={setShowAbsoluteValuesInResourceRecommender}
                     gvkOptions={gvkOptions}
-                    isLoading={isLoading}
+                    areGVKOptionsLoading={areGVKOptionsLoading}
+                    gvkOptionsError={gvkOptionsError}
+                    reloadGVKOptions={reloadGVKOptions}
+                    isResourceListLoading={isLoading}
                 />
             )}
             {renderContent()}
