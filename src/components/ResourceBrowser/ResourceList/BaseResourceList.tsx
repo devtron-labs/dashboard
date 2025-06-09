@@ -557,7 +557,7 @@ const BaseResourceListContent = ({
                         }
                     >
                         <span
-                            className={`severity-chip ${severityChipClass} dc__no-border-imp dc_width-max-content dc__mxw-120`}
+                            className={`severity-chip ${severityChipClass} h-20 dc__no-border-imp dc_width-max-content dc__mxw-120`}
                         >
                             {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
                             <Icon {...iconProps} size={14} />
@@ -607,7 +607,9 @@ const BaseResourceListContent = ({
                     >
                         <span
                             className={
-                                columnName === 'status' && isNodeUnschedulable ? 'dc__no-shrink' : 'dc__truncate'
+                                columnName === 'status' && isNodeUnschedulable
+                                    ? 'dc__no-shrink'
+                                    : 'dc__truncate dc__ellipsis-right'
                             }
                             data-testid={`${columnName}-count`}
                             // eslint-disable-next-line react/no-danger
@@ -710,7 +712,7 @@ const BaseResourceListContent = ({
                                     value={CHECKBOX_VALUE.CHECKED}
                                 />
                             )}
-                            <div className="flexbox dc__align-start dc__content-space dc__gap-4 flex-grow-1">
+                            <div className="flexbox dc__align-start dc__content-space dc__gap-8 flex-grow-1">
                                 <div className="flexbox dc__align-start dc__gap-4 flex-grow-1">
                                     <Tooltip content={resourceData.name}>
                                         <button
