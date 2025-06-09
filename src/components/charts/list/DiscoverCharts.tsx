@@ -432,8 +432,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         history.push(url)
     }
 
-    const randerChartStoreEmptyState = (): JSX.Element => {
-        return chartRepos?.length > 0 && noChartAvailable ? (
+    const renderChartStoreEmptyState = (): JSX.Element => {
+        return chartRepos?.length > 0 && noChartAvailable && searchApplied ? (
             <ChartEmptyState onClickViewChartButton={clearSearch} />
         ) : (
             <ChartEmptyState
@@ -491,7 +491,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
                                             />
                                         ) : (
-                                            randerChartStoreEmptyState()
+                                            renderChartStoreEmptyState()
                                         )}
                                     </div>
                                 ) : (
@@ -568,7 +568,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                         )}
                                                     </>
                                                 ) : (
-                                                    randerChartStoreEmptyState()
+                                                    renderChartStoreEmptyState()
                                                 )}
                                             </div>
                                         )}

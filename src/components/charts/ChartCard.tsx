@@ -73,7 +73,7 @@ const ChartCard = ({
     }
 
     const renderAddIcon = () => (
-        <div className={`${selectedCount > 0 ? 'dc__visible' : ''} dc__visible-hover--child`}>
+        <div className={`${selectedCount > 0 ? 'dc__visible' : 'dc__border br-6'} dc__visible-hover--child `}>
             <Button
                 icon={<Icon name="ic-add" size={null} color={null} />}
                 onClick={addChartTab}
@@ -142,9 +142,7 @@ const ChartCard = ({
     return (
         <div
             key={chart.id}
-            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__primary cursor dc__position-rel br-8 ${isListView ? 'flexbox-col' : ''} ${
-                showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''
-            } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}
+            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__primary cursor dc__position-rel br-8 ${isListView ? 'flexbox-col' : ''} ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${dataTestId}`}
         >
@@ -153,7 +151,7 @@ const ChartCard = ({
                 <div>
                     {serverMode === SERVER_MODE.FULL && addChart && subtractChart ? (
                         <div
-                            className={`chart-grid__check devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid' : ''} `}
+                            className={`chart-grid__check devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''} `}
                         >
                             {selectedCount > 0 && (
                                 <>

@@ -70,26 +70,6 @@
             }
         }
 
-        .show-checkbox-onhover {
-            &:hover {
-                .chart-grid__check {
-                    &.devtron-stepper {
-                        display: grid;
-                    }
-                }
-            }
-        }
-
-        .devtron-stepper {
-            font-weight: 600;
-            border: 1px solid var(--N200);
-            border-radius: 6px;
-            place-items: center;
-            grid-column-gap: 0px;
-            background-color: var(--bg-primary);
-            cursor: default;
-        }
-
         .devtron-stepper-grid {
             grid-template-columns: repeat(3, 28px);
         }
