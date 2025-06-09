@@ -567,9 +567,10 @@ export const ChartValuesSelector = ({
         `${option.value.id} ${option.value.kind}`
 
     const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) => {
+        const kind = selectedOption.value.kind
         handleAnalyticsEvent({
             category: 'Chart Store',
-            action: `CS_CHART_CONFIGURE_&_DEPLOY_${selectedOption.value.kind}_VALUE_SELECTED`,
+            action: `CS_CHART_CONFIGURE_&_DEPLOY_${kind === 'TEMPLATE' ? 'PRESET' : kind}_VALUE_SELECTED`,
         })
         handleChartValuesSelection(selectedOption.value)
     }
