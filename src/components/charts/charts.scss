@@ -14,43 +14,115 @@
  * limitations under the License.
  */
 
-.chart-grid {
-    .chart-grid-item {
-        &.chart-grid-item--selected {
-            border: solid 1px var(--B500);
-            background-color: var(--B100);
+.discover-charts__body {
+    .chart-grid {
+        .chart-grid-item {
+            &.chart-grid-item--selected {
+                border: solid 1px var(--B500);
+                background-color: var(--B50);
+            }
+
+            .icon-wrapper {
+                border: 1px solid var(--border-primary);
+                border-radius: 8px;
+                background-color: var(--bg-secondary);
+                padding: 8px;
+                width: fit-content;
+            }
+
+            .chart-icon-dim {
+                width: 32px;
+                height: 32px;
+            }
         }
 
-        .icon-wrapper {
-            border: 1px solid var(--border-primary);
-            border-radius: 8px;
-            background-color: var(--bg-secondary);
-            padding: 8px;
-            width: fit-content;
+        .chart-grid-item:hover {
+            text-decoration: none;
+            box-shadow: var(--shadow-10);
+
+            .chart-grid-item__title {
+                color: var(--B500);
+            }
+
+            .icon-wrapper {
+                border: 1px solid transparent;
+                padding: 0;
+                background-color: transparent;
+            }
+
+            .chart-icon-dim {
+                width: 48px;
+                height: 48px;
+                transition: transform 0.5s ease-in-out;
+            }
+
+            .chart-name__arrow {
+                transform: translateX(30%);
+                visibility: visible;
+            }
         }
 
-        .chart-icon-dim {
-            width: 32px;
-            height: 32px;
-        }
-    }
+        .chart-grid__check {
+            position: absolute;
+            right: 20px;
+            top: 20px;
 
-    .chart-grid-item:hover {
-        text-decoration: none;
-        box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
-
-        .chart-grid-item__title {
-            color: var(--B500);
+            &.chart-grid__check--hidden {
+                display: none;
+            }
         }
 
-        .icon-wrapper {
-            border: 1px solid transparent;
-            padding: 0;
+        .show-checkbox-onhover {
+            &:hover {
+                .chart-grid__check {
+                    &.devtron-stepper {
+                        display: grid;
+                    }
+                }
+            }
         }
 
-        .chart-icon-dim {
-            width: 48px;
-            height: 48px;
+        .devtron-stepper {
+            font-weight: 600;
+            border: 1px solid var(--N200);
+            border-radius: 6px;
+            place-items: center;
+            grid-column-gap: 0px;
+            background-color: var(--bg-primary);
+            cursor: default;
+        }
+
+        .devtron-stepper-grid {
+            grid-template-columns: repeat(3, 28px);
+        }
+
+        .devtron-stepper__item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            width: 100%;
+
+            &:disabled {
+                cursor: not-allowed;
+
+                .fill-color {
+                    fill: var(--N600);
+                    cursor: not-allowed;
+                }
+            }
+
+            .fill-color {
+                fill: var(--B500);
+            }
+        }
+
+        .white-card {
+            &.white-card--chart-store {
+                display: flex;
+                flex-direction: column;
+                padding: 0;
+            }
         }
     }
 
@@ -58,78 +130,6 @@
         max-width: 776px;
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .chart-grid__check {
-        position: absolute;
-        right: 20px;
-        top: 20px;
-
-        &.chart-grid__check--hidden {
-            display: none;
-        }
-    }
-
-    .chart-grid__check--hide {
-        display: none;
-    }
-
-    .show-checkbox-onhover {
-        &:hover {
-            .chart-grid__check {
-                &.devtron-stepper {
-                    display: grid;
-                }
-            }
-        }
-    }
-
-    .devtron-stepper {
-        font-weight: 600;
-        border: 1px solid var(--N200);
-        border-radius: 6px;
-        place-items: center;
-        grid-column-gap: 0px;
-        background-color: var(--bg-primary);
-        cursor: default;
-    }
-
-    .devtron-stepper-grid {
-        grid-template-columns: repeat(3, 20px);
-    }
-
-    .devtron-stepper__item {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        width: 100%;
-
-        &:disabled {
-            cursor: not-allowed;
-
-            .fill-color {
-                fill: var(--N600);
-                cursor: not-allowed;
-            }
-        }
-
-        .fill-color {
-            fill: var(--B500);
-        }
-    }
-
-    .chart-group-deployments {
-        padding: 16px 24px;
-        flex: 1;
-    }
-
-    .white-card {
-        &.white-card--chart-store {
-            display: flex;
-            flex-direction: column;
-            padding: 0;
-        }
     }
 }
 
@@ -159,7 +159,6 @@
         margin-bottom: unset;
     }
 }
-
 
 .deploy-and-details-view {
     display: flex;
@@ -208,8 +207,9 @@
     margin-bottom: 16px;
 }
 
-.chart-group__header {
-    padding: 20px 20px 0px 20px;
+.chart-group-deployments {
+    padding: 16px 24px;
+    flex: 1;
 }
 
 .chart-group__chart-icon {

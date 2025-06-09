@@ -25,6 +25,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICCaretSmall } from '@Icons/ic-caret-left-small.svg'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
@@ -72,7 +73,7 @@ const ChartCard = ({
     }
 
     const renderAddIcon = () => (
-        <div className="dc__visible-hover--child">
+        <div className={`${selectedCount > 0 ? 'dc__visible' : ''} dc__visible-hover--child`}>
             <Button
                 icon={<Icon name="ic-add" size={null} color={null} />}
                 onClick={addChartTab}
@@ -114,8 +115,8 @@ const ChartCard = ({
         <div className="flexbox-col flex-grow-1 dc__gap-4 px-20 pb-16">
             <div className="flex left">
                 <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
-                <div className="dc__visible-hover--child">
-                    <Icon name="ic-caret-right" size={16} color="B500" />
+                <div className="chart-name__arrow dc__no-shrink flex">
+                    <ICCaretSmall className="icon-dim-16 dc__flip-180 scb-5" />
                 </div>
             </div>
             {chart.deprecated && renderDeprecatedWarning()}
@@ -141,7 +142,7 @@ const ChartCard = ({
     return (
         <div
             key={chart.id}
-            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent cursor dc__position-rel br-8 dc__border bg__primary ${isListView ? 'flexbox-col' : ''} ${
+            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__primary cursor dc__position-rel br-8 ${isListView ? 'flexbox-col' : ''} ${
                 showCheckBoxOnHoverOnly ? 'show-checkbox-onhover' : ''
             } ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}
             onClick={onClick ? onClickChartSelect : noop}
@@ -152,7 +153,7 @@ const ChartCard = ({
                 <div>
                     {serverMode === SERVER_MODE.FULL && addChart && subtractChart ? (
                         <div
-                            className={`chart-grid__check devtron-stepper dc__grid ${selectedCount > 0 ? 'devtron-stepper-grid' : ''} `}
+                            className={`chart-grid__check devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid' : ''} `}
                         >
                             {selectedCount > 0 && (
                                 <>
