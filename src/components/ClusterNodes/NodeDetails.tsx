@@ -68,6 +68,7 @@ import {
     updateNodeManifest,
 } from './clusterNodes.service'
 import {
+    BackupSystemStateDTO,
     BackupSystemStatePayload,
     ClusterListType,
     NodeDetail,
@@ -89,7 +90,7 @@ import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSel
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { importComponentFromFELibrary } from '@Components/common'
-import { getIsResourceNamePod, getNodeResourceThreshold } from './utils'
+import { getIsResourceNamePod, getNodeResourceThreshold, getPreviousUsage } from './utils'
 import { EditThresholdDrawer } from './EditThresholdDrawer'
 import { NodeUsage } from './NodeUsage'
 
@@ -127,6 +128,8 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const [isBackingUpSystemState, setIsBackingUpSystemState] = useState(false)
     const [backupSystemStateValue, setBackupSystemStateValue] = useState<number | null>(null)
 
+    const backedUpSystemStateRef = useRef<BackupSystemStateDTO['data'] | null>(null)
+
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push, replace } = useHistory()
@@ -139,16 +142,37 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                 if (response.result) {
                     setSortedPodList(response.result.pods?.sort((a, b) => a['name'].localeCompare(b['name'])))
                     const resourceList = response.result.resources ?? []
+                    const backedUpSystemState = backedUpSystemStateRef.current ?? {}
 
                     setNodeDetail({
                         ...response.result,
                         resources: resourceList
                             .filter((resource) => resource.name !== 'cpu' && resource.name !== 'memory')
+                            .map((resource) => ({
+                                ...resource,
+                                prevUsagePercentage: getPreviousUsage(backedUpSystemState, resource.name),
+                            }))
                             .sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
                     })
 
-                    setCpuData(resourceList.find(({ name }) => name === 'cpu') ?? null)
-                    setMemoryData(resourceList.find(({ name }) => name === 'memory') ?? null)
+                    const _cpuData = resourceList.find(({ name }) => name === 'cpu')
+                    const _memoryData = resourceList.find(({ name }) => name === 'memory')
+                    setCpuData(
+                        _cpuData
+                            ? {
+                                  ..._cpuData,
+                                  prevUsagePercentage: getPreviousUsage(backedUpSystemState, 'cpu'),
+                              }
+                            : null,
+                    )
+                    setMemoryData(
+                        _memoryData
+                            ? {
+                                  ..._memoryData,
+                                  prevUsagePercentage: getPreviousUsage(backedUpSystemState, 'memory'),
+                              }
+                            : null,
+                    )
 
                     let manifestData = JSON.parse(JSON.stringify(response.result.manifest))
                     if (_patchdata?.length) {
@@ -178,6 +202,18 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         [isCompareUsageChecked],
         isCompareUsageChecked,
     )
+
+    const updateResourcesPreviousUsage = (data: Record<string, number | null> | null) => {
+        setCpuData((prev) => ({ ...prev, prevUsagePercentage: getPreviousUsage(data, 'cpu') }))
+        setMemoryData((prev) => ({ ...prev, prevUsagePercentage: getPreviousUsage(data, 'memory') }))
+        setNodeDetail((prev) => ({
+            ...prev,
+            resources: prev.resources.map((resource) => ({
+                ...resource,
+                prevUsagePercentage: getPreviousUsage(data, resource.name),
+            })),
+        }))
+    }
 
     const getSanitizedNodeTabId = (id: string) => id.toLowerCase().replace(' ', '-')
 
@@ -327,6 +363,14 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
+    const handleCompareUsageChange = () => {
+        const updatedIsCompareUsageChecked = !isCompareUsageChecked
+        setIsCompareUsageChecked(updatedIsCompareUsageChecked)
+        if (!updatedIsCompareUsageChecked) {
+            updateResourcesPreviousUsage(null)
+        }
+    }
+
     const handleEditThresholdDrawerOpen = () => {
         setIsEditThresholdOpen(true)
     }
@@ -367,38 +411,19 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const updateResourcesPreviousUsage = (data: Record<string, number | null> | null) => {
-        setCpuData((prev) => ({ ...prev, prevUsagePercentage: data?.cpu ? `${data.cpu}%` : null }))
-        setMemoryData((prev) => ({ ...prev, prevUsagePercentage: data?.memory ? `${data.memory}%` : null }))
-        setNodeDetail((prev) => ({
-            ...prev,
-            resources: prev.resources.map((resource) => ({
-                ...resource,
-                prevUsagePercentage: data?.[resource.name]
-                    ? `${data[resource.name]}${!getIsResourceNamePod(resource.name) ? '%' : ''}`
-                    : null,
-            })),
-        }))
-    }
-
     const handleBackupSystemStateValueChange = async ({ value }: SelectPickerOptionType<number>) => {
         setBackupSystemStateValue(value)
 
         setIsFetchingBackedUpSystemState(true)
+        backedUpSystemStateRef.current = null
         try {
             const { data } = await getBackedUpSystemState(value)
+            backedUpSystemStateRef.current = data
             updateResourcesPreviousUsage(data)
         } catch {
             updateResourcesPreviousUsage(null)
         } finally {
             setIsFetchingBackedUpSystemState(false)
-        }
-    }
-
-    const handleCompareUsageChange = () => {
-        setIsCompareUsageChecked(!isCompareUsageChecked)
-        if (isCompareUsageChecked) {
-            updateResourcesPreviousUsage(null)
         }
     }
 

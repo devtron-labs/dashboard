@@ -45,7 +45,7 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
                     content={
                         <div className="flexbox-col w-150">
                             <div className="flexbox-col dc__gap-2 px-8 pt-8 pb-7 border__white-20--bottom">
-                                <p className="text-white fs-12 fw-6 lh-18 m-0">{name}</p>
+                                <p className="text-white fs-12 fw-6 lh-18 m-0">{`${name} usage`}</p>
                                 <p
                                     className={`fs-12 fw-4 lh-18 m-0 ${hasCurrentUsageBreachedThreshold ? 'cr-5' : 'cg-5'}`}
                                 >

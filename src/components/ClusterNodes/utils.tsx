@@ -30,6 +30,7 @@ import {
     NODE_RESOURCE_DEFAULT_THRESHOLD,
     NODE_RESOURCE_THRESHOLD_OPERATOR_MAP,
 } from './constants'
+import { BackupSystemStateDTO } from './types'
 
 export const getSortedClusterList = (
     updatedClusterOptions: ClusterDetail[],
@@ -106,22 +107,23 @@ export const getNodeResourceThreshold = (threshold: ResourceDetail['threshold'],
 
 export const getHasCurrentUsageBreachedThreshold = ({
     currentUsage,
-    threshold,
+    threshold: overrideThreshold,
 }: Required<Pick<ResourceDetail, 'threshold'>> & { currentUsage: number }) => {
-    if (!threshold) {
-        return false
-    }
+    const threshold = overrideThreshold ?? NODE_RESOURCE_DEFAULT_THRESHOLD
 
     switch (threshold.operator) {
         case 'greaterThan':
-            return currentUsage < threshold.value
-        case 'lessThan':
             return currentUsage > threshold.value
+        case 'lessThan':
+            return currentUsage < threshold.value
         case 'equalTo':
-            return currentUsage === threshold.value
+            return currentUsage !== threshold.value
         default:
             return false
     }
 }
 
 export const getIsResourceNamePod = (resource: string) => ['pods', 'pod'].includes(resource)
+
+export const getPreviousUsage = (data: BackupSystemStateDTO['data'], resourceName: ResourceDetail['name']) =>
+    data?.[resourceName] ? `${data[resourceName]}${!getIsResourceNamePod(resourceName) ? '%' : ''}` : null
