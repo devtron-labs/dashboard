@@ -219,17 +219,11 @@ export const getSidebarIconBasedOnResourceStatus = (
     const showErrorForNodesWhenNotSelected = [Nodes.Pod]
     const showPendingForNodesWhenNotSelected = [Nodes.PersistentVolumeClaim]
 
-    if (
-        showErrorForNodesWhenNotSelected.includes(nodeName as Nodes) &&
-        (!isSelected || (isSelected && selectedResourceStatus !== ResourceStatusFilter.ERROR))
-    ) {
+    if (showErrorForNodesWhenNotSelected.includes(nodeName as Nodes) && !isSelected) {
         return 'ic-error'
     }
 
-    if (
-        showPendingForNodesWhenNotSelected.includes(nodeName as Nodes) &&
-        (!isSelected || (isSelected && selectedResourceStatus !== ResourceStatusFilter.PENDING))
-    ) {
+    if (showPendingForNodesWhenNotSelected.includes(nodeName as Nodes) && !isSelected) {
         return 'ic-in-progress'
     }
 
