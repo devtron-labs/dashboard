@@ -244,26 +244,28 @@ const ResourceFilterOptions = ({
 
                                 <div className="dc__divider h-20" />
 
-                                <SelectPicker<GVKOptionValueType, false>
-                                    inputId="resource-filter__gvk-select"
-                                    placeholder="Select Resource Kind"
-                                    options={gvkOptions}
-                                    value={{
-                                        label: selectedKindGVKFilter || 'All Kinds',
-                                        value:
-                                            selectedKindGVKFilter && selectedAPIVersionGVKFilter
-                                                ? {
-                                                      kind: selectedKindGVKFilter,
-                                                      apiVersion: selectedAPIVersionGVKFilter,
-                                                  }
-                                                : null,
-                                    }}
-                                    isOptionSelected={getIsGVKOptionSelected}
-                                    onChange={handleGVKFilterChange}
-                                    isLoading={areGVKOptionsLoading}
-                                    optionListError={gvkOptionsError}
-                                    reloadOptionList={reloadGVKOptions}
-                                />
+                                <div className="dc__mxw-200">
+                                    <SelectPicker<GVKOptionValueType, false>
+                                        inputId="resource-filter__gvk-select"
+                                        placeholder="Select Resource Kind"
+                                        options={gvkOptions}
+                                        value={{
+                                            label: selectedKindGVKFilter || 'All Kinds',
+                                            value:
+                                                selectedKindGVKFilter && selectedAPIVersionGVKFilter
+                                                    ? {
+                                                          kind: selectedKindGVKFilter,
+                                                          apiVersion: selectedAPIVersionGVKFilter,
+                                                      }
+                                                    : null,
+                                        }}
+                                        isOptionSelected={getIsGVKOptionSelected}
+                                        onChange={handleGVKFilterChange}
+                                        isLoading={areGVKOptionsLoading}
+                                        optionListError={gvkOptionsError}
+                                        reloadOptionList={reloadGVKOptions}
+                                    />
+                                </div>
                             </>
                         )}
 
@@ -276,17 +278,21 @@ const ResourceFilterOptions = ({
                             />
                         )}
 
-                        <SelectPicker
-                            inputId="resource-filter-select"
-                            placeholder="Select Namespace"
-                            options={namespaceOptions}
-                            value={selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION}
-                            onChange={handleNamespaceChange}
-                            isDisabled={!selectedResource?.namespaced}
-                            icon={<NamespaceIcon className="fcn-6" />}
-                            disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
-                            shouldMenuAlignRight
-                        />
+                        <div className="dc__mxw-200">
+                            <SelectPicker
+                                inputId="resource-filter-select"
+                                placeholder="Select Namespace"
+                                options={namespaceOptions}
+                                value={
+                                    selectedResource?.namespaced ? selectedNamespace : NAMESPACE_NOT_APPLICABLE_OPTION
+                                }
+                                onChange={handleNamespaceChange}
+                                isDisabled={!selectedResource?.namespaced}
+                                icon={<NamespaceIcon className="fcn-6" />}
+                                disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
+                                shouldMenuAlignRight
+                            />
+                        </div>
 
                         {isResourceRecommender && (
                             <ExportToCsv
