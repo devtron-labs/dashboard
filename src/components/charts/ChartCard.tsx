@@ -28,7 +28,7 @@ import {
 import { ReactComponent as ICCaretSmall } from '@Icons/ic-caret-left-small.svg'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
-import placeHolder from '../../assets/icons/ic-plc-chart.svg'
+import placeHolder from '../../assets/icons/ic-default-chart.svg'
 import { SERVER_MODE } from '../../config'
 import { LazyImage } from '../common'
 import { ChartSelectProps } from './util/types'
@@ -36,11 +36,9 @@ import { renderDeprecatedWarning } from './charts.util'
 
 const ChartCard = ({
     chart,
-    selectChart,
     addChart,
     subtractChart,
     selectedCount = 0,
-    showCheckBoxOnHoverOnly,
     onClick,
     dataTestId,
     isListView,
@@ -63,17 +61,12 @@ const ChartCard = ({
         subtractChart(chart.id)
     }
 
-    const selectChartTab = (e): void => {
-        stopPropagation(e)
-        selectChart(chart.id)
-    }
-
     const onClickChartSelect = (): void => {
         onClick(chart.id)
     }
 
     const renderAddIcon = () => (
-        <div className={`${selectedCount > 0 ? 'dc__visible' : 'dc__border br-6'} dc__visible-hover--child `}>
+        <div className={`${selectedCount > 0 ? 'dc__visible' : 'dc__border br-6'} dc__visible-hover--child h-28`}>
             <Button
                 icon={<Icon name="ic-add" size={null} color={null} />}
                 onClick={addChartTab}
@@ -100,7 +93,7 @@ const ChartCard = ({
     )
 
     const renderIcon = () => (
-        <div className="px-20 pt-20 pb-16 flexbox-col flex-grow-1 h-86">
+        <div className={`${isListView ? 'flex' : 'px-20 py-16 h-86'}`}>
             <div className="icon-wrapper">
                 <LazyImage
                     className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim`}
@@ -112,7 +105,7 @@ const ChartCard = ({
     )
 
     const renderCardInfo = () => (
-        <div className="flexbox-col flex-grow-1 dc__gap-4 px-20 pb-16">
+        <div className={`flexbox-col flex-grow-1 dc__gap-4 px-20 pb-16  ${isListView ? 'pt-20' : ''}`}>
             <div className="flex left">
                 <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
                 <div className="chart-name__arrow dc__no-shrink flex">
@@ -146,12 +139,12 @@ const ChartCard = ({
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${dataTestId}`}
         >
-            <div className="h-164">
+            <div className={`${isListView ? 'dc__grid chart-list-item px-20' : 'h-164'}`}>
                 {renderIcon()}
-                <div>
-                    {serverMode === SERVER_MODE.FULL && addChart && subtractChart ? (
+                <div className={`${isListView ? 'dc__gap-16' : ''}`}>
+                    {serverMode === SERVER_MODE.FULL && addChart && subtractChart && (
                         <div
-                            className={`chart-grid__check devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''} `}
+                            className={`chart-grid__check devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''}`}
                         >
                             {selectedCount > 0 && (
                                 <>
@@ -163,20 +156,12 @@ const ChartCard = ({
                                 </>
                             )}
 
-                            {renderAddIcon()}
+                            {!isListView && renderAddIcon()}
                         </div>
-                    ) : (
-                        <input
-                            onClick={selectChartTab}
-                            type="checkbox"
-                            checked={selectedCount > 0}
-                            className={`chart-grid__check ${
-                                showCheckBoxOnHoverOnly ? 'chart-grid__check--hidden' : ''
-                            } icon-dim-24`}
-                        />
                     )}
                     {renderCardInfo()}
                 </div>
+                {isListView && renderAddIcon()}
             </div>
             {renderFooter()}
         </div>

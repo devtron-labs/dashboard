@@ -397,7 +397,6 @@ const ChartList = ({ availableCharts, selectedInstances, addChart, subtractChart
                     selectedCount={selectedInstances[chart.id]?.length}
                     addChart={addChart}
                     subtractChart={subtractChart}
-                    showCheckBoxOnHoverOnly={false}
                     isListView={!isGrid}
                     dataTestId={String(idx)}
                 />

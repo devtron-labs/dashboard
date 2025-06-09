@@ -539,9 +539,6 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                         selectedCount={
                                                                             state.selectedInstances[chart.id]?.length
                                                                         }
-                                                                        showCheckBoxOnHoverOnly={
-                                                                            state.charts.length === 0
-                                                                        }
                                                                         addChart={addChart}
                                                                         subtractChart={subtractChart}
                                                                         onClick={(chartId) =>

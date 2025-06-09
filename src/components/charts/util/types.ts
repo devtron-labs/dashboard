@@ -9,11 +9,9 @@ export interface AllChartSelectProps {
     isListView: boolean
     dataTestId: string
     selectedCount: number
-    showCheckBoxOnHoverOnly: boolean
     onClick?: (chartId: number) => void
     addChart?: (chartId: number) => void
     subtractChart?: (chartId: number) => void
-    selectChart?: (chartId: number) => void
 }
 
 export interface Stepper extends AllChartSelectProps {
