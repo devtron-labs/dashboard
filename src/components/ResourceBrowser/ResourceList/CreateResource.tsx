@@ -15,7 +15,6 @@
  */
 
 import React, { useEffect, useState } from 'react'
-import ReactGA from 'react-ga4'
 
 import {
     Button,
@@ -26,6 +25,7 @@ import {
     CreateResourceDTO,
     Drawer,
     GenericEmptyState,
+    handleAnalyticsEvent,
     InfoBlock,
     showError,
     useRegisterShortcut,
@@ -71,7 +71,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     }
 
     const onSave = async (): Promise<void> => {
-        ReactGA.event({
+        handleAnalyticsEvent({
             category: 'RB Create Resource',
             action: 'RB_CREATE_RESOURCE_APPLY',
         })

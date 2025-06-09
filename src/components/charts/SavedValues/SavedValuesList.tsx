@@ -27,6 +27,7 @@ import {
     SearchBar,
     DeleteConfirmationModal,
     DocLink,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
@@ -104,6 +105,9 @@ export default function SavedValuesList() {
                 toDeployChartView ? URLS.DEPLOY_CHART : URLS.PRESET_VALUES
             }/${chartValueId}`,
         )
+        if (!!chartValueId) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES_NEW' })
+        }
     }
     const hideDeleteModal = () => setShowDeleteDialog(false)
 

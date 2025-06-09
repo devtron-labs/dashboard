@@ -20,6 +20,7 @@ import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 
 
 import {
     BreadCrumb,
+    handleAnalyticsEvent,
     noop,
     PageHeader,
     TabGroup,
@@ -34,7 +35,7 @@ import AppGroupAppFilter from '../../ApplicationGroup/AppGroupAppFilter'
 import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetailsRoute'
 import { AppSelector } from '../../AppSelector'
 import { useAppContext } from '../../common'
-import { importComponentFromFELibrary, trackByGAEvent } from '../../common/helpers/Helpers'
+import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import { AppHeaderType } from '../types'
 
 import './appDetails/appDetails.scss'
@@ -105,7 +106,7 @@ export const AppHeader = ({
     }
 
     function handleEventClick(event) {
-        trackByGAEvent('App', event.currentTarget.dataset.action)
+        handleAnalyticsEvent({ category: 'App', action: event.currentTarget.dataset.action })
         onClickTabPreventDefault(event, 'active')
     }
 

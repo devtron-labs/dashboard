@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
 import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -25,6 +24,7 @@ import {
     DynamicTabType,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    handleAnalyticsEvent,
     InitTabType,
     noop,
     useAsync,
@@ -283,7 +283,7 @@ const ResourceList = () => {
     }, [location.pathname])
 
     const onClusterChange = (selected: ClusterOptionType) => {
-        ReactGA.event({
+        handleAnalyticsEvent({
             category: 'Resource Browser',
             action: 'RB_CLUSTER_SWITCH_CLUSTER',
         })

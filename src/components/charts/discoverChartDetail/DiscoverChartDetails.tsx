@@ -27,6 +27,7 @@ import {
     ToastManager,
     ToastVariantType,
     MarkDown,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List } from '../../common'
 import { URLS } from '../../../config'
@@ -162,6 +163,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
 
     function openSavedValuesList() {
         history.push(getSavedValuesListURL(chartId))
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES' })
     }
 
     async function getChartValuesList() {
@@ -276,20 +278,10 @@ const Deployment: React.FC<DeploymentProps> = ({
     appStoreApplicationName = '',
     availableVersions,
     deprecated = '',
-    ...rest
 }) => {
-    const {
-        redirectToChartValues,
-        openSavedValuesList,
-        selectedVersion,
-        selectVersion,
-        chartValuesList,
-        chartValues,
-        setChartValues,
-    } = useDiscoverDetailsContext()
+    const { openSavedValuesList, chartValuesList } = useDiscoverDetailsContext()
     const match = useRouteMatch()
     const { push } = useHistory()
-    const [showChartVersionSelectorModal, setShowChartVersionSelectorModal] = useState(false)
     const [deployedChartValueList, setDeployedChartValueList] = useState<ChartValuesType[]>([])
     const [presetChartValueList, setPresetChartValueList] = useState<ChartValuesType[]>([])
 
@@ -323,18 +315,7 @@ const Deployment: React.FC<DeploymentProps> = ({
 
     function handleDeploy() {
         push(`${match.url}/deploy-chart`)
-    }
-
-    const handleDeployButtonClick = (): void => {
-        if (deployedChartValueList.length === 0 && presetChartValueList.length === 0) {
-            handleDeploy()
-        } else {
-            setShowChartVersionSelectorModal(true)
-        }
-    }
-
-    const hideVersionModal = (): void => {
-        setShowChartVersionSelectorModal(false)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY' })
     }
 
     return (

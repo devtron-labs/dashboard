@@ -563,10 +563,10 @@ export const getInternetConnectivity = (controller: AbortController): Promise<an
         controller.abort()
     }, 10000)
 
-    return fetch(`${window._env_?.CENTRAL_API_ENDPOINT ?? 'https://api.devtron.ai'}/${Routes.HEALTH}`, {
+    return fetch('https://devtron-labs.github.io/', {
         signal: controller.signal,
     })
-        .then((res) => res.json())
+        .then(({ok}) => ok)
         .finally(() => {
             clearTimeout(timeoutId)
         })

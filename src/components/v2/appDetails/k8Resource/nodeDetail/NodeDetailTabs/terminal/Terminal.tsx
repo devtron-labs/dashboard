@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import React, { useEffect, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
 import moment from 'moment'
 import SockJS from 'sockjs-client'
 import { Terminal } from 'xterm'
@@ -24,6 +23,7 @@ import * as XtermWebfont from 'xterm-webfont'
 import {
     AppThemeType,
     getComponentSpecificThemeClass,
+    handleAnalyticsEvent,
     IS_PLATFORM_MAC_OS,
     LogResizeButton,
     noop,
@@ -254,7 +254,7 @@ const TerminalView = ({
 
     const handleToggleFullscreen = () => {
         if (isResourceBrowserView) {
-            ReactGA.event({
+            handleAnalyticsEvent({
                 category: 'Cluster Terminal',
                 action: 'RB_TERMINAL_FULLSCREEN',
             })

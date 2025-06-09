@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -24,6 +23,7 @@ import {
     ComponentSizeType,
     get,
     getIsRequestAborted,
+    handleAnalyticsEvent,
     NodeTaintType,
     noop,
     OptionType,
@@ -644,7 +644,7 @@ const ClusterTerminal = ({
 
     const toggleScreenView = (): void => {
         if (!isFullScreen) {
-            ReactGA.event({
+            handleAnalyticsEvent({
                 category: 'Cluster Terminal',
                 action: 'RB_TERMINAL_FULLSCREEN',
             })
