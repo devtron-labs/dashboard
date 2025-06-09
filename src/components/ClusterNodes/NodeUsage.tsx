@@ -35,9 +35,9 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
         }
     }
 
-    return compareWithPrevious ? (
+    return (
         <>
-            <div>{prevUsage || '-'}</div>
+            {compareWithPrevious && <div>{prevUsage || '-'}</div>}
             {currentUsage ? (
                 <Tooltip
                     alwaysShowTippyOnHover
@@ -53,10 +53,12 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
                                 </p>
                             </div>
                             <div className="flexbox-col dc__gap-4 p-8">
-                                <div className="flex dc__content-space dc__gap-8">
-                                    <p className="text-white fs-12 fw-4 lh-18 m-0">Prev. Usage</p>
-                                    <p className="text-white fs-12 fw-4 lh-18 m-0">{prevUsage || '-'}</p>
-                                </div>
+                                {compareWithPrevious && (
+                                    <div className="flex dc__content-space dc__gap-8">
+                                        <p className="text-white fs-12 fw-4 lh-18 m-0">Prev. Usage</p>
+                                        <p className="text-white fs-12 fw-4 lh-18 m-0">{prevUsage || '-'}</p>
+                                    </div>
+                                )}
                                 <div className="flex dc__content-space dc__gap-8">
                                     <p className="text-white fs-12 fw-4 lh-18 m-0">Current Usage</p>
                                     <p className="text-white fs-12 fw-4 lh-18 m-0">{currentUsage}</p>
@@ -72,10 +74,14 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
                     }
                 >
                     <div className="flex left dc__gap-6">
-                        <div className="dc__w-fit-content flex left dc__gap-4 br-4 px-6 py-2 bg__secondary cn-7">
-                            <p className="m-0 fs-12 lh-16">{currentUsage}</p>
-                            <Icon {...getUsageIconConfig()} color="N700" size={14} />
-                        </div>
+                        {compareWithPrevious ? (
+                            <div className="dc__w-fit-content flex left dc__gap-4 br-4 px-6 py-2 bg__secondary cn-7">
+                                <p className="m-0 fs-12 lh-16">{currentUsage}</p>
+                                <Icon {...getUsageIconConfig()} color="N700" size={14} />
+                            </div>
+                        ) : (
+                            <div>{currentUsage}</div>
+                        )}
                         {hasCurrentUsageBreachedThreshold && <Icon name="ic-error" color={null} />}
                     </div>
                 </Tooltip>
@@ -83,7 +89,5 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
                 <div>-</div>
             )}
         </>
-    ) : (
-        <div>{currentUsage || '-'}</div>
     )
 }
