@@ -172,6 +172,7 @@ if (!window || !window._env_) {
         LOGIN_PAGE_IMAGE: '',
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
+        FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,
     }
 }
 
