@@ -18,6 +18,13 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         abortControllerRef.current.abort()
     }
 
+    const onConnectivitySuccess = () => {
+        setOnline((prev) => {
+            if (!prev) onOnline()
+            return true
+        })
+    }
+
     const checkConnectivity = async () => {
         if (isAirgapped) return
 
@@ -27,20 +34,13 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
 
         try {
             await getInternetConnectivity(abortControllerRef.current)
-            setOnline((prev) => {
-                if (!prev) {
-                    onOnline()
-                }
-                return true
-            })
+            onConnectivitySuccess()
+
             timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
         } catch (error) {
             try {
                 await getFallbackInternetConnectivity(abortControllerRef.current)
-                setOnline((prev) => {
-                    if (!prev) onOnline()
-                    return true
-                })
+                onConnectivitySuccess()
             } catch {
                 setOnline(false)
             } finally {
