@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom'
 import { ChartGroup, ChartGroupEntry } from '../charts.types'
 import { getChartGroupURL } from '../charts.helper'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-import { handleAnalyticsEvent } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartGroupCardProps {
     chartGroup: ChartGroup
