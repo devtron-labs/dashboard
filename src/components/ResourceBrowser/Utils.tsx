@@ -449,3 +449,24 @@ export const getResourceStatusFilterOptions = () =>
         value,
         startIcon: <Icon name={RESOURCE_STATUS_FILTER_ICON_MAP[value]} color={null} />,
     }))
+
+// TODO: these utils are be to removed after airtel demo
+// ------------------------------------------------
+export const getPendingStateFilter = () =>
+    "self.status.phase == 'Starting' || self.status.phase == 'Initiating' || self.status.phase == 'Suspended' || self.status.phase == 'SwitchedToActiveService' || self.status.phase == 'ContainerCreating' || self.status.phase == 'Pending' || self.status.phase == 'PodInitializing' || self.status.phase == 'Uninstalling' || self.status.phase == 'Pending-Install' || self.status.phase == 'Pending-Upgrade' || self.status.phase == 'Pending-Rollback' || self.status.phase == 'Progressing' || self.status.phase == 'InProgress' || self.status.phase == 'Initiated' || self.status.phase == 'Updated' || self.status.phase == 'Waiting'"
+
+export const getErrorStateFilter = () =>
+    "self.status.phase == 'Degraded' || self.status.phase == 'OOMKilled' || self.status.phase == 'Sync.Failed' || self.status.phase == 'Failed' || self.status.phase == 'Error' || self.status.phase == 'ImagePullBackOff' || self.status.phase == 'ErrImagePull' || self.status.phase == 'Warning' || self.status.phase == 'OutOfSync' || self.status.phase == 'Terminating' || self.status.phase == 'CrashLoopBackOff' || self.status.phase == 'Init:CrashLoopBackOff' || self.status.phase == 'CreateContainerConfigError' || self.status.phase == 'Deleted' || self.status.phase == 'Not:Ready' || self.status.phase == 'Not/Ready' || self.status.phase == 'Evicted' || self.status.phase == 'Disconnect' || self.status.phase == 'SyncFail' || self.status.phase == 'Superseded'"
+
+export const getResourcesError = (resourcesInError, resourcesInPending) => {
+    if (resourcesInError?.result?.data?.length) {
+        return ResourceStatusFilter.ERROR
+    }
+
+    if (resourcesInPending?.result?.data?.length) {
+        return ResourceStatusFilter.PENDING
+    }
+
+    return null
+}
+// ------------------------------------------------

@@ -31,7 +31,7 @@ import {
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
 import { URLS } from '../../../config'
 import { AggregationKeys } from '../../app/types'
-import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, SIDEBAR_KEYS } from '../Constants'
+import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, RESOURCE_STATUS_FILTER_ICON_MAP, SIDEBAR_KEYS } from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType, URLParams } from '../Types'
 import {
     convertK8sObjectMapToOptionsList,
@@ -39,7 +39,6 @@ import {
     getK8SObjectMapAfterGroupHeadingClick,
 } from '../Utils'
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
-import { getSidebarIconBasedOnResourceStatus } from './utils'
 
 const Sidebar = ({
     apiResources,
@@ -48,8 +47,7 @@ const Sidebar = ({
     updateK8sResourceTab,
     updateK8sResourceTabLastSyncMoment,
     isOpen,
-    selectedResourceStatus,
-    setSelectedResourceStatus,
+    resourceStatus,
 }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
@@ -127,7 +125,6 @@ const Sidebar = ({
             isGrouped: e.currentTarget.dataset.grouped === 'true',
         }
 
-        setSelectedResourceStatus(null)
         setSelectedResource(_selectedResource)
         updateK8sResourceTabLastSyncMoment()
 
@@ -209,7 +206,7 @@ const Sidebar = ({
                 namespaced={childData.namespaced}
                 isSelected={isSelected}
                 onClick={selectNode}
-                icon={getSidebarIconBasedOnResourceStatus(nodeName, isSelected, selectedResourceStatus)}
+                icon={RESOURCE_STATUS_FILTER_ICON_MAP[resourceStatus[childData.gvk.Kind]] ?? null}
             />
         )
     }

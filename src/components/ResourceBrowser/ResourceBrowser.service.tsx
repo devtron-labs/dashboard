@@ -41,7 +41,7 @@ import {
 import { Routes } from '../../config'
 import { SIDEBAR_KEYS } from './Constants'
 import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
-import { parseNodeList } from './Utils'
+import { getErrorStateFilter, getPendingStateFilter, getResourcesError, parseNodeList } from './Utils'
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -146,5 +146,72 @@ export const getClusterListing = async (
             showError(err)
         }
         throw err
+    }
+}
+
+// TODO: this will be removed after Airtel Demo
+export const getPodAndPVCResourcesStatus = async (clusterId: number) => {
+    const [podsInError, podsInPending, pvcInError, pvcInPending] = await Promise.all([
+        getK8sResourceList({
+            clusterId,
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: {
+                        Group: '',
+                        Kind: 'Pod',
+                        Version: 'v1',
+                    },
+                    namespace: '',
+                },
+            },
+            filter: getErrorStateFilter(),
+        }),
+        getK8sResourceList({
+            clusterId: +clusterId,
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: {
+                        Group: '',
+                        Kind: 'Pod',
+                        Version: 'v1',
+                    },
+                    namespace: '',
+                },
+            },
+            filter: getPendingStateFilter(),
+        }),
+        getK8sResourceList({
+            clusterId: +clusterId,
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: {
+                        Group: '',
+                        Kind: 'PersistentVolumeClaim',
+                        Version: 'v1',
+                    },
+                    namespace: '',
+                },
+            },
+            filter: getErrorStateFilter(),
+        }),
+        getK8sResourceList({
+            clusterId: +clusterId,
+            k8sRequest: {
+                resourceIdentifier: {
+                    groupVersionKind: {
+                        Group: '',
+                        Kind: 'PersistentVolumeClaim',
+                        Version: 'v1',
+                    },
+                    namespace: '',
+                },
+            },
+            filter: getPendingStateFilter(),
+        }),
+    ])
+
+    return {
+        Pod: getResourcesError(podsInError, podsInPending),
+        PersistentVolumeClaim: getResourcesError(pvcInError, pvcInPending),
     }
 }

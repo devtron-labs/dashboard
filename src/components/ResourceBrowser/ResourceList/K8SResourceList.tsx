@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -34,7 +34,7 @@ import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType, URLParams } from '../Types'
 import { removeDefaultForStorageClass, sortEventListData } from '../Utils'
 import BaseResourceList from './BaseResourceList'
-import { getResourcesStatus, getResourceStatusType } from './utils'
+import { getResourceStatusType } from './utils'
 
 const PodRestart = importComponentFromFELibrary('PodRestart')
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -53,7 +53,6 @@ export const K8SResourceList = ({
     handleResourceClick,
     clusterName,
     lowercaseKindToResourceGroupMap,
-    setSelectedResourceStatus,
 }: K8SResourceListType) => {
     // HOOKS
     const location = useLocation()
@@ -114,12 +113,6 @@ export const K8SResourceList = ({
 
         return result
     }, [_resourceList])
-
-    useEffect(() => {
-        if (resourceList) {
-            setSelectedResourceStatus(getResourcesStatus(resourceList))
-        }
-    }, [resourceList])
 
     return (
         <BaseResourceList

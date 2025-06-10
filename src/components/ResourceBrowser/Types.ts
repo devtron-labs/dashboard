@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, RefObject, SetStateAction } from 'react'
+import React, { RefObject } from 'react'
 
 import {
     ALL_NAMESPACE_OPTION,
@@ -96,8 +96,7 @@ export interface SidebarType {
     updateK8sResourceTab: ClusterListType['updateTabUrl']
     selectedResource: ApiResourceGroupType
     setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
-    selectedResourceStatus: ResourceStatusFilter
-    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatusFilter>>
+    resourceStatus: Record<string, ResourceStatusFilter>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -142,7 +141,6 @@ export interface K8SResourceListType
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
-    setSelectedResourceStatus: Dispatch<SetStateAction<ResourceStatusFilter>>
 }
 
 export interface ResourceBrowserActionMenuType {

@@ -18,6 +18,7 @@ import React, { useEffect, useMemo, useRef } from 'react'
 
 import {
     ClusterDetail,
+    ClusterStatusType,
     DevtronProgressing,
     ErrorScreenManager,
     PageHeader,
@@ -29,16 +30,23 @@ import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 
 import { sortObjectArrayAlphabetically } from '../common'
 import { renderNewClusterButton } from './PageHeader.buttons'
-import { getClusterListing } from './ResourceBrowser.service'
+import { getClusterListing, getPodAndPVCResourcesStatus } from './ResourceBrowser.service'
+import { ResourceStatusFilter } from './Types'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
-    const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(() =>
-        getClusterListing(false, abortControllerRef),
+    const [detailClusterListLoading, detailClusterListRes, , reloadDetailClusterList] = useAsync(() =>
+        Promise.all([
+            getClusterListing(false, abortControllerRef),
+            // TODO: this api call is be to removed after airtel demo
+            getPodAndPVCResourcesStatus(1),
+        ]),
     )
     const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListing(true, abortControllerRef))
+
+    const [detailClusterList, podAndPVCResourcesStatus] = detailClusterListRes ?? []
 
     useEffect(
         () => () => {
@@ -49,12 +57,28 @@ const ResourceBrowser: React.FC = () => {
 
     const sortedClusterList: ClusterDetail[] = useMemo(
         () =>
-            sortObjectArrayAlphabetically(detailClusterList || clusterListMinData || [], 'name').filter(
-                (option) =>
-                    !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
-                    !option.isVirtualCluster,
-            ),
-        [detailClusterList, clusterListMinData],
+            sortObjectArrayAlphabetically(detailClusterList || clusterListMinData || [], 'name')
+                .filter(
+                    (option) =>
+                        !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
+                        !option.isVirtualCluster,
+                )
+                // TODO: this logic is be to removed after airtel demo
+                .map<ClusterDetail>((item) => {
+                    const resourcesErrors = Object.values(podAndPVCResourcesStatus ?? {}).filter(
+                        (status) => status === ResourceStatusFilter.ERROR,
+                    )
+
+                    return {
+                        ...item,
+                        nodeErrors: resourcesErrors.map(
+                            (resourcesError, index) => ({ [`error-${index}`]: resourcesError }),
+                            {},
+                        ),
+                        status: resourcesErrors ? ClusterStatusType.UNHEALTHY : item.status,
+                    }
+                }),
+        [detailClusterList, clusterListMinData, podAndPVCResourcesStatus],
     )
 
     const renderContent = () => {

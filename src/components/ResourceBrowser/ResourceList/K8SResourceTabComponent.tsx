@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from 'react'
+import { useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getResourceGroupList } from '../ResourceBrowser.service'
-import { K8SResourceTabComponentProps, ResourceStatusFilter, URLParams } from '../Types'
+import { getPodAndPVCResourcesStatus, getResourceGroupList } from '../ResourceBrowser.service'
+import { K8SResourceTabComponentProps, URLParams } from '../Types'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { K8SResourceList } from './K8SResourceList'
 import Sidebar from './Sidebar'
@@ -38,20 +38,25 @@ const K8SResourceTabComponent = ({
     clusterName,
     lowercaseKindToResourceGroupMap,
 }: K8SResourceTabComponentProps) => {
-    const [selectedResourceStatus, setSelectedResourceStatus] = useState<ResourceStatusFilter | null>(null)
-
     const { clusterId } = useParams<URLParams>()
 
     const abortControllerRef = useRef(new AbortController())
 
-    const [loading, k8SObjectMap, error, reload] = useAsync(
+    const [loading, res, error, reload] = useAsync(
         () =>
             abortPreviousRequests(
-                () => getResourceGroupList(clusterId, abortControllerRef.current?.signal),
+                () =>
+                    Promise.all([
+                        getResourceGroupList(clusterId, abortControllerRef.current?.signal),
+                        // TODO: this api call is be to removed after airtel demo
+                        clusterId === '1' ? getPodAndPVCResourcesStatus(1) : null,
+                    ]),
                 abortControllerRef,
             ),
         [clusterId],
     )
+
+    const [k8SObjectMap, podAndPVCResourcesStatus] = res ?? []
 
     const errorMessage = error?.errors?.[0]?.userMessage || error?.message || null
 
@@ -80,8 +85,7 @@ const K8SResourceTabComponent = ({
                 isOpen={isOpen}
                 updateK8sResourceTab={updateK8sResourceTab}
                 updateK8sResourceTabLastSyncMoment={updateK8sResourceTabLastSyncMoment}
-                selectedResourceStatus={selectedResourceStatus}
-                setSelectedResourceStatus={setSelectedResourceStatus}
+                resourceStatus={podAndPVCResourcesStatus ?? {}}
             />
             <K8SResourceList
                 clusterName={clusterName}
@@ -93,7 +97,6 @@ const K8SResourceTabComponent = ({
                 updateK8sResourceTab={updateK8sResourceTab}
                 handleResourceClick={handleResourceClick}
                 lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                setSelectedResourceStatus={setSelectedResourceStatus}
             />
         </div>
     )
