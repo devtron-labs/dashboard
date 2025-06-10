@@ -40,14 +40,18 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         abortControllerRef.current = controller
 
         try {
-            await getInternetConnectivity({ controller: abortControllerRef.current, setTimeoutRef, checkConnectivity })
+            await getFallbackInternetConnectivity({
+                controller: abortControllerRef.current,
+                setTimeoutRef,
+                checkConnectivity,
+            })
             onConnectivitySuccess()
         } catch (error) {
             if (getIsRequestAborted(error)) return
             const fallbackController = new AbortController()
             abortControllerRef.current = fallbackController
             try {
-                await getFallbackInternetConnectivity({
+                await getInternetConnectivity({
                     controller: abortControllerRef.current,
                     setTimeoutRef,
                     checkConnectivity,
