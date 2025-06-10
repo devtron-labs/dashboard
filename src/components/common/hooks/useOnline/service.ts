@@ -1,9 +1,9 @@
 import { Routes } from '@Config/constants'
 
-const DEFAULT_TIMEOUT = 20000
+import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 
 const fetchWithTimeout = (url: string, options: RequestInit, controller: AbortController): Promise<any> => {
-    const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT)
+    const timeoutId = setTimeout(() => controller.abort(), INTERNET_CONNECTIVITY_INTERVAL)
 
     return fetch(url, { ...options, signal: controller.signal }).finally(() => clearTimeout(timeoutId))
 }
