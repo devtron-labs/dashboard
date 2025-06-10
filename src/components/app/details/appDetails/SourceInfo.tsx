@@ -309,84 +309,87 @@ export const SourceInfo = ({
                             <div style={{ marginLeft: 'auto' }} className="flex dc__gap-8">
                                 <div className="app-details-action-buttons flex border__primary br-6 dc__overflow-hidden">
                                     {!isVirtualEnvironment && showUrlInfo && (
-                                        <Button
-                                            dataTestId="app-details-urls"
-                                            size={ComponentSizeType.medium}
-                                            variant={ButtonVariantType.secondary}
-                                            icon={<LinkIcon />}
-                                            onClick={onClickShowUrlInfo}
-                                            style={ButtonStyleType.neutral}
-                                            ariaLabel="URLs"
-                                        />
-                                    )}
-
-                                    <div className="border__primary--left w-1 h-100" />
-
-                                    {!isVirtualEnvironment && showHibernateModal && (
-                                        <Button
-                                            dataTestId="app-details-hibernate-modal-button"
-                                            size={ComponentSizeType.medium}
-                                            variant={ButtonVariantType.secondary}
-                                            isLoading={hibernationPatchResponseLoading}
-                                            icon={
-                                                <Icon
-                                                    name={isHibernated ? 'ic-sun' : 'ic-hibernate-circle'}
-                                                    color={null}
-                                                />
-                                            }
-                                            onClick={onClickShowHibernateModal}
-                                            disabled={isApprovalConfigured || hibernationPatchResponseLoading}
-                                            style={ButtonStyleType.neutral}
-                                            showTooltip={isApprovalConfigured}
-                                            tooltipProps={{
-                                                content: (
-                                                    <div className="flexbox-col">
-                                                        <span className="fw-6">
-                                                            Cannot {isHibernated ? 'unhibernate' : 'hibernate'}
-                                                        </span>
-                                                        <span className="fw-4 dc__word-break">
-                                                            {ACTION_DISABLED_TEXT}
-                                                        </span>
-                                                    </div>
-                                                ),
-                                                placement: 'bottom',
-                                            }}
-                                            ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
-                                        />
-                                    )}
-
-                                    <div className="border__primary--left w-1 h-100" />
-
-                                    {window._env_.ENABLE_RESTART_WORKLOAD &&
-                                        !isVirtualEnvironment &&
-                                        setRotateModal && (
+                                        <>
                                             <Button
-                                                dataTestId="app-details-rotate-pods-modal-button"
+                                                dataTestId="app-details-urls"
                                                 size={ComponentSizeType.medium}
                                                 variant={ButtonVariantType.secondary}
-                                                onClick={() => setRotateModal(true)}
-                                                disabled={isApprovalConfigured}
-                                                icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                                icon={<LinkIcon />}
+                                                onClick={onClickShowUrlInfo}
                                                 style={ButtonStyleType.neutral}
-                                                showTooltip
+                                                ariaLabel="URLs"
+                                            />
+                                            <div className="divider__primary h-100" />
+                                        </>
+                                    )}
+
+                                    {!isVirtualEnvironment && showHibernateModal && (
+                                        <>
+                                            <Button
+                                                dataTestId="app-details-hibernate-modal-button"
+                                                size={ComponentSizeType.medium}
+                                                variant={ButtonVariantType.secondary}
+                                                isLoading={hibernationPatchResponseLoading}
+                                                icon={
+                                                    <Icon
+                                                        name={isHibernated ? 'ic-sun' : 'ic-hibernate-circle'}
+                                                        color={null}
+                                                    />
+                                                }
+                                                onClick={onClickShowHibernateModal}
+                                                disabled={isApprovalConfigured || hibernationPatchResponseLoading}
+                                                style={ButtonStyleType.neutral}
+                                                showTooltip={isApprovalConfigured}
                                                 tooltipProps={{
-                                                    content: isApprovalConfigured ? (
+                                                    content: (
                                                         <div className="flexbox-col">
-                                                            <span className="fw-6">Cannot restart workloads</span>
+                                                            <span className="fw-6">
+                                                                Cannot {isHibernated ? 'unhibernate' : 'hibernate'}
+                                                            </span>
                                                             <span className="fw-4 dc__word-break">
                                                                 {ACTION_DISABLED_TEXT}
                                                             </span>
                                                         </div>
-                                                    ) : (
-                                                        'Restart workloads'
                                                     ),
-                                                    placement: 'top',
+                                                    placement: 'bottom',
                                                 }}
-                                                ariaLabel="restart workloads"
+                                                ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
                                             />
-                                        )}
+                                            <div className="divider__primary h-100" />
+                                        </>
+                                    )}
 
-                                    <div className="border__primary--left w-1 h-100" />
+                                    {window._env_.ENABLE_RESTART_WORKLOAD &&
+                                        !isVirtualEnvironment &&
+                                        setRotateModal && (
+                                            <>
+                                                <Button
+                                                    dataTestId="app-details-rotate-pods-modal-button"
+                                                    size={ComponentSizeType.medium}
+                                                    variant={ButtonVariantType.secondary}
+                                                    onClick={() => setRotateModal(true)}
+                                                    disabled={isApprovalConfigured}
+                                                    icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                                    style={ButtonStyleType.neutral}
+                                                    showTooltip
+                                                    tooltipProps={{
+                                                        content: isApprovalConfigured ? (
+                                                            <div className="flexbox-col">
+                                                                <span className="fw-6">Cannot restart workloads</span>
+                                                                <span className="fw-4 dc__word-break">
+                                                                    {ACTION_DISABLED_TEXT}
+                                                                </span>
+                                                            </div>
+                                                        ) : (
+                                                            'Restart workloads'
+                                                        ),
+                                                        placement: 'top',
+                                                    }}
+                                                    ariaLabel="restart workloads"
+                                                />
+                                                <div className="divider__primary h-100" />
+                                            </>
+                                        )}
 
                                     {renderRollbackButton(true)}
                                 </div>
