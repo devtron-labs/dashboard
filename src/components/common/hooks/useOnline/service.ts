@@ -1,7 +1,7 @@
 export const getFallbackInternetConnectivity = (controller: AbortController): Promise<any> => {
     const timeoutId = setTimeout(() => {
         controller.abort()
-    }, 10000)
+    }, 20000)
 
     return fetch('https://www.google.com/favicon.ico', {
         method: 'HEAD',
