@@ -114,3 +114,15 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
     }
     return !aiButtonConfig.excludeValues.has(value)
 }
+
+export const getResourceRecommendationLabel = (value: string | 'none' | null): string => {
+    if (!value) {
+        return 'NA'
+    }
+
+    if (value === 'none') {
+        return 'None'
+    }
+
+    return value
+}

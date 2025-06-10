@@ -92,7 +92,12 @@ import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
-import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap, getShowAIButton } from './utils'
+import {
+    getAppliedColumnsFromLocalStorage,
+    getFirstResourceFromKindResourceMap,
+    getResourceRecommendationLabel,
+    getShowAIButton,
+} from './utils'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
@@ -452,7 +457,10 @@ const BaseResourceListContent = ({
         currentValue: string,
         isTooltipView = false,
     ): { class: string; iconProps: IconsProps } => {
-        if (delta === 0 || (!recommendedValue && !currentValue)) {
+        const isRecommendedValueNull = !recommendedValue || recommendedValue === 'none'
+        const isCurrentValueNull = !currentValue || currentValue === 'none'
+
+        if (delta === 0 || (isCurrentValueNull && isRecommendedValueNull)) {
             return {
                 class: isTooltipView ? 'cn-3' : 'severity-chip--unknown',
                 iconProps: {
@@ -462,7 +470,7 @@ const BaseResourceListContent = ({
             }
         }
 
-        if (delta > 0 || (recommendedValue && !currentValue)) {
+        if (delta > 0 || (!isRecommendedValueNull && isCurrentValueNull)) {
             return {
                 class: isTooltipView ? 'cr-5' : 'severity-chip--critical',
                 iconProps: {
@@ -514,64 +522,76 @@ const BaseResourceListContent = ({
                                     <div className="flexbox dc__gap-8 dc__content-space w-100">
                                         <span className="fs-12 fw-4 lh-18">Current</span>
                                         <span className="fs-12 fw-6 lh-18">
-                                            {current ? `${current.value}` : 'None'}
+                                            {getResourceRecommendationLabel(current?.value)}
                                         </span>
                                     </div>
 
                                     <div className="flexbox dc__gap-8 dc__content-space w-100">
                                         <span className="fs-12 fw-4 lh-18">Recommended</span>
                                         <span className="fs-12 fw-6 lh-18">
-                                            {recommended ? `${recommended.value}` : 'None'}
+                                            {getResourceRecommendationLabel(recommended?.value)}
                                         </span>
                                     </div>
 
-                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
-                                        <span className="fs-12 fw-4 lh-18">Change</span>
-                                        <div className="flexbox dc__gap-2 dc__align-items-center">
-                                            <Icon
-                                                {...getSeverityChipIconAndClass(
-                                                    delta,
-                                                    recommended?.value,
-                                                    current?.value,
-                                                    true,
-                                                ).iconProps}
-                                                size={12}
-                                            />
-
-                                            <span
-                                                className={`fs-12 fw-6 lh-18 ${
-                                                    getSeverityChipIconAndClass(
+                                    {isNullOrUndefined(recommended?.value) ? (
+                                        <span className="fs-11 fw-4 lh-1-5">
+                                            No recommendation available due to insufficient data
+                                        </span>
+                                    ) : (
+                                        <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                            <span className="fs-12 fw-4 lh-18">Change</span>
+                                            <div className="flexbox dc__gap-2 dc__align-items-center">
+                                                <Icon
+                                                    {...getSeverityChipIconAndClass(
                                                         delta,
                                                         recommended?.value,
                                                         current?.value,
                                                         true,
-                                                    ).class
-                                                }`}
-                                            >
-                                                {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
-                                            </span>
+                                                    ).iconProps}
+                                                    size={12}
+                                                />
+
+                                                <span
+                                                    className={`fs-12 fw-6 lh-18 ${
+                                                        getSeverityChipIconAndClass(
+                                                            delta,
+                                                            recommended?.value,
+                                                            current?.value,
+                                                            true,
+                                                        ).class
+                                                    }`}
+                                                >
+                                                    {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
                         }
                     >
-                        <span
-                            className={`severity-chip ${severityChipClass} h-20 dc__no-border-imp dc_width-max-content dc__mxw-120`}
-                        >
-                            {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
-                            <Icon {...iconProps} size={14} />
-                        </span>
+                        {isNullOrUndefined(recommended?.value) ? (
+                            <span>No Recommendation</span>
+                        ) : (
+                            <span
+                                className={`severity-chip ${severityChipClass} h-20 dc__no-border-imp dc_width-max-content dc__mxw-120`}
+                            >
+                                {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
+                                <Icon {...iconProps} size={14} />
+                            </span>
+                        )}
                     </Tooltip>
 
                     {showAbsoluteValuesInResourceRecommender && (
                         <div className="flexbox dc__align-items-center dc__gap-4 dc__word-break">
-                            <span className="cn-7 fs-12 fw-5 lh-1-5">{current ? `${current.value}` : 'None'}</span>
+                            <span className="cn-7 fs-12 fw-5 lh-1-5">
+                                {getResourceRecommendationLabel(current?.value)}
+                            </span>
 
                             <Icon name="ic-arrow-right" color="N700" size={12} />
 
                             <span className="cn-7 fs-12 fw-5 lh-1-5">
-                                {recommended ? `${recommended.value}` : 'None'}
+                                {getResourceRecommendationLabel(recommended?.value)}
                             </span>
                         </div>
                     )}

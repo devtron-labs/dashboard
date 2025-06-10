@@ -46,6 +46,7 @@ import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
+import { getResourceRecommendationLabel } from './utils'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
 
@@ -189,7 +190,7 @@ const ResourceFilterOptions = ({
                             resource?.additionalMetadata?.[headerKey as ResourceRecommenderHeaderWithRecommendation]
                         if (metadata) {
                             acc[headerKey] =
-                                `${metadata.current?.value} -> ${metadata.recommended?.value} ${metadata.delta}%`
+                                `${getResourceRecommendationLabel(metadata.current?.value)} -> ${getResourceRecommendationLabel(metadata.recommended?.value)} ${metadata.delta ? `(${metadata.delta})%` : ''}`
                         } else {
                             acc[headerKey as string] = resource?.[headerKey] || ''
                         }
