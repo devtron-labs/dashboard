@@ -144,6 +144,7 @@ if (!window || !window._env_) {
         ENABLE_EXTERNAL_ARGO_CD: true,
         API_BATCH_SIZE: 20,
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: true,
+        FEATURE_INTERNET_CONNECTIVITY_ENABLE: true,
         SERVICE_WORKER_TIMEOUT: '3',
         HIDE_RELEASES: false,
         HIDE_RESOURCE_WATCHER: false,
