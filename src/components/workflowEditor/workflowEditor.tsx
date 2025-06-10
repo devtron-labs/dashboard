@@ -591,8 +591,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         open={this.props.location.pathname.includes(URLS.APP_CI_CD_CONFIG)}
                         onClose={this.handleCreateCICDPipelineClose}
                         appId={this.props.match.params.appId}
-                        workflowId={this.state.workflowId}
                         getWorkflows={this.getWorkflows}
+                        noGitOpsModuleInstalledAndConfigured={this.state.noGitOpsModuleInstalledAndConfigured}
+                        isGitOpsInstalledButNotConfigured={this.state.noGitOpsConfiguration}
+                        isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
+                        envIds={this.state.envIds}
+                        reloadAppConfig={this.props.reloadAppConfig}
                     />
                 )}
                 <Switch>
@@ -1014,21 +1018,20 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         isTemplateView={this.props.isTemplateView}
                     />
                 )}
-                {this.state.showWorkflowOptionsModal && (
-                    <WorkflowOptionsModal
-                        handleCloseWorkflowOptionsModal={this.handleCloseWorkflowOptionsModal}
-                        addWebhookCD={this.addWebhookCD}
-                        addCIPipeline={this.addCIPipeline}
-                        addLinkedCD={this.addLinkedCD}
-                        showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
-                        changeCIPayload={this.state.changeCIPayload}
-                        workflows={this.state.workflows}
-                        getWorkflows={this.getWorkflows}
-                        resetChangeCIPayload={this.resetChangeCIPayload}
-                        linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
-                        isTemplateView={this.props.isTemplateView}
-                    />
-                )}
+                <WorkflowOptionsModal
+                    open={this.state.showWorkflowOptionsModal}
+                    onClose={this.handleCloseWorkflowOptionsModal}
+                    addWebhookCD={this.addWebhookCD}
+                    addCIPipeline={this.addCIPipeline}
+                    addLinkedCD={this.addLinkedCD}
+                    showLinkedCDSource={this.state.cachedCDConfigResponse?.pipelines?.length > 0}
+                    changeCIPayload={this.state.changeCIPayload}
+                    workflows={this.state.workflows}
+                    getWorkflows={this.getWorkflows}
+                    resetChangeCIPayload={this.resetChangeCIPayload}
+                    linkedCDSourceVariant={LINKED_CD_SOURCE_VARIANT}
+                    isTemplateView={this.props.isTemplateView}
+                />
             </>
         )
     }

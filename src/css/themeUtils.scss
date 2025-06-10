@@ -184,5 +184,11 @@
         width: 1px;
         min-height: 16px;
         background-color: var(--divider-secondary-translucent);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-secondary-translucent);
+        }
     }
 }

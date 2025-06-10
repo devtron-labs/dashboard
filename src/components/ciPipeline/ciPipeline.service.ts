@@ -326,6 +326,8 @@ export function saveCIPipeline(
             undefined,
             undefined,
             ciPipelineSourceTypeOptions,
+            false,
+            response.result.appWorkflowId,
         )
     })
 }
@@ -556,6 +558,7 @@ function parseCIResponse(
     webhookEvents,
     ciPipelineSourceTypeOptions,
     isBlobStorageConfigured?: boolean,
+    appWorkflowId?: number,
 ) {
     if (ciPipeline) {
         if (ciPipeline.beforeDockerBuildScripts) {
@@ -597,6 +600,7 @@ function parseCIResponse(
             view: ViewType.FORM,
             showError: false,
             ciPipeline,
+            appWorkflowId,
             form: {
                 name: ciPipeline.name,
                 triggerType: ciPipeline.isManual ? TriggerType.Manual : TriggerType.Auto,

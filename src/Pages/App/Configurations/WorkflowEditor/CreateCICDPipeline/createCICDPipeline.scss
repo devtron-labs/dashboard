@@ -2,7 +2,8 @@
     $stepper-gap: 16px;
     $stepper-connector-left: 18px;
 
-    height: 450px;
+    min-height: 400px;
+    max-height: 80vh;
 
     &__stepper-container {
         gap: #{$stepper-gap};
@@ -32,9 +33,7 @@
         }
     }
 
-    &__deployment-app-radio-group {
-        border: none;
-
+    .chartrepo-type__radio-group {
         .form__radio-item .form__radio-item-content {
             padding: 4px 16px 4px 0;
         }

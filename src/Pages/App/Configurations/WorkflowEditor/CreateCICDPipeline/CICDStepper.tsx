@@ -3,7 +3,7 @@ import { Icon } from '@devtron-labs/devtron-fe-common-lib'
 import { CICDStepperProps } from './types'
 
 export const CICDStepper = ({ config }: CICDStepperProps) => (
-    <div className="ci-cd-pipeline__stepper-container flexbox-col">
+    <div className="ci-cd-pipeline__stepper-container flexbox-col flex-grow-1 dc__align-self-start">
         {config.map(({ id, icon, title, content }) => (
             <div key={id} className="ci-cd-pipeline__stepper flex left top dc__gap-8">
                 <div className="dc__position-rel flex p-7 br-6 border__secondary bg__modal--secondary">

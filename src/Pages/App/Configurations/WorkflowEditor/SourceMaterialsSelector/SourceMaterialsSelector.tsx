@@ -23,12 +23,7 @@ export const SourceMaterialsSelector = ({
                 closeMenuOnSelect
                 size={ComponentSizeType.large}
             />
-            {!branchInputProps.hideInput && (
-                <div>
-                    <CustomInput {...branchInputProps} type="text" required />
-                    {!branchInputProps.error && <div className="h-20" />}
-                </div>
-            )}
+            {!branchInputProps.hideInput && <CustomInput {...branchInputProps} type="text" required />}
         </div>
     </div>
 )

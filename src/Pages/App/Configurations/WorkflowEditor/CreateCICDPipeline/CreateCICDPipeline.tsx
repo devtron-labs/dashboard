@@ -1,9 +1,13 @@
-import { useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import {
     APIResponseHandler,
+    ButtonStyleType,
+    ComponentSizeType,
+    DeploymentAppTypes,
     GenericModal,
     Icon,
+    saveCDPipeline,
     ServerErrors,
     showError,
     ToastManager,
@@ -13,6 +17,15 @@ import {
 
 import { saveCIPipeline } from '@Components/ciPipeline/ciPipeline.service'
 import { CIPipelineBuildType } from '@Components/ciPipeline/types'
+import {
+    gitOpsRepoNotConfigured,
+    gitOpsRepoNotConfiguredWithEnforcedEnv,
+    gitOpsRepoNotConfiguredWithOptionsHidden,
+} from '@Components/gitOps/constants'
+import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
+import NoGitOpsRepoConfiguredWarning, {
+    ReloadNoGitOpsRepoConfiguredModal,
+} from '@Components/workflowEditor/NoGitOpsRepoConfiguredWarning'
 
 import { CDStepperContent } from './CDStepperContent'
 import { CICDStepper } from './CICDStepper'
@@ -20,7 +33,13 @@ import { CIStepperContent } from './CIStepperContent'
 import { CREATE_CI_CD_PIPELINE_TOAST_MESSAGES } from './constants'
 import { getCICDPipelineInitData } from './service'
 import { CICDStepperProps, CreateCICDPipelineData, CreateCICDPipelineFormError, CreateCICDPipelineProps } from './types'
-import { getCiCdPipelineDefaultState, getSaveCIPipelineMaterialsPayload, validateCreateCICDPipelineData } from './utils'
+import {
+    getCiCdPipelineDefaultState,
+    getCiCdPipelineFormErrorDefaultState,
+    getSaveCDPipelinesPayload,
+    getSaveCIPipelineMaterialsPayload,
+    validateCreateCICDPipelineData,
+} from './utils'
 
 import './createCICDPipeline.scss'
 
@@ -31,58 +50,99 @@ const FooterInfo = () => (
     </div>
 )
 
-export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkflows }: CreateCICDPipelineProps) => {
+export const CreateCICDPipeline = ({
+    open,
+    onClose,
+    appId,
+    getWorkflows,
+    noGitOpsModuleInstalledAndConfigured,
+    isGitOpsInstalledButNotConfigured,
+    isGitOpsRepoNotConfigured,
+    envIds,
+    reloadAppConfig,
+}: CreateCICDPipelineProps) => {
     // STATES
-    const [ciCdPipeline, setCiCdPipeline] = useState<CreateCICDPipelineData>(getCiCdPipelineDefaultState)
-    const [ciCdPipelineFormError, setCiCdPipelineFormError] = useState<CreateCICDPipelineFormError>({})
+    const [ciCdPipelineFormError, setCiCdPipelineFormError] = useState<CreateCICDPipelineFormError>(
+        getCiCdPipelineFormErrorDefaultState,
+    )
     const [isCreatingWorkflow, setIsCreatingWorkflow] = useState(false)
     const [cdNodeCreateError, setCdNodeCreateError] = useState<ServerErrors | null>(null)
+    const [reloadNoGitOpsRepoConfiguredModal, setReloadNoGitOpsRepoConfiguredModal] = useState(false)
+    const [gitOpsRepoConfiguredWarning, setGitOpsRepoConfiguredWarning] = useState<{ show: boolean; text: string }>({
+        show: false,
+        text: '',
+    })
+
+    // REFS
+    const ciPipelineResRef = useRef<{ appWorkflowId: number; id: number } | null>(null)
 
     // ASYNC CALLS
-    const [isCiCdPipelineLoading, ciCdPipelineRes, ciCdPipelineErr, reloadCiCdPipeline] = useAsync(
+    const [isCiCdPipelineLoading, ciCdPipelineRes, ciCdPipelineErr, reloadCiCdPipeline, setter] = useAsync(
         () => getCICDPipelineInitData(appId),
         [open],
         open,
     )
 
-    const resetStateToDefault = () => {
-        setCiCdPipeline(getCiCdPipelineDefaultState)
-        setCiCdPipelineFormError({})
-        setIsCreatingWorkflow(false)
-        setCdNodeCreateError(null)
-    }
+    const ciCdPipeline = ciCdPipelineRes ?? getCiCdPipelineDefaultState()
+    const setCiCdPipeline = setter as Dispatch<SetStateAction<CreateCICDPipelineData>>
 
-    useEffect(() => {
-        if (!open) {
-            resetStateToDefault()
-        }
-    }, [open])
-
-    useEffect(() => {
-        if (!isCiCdPipelineLoading && ciCdPipelineRes) {
-            setCiCdPipeline(ciCdPipelineRes)
-        }
-    }, [isCiCdPipelineLoading, ciCdPipelineRes])
-
-    const {
-        materials,
-        webhookConditionList,
-        gitHost,
-        webhookEvents,
-        ciPipelineSourceTypeOptions,
-        ciPipelineEditable,
-        scanEnabled,
-        isSecurityModuleInstalled,
-    } = ciCdPipeline
+    const { ci, cd } = ciCdPipeline
+    const { materials, webhookConditionList, ciPipelineSourceTypeOptions, scanEnabled, isSecurityModuleInstalled } = ci
+    const { deploymentAppType, selectedEnvironment } = cd
 
     // HANDLERS
-    const saveCDPipeline = () =>
-        // TODO: Integrate
-        Promise.allSettled([
-            new Promise((_, reject) => {
-                setTimeout(() => reject(new Error('cd node failed')), 2000)
-            }),
-        ])
+    const handleReloadNoGitOpsRepoConfiguredModalClose = () => {
+        setReloadNoGitOpsRepoConfiguredModal(false)
+    }
+
+    const handleNoGitOpsRepoConfiguredWarningClose = () => {
+        setGitOpsRepoConfiguredWarning({ show: false, text: '' })
+    }
+
+    const checkForGitOpsRepoNotConfigured = () => {
+        const isHelmEnforced =
+            selectedEnvironment.allowedDeploymentTypes.length === 1 &&
+            selectedEnvironment.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
+
+        const gitOpsRepoNotConfiguredAndOptionsHidden =
+            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
+            !noGitOpsModuleInstalledAndConfigured &&
+            !isHelmEnforced &&
+            isGitOpsRepoNotConfigured
+
+        if (gitOpsRepoNotConfiguredAndOptionsHidden) {
+            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
+        }
+
+        const isGitOpsRepoNotConfiguredAndOptionsVisible =
+            deploymentAppType === DeploymentAppTypes.GITOPS &&
+            isGitOpsRepoNotConfigured &&
+            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
+
+        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
+            isGitOpsRepoNotConfiguredAndOptionsVisible && selectedEnvironment.allowedDeploymentTypes.length === 1
+
+        if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
+            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
+        }
+
+        if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
+            setGitOpsRepoConfiguredWarning({
+                show: true,
+                text: gitOpsRepoNotConfiguredWithEnforcedEnv(selectedEnvironment.name),
+            })
+        }
+
+        if (
+            gitOpsRepoNotConfiguredAndOptionsHidden ||
+            isGitOpsRepoNotConfiguredAndGitopsEnforced ||
+            isGitOpsRepoNotConfiguredAndOptionsVisible
+        ) {
+            return true
+        }
+
+        return false
+    }
 
     const createWorkflow = async ({ shouldCreateCINode }: { shouldCreateCINode: boolean }) => {
         if (shouldCreateCINode) {
@@ -96,8 +156,27 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
             }
         }
 
-        const { ciCdPipelineFormError: updatedCiCdPipelineFormError, isValid } =
-            validateCreateCICDPipelineData(ciCdPipeline)
+        if (deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                title: 'GitOps credentials not configured',
+                description: 'GitOps credentials is required to deploy applications via GitOps',
+                buttonProps: getConfigureGitOpsCredentialsButtonProps({
+                    size: ComponentSizeType.small,
+                    style: ButtonStyleType.neutral,
+                }),
+            })
+            return
+        }
+
+        if (checkForGitOpsRepoNotConfigured()) {
+            return
+        }
+
+        const { ciCdPipelineFormError: updatedCiCdPipelineFormError, isValid } = validateCreateCICDPipelineData(
+            ciCdPipeline,
+            envIds,
+        )
 
         setCiCdPipelineFormError(updatedCiCdPipelineFormError)
         if (!isValid) {
@@ -114,9 +193,9 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
         try {
             const materialsPayload = getSaveCIPipelineMaterialsPayload(materials)
             if (shouldCreateCINode) {
-                await saveCIPipeline(
+                const res = await saveCIPipeline(
                     {
-                        ...ciCdPipeline,
+                        ...ciCdPipeline.ci,
                         materials: materialsPayload,
                         scanEnabled: isSecurityModuleInstalled ? scanEnabled : false,
                     },
@@ -125,15 +204,33 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
                     },
                     materialsPayload,
                     +appId,
-                    workflowId,
+                    0,
                     false,
                     webhookConditionList,
                     ciPipelineSourceTypeOptions,
                     null,
                     false,
                 )
+
+                ciPipelineResRef.current = {
+                    id: res.ciPipeline.id,
+                    appWorkflowId: res.appWorkflowId,
+                }
             }
-            const [cdNodeRes] = await saveCDPipeline()
+
+            const [cdNodeRes] = await Promise.allSettled([
+                saveCDPipeline(
+                    {
+                        appId: +appId,
+                        pipelines: getSaveCDPipelinesPayload({
+                            cd,
+                            appWorkflowId: ciPipelineResRef.current.appWorkflowId,
+                            ciPipelineId: ciPipelineResRef.current.id,
+                        }),
+                    },
+                    { isTemplateView: false },
+                ),
+            ])
 
             setIsCreatingWorkflow(false)
             await getWorkflows()
@@ -142,7 +239,11 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
                 setCdNodeCreateError(cdNodeRes.reason)
 
                 if (!shouldCreateCINode) {
-                    showError(cdNodeRes.reason)
+                    if (cdNodeRes.reason.code === 409) {
+                        setReloadNoGitOpsRepoConfiguredModal(true)
+                    } else {
+                        showError(cdNodeRes.reason)
+                    }
                 } else {
                     ToastManager.showToast({
                         variant: ToastVariantType.warn,
@@ -167,9 +268,23 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
         }
     }
 
-    const handleCreateWorkflow = () => createWorkflow({ shouldCreateCINode: true })
+    const handleCreateWorkflow = () =>
+        cdNodeCreateError ? createWorkflow({ shouldCreateCINode: false }) : createWorkflow({ shouldCreateCINode: true })
 
-    const handleRetryCreateWorkflow = () => createWorkflow({ shouldCreateCINode: false })
+    // RESET
+    const resetStateToDefault = () => {
+        setCiCdPipeline(getCiCdPipelineDefaultState)
+        setCiCdPipelineFormError(getCiCdPipelineFormErrorDefaultState)
+        setIsCreatingWorkflow(false)
+        setCdNodeCreateError(null)
+        ciPipelineResRef.current = null
+    }
+
+    useEffect(() => {
+        if (!open) {
+            resetStateToDefault()
+        }
+    }, [open])
 
     // CONFIGS
     const stepperConfig: CICDStepperProps['config'] = [
@@ -179,12 +294,6 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
             title: 'Build and deploy from source code',
             content: (
                 <CIStepperContent
-                    materials={materials}
-                    ciPipelineSourceTypeOptions={ciPipelineSourceTypeOptions}
-                    gitHost={gitHost}
-                    webhookEvents={webhookEvents}
-                    webhookConditionList={webhookConditionList}
-                    ciPipelineEditable={ciPipelineEditable}
                     ciCdPipeline={ciCdPipeline}
                     setCiCdPipeline={setCiCdPipeline}
                     ciCdPipelineFormError={ciCdPipelineFormError}
@@ -200,46 +309,77 @@ export const CreateCICDPipeline = ({ open, onClose, appId, workflowId, getWorkfl
             title: 'Select environment to deploy',
             content: (
                 <CDStepperContent
+                    appId={appId}
                     ciCdPipeline={ciCdPipeline}
+                    setCiCdPipeline={setCiCdPipeline}
                     ciCdPipelineFormError={ciCdPipelineFormError}
                     setCiCdPipelineFormError={setCiCdPipelineFormError}
                     isCreatingWorkflow={isCreatingWorkflow}
                     cdNodeCreateError={cdNodeCreateError}
-                    onRetry={handleRetryCreateWorkflow}
+                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
+                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                    envIds={envIds}
+                    onRetry={handleCreateWorkflow}
+                    setReloadNoGitOpsRepoConfiguredModal={setReloadNoGitOpsRepoConfiguredModal}
                 />
             ),
         },
     ]
 
     return (
-        <GenericModal name="create-ci-cd-pipeline-modal" open={open} width={800} onClose={onClose} onEscape={onClose}>
-            <GenericModal.Header title="Build and deploy from source code" />
-            <GenericModal.Body>
-                <div className="ci-cd-pipeline px-20 py-16 dc__overflow-auto">
-                    <APIResponseHandler
-                        isLoading={isCiCdPipelineLoading}
-                        progressingProps={{ pageLoader: true }}
-                        error={ciCdPipelineErr}
-                        errorScreenManagerProps={{ code: ciCdPipelineErr?.code, reload: reloadCiCdPipeline }}
-                    >
-                        <CICDStepper config={stepperConfig} />
-                    </APIResponseHandler>
-                </div>
-            </GenericModal.Body>
-            {!isCiCdPipelineLoading && !ciCdPipelineErr && (
-                <GenericModal.Footer
-                    leftSideElement={<FooterInfo />}
-                    buttonConfig={{
-                        primaryButton: {
-                            dataTestId: 'ci-cd-workflow-create-button',
-                            startIcon: cdNodeCreateError ? <Icon name="ic-arrow-clockwise" color={null} /> : null,
-                            text: cdNodeCreateError ? 'Retry' : 'Create Workflow',
-                            isLoading: isCreatingWorkflow,
-                            onClick: cdNodeCreateError ? handleRetryCreateWorkflow : handleCreateWorkflow,
-                        },
-                    }}
+        <>
+            <GenericModal
+                name="create-ci-cd-pipeline-modal"
+                open={open}
+                width={800}
+                onClose={onClose}
+                onEscape={onClose}
+            >
+                <GenericModal.Header title="Build and deploy from source code" />
+                <GenericModal.Body>
+                    <div className="flex ci-cd-pipeline px-20 py-16 dc__overflow-auto">
+                        <APIResponseHandler
+                            isLoading={isCiCdPipelineLoading}
+                            progressingProps={{ pageLoader: true }}
+                            error={ciCdPipelineErr}
+                            errorScreenManagerProps={{ code: ciCdPipelineErr?.code, reload: reloadCiCdPipeline }}
+                        >
+                            <CICDStepper config={stepperConfig} />
+                        </APIResponseHandler>
+                    </div>
+                </GenericModal.Body>
+                {!isCiCdPipelineLoading && !ciCdPipelineErr && (
+                    <GenericModal.Footer
+                        leftSideElement={<FooterInfo />}
+                        buttonConfig={{
+                            primaryButton: {
+                                dataTestId: 'ci-cd-workflow-create-button',
+                                startIcon: cdNodeCreateError ? <Icon name="ic-arrow-clockwise" color={null} /> : null,
+                                text: cdNodeCreateError ? 'Retry' : 'Create Workflow',
+                                isLoading: isCreatingWorkflow,
+                                onClick: handleCreateWorkflow,
+                            },
+                        }}
+                    />
+                )}
+            </GenericModal>
+
+            {reloadNoGitOpsRepoConfiguredModal && (
+                <ReloadNoGitOpsRepoConfiguredModal
+                    closePopup={handleReloadNoGitOpsRepoConfiguredModalClose}
+                    reload={reloadAppConfig}
                 />
             )}
-        </GenericModal>
+
+            {gitOpsRepoConfiguredWarning.show && (
+                <NoGitOpsRepoConfiguredWarning
+                    closePopup={handleNoGitOpsRepoConfiguredWarningClose}
+                    appId={+appId}
+                    text={gitOpsRepoConfiguredWarning.text}
+                    reload={reloadAppConfig}
+                />
+            )}
+        </>
     )
 }
