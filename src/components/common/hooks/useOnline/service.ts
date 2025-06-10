@@ -1,6 +1,6 @@
 import { Routes } from '@Config/constants'
 
-const DEFAULT_TIMEOUT = 10000
+const DEFAULT_TIMEOUT = 20000
 
 const fetchWithTimeout = (url: string, options: RequestInit, controller: AbortController): Promise<any> => {
     const timeoutId = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT)
