@@ -181,7 +181,7 @@ const ChartHeaderFilter = ({
     const toggleDeprecated = (): void => {
         const value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, CHART_KEYS.DEPRECATED)
-        if (!!value) {
+        if (value) {
             handleAnalyticsEvent({category: 'Chart Store', action: 'CS_SHOW_DEPRECATED'})
         }
     }

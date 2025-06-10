@@ -319,7 +319,7 @@ export const SourceInfo = ({
                                                 style={ButtonStyleType.neutral}
                                                 ariaLabel="URLs"
                                             />
-                                            <div className="border__primary--left w-1 h-100" />
+                                            <div className="divider__primary h-100" />
                                         </>
                                     )}
 
@@ -355,7 +355,7 @@ export const SourceInfo = ({
                                                 }}
                                                 ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
                                             />
-                                            <div className="border__primary--left w-1 h-100" />
+                                            <div className="divider__primary h-100" />
                                         </>
                                     )}
 
@@ -387,7 +387,7 @@ export const SourceInfo = ({
                                                     }}
                                                     ariaLabel="restart workloads"
                                                 />
-                                                <div className="border__primary--left w-1 h-100" />
+                                                <div className="divider__primary h-100" />
                                             </>
                                         )}
 
