@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-import { getIsRequestAborted, noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
 import { getFallbackInternetConnectivity, getInternetConnectivity } from './service'
@@ -18,18 +18,12 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         abortControllerRef.current.abort()
     }
 
-    const onConnectivitySuccess = () => {
+    const onConnectivitySuccess = (checkConnectivity) => {
         setOnline((prev) => {
             if (!prev) onOnline()
             return true
         })
-    }
-
-    const setTimeoutRef = (ref: NodeJS.Timeout) => {
-        if (timeoutRef.current) {
-            clearTimeout(timeoutRef.current)
-        }
-        timeoutRef.current = ref
+        timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
     }
 
     const checkConnectivity = async () => {
@@ -42,26 +36,28 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         try {
             await getFallbackInternetConnectivity({
                 controller: abortControllerRef.current,
-                setTimeoutRef,
-                checkConnectivity,
             })
-            onConnectivitySuccess()
-        } catch (error) {
-            if (getIsRequestAborted(error)) return
+            onConnectivitySuccess(checkConnectivity)
+        } catch {
+            if (abortControllerRef.current.signal.aborted) {
+                if (timeoutRef.current) {
+                    timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+                }
+                return
+            }
             const fallbackController = new AbortController()
             abortControllerRef.current = fallbackController
             try {
                 await getInternetConnectivity({
                     controller: abortControllerRef.current,
-                    setTimeoutRef,
-                    checkConnectivity,
                 })
-                onConnectivitySuccess()
-            } catch (fallbackError) {
-                if (!getIsRequestAborted(fallbackError)) {
+                onConnectivitySuccess(checkConnectivity)
+            } catch {
+                if (!abortControllerRef.current.signal.aborted) {
                     setOnline(false)
+                } else if (timeoutRef.current) {
+                    timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
                 }
-                timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
             }
         }
     }
