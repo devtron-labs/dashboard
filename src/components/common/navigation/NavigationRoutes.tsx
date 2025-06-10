@@ -150,8 +150,6 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
 
-    const parentRef = useRef<HTMLDivElement>(null)
-
     const { showThemeSwitcherDialog, handleThemeSwitcherDialogVisibilityChange, appTheme } = useTheme()
 
     const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
@@ -518,7 +516,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 isFELibAvailable: !!isFELibAvailable,
             }}
         >
-            <motion.main ref={parentRef} id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+            <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                 {showThemeSwitcherDialog && (
                     <SwitchThemeDialog
                         initialThemePreference={userPreferences?.themePreference}

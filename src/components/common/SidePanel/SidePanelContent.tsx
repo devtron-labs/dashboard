@@ -93,6 +93,7 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
 
                         return (
                             <div
+                                key={id}
                                 role="button"
                                 data-testid={`side-panel-tab-${id}`}
                                 className={`flex dc__gap-6 dc__border-right px-16 dc__transition--background ${isSelected ? 'bg__primary' : ''}`}

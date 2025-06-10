@@ -10,11 +10,9 @@ export interface SidePanelContentBaseProps {
     SidePanelHeaderActions: FunctionComponent
 }
 
-export interface SidePanelContentProps {
+export interface SidePanelContentProps extends Pick<MainContext, 'sidePanelConfig' | 'setSidePanelConfig'> {
     tab?: SidePanelTab
     onClose: () => void
-    setSidePanelConfig: MainContext['setSidePanelConfig']
-    sidePanelConfig: MainContext['sidePanelConfig']
 }
 
 export interface TabConfig {

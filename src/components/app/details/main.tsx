@@ -94,10 +94,6 @@ export default function AppDetailsPage() {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
-    const { aiAgentContext } = useMainContext()
-
-    const parentRef = useRef<HTMLDivElement>(null)
-
     const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
 
     const getAppMetaInfoRes = async (shouldResetAppName: boolean = false): Promise<AppMetaInfo> => {
@@ -362,7 +358,7 @@ export default function AppDetailsPage() {
     const _filteredEnvIds = selectedAppList.length > 0 ? selectedAppList.map((app) => +app.value).join(',') : null
 
     return (
-        <div ref={parentRef} className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
+        <div className="app-details-page flexbox-col w-100 h-100 dc__overflow-auto">
             <AppHeader
                 appName={appName}
                 appMetaInfo={appMetaInfo}
