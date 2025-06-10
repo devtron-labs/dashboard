@@ -5,6 +5,7 @@ import { getIsRequestAborted, noop, useMainContext } from '@devtron-labs/devtron
 import { getInternetConnectivity } from '@Services/service'
 
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
+import { getFallbackInternetConnectivity } from './service'
 
 export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const [online, setOnline] = useState(structuredClone(navigator.onLine))
@@ -36,12 +37,22 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
             })
             timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
         } catch (error) {
-            setOnline(false)
-            if (!getIsRequestAborted(error)) {
-                timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+            try {
+                await getFallbackInternetConnectivity(abortControllerRef.current)
+                setOnline((prev) => {
+                    if (!prev) onOnline()
+                    return true
+                })
+            } catch {
+                setOnline(false)
+            } finally {
+                if (!getIsRequestAborted(error)) {
+                    timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
+                }
             }
         }
     }
+
     const handleOffline = () => {
         handleClearTimeout()
         setOnline(false)
