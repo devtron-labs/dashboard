@@ -733,7 +733,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && formData.isCustomChart ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
