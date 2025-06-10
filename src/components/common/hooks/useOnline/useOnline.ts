@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 
 import { getIsRequestAborted, noop, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getInternetConnectivity } from '@Services/service'
-
 import { INTERNET_CONNECTIVITY_INTERVAL } from '../constants'
-import { getFallbackInternetConnectivity } from './service'
+import { getFallbackInternetConnectivity, getInternetConnectivity } from './service'
 
 export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const [online, setOnline] = useState(structuredClone(navigator.onLine))
