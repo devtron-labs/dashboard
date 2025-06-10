@@ -353,7 +353,6 @@ src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
-src/components/v2/devtronStackManager/SuccessModalComponent.tsx
 src/components/v2/headers/ChartHeader.component.tsx
 src/components/v2/headers/EAHeader.component.tsx
 src/components/v2/index.tsx
@@ -371,7 +370,6 @@ src/components/workflowEditor/CreateWorkflow.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
-src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
 src/components/workflowEditor/Workflow.tsx
 src/components/workflowEditor/nodes/CDNode.tsx

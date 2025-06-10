@@ -532,6 +532,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 showPluginWarning={node.showPluginWarning}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
                 isTemplateView={this.props.isTemplateView}
+                history={this.props.history}
+                location={this.props.location}
             />
         )
     }

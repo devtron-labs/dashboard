@@ -218,23 +218,7 @@
         padding: 10px 16px;
     }
 }
-.confirmation-dialog__body {
-    .module-details__upgrade-success {
-        text-align: center;
 
-        img {
-            position: absolute;
-            width: 160px;
-            height: 160px;
-        }
-
-        svg,
-        h3,
-        p {
-            z-index: 1;
-        }
-    }
-}
 .no-integrations__installed-view {
     width: 100%;
     height: 100%;
