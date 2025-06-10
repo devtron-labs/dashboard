@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { lazy, PropsWithChildren, Suspense, useEffect, useRef, useState } from 'react'
+import { lazy, PropsWithChildren, Suspense, useEffect, useState } from 'react'
 import { Switch, Route, Redirect, useParams, useRouteMatch } from 'react-router-dom'
 import {
     showError,
@@ -35,7 +35,6 @@ import { MultiValue } from 'react-select'
 import {
     ErrorBoundary,
     getAndSetAppGroupFilters,
-    importComponentFromFELibrary,
     setAppGroupFilterInLocalStorage,
     sortOptionsByLabel,
 } from '../../common'

@@ -55,7 +55,7 @@ import * as Sentry from '@sentry/browser'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
 import Navigation from './Navigation'
-import { ErrorBoundary, AppContext, AppContextType } from '..'
+import { ErrorBoundary, AppContext } from '..'
 import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
 import { Security } from '../../security/Security'
 import {

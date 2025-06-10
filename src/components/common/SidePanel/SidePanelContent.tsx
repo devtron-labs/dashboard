@@ -1,3 +1,5 @@
+import { KeyboardEvent } from 'react'
+
 import {
     Button,
     ButtonStyleType,
@@ -87,8 +89,14 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                     {TABS_CONFIG.map(({ label, iconName, id }) => {
                         const isSelected = tab === id
 
-                        const handleTabClick = () => {
+                        const onTabClick = () => {
                             setSidePanelConfig((prev) => ({ ...prev, state: id }))
+                        }
+
+                        const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.currentTarget.click()
+                            }
                         }
 
                         return (
@@ -97,10 +105,11 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                                 role="button"
                                 data-testid={`side-panel-tab-${id}`}
                                 className={`flex dc__gap-6 dc__border-right px-16 dc__transition--background ${isSelected ? 'bg__primary' : ''}`}
-                                onClick={handleTabClick}
+                                onClick={onTabClick}
                                 style={{ ...(isSelected ? { boxShadow: '0 1px 0 0 var(--bg-primary)' } : {}) }}
                                 tabIndex={0}
                                 data-config={JSON.stringify(getConfigForTab(id))}
+                                onKeyDown={onKeyDown}
                             >
                                 <Icon name={iconName} color={isSelected ? 'N900' : 'N700'} />
 
@@ -113,7 +122,7 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                 </div>
 
                 <div className="flex dc__gap-8 pr-16 pt-12 pb-11">
-                    <div id="devtron-side-panel-actions" />
+                    <div id="devtron-side-panel-actions" className="flexbox" />
 
                     <Button
                         dataTestId="close-side-panel-button"
