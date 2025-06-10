@@ -105,7 +105,7 @@ export default function SavedValuesList() {
                 toDeployChartView ? URLS.DEPLOY_CHART : URLS.PRESET_VALUES
             }/${chartValueId}`,
         )
-        if (!!chartValueId) {
+        if (chartValueId) {
             handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES_NEW' })
         }
     }
