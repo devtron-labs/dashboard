@@ -25,6 +25,13 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         })
     }
 
+    const setTimeoutRef = (ref: NodeJS.Timeout) => {
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current)
+        }
+        timeoutRef.current = ref
+    }
+
     const checkConnectivity = async () => {
         if (isAirgapped) return
 
@@ -33,20 +40,23 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
         abortControllerRef.current = controller
 
         try {
-            await getInternetConnectivity(abortControllerRef.current)
+            await getInternetConnectivity({ controller: abortControllerRef.current, setTimeoutRef, checkConnectivity })
             onConnectivitySuccess()
-
-            timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
         } catch (error) {
             if (getIsRequestAborted(error)) return
             const fallbackController = new AbortController()
             abortControllerRef.current = fallbackController
             try {
-                await getFallbackInternetConnectivity(fallbackController)
+                await getFallbackInternetConnectivity({
+                    controller: abortControllerRef.current,
+                    setTimeoutRef,
+                    checkConnectivity,
+                })
                 onConnectivitySuccess()
-            } catch {
-                setOnline(false)
-            } finally {
+            } catch (fallbackError) {
+                if (!getIsRequestAborted(fallbackError)) {
+                    setOnline(false)
+                }
                 timeoutRef.current = setTimeout(checkConnectivity, INTERNET_CONNECTIVITY_INTERVAL)
             }
         }
