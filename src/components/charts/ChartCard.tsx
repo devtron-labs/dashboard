@@ -93,7 +93,7 @@ const ChartCard = ({
     )
 
     const renderIcon = () => (
-        <div className={`${isListView ? 'flex' : 'px-20 pt-16 h-86'}`}>
+        <div className={`${isListView ? 'flex' : 'px-20 pt-16 pb-12'}`}>
             <div className="icon-wrapper">
                 <LazyImage
                     className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim`}
@@ -105,14 +105,16 @@ const ChartCard = ({
     )
 
     const renderCardInfo = () => (
-        <div className={`flexbox-col flex-grow-1 dc__gap-4 pb-16  ${isListView ? 'pt-20' : 'px-20'}`}>
-            <div className="flex left">
-                <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
-                <div className="chart-name__arrow dc__no-shrink flex">
-                    <ICCaretSmall className="icon-dim-16 dc__flip-180 scb-5" />
+        <div className={`flexbox-col flex-grow-1 dc__gap-8 pb-16  ${isListView ? 'pt-20' : 'px-20'}`}>
+            <div className="flexbox-col dc__gap-2">
+                <div className="flex left">
+                    <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
+                    <div className="chart-name__arrow dc__no-shrink flex">
+                        <ICCaretSmall className="icon-dim-16 dc__flip-180 scb-5" />
+                    </div>
                 </div>
+                {chart.deprecated && renderDeprecatedWarning()}
             </div>
-            {chart.deprecated && renderDeprecatedWarning()}
 
             <span className={`fw-4 fs-13 lh-20 ${chart.deprecated ? 'dc__truncate' : 'dc__truncate--clamp-2'}`}>
                 {chart.description || 'No description'}
@@ -126,7 +128,8 @@ const ChartCard = ({
                 <Icon name="ic-folder-color" size={16} color={null} />
                 <InteractiveCellText
                     text={chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id}
-                    rootClassName="cn-4"
+                    rootClassName="cn-7"
+                    fontSize={12}
                 />
             </div>
             <div className="fs-12 cn-7 dc__ellipsis-right__2nd-line lh-18 dc__no-shrink">v{chart.version}</div>
