@@ -108,7 +108,11 @@ const ChartCard = ({
         <div className={`flexbox-col flex-grow-1 dc__gap-8 pb-16  ${isListView ? 'pt-20' : 'px-20'}`}>
             <div className="flexbox-col dc__gap-2">
                 <div className="flex left">
-                    <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title cn-9" />
+                    <InteractiveCellText
+                        text={chart.name}
+                        rootClassName="fw-6 chart-grid-item__title cn-9"
+                        fontSize={14}
+                    />
                     <div className="chart-name__arrow dc__no-shrink flex">
                         <ICCaretSmall className="icon-dim-16 dc__flip-180 scb-5" />
                     </div>
