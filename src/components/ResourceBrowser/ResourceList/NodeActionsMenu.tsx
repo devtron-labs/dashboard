@@ -195,7 +195,7 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
                         variant={ButtonVariantType.borderLess}
                         ariaLabel="Open action menu"
                         style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.small}
+                        size={ComponentSizeType.xxs}
                         showAriaLabelInTippy={false}
                     />
                 </ActionMenu>

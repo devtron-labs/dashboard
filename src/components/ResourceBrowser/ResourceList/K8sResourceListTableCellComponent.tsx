@@ -210,7 +210,8 @@ const K8sResourceListTableCellComponent = ({
                         </Tooltip>
                         <ClipboardButton
                             content={String(resourceData.name)}
-                            rootClassName="p-4 dc__visible-hover--child"
+                            rootClassName="p-2 dc__visible-hover--child"
+                            iconSize={16}
                         />
                     </div>
                     {!isNodeListing ? (

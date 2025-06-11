@@ -83,7 +83,7 @@ const ResourceFilterOptions = ({
 
     const selectedNamespaceOption = useMemo(() => {
         if (selectedResource?.namespaced) {
-            return namespaceOptions.find((option) => option.value === selectedNamespace)
+            return namespaceOptions.find((option) => option.value === (selectedNamespace || ALL_NAMESPACE_OPTION.value))
         }
         return NAMESPACE_NOT_APPLICABLE_OPTION
     }, [selectedNamespace, selectedResource?.namespaced, namespaceOptions])

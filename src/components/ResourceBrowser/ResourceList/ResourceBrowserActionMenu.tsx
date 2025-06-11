@@ -203,7 +203,7 @@ const ResourceBrowserActionMenu = forwardRef(
                         variant={ButtonVariantType.borderLess}
                         ariaLabel="Open action menu"
                         style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.small}
+                        size={ComponentSizeType.xxs}
                         showAriaLabelInTippy={false}
                     />
                 </ActionMenu>

@@ -290,6 +290,7 @@ export const K8SResourceList = ({
                 isEventListing,
                 lowercaseKindToResourceGroupMap,
                 reloadResourceListData: handleClearCacheAndReload,
+                clusterName: selectedCluster?.label ?? '',
             }}
             pageSizeOptions={!isNodeListing ? RESOURCE_PAGE_SIZE_OPTIONS : undefined}
         />
