@@ -86,7 +86,7 @@ const ChartCard = ({
             dataTestId={`chart-remove-${dataTestId}`}
             variant={ButtonVariantType.borderLess}
             size={ComponentSizeType.small}
-            style={ButtonStyleType.default}
+            style={ButtonStyleType.negativeGrey}
             showAriaLabelInTippy={selectedCount > 0}
             ariaLabel="Remove charts from selection"
         />
@@ -108,7 +108,7 @@ const ChartCard = ({
         <div className={`flexbox-col flex-grow-1 dc__gap-8 pb-16  ${isListView ? 'pt-20' : 'px-20'}`}>
             <div className="flexbox-col dc__gap-2">
                 <div className="flex left">
-                    <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
+                    <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title cn-9" />
                     <div className="chart-name__arrow dc__no-shrink flex">
                         <ICCaretSmall className="icon-dim-16 dc__flip-180 scb-5" />
                     </div>
@@ -138,7 +138,7 @@ const ChartCard = ({
     return (
         <div
             key={chart.id}
-            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__primary cursor dc__position-rel br-8 ${isListView ? 'flexbox-col' : ''} ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}
+            className={`chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__secondary-translucent cursor dc__position-rel br-8 ${isListView ? 'flexbox-col' : ''} ${selectedCount > 0 ? 'chart-grid-item--selected' : ''} `}
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${dataTestId}`}
         >
@@ -147,7 +147,7 @@ const ChartCard = ({
                 <div className={`${isListView ? 'dc__gap-16' : ''}`}>
                     {serverMode === SERVER_MODE.FULL && addChart && subtractChart && (
                         <div
-                            className={`chart-grid__check devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''}`}
+                            className={`devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''}`}
                         >
                             {selectedCount > 0 && (
                                 <>

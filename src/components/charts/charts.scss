@@ -17,7 +17,7 @@
 .discover-charts__body {
     .chart-grid {
         .chart-grid-item {
-            transition: box-shadow 0.2s ease-out;
+            transition: box-shadow 0.5s ease-out, border-color 0.3s ease-out ;
 
             &.chart-grid-item--selected {
                 border: solid 1px var(--B500);
@@ -27,7 +27,7 @@
             .icon-wrapper {
                 border: 1px solid var(--border-primary);
                 background-color: var(--bg-secondary);
-                border-radius: 8px;
+                border-radius: 4px;
                 padding: 8px;
                 width: fit-content;
             }
@@ -47,7 +47,8 @@
 
         .chart-grid-item:hover {
             text-decoration: none;
-            box-shadow: var(--shadow-10);
+            box-shadow: var(--shadow-20);
+            border: 1px solid var(--border-primary-translucent);
             transition: transform 0.17s ease-in-out;
 
             .chart-grid-item__title {
@@ -69,14 +70,10 @@
             }
         }
 
-        .chart-grid__check {
+        .devtron-stepper {
             position: absolute;
             right: 20px;
             top: 20px;
-
-            &.chart-grid__check--hidden {
-                display: none;
-            }
         }
 
         .devtron-stepper-grid {
