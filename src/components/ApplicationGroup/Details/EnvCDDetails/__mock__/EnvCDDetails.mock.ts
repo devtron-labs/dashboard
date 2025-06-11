@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { ResponseType } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ModuleConfigResponse } from '../../../../app/details/appDetails/appDetails.type'
+import { ModuleConfigResponse, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export async function mockCDList(): Promise<ResponseType> {
     const response = {
