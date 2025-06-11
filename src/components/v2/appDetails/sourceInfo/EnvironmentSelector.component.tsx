@@ -43,7 +43,7 @@ import { deleteInstalledChart } from '../../../charts/charts.service'
 import { ReactComponent as Dots } from '@Icons/ic-more-vertical.svg'
 import { DELETE_ACTION, URLS, checkIfDevtronOperatorHelmRelease } from '../../../../config'
 import { ReactComponent as BinWithDots } from '../../../../assets/icons/ic-delete-dots.svg'
-import { DELETE_DEPLOYMENT_PIPELINE, DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
+import { DELETE_DEPLOYMENT_PIPELINE } from '../../../../config/constantMessaging'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'
@@ -93,19 +93,6 @@ const EnvironmentSelectorComponent = ({
                 })
         }
     }, [params.appId])
-
-    const getDeployedUsing = () => {
-        if (isGitops) {
-            return DeploymentAppTypeNameMapping.GitOps
-        }
-        if (appDetails.appType === AppType.EXTERNAL_ARGO_APP) {
-            return DeploymentAppTypeNameMapping.ArgoCD
-        }
-        if (appDetails.appType === AppType.EXTERNAL_FLUX_APP) {
-            return DeploymentAppTypeNameMapping.FluxCD
-        }
-        return DeploymentAppTypeNameMapping.Helm
-    }
 
     useEffect(() => {
         if (!params.envId && appDetails.environmentId && !isExternalApp) {
@@ -318,21 +305,10 @@ const EnvironmentSelectorComponent = ({
                             )}
                         </div>
                     </div>
-                    {(appDetails?.deploymentAppType || appDetails?.appType) && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            disabled={isVirtualEnvironment}
-                            placement="top"
-                            content={`Deployed using ${getDeployedUsing()}`}
-                        >
-                            <div className={`flex ${!isVirtualEnvironment ? 'ml-16' : ''}`}>
-                                <DeploymentTypeIcon
-                                    deploymentAppType={appDetails.deploymentAppType}
-                                    appType={appDetails.appType}
-                                />
-                            </div>
-                        </Tippy>
+                    {appDetails?.deploymentAppType && (
+                        <div className={`flex ${!isVirtualEnvironment ? 'ml-16' : ''}`}>
+                            <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} />
+                        </div>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
