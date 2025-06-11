@@ -31,7 +31,7 @@ import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellT
 import placeHolder from '../../assets/icons/ic-default-chart.svg'
 import { SERVER_MODE } from '../../config'
 import { LazyImage } from '../common'
-import { ChartSelectProps } from './util/types'
+import { ChartSelectProps } from './charts.types'
 import { renderDeprecatedWarning } from './charts.util'
 
 const ChartCard = ({
