@@ -20,7 +20,6 @@ import {
     Progressing,
     Checkbox,
     Drawer,
-    InfoColourBar,
     CHECKBOX_VALUE,
     MODAL_TYPE,
     ToastManager,

@@ -201,6 +201,7 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
                                         documentationLinkText="View documentation"
                                         documentationLink="TAINT"
                                         additionalContent={<AdditionalContent />}
+                                        openInNewTab
                                     />
                                 </div>
                                 <Button

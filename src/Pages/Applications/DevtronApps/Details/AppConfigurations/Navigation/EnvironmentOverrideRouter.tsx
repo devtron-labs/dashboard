@@ -19,7 +19,8 @@ import { Link, NavLink, useLocation, useParams, useRouteMatch } from 'react-rout
 
 import {
     ComponentSizeType,
-    ConfirmationDialog,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
     DeleteConfirmationModal,
     DocLink,
     EnvResourceType,
@@ -38,7 +39,6 @@ import { ReactComponent as ICStamp } from '@Icons/ic-stamp.svg'
 import { ReactComponent as Add } from '../../../../../../assets/icons/ic-add.svg'
 import { ReactComponent as DeleteIcon } from '../../../../../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as More } from '../../../../../../assets/icons/ic-more-option.svg'
-import warn from '../../../../../../assets/icons/ic-warning.svg'
 import { createClusterEnvGroup, usePrevious } from '../../../../../../components/common'
 import { RESOURCE_ACTION_MENU } from '../../../../../../components/ResourceBrowser/Constants'
 import { URLS } from '../../../../../../config'
@@ -55,6 +55,7 @@ const EnvOverridesHelpNote = () => (
             docLinkKey="APP_CREATE_ENVIRONMENT_OVERRIDE"
             dataTestId="env-overrides-learn-more"
             size={ComponentSizeType.xs}
+            fontWeight="normal"
         />
     </div>
 )
@@ -98,33 +99,34 @@ const JobEnvOverrideRoute = ({ envOverride, ciPipelines, reload, isEnvProtected 
     )
 
     const renderConfirmationDeleteModal = (pipeline, path: string): JSX.Element => (
-        <ConfirmationDialog>
-            <ConfirmationDialog.Icon src={warn} />
-            <ConfirmationDialog.Body
-                title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`}
-            />
-            <p className="fs-13 cn-7 lh-1-54">
-                {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
-                <Link to={path} onClick={onCloseDeleteModal} className="ml-2">
-                    View pipeline
-                </Link>
-            </p>
-            <p className="fs-13 cn-7 lh-1-54">
-                Base configmaps & secrets will be used if environment configurations are deleted.
-            </p>
-            <ConfirmationDialog.ButtonGroup>
-                <button type="button" className="cta cancel" onClick={handleCancelDelete}>
-                    Cancel
-                </button>
-                <button
-                    type="button"
-                    onClick={handleDeleteConfirmation}
-                    className="cta delete cta-cd-delete-modal ml-16"
-                >
-                    Delete Anyway
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.warning}
+            title={`Configurations for environment ‘${envOverride.environmentName}‘ is in use`}
+            subtitle={
+                <>
+                    <p className="fs-13 cn-7 lh-1-54">
+                        {`Pipeline ‘${pipeline.name}‘ is using configurations for environment ‘${envOverride.environmentName}’.`}
+                        <Link to={path} onClick={onCloseDeleteModal} className="ml-2">
+                            View pipeline
+                        </Link>
+                    </p>
+                    <p className="fs-13 cn-7 lh-1-54">
+                        Base configmaps & secrets will be used if environment configurations are deleted.
+                    </p>
+                </>
+            }
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: handleCancelDelete,
+                },
+                primaryButtonConfig: {
+                    text: 'Delete Anyway',
+                    onClick: handleDeleteConfirmation,
+                },
+            }}
+            handleClose={handleCancelDelete}
+        />
     )
 
     const showDeleteDialog = (pipeline): JSX.Element => {

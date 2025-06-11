@@ -25,7 +25,6 @@ import {
     VariableType,
     VisibleModal,
     PipelineType,
-    ButtonWithLoader,
     MODAL_TYPE,
     ACTION_STATE,
     YAMLStringify,
@@ -54,6 +53,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -1165,6 +1165,7 @@ export default function CDPipeline({
         form.strategies = strategies
         setFormData(form)
         setIsAdvanced(true)
+        handleAnalyticsEvent({ category: 'CD Pipeline', action: 'DA_DEPLOY_ADVANCED' })
     }
 
     const openDeleteModal = () => {
@@ -1418,6 +1419,8 @@ export default function CDPipeline({
             return ''
         }
 
+        const buttonDisableText = getButtonDisabledMessage()
+
         return (
             <div
                 className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
@@ -1476,15 +1479,17 @@ export default function CDPipeline({
                         {formData && (
                             <>
                                 {renderSecondaryButton()}
-                                <ButtonWithLoader
-                                    rootClassName="cta cta--workflow"
+                                <Button
                                     dataTestId="build-pipeline-button"
+                                    text={text}
                                     onClick={savePipeline}
                                     isLoading={loadingData}
-                                    disabled={!!getButtonDisabledMessage()}
-                                >
-                                    {text}
-                                </ButtonWithLoader>
+                                    disabled={!!buttonDisableText}
+                                    showTooltip={!!buttonDisableText}
+                                    tooltipProps={{
+                                        content: buttonDisableText,
+                                    }}
+                                />
                             </>
                         )}
                     </div>

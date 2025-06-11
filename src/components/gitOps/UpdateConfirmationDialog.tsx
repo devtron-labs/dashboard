@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ButtonWithLoader, ConfirmationDialog, DocLink } from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationModal, ConfirmationModalVariantType, DocLink } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GitProvider } from '@Components/common/GitTabs/constants'
 import { getProviderNameFromEnum } from '@Components/common/GitTabs/utils'
@@ -39,7 +39,7 @@ const UpdateConfirmationDialog = ({
     const renderIconField = () => {
         if (isSwitchingProvider) {
             return (
-                <div className="flexbox dc__align-items-center dc__no-shrink dc__gap-20 pb-24">
+                <div className="flexbox dc__align-items-center dc__no-shrink dc__gap-20">
                     <GitProviderTabIcons provider={lastActiveGitOpsProvider} rootClassName="icon-dim-48" />
                     <ICArrowRight className="dc__no-shrink icon-dim-16 scn-5" />
                     <GitProviderTabIcons provider={providerTab} rootClassName="icon-dim-48" />
@@ -79,7 +79,6 @@ const UpdateConfirmationDialog = ({
                         docLinkKey="GLOBAL_CONFIG_GITOPS"
                         text="Know more"
                         dataTestId="know-more-about-git-ops-link"
-                        fullWidth={false}
                     />
                 </p>
 
@@ -89,33 +88,26 @@ const UpdateConfirmationDialog = ({
     }
 
     return (
-        <ConfirmationDialog className="w-400">
-            {renderIconField()}
-            <ConfirmationDialog.Body title={renderTitle()}>{renderContent()}</ConfirmationDialog.Body>
-
-            <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="cta cancel h-36 flex"
-                    onClick={handleCancel}
-                    disabled={saveLoading}
-                    data-testid="cancel-git-ops-update"
-                >
-                    Cancel
-                </button>
-
-                <ButtonWithLoader
-                    isLoading={saveLoading}
-                    rootClassName="cta h-36 flex"
-                    onClick={handleUpdate}
-                    type="button"
-                    disabled={saveLoading}
-                    dataTestId="cancel-git-ops-update"
-                >
-                    {isSwitchingProvider ? 'Switch & Save' : 'Save'}
-                </ButtonWithLoader>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.custom}
+            Icon={renderIconField()}
+            title={renderTitle()}
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: handleCancel,
+                    disabled: saveLoading,
+                },
+                primaryButtonConfig: {
+                    text: isSwitchingProvider ? 'Switch & Save' : 'Save',
+                    isLoading: saveLoading,
+                    onClick: handleUpdate,
+                },
+            }}
+            handleClose={handleCancel}
+        >
+            {renderContent()}
+        </ConfirmationModal>
     )
 }
 

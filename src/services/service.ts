@@ -559,7 +559,15 @@ export const getTemplateOptions = (appId: number, envId: number): Promise<Respon
     get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
 
 export const getInternetConnectivity = (controller: AbortController): Promise<any> => {
+    const timeoutId = setTimeout(() => {
+        controller.abort()
+    }, 10000)
+
     return fetch(`${window._env_?.CENTRAL_API_ENDPOINT ?? 'https://api.devtron.ai'}/${Routes.HEALTH}`, {
         signal: controller.signal,
-    }).then((res) => res.json())
+    })
+        .then((res) => res.json())
+        .finally(() => {
+            clearTimeout(timeoutId)
+        })
 }

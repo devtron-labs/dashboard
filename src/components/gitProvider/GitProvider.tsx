@@ -22,7 +22,6 @@ import {
     ErrorScreenNotAuthorized,
     VisibleModal,
     useEffectAfterMount,
-    stopPropagation,
     useAsync,
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
@@ -41,6 +40,8 @@ import {
     PasswordField,
     Icon,
     InfoBlock,
+    DTSwitchProps,
+    DTSwitch,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -252,7 +253,7 @@ const CollapsedList = ({
     ...props
 }) => {
     const [collapsed, toggleCollapse] = useState(true)
-    const [enabled, toggleEnabled] = useState<boolean>(active)
+    const [enabled, setEnabled] = useState<boolean>(active)
     const [loading, setLoading] = useState(false)
     const selectedGitHost = hostListOption.find((p) => p.value === gitHostId)
     const [gitHost, setGithost] = useState({ value: selectedGitHost, error: '' })
@@ -306,6 +307,11 @@ const CollapsedList = ({
         toggleCollapse((t) => !t)
     }
 
+    const handleProviderToggle: DTSwitchProps['onChange'] = (e) => {
+        e.stopPropagation()
+        setEnabled((prev) => !prev)
+    }
+
     return (
         <article
             className={`collapsed-list ${id ? 'collapsed-list--chart' : 'collapsed-list--git dashed'} collapsed-list--${
@@ -325,27 +331,21 @@ const CollapsedList = ({
                     )}
                     {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
                 </List.Logo>
-                <div className="flex left">
+                <div className="flexbox dc__align-items-center dc__content-space">
                     <List.Title
                         style={{ color: !id && !collapsed ? 'var(--N900)' : '' }}
                         title={id && !collapsed ? 'Edit git account' : name || 'Add git account'}
                         subtitle={collapsed ? url : null}
                     />
                     {id && (
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="bottom"
-                            content={enabled ? 'Disable git account' : 'Enable git account'}
-                        >
-                            <span
-                                onClick={stopPropagation}
-                                style={{ marginLeft: 'auto' }}
-                                data-testid={`${name}-toggle-button`}
-                            >
-                                {loading ? <Progressing /> : <List.Toggle onSelect={toggleEnabled} enabled={enabled} />}
-                            </span>
-                        </Tippy>
+                        <DTSwitch
+                            name={`${name}-toggle-button`}
+                            ariaLabel="Toggle git provider"
+                            tooltipContent={`${enabled ? 'Disable' : 'Enable'} git account`}
+                            isLoading={loading}
+                            isChecked={enabled}
+                            onChange={handleProviderToggle}
+                        />
                     )}
                 </div>
                 {id && (
@@ -795,7 +795,6 @@ const GitForm = ({
     const closeConfirmationModal = () => setConfirmation(false)
     const showConfirmationModal = () => setConfirmation(true)
 
-
     return (
         <form onSubmit={handleOnSubmit} className="git-form" autoComplete="off">
             <div className="mb-16">
@@ -829,7 +828,7 @@ const GitForm = ({
                                 onClick: onClickAddGitAccountHandler,
                                 variant: ButtonVariantType.borderLess,
                                 dataTestId: 'add-git-host',
-                                startIcon: <Icon name="ic-add" color={null} />
+                                startIcon: <Icon name="ic-add" color={null} />,
                             },
                         }}
                         onChange={(e) => handleGithostChange(e)}
@@ -880,9 +879,7 @@ const GitForm = ({
                 versa.
             </div>
             {state.auth.value === AuthenticationType.ANONYMOUS && (
-                <InfoBlock
-                    description="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account."
-                />
+                <InfoBlock description="Applications using ‘anonymous’ git accounts, will be able to access only ‘public repositories’ from the git account." />
             )}
             {state.auth.error && <div className="form__error">{state.auth.error}</div>}
             {state.auth.value === 'USERNAME_PASSWORD' && (
@@ -973,14 +970,16 @@ const GitForm = ({
                 </div>
             </div>
 
-            {confirmation && <DeleteConfirmationModal
-                title={state.name.value}
-                onDelete={onDelete}
-                component={DeleteComponentsName.GitProvider}
-                renderCannotDeleteConfirmationSubTitle={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
-                closeConfirmationModal={closeConfirmationModal}
-                errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-            />}
+            {confirmation && (
+                <DeleteConfirmationModal
+                    title={state.name.value}
+                    onDelete={onDelete}
+                    component={DeleteComponentsName.GitProvider}
+                    renderCannotDeleteConfirmationSubTitle={DC_GIT_PROVIDER_CONFIRMATION_MESSAGE}
+                    closeConfirmationModal={closeConfirmationModal}
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                />
+            )}
         </form>
     )
 }

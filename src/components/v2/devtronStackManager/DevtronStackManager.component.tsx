@@ -16,73 +16,76 @@
 
 import React, { useEffect, useState } from 'react'
 import { NavLink, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
-    VisibleModal,
+    Button,
     Checkbox,
     CHECKBOX_VALUE,
-    Toggle,
-    ConfirmationDialog,
-    IMAGE_SCAN_TOOL,
-    PageHeader,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
+    DISCORD_LINK,
+    DocLink,
+    DTSwitch,
     GenericFilterEmptyState,
+    IMAGE_SCAN_TOOL,
+    InstallationType,
+    MarkDown,
+    PageHeader,
+    Progressing,
+    RAISE_ISSUE,
+    showError,
+    TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
-    TOAST_ACCESS_DENIED,
-    MarkDown,
-    Button,
-    RAISE_ISSUE,
-    getDocumentationUrl,
-    DISCORD_LINK,
-    InstallationType,
+    VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
+
+import { ReactComponent as SuccessIcon } from '@Icons/appstatus/healthy.svg'
+import { ReactComponent as RetryInstallIcon } from '@Icons/ic-arrow-clockwise.svg'
+import { ReactComponent as InstallIcon } from '@Icons/ic-arrow-forward.svg'
+import { ReactComponent as UpToDateIcon } from '@Icons/ic-celebration.svg'
+import { ReactComponent as Chat } from '@Icons/ic-chat-circle-dots.svg'
+import { ReactComponent as InstalledIcon } from '@Icons/ic-check.svg'
+import { ReactComponent as ICTrivy } from '@Icons/ic-clair-to-trivy.svg'
+import { ReactComponent as CloseIcon } from '@Icons/ic-close.svg'
+import { ReactComponent as DiscoverIcon } from '@Icons/ic-compass.svg'
+import { ReactComponent as ErrorIcon } from '@Icons/ic-error-exclamation.svg'
+import { ReactComponent as Note } from '@Icons/ic-note.svg'
+import { ReactComponent as ICClair } from '@Icons/ic-trivy-to-clair.svg'
+import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
+import { ReactComponent as Info } from '@Icons/info-filled.svg'
+
+import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
+import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+import Carousel from '../../common/Carousel/Carousel'
 import {
     InstallationWrapperType,
     ModuleDetails,
     ModuleDetailsCardType,
     ModuleDetailsViewType,
+    ModuleEnableType,
     ModuleInstallationStatusType,
     ModuleListingViewType,
     ModuleStatus,
     StackManagerNavItemType,
     StackManagerNavLinkType,
     StackManagerPageHeaderType,
-    ModuleEnableType,
 } from './DevtronStackManager.type'
-import { ReactComponent as DiscoverIcon } from '../../../assets/icons/ic-compass.svg'
-import { ReactComponent as InstalledIcon } from '../../../assets/icons/ic-check.svg'
-import { ReactComponent as ErrorIcon } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as InstallIcon } from '../../../assets/icons/ic-arrow-forward.svg'
-import { ReactComponent as RetryInstallIcon } from '../../../assets/icons/ic-arrow-clockwise.svg'
-import { ReactComponent as SuccessIcon } from '../../../assets/icons/appstatus/healthy.svg'
-import { ReactComponent as UpToDateIcon } from '../../../assets/icons/ic-celebration.svg'
-import { ReactComponent as Chat } from '../../../assets/icons/ic-chat-circle-dots.svg'
-import { ReactComponent as Info } from '../../../assets/icons/info-filled.svg'
-import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
-import { ReactComponent as Note } from '../../../assets/icons/ic-note.svg'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
-import { MODULE_STATUS, MODULE_TYPE_SECURITY, ModuleNameMap, URLS } from '../../../config'
-import Carousel from '../../common/Carousel/Carousel'
 import {
     AboutSection,
     DEVTRON_UPGRADE_MESSAGE,
     handleAction,
+    handleEnableAction,
     isLatestVersionAvailable,
     MODULE_CONFIGURATION_DETAIL_MAP,
     ModulesSection,
     MORE_MODULE_DETAILS,
     OTHER_INSTALLATION_IN_PROGRESS_MESSAGE,
     PENDING_DEPENDENCY_MESSAGE,
-    handleEnableAction,
 } from './DevtronStackManager.utils'
-import './devtronStackManager.component.scss'
-import trivy from '../../../assets/icons/ic-clair-to-trivy.svg'
-import clair from '../../../assets/icons/ic-trivy-to-clair.svg'
-import warn from '../../../assets/icons/ic-error-medium.svg'
 import { SuccessModalComponent } from './SuccessModalComponent'
-import { EMPTY_STATE_STATUS } from '../../../config/constantMessaging'
+
+import './devtronStackManager.component.scss'
 
 const getInstallationStatusLabel = (
     installationStatus: ModuleStatus,
@@ -194,18 +197,16 @@ export const ModulesListingView = ({
 
     return (
         <div className="flexbox flex-wrap left p-20">
-            {modulesList.map((module, idx) => {
-                return (
-                    <ModuleDetailsCard
-                        key={`module-details__card-${idx}`}
-                        moduleDetails={module}
-                        className="cursor"
-                        handleModuleCardClick={handleModuleCardClick}
-                        fromDiscoverModules={isDiscoverModulesView}
-                        dataTestId={`module-card-${idx}`}
-                    />
-                )
-            })}
+            {modulesList.map((module, idx) => (
+                <ModuleDetailsCard
+                    key={`module-details__card-${idx}`}
+                    moduleDetails={module}
+                    className="cursor"
+                    handleModuleCardClick={handleModuleCardClick}
+                    fromDiscoverModules={isDiscoverModulesView}
+                    dataTestId={`module-card-${idx}`}
+                />
+            ))}
             {isDiscoverModulesView && (
                 <ModuleDetailsCard
                     moduleDetails={MORE_MODULE_DETAILS}
@@ -250,53 +251,46 @@ export const NavItem = ({
     showInitializing,
     showVersionInfo,
 }: StackManagerNavItemType): JSX.Element => {
-    const getNavLink = (route: StackManagerNavLinkType): JSX.Element => {
-        return (
-            <NavLink
-                to={`${route.href}`}
-                key={route.href}
-                className={`stack-manager__navlink ${route.className}`}
-                activeClassName="active-route"
-                {...(route.name === 'About Devtron' && { onClick: () => handleTabChange(0) })}
-            >
-                <div className="flex left">
-                    <route.icon className="stack-manager__navlink-icon icon-dim-20" />
-                    {route.name !== 'Installed' && route.name !== 'About Devtron' && (
-                        <span data-testid={`${route.name.toLowerCase()}-link`} className="fs-13 ml-12">
-                            {route.name}
-                        </span>
-                    )}
-                    {route.name === 'Installed' && (
-                        <div
-                            data-testid="installed-link"
-                            className="installed-modules-link flex dc__content-space ml-12"
-                            style={{ width: '175px' }}
-                        >
-                            <span className="fs-13">{route.name}</span>
-                            <span className="badge">{installedModulesCount || 0}</span>
-                        </div>
-                    )}
-                    {route.name === 'About Devtron' && (
-                        <div data-testid="about-devtron-link" className="about-devtron ml-12">
-                            <span className="fs-13">{route.name}</span>
-                            <br />
-                            {showVersionInfo && (
-                                <span className="fs-11 fw-4 cn-9 flex left">
-                                    {currentVersion}
-                                    {getUpdateStatusLabel(
-                                        installationStatus,
-                                        currentVersion,
-                                        newVersion,
-                                        showInitializing,
-                                    )}
-                                </span>
-                            )}
-                        </div>
-                    )}
-                </div>
-            </NavLink>
-        )
-    }
+    const getNavLink = (route: StackManagerNavLinkType): JSX.Element => (
+        <NavLink
+            to={`${route.href}`}
+            key={route.href}
+            className={`stack-manager__navlink ${route.className}`}
+            activeClassName="active-route"
+            {...(route.name === 'About Devtron' && { onClick: () => handleTabChange(0) })}
+        >
+            <div className="flex left">
+                <route.icon className="stack-manager__navlink-icon icon-dim-20" />
+                {route.name !== 'Installed' && route.name !== 'About Devtron' && (
+                    <span data-testid={`${route.name.toLowerCase()}-link`} className="fs-13 ml-12">
+                        {route.name}
+                    </span>
+                )}
+                {route.name === 'Installed' && (
+                    <div
+                        data-testid="installed-link"
+                        className="installed-modules-link flex dc__content-space ml-12"
+                        style={{ width: '175px' }}
+                    >
+                        <span className="fs-13">{route.name}</span>
+                        <span className="badge">{installedModulesCount || 0}</span>
+                    </div>
+                )}
+                {route.name === 'About Devtron' && (
+                    <div data-testid="about-devtron-link" className="about-devtron ml-12">
+                        <span className="fs-13">{route.name}</span>
+                        <br />
+                        {showVersionInfo && (
+                            <span className="fs-11 fw-4 cn-9 flex left">
+                                {currentVersion}
+                                {getUpdateStatusLabel(installationStatus, currentVersion, newVersion, showInitializing)}
+                            </span>
+                        )}
+                    </div>
+                )}
+            </div>
+        </NavLink>
+    )
 
     return (
         <div className="flex column left">
@@ -321,17 +315,15 @@ export const StackPageHeader = ({
         history.push(url)
     }
 
-    const renderBreadcrumbs = (headerTitleName, detailsMode) => {
-        return (
-            <div data-testid="module-details-header" className="m-0 flex left ">
-                <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
-                    <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
-                </div>
-                <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
-                <span className="fs-16 cn-9">{selectedModule?.title}</span>
+    const renderBreadcrumbs = (headerTitleName, detailsMode) => (
+        <div data-testid="module-details-header" className="m-0 flex left ">
+            <div onClick={() => handleRedirectToModule(detailsMode)} className="dc__devtron-breadcrumb__item">
+                <span className="cb-5 fs-16 cursor">{headerTitleName} </span>
             </div>
-        )
-    }
+            <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
+            <span className="fs-16 cn-9">{selectedModule?.title}</span>
+        </div>
+    )
     return (
         <>
             {!detailsMode && <PageHeader headerName="Devtron Stack Manager" />}
@@ -358,7 +350,8 @@ const getProgressingLabel = (isUpgradeView: boolean, canViewLogs: boolean, logPo
 
     return 'Initializing'
 }
-export const EnableModuleConfirmation = ({
+
+const EnableModuleConfirmation = ({
     moduleDetails,
     setDialog,
     retryState,
@@ -373,6 +366,7 @@ export const EnableModuleConfirmation = ({
         setDialog(false)
         setToggled(false)
     }
+
     const handleEnableActionButton = () => {
         setProgressing(true)
         handleEnableAction(
@@ -384,53 +378,52 @@ export const EnableModuleConfirmation = ({
             setProgressing,
         )
     }
+
     const isModuleTrivy = moduleDetails.name === ModuleNameMap.SECURITY_TRIVY
+
     return (
-        <ConfirmationDialog>
-            <ConfirmationDialog.Icon
-                src={retryState ? warn : isModuleTrivy ? trivy : clair}
-                className={retryState ? 'w-40 mb-24' : `w-50 mb-24`}
-            />
-            <ConfirmationDialog.Body
-                title={`${retryState ? 'Could not' : ''} Enable ${
-                    isModuleTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair
-                } ${retryState ? '' : 'integration'}`}
-            />
-            <p className="fs-14 cn-7 lh-1-54 mb-12 ">
-                {retryState
+        <ConfirmationModal
+            {...(retryState
+                ? { variant: ConfirmationModalVariantType.warning }
+                : {
+                      variant: ConfirmationModalVariantType.custom,
+                      Icon: isModuleTrivy ? (
+                          <ICTrivy className="dc__w-fit-content" />
+                      ) : (
+                          <ICClair className="dc__w-fit-content" />
+                      ),
+                  })}
+            title={`${retryState ? 'Could not' : ''} Enable ${
+                isModuleTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair
+            } ${retryState ? '' : 'integration'}`}
+            subtitle={
+                retryState
                     ? 'This integration could not be enabled. Please try again after some time.'
-                    : `Only one Vulnerability scanning integration can be used at a time.`}
-            </p>
+                    : `Only one Vulnerability scanning integration can be used at a time.`
+            }
+            buttonConfig={{
+                primaryButtonConfig: {
+                    text: retryState
+                        ? 'Retry'
+                        : `Enable ${isModuleTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}`,
+                    isLoading: progressing,
+                    onClick: handleEnableActionButton,
+                },
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: handleCancelAction,
+                    disabled: progressing,
+                },
+            }}
+            handleClose={handleCancelAction}
+        >
             {!retryState && (
                 <p className="fs-14 cn-7 lh-1-54">
                     Enabling this integration will automatically disable the other integration. Are you sure you want to
                     continue?
                 </p>
             )}
-            <ConfirmationDialog.ButtonGroup>
-                <button
-                    type="button"
-                    className="cta cancel h-36 flex"
-                    onClick={handleCancelAction}
-                    data-testid="module-cancel-button"
-                >
-                    Cancel
-                </button>
-                <button
-                    className="cta form-submit-cta ml-12 dc__no-decor form-submit-cta flex h-36 "
-                    onClick={handleEnableActionButton}
-                    data-testid="enable-button"
-                >
-                    {progressing ? (
-                        <Progressing />
-                    ) : retryState ? (
-                        'Retry'
-                    ) : (
-                        `Enable ${isModuleTrivy ? IMAGE_SCAN_TOOL.Trivy : IMAGE_SCAN_TOOL.Clair}`
-                    )}
-                </button>
-            </ConfirmationDialog.ButtonGroup>
-        </ConfirmationDialog>
+        </ConfirmationModal>
     )
 }
 
@@ -536,7 +529,7 @@ const InstallationStatus = ({
                             <span className="mt-12">You're using the latest version of Devtron.</span>
                         </div>
                     ) : (
-                        <div className="flexbox">
+                        <div className="flexbox dc__content-space">
                             <div className="module-details__installtion-success flex left dc__content-space">
                                 <div>
                                     <span className="flexbox column left" data-testid="module-status-installed">
@@ -552,15 +545,13 @@ const InstallationStatus = ({
                                 </div>
                             </div>
                             {moduleNotEnabled ? (
-                                <Tippy className="default-tt" arrow placement="top" content="Enable integration">
-                                    <div className="ml-auto" style={{ width: '30px', height: '19px' }}>
-                                        <Toggle
-                                            dataTestId="toggle-button"
-                                            onSelect={handleToggleButton}
-                                            selected={toggled}
-                                        />
-                                    </div>
-                                </Tippy>
+                                <DTSwitch
+                                    name="toggle-enable-integration"
+                                    ariaLabel="Toggle enable integration"
+                                    tooltipContent="Enable integration"
+                                    isChecked={toggled}
+                                    onChange={handleToggleButton}
+                                />
                             ) : (
                                 ''
                             )}
@@ -633,34 +624,30 @@ const InstallationStatus = ({
     )
 }
 
-const GetHelpCard = (): JSX.Element => {
-    return (
-        <div className="module-details__get-help flex column top left br-4 cn-9 fs-13 mb-16">
-            <span className="fw-6 mb-10">Facing issues?</span>
-            <a
-                className="module-details__help-chat cb-5 flex left"
-                href={DISCORD_LINK}
-                target="_blank"
-                rel="noreferrer noopener"
-            >
-                <Chat className="icon-dim-20 mr-12" /> Chat with support
-            </a>
-        </div>
-    )
-}
+const GetHelpCard = (): JSX.Element => (
+    <div className="module-details__get-help flex column top left br-4 cn-9 fs-13 mb-16">
+        <span className="fw-6 mb-10">Facing issues?</span>
+        <a
+            className="module-details__help-chat cb-5 flex left"
+            href={DISCORD_LINK}
+            target="_blank"
+            rel="noreferrer noopener"
+        >
+            <Chat className="icon-dim-20 mr-12" /> Chat with support
+        </a>
+    </div>
+)
 
-const ModuleUpdateNote = (): JSX.Element => {
-    return (
-        <div className="module-details__update-note br-4 cn-9 fs-13 mb-16">
-            <div className="fs-4 mb-8">Integrations are updated along with Devtron updates.</div>
-            <div className="fs-6">
-                <NavLink to={URLS.STACK_MANAGER_ABOUT} className="fw-6">
-                    Check for Devtron updates
-                </NavLink>
-            </div>
+const ModuleUpdateNote = (): JSX.Element => (
+    <div className="module-details__update-note br-4 cn-9 fs-13 mb-16">
+        <div className="fs-4 mb-8">Integrations are updated along with Devtron updates.</div>
+        <div className="fs-6">
+            <NavLink to={URLS.STACK_MANAGER_ABOUT} className="fw-6">
+                Check for Devtron updates
+            </NavLink>
         </div>
-    )
-}
+    </div>
+)
 
 export const handleError = (err: any, isUpgradeView?: boolean): void => {
     if (err.code === 403) {
@@ -729,20 +716,16 @@ export const InstallationWrapper = ({
     }, [releaseNotes])
 
     const fetchPreRequisiteListFromReleaseNotes = () => {
-        const _preRequisiteList = []
-        for (let index = 0; index < releaseNotes.length; index++) {
-            const element = releaseNotes[index]
-            if (element.releaseName === serverInfo?.currentVersion) {
-                break
-            }
-            if (element.prerequisite && element.prerequisiteMessage) {
-                _preRequisiteList.push({
-                    version: element.releaseName,
-                    prerequisiteMessage: element.prerequisiteMessage,
-                    tagLink: element.tagLink,
-                })
-            }
-        }
+        const _preRequisiteList = releaseNotes
+            .filter(
+                ({ releaseName, prerequisite, prerequisiteMessage }) =>
+                    releaseName !== serverInfo?.currentVersion && prerequisite && prerequisiteMessage,
+            )
+            .map(({ releaseName, prerequisiteMessage, tagLink }) => ({
+                version: releaseName,
+                prerequisiteMessage,
+                tagLink,
+            }))
         setPreRequisiteList(_preRequisiteList.reverse())
     }
 
@@ -761,6 +744,7 @@ export const InstallationWrapper = ({
                 updateActionTrigger,
                 history,
                 location,
+                serverInfo.currentVersion,
                 moduleDetails && (moduleDetails.moduleType ? moduleDetails.moduleType : undefined),
             )
         } else {
@@ -790,7 +774,7 @@ export const InstallationWrapper = ({
                         </div>
                         <CloseIcon className="pointer mt-2" onClick={hidePrerequisiteConfirmationModal} />
                     </div>
-                    <div className="p-20">
+                    <div className="p-20 mxh-600 dc__overflow-auto">
                         <div className="fw-6 fs-13 cn-9 mb-12">
                             Please ensure you follow below pre-requisites steps in order.
                         </div>
@@ -1065,17 +1049,15 @@ export const NoIntegrationsInstalledView = (): JSX.Element => {
         history.push(URLS.STACK_MANAGER_DISCOVER_MODULES)
     }
 
-    const renderDiscoverIntegrationsButton = () => {
-        return (
-            <button
-                type="button"
-                className="empty-state__discover-btn flex fs-13 fw-6 br-4"
-                onClick={redirectToDiscoverModules}
-            >
-                <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
-            </button>
-        )
-    }
+    const renderDiscoverIntegrationsButton = () => (
+        <button
+            type="button"
+            className="empty-state__discover-btn flex fs-13 fw-6 br-4"
+            onClick={redirectToDiscoverModules}
+        >
+            <DiscoverIcon className="discover-icon" /> <span className="ml-8">Discover integrations</span>
+        </button>
+    )
 
     return (
         <div className="no-integrations__installed-view dc__position-rel">
@@ -1114,64 +1096,58 @@ const ModuleNotConfigured = ({ moduleName }: { moduleName: string }): JSX.Elemen
     )
 }
 
-const UpgradeNote = (): JSX.Element => {
-    return (
-        <div className="mb-16">
-            <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcb-1 eb-2">
-                <div className="icon-dim-20 mr-12">
-                    <Info className="icon-dim-20" />
-                </div>
-                <div>
-                    <p className="fs-13 fw-4 mb-0 lh-20">{DEVTRON_UPGRADE_MESSAGE}</p>
-                    <NavLink
-                        exact
-                        to={URLS.STACK_MANAGER_ABOUT}
-                        activeClassName="active"
-                        className="mt-8 dc__no-decor fs-13 fw-6"
-                    >
-                        Check for Devtron updates
-                    </NavLink>
-                </div>
+const UpgradeNote = (): JSX.Element => (
+    <div className="mb-16">
+        <div className="pt-10 pr 16 pb-10 pl-16 flex top left br-4 cn-9 bcb-1 eb-2">
+            <div className="icon-dim-20 mr-12">
+                <Info className="icon-dim-20" />
+            </div>
+            <div>
+                <p className="fs-13 fw-4 mb-0 lh-20">{DEVTRON_UPGRADE_MESSAGE}</p>
+                <NavLink
+                    exact
+                    to={URLS.STACK_MANAGER_ABOUT}
+                    activeClassName="active"
+                    className="mt-8 dc__no-decor fs-13 fw-6"
+                >
+                    Check for Devtron updates
+                </NavLink>
             </div>
         </div>
-    )
-}
+    </div>
+)
 
-export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }): JSX.Element => {
-    return (
-        <div className="not-supported__note-wrapper mb-16">
-            <div className="not-supported__note flex top left br-4 cn-9 bcy-1">
-                <div className="icon-dim-20 mr-12">
-                    <Warning className="not-supported__note-icon icon-dim-20" />
-                </div>
-                <div>
-                    <h2 className="m-0 p-0 fs-13 fw-6 lh-20">
-                        {isUpgradeView
-                            ? 'Updates from UI are currently not supported for kubectl installations'
-                            : 'Integrations are currently not supported for Devtron installed via kubectl'}
-                    </h2>
-                    <p className="fs-13 fw-4 mb-0 mt-4 lh-20">
-                        {isUpgradeView ? (
-                            <>
-                                Please refer&nbsp;
-                                <a
-                                    className="cb-5 fw-6"
-                                    href={getDocumentationUrl({ docLinkKey: 'DEVTRON_UPGRADE' })}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                >
-                                    steps to upgrade using CLI
-                                </a>
-                            </>
-                        ) : (
-                            'This functionality is available only for Devtron installed via Helm charts'
-                        )}
-                    </p>
-                </div>
+export const NotSupportedNote = ({ isUpgradeView }: { isUpgradeView: boolean }): JSX.Element => (
+    <div className="not-supported__note-wrapper mb-16">
+        <div className="not-supported__note flex top left br-4 cn-9 bcy-1">
+            <div className="icon-dim-20 mr-12">
+                <Warning className="not-supported__note-icon icon-dim-20" />
+            </div>
+            <div>
+                <h2 className="m-0 p-0 fs-13 fw-6 lh-20">
+                    {isUpgradeView
+                        ? 'Updates from UI are currently not supported for kubectl installations'
+                        : 'Integrations are currently not supported for Devtron installed via kubectl'}
+                </h2>
+                <p className="fs-13 fw-4 mb-0 mt-4 lh-20">
+                    {isUpgradeView ? (
+                        <>
+                            Please refer&nbsp;
+                            <DocLink
+                                dataTestId="devtron-upgrade-docs-link"
+                                docLinkKey="DEVTRON_UPGRADE"
+                                text="steps to upgrade using CLI"
+                                fontWeight="normal"
+                            />
+                        </>
+                    ) : (
+                        'This functionality is available only for Devtron installed via Helm charts'
+                    )}
+                </p>
             </div>
         </div>
-    )
-}
+    </div>
+)
 
 const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }): JSX.Element => {
     const history: RouteComponentProps['history'] = useHistory()
@@ -1191,17 +1167,15 @@ const DependentModuleList = ({ modulesList }: { modulesList: ModuleDetails[] }):
     return modulesList?.length ? (
         <div>
             <div className="fs-14 fw-6 cn-9 mb-16 mt-16">Pre-requisite integrations</div>
-            {modulesList.map((module, idx) => {
-                return (
-                    <ModuleDetailsCard
-                        key={`module-details__card-${idx}`}
-                        moduleDetails={module}
-                        className="cursor dependent-module__card"
-                        handleModuleCardClick={handleModuleCardClick}
-                        fromDiscoverModules={false}
-                    />
-                )
-            })}
+            {modulesList.map((module, idx) => (
+                <ModuleDetailsCard
+                    key={`module-details__card-${idx}`}
+                    moduleDetails={module}
+                    className="cursor dependent-module__card"
+                    handleModuleCardClick={handleModuleCardClick}
+                    fromDiscoverModules={false}
+                />
+            ))}
         </div>
     ) : null
 }
