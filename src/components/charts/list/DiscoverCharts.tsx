@@ -61,6 +61,7 @@ import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
+import ChartCardSkeletonRow from './ChartCardSkeleton'
 
 // TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -561,12 +562,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                             )}
                                                         </div>
 
-                                                        {state.hasMoreCharts && (
-                                                            <Progressing
-                                                                size={25}
-                                                                styles={{ height: '0%', paddingBottom: '5px' }}
-                                                            />
-                                                        )}
+                                                        <ChartCardSkeletonRow isGridView={isGrid} />
                                                     </>
                                                 ) : (
                                                     renderChartStoreEmptyState()
