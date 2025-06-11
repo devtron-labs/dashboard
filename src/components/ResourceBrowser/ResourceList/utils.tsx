@@ -23,11 +23,17 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
+import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import {
+    K8S_EMPTY_GROUP,
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
+    RESOURCE_BROWSER_ROUTES,
+    ResourceBrowserRouteToTabIdMap,
+    SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
+    UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { ClusterOptionType, K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
 import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
@@ -276,3 +282,43 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
 
 export const getColumnComparator = (field: string, isEventListing: boolean) =>
     field === 'message' && isEventListing ? null : dynamicSort(field)
+
+export const getTabIdParamsForPath = (
+    path: string,
+    params: Record<string, string>,
+): Parameters<UseTabsReturnType['getTabId']> => {
+    if (path === RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE) {
+        return [
+            UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+            UPGRADE_CLUSTER_CONSTANTS.NAME,
+            SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+        ]
+    }
+
+    if (path === RESOURCE_BROWSER_ROUTES.NODE_DETAIL) {
+        const { name } = params
+        return [K8S_EMPTY_GROUP, name, 'node']
+    }
+
+    if (path === RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL) {
+        const { version, kind, group, name, namespace } = params
+        const ID_PREFIX = `${group}-${version}-${namespace}`
+        return [ID_PREFIX, name, kind]
+    }
+
+    logExceptionToSentry(`Unknown path: ${path}`)
+    return null
+}
+
+export const getTabIdForTab = (
+    path: string,
+    getTabId: UseTabsReturnType['getTabId'],
+    params: Record<string, string>,
+) => {
+    if (ResourceBrowserRouteToTabIdMap[path]) {
+        return ResourceBrowserRouteToTabIdMap[path]
+    }
+
+    const functionParams = getTabIdParamsForPath(path, params)
+    return functionParams ? getTabId(...functionParams) : null
+}

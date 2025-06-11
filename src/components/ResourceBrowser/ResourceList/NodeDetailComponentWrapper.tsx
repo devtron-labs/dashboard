@@ -1,7 +1,4 @@
-import { useEffect } from 'react'
-import { useParams, useRouteMatch } from 'react-router-dom'
-
-import { noop } from '@devtron-labs/devtron-fe-common-lib/dist'
+import { useParams } from 'react-router-dom'
 
 import { UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import NodeDetailComponent from '@Components/v2/appDetails/k8Resource/nodeDetail/NodeDetail.component'
@@ -17,29 +14,11 @@ const NodeDetailComponentWrapper = ({
     lowercaseKindToResourceGroupMap,
     updateTabUrl,
     clusterName,
-    markTabActiveById,
-    addTab,
 }: NodeDetailComponentWrapperProps) => {
-    const { url } = useRouteMatch()
     const { version, kind, group, name, namespace } = useParams<K8sResourceDetailURLParams>()
 
     const ID_PREFIX = `${group}-${version}-${namespace}`
     const id = getTabId(ID_PREFIX, name, kind)
-
-    useEffect(() => {
-        markTabActiveById(id)
-            .then((wasFound) => {
-                if (!wasFound) {
-                    addTab({
-                        idPrefix: ID_PREFIX,
-                        name,
-                        kind,
-                        url,
-                    }).catch(noop)
-                }
-            })
-            .catch(noop)
-    }, [])
 
     const updateTabUrlHandler = ({ url: _url, dynamicTitle, retainSearchParams }: Omit<UpdateTabUrlParamsType, 'id'>) =>
         updateTabUrl({ id, url: _url, dynamicTitle, retainSearchParams })

@@ -20,14 +20,12 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
-    InfoIconTippy,
+    FeatureTitleWithInfo,
     SearchBar,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as PlusIcon } from '../../../../../assets/icons/ic-add.svg'
-import { ReactComponent as ArrowSquareOut } from '../../../../../assets/icons/ic-arrow-square-out.svg'
-import { DOCUMENTATION } from '../../../../../config'
 import ExportPermissionGroupsToCsv from './ExportPermissionGroupsToCsv'
 import { PermissionGroupListHeaderProps } from './types'
 
@@ -43,24 +41,13 @@ const PermissionGroupListHeader = ({
     return (
         <div className="flex dc__content-space pl-20 pr-20 pt-16">
             <div className="flex dc__gap-8">
-                <h2 className="fs-16 lh-32 cn-9 fw-6 m-0">Permission Groups</h2>
-                <InfoIconTippy
-                    infoText="Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions."
-                    heading="Permission Groups"
-                    additionalContent={
-                        <div className="pl-12 pb-12">
-                            <a
-                                href={DOCUMENTATION.GLOBAL_CONFIG_GROUPS}
-                                target="_blank"
-                                rel="noreferrer noreferrer"
-                                className="anchor flexbox flex-align-center fs-13 dc__gap-4"
-                            >
-                                View Documentation
-                                <ArrowSquareOut className="icon-dim-14 scb-5" />
-                            </a>
-                        </div>
+                <FeatureTitleWithInfo
+                    title="Permission Groups"
+                    renderDescriptionContent={() =>
+                        'Permission groups allow you to easily manage user permissions by assigning desired permissions to a group and assigning these groups to users to provide all underlying permissions.'
                     }
-                    iconClassName="mw-20 icon-dim-20 fcn-6"
+                    docLink="GLOBAL_CONFIG_GROUPS"
+                    showInfoIconTippy
                 />
             </div>
             <div className="flex dc__gap-8">

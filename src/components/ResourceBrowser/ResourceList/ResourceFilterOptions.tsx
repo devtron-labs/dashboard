@@ -53,7 +53,6 @@ const ResourceFilterOptions = ({
     setSearchText,
     isSearchInputDisabled,
     renderRefreshBar,
-    updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
     eventType = 'warning',
@@ -102,6 +101,10 @@ const ResourceFilterOptions = ({
         namespaceFilterRef.current?.openMenu('first')
     }
 
+    const handleCloseFilterModal = () => {
+        setShowFilterModal(false)
+    }
+
     useEffect(() => {
         if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleInputShortcut })
@@ -135,7 +138,6 @@ const ResourceFilterOptions = ({
         const parsedUrlSearchParams = new URLSearchParams(location.search)
         parsedUrlSearchParams.set('namespace', selected.value)
         const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1?${parsedUrlSearchParams.toString()}`
-        updateK8sResourceTab({ url })
         replace(url)
     }
 
@@ -201,9 +203,9 @@ const ResourceFilterOptions = ({
                         {FilterButton && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
-                                updateTabUrl={updateK8sResourceTab}
                                 showModal={showFilterModal}
-                                setShowModal={setShowFilterModal}
+                                handleShowFilterModal={handleShowFilterModal}
+                                handleCloseFilterModal={handleCloseFilterModal}
                             />
                         )}
                         <SelectPicker

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CHECKBOX_VALUE, Checkbox, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox, SearchBar, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
@@ -170,15 +170,20 @@ const ChartHeaderFilter = ({
 
     const setGrid = (): void => {
         setIsGrid(true)
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_VIEW_GRID'})
     }
 
     const setList = (): void => {
         setIsGrid(false)
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_VIEW_LIST'})
     }
 
     const toggleDeprecated = (): void => {
         const value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, CHART_KEYS.DEPRECATED)
+        if (value) {
+            handleAnalyticsEvent({category: 'Chart Store', action: 'CS_SHOW_DEPRECATED'})
+        }
     }
 
     const handleSearchEnter = (searchKey: string): void => {

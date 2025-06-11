@@ -87,8 +87,7 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams'>,
+    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams'>,
         Pick<K8sResourceListFilterType, 'eventType'> {
     selectedResource: ApiResourceGroupType
     resourceList?: K8sResourceDetailType
@@ -111,7 +110,8 @@ export interface ResourceFilterOptionsProps
 }
 
 export interface K8SResourceListType
-    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType'> {
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType'>,
+        Pick<SidebarType, 'updateK8sResourceTab'> {
     addTab: UseTabsReturnType['addTab']
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
@@ -188,8 +188,7 @@ export interface K8sObjectOptionType extends OptionType {
 
 export interface K8SResourceTabComponentProps
     extends Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'>,
-        Pick<UseTabsReturnType, 'markTabActiveById'> {
+        Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']

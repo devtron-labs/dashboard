@@ -29,8 +29,7 @@ import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS } from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<UseTabsReturnType, 'addTab' | 'markTabActiveById' | 'getTabId'>,
-        Pick<ClusterListType, 'updateTabUrl'>,
+    extends Pick<ClusterListType, 'updateTabUrl'>,
         Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
     clusterName: string
 }
@@ -51,10 +50,7 @@ export interface K8sResourceDetailURLParams extends K8sResourceListURLParams {
 }
 
 export interface NodeDetailComponentWrapperProps
-    extends Pick<
-            UseTabsReturnType,
-            'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId' | 'markTabActiveById' | 'addTab'
-        >,
+    extends Pick<UseTabsReturnType, 'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId'>,
         Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
     clusterName: string
 }
@@ -100,3 +96,9 @@ export interface ClusterUpgradeCompatibilityInfoTableCellComponentProps
         Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {}
 
 export interface ClusterUpgradeCompatibilityInfoTableWrapperProps extends TableViewWrapperProps<FiltersTypeEnum.URL> {}
+
+export type DynamicTabComponentWrapperProps = Pick<
+    UseTabsReturnType,
+    'updateTabUrl' | 'markTabActiveById' | 'getTabId' | 'getTabById'
+> &
+    ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] })

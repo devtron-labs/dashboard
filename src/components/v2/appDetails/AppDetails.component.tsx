@@ -15,10 +15,14 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useLocation, useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
+    AppStatusModal,
+    AppStatusModalTabType,
     DeploymentAppTypes,
+    DeploymentStatusDetailsBreakdownDataType,
+    DeploymentStatusDetailsType,
     noop,
     processDeploymentStatusDetailsData,
     Progressing,
@@ -26,13 +30,8 @@ import {
 
 import { ClusterMetaDataBar } from '@Components/common/ClusterMetaDataBar/ClusterMetaDataBar'
 
-import { DEFAULT_STATUS, DEFAULT_STATUS_TEXT, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
+import { DEFAULT_STATUS, DEPLOYMENT_STATUS, DEPLOYMENT_STATUS_QUERY_PARAM } from '../../../config'
 import { getDeploymentStatusDetail } from '../../app/details/appDetails/appDetails.service'
-import {
-    DeploymentStatusDetailsBreakdownDataType,
-    DeploymentStatusDetailsType,
-} from '../../app/details/appDetails/appDetails.type'
-import DeploymentStatusDetailModal from '../../app/details/appDetails/DeploymentStatusDetailModal'
 import { importComponentFromFELibrary } from '../../common'
 import { AppLevelExternalLinks } from '../../externalLinks/ExternalLinks.component'
 import { useSharedState } from '../utils/useSharedState'
@@ -53,6 +52,7 @@ const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
     null,
     'function',
 )
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const AppDetailsComponent = ({
     externalLinks = [],
@@ -70,11 +70,7 @@ const AppDetailsComponent = ({
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
-    const deploymentModalShownRef = useRef(null)
-    deploymentModalShownRef.current = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
-    // State to track the loading state for the timeline data when the detailed status modal opens
-    const [isInitialTimelineDataLoading, setIsInitialTimelineDataLoading] = useState(true)
-    const shouldFetchTimelineRef = useRef(false)
+    const history = useHistory()
     const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
@@ -84,7 +80,6 @@ const AppDetailsComponent = ({
                 ? processVirtualEnvironmentDeploymentData()
                 : processDeploymentStatusDetailsData()),
             deploymentStatus: DEFAULT_STATUS,
-            deploymentStatusText: DEFAULT_STATUS_TEXT,
         })
 
     useEffect(() => {
@@ -92,15 +87,6 @@ const AppDetailsComponent = ({
             getSaveTelemetry(params.appId).catch(noop)
         }
     }, [])
-    useEffect(() => {
-        const isModalOpen = location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM)
-        // Reset the loading state when the modal is closed
-        if (shouldFetchTimelineRef.current && !isModalOpen) {
-            setIsInitialTimelineDataLoading(true)
-        }
-        // The timeline should be fetched by default if the modal is open
-        shouldFetchTimelineRef.current = isModalOpen
-    }, [location.search])
 
     const clearDeploymentStatusTimer = (): void => {
         if (deploymentStatusTimer) {
@@ -108,17 +94,13 @@ const AppDetailsComponent = ({
         }
     }
 
-    const getDeploymentDetailStepsData = (showTimeline?: boolean): void => {
-        const shouldFetchTimeline = showTimeline ?? shouldFetchTimelineRef.current
-
+    const getDeploymentDetailStepsData = (): void => {
+        // TODO: Ask why are we not sending wfrId in the request in case of virtual environment?
         // Deployments status details for Helm apps
-        getDeploymentStatusDetail(params.appId, params.envId, shouldFetchTimeline, '', true)
+        getDeploymentStatusDetail(params.appId, params.envId, '', true)
             .then((deploymentStatusDetailRes) => {
                 // eslint-disable-next-line @typescript-eslint/no-use-before-define
                 processDeploymentStatusData(deploymentStatusDetailRes.result)
-                if (shouldFetchTimeline) {
-                    setIsInitialTimelineDataLoading(false)
-                }
             })
             .catch(noop)
     }
@@ -152,6 +134,18 @@ const AppDetailsComponent = ({
             }, 30000)
         }
         setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusDetailsData)
+    }
+
+    const handleCloseDeploymentStatusModal = () => {
+        history.replace({
+            search: '',
+        })
+    }
+
+    const updateDeploymentStatusDetailsBreakdownData = (
+        updatedTimelineData: typeof deploymentStatusDetailsBreakdownData,
+    ) => {
+        setDeploymentStatusDetailsBreakdownData(updatedTimelineData)
     }
 
     const renderHelmAppDetails = (): JSX.Element => {
@@ -210,7 +204,7 @@ const AppDetailsComponent = ({
                                 loadingResourceTree={loadingResourceTree || !appDetails?.appType}
                                 deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                                 isVirtualEnvironment={isVirtualEnv.current}
-                                refetchDeploymentStatus={getDeploymentDetailStepsData}
+                                updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
                             />
                         )}
                     </div>
@@ -230,13 +224,18 @@ const AppDetailsComponent = ({
                         renderHelmAppDetails()
                     )}
 
-                    {location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
-                        <DeploymentStatusDetailModal
-                            appName={appDetails.appName}
-                            environmentName={appDetails.environmentName}
-                            deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
-                            isVirtualEnvironment={isVirtualEnv.current}
-                            isLoading={isInitialTimelineDataLoading}
+                    {!loadingDetails && location.search.includes(DEPLOYMENT_STATUS_QUERY_PARAM) && (
+                        <AppStatusModal
+                            type="other-apps"
+                            titleSegments={[appDetails?.appName, appDetails?.environmentName || appDetails?.namespace]}
+                            handleClose={handleCloseDeploymentStatusModal}
+                            appDetails={appDetails}
+                            isConfigDriftEnabled={false}
+                            configDriftModal={null}
+                            initialTab={AppStatusModalTabType.DEPLOYMENT_STATUS}
+                            processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
+                            updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
+                            debugWithAIButton={ExplainWithAIButton}
                         />
                     )}
                 </div>

@@ -9,10 +9,8 @@ vite.config.mts
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
 src/components/AppSelector/ChartSelector.tsx
 src/components/ApplicationGroup/AppGroup.service.ts
-src/components/ApplicationGroup/AppGroup.types.ts
 src/components/ApplicationGroup/AppGroup.utils.ts
 src/components/ApplicationGroup/AppGroupAppFilter.components.tsx
-src/components/ApplicationGroup/AppGroupAppFilter.tsx
 src/components/ApplicationGroup/AppGroupDetailsRoute.tsx
 src/components/ApplicationGroup/AppGroupRoute.tsx
 src/components/ApplicationGroup/Constants.ts
@@ -23,7 +21,6 @@ src/components/ApplicationGroup/Details/EnvCIDetails/EnvCIDetails.tsx
 src/components/ApplicationGroup/Details/EnvCIDetails/__test__/EnvCIDetails.test.tsx
 src/components/ApplicationGroup/Details/EnvironmentConfig/__test__/ApplicationRoutes.test.tsx
 src/components/ApplicationGroup/Details/EnvironmentConfig/__test__/EnvConfig.test.tsx
-src/components/ApplicationGroup/Details/EnvironmentOverview/EnvironmentOverview.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateModal.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusListDrawer.tsx
 src/components/ApplicationGroup/Details/EnvironmentOverview/HibernateStatusRow.tsx
@@ -52,13 +49,9 @@ src/components/CIPipelineN/ciPipeline.utils.tsx
 src/components/ClusterNodes/ClusterEvents.tsx
 src/components/ClusterNodes/ClusterManifest.tsx
 src/components/ClusterNodes/ClusterNodeEmptyStates.tsx
-src/components/ClusterNodes/NodeActions/EditTaintsModal.tsx
-src/components/ClusterNodes/NodeActions/NodeActionsMenu.tsx
-src/components/ClusterNodes/NodeActions/validationRules.ts
 src/components/ClusterNodes/NodeDetails.tsx
 src/components/ClusterNodes/__tests__/ClusterManifest.test.tsx
 src/components/ClusterNodes/__tests__/NodeList.test.tsx
-src/components/ClusterNodes/constants.ts
 src/components/Hotjar/Hotjar.tsx
 src/components/Jobs/ExpandedRow/ExpandedRow.tsx
 src/components/Jobs/JobDetails/JobDetails.tsx
@@ -134,7 +127,6 @@ src/components/app/list/appList.modal.ts
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/service.ts
-src/components/app/types.ts
 src/components/bulkEdits/BulkEdits.tsx
 src/components/bulkEdits/bulkedit.utils.tsx
 src/components/cdPipeline/BuildCD.tsx
@@ -362,7 +354,6 @@ src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
-src/components/v2/devtronStackManager/SuccessModalComponent.tsx
 src/components/v2/headers/ChartHeader.component.tsx
 src/components/v2/headers/EAHeader.component.tsx
 src/components/v2/index.tsx
@@ -376,12 +367,10 @@ src/components/v2/values/chartValuesDiff/ChartValuesView.reducer.ts
 src/components/v2/values/chartValuesDiff/ChartValuesView.tsx
 src/components/v2/values/chartValuesDiff/ProjectUpdateModal.tsx
 src/components/v2/values/common/chartValues.api.ts
-src/components/workflowEditor/CDSuccessModal.tsx
 src/components/workflowEditor/CreateWorkflow.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
-src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
 src/components/workflowEditor/Workflow.tsx
 src/components/workflowEditor/nodes/CDNode.tsx

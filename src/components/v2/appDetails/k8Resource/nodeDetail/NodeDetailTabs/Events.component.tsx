@@ -34,6 +34,7 @@ const EventsComponent = ({
     selectedResource,
     clusterId,
     aiWidgetEventDetails,
+    shouldScroll = true,
 }: ResourceInfoActionPropsType) => {
     const params = useParams<{
         actionName: string
@@ -107,7 +108,10 @@ const EventsComponent = ({
     }
 
     return (
-        <div className="flex-grow-1 flexbox-col dc__overflow-auto" style={{ background: 'var(--terminal-bg)' }}>
+        <div
+            className={`flex-grow-1 flexbox-col ${shouldScroll ? 'dc__overflow-auto' : ''}`}
+            style={{ background: 'var(--terminal-bg)' }}
+        >
             {renderContent()}
         </div>
     )

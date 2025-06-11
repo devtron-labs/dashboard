@@ -131,6 +131,7 @@ const ConfigDryRun = ({
                         )}
 
                         <ToggleResolveScopedVariables
+                            name="resolve-scoped-variables-dry-run-view"
                             handleToggleScopedVariablesView={handleToggleResolveScopedVariables}
                             resolveScopedVariables={resolveScopedVariables}
                             isDisabled={!!errorInfo}

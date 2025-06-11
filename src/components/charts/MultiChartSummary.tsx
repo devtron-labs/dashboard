@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { noop, Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import React, { useRef } from 'react'
+import { DTSwitch, DTSwitchProps, getUniqueId, noop } from '@devtron-labs/devtron-fe-common-lib'
 import { Select, Pencil } from '../common'
 import placeHolder from '../../assets/icons/ic-plc-chart.svg'
 import { ChartGroupEntry, ChartValuesNativeType, ChartVersionType, MultiChartSummaryProps } from './charts.types'
@@ -116,9 +116,7 @@ const MultiChartSummary: React.FC<MultiChartSummaryProps> = ({
                             }
                             key={index}
                             remove={removeChart ? (e) => removeChart(index) : null}
-                            toggleChart={
-                                toggleChart && configureChartIndex !== index ? (e) => toggleChart(index) : null
-                            }
+                            toggleChart={toggleChart && configureChartIndex !== index ? () => toggleChart(index) : null}
                             chart={chart}
                             selected={configureChartIndex === index}
                             getChartVersionsAndValues={
@@ -139,7 +137,7 @@ interface SelectedChartWidget {
     remove?: (...args) => void
     selectChartVersion?: (...args) => void
     selectChartValues?: (...args) => void
-    toggleChart?: (...args) => void
+    toggleChart?: DTSwitchProps['onChange']
     selectChart?: (...args) => void
     getChartVersionsAndValues?: (...args) => Promise<void>
     selected: boolean
@@ -159,6 +157,7 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
     hideDeployedValues,
     index,
 }) => {
+    const toggleName = useRef(getUniqueId())
     const {
         chartMetaData: { chartName, chartRepoName, icon },
         kind,
@@ -351,7 +350,13 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
                 </div>
             ) : toggleChart ? (
                 <div className="toggle-container">
-                    <Toggle onSelect={toggleChart} selected={isEnabled} />
+                    <DTSwitch
+                        name={toggleName.current}
+                        dataTestId={`${chartRepoName}-${chartName}-toggle`}
+                        ariaLabel={`Toggle chart ${chartRepoName}/${chartName}`}
+                        isChecked={isEnabled}
+                        onChange={toggleChart}
+                    />
                 </div>
             ) : (
                 <span />

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
-import { abortPreviousRequests, ErrorScreenManager, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { K8S_EMPTY_GROUP, ResourceBrowserTabsId } from '../Constants'
+import { K8S_EMPTY_GROUP } from '../Constants'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import { K8SResourceTabComponentProps } from '../Types'
 import Cache from './Cache'
@@ -29,7 +29,6 @@ import Sidebar from './Sidebar'
 import { K8sResourceListURLParams } from './types'
 
 const K8SResourceTabComponent = ({
-    markTabActiveById,
     selectedCluster,
     renderRefreshBar,
     addTab,
@@ -40,10 +39,6 @@ const K8SResourceTabComponent = ({
     const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
 
     const abortControllerRef = useRef(new AbortController())
-
-    useEffect(() => {
-        markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
-    }, [])
 
     const selectedResource = useMemo(
         () => lowercaseKindToResourceGroupMap?.[`${group === K8S_EMPTY_GROUP ? '' : group}-${kind}`.toLowerCase()],

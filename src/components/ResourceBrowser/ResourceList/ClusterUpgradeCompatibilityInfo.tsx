@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo } from 'react'
-import { useParams, useRouteMatch } from 'react-router-dom'
+import { useMemo } from 'react'
+import { useParams } from 'react-router-dom'
 
 import {
     CollapsibleList,
@@ -23,7 +23,6 @@ import {
     FiltersTypeEnum,
     GenericEmptyState,
     ImageType,
-    noop,
     PaginationEnum,
     Progressing,
     Table,
@@ -36,12 +35,12 @@ import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipe
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
-import { SIDEBAR_KEYS, TARGET_K8S_VERSION_SEARCH_KEY, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
+import { TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import ClusterUpgradeCompatibilityInfoTableCellComponent from './ClusterUpgradeCompatibilityInfoTableCellComponent'
 import ClusterUpgradeCompatibilityInfoTableWrapper from './ClusterUpgradeCompatibilityInfoTableWrapper'
 import { ClusterUpgradeCompatibilityInfoProps } from './types'
-import { dynamicSort, getUpgradeCompatibilityTippyConfig } from './utils'
+import { dynamicSort } from './utils'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
     'useClusterUpgradeCompatibilityInfo',
@@ -52,15 +51,10 @@ const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
 const ClusterUpgradeCompatibilityInfo = ({
     updateTabUrl,
     clusterName,
-    markTabActiveById,
-    addTab,
-    getTabId,
     lowercaseKindToResourceGroupMap,
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
-
-    const { url } = useRouteMatch()
 
     const {
         isLoading,
@@ -75,29 +69,6 @@ const ClusterUpgradeCompatibilityInfo = ({
         clusterId,
         updateTabUrl,
     })
-
-    useEffect(() => {
-        const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
-
-        markTabActiveById(
-            getTabId(UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX, UPGRADE_CLUSTER_CONSTANTS.NAME, upgradeClusterLowerCaseKind),
-        )
-            .then((found) => {
-                if (!found) {
-                    addTab({
-                        idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
-                        kind: upgradeClusterLowerCaseKind,
-                        name: UPGRADE_CLUSTER_CONSTANTS.NAME,
-                        url,
-                        dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${targetK8sVersion}`,
-                        tippyConfig: getUpgradeCompatibilityTippyConfig({
-                            targetK8sVersion,
-                        }),
-                    }).catch(noop)
-                }
-            })
-            .catch(noop)
-    }, [])
 
     const { columns, rows } = useMemo(
         () => ({

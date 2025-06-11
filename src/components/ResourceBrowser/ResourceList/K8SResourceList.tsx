@@ -64,7 +64,6 @@ const K8SResourceListViewWrapper = ({
     children,
     handleSearch,
     renderRefreshBar,
-    updateK8sResourceTab,
     searchKey,
     selectedCluster,
     selectedNamespace,
@@ -94,7 +93,6 @@ const K8SResourceListViewWrapper = ({
                 setSearchText={handleSearch}
                 isSearchInputDisabled={false}
                 renderRefreshBar={renderRefreshBar}
-                updateK8sResourceTab={updateK8sResourceTab}
                 areFiltersHidden={false}
                 updateSearchParams={updateSearchParams}
                 eventType={eventType}
@@ -164,6 +162,10 @@ export const K8SResourceList = ({
         },
         [],
     )
+
+    useEffect(() => {
+        updateK8sResourceTab({ url: `${location.pathname}${location.search}` })
+    }, [location.pathname, location.search])
 
     const columns: TableColumnType[] = useMemo(
         () =>
@@ -281,7 +283,6 @@ export const K8SResourceList = ({
             filter={tableFilter}
             additionalProps={{
                 renderRefreshBar,
-                updateK8sResourceTab,
                 selectedResource,
                 selectedCluster,
                 addTab,

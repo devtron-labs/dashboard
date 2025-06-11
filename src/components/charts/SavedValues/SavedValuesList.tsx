@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useHistory, RouteComponentProps } from 'react-router-dom'
 import {
     showError,
@@ -26,10 +26,12 @@ import {
     PageHeader,
     SearchBar,
     DeleteConfirmationModal,
+    DocLink,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import Tippy from '@tippyjs/react'
-import { DOCUMENTATION, Moment12HourFormat, URLS } from '../../../config'
+import { Moment12HourFormat, URLS } from '../../../config'
 import emptyCustomChart from '../../../assets/img/app-not-configured.png'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as File } from '../../../assets/icons/ic-file-text.svg'
@@ -103,6 +105,9 @@ export default function SavedValuesList() {
                 toDeployChartView ? URLS.DEPLOY_CHART : URLS.PRESET_VALUES
             }/${chartValueId}`,
         )
+        if (chartValueId) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES_NEW' })
+        }
     }
     const hideDeleteModal = () => setShowDeleteDialog(false)
 
@@ -167,26 +172,12 @@ export default function SavedValuesList() {
         )
     }
 
-    const renderLearnMoreLink = (): JSX.Element => {
-        return (
-            <a
-                className="dc__no-decor"
-                href={DOCUMENTATION.CUSTOM_VALUES}
-                target="_blank"
-                rel="noreferrer noopener"
-                data-testid="preset-values-learn-more-link"
-            >
-                Learn more
-            </a>
-        )
-    }
-
     const renderSubtitleAndNewButton = (subtitleText: string): JSX.Element => {
         return (
             <>
-                <p className="fs-13 fw-4">
+                <p className="flexbox fs-13 fw-4">
                     {subtitleText}&nbsp;
-                    {renderLearnMoreLink()}
+                    <DocLink docLinkKey="CUSTOM_VALUES" dataTestId="preset-values-learn-more-link" />
                 </p>
                 <div className="flexbox dc__content-space">
                     {renderUploadButton()}

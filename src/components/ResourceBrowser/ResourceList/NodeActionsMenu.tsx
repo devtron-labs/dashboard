@@ -27,7 +27,7 @@ import {
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 import { TaintType } from '@Components/ClusterNodes/types'
 
 import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'

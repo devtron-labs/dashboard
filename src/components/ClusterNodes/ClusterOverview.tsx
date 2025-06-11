@@ -31,6 +31,7 @@ import {
     StatusComponent,
     StatusType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
@@ -38,7 +39,6 @@ import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
 import { getAvailableCharts } from '@Services/service'
 
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
-import { URLS } from '../../config'
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import GenericDescription from '../common/Description/GenericDescription'
@@ -46,7 +46,6 @@ import {
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     RESOURCE_BROWSER_ROUTES,
-    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
@@ -93,7 +92,7 @@ const tippyForMetricsApi = () => (
             heading="Metrics API is not available"
             additionalContent={metricsApiTippyContent()}
             documentationLinkText="View metrics-server helm chart"
-            documentationLink={`/dashboard${URLS.CHARTS_DISCOVER}?appStoreName=metrics-server`}
+            documentationLink="CHART_STORE_METRICS_SERVER"
             iconClassName="icon-dim-20 ml-8 fcn-5"
         />
     </div>
@@ -117,8 +116,10 @@ const LoadingMetricCard = () => (
     </div>
 )
 
-function ClusterOverview({ selectedCluster, addTab, markTabActiveById }: ClusterOverviewProps) {
+function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
+
+    const { isSuperAdmin } = useMainContext()
 
     const history = useHistory()
     const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
@@ -128,7 +129,7 @@ function ClusterOverview({ selectedCluster, addTab, markTabActiveById }: Cluster
     const getClusterConfigAbortControllerRef = useRef(new AbortController())
 
     const fetchClusterConfig = async (clusterName: string) => {
-        if (!getInstallationClusterConfig) {
+        if (!getInstallationClusterConfig || !isSuperAdmin) {
             return
         }
 
@@ -200,15 +201,14 @@ function ClusterOverview({ selectedCluster, addTab, markTabActiveById }: Cluster
         pollClusterConfig(clusterName)
     }
 
-    useEffect(() => {
-        markTabActiveById(ResourceBrowserTabsId.cluster_overview).catch(noop)
-
-        return () => {
+    useEffect(
+        () => () => {
             requestAbortControllerRef.current.abort()
             clearTimeout(clusterConfigPollTimeoutRef.current)
             getClusterConfigAbortControllerRef.current.abort()
-        }
-    }, [])
+        },
+        [],
+    )
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'

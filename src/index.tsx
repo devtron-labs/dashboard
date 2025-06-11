@@ -27,8 +27,6 @@ import {
     UserEmailProvider,
     customEnv,
     ThemeProvider,
-    ConfirmationModalProvider,
-    BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -170,8 +168,10 @@ if (!window || !window._env_) {
         FEATURE_APPLICATION_TEMPLATES_ENABLE: true,
         FEATURE_DEFAULT_AUTHENTICATED_VIEW_ENABLE: false,
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
-        FEATURE_AI_INTEGRATION_ENABLE: false,
+        FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
+        FEATURE_MANAGE_TRAFFIC_ENABLE: true,
+        FEATURE_REDFISH_NODE_ENABLE: false,
     }
 }
 
@@ -182,10 +182,7 @@ ReactDOM.render(
                 <BrowserRouter basename={window.__BASE_URL__}>
                     <UseRegisterShortcutProvider>
                         <UserEmailProvider>
-                            <ConfirmationModalProvider>
-                                <App />
-                                <BaseConfirmationModal />
-                            </ConfirmationModalProvider>
+                            <App />
                         </UserEmailProvider>
                     </UseRegisterShortcutProvider>
                     <ToastManagerContainer />

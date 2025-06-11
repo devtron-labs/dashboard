@@ -26,7 +26,9 @@ import { getInstalledChartNotesDetail } from '../../appDetails.api'
 import { importComponentFromFELibrary } from '../../../../common'
 import {
     AppStatusModal,
+    AppStatusModalTabType,
     DeploymentAppTypes,
+    LoadingCard,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
@@ -35,7 +37,6 @@ import AppStatusCard from '../../../../app/details/appDetails/AppStatusCard'
 import DeploymentStatusCard from '../../../../app/details/appDetails/DeploymentStatusCard'
 import ChartUsedCard from './ChartUsedCard'
 import LastUpdatedCard from '../../../../app/details/appDetails/LastUpdatedCard'
-import LoadingCard from '../../../../app/details/appDetails/LoadingCard'
 import IssuesCard from '../../../../app/details/appDetails/IssuesCard'
 import { ErrorItem } from '../../../../app/details/appDetails/appDetails.type'
 import IssuesListingModal from '../../../../app/details/appDetails/IssuesListingModal'
@@ -44,13 +45,18 @@ import SecurityVulnerabilityCard from '../../../../app/details/appDetails/Securi
 const AppDetailsDownloadCard = importComponentFromFELibrary('AppDetailsDownloadCard')
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', false, 'function')
+const processVirtualEnvironmentDeploymentData = importComponentFromFELibrary(
+    'processVirtualEnvironmentDeploymentData',
+    null,
+    'function',
+)
 
 const EnvironmentStatusComponent = ({
     loadingDetails,
     loadingResourceTree,
     deploymentStatusDetailsBreakdownData,
     isVirtualEnvironment,
-    refetchDeploymentStatus,
+    updateDeploymentStatusDetailsBreakdownData,
 }: EnvironmentStatusComponentType) => {
     const [appDetails] = useSharedState(IndexStore.getAppDetails(), IndexStore.getAppDetailsObservable())
     const [showAppStatusDetail, setShowAppStatusDetail] = useState(false)
@@ -151,7 +157,6 @@ const EnvironmentStatusComponent = ({
                     deploymentStatusDetailsBreakdownData={deploymentStatusDetailsBreakdownData}
                     cardLoading={cardLoading}
                     hideDetails={false}
-                    refetchDeploymentStatus={refetchDeploymentStatus}
                     isVirtualEnvironment={isVirtualEnvironment}
                 />
             )
@@ -199,15 +204,18 @@ const EnvironmentStatusComponent = ({
             )}
             {showAppStatusDetail && (
                 <AppStatusModal
+                    type="other-apps"
                     titleSegments={[
                         appDetails?.appName,
                         appDetails?.environmentName || appDetails?.namespace,
                     ]}
                     handleClose={handleCloseAppStatusModal}
-                    type="other-apps"
                     appDetails={appDetails}
                     isConfigDriftEnabled={false}
                     configDriftModal={null}
+                    initialTab={AppStatusModalTabType.APP_STATUS}
+                    updateDeploymentStatusDetailsBreakdownData={updateDeploymentStatusDetailsBreakdownData}
+                    processVirtualEnvironmentDeploymentData={processVirtualEnvironmentDeploymentData}
                     debugWithAIButton={ExplainWithAIButton}
                 />
             )}
