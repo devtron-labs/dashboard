@@ -19,6 +19,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    handleAnalyticsEvent,
     Icon,
     noop,
     stopPropagation,
@@ -54,15 +55,18 @@ const ChartCard = ({
     const addChartTab = (e): void => {
         stopPropagation(e)
         addChart(chart.id)
+        handleAnalyticsEvent({ category: 'Chart store add icon', action: 'CS_BULK_DEPLOY_ADD_CHART' })
     }
 
     const removeChartTab = (e): void => {
         stopPropagation(e)
         subtractChart(chart.id)
+        handleAnalyticsEvent({ category: 'Chart store remove icon', action: 'CS_BULK_DEPLOY_REMOVE_CHART' })
     }
 
     const onClickChartSelect = (): void => {
         onClick(chart.id)
+        handleAnalyticsEvent({ category: 'Chart store card', action: 'CS_CHART_CARD_CLICKED' })
     }
 
     const renderAddIcon = () => (
@@ -74,7 +78,7 @@ const ChartCard = ({
                 variant={ButtonVariantType.borderLess}
                 size={ComponentSizeType.small}
                 style={ButtonStyleType.default}
-                ariaLabel="Add charts to deploy"
+                ariaLabel="Add chart to selection"
             />
         </div>
     )
@@ -88,7 +92,7 @@ const ChartCard = ({
             size={ComponentSizeType.small}
             style={ButtonStyleType.negativeGrey}
             showAriaLabelInTippy={selectedCount > 0}
-            ariaLabel="Remove charts from selection"
+            ariaLabel="Remove chart from selection"
         />
     )
 
@@ -101,6 +105,15 @@ const ChartCard = ({
             />
         </div>
     )
+
+    const getDescriptionTruncate = () => {
+        if (isListView) {
+            return 'dc__truncate--clamp-4'
+        }
+
+        if (chart.deprecated) return 'dc__truncate'
+        return 'dc__truncate--clamp-2'
+    }
 
     const renderCardInfo = () => (
         <div className="flexbox-col flex-grow-1 dc__gap-8">
@@ -118,7 +131,7 @@ const ChartCard = ({
                 {chart.deprecated && renderDeprecatedWarning()}
             </div>
 
-            <span className={`fw-4 fs-13 lh-20 ${chart.deprecated ? 'dc__truncate' : 'dc__truncate--clamp-2'}`}>
+            <span className={`fw-4 fs-13 lh-20 ${getDescriptionTruncate()}`}>
                 {chart.description || 'No description'}
             </span>
         </div>

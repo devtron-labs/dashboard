@@ -132,6 +132,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
+    const chartStoreRef =useRef<HTMLDivElement>(null)
+
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
@@ -477,6 +479,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 setIsGrid={setIsGrid}
                                 chartCategoryIds={chartCategoryIds}
                                 setChartCategoryIds={setChartCategoryIds}
+                                chartStoreRef={chartStoreRef}
                             />
                         )}
                         {state.loading || chartListLoading ? (
@@ -503,7 +506,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="discover-charts__body-details bg__secondary">
+                                    <div className="discover-charts__body-details bg__secondary" ref={chartStoreRef}>
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
                                                 chart={state.charts[state.configureChartIndex]}

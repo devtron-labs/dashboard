@@ -23,29 +23,24 @@ export interface ChartGroupCardProps {
     chartGroup: ChartGroup
 }
 
-export interface AllChartSelectProps {
+export type ChartSelectProps = {
     chart: Chart
     isListView: boolean
     dataTestId: string
     selectedCount: number
     onClick?: (chartId: number) => void
-    addChart?: (chartId: number) => void
-    subtractChart?: (chartId: number) => void
-}
-
-export interface Stepper extends AllChartSelectProps {
-    addChart: (chartId: number) => void
-    subtractChart: (chartId: number) => void
-    selectChart?: never
-}
-
-export interface Checkbox extends AllChartSelectProps {
-    addChart?: never
-    subtractChart?: never
-    selectChart: (chartId: number) => void
-}
-
-export type ChartSelectProps = Stepper | Checkbox
+} & (
+    | {
+          addChart: (chartId: number) => void
+          subtractChart: (chartId: number) => void
+          selectChart?: never
+      }
+    | {
+          addChart?: never
+          subtractChart?: never
+          selectChart: (chartId: number) => void
+      }
+)
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null
@@ -434,6 +429,7 @@ export interface ChartHeaderFilterProps {
     setIsGrid: (isGrid: boolean) => void
     chartCategoryIds: string[]
     setChartCategoryIds: Dispatch<SetStateAction<string[]>>
+    chartStoreRef?: React.MutableRefObject<HTMLDivElement>
 }
 
 export interface DeleteInstalledChartParamsType {

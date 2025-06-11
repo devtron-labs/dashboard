@@ -41,7 +41,7 @@ export const renderAdditionalErrorInfo = (
 export const renderDeprecatedWarning = () => {
     return (
         <div className="flex left dc__gap-4">
-            <span className="mono cy-7 fs-12 lh-18">DEPRECATED</span>
+            <span className="font-ibm-plex-mono cy-7 fs-12 lh-18">DEPRECATED</span>
             <Icon name="ic-warning" color={null} size={16} />
         </div>
     )
