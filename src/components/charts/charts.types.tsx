@@ -19,6 +19,29 @@ import { RouteComponentProps } from 'react-router-dom'
 
 import { OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
+export interface ChartGroupCardProps {
+    chartGroup: ChartGroup
+}
+
+export type ChartSelectProps = {
+    chart: Chart
+    isListView: boolean
+    dataTestId: string
+    selectedCount: number
+    onClick?: (chartId: number) => void
+} & (
+    | {
+          addChart: (chartId: number) => void
+          subtractChart: (chartId: number) => void
+          selectChart?: never
+      }
+    | {
+          addChart?: never
+          subtractChart?: never
+          selectChart: (chartId: number) => void
+      }
+)
+
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null
     chartVersion?: string
@@ -406,6 +429,7 @@ export interface ChartHeaderFilterProps {
     setIsGrid: (isGrid: boolean) => void
     chartCategoryIds: string[]
     setChartCategoryIds: Dispatch<SetStateAction<string[]>>
+    chartStoreRef?: React.MutableRefObject<HTMLDivElement>
 }
 
 export interface DeleteInstalledChartParamsType {
