@@ -37,8 +37,8 @@ const renderInfoContent = () => (
     <>
         Host URL is the domain address at which your devtron dashboard can be reached.
         <br />
-        It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or
-        slack notifications, grafana dashboard, etc.
+        It is used to reach your devtron dashboard from external sources like configured webhooks, e-mail or slack
+        notifications, grafana dashboard, etc.
     </>
 )
 export default class HostURLConfiguration extends Component<HostURLConfigProps, HostURLConfigState> {
@@ -207,8 +207,6 @@ export default class HostURLConfiguration extends Component<HostURLConfigProps, 
                 </section>
             )
         }
-
-      
 
         return (
             <section

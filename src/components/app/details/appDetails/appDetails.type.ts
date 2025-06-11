@@ -17,6 +17,7 @@
 import {
     ACTION_STATE,
     AppEnvironment,
+    DeploymentStatusDetailsBreakdownDataType,
     EnvAppsMetaDTO,
     OptionType,
     ResponseType,
@@ -62,79 +63,6 @@ export type CalendarFocusInputType = 'startDate' | 'endDate'
 export interface AppDetailsPathParams {
     appId: string
     envId?: string
-}
-
-export interface SyncStageResourceDetail {
-    id: number
-    cdWorkflowRunnerId: number
-    resourceGroup: string
-    resourceKind: string
-    resourceName: string
-    resourcePhase: string
-    resourceStatus: string
-    statusMessage: string
-}
-
-export interface DeploymentStatusDetailsTimelineType {
-    id: number
-    cdWorkflowRunnerId: number
-    status: string
-    statusDetail: string
-    statusTime: string
-    resourceDetails?: SyncStageResourceDetail[]
-}
-
-export interface DeploymentStatusDetailsType {
-    deploymentFinishedOn: string
-    deploymentStartedOn: string
-    triggeredBy: string
-    statusFetchCount: number
-    statusLastFetchedAt: string
-    timelines: DeploymentStatusDetailsTimelineType[]
-    wfrStatus?: string
-}
-
-export interface DeploymentStatusDetailsResponse extends ResponseType {
-    result?: DeploymentStatusDetailsType
-}
-
-interface DeploymentStatusDetailRow {
-    icon: string
-    displayText: string
-    displaySubText: string
-    time: string
-    resourceDetails?: any
-    isCollapsed?: boolean
-    kubeList?: { icon: any; message: string }[]
-    timelineStatus?: string
-}
-export interface DeploymentStatusDetailsBreakdownDataType {
-    deploymentStatus: string
-    deploymentStatusText: string
-    deploymentTriggerTime: string
-    deploymentEndTime: string
-    deploymentError: string
-    triggeredBy: string
-    nonDeploymentError: string
-    deploymentStatusBreakdown: {
-        DEPLOYMENT_INITIATED: DeploymentStatusDetailRow
-        GIT_COMMIT?: DeploymentStatusDetailRow
-        ARGOCD_SYNC?: DeploymentStatusDetailRow
-        KUBECTL_APPLY?: DeploymentStatusDetailRow
-        APP_HEALTH?: DeploymentStatusDetailRow
-        HELM_PACKAGE_GENERATED?: DeploymentStatusDetailRow
-    }
-}
-
-export interface DeploymentStatusDetailModalType {
-    appName: string
-    environmentName: string
-    deploymentStatusDetailsBreakdownData: DeploymentStatusDetailsBreakdownDataType
-    isVirtualEnvironment: boolean
-    /**
-     * Loading state for the timeline data
-     */
-    isLoading: boolean
 }
 
 export interface ModuleConfigResponse extends ResponseType {
@@ -243,7 +171,6 @@ export interface DeploymentStatusCardType {
     hideDetails?: boolean
     triggeredBy?: string
     isVirtualEnvironment?: boolean
-    refetchDeploymentStatus: (showTimeline?: boolean) => void
 }
 
 export interface IssuesCardType {
@@ -265,10 +192,6 @@ export interface DeployedCommitCardType {
     cardLoading?: boolean
     envId: number | string
     ciArtifactId: number
-}
-
-export interface LoadingCardType {
-    wider?: boolean
 }
 
 export type ErrorItem = {

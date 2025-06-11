@@ -28,7 +28,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-dot.svg'
+import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 
 import { ReactComponent as CalendarIcon } from '../../../assets/icons/ic-calendar.svg'
 import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'

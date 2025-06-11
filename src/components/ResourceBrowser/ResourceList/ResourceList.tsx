@@ -21,6 +21,7 @@ import {
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    handleAnalyticsEvent,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -158,6 +159,10 @@ const ResourceList = () => {
     }, [getTabById(ResourceBrowserTabsId.terminal)?.dynamicTitle, selectedCluster])
 
     const onClusterChange = (selected: ClusterOptionType) => {
+        handleAnalyticsEvent({
+            category: 'Resource Browser',
+            action: 'RB_CLUSTER_SWITCH_CLUSTER',
+        })
         if (selected.value === selectedCluster?.value) {
             return
         }

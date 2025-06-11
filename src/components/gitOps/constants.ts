@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { DocLinkProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import { GitProvider } from '@Components/common/GitTabs/constants'
-import { DOCUMENTATION } from '@Config/constants'
 
 import { DefaultShortGitOpsType, GitOpsFormErrorType } from './gitops.type'
 
@@ -114,10 +115,10 @@ export const gitOpsRepoNotConfigured =
 
 export const PROVIDER_DOC_LINK_MAP: Record<
     Exclude<GitProvider, GitProvider.OTHER_GIT_OPS | GitProvider.AWS_CODE_COMMIT>,
-    string
+    DocLinkProps['docLinkKey']
 > = {
-    [GitProvider.GITHUB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITHUB,
-    [GitProvider.GITLAB]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_GITLAB,
-    [GitProvider.AZURE_DEVOPS]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_AZURE,
-    [GitProvider.BITBUCKET_CLOUD]: DOCUMENTATION.GLOBAL_CONFIG_GITOPS_BITBUCKET,
+    [GitProvider.GITHUB]: 'GLOBAL_CONFIG_GITOPS_GITHUB',
+    [GitProvider.GITLAB]: 'GLOBAL_CONFIG_GITOPS_GITLAB',
+    [GitProvider.AZURE_DEVOPS]: 'GLOBAL_CONFIG_GITOPS_AZURE',
+    [GitProvider.BITBUCKET_CLOUD]: 'GLOBAL_CONFIG_GITOPS_BITBUCKET',
 }

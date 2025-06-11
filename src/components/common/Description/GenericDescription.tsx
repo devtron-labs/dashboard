@@ -20,7 +20,7 @@ import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { patchApplicationNote, patchClusterNote } from '../../ClusterNodes/clusterNodes.service'
 import 'react-mde/lib/styles/css/react-mde-all.css'
-import { MarkDown, showError, TOAST_ACCESS_DENIED, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
+import { MarkDown, showError, ToastManager, ToastVariantType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 import { MDEditorSelectedTabType } from '../../ClusterNodes/types'
 import { ReactComponent as HeaderIcon } from '../../../assets/icons/mdeditor/ic-header.svg'
 import { ReactComponent as BoldIcon } from '../../../assets/icons/mdeditor/ic-bold.svg'
@@ -346,19 +346,22 @@ export default function GenericDescription({
             >
                 {isEditDescriptionView ? (
                     <div className="min-w-500 bg__primary br-4 dc__border-top dc__border-left dc__border-right w-100 dc__border-bottom">
-                        <div className="pt-8 pb-8 pl-16 pr-16 dc__top-radius-4 flex bg__secondary dc__border-bottom h-36 fs-13">
+                        <div className="py-8 px-16 dc__top-radius-4 flex dc__content-space dc__gap-8 bg__secondary dc__border-bottom fs-13">
                             <div className="fw-6 lh-20 cn-9">Readme</div>
                             {descriptionUpdatedBy && descriptionUpdatedOn && (
-                                <div className="flex left fw-4 cn-7 ml-8">
-                                    Last updated by {descriptionUpdatedBy} on {descriptionUpdatedOn}
-                                </div>
+                                <Tooltip content={`Last updated by ${descriptionUpdatedBy} on ${descriptionUpdatedOn}`}>
+                                    <p className="m-0 flex-grow-1 fw-4 cn-7 dc__truncate">
+                                        {`Last updated by ${descriptionUpdatedBy} on ${descriptionUpdatedOn}`}
+                                    </p>
+                                </Tooltip>
                             )}
                             <div
                                 data-testid="description-edit-button"
-                                className="dc__align-right pencil-icon cursor flex fw-6 cn-7"
+                                className="pencil-icon cursor flex dc__gap-4 fw-6 cn-7"
                                 onClick={toggleDescriptionView}
                             >
-                                <Edit className="icon-dim-16 mr-4 scn-7" /> Edit
+                                <Edit className="icon-dim-16 scn-7" />
+                                Edit
                             </div>
                         </div>
                         <ReactMde

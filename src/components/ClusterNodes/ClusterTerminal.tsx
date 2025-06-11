@@ -22,6 +22,8 @@ import {
     CHECKBOX_VALUE,
     ComponentSizeType,
     get,
+    getIsRequestAborted,
+    handleAnalyticsEvent,
     NodeTaintType,
     noop,
     OptionType,
@@ -195,6 +197,10 @@ const ClusterTerminal = ({
     }
 
     function sessionError(error): void {
+        if (getIsRequestAborted(error)) {
+            return
+        }
+
         showError(error)
         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
             error.errors.forEach(({ userMessage }) => {
@@ -634,7 +640,13 @@ const ClusterTerminal = ({
     }
 
     const toggleScreenView = (): void => {
-        setFullScreen(!isFullScreen)
+        if (!isFullScreen) {
+            handleAnalyticsEvent({
+                category: 'Cluster Terminal',
+                action: 'RB_TERMINAL_FULLSCREEN',
+            })
+        }
+        setFullScreen((prev) => !prev)
     }
 
     const selectEventsTab = (): void => {
@@ -882,6 +894,10 @@ const ClusterTerminal = ({
         return nodeGroupOptions
     }
 
+    const toggleDebugMode = (): void => {
+        setDebugMode((prev) => !prev)
+    }
+
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
@@ -987,7 +1003,7 @@ const ClusterTerminal = ({
                 type: TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON,
                 hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
                 showInfoTippy: true,
-                onToggle: setDebugMode,
+                onToggle: toggleDebugMode,
                 isEnabled: debugMode,
             },
             {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
+import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react'
 import {
     showError,
     Progressing,
@@ -37,6 +37,10 @@ import {
     noop,
     AppThemeType,
     Icon,
+    NodeDetailTabsInfoType,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, useLocation, useHistory } from 'react-router-dom'
 import YAML from 'yaml'
@@ -48,14 +52,7 @@ import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
 import { ReactComponent as Storage } from '@Icons/ic-storage.svg'
 import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
-import { ReactComponent as CordonIcon } from '@Icons/ic-cordon.svg'
-import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
-import { ReactComponent as DrainIcon } from '@Icons/ic-clean-brush.svg'
-import { ReactComponent as EditTaintsIcon } from '@Icons/ic-spraycan.svg'
-import { ReactComponent as DeleteIcon } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
-import { ReactComponent as Check } from '@Icons/ic-check.svg'
-import { ReactComponent as Review } from '@Icons/ic-visibility-on.svg'
 import { getNodeCapacity, updateNodeManifest } from './clusterNodes.service'
 import {
     ClusterListType,
@@ -67,7 +64,6 @@ import {
 } from './types'
 import { OrderBy } from '../app/list/types'
 import { MODES, URLS } from '../../config'
-import { ReactComponent as TerminalLineIcon } from '../../assets/icons/ic-terminal-line.svg'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
@@ -78,6 +74,9 @@ import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
 
 const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, name } = useParams<{ clusterId: string; nodeType: string; name: string }>()
@@ -152,20 +151,129 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         getData(patchData)
     }, [name])
 
+    const getSanitizedNodeTabId = (id: string) => id.toLowerCase().replace(' ', '-')
+
+    const renderSummary = (): JSX.Element | null => {
+        if (!nodeDetail) {
+            return null
+        }
+
+        return (
+            <div className="node-details-container node-data-wrapper dc__overflow-hidden flexbox-col flex-grow-1">
+                <div className="mt-12 node-details-grid dc__overflow-hidden">
+                    <div className="pl-20 fw-6 fs-16 cn-9 dc__overflow-auto">
+                        {renderErrorOverviewCard()}
+                        {renderProbableIssuesOverviewCard()}
+                        {renderNodeOverviewCard()}
+                    </div>
+                    <div className="dc__overflow-auto pr-20">
+                        {renderResourceList()}
+                        {renderLabelAnnotationTaint()}
+                        {renderPodList()}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+
+    const renderYAMLEditor = (): JSX.Element => (
+        <div className="flex-grow-1 flexbox-col">
+            <CodeEditor
+                readOnly={!isEdit}
+                diffView={isReviewState}
+                mode={MODES.YAML}
+                noParsing
+                theme={AppThemeType.dark}
+                height="fitToParent"
+                {...(isReviewState
+                    ? {
+                          diffView: true,
+                          originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
+                          modifiedValue: modifiedManifest,
+                          onModifiedValueChange: handleEditorValueChange,
+                      }
+                    : {
+                          diffView: false,
+                          value: modifiedManifest,
+                          onChange: handleEditorValueChange,
+                      })}
+            >
+                {isReviewState && isShowWarning && (
+                    <CodeEditor.Warning
+                        className="dc__ellipsis-right"
+                        text="Actual YAML has changed since you made the changes. Please check the diff carefully."
+                    />
+                )}
+                {isReviewState && (
+                    <CodeEditor.Header hideDefaultSplitHeader>
+                        <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
+                        <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
+                            <Edit className="icon-dim-16" />
+                            <span>YAML (Editing)</span>
+                        </p>
+                    </CodeEditor.Header>
+                )}
+            </CodeEditor>
+        </div>
+    )
+
+    const renderConditions = (): JSX.Element => (
+        <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
+            <div className="ml-20 mr-20 mb-12 mt-12 bg__primary br-8 en-2 bw-1">
+                <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
+                    <div>Type</div>
+                    <div>Status</div>
+                    <div>Message</div>
+                </div>
+                {nodeDetail.conditions.map((condition) => (
+                    <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
+                        <div>{condition.type}</div>
+                        <div className="flexbox">
+                            {condition.haveIssue ? (
+                                <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            ) : (
+                                <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
+                            )}
+                            {condition.reason}
+                        </div>
+                        <div>{condition.message}</div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    )
+
+    // id will be populated into url
+    const NODE_TABS_INFO: NodeDetailTabsInfoType = [
+        {
+            id: getSanitizedNodeTabId(NODE_DETAILS_TABS.summary),
+            label: NODE_DETAILS_TABS.summary,
+            renderComponent: renderSummary,
+        },
+        ...(window._env_.FEATURE_REDFISH_NODE_ENABLE ? REDFISH_NODE_UI_TABS : []),
+        {
+            id: getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml),
+            label: NODE_DETAILS_TABS.yaml,
+            icon: 'ic-pencil',
+            renderComponent: renderYAMLEditor,
+        },
+        {
+            id: getSanitizedNodeTabId(NODE_DETAILS_TABS.nodeConditions),
+            label: NODE_DETAILS_TABS.nodeConditions,
+            renderComponent: renderConditions,
+        },
+    ]
+
     useEffect(() => {
-        if (queryParams.has('tab')) {
-            const tab = queryParams.get('tab').replace('-', ' ')
-            if (tab === NODE_DETAILS_TABS.summary.toLowerCase()) {
-                setSelectedTabIndex(0)
-            } else if (tab === NODE_DETAILS_TABS.yaml.toLowerCase()) {
-                setSelectedTabIndex(1)
-            } else if (tab === NODE_DETAILS_TABS.nodeConditions.toLowerCase()) {
-                setSelectedTabIndex(2)
-            }
+        const tab = queryParams.get('tab')
+        const tabIndex = NODE_TABS_INFO.findIndex((tabDetails) => tabDetails.id === tab)
+
+        if (tabIndex !== -1) {
+            setSelectedTabIndex(tabIndex)
         } else {
             replace({
                 pathname: location.pathname,
-                search: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
+                search: `?tab=${getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)}`,
             })
         }
     }, [location.search])
@@ -182,14 +290,9 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
         if (name !== AUTO_SELECT.value) {
-            let _searchParam = '?tab='
-            if (_tabIndex === 0) {
-                _searchParam += NODE_DETAILS_TABS.summary.toLowerCase()
-            } else if (_tabIndex === 1) {
-                _searchParam += NODE_DETAILS_TABS.yaml.toLowerCase()
-            } else if (_tabIndex === 2) {
-                _searchParam += NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')
-            }
+            const selectedTab = NODE_TABS_INFO[_tabIndex]?.id || ''
+            const _searchParam = `?tab=${selectedTab}`
+
             updateTabUrl({
                 url: `${location.pathname}${_searchParam}`,
             })
@@ -197,46 +300,19 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs: TabProps[] = [
-            {
-                id: NODE_DETAILS_TABS.summary,
-                label: NODE_DETAILS_TABS.summary,
-                tabType: 'navLink',
-                props: {
-                    to: `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
-                    onClick: changeNodeTab,
-                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.summary.toLowerCase()}`,
-                    ['data-tab-index']: 0,
-                },
+        const tabs = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
+            ...tabDetails,
+            tabType: 'navLink',
+            props: {
+                to: `?tab=${tabDetails.id}`,
+                onClick: changeNodeTab,
+                isActive: (_, { search }) => search === `?tab=${tabDetails.id}`,
+                ['data-tab-index']: index,
             },
-            {
-                id: NODE_DETAILS_TABS.yaml,
-                label: NODE_DETAILS_TABS.yaml,
-                tabType: 'navLink',
-                icon: Edit,
-                props: {
-                    to: `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
-                    onClick: changeNodeTab,
-                    isActive: (_, { search }) => search === `?tab=${NODE_DETAILS_TABS.yaml.toLowerCase()}`,
-                    ['data-tab-index']: 1,
-                },
-            },
-            {
-                id: NODE_DETAILS_TABS.nodeConditions,
-                label: NODE_DETAILS_TABS.nodeConditions,
-                tabType: 'navLink',
-                props: {
-                    to: `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
-                    onClick: changeNodeTab,
-                    isActive: (_, { search }) =>
-                        search === `?tab=${NODE_DETAILS_TABS.nodeConditions.toLowerCase().replace(' ', '-')}`,
-                    ['data-tab-index']: 2,
-                },
-            },
-        ]
+        })) as TabProps[]
 
         return (
-            <div className="pl-20 dc__border-bottom flex dc__gap-16">
+            <div className="px-20 dc__border-bottom flex dc__gap-16">
                 <TabGroup tabs={tabs} size={ComponentSizeType.medium} />
                 {nodeControls()}
             </div>
@@ -739,107 +815,110 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const renderTabControls = () => {
-        if (selectedTabIndex == 0) {
-            return (
-                <>
-                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={showCordonNodeModal}>
-                        {nodeDetail?.unschedulable ? (
-                            <>
-                                <UncordonIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                            </>
-                        ) : (
-                            <>
-                                <CordonIcon className="icon-dim-16 mr-5 scb-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                            </>
-                        )}
-                    </span>
-                    <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showDrainNodeModal}>
-                        <DrainIcon className="icon-dim-16 mr-5 scb-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                    </span>
-                    <span className="flex left fw-6 cb-5 ml-16 fs-12 cursor" onClick={showEditTaintsModal}>
-                        <EditTaintsIcon className="icon-dim-16 mr-5 scb-5" />
-                        {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                    </span>
-                </>
-            )
-        }
-        if (selectedTabIndex == 1) {
+        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
+
+        if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
             if (!isEdit) {
                 return (
-                    <span className="cb-5 fs-12 scb-5 fw-6 cursor flex" onClick={setYAMLEdit}>
-                        <Edit className="icon-dim-16 mr-6" /> Edit YAML
-                    </span>
+                    <div className="flexbox dc__align-items-center dc__gap-12">
+                        <div className="dc__divider h-16" />
+
+                        <Button
+                            dataTestId="edit-yaml"
+                            variant={ButtonVariantType.text}
+                            size={ComponentSizeType.small}
+                            text="Edit YAML"
+                            onClick={setYAMLEdit}
+                            startIcon={<Icon name="ic-pencil" color={null} />}
+                        />
+                    </div>
                 )
             }
             return (
-                <>
-                    {apiInProgress ? (
-                        <Progressing />
-                    ) : (
-                        <span className="flex scb-5 cb-5 left fw-6 fs-12 cursor" onClick={saveYAML}>
-                            {isReviewState ? (
-                                <>
-                                    <Check className="icon-dim-16 mr-6" /> Apply changes
-                                </>
-                            ) : (
-                                <>
-                                    <Review className="icon-dim-16 mr-6" /> Review & Save changes
-                                </>
-                            )}
-                        </span>
+                <div className="flexbox dc__align-items-center dc__gap-12">
+                    <div className="dc__divider h-16" />
+
+                    <Button
+                        dataTestId={isReviewState ? 'apply-changes' : 'review-changes'}
+                        variant={ButtonVariantType.text}
+                        size={ComponentSizeType.small}
+                        text={isReviewState ? 'Apply changes' : 'Review & Save changes'}
+                        onClick={saveYAML}
+                        startIcon={isReviewState ? <Icon name="ic-check" color={null} /> : null}
+                        isLoading={apiInProgress}
+                    />
+
+                    {!apiInProgress && (
+                        <Button
+                            dataTestId="cancel-changes"
+                            variant={ButtonVariantType.text}
+                            size={ComponentSizeType.small}
+                            style={ButtonStyleType.negativeGrey}
+                            onClick={cancelYAMLEdit}
+                            text="Cancel"
+                        />
                     )}
-                    <span className="flex left fw-6 fs-12 cn-6 cursor ml-12" onClick={cancelYAMLEdit}>
-                        Cancel
-                    </span>
-                </>
+                </div>
             )
         }
+
+        return <div />
     }
 
-    const nodeControls = () => {
-        return (
-            <div className="fw-6 flex dc__content-space flex-grow-1 mr-12">
-                <div className="flex left">
-                    <span className="flex left fw-6 cb-5 fs-12 cursor" onClick={openDebugTerminal}>
-                        <TerminalLineIcon className="icon-dim-16 mr-5" />
-                        {NODE_DETAILS_TABS.debug}
-                    </span>
-                    <span className="cn-2 mr-16 ml-16">|</span>
-                    {renderTabControls()}
-                </div>
-                <span className="flex left fw-6 cr-5 ml-16 fs-12 cursor" onClick={showDeleteNodeModal}>
-                    <DeleteIcon className="icon-dim-16 mr-5 scr-5" />
-                    {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                </span>
+    const nodeControls = () => (
+        <div className="flex-grow-1 flexbox dc__content-space dc__gap-12">
+            {renderTabControls()}
+
+            <div className="flexbox dc__gap-12 dc__align-items-center">
+                <Button
+                    dataTestId="open-debug-terminal"
+                    variant={ButtonVariantType.text}
+                    text={NODE_DETAILS_TABS.debug}
+                    onClick={openDebugTerminal}
+                    size={ComponentSizeType.small}
+                    startIcon={<Icon name="ic-terminal" color={null} />}
+                />
+
+                <Button
+                    dataTestId={nodeDetail?.unschedulable ? 'un-cordon-node' : 'cordon-node'}
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    text={
+                        nodeDetail?.unschedulable
+                            ? CLUSTER_NODE_ACTIONS_LABELS.uncordon
+                            : CLUSTER_NODE_ACTIONS_LABELS.cordon
+                    }
+                    onClick={showCordonNodeModal}
+                />
+
+                <Button
+                    dataTestId="drain-node"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.drain}
+                    onClick={showDrainNodeModal}
+                />
+
+                <Button
+                    dataTestId="edit-taints"
+                    variant={ButtonVariantType.text}
+                    size={ComponentSizeType.small}
+                    onClick={showEditTaintsModal}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.taints}
+                />
+
+                <Button
+                    dataTestId="delete-node"
+                    variant={ButtonVariantType.text}
+                    style={ButtonStyleType.negative}
+                    size={ComponentSizeType.small}
+                    onClick={showDeleteNodeModal}
+                    text={CLUSTER_NODE_ACTIONS_LABELS.delete}
+                    startIcon={<Icon name="ic-delete" color={null} />}
+                />
             </div>
-        )
-    }
-
-    const renderSummary = (): JSX.Element | null => {
-        if (!nodeDetail) {
-            return null
-        }
-
-        return (
-            <div className="node-details-container node-data-wrapper dc__overflow-hidden flexbox-col flex-grow-1">
-                <div className="mt-12 node-details-grid dc__overflow-hidden">
-                    <div className="pl-20 fw-6 fs-16 cn-9 dc__overflow-auto">
-                        {renderErrorOverviewCard()}
-                        {renderProbableIssuesOverviewCard()}
-                        {renderNodeOverviewCard()}
-                    </div>
-                    <div className="dc__overflow-auto pr-20">
-                        {renderResourceList()}
-                        {renderLabelAnnotationTaint()}
-                        {renderPodList()}
-                    </div>
-                </div>
-            </div>
-        )
-    }
+        </div>
+    )
 
     const cancelYAMLEdit = (): void => {
         setIsReviewStates(false)
@@ -915,85 +994,15 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
         }
     }
 
-    const renderYAMLEditor = (): JSX.Element => {
-        return (
-            <div className="flex-grow-1 flexbox-col">
-                <CodeEditor
-                    readOnly={!isEdit}
-                    diffView={isReviewState}
-                    mode={MODES.YAML}
-                    noParsing
-                    theme={AppThemeType.dark}
-                    height="fitToParent"
-                    {...(isReviewState
-                        ? {
-                              diffView: true,
-                              originalValue: (nodeDetail?.manifest && YAMLStringify(nodeDetail.manifest)) || '',
-                              modifiedValue: modifiedManifest,
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: modifiedManifest,
-                              onChange: handleEditorValueChange,
-                          })}
-                >
-                    {isReviewState && isShowWarning && (
-                        <CodeEditor.Warning
-                            className="dc__ellipsis-right"
-                            text="Actual YAML has changed since you made the changes. Please check the diff carefully."
-                        />
-                    )}
-                    {isReviewState && (
-                        <CodeEditor.Header hideDefaultSplitHeader>
-                            <p className="m-0 fs-12 fw-6 cn-7">Current node YAML</p>
-                            <p className="m-0 fs-12 fw-6 cn-7 pl-16 flex left dc__gap-4">
-                                <Edit className="icon-dim-16" />
-                                <span>YAML (Editing)</span>
-                            </p>
-                        </CodeEditor.Header>
-                    )}
-                </CodeEditor>
-            </div>
-        )
-    }
+    const renderTabContent = (): JSX.Element => {
+        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
+        const renderNode = selectedTab?.renderComponent
 
-    const renderConditions = (): JSX.Element => {
-        return (
-            <div className="node-details-container flex-grow-1 flexbox-col dc__overflow-auto">
-                <div className="ml-20 mr-20 mb-12 mt-16 bg__primary br-8 en-2 bw-1">
-                    <div className="condition-grid cn-7 fw-6 fs-13 dc__border-bottom pt-8 pl-20 pb-8 pr-20">
-                        <div>Type</div>
-                        <div>Status</div>
-                        <div>Message</div>
-                    </div>
-                    {nodeDetail.conditions.map((condition) => (
-                        <div className="condition-grid cn-9 fw-4 fs-13 dc__border-bottom-n1 pt-12 pl-20 pb-12 pr-20">
-                            <div>{condition.type}</div>
-                            <div className="flexbox">
-                                {condition.haveIssue ? (
-                                    <Error className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                ) : (
-                                    <Success className="mt-2 mb-2 mr-8 icon-dim-18" />
-                                )}
-                                {condition.reason}
-                            </div>
-                            <div>{condition.message}</div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        )
-    }
+        if (renderNode) {
+            return renderNode()
+        }
 
-    const renderTabs = (): JSX.Element => {
-        if (selectedTabIndex === 1) {
-            return renderYAMLEditor()
-        }
-        if (selectedTabIndex === 2) {
-            return renderConditions()
-        }
-        return renderSummary()
+        return null
     }
 
     const showCordonNodeModal = (): void => {
@@ -1056,7 +1065,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             ) : (
                 <>
                     {renderNodeDetailsTabs()}
-                    {renderTabs()}
+                    {renderTabContent()}
                     {showCordonNodeDialog && (
                         <CordonNodeModal
                             name={name}

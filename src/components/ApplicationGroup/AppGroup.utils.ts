@@ -35,6 +35,7 @@ import {
     CDWorkflowStatusType,
     CIWorkflowStatusType,
     ProcessWorkFlowStatusType,
+    AppGroupListType,
 } from './AppGroup.types'
 
 let timeoutId
@@ -326,7 +327,7 @@ export const getAppGroupDeploymentHistoryLink = (
 ) => {
     if (status?.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING) {
         //If deployment is in progress then it will redirect to app details page
-        return `${URLS.APP}/${appId}/${URLS.APP_DETAILS}/${envId}`
+        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_DETAILS}/${appId}`
     }
     if (redirectToAppGroup) {
         // It will redirect to application group deployment history in case of same environment
@@ -335,3 +336,39 @@ export const getAppGroupDeploymentHistoryLink = (
     }
     return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
 }
+
+export const parseAppListData = (
+    data: AppGroupListType,
+    statusRecord: Record<string, { status: string; pipelineId: number }>,
+) => {
+    const parsedData = {
+        environment: data.environmentName,
+        namespace: data.namespace || '-',
+        cluster: data.clusterName,
+        appInfoList: [],
+    }
+
+    data?.apps?.forEach((app) => {
+        const appInfo = {
+            appId: app.appId,
+            application: app.appName,
+            appStatus: app.appStatus,
+            deploymentStatus: statusRecord[app.appId].status,
+            pipelineId: statusRecord[app.appId].pipelineId,
+            lastDeployed: app.lastDeployedTime,
+            lastDeployedBy: app.lastDeployedBy,
+            lastDeployedImage: app.lastDeployedImage,
+            commits: app.commits,
+            ciArtifactId: app.ciArtifactId,
+        }
+        parsedData.appInfoList.push(appInfo)
+    })
+
+    return parsedData
+}
+
+export const getDeploymentHistoryLink = (appId: number, pipelineId: number, envId: string) =>
+    `${URLS.APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
+
+export const getAppRedirectLink = (appId: number, envId: number) =>
+    `${URLS.APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`

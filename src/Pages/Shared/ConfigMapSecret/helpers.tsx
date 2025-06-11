@@ -19,13 +19,12 @@ import { Link } from 'react-router-dom'
 import {
     CMSecretComponentType,
     CMSecretExternalType,
+    ComponentSizeType,
+    DocLink,
     Icon,
     InfoBlock,
-    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
-import { DOCUMENTATION } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
@@ -43,14 +42,7 @@ export const renderESOInfo = (isESO: boolean) =>
                         External Secrets Operator
                     </Link>
                     &nbsp;<span>should be installed in the target cluster.</span>&nbsp;
-                    <a
-                        className="anchor"
-                        href={DOCUMENTATION.EXTERNAL_SECRET}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                    >
-                        Learn more
-                    </a>
+                    <DocLink docLinkKey="EXTERNAL_SECRET" dataTestId="learn-more-about-external-secrets" />
                 </p>
             }
         />
@@ -60,35 +52,25 @@ export const renderExternalInfo = (
     externalType: CMSecretExternalType,
     external: boolean,
     componentType: CMSecretComponentType,
-    className?: string,
 ) =>
     externalType === CMSecretExternalType.KubernetesSecret ||
     (componentType === CMSecretComponentType.ConfigMap && external) ? (
-        <InfoColourBar
-            classname={`info_bar ${className || ''}`}
-            message={
-                <div className="flex column left">
-                    <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
-                    <p className="m-0 lh-20 dc__info-subtitle">{EXTERNAL_INFO_TEXT[componentType].infoText}</p>
-                </div>
-            }
-            Icon={InfoIcon}
-            iconSize={20}
+        <InfoBlock
+            heading={EXTERNAL_INFO_TEXT[componentType].title}
+            description={EXTERNAL_INFO_TEXT[componentType].infoText}
         />
     ) : null
 
 export const renderChartVersionBelow3090NotSupportedText = () => (
-    <span className="fs-12 fw-4">
+    <span className="fs-12 fw-4 flex">
         <span className="cr-5">Supported for Chart Versions 3.10 and above.</span>&nbsp;
         <span className="cn-7">Learn more about</span>&nbsp;
-        <a
-            className="dc__link"
-            href={DOCUMENTATION.APP_ROLLOUT_DEPLOYMENT_TEMPLATE}
-            rel="noreferrer noopener"
-            target="_blank"
-        >
-            Deployment Template &gt; Chart Version
-        </a>
+        <DocLink
+            docLinkKey="APP_ROLLOUT_DEPLOYMENT_TEMPLATE"
+            text="Deployment Template &gt; Chart Version"
+            dataTestId="chart-version-learn-more"
+            size={ComponentSizeType.xs}
+        />
     </span>
 )
 

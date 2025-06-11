@@ -27,7 +27,6 @@ import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Webhook } from '../../../assets/icons/ic-CIWebhook.svg'
 import { WebhookNodeProps } from '../types'
 import { ReactComponent as ICCIWebhook } from '@Icons/ic-CIWebhook.svg'
-import { DOCUMENTATION } from '@Config/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
@@ -93,7 +92,7 @@ export const WebhookNode = ({
                 onClose={toggleIsWebhookTippyOpen}
                 interactive
                 appendTo={document.getElementById(TARGET_IDS.WORKFLOW_EDITOR_CONTAINER)}
-                documentationLink={DOCUMENTATION.CONFIGURING_WEBHOOK}
+                documentationLink="CONFIGURING_WEBHOOK"
                 documentationLinkText="Documentation"
                 visible={isWebhookTippyOpen}
             >

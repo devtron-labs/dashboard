@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     showError,
     Progressing,
     ErrorScreenManager,
     sortCallback,
     AppListConstants,
+    DocLink,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { AppConfigStatus, ViewType, DOCUMENTATION, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { AppConfigStatus, ViewType, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { CreateMaterial } from './CreateMaterial'
 import { UpdateMaterial, UpdateMaterialProps } from './UpdateMaterial'
 import { GitMaterialType, MaterialListProps, MaterialListState } from './material.types'
@@ -163,14 +165,12 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                 </h2>
                 <p className="form__subtitle form__subtitle--artifacts">
                     Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        href={this.props.isJobView ? DOCUMENTATION.JOB_SOURCE_CODE : DOCUMENTATION.GLOBAL_CONFIG_GIT}
-                    >
-                        Learn more
-                    </a>
+                    <DocLink
+                        dataTestId="git-repo-doc-link"
+                        docLinkKey={this.props.isJobView ? 'JOB_SOURCE_CODE' : 'GLOBAL_CONFIG_GIT'}
+                        fontWeight="normal"
+                        size={ComponentSizeType.small}
+                    />
                 </p>
             </>
         )
@@ -255,7 +255,8 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
                             isTemplateView={this.props.isTemplateView}
                             isCreateAppView={this.props.isCreateAppView}
                             handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
-                        />                    )
+                        />
+                    )
                 })}
             </div>
         )

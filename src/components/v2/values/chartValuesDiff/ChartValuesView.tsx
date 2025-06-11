@@ -22,7 +22,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ConditionalWrap,
-    InfoColourBar,
     ServerErrors,
     GenericEmptyState,
     ResponseType,
@@ -41,6 +40,9 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     ForceDeleteConfirmationModal,
     doesJSONConformToSchema07,
+    InfoBlock,
+    ButtonVariantType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -92,7 +94,6 @@ import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import {
     ChartDeploymentHistoryResponse,
@@ -987,6 +988,7 @@ const ChartValuesView = ({
                     res = await updateAppReleaseWithoutLinking(payload)
                 }
             } else if (isDeployChartView) {
+                handleAnalyticsEvent({category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_DEPLOY'})
                 const payload = {
                     teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
@@ -1120,11 +1122,13 @@ const ChartValuesView = ({
         if (_chartId) {
             history.push(getChartValuesURL(_chartId))
         }
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_NEW_PRESET_VALUE'})
     }
 
     const handleTabSwitch = (e) => {
         if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
+                handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_MANIFEST' })
                 const validatedName = validateAppName(isCreateValueView ? valueName : appName)
                 if (isCreateValueView && !validatedName.isValid) {
                     dispatch({
@@ -1198,7 +1202,9 @@ const ChartValuesView = ({
         if (commonState.fetchingReadMe || disabled) {
             return
         }
-
+        if (!commonState.openReadMe) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_README' })
+        }
         dispatch({ type: ChartValuesViewActionTypes.openReadMe, payload: !commonState.openReadMe })
         if (commonState.openComparison) {
             dispatch({ type: ChartValuesViewActionTypes.openComparison, payload: false })
@@ -1233,7 +1239,9 @@ const ChartValuesView = ({
         if (disabled) {
             return
         }
-
+        if (!commonState.openComparison) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_COMPARE' })
+        }
         dispatch({ type: ChartValuesViewActionTypes.openComparison, payload: !commonState.openComparison })
         if (commonState.openReadMe) {
             dispatch({ type: ChartValuesViewActionTypes.openReadMe, payload: false })
@@ -1364,6 +1372,7 @@ const ChartValuesView = ({
     }
 
     const handleToggleSecurityScan = () => {
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_SCAN_TOGGLE' })
         dispatch({
             type: ChartValuesViewActionTypes.setIsManifestScanEnabled,
             payload: !commonState.isManifestScanEnabled,
@@ -1561,21 +1570,19 @@ const ChartValuesView = ({
         })
     }
 
-    const hideConnectToChartTippy = () => {
-        dispatch({
-            type: ChartValuesViewActionTypes.showConnectToChartTippy,
-            payload: false,
-        })
-    }
-
-    const renderConnectToHelmChart = (): JSX.Element => {
-        return (
-            <div className="flex left mt-8">
-                <LinkIcon className="connect-to-chart-icon icon-dim-16 mr-8" />
-                <span className="fs-13 fw-6 lh-20">Connect to helm chart</span>
-            </div>
-        )
-    }
+    const renderConnectToHelmChartInfoBlock = () => (
+        <InfoBlock
+            description={CONNECT_TO_HELM_CHART_TEXTS.Message}
+            layout="column"
+            buttonProps={{
+                text: 'Connect to helm chart',
+                onClick: handleConnectToChartClick,
+                variant: ButtonVariantType.text,
+                dataTestId: 'connect-to-helm-chart-button',
+                startIcon: <LinkIcon className="connect-to-chart-icon icon-dim-16" />,
+            }}
+        />
+    )
 
     const getHelmAppMetaInfoRes = async (): Promise<void> => {
         try {
@@ -1774,15 +1781,8 @@ const ChartValuesView = ({
                             {!isDeployChartView &&
                                 isExternalApp &&
                                 !commonState.installedAppInfo &&
-                                !commonState.showRepoSelector && (
-                                    <InfoColourBar
-                                        message={CONNECT_TO_HELM_CHART_TEXTS.Message}
-                                        classname="connect-to-chart-wrapper info_bar"
-                                        Icon={InfoIcon}
-                                        linkOnClick={handleConnectToChartClick}
-                                        linkText={renderConnectToHelmChart()}
-                                    />
-                                )}
+                                !commonState.showRepoSelector &&
+                                renderConnectToHelmChartInfoBlock()}
                             {renderGeneratedDownloadManifest()}
                             {(!isExternalApp ||
                                 commonState.installedAppInfo ||
@@ -1809,12 +1809,15 @@ const ChartValuesView = ({
                                 />
                             )}
                         </div>
-                        {!isExternalApp && (isDeployChartView || isUpdateAppView) && ToggleSecurityScan && (
-                            <ToggleSecurityScan
-                                isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                handleToggleSecurityScan={handleToggleSecurityScan}
-                            />
-                        )}
+                        {!isExternalApp &&
+                            serverMode === SERVER_MODE.FULL &&
+                            (isDeployChartView || isUpdateAppView) &&
+                            ToggleSecurityScan && (
+                                <ToggleSecurityScan
+                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                    handleToggleSecurityScan={handleToggleSecurityScan}
+                                />
+                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(

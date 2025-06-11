@@ -21,7 +21,6 @@ import {
     ServerErrors,
     showError,
     Progressing,
-    ConfirmationDialog,
     PopupMenu,
     ResponseType,
     DeploymentAppTypes,
@@ -36,7 +35,7 @@ import { Td } from '../../common'
 import { Routes, URLS, ViewType, SERVER_MODE, DELETE_ACTION } from '../../../config'
 import { deleteInstalledChart } from '../charts.service'
 import AppNotDeployedIcon from '../../../assets/img/app-not-configured.png'
-import { ReactComponent as Dots } from '@Icons/ic-dot.svg'
+import { ReactComponent as Dots } from '@Icons/ic-more-vertical.svg'
 import trash from '../../../assets/icons/ic-delete.svg'
 import { getAppId } from '../../v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import ClusterNotReachableDialog from '../../common/ClusterNotReachableDialog/ClusterNotReachableDialog'

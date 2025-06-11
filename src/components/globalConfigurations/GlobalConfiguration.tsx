@@ -19,7 +19,6 @@ import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } fro
 import {
     showError,
     Progressing,
-    Toggle,
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
@@ -154,7 +153,9 @@ export default function GlobalConfiguration(props) {
     }
 
     return (
-        <main className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}>
+        <main
+            className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}
+        >
             {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
@@ -819,23 +820,6 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
     )
 }
 
-const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...props }) => {
-    const handleToggle = () => {
-        if (!isButtonDisabled) {
-            onSelect(!enabled)
-        }
-    }
-    return (
-        <Toggle
-            dataTestId="toggle-button"
-            {...props}
-            onSelect={handleToggle}
-            selected={enabled}
-            disabled={isButtonDisabled}
-        />
-    )
-}
-
 const DropDown = ({ className = '', dataTestid = '', style = {}, src = null, ...props }) => {
     if (isValidElement(src)) {
         return src
@@ -866,5 +850,4 @@ export const List = ({
 
 List.Logo = Logo
 List.Title = Title
-List.Toggle = ListToggle
 List.DropDown = DropDown

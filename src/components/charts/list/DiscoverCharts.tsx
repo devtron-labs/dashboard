@@ -26,9 +26,11 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    DocLink,
     Button,
     ComponentSizeType,
     ButtonVariantType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -45,7 +47,7 @@ import { DeployableCharts, deployChartGroup, getChartProviderList } from '../cha
 import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { DOCUMENTATION, URLS, SERVER_MODE } from '../../../config'
+import { URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
@@ -129,7 +131,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
-    const noChartAvailable: boolean = chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
+    const noChartAvailable: boolean =
+        chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
         return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
     }, true)
@@ -190,10 +193,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const handleDeployButtonClick = (): void => {
         handleActionButtonClick(false)
+        handleAnalyticsEvent({category: 'Chart Store', action: state.advanceVisited ? 'CS_BULK_DEPLOY_ADV_DEPLOY' : 'CS_BULK_DEPLOY_TO'})
     }
 
     const handleAdvancedButtonClick = (): void => {
         handleActionButtonClick(true)
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_ADV_OPTIONS'})
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -356,6 +361,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const onChangeShowSourcePopup = () => {
         setShowSourcePopoUp(true)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_SOURCE' })
     }
 
     const toggleChartListPopUp = (e: React.MouseEvent): void => {
@@ -750,15 +756,13 @@ const ChartListHeader = ({ charts }) => {
             </h3>
             <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
                 Select chart to deploy. &nbsp;
-                <a
-                    className="dc__link"
-                    href={DOCUMENTATION.CHART_LIST}
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    data-testid="chart-store-link"
-                >
-                    Learn more about deploying charts
-                </a>
+                <DocLink
+                    dataTestId="chart-group-link"
+                    docLinkKey="CHART_LIST"
+                    text="Learn how to deploy charts"
+                    fontWeight="normal"
+                    size={ComponentSizeType.small}
+                />
             </p>
         </div>
     )
@@ -775,7 +779,11 @@ export const EmptyChartGroup = ({
     toggleChartGroupModal,
     showChartGroupModal,
 }: EmptyCharts) => {
-    const { url } = useRouteMatch()
+    const handleCreateGroup = () => {
+        toggleChartGroupModal(!showChartGroupModal)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CREATE_CHART_GROUP' })
+    }
+    
     return (
         <div className="bg__primary flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
@@ -787,15 +795,12 @@ export const EmptyChartGroup = ({
                     {subTitle || 'Use chart groups to preconfigure and deploy frequently used charts together.'}
                 </div>
                 {!removeLearnMore && (
-                    <a
-                        href={DOCUMENTATION.CHART_GROUP}
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className="dc__link"
-                        data-testid="chart-group-link"
-                    >
-                        Learn more about chart groups
-                    </a>
+                    <DocLink
+                        dataTestId="chart-group-link"
+                        docLinkKey="CHART_GROUP"
+                        text="Learn more about chart groups"
+                        fontWeight="normal"
+                    />
                 )}
                 {typeof onClickViewChartButton === 'function' ? (
                     <button type="button" onClick={onClickViewChartButton} className="cta ghosted flex mb-24 mt-24">
@@ -805,7 +810,7 @@ export const EmptyChartGroup = ({
                     <button
                         type="button"
                         className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bg__primary h-32"
-                        onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
+                        onClick={handleCreateGroup}
                         data-testid="chart-group-create-button"
                     >
                         Create group
@@ -839,6 +844,7 @@ export const ChartGroupListMin = ({
 
     const redirectToGroup = () => {
         history.push(`${match.url}/group`)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_ALL_CHART_GROUPS' })
     }
 
     return (
@@ -850,8 +856,7 @@ export const ChartGroupListMin = ({
                         renderDescriptionContent={() =>
                             'Use chart groups to pre-configure and deploy frequently used charts together.'
                         }
-                        docLink={DOCUMENTATION.CHART_GROUP}
-                        docLinkText="Learn more"
+                        docLink="CHART_GROUP"
                         dataTestId="chart-store"
                         showInfoIconTippy
                     />

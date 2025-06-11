@@ -16,7 +16,7 @@
 
 import { Component } from 'react'
 import * as Sentry from '@sentry/browser'
-import { Reload } from '@devtron-labs/devtron-fe-common-lib'
+import { DISCORD_LINK, Reload } from '@devtron-labs/devtron-fe-common-lib'
 import bugFixing from '../../assets/img/bug-fixing.webp'
 
 interface errorBoundaryState {
@@ -67,7 +67,7 @@ export default class ErrorBoundary extends Component<ErrorBoundaryProps, errorBo
                     <img src={bugFixing} alt="" style={{ height: '300px', width: 'auto', marginBottom: '20px' }} />
                     <h2 style={{ marginBottom: '20px' }}>We encountered an error.</h2>
                     <a
-                        href="https://discord.devtron.ai/"
+                        href={DISCORD_LINK}
                         className="cta flex dc__no-decor"
                         target="_blank"
                         onClick={() => Sentry.showReportDialog({ eventId: this.state.eventId })}
