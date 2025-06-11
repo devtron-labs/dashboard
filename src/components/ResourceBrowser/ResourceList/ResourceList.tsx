@@ -57,6 +57,7 @@ import AdminTerminalDummy from './AdminTerminalDummy'
 import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
+import { DynamicTabComponentWrapper } from './DynamicTabComponentWrapper'
 import K8SResourceTabComponent from './K8SResourceTabComponent'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
@@ -285,6 +286,13 @@ const ResourceList = () => {
         )
     }
 
+    const DynamicTabComponentWrapperBaseProps = {
+        updateTabUrl,
+        markTabActiveById,
+        getTabId,
+        getTabById,
+    }
+
     const renderMainBody = () => {
         if (error) {
             return <ErrorScreenManager code={error.code} />
@@ -318,73 +326,80 @@ const ResourceList = () => {
                     }}
                 />
                 <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
-                    <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
+                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
+                        <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
+                    </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD} exact>
-                    <MonitoringDashboard />
+                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
+                        <MonitoringDashboard />
+                    </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
-                    <AdminTerminalDummy
-                        markTabActiveById={markTabActiveById}
-                        clusterName={selectedCluster.label}
-                        getTabById={getTabById}
-                        updateTabUrl={updateTabUrl}
-                    />
+                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
+                        <AdminTerminalDummy
+                            markTabActiveById={markTabActiveById}
+                            clusterName={selectedCluster.label}
+                            getTabById={getTabById}
+                            updateTabUrl={updateTabUrl}
+                        />
+                    </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE} exact>
-                    <ClusterUpgradeCompatibilityInfo
-                        clusterName={selectedCluster.label}
-                        updateTabUrl={getUpdateTabUrlForId(
-                            getTabId(
-                                UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
-                                UPGRADE_CLUSTER_CONSTANTS.NAME,
-                                SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
-                            ),
-                        )}
-                        addTab={addTab}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        getTabId={getTabId}
-                        markTabActiveById={markTabActiveById}
-                    />
+                    <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
+                        <ClusterUpgradeCompatibilityInfo
+                            clusterName={selectedCluster.label}
+                            updateTabUrl={getUpdateTabUrlForId(
+                                getTabId(
+                                    UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
+                                    UPGRADE_CLUSTER_CONSTANTS.NAME,
+                                    SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase(),
+                                ),
+                            )}
+                            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                        />
+                    </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL} exact>
-                    <NodeDetailWrapper
-                        addTab={addTab}
-                        markTabActiveById={markTabActiveById}
-                        getTabId={getTabId}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        updateTabUrl={updateTabUrl}
-                    />
+                    <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
+                        <NodeDetailWrapper
+                            addTab={addTab}
+                            getTabId={getTabId}
+                            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                            updateTabUrl={updateTabUrl}
+                        />
+                    </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL}>
-                    <NodeDetailComponentWrapper
-                        clusterName={selectedCluster.label}
-                        getTabId={getTabId}
-                        logSearchTerms={logSearchTerms}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        removeTabByIdentifier={removeTabByIdentifier}
-                        setLogSearchTerms={setLogSearchTerms}
-                        updateTabUrl={updateTabUrl}
-                        loadingResources={rawGVKLoader}
-                        markTabActiveById={markTabActiveById}
-                        addTab={addTab}
-                    />
+                    <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
+                        <NodeDetailComponentWrapper
+                            clusterName={selectedCluster.label}
+                            getTabId={getTabId}
+                            logSearchTerms={logSearchTerms}
+                            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                            removeTabByIdentifier={removeTabByIdentifier}
+                            setLogSearchTerms={setLogSearchTerms}
+                            updateTabUrl={updateTabUrl}
+                            loadingResources={rawGVKLoader}
+                        />
+                    </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST} exact>
-                    <K8SResourceTabComponent
-                        markTabActiveById={markTabActiveById}
-                        selectedCluster={selectedCluster}
-                        addTab={addTab}
-                        renderRefreshBar={renderRefreshBar(
-                            isDataStale,
-                            getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
-                            refreshData,
-                        )}
-                        updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
-                        clusterName={selectedCluster.label}
-                        lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                        key={getTabById(ResourceBrowserTabsId.k8s_Resources).lastSyncMoment.toString()}
-                    />
+                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
+                        <K8SResourceTabComponent
+                            selectedCluster={selectedCluster}
+                            addTab={addTab}
+                            renderRefreshBar={renderRefreshBar(
+                                isDataStale,
+                                getTabById(ResourceBrowserTabsId.k8s_Resources)?.lastSyncMoment?.toString(),
+                                refreshData,
+                            )}
+                            updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
+                            clusterName={selectedCluster.label}
+                            lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
+                            key={getTabById(ResourceBrowserTabsId.k8s_Resources).lastSyncMoment.toString()}
+                        />
+                    </DynamicTabComponentWrapper>
                 </Route>
 
                 {renderTerminal()}

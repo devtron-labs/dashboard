@@ -51,7 +51,6 @@ const ResourceFilterOptions = ({
     setSearchText,
     isSearchInputDisabled,
     renderRefreshBar,
-    updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
     eventType = 'warning',
@@ -129,7 +128,6 @@ const ResourceFilterOptions = ({
         const parsedUrlSearchParams = new URLSearchParams(location.search)
         parsedUrlSearchParams.set('namespace', selected.value)
         const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1?${parsedUrlSearchParams.toString()}`
-        updateK8sResourceTab({ url })
         replace(url)
     }
 
@@ -195,7 +193,6 @@ const ResourceFilterOptions = ({
                         {FilterButton && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
-                                updateTabUrl={updateK8sResourceTab}
                                 showModal={showFilterModal}
                                 handleShowFilterModal={handleShowFilterModal}
                                 handleCloseFilterModal={handleCloseFilterModal}

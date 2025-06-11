@@ -402,3 +402,12 @@ export const RESOURCE_BROWSER_ROUTES = {
 } as const
 
 export const DUMMY_RESOURCE_GVK_VERSION = 'v1'
+
+export const ResourceBrowserRouteToTabIdMap: Partial<
+    Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
+> = {
+    '/resource-browser/:clusterId/:kind/:group/:version': ResourceBrowserTabsId.k8s_Resources,
+    '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
+    '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
+    '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
+}
