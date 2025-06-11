@@ -515,6 +515,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
             }}
         >
             <ConfirmationModalProvider>
+                <BaseConfirmationModal />
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                     {showThemeSwitcherDialog && (
                         <SwitchThemeDialog
@@ -693,7 +694,6 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                         </>
                     )}
                 </motion.main>
-                <BaseConfirmationModal />
             </ConfirmationModalProvider>
         </MainContextProvider>
     )
