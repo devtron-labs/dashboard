@@ -194,12 +194,15 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const handleDeployButtonClick = (): void => {
         handleActionButtonClick(false)
-        handleAnalyticsEvent({category: 'Chart Store', action: state.advanceVisited ? 'CS_BULK_DEPLOY_ADV_DEPLOY' : 'CS_BULK_DEPLOY_TO'})
+        handleAnalyticsEvent({
+            category: 'Chart Store',
+            action: state.advanceVisited ? 'CS_BULK_DEPLOY_ADV_DEPLOY' : 'CS_BULK_DEPLOY_TO',
+        })
     }
 
     const handleAdvancedButtonClick = (): void => {
         handleActionButtonClick(true)
-        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_ADV_OPTIONS'})
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_ADV_OPTIONS' })
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -562,7 +565,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                             )}
                                                         </div>
 
-                                                        <ChartCardSkeletonRow isGridView={isGrid} />
+                                                        {state.hasMoreCharts && (
+                                                            <ChartCardSkeletonRow isGridView={isGrid} />
+                                                        )}
                                                     </>
                                                 ) : (
                                                     renderChartStoreEmptyState()
@@ -776,7 +781,7 @@ export const EmptyChartGroup = ({
         toggleChartGroupModal(!showChartGroupModal)
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CREATE_CHART_GROUP' })
     }
-    
+
     return (
         <div className="bg__primary flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />

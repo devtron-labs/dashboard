@@ -156,12 +156,11 @@ const ChartCard = ({
                                 </>
                             )}
 
-                            {!isListView && renderAddIcon()}
+                            {renderAddIcon()}
                         </div>
                     )}
                     {renderCardInfo()}
                 </div>
-                {isListView && renderAddIcon()}
             </div>
             {renderFooter()}
         </div>
