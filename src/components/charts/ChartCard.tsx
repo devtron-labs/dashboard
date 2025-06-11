@@ -96,7 +96,7 @@ const ChartCard = ({
         <div className={`${isListView ? 'flex' : 'px-20 pt-16 pb-12'}`}>
             <div className="icon-wrapper">
                 <LazyImage
-                    className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim`}
+                    className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim br-4`}
                     src={chart.icon}
                     onError={handleImageError}
                 />
