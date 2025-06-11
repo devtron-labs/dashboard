@@ -21,6 +21,7 @@ import {
     ComponentSizeType,
     handleAnalyticsEvent,
     Icon,
+    ImageWithFallback,
     noop,
     stopPropagation,
     useMainContext,
@@ -29,9 +30,8 @@ import {
 import { ReactComponent as ICCaretSmall } from '@Icons/ic-caret-left-small.svg'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
-import placeHolder from '../../assets/icons/ic-default-chart.svg'
+import { ReactComponent as Helm } from '../../assets/icons/ic-default-chart.svg'
 import { SERVER_MODE } from '../../config'
-import { LazyImage } from '../common'
 import { ChartSelectProps } from './charts.types'
 import { renderDeprecatedWarning } from './charts.util'
 
@@ -45,12 +45,6 @@ const ChartCard = ({
     isListView,
 }: ChartSelectProps) => {
     const { serverMode } = useMainContext()
-
-    const handleImageError = (e): void => {
-        const target = e.target as HTMLImageElement
-        target.onerror = null
-        target.src = placeHolder
-    }
 
     const addChartTab = (e): void => {
         stopPropagation(e)
@@ -95,13 +89,19 @@ const ChartCard = ({
             ariaLabel="Remove chart from selection"
         />
     )
+    const chartIconClass = 'dc__chart-grid-item__icon chart-icon-dim br-4 dc__no-shrink'
 
     const renderIcon = () => (
         <div className="icon-wrapper">
-            <LazyImage
-                className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim br-4`}
-                src={chart.icon}
-                onError={handleImageError}
+            <ImageWithFallback
+                imageProps={{
+                    height: 32,
+                    width: 32,
+                    src: chart.icon,
+                    alt: 'chart',
+                    className: chartIconClass,
+                }}
+                fallbackImage={<Helm className={chartIconClass} />}
             />
         </div>
     )
