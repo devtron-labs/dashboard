@@ -93,19 +93,17 @@ const ChartCard = ({
     )
 
     const renderIcon = () => (
-        <div className={`${isListView ? 'flex' : 'px-20 pt-16 pb-12'}`}>
-            <div className="icon-wrapper">
-                <LazyImage
-                    className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim br-4`}
-                    src={chart.icon}
-                    onError={handleImageError}
-                />
-            </div>
+        <div className="icon-wrapper">
+            <LazyImage
+                className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim br-4`}
+                src={chart.icon}
+                onError={handleImageError}
+            />
         </div>
     )
 
     const renderCardInfo = () => (
-        <div className={`flexbox-col flex-grow-1 dc__gap-8 pb-16  ${isListView ? 'pt-20' : 'px-20'}`}>
+        <div className="flexbox-col flex-grow-1 dc__gap-8">
             <div className="flexbox-col dc__gap-2">
                 <div className="flex left">
                     <InteractiveCellText
@@ -146,28 +144,26 @@ const ChartCard = ({
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${dataTestId}`}
         >
-            <div className={`${isListView ? 'dc__grid chart-list-item px-20 dc__gap-16' : 'h-164'}`}>
+            <div
+                className={`${isListView ? 'dc__grid chart-list-item dc__gap-16' : 'flexbox-col h-166 dc__gap-12'} px-20 pt-20 pb-16`}
+            >
                 {renderIcon()}
-                <div className={`${isListView ? 'dc__gap-16' : ''}`}>
-                    {serverMode === SERVER_MODE.FULL && addChart && subtractChart && (
-                        <div
-                            className={`devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''}`}
-                        >
-                            {selectedCount > 0 && (
-                                <>
-                                    {renderRemoveIcon()}
+                {serverMode === SERVER_MODE.FULL && addChart && subtractChart && (
+                    <div
+                        className={`devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''}`}
+                    >
+                        {selectedCount > 0 && (
+                            <>
+                                {renderRemoveIcon()}
 
-                                    <span className="devtron-stepper__item fs-13 icon-dim-20 px-4">
-                                        {selectedCount}
-                                    </span>
-                                </>
-                            )}
+                                <span className="devtron-stepper__item fs-13 icon-dim-20 px-4">{selectedCount}</span>
+                            </>
+                        )}
 
-                            {renderAddIcon()}
-                        </div>
-                    )}
-                    {renderCardInfo()}
-                </div>
+                        {renderAddIcon()}
+                    </div>
+                )}
+                {renderCardInfo()}
             </div>
             {renderFooter()}
         </div>

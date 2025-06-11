@@ -30,6 +30,7 @@
                 border-radius: 8px;
                 padding: 8px;
                 width: fit-content;
+                height: fit-content;
             }
 
             .chart-icon-dim {
@@ -116,7 +117,7 @@
         margin-right: auto;
 
         .chart-list-item{
-            grid-template-columns: 48px 1fr 84px;
+            grid-template-columns: 50px 1fr 84px;
         }
     }
 }
