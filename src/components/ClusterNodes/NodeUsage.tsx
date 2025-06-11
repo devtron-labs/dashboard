@@ -1,7 +1,7 @@
 import { Icon, IconsProps, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NodeUsageProps } from './types'
-import { getHasCurrentUsageBreachedThreshold, getIsResourceNamePod, getNodeResourceThreshold } from './utils'
+import { getHasUsageBreachedThreshold, getIsResourceNamePod, getNodeResourceThreshold } from './utils'
 
 export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, threshold }: NodeUsageProps) => {
     const currentUsageNumeric = parseInt(currentUsage, 10)
@@ -10,8 +10,12 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
     const isUsageIncreased = currentUsageNumeric > prevUsageNumeric
     const isUsageDecreased = currentUsageNumeric < prevUsageNumeric
 
-    const hasCurrentUsageBreachedThreshold = getHasCurrentUsageBreachedThreshold({
-        currentUsage: currentUsageNumeric,
+    const hasCurrentUsageBreachedThreshold = getHasUsageBreachedThreshold({
+        usage: currentUsageNumeric,
+        threshold,
+    })
+    const hasPreviousUsageBreachedThreshold = getHasUsageBreachedThreshold({
+        usage: prevUsageNumeric,
         threshold,
     })
 
@@ -37,7 +41,18 @@ export const NodeUsage = ({ name, currentUsage, prevUsage, compareWithPrevious, 
 
     return (
         <>
-            {compareWithPrevious && <div>{prevUsage || '-'}</div>}
+            {compareWithPrevious && (
+                <div className="flex left dc__gap-6">
+                    {prevUsage || '-'}
+                    {hasPreviousUsageBreachedThreshold && (
+                        <Icon
+                            name="ic-error"
+                            color={null}
+                            tooltipProps={{ content: 'Threshold breached', alwaysShowTippyOnHover: true }}
+                        />
+                    )}
+                </div>
+            )}
             {currentUsage ? (
                 <Tooltip
                     alwaysShowTippyOnHover

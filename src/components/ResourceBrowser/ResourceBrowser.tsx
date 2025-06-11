@@ -71,11 +71,13 @@ const ResourceBrowser: React.FC = () => {
 
                     return {
                         ...item,
-                        nodeErrors: resourcesErrors.map(
-                            (resourcesError, index) => ({ [`error-${index}`]: resourcesError }),
-                            {},
-                        ),
-                        status: resourcesErrors ? ClusterStatusType.UNHEALTHY : item.status,
+                        nodeErrors: resourcesErrors.length
+                            ? resourcesErrors.map(
+                                  (resourcesError, index) => ({ [`error-${index}`]: resourcesError }),
+                                  {},
+                              )
+                            : item.nodeErrors,
+                        status: resourcesErrors.length ? ClusterStatusType.UNHEALTHY : item.status,
                     }
                 }),
         [detailClusterList, clusterListMinData, podAndPVCResourcesStatus],

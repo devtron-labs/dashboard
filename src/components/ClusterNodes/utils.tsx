@@ -105,19 +105,19 @@ export const getNodeResourceThreshold = (threshold: ResourceDetail['threshold'],
     return `${NODE_RESOURCE_THRESHOLD_OPERATOR_MAP[threshold.operator || 'greaterThan']}${threshold.value}${appendPercentage ? '%' : ''}`
 }
 
-export const getHasCurrentUsageBreachedThreshold = ({
-    currentUsage,
+export const getHasUsageBreachedThreshold = ({
+    usage,
     threshold: overrideThreshold,
-}: Required<Pick<ResourceDetail, 'threshold'>> & { currentUsage: number }) => {
+}: Required<Pick<ResourceDetail, 'threshold'>> & { usage: number }) => {
     const threshold = overrideThreshold ?? NODE_RESOURCE_DEFAULT_THRESHOLD
 
     switch (threshold.operator) {
         case 'greaterThan':
-            return currentUsage > threshold.value
+            return usage > threshold.value
         case 'lessThan':
-            return currentUsage < threshold.value
+            return usage < threshold.value
         case 'equalTo':
-            return currentUsage !== threshold.value
+            return usage !== threshold.value
         default:
             return false
     }
