@@ -93,7 +93,7 @@ const ChartCard = ({
     )
 
     const renderIcon = () => (
-        <div className={`${isListView ? 'flex' : 'px-20 py-16 h-86'}`}>
+        <div className={`${isListView ? 'flex' : 'px-20 pt-16 h-86'}`}>
             <div className="icon-wrapper">
                 <LazyImage
                     className={`${isListView ? 'dc__list-icon' : ''} dc__chart-grid-item__icon chart-icon-dim`}
@@ -105,7 +105,7 @@ const ChartCard = ({
     )
 
     const renderCardInfo = () => (
-        <div className={`flexbox-col flex-grow-1 dc__gap-4 px-20 pb-16  ${isListView ? 'pt-20' : ''}`}>
+        <div className={`flexbox-col flex-grow-1 dc__gap-4 pb-16  ${isListView ? 'pt-20' : 'px-20'}`}>
             <div className="flex left">
                 <InteractiveCellText text={chart.name} rootClassName="fw-6 chart-grid-item__title" />
                 <div className="chart-name__arrow dc__no-shrink flex">
@@ -139,7 +139,7 @@ const ChartCard = ({
             onClick={onClick ? onClickChartSelect : noop}
             data-testid={`chart-card-${dataTestId}`}
         >
-            <div className={`${isListView ? 'dc__grid chart-list-item px-20' : 'h-164'}`}>
+            <div className={`${isListView ? 'dc__grid chart-list-item px-20 dc__gap-16' : 'h-164'}`}>
                 {renderIcon()}
                 <div className={`${isListView ? 'dc__gap-16' : ''}`}>
                     {serverMode === SERVER_MODE.FULL && addChart && subtractChart && (
