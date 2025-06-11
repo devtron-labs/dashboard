@@ -298,20 +298,26 @@ export const DeploymentAppRadioGroup = ({
                     </RadioGroupItem>
                 </ConditionalWrap>
             )}
-            <ConditionalWrap
-                condition={!isDisabled && allowedDeploymentTypes.indexOf(DeploymentAppTypes.FLUX) === -1}
-                wrap={(children) =>
-                    RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Flux')
-                }
-            >
-                <RadioGroupItem
-                    dataTestId="flux-deployment"
-                    value={DeploymentAppTypes.FLUX}
-                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.FLUX) === -1}
+            {window._env_.FEATURE_FLUX_DEPLOYMENTS_ENABLE && (
+                <ConditionalWrap
+                    condition={!isDisabled && allowedDeploymentTypes.indexOf(DeploymentAppTypes.FLUX) === -1}
+                    wrap={(children) =>
+                        RadioWithTippy(
+                            children,
+                            isFromCDPipeline,
+                            'Deployment to this environment is not allowed via Flux',
+                        )
+                    }
                 >
-                    Flux
-                </RadioGroupItem>
-            </ConditionalWrap>
+                    <RadioGroupItem
+                        dataTestId="flux-deployment"
+                        value={DeploymentAppTypes.FLUX}
+                        disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.FLUX) === -1}
+                    >
+                        Flux
+                    </RadioGroupItem>
+                </ConditionalWrap>
+            )}
         </RadioGroup>
 
         <GitOpsActionBlock
