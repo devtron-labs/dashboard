@@ -27,8 +27,6 @@ import {
     UserEmailProvider,
     customEnv,
     ThemeProvider,
-    ConfirmationModalProvider,
-    BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 import App from './App'
 
@@ -184,10 +182,7 @@ ReactDOM.render(
                 <BrowserRouter basename={window.__BASE_URL__}>
                     <UseRegisterShortcutProvider>
                         <UserEmailProvider>
-                            <ConfirmationModalProvider>
-                                <App />
-                                <BaseConfirmationModal />
-                            </ConfirmationModalProvider>
+                            <App />
                         </UserEmailProvider>
                     </UseRegisterShortcutProvider>
                     <ToastManagerContainer />

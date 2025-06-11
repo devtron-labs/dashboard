@@ -30,6 +30,7 @@ import {
     Button,
     ComponentSizeType,
     ButtonVariantType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -192,10 +193,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const handleDeployButtonClick = (): void => {
         handleActionButtonClick(false)
+        handleAnalyticsEvent({category: 'Chart Store', action: state.advanceVisited ? 'CS_BULK_DEPLOY_ADV_DEPLOY' : 'CS_BULK_DEPLOY_TO'})
     }
 
     const handleAdvancedButtonClick = (): void => {
         handleActionButtonClick(true)
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_ADV_OPTIONS'})
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -358,6 +361,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const onChangeShowSourcePopup = () => {
         setShowSourcePopoUp(true)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_SOURCE' })
     }
 
     const toggleChartListPopUp = (e: React.MouseEvent): void => {
@@ -772,7 +776,11 @@ export const EmptyChartGroup = ({
     toggleChartGroupModal,
     showChartGroupModal,
 }: EmptyCharts) => {
-    const { url } = useRouteMatch()
+    const handleCreateGroup = () => {
+        toggleChartGroupModal(!showChartGroupModal)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CREATE_CHART_GROUP' })
+    }
+    
     return (
         <div className="bg__primary flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
@@ -799,7 +807,7 @@ export const EmptyChartGroup = ({
                     <button
                         type="button"
                         className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bg__primary h-32"
-                        onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
+                        onClick={handleCreateGroup}
                         data-testid="chart-group-create-button"
                     >
                         Create group
@@ -833,6 +841,7 @@ export const ChartGroupListMin = ({
 
     const redirectToGroup = () => {
         history.push(`${match.url}/group`)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_ALL_CHART_GROUPS' })
     }
 
     return (
