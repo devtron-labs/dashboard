@@ -25,7 +25,7 @@
             }
 
             .icon-wrapper {
-                border: 1px solid var(--border-primary);
+                border: 1px solid var(--border-secondary-translucent);
                 background-color: var(--bg-secondary);
                 border-radius: 8px;
                 padding: 8px;
@@ -35,7 +35,7 @@
             .chart-icon-dim {
                 width: 32px;
                 height: 32px;
-                transition: transform 0.17s ease-in-out;
+                transition: transform 0.17s ease-out;
             }
         }
 
@@ -49,7 +49,7 @@
             text-decoration: none;
             box-shadow: var(--shadow-20);
             border: 1px solid var(--border-primary-translucent);
-            transition: transform 0.17s ease-in-out;
+            transition: transform 0.17s ease-out;
 
             .chart-grid-item__title {
                 color: var(--B500);

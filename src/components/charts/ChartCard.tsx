@@ -66,7 +66,7 @@ const ChartCard = ({
     }
 
     const renderAddIcon = () => (
-        <div className={`${selectedCount > 0 ? 'dc__visible' : 'dc__border br-6'} dc__visible-hover--child h-28`}>
+        <div className={`${selectedCount > 0 ? 'dc__visible' : 'dc__border br-6'} dc__visible-hover--child`}>
             <Button
                 icon={<Icon name="ic-add" size={null} color={null} />}
                 onClick={addChartTab}
