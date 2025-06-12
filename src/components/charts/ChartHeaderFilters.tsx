@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { CHECKBOX_VALUE, Checkbox, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { CHECKBOX_VALUE, Checkbox, SearchBar, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
-import { QueryParams } from './charts.util'
+import { QueryParams } from './constants'
 import { Accordian } from '../common/Accordian/Accordian'
 import { URLS } from '../../config'
 import { CHART_KEYS } from './constants'
@@ -37,6 +37,7 @@ const ChartHeaderFilter = ({
     setIsGrid,
     chartCategoryIds,
     setChartCategoryIds,
+    chartStoreRef,
 }: ChartHeaderFilterProps) => {
     const match = useRouteMatch()
     const history = useHistory()
@@ -168,17 +169,28 @@ const ChartHeaderFilter = ({
         }
     }
 
+    const getScrollToInitial = () => {
+        chartStoreRef.current?.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+
     const setGrid = (): void => {
         setIsGrid(true)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_VIEW_GRID' })
+        getScrollToInitial()
     }
 
     const setList = (): void => {
         setIsGrid(false)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_VIEW_LIST' })
+        getScrollToInitial()
     }
 
     const toggleDeprecated = (): void => {
         const value = (includeDeprecated + 1) % 2
         handleFilterChanges(value, CHART_KEYS.DEPRECATED)
+        if (value) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_SHOW_DEPRECATED' })
+        }
     }
 
     const handleSearchEnter = (searchKey: string): void => {

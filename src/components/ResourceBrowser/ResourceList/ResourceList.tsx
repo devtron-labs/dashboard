@@ -24,6 +24,7 @@ import {
     DynamicTabType,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    handleAnalyticsEvent,
     InitTabType,
     noop,
     useAsync,
@@ -295,6 +296,10 @@ const ResourceList = () => {
     }, [location.pathname, location.search, selectedCluster.label])
 
     const onClusterChange = (selected: ClusterOptionType) => {
+        handleAnalyticsEvent({
+            category: 'Resource Browser',
+            action: 'RB_CLUSTER_SWITCH_CLUSTER',
+        })
         if (selected.value === selectedCluster?.value) {
             return
         }

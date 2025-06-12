@@ -88,7 +88,6 @@ src/components/app/details/appDetails/utils.tsx
 src/components/app/details/cIDetails/CIDetails.tsx
 src/components/app/details/cIDetails/cIDetails.util.tsx
 src/components/app/details/cdDetails/CDDetails.tsx
-src/components/app/details/cdDetails/service.ts
 src/components/app/details/cicdHistory/History.components.tsx
 src/components/app/details/main.tsx
 src/components/app/details/metrics/BenchmarkModal.tsx

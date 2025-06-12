@@ -42,6 +42,7 @@ import {
     doesJSONConformToSchema07,
     InfoBlock,
     ButtonVariantType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -987,6 +988,7 @@ const ChartValuesView = ({
                     res = await updateAppReleaseWithoutLinking(payload)
                 }
             } else if (isDeployChartView) {
+                handleAnalyticsEvent({category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_DEPLOY'})
                 const payload = {
                     teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
@@ -1120,11 +1122,13 @@ const ChartValuesView = ({
         if (_chartId) {
             history.push(getChartValuesURL(_chartId))
         }
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_NEW_PRESET_VALUE'})
     }
 
     const handleTabSwitch = (e) => {
         if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
+                handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_MANIFEST' })
                 const validatedName = validateAppName(isCreateValueView ? valueName : appName)
                 if (isCreateValueView && !validatedName.isValid) {
                     dispatch({
@@ -1198,7 +1202,9 @@ const ChartValuesView = ({
         if (commonState.fetchingReadMe || disabled) {
             return
         }
-
+        if (!commonState.openReadMe) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_README' })
+        }
         dispatch({ type: ChartValuesViewActionTypes.openReadMe, payload: !commonState.openReadMe })
         if (commonState.openComparison) {
             dispatch({ type: ChartValuesViewActionTypes.openComparison, payload: false })
@@ -1233,7 +1239,9 @@ const ChartValuesView = ({
         if (disabled) {
             return
         }
-
+        if (!commonState.openComparison) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_COMPARE' })
+        }
         dispatch({ type: ChartValuesViewActionTypes.openComparison, payload: !commonState.openComparison })
         if (commonState.openReadMe) {
             dispatch({ type: ChartValuesViewActionTypes.openReadMe, payload: false })
@@ -1364,6 +1372,7 @@ const ChartValuesView = ({
     }
 
     const handleToggleSecurityScan = () => {
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_SCAN_TOGGLE' })
         dispatch({
             type: ChartValuesViewActionTypes.setIsManifestScanEnabled,
             payload: !commonState.isManifestScanEnabled,

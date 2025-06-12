@@ -12,18 +12,15 @@ export const SIDEBAR_CONFIG: SidebarConfigType = {
             </p>
         ),
     },
-    [CreateClusterTypeEnum.CREATE_EKS_CLUSTER]: {
-        title: 'Create EKS Cluster',
-        iconName: 'ic-cluster',
-        dataTestId: 'create-eks-cluster-tab',
+    [CreateClusterTypeEnum.CREATE_CLUSTER]: {
+        title: 'Create Kubernetes Cluster',
+        iconName: 'ic-new',
+        dataTestId: 'create-cluster-tab',
         body: (
-            <>
-                <p className="m-0">With Devtron, you can effortlessly create an Amazon EKS cluster.</p>
-                <p className="m-0">
-                    Amazon Elastic Kubernetes Service (Amazon EKS) is a fully managed Kubernetes service that enables
-                    you to run Kubernetes seamlessly in both AWS Cloud and on-premises data centers.
-                </p>
-            </>
+            <p className="m-0">
+                Use Devtron to easily create Kubernetes clusters on popular cloud providers. Simplify cluster
+                provisioning and management with a guided, user-friendly interface.
+            </p>
         ),
         isEnterprise: true,
     },

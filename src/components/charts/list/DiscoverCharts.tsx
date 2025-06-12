@@ -30,12 +30,13 @@ import {
     Button,
     ComponentSizeType,
     ButtonVariantType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import ChartSelect from '../util/ChartSelect'
+import ChartCard from '../ChartCard'
 import ChartGroupList from './ChartGroup'
 import ChartGroupCard from '../util/ChartGroupCard'
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
@@ -50,7 +51,7 @@ import { URLS, SERVER_MODE } from '../../../config'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import ChartHeaderFilter from '../ChartHeaderFilters'
-import { QueryParams } from '../charts.util'
+import { QueryParams } from '../constants'
 import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
 import SavedValuesList from '../SavedValues/SavedValuesList'
 import ChartValues from '../chartValues/ChartValues'
@@ -60,6 +61,7 @@ import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
+import ChartCardSkeletonRow from './ChartCardSkeleton'
 
 // TODO: move to service
 export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
@@ -130,6 +132,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
+    const chartStoreRef =useRef<HTMLDivElement>(null)
+
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
     isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
@@ -192,10 +196,15 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const handleDeployButtonClick = (): void => {
         handleActionButtonClick(false)
+        handleAnalyticsEvent({
+            category: 'Chart Store',
+            action: state.advanceVisited ? 'CS_BULK_DEPLOY_ADV_DEPLOY' : 'CS_BULK_DEPLOY_TO',
+        })
     }
 
     const handleAdvancedButtonClick = (): void => {
         handleActionButtonClick(true)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_BULK_DEPLOY_ADV_OPTIONS' })
     }
 
     const handleActionButtonClick = (_clickedOnAdvance: boolean): void => {
@@ -358,6 +367,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const onChangeShowSourcePopup = () => {
         setShowSourcePopoUp(true)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_SOURCE' })
     }
 
     const toggleChartListPopUp = (e: React.MouseEvent): void => {
@@ -432,8 +442,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         history.push(url)
     }
 
-    const randerChartStoreEmptyState = (): JSX.Element => {
-        return chartRepos?.length > 0 && noChartAvailable ? (
+    const renderChartStoreEmptyState = (): JSX.Element => {
+        return chartRepos?.length > 0 && noChartAvailable && searchApplied ? (
             <ChartEmptyState onClickViewChartButton={clearSearch} />
         ) : (
             <ChartEmptyState
@@ -469,6 +479,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                 setIsGrid={setIsGrid}
                                 chartCategoryIds={chartCategoryIds}
                                 setChartCategoryIds={setChartCategoryIds}
+                                chartStoreRef={chartStoreRef}
                             />
                         )}
                         {state.loading || chartListLoading ? (
@@ -491,11 +502,11 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                 discardValuesYamlChanges={discardValuesYamlChanges}
                                             />
                                         ) : (
-                                            randerChartStoreEmptyState()
+                                            renderChartStoreEmptyState()
                                         )}
                                     </div>
                                 ) : (
-                                    <div className="discover-charts__body-details bg__secondary">
+                                    <div className="discover-charts__body-details bg__secondary" ref={chartStoreRef}>
                                         {typeof state.configureChartIndex === 'number' ? (
                                             <AdvancedConfig
                                                 chart={state.charts[state.configureChartIndex]}
@@ -533,17 +544,13 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                             {chartList
                                                                 .slice(0, showDeployModal ? 12 : chartList.length)
                                                                 .map((chart, index) => (
-                                                                    <ChartSelect
+                                                                    <ChartCard
                                                                         key={chart.id}
                                                                         chart={chart}
                                                                         selectedCount={
                                                                             state.selectedInstances[chart.id]?.length
                                                                         }
-                                                                        showCheckBoxOnHoverOnly={
-                                                                            state.charts.length === 0
-                                                                        }
                                                                         addChart={addChart}
-                                                                        showDescription={!isGrid}
                                                                         subtractChart={subtractChart}
                                                                         onClick={(chartId) =>
                                                                             state.charts.length === 0
@@ -552,7 +559,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                                   )
                                                                                 : selectChart(chartId)
                                                                         }
-                                                                        datatestid={`single-${index}`}
+                                                                        dataTestId={`single-${index}`}
+                                                                        isListView={!isGrid}
                                                                     />
                                                                 ))}
                                                             {state.hasMoreCharts && (
@@ -561,14 +569,11 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                         </div>
 
                                                         {state.hasMoreCharts && (
-                                                            <Progressing
-                                                                size={25}
-                                                                styles={{ height: '0%', paddingBottom: '5px' }}
-                                                            />
+                                                            <ChartCardSkeletonRow isGridView={isGrid} />
                                                         )}
                                                     </>
                                                 ) : (
-                                                    randerChartStoreEmptyState()
+                                                    renderChartStoreEmptyState()
                                                 )}
                                             </div>
                                         )}
@@ -775,7 +780,11 @@ export const EmptyChartGroup = ({
     toggleChartGroupModal,
     showChartGroupModal,
 }: EmptyCharts) => {
-    const { url } = useRouteMatch()
+    const handleCreateGroup = () => {
+        toggleChartGroupModal(!showChartGroupModal)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CREATE_CHART_GROUP' })
+    }
+
     return (
         <div className="bg__primary flex left br-8 mt-20 ml-20 mr-20" style={{ gridColumn: '1 / span 4', ...styles }}>
             <img src={image || empty} style={{ width: '200px', margin: '20px 42px' }} />
@@ -802,7 +811,7 @@ export const EmptyChartGroup = ({
                     <button
                         type="button"
                         className="en-2 br-4 bw-1 mt-16 cursor flex fw-6 cn-7 pt-6 pr-10 pb-6 pl-10 bg__primary h-32"
-                        onClick={(e) => toggleChartGroupModal(!showChartGroupModal)}
+                        onClick={handleCreateGroup}
                         data-testid="chart-group-create-button"
                     >
                         Create group
@@ -836,11 +845,12 @@ export const ChartGroupListMin = ({
 
     const redirectToGroup = () => {
         history.push(`${match.url}/group`)
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_ALL_CHART_GROUPS' })
     }
 
     return (
         <div className="chart-group">
-            <div className="chart-group__header">
+            <div className="px-20 pt-20">
                 <div className="flex dc__content-space dc__gap-8">
                     <FeatureTitleWithInfo
                         title="Chart Groups"
