@@ -44,6 +44,19 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
             iframeKeyRef.current = `${docLink}-${getUniqueId()}`
             setSidePanelConfig((prev) => ({ ...prev, reinitialize: false }))
         }
+
+        let iframeLatestSrc = docLink
+
+        const interval = setInterval(() => {
+            if (iframeRef.current?.contentWindow?.location?.href) {
+                iframeLatestSrc = iframeRef.current.contentWindow.location.href
+            }
+        }, 100)
+
+        return () => {
+            clearInterval(interval)
+            setSidePanelConfig((prev) => ({ ...prev, reinitialize: false, docLink: iframeLatestSrc }))
+        }
     }, [reinitialize])
 
     return (
