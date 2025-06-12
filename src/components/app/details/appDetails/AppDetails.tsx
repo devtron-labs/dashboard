@@ -44,6 +44,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
@@ -207,6 +208,20 @@ const Details: React.FC<DetailsType> = ({
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     const { replace } = useHistory()
+    const { path, url } = useRouteMatch()
+
+    const { setAIAgentContext } = useMainContext()
+
+    useEffect(() => {
+        setAIAgentContext({
+            path,
+            context: {
+                ...params,
+                environmentName: appDetails?.environmentName ?? '',
+                appName: appDetails?.appName ?? '',
+            },
+        })
+    }, [appDetails?.environmentName, appDetails?.appName, url])
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
