@@ -12,7 +12,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SIDE_PANEL_ASIDE_DRAG_HANDLE, SIDE_PANEL_MAX_ASIDE_WIDTH, SIDE_PANEL_MIN_ASIDE_WIDTH } from './constants'
-import { SidePanelDocumentation } from './SidePanelDocumentation'
+import { SidePanelContent } from './SidePanelContent'
 import { SidePanelProps } from './types'
 
 import './SidePanel.scss'
@@ -25,7 +25,8 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
     const { appTheme } = useTheme()
     const { sidePanelConfig, setSidePanelConfig } = useMainContext()
 
-    const { open } = sidePanelConfig
+    const { state } = sidePanelConfig
+    const open = state !== 'closed'
 
     useEffect(() => {
         if (open) {
@@ -46,7 +47,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
     // HANDLERS
     const handleClose = () => {
         asideWidth.set(SIDE_PANEL_MIN_ASIDE_WIDTH)
-        setSidePanelConfig({ open: false, docLink: null, reinitialize: false })
+        setSidePanelConfig({ state: 'closed', docLink: null, reinitialize: false })
     }
 
     const handleDrag: DraggableEventHandler = (_, data) => {
@@ -67,7 +68,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: SIDE_PANEL_MIN_ASIDE_WIDTH, opacity: 0 }}
                     transition={{ duration: 0.2, ease: 'easeInOut' }}
-                    className="flexbox"
+                    className="flexbox h-100vh dc__overflow-hidden"
                 >
                     <Draggable
                         handle={`.${SIDE_PANEL_ASIDE_DRAG_HANDLE}`}
@@ -94,7 +95,11 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                             className={`w-100 h-100 dc__position-rel br-6 bg__primary flexbox-col dc__overflow-hidden ${appTheme === AppThemeType.dark ? 'border__primary-translucent' : ''}`}
                         >
                             {contentOverlay && <div className="dc__position-abs w-100 h-100 dc__zi-1" />}
-                            <SidePanelDocumentation onClose={handleClose} />
+                            <SidePanelContent
+                                onClose={handleClose}
+                                sidePanelConfig={sidePanelConfig}
+                                setSidePanelConfig={setSidePanelConfig}
+                            />
                         </div>
                     </div>
                 </motion.aside>

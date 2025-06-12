@@ -88,7 +88,6 @@ src/components/app/details/appDetails/utils.tsx
 src/components/app/details/cIDetails/CIDetails.tsx
 src/components/app/details/cIDetails/cIDetails.util.tsx
 src/components/app/details/cdDetails/CDDetails.tsx
-src/components/app/details/cdDetails/service.ts
 src/components/app/details/cicdHistory/History.components.tsx
 src/components/app/details/main.tsx
 src/components/app/details/metrics/BenchmarkModal.tsx
@@ -127,7 +126,6 @@ src/components/app/list/appList.modal.ts
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/service.ts
-src/components/app/types.ts
 src/components/bulkEdits/BulkEdits.tsx
 src/components/bulkEdits/bulkedit.utils.tsx
 src/components/cdPipeline/BuildCD.tsx
@@ -355,7 +353,6 @@ src/components/v2/devtronStackManager/DevtronStackManager.component.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.service.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.tsx
 src/components/v2/devtronStackManager/DevtronStackManager.utils.ts
-src/components/v2/devtronStackManager/SuccessModalComponent.tsx
 src/components/v2/headers/ChartHeader.component.tsx
 src/components/v2/headers/EAHeader.component.tsx
 src/components/v2/index.tsx
@@ -373,7 +370,6 @@ src/components/workflowEditor/CreateWorkflow.tsx
 src/components/workflowEditor/DeprecatedWarningModal.tsx
 src/components/workflowEditor/EmptyWorkflow.tsx
 src/components/workflowEditor/NoGitOpsConfiguredWarning.tsx
-src/components/workflowEditor/NoGitOpsRepoConfiguredWarning.tsx
 src/components/workflowEditor/PipelineSelect.tsx
 src/components/workflowEditor/Workflow.tsx
 src/components/workflowEditor/nodes/CDNode.tsx

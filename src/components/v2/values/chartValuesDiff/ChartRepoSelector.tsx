@@ -23,11 +23,10 @@ import { getChartsByKeyword } from '../../../charts/charts.service'
 import { ChartRepoDetailsType, ChartRepoOptions, ChartRepoSelectorType } from './ChartValuesView.type'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { ReactComponent as Refetch } from '../../../../assets/icons/ic-restore.svg'
-import { ReactComponent as Info } from '../../../../assets/icons/ic-info-filled-purple.svg'
 import { URLS } from '../../../../config'
 import { getCommonSelectStyle } from '../../common/ReactSelect.utils'
 import { CHART_DEPCRECATED_TEXTS, CONNECT_CHART_REPO_TEXTS } from './ChartValuesView.constants'
-import { getNoMatchingResultText} from '@devtron-labs/devtron-fe-common-lib'
+import { getNoMatchingResultText, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ChartRepoSelector = ({
     isExternal,
@@ -127,18 +126,19 @@ export const ChartRepoSelector = ({
         return (
             <components.MenuList {...props}>
                 {props.children}
-                <div className="flex dc__react-select__bottom bg__primary">
-                    <div className="sticky-information__bottom">
-                        <div className="sticky-information__icon mt-2">
-                            <Info className="icon-dim-16" />
-                        </div>
-                        <div className="sticky-information__note fs-13">
-                            {CONNECT_CHART_REPO_TEXTS.InfoText}&nbsp;
-                            <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank" className="fw-6">
-                                {CONNECT_CHART_REPO_TEXTS.LinkText}
-                            </NavLink>
-                        </div>
-                    </div>
+                <div className="m-8">
+                    <InfoBlock
+                        description={
+                            <div>
+                                {CONNECT_CHART_REPO_TEXTS.InfoText}
+                                <NavLink to={URLS.GLOBAL_CONFIG_CHART} target="_blank" className="fw-6">
+                                    {CONNECT_CHART_REPO_TEXTS.LinkText}
+                                </NavLink>
+                            </div>
+                        }
+                        layout="column"
+                        variant="help"
+                    />
                 </div>
             </components.MenuList>
         )

@@ -42,7 +42,6 @@ module.exports = {
         'airbnb',
         'airbnb/hooks',
         'prettier',
-        'plugin:storybook/recommended',
     ],
     rules: {
         'prettier/prettier': ['error'],

@@ -28,8 +28,9 @@ const CreateClusterForm = importComponentFromFELibrary(
     'CreateClusterForm',
     () => (
         <EnterpriseTrialDialog
-            featureTitle="EKS Cluster"
-            featureDescription="With Devtron, you can effortlessly create an Amazon EKS cluster."
+            featureTitle="Create Kubernetes Cluster"
+            featureDescription="Use Devtron to easily create Kubernetes clusters on popular cloud providers. Simplify cluster
+                provisioning and management with a guided, user-friendly interface."
         />
     ),
     'function',
@@ -75,7 +76,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         category={null}
                     />
                 )
-            case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
+            case CreateClusterTypeEnum.CREATE_CLUSTER:
                 return (
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}

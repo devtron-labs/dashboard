@@ -29,6 +29,7 @@ import {
     ComponentSizeType,
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
+    DTSwitch,
     GenericFilterEmptyState,
     Icon,
     InfoBlock,
@@ -42,7 +43,6 @@ import {
     Textarea,
     ToastManager,
     ToastVariantType,
-    Toggle,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -877,9 +877,12 @@ const ClusterForm = ({
                     <div className={getGrafanaModuleSectionClassName()}>
                         <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
-                            <div className="w-32 h-20">
-                                <Toggle selected={prometheusToggleEnabled} onSelect={setPrometheusToggle} />
-                            </div>
+                            <DTSwitch
+                                name="toggle-configure-prometheus"
+                                ariaLabel="Toggle configure prometheus"
+                                isChecked={prometheusToggleEnabled}
+                                onChange={setPrometheusToggle}
+                            />
                         </div>
                         <span className="cn-6 fs-12">
                             Configure prometheus to see metrics like CPU, RAM, Throughput etc. for applications running
