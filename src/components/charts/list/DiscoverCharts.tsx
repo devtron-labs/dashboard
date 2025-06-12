@@ -526,7 +526,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                     !searchApplied &&
                                                     !selectedChartRepo.length &&
                                                     !chartCategoryIds.length &&
-                                                    !!state.charts.length && (
+                                                    !!chartList.length && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
                                                             showChartGroupModal={showChartGroupModal}
