@@ -131,7 +131,7 @@ const ChartCard = ({
                 {chart.deprecated && renderDeprecatedWarning()}
             </div>
 
-            <span className={`fw-4 fs-13 lh-20 ${getDescriptionTruncate()}`}>
+            <span className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate()}`}>
                 {chart.description || 'No description'}
             </span>
         </div>
@@ -140,14 +140,18 @@ const ChartCard = ({
     const renderFooter = () => (
         <div className="flex left dc__content-space dc__border-top-n1 px-20 py-16 dc__gap-6">
             <div className="flex dc__gap-6">
-                <Icon name="ic-folder-color" size={16} color={null} />
+                <Icon name="ic-folder-color" size={18} color={null} />
                 <InteractiveCellText
                     text={chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id}
-                    rootClassName="cn-7"
+                    rootClassName="cn-7 lh-1-5"
                     fontSize={12}
                 />
             </div>
-            <InteractiveCellText text={`v${chart.version}`} rootClassName="cn-7 lh-18" fontSize={12} />
+            <InteractiveCellText
+                text={`v${chart.version}`}
+                rootClassName={`cn-7 lh-1-5 ${isListView ? 'dc__mxw-250' : 'dc__mxw-120'}`}
+                fontSize={12}
+            />
         </div>
     )
     return (
