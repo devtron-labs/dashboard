@@ -132,7 +132,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
-    const chartStoreRef =useRef<HTMLDivElement>(null)
+    const chartStoreRef = useRef<HTMLDivElement>(null)
 
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
@@ -525,7 +525,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                 {serverMode == SERVER_MODE.FULL &&
                                                     !searchApplied &&
                                                     !selectedChartRepo.length &&
-                                                    !chartCategoryIds.length && (
+                                                    !chartCategoryIds.length &&
+                                                    !!state.charts.length && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
                                                             showChartGroupModal={showChartGroupModal}
@@ -564,13 +565,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                                     />
                                                                 ))}
                                                             {state.hasMoreCharts && (
+                                                                <ChartCardSkeletonRow isGridView={isGrid} />
+                                                            )}
+                                                            {state.hasMoreCharts && (
                                                                 <DetectBottom callback={reloadNextAfterBottom} />
                                                             )}
                                                         </div>
-
-                                                        {state.hasMoreCharts && (
-                                                            <ChartCardSkeletonRow isGridView={isGrid} />
-                                                        )}
                                                     </>
                                                 ) : (
                                                     renderChartStoreEmptyState()

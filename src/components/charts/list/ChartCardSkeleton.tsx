@@ -1,9 +1,7 @@
 import { ChartSkeletonRowType } from './types'
 
 export const ChartCardSkeleton = ({ isGridView }: ChartSkeletonRowType) => (
-    <div
-        className={`dc__gap-16 w-100 chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__primary cursor dc__position-rel br-8 `}
-    >
+    <div className="dc__gap-16 w-100 chart-grid-item dc__visible-hover dc__visible-hover--parent bg__primary border__secondary-translucent cursor dc__position-rel br-8">
         <div className={`${isGridView ? 'flexbox-col dc__gap-12' : 'flexbox dc__gap-16'} px-20 pt-20 pb-16`}>
             <div className="p-4 dc__no-shrink icon-dim-48 shimmer-loading h-48" />
 
@@ -31,14 +29,14 @@ export const ChartCardSkeleton = ({ isGridView }: ChartSkeletonRowType) => (
 )
 
 const ChartCardSkeletonRow = ({ isGridView }: ChartSkeletonRowType) => (
-    <div className={isGridView ? 'chart-grid' : 'chart-grid list-view'}>
-        {Array(isGridView ? 4 : 2)
+    <>
+        {Array(2)
             .fill(0)
             .map((_, index) => (
                 // eslint-disable-next-line react/no-array-index-key
                 <ChartCardSkeleton key={index} isGridView={isGridView} />
             ))}
-    </div>
+    </>
 )
 
 export default ChartCardSkeletonRow

@@ -16,19 +16,25 @@
 
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
+
 import { copyToClipboard, DocLink, noop } from '@devtron-labs/devtron-fe-common-lib'
-import 'tippy.js/themes/light.css'
-import { ReactComponent as Help } from '../../assets/icons/ic-help.svg'
-import { ReactComponent as ClipboardIcon } from '../../assets/icons/ic-copy.svg'
+
+import { ReactComponent as ClipboardIcon } from '@Icons/ic-copy.svg'
+import { ReactComponent as Help } from '@Icons/ic-help.svg'
+
 import { ClusterStepModal } from './cluster.type'
+
+import 'tippy.js/themes/light.css'
 
 const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     const [copied, setCopied] = useState(false)
     const copyClipboard = (e): void => {
         e.stopPropagation()
-        copyToClipboard(command).then(() => {
-            setCopied(true)
-        }).catch(noop)
+        copyToClipboard(command)
+            .then(() => {
+                setCopied(true)
+            })
+            .catch(noop)
     }
     const infoItems = [
         {
@@ -42,10 +48,7 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
             info: 'Run below command on terminal to get server URI & bearer token',
             additionalInfo: (
                 <div className="dc__position-rel cluster-modal-container dc__align-left bcn-1 lh-20 mt-2 br-4">
-                    <div
-                        className="fs-13 fw-4 h-100 dc__overflow-auto mono pl-10 pt-10 pb-10 pr-36"
-                        id="command-code"
-                    >
+                    <div className="fs-13 fw-4 h-100 dc__overflow-auto mono pl-10 pt-10 pb-10 pr-36" id="command-code">
                         {command}
                     </div>
                     <Tippy
@@ -92,24 +95,24 @@ const ClusterInfoSteps = ({ command, clusterName }: ClusterStepModal) => {
     )
 }
 
-export default function ClusterInfoStepsModal({ subTitle, command, clusterName }: ClusterStepModal) {
-    return (
-        <div className="fs-13 fw-4 br-4 en-2 bg__primary cluster-modal-shadow">
-            <h2 className="flex left fs-14 fw-6 p-12 m-0">
-                <Help className="icon-dim-20 fcv-5 mr-12" />
-                Get Server URL & Bearer token
-            </h2>
-            {subTitle && <p className="bcn-1 pt-8 pb-8 pl-12 pr-12 m-0">{subTitle}</p>}
-            <ClusterInfoSteps subTitle={subTitle} command={command} clusterName={clusterName} />
-            <div className="p-12 flexbox dc__align-start">
-                <DocLink
-                    docLinkKey="GLOBAL_CONFIG_CLUSTER"
-                    text="View documentation"
-                    dataTestId="cluster-info-step-view-documentation"
-                    showExternalIcon
-                    openInNewTab
-                />
-            </div>
+const ClusterInfoStepsModal = ({ subTitle, command, clusterName }: ClusterStepModal) => (
+    <div className="fs-13 fw-4 br-4 en-2 bg__primary cluster-modal-shadow">
+        <h2 className="flex left fs-14 fw-6 p-12 m-0">
+            <Help className="icon-dim-20 fcv-5 mr-12" />
+            Get Server URL & Bearer token
+        </h2>
+        {subTitle && <p className="bcn-1 pt-8 pb-8 pl-12 pr-12 m-0">{subTitle}</p>}
+        <ClusterInfoSteps subTitle={subTitle} command={command} clusterName={clusterName} />
+        <div className="p-12 flexbox dc__align-start">
+            <DocLink
+                docLinkKey="GLOBAL_CONFIG_CLUSTER"
+                text="View documentation"
+                dataTestId="cluster-info-step-view-documentation"
+                showExternalIcon
+                openInNewTab
+            />
         </div>
-    )
-}
+    </div>
+)
+
+export default ClusterInfoStepsModal
