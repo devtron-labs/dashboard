@@ -15,10 +15,12 @@
  */
 
 import React, { RefObject } from 'react'
+import { GroupBase } from 'react-select'
 
 import {
     ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
+    GVKOptionValueType,
     GVKType,
     InitTabType,
     K8SObjectBaseType,
@@ -27,6 +29,8 @@ import {
     OptionType,
     ResourceDetail,
     SelectedResourceType,
+    SelectPickerOptionType,
+    ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
@@ -114,9 +118,16 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
      * @default undefined
      */
     searchPlaceholder?: string
+    showAbsoluteValuesInResourceRecommender?: boolean
+    setShowAbsoluteValuesInResourceRecommender?: React.Dispatch<React.SetStateAction<boolean>>
+    gvkOptions?: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
+    areGVKOptionsLoading?: boolean
+    reloadGVKOptions?: () => void
+    gvkOptionsError?: ServerErrors
+    isResourceListLoading?: boolean
 }
 
-export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
+export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'isLoading'> {
     addTab: UseTabsReturnType['addTab']
     handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
@@ -238,6 +249,7 @@ export interface RBSidebarKeysType {
     overviewGVK: GVKType
     monitoringGVK: GVKType
     upgradeClusterGVK: GVKType
+    resourceRecommenderGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {
@@ -256,6 +268,10 @@ export interface GetTabsBasedOnRoleParamsType {
      * @default false
      */
     isMonitoringDashBoardSelected?: boolean
+    /**
+     * @default false
+     */
+    isResourceRecommenderSelected?: boolean
 }
 
 export interface NodeRowDetail {

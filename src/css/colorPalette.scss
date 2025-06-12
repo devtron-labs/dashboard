@@ -225,6 +225,7 @@ $black: 0, 0, 0;
 }
 
 :root {
+    --white-10: rgba(#{$white}, 0.1);
     --white-20: rgba(#{$white}, 0.2);
     --white-40: rgba(#{$white}, 0.4);
     --white-60: rgba(#{$white}, 0.6);

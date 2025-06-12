@@ -28,17 +28,25 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     ClipboardButton,
+    ComponentSizeType,
     ConditionalWrap,
+    ErrorScreenManager,
     GenericFilterEmptyState,
     getAIAnalyticsEvents,
     GVKType,
     highlightSearchText,
+    Icon,
+    IconsProps,
+    isNullOrUndefined,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     Nodes,
     noop,
     Pagination,
     Progressing,
+    RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP,
+    RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP,
+    ResourceRecommenderHeaderWithRecommendation,
     SelectAllDialogStatus,
     SortableTableHeaderCell,
     Tooltip,
@@ -84,12 +92,22 @@ import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
-import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap, getShowAIButton } from './utils'
+import {
+    getAppliedColumnsFromLocalStorage,
+    getFirstResourceFromKindResourceMap,
+    getResourceRecommendationLabel,
+    getShowAIButton,
+} from './utils'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
 const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
+const ApplyResourceRecommendationModal = importComponentFromFELibrary(
+    'ApplyResourceRecommendationModal',
+    null,
+    'function',
+)
 
 const BaseResourceListContent = ({
     isLoading,
@@ -117,6 +135,12 @@ const BaseResourceListContent = ({
     shouldOverrideSelectedResourceKind = false,
     lowercaseKindToResourceGroupMap,
     handleResourceClick: onResourceClick,
+    showAbsoluteValuesInResourceRecommender,
+    setShowAbsoluteValuesInResourceRecommender,
+    gvkOptions,
+    areGVKOptionsLoading,
+    reloadGVKOptions,
+    gvkOptionsError,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -129,6 +153,8 @@ const BaseResourceListContent = ({
 
     // NOTE: this is only being used for node listing currently
     const [visibleColumns, setVisibleColumns] = useState(getAppliedColumnsFromLocalStorage())
+    const [applyResourceRecommendationConfig, setApplyResourceRecommendationConfig] =
+        useState<(typeof resourceList)['data'][number]>(null)
 
     const searchWorkerRef = useRef(null)
     const resourceListRef = useRef<HTMLDivElement>(null)
@@ -141,6 +167,7 @@ const BaseResourceListContent = ({
     const { searchParams } = useSearchString()
 
     const isNodeListing = selectedResource?.gvk.Kind.toLowerCase() === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()
+    const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
 
     const {
         selectedIdentifiers: bulkSelectionState,
@@ -166,11 +193,19 @@ const BaseResourceListContent = ({
         )
     }, [resourceList, visibleColumns, isNodeListing])
 
+    const getColumnWidth = (columnName: string, index: number) => {
+        if (isResourceRecommender && RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP[columnName]) {
+            return RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP[columnName]
+        }
+
+        return index === 0 ? 350 : 180
+    }
+
     const { gridTemplateColumns, handleResize } = useResizableTableConfig({
         headersConfig: headers.map((columnName, index) => ({
             id: columnName,
             minWidth: index === 0 ? 120 : null,
-            width: index === 0 ? 350 : 180,
+            width: getColumnWidth(columnName, index),
         })),
     })
 
@@ -415,30 +450,276 @@ const BaseResourceListContent = ({
         setShowCreateEnvironmentDrawer(false)
     }
 
-    const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
-        const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
-        // Redirection and actions are not possible for Events since the required data for the same is not available
-        const shouldShowRedirectionAndActions = lowercaseKind !== Nodes.Event.toLowerCase()
+    // Move separately
+    const getSeverityChipIconAndClass = (
+        delta: number,
+        recommendedValue: string,
+        currentValue: string,
+        isTooltipView = false,
+    ): { class: string; iconProps: IconsProps } => {
+        const isRecommendedValueNull = !recommendedValue || recommendedValue === 'none'
+        const isCurrentValueNull = !currentValue || currentValue === 'none'
+
+        if (delta === 0 || (isCurrentValueNull && isRecommendedValueNull)) {
+            return {
+                class: isTooltipView ? 'cn-3' : 'severity-chip--unknown',
+                iconProps: {
+                    color: isTooltipView ? 'N300' : 'N700',
+                    name: 'ic-minus',
+                },
+            }
+        }
+
+        if (delta > 0 || (!isRecommendedValueNull && isCurrentValueNull)) {
+            return {
+                class: isTooltipView ? 'cr-5' : 'severity-chip--critical',
+                iconProps: {
+                    color: isTooltipView ? 'R500' : 'R700',
+                    name: 'ic-arrow-right',
+                    rotateBy: 270,
+                },
+            }
+        }
+
+        return {
+            class: isTooltipView ? 'cg-5' : 'severity-chip--passed',
+            iconProps: {
+                color: isTooltipView ? 'G500' : 'G700',
+                name: 'ic-arrow-right',
+                rotateBy: 90,
+            },
+        }
+    }
+
+    const getOpenShowSingleApplyRecommendation = (resourceData: K8sResourceDetailDataType) => () => {
+        setApplyResourceRecommendationConfig(resourceData)
+    }
+
+    const renderColumnValue = (resourceData: K8sResourceDetailDataType, columnName: string, showAIButton: boolean) => {
+        if (isResourceRecommender && resourceData.additionalMetadata?.[columnName]) {
+            const { delta, recommended, current } =
+                resourceData.additionalMetadata[columnName as ResourceRecommenderHeaderWithRecommendation]
+            const { class: severityChipClass, iconProps } = getSeverityChipIconAndClass(
+                delta,
+                recommended?.value,
+                current?.value,
+            )
+
+            return (
+                <div key={`${resourceData.id}-${columnName}`} className="flexbox-col dc__gap-4 py-12">
+                    <Tooltip
+                        alwaysShowTippyOnHover
+                        className="no-content-padding"
+                        content={
+                            <div className="flexbox-col">
+                                <div className="flexbox border__white-10--bottom px-8">
+                                    <h6 className="m-0 fs-12 fw-6 lh-18 dc__word-break p-8">
+                                        {RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP[columnName] || columnName}
+                                    </h6>
+                                </div>
+
+                                <div className="flexbox-col dc__gap-4 px-16 py-8">
+                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                        <span className="fs-12 fw-4 lh-18">Current</span>
+                                        <span className="fs-12 fw-6 lh-18">
+                                            {getResourceRecommendationLabel(current?.value)}
+                                        </span>
+                                    </div>
+
+                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                        <span className="fs-12 fw-4 lh-18">Recommended</span>
+                                        <span className="fs-12 fw-6 lh-18">
+                                            {getResourceRecommendationLabel(recommended?.value)}
+                                        </span>
+                                    </div>
+
+                                    {isNullOrUndefined(recommended?.value) ? (
+                                        <span className="fs-11 fw-4 lh-1-5">
+                                            No recommendation available due to insufficient data
+                                        </span>
+                                    ) : (
+                                        <div className="flexbox dc__gap-8 dc__content-space w-100">
+                                            <span className="fs-12 fw-4 lh-18">Change</span>
+                                            <div className="flexbox dc__gap-2 dc__align-items-center">
+                                                <Icon
+                                                    {...getSeverityChipIconAndClass(
+                                                        delta,
+                                                        recommended?.value,
+                                                        current?.value,
+                                                        true,
+                                                    ).iconProps}
+                                                    size={12}
+                                                />
+
+                                                <span
+                                                    className={`fs-12 fw-6 lh-18 ${
+                                                        getSeverityChipIconAndClass(
+                                                            delta,
+                                                            recommended?.value,
+                                                            current?.value,
+                                                            true,
+                                                        ).class
+                                                    }`}
+                                                >
+                                                    {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        }
+                    >
+                        {isNullOrUndefined(recommended?.value) ? (
+                            <span>No Recommendation</span>
+                        ) : (
+                            <span
+                                className={`severity-chip ${severityChipClass} h-20 dc__no-border-imp dc_width-max-content dc__mxw-120`}
+                            >
+                                {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
+                                <Icon {...iconProps} size={14} />
+                            </span>
+                        )}
+                    </Tooltip>
+
+                    {showAbsoluteValuesInResourceRecommender && (
+                        <div className="flexbox dc__align-items-center dc__gap-4 dc__word-break">
+                            <span className="cn-7 fs-12 fw-5 lh-1-5">
+                                {getResourceRecommendationLabel(current?.value)}
+                            </span>
+
+                            <Icon name="ic-arrow-right" color="N700" size={12} />
+
+                            <span className="cn-7 fs-12 fw-5 lh-1-5">
+                                {getResourceRecommendationLabel(recommended?.value)}
+                            </span>
+                        </div>
+                    )}
+                </div>
+            )
+        }
+
         const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
         const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
 
         return (
             <div
+                key={`${resourceData.id}-${columnName}`}
+                className={`flexbox py-12 ${
+                    columnName === 'status'
+                        ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
+                        : ''
+                } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
+            >
+                <ConditionalWrap
+                    condition={columnName === 'node'}
+                    wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
+                >
+                    {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
+                        <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
+                    )}
+                    <Tooltip
+                        content={renderResourceValue(
+                            resourceData[
+                                isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
+                            ]?.toString(),
+                        )}
+                    >
+                        <span
+                            className={
+                                columnName === 'status' && isNodeUnschedulable
+                                    ? 'dc__no-shrink'
+                                    : 'dc__truncate dc__ellipsis-right'
+                            }
+                            data-testid={`${columnName}-count`}
+                            // eslint-disable-next-line react/no-danger
+                            dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                    highlightSearchText({
+                                        searchText,
+                                        text: renderResourceValue(
+                                            resourceData[
+                                                isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
+                                            ]?.toString(),
+                                        ),
+                                        highlightClasses: 'p-0 fw-6 bcy-2',
+                                    }),
+                                ),
+                            }}
+                        />
+                    </Tooltip>
+                    {selectedResource?.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase() &&
+                        columnName === 'environment' &&
+                        !resourceData.environment && (
+                            <Button
+                                text="Add environment"
+                                dataTestId="add-environment"
+                                variant={ButtonVariantType.text}
+                                onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                            />
+                        )}
+                    {columnName === 'status' && isNodeUnschedulable && (
+                        <>
+                            <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
+                            <Tooltip content="Scheduling disabled">
+                                <span className="cr-5 dc__truncate">SchedulingDisabled</span>
+                            </Tooltip>
+                        </>
+                    )}
+                    <span>
+                        {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
+                            <PodRestartIcon
+                                clusterId={clusterId}
+                                name={resourceData.name}
+                                namespace={resourceData.namespace}
+                            />
+                        )}
+                    </span>
+                </ConditionalWrap>
+                {showAIButton && (
+                    <div className="ml-4">
+                        <ExplainWithAIButton
+                            isIconButton
+                            intelligenceConfig={{
+                                clusterId,
+                                metadata: {
+                                    object: `${selectedResource?.gvk?.Kind}/${resourceData.name}`,
+                                    namespace: resourceData.namespace,
+                                    status: resourceData.status ?? '',
+                                },
+                                prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
+                                analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
+                            }}
+                        />
+                    </div>
+                )}
+            </div>
+        )
+    }
+
+    const renderResourceRow = (resourceData: K8sResourceDetailDataType): JSX.Element => {
+        const lowercaseKind = (resourceData.kind as string)?.toLowerCase()
+        const shouldShowActionMenu = lowercaseKind !== Nodes.Event.toLowerCase() && !isResourceRecommender
+        const shouldAllowNameNavigation = lowercaseKind !== Nodes.Event.toLowerCase()
+
+        return (
+            <div
                 // Added id as the name is not always unique
                 key={`${resourceData.id}-${bulkSelectionState[resourceData.id as string]}-${isBulkSelectionApplied}`}
-                className="scrollable-resource-list__row fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class h-44 dc__gap-16 dc__visible-hover dc__hover-n50"
+                className="scrollable-resource-list__row dc__opacity-hover dc__opacity-hover--parent fw-4 cn-9 fs-13 dc__border-bottom-n1 hover-class dc__gap-16 dc__visible-hover dc__hover-n50"
                 style={{ gridTemplateColumns }}
             >
                 {headers.map((columnName) => {
                     const aiButtonConfig = AI_BUTTON_CONFIG_MAP[gvkString]
                     const showAIButton =
                         !!ExplainWithAIButton &&
+                        !isResourceRecommender &&
                         getShowAIButton(aiButtonConfig, columnName, resourceData[columnName] as string)
 
                     return columnName === 'name' ? (
                         <div
                             key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent ${shouldShowRedirectionAndActions ? '' : 'pr-8'}`}
+                            className={`flexbox dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-12 ${shouldAllowNameNavigation && !isResourceRecommender ? '' : 'pr-8'}`}
                             data-testid="created-resource-name"
                         >
                             {!hideBulkSelection && (
@@ -447,42 +728,58 @@ const BaseResourceListContent = ({
                                         !!bulkSelectionState[resourceData.id as string] || isBulkSelectionApplied
                                     }
                                     onChange={getHandleCheckedForId(resourceData)}
-                                    rootClassName="mb-0"
+                                    rootClassName="mb-0 dc__no-shrink dc__align-start"
                                     value={CHECKBOX_VALUE.CHECKED}
                                 />
                             )}
-                            <div className="flex left dc__gap-4">
-                                <Tooltip content={resourceData.name}>
-                                    <button
-                                        type="button"
-                                        className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldShowRedirectionAndActions ? 'cursor-default' : ''}`}
-                                        data-name={resourceData.name}
-                                        data-namespace={resourceData.namespace}
-                                        data-kind={resourceData.kind}
-                                        onClick={shouldShowRedirectionAndActions ? handleResourceClick : null}
-                                        aria-label={`Select ${resourceData.name}`}
-                                    >
-                                        <span
-                                            className={shouldShowRedirectionAndActions ? 'dc__link cursor' : ''}
-                                            // eslint-disable-next-line react/no-danger
-                                            dangerouslySetInnerHTML={{
-                                                __html: DOMPurify.sanitize(
-                                                    highlightSearchText({
-                                                        searchText,
-                                                        text: String(resourceData.name),
-                                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                                    }),
-                                                ),
-                                            }}
-                                        />
-                                    </button>
-                                </Tooltip>
-                                <ClipboardButton
-                                    content={String(resourceData.name)}
-                                    rootClassName="p-4 dc__visible-hover--child"
-                                />
+                            <div className="flexbox dc__align-start dc__content-space dc__gap-8 flex-grow-1">
+                                <div className="flexbox dc__align-start dc__gap-4 flex-grow-1">
+                                    <Tooltip content={resourceData.name}>
+                                        <button
+                                            type="button"
+                                            className={`dc__unset-button-styles dc__align-left dc__truncate ${!shouldAllowNameNavigation ? 'cursor-default' : ''}`}
+                                            data-name={resourceData.name}
+                                            data-namespace={resourceData.namespace}
+                                            data-kind={resourceData.kind}
+                                            data-api-version={isResourceRecommender ? resourceData.apiVersion : null}
+                                            onClick={shouldAllowNameNavigation ? handleResourceClick : null}
+                                            aria-label={`Select ${resourceData.name}`}
+                                        >
+                                            <span
+                                                className={shouldAllowNameNavigation ? 'dc__link cursor' : ''}
+                                                // eslint-disable-next-line react/no-danger
+                                                dangerouslySetInnerHTML={{
+                                                    __html: DOMPurify.sanitize(
+                                                        highlightSearchText({
+                                                            searchText,
+                                                            text: String(resourceData.name),
+                                                            highlightClasses: 'p-0 fw-6 bcy-2',
+                                                        }),
+                                                    ),
+                                                }}
+                                            />
+                                        </button>
+                                    </Tooltip>
+                                    <ClipboardButton
+                                        content={String(resourceData.name)}
+                                        rootClassName="mt-4 dc__visible-hover--child"
+                                    />
+                                </div>
+
+                                {/* Maybe move to separate */}
+                                {isResourceRecommender && (
+                                    <Button
+                                        dataTestId={`apply-recommendation-${resourceData.id as string}`}
+                                        text="Apply"
+                                        endIcon={<Icon name="ic-caret-right" color={null} />}
+                                        onClick={getOpenShowSingleApplyRecommendation(resourceData)}
+                                        size={ComponentSizeType.medium}
+                                        variant={ButtonVariantType.text}
+                                        isOpacityHoverChild
+                                    />
+                                )}
                             </div>
-                            {shouldShowRedirectionAndActions &&
+                            {shouldShowActionMenu &&
                                 (!isNodeListing ? (
                                     <ResourceBrowserActionMenu
                                         clusterId={clusterId}
@@ -507,101 +804,7 @@ const BaseResourceListContent = ({
                                 ))}
                         </div>
                     ) : (
-                        <div
-                            key={`${resourceData.id}-${columnName}`}
-                            className={`flexbox dc__align-items-center ${
-                                columnName === 'status'
-                                    ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]))}`
-                                    : ''
-                            } ${columnName === 'errors' ? 'app-summary__status-name f-error dc__no-text-transform' : ''}`}
-                        >
-                            <ConditionalWrap
-                                condition={columnName === 'node'}
-                                wrap={getRenderNodeButton(resourceData, columnName, handleNodeClick)}
-                            >
-                                {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
-                                    <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
-                                )}
-                                <Tooltip
-                                    content={renderResourceValue(
-                                        resourceData[
-                                            isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName] : columnName
-                                        ]?.toString(),
-                                    )}
-                                >
-                                    <span
-                                        className={
-                                            columnName === 'status' && isNodeUnschedulable
-                                                ? 'dc__no-shrink'
-                                                : 'dc__truncate'
-                                        }
-                                        data-testid={`${columnName}-count`}
-                                        // eslint-disable-next-line react/no-danger
-                                        dangerouslySetInnerHTML={{
-                                            __html: DOMPurify.sanitize(
-                                                highlightSearchText({
-                                                    searchText,
-                                                    text: renderResourceValue(
-                                                        resourceData[
-                                                            isNodeListing
-                                                                ? NODE_LIST_HEADERS_TO_KEY_MAP[columnName]
-                                                                : columnName
-                                                        ]?.toString(),
-                                                    ),
-                                                    highlightClasses: 'p-0 fw-6 bcy-2',
-                                                }),
-                                            ),
-                                        }}
-                                    />
-                                </Tooltip>
-                                {selectedResource?.gvk.Kind.toLowerCase() === Nodes.Namespace.toLowerCase() &&
-                                    columnName === 'environment' &&
-                                    !resourceData.environment && (
-                                        <Button
-                                            text="Add environment"
-                                            dataTestId="add-environment"
-                                            variant={ButtonVariantType.text}
-                                            onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
-                                        />
-                                    )}
-                                {columnName === 'status' && isNodeUnschedulable && (
-                                    <>
-                                        <span className="dc__bullet mr-4 ml-4 mw-4 bcn-4" />
-                                        <Tooltip content="Scheduling disabled">
-                                            <span className="cr-5 dc__truncate">SchedulingDisabled</span>
-                                        </Tooltip>
-                                    </>
-                                )}
-                                <span>
-                                    {columnName === 'restarts' &&
-                                        Number(resourceData.restarts) !== 0 &&
-                                        PodRestartIcon && (
-                                            <PodRestartIcon
-                                                clusterId={clusterId}
-                                                name={resourceData.name}
-                                                namespace={resourceData.namespace}
-                                            />
-                                        )}
-                                </span>
-                            </ConditionalWrap>
-                            {showAIButton && (
-                                <div className="ml-4">
-                                    <ExplainWithAIButton
-                                        isIconButton
-                                        intelligenceConfig={{
-                                            clusterId,
-                                            metadata: {
-                                                object: `${selectedResource?.gvk?.Kind}/${resourceData.name}`,
-                                                namespace: resourceData.namespace,
-                                                status: resourceData.status ?? '',
-                                            },
-                                            prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
-                                            analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
-                                        }}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        renderColumnValue(resourceData, columnName, showAIButton)
                     )
                 })}
             </div>
@@ -614,6 +817,16 @@ const BaseResourceListContent = ({
         }
 
         if (filteredResourceList?.length === 0 || resourceListError) {
+            if (isResourceRecommender && resourceListError) {
+                return (
+                    <ErrorScreenManager
+                        code={resourceListError?.code}
+                        redirectURL={URLS.RESOURCE_BROWSER}
+                        reload={reloadResourceListData}
+                    />
+                )
+            }
+
             if (showGenericNullState) {
                 return <GenericFilterEmptyState />
             }
@@ -621,19 +834,18 @@ const BaseResourceListContent = ({
             const isFilterApplied =
                 searchText || location.search || selectedNamespace.value !== ALL_NAMESPACE_OPTION.value
 
+            const emptyStateKindValue = !isResourceRecommender ? selectedResource?.gvk?.Kind : null
+
             return isFilterApplied ? (
                 <ResourceListEmptyState
                     title={RESOURCE_LIST_EMPTY_STATE.title}
-                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(selectedResource?.gvk?.Kind)}
+                    subTitle={RESOURCE_LIST_EMPTY_STATE.subTitle(emptyStateKindValue)}
                     actionHandler={emptyStateActionHandler}
                 />
             ) : (
                 <ResourceListEmptyState
-                    title={RESOURCE_EMPTY_PAGE_STATE.title(selectedResource?.gvk?.Kind)}
-                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(
-                        selectedResource?.gvk?.Kind,
-                        selectedResource?.namespaced,
-                    )}
+                    title={RESOURCE_EMPTY_PAGE_STATE.title(emptyStateKindValue)}
+                    subTitle={RESOURCE_EMPTY_PAGE_STATE.subTitle(emptyStateKindValue, selectedResource?.namespaced)}
                 />
             )
         }
@@ -661,7 +873,11 @@ const BaseResourceListContent = ({
                                     )}
                                     <SortableTableHeaderCell
                                         showTippyOnTruncate
-                                        title={columnName}
+                                        title={
+                                            isResourceRecommender
+                                                ? RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP[columnName] || columnName
+                                                : columnName
+                                        }
                                         triggerSorting={triggerSortingHandler(columnName)}
                                         isSorted={sortBy === columnName}
                                         sortOrder={sortOrder}
@@ -739,6 +955,13 @@ const BaseResourceListContent = ({
                     updateK8sResourceTab={updateK8sResourceTab}
                     areFiltersHidden={areFiltersHidden}
                     searchPlaceholder={searchPlaceholder}
+                    showAbsoluteValuesInResourceRecommender={showAbsoluteValuesInResourceRecommender}
+                    setShowAbsoluteValuesInResourceRecommender={setShowAbsoluteValuesInResourceRecommender}
+                    gvkOptions={gvkOptions}
+                    areGVKOptionsLoading={areGVKOptionsLoading}
+                    gvkOptionsError={gvkOptionsError}
+                    reloadGVKOptions={reloadGVKOptions}
+                    isResourceListLoading={isLoading}
                 />
             )}
             {renderContent()}
@@ -765,6 +988,19 @@ const BaseResourceListContent = ({
                             handleOpenCordonNodeModal={getBulkOperationsModalStateSetter('cordon')}
                             handleOpenUncordonNodeModal={getBulkOperationsModalStateSetter('uncordon')}
                             handleOpenDrainNodeModal={getBulkOperationsModalStateSetter('drain')}
+                            handleOpenApplyResourceRecommendationModal={getBulkOperationsModalStateSetter(
+                                'applyResourceRecommendation',
+                            )}
+                            isResourceRecommendationView={isResourceRecommender}
+                        />
+                    )}
+
+                    {applyResourceRecommendationConfig && (
+                        <ApplyResourceRecommendationModal
+                            handleClose={getOpenShowSingleApplyRecommendation(null)}
+                            clusterId={+clusterId}
+                            resourceList={[applyResourceRecommendationConfig]}
+                            handleReloadDataAfterBulkOperation={handleReloadDataAfterBulkDelete}
                         />
                     )}
 

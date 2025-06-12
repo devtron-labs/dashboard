@@ -107,6 +107,7 @@ export default () => {
         'mem usage (%)': numberInStringComparator,
         'mem allocatable': numberInStringComparator,
         'cpu usage (absolute)': numberInStringComparator,
+        // Add here as well
     }
 
     /**
@@ -146,6 +147,7 @@ export default () => {
             return 0
         }
 
+    // Need to search None and other stuff as well
     const debounceSearch = <T extends unknown[]>(callback: (...args: T) => void) => {
         let timeout: NodeJS.Timeout
         return (...args: T) => {
@@ -225,7 +227,11 @@ export default () => {
         } else if (searchTextLowerCased !== '' && list?.length) {
             filteredList = list.filter((item) =>
                 Object.entries(item).some(
-                    ([key, value]) => key !== 'id' && String(value).toLowerCase().includes(searchTextLowerCased),
+                    ([key, value]) =>
+                        key !== 'id' &&
+                        value !== null &&
+                        value !== undefined &&
+                        String(value).toLowerCase().includes(searchTextLowerCased),
                 ),
             )
         }

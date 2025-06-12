@@ -62,6 +62,8 @@ const getSSHConfig: (
 ) => Pick<EditClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
     importComponentFromFELibrary('getSSHConfig', noop, 'function')
 const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
+const EditClusterPopup = importComponentFromFELibrary('EditClusterPopup', null, 'function')
+const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
 
 class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -311,6 +313,7 @@ const Cluster = ({
     const [prometheusAuth, setPrometheusAuth] = useState(undefined)
     const [showWindow, setShowWindow] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
+    const [showPodSpreadModal, setShowPodSpreadModal] = useState(false)
 
     const drawerRef = useRef(null)
 
@@ -401,6 +404,42 @@ const Cluster = ({
         reload()
     }
 
+    const handleClosePodSpreadModal = () => {
+        setShowPodSpreadModal(false)
+    }
+
+    const handleOpenPodSpreadModal = () => {
+        setShowPodSpreadModal(true)
+    }
+
+    const renderEditButton = () => {
+        if (!clusterId) {
+            return null
+        }
+
+        if (EditClusterPopup) {
+            return (
+                <EditClusterPopup
+                    handleOpenEditClusterModal={handleEdit}
+                    handleOpenPodSpreadModal={handleOpenPodSpreadModal}
+                    clusterId={clusterId}
+                />
+            )
+        }
+
+        return (
+            <Button
+                dataTestId={`edit_cluster_pencil-${cluster_name}`}
+                ariaLabel="Edit Cluster"
+                icon={<PencilEdit />}
+                size={ComponentSizeType.small}
+                variant={ButtonVariantType.borderLess}
+                style={ButtonStyleType.neutral}
+                onClick={handleEdit}
+            />
+        )
+    }
+
     return (
         <>
             <article
@@ -449,17 +488,7 @@ const Cluster = ({
                             </div>
                         )}
                     </div>
-                    {clusterId && (
-                        <Button
-                            dataTestId={`edit_cluster_pencil-${cluster_name}`}
-                            ariaLabel="Edit Cluster"
-                            icon={<PencilEdit />}
-                            size={ComponentSizeType.small}
-                            variant={ButtonVariantType.borderLess}
-                            style={ButtonStyleType.neutral}
-                            onClick={handleEdit}
-                        />
-                    )}
+                    {renderEditButton()}
                 </List>
                 {!window._env_.K8S_CLIENT && Array.isArray(newEnvs) && newEnvs.length > 1 ? (
                     <div className="pb-8">
@@ -584,6 +613,13 @@ const Cluster = ({
                         />
                     ))}
             </article>
+
+            {showPodSpreadModal && (
+                <PodSpreadModal
+                    clusterId={clusterId}
+                    handleClose={handleClosePodSpreadModal}
+                />
+            )}
 
             {showWindow && (
                 <ClusterEnvironmentDrawer
