@@ -116,7 +116,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
 
-            {defaultOption?.value !== String(DEFAULT_CLUSTER_ID) ? (
+            {defaultOption?.value !== String(DEFAULT_CLUSTER_ID) && (
                 <PopupMenu autoClose>
                     <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
                         <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
@@ -136,7 +136,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                         </div>
                     </PopupMenu.Body>
                 </PopupMenu>
-            ) : null}
+            )}
 
             {openDeleteClusterModal && (
                 <DeleteClusterConfirmationModal
