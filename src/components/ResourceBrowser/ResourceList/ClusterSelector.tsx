@@ -25,6 +25,8 @@ import {
     DocLinkProps,
     Icon,
     PopupMenu,
+    ToastManager,
+    ToastVariantType,
     ValueContainerWithLoadingShimmer,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -77,6 +79,14 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     }
 
     const handleOpenDeleteModal = () => {
+        if (+clusterId === DEFAULT_CLUSTER_ID) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Default cluster cannot be deleted.',
+            })
+            return
+        }
+
         setOpenDeleteClusterModal(true)
     }
 
