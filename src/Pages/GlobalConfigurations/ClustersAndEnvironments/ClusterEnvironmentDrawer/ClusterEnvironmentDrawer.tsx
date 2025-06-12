@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { generatePath } from 'react-router-dom'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -41,12 +42,12 @@ import {
 import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { deleteEnvironment, saveEnvironment, updateEnvironment } from '@Components/cluster/cluster.service'
-import { getNamespaceFromLocalStorage } from '@Components/cluster/cluster.util'
-import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
+import { getNamespaceFromLocalStorage } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
+import { deleteEnvironment, saveEnvironment, updateEnvironment } from '../cluster.service'
 import { CreateClusterTypeEnum } from '../CreateCluster/types'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
@@ -56,6 +57,7 @@ import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNames
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
 const getClusterNamespaces = importComponentFromFELibrary('getClusterNamespaces', noop, 'function')
 const EnvironmentLabels = importComponentFromFELibrary('EnvironmentLabels', null, 'function')
+const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect', null, 'function')
 
 const getVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
 
@@ -70,6 +72,7 @@ export const ClusterEnvironmentDrawer = ({
     hideClusterDrawer,
     isVirtual,
     clusterName,
+    category,
 }: ClusterEnvironmentDrawerProps) => {
     // STATES
     // Manages the loading state for create and update actions
@@ -113,7 +116,7 @@ export const ClusterEnvironmentDrawer = ({
 
         try {
             // Fetch namespaces from the cluster
-            const { result } = await getClusterNamespaces(clusterId)
+            const { result } = await getClusterNamespaces(+clusterId)
 
             // Update clusterNamespaces state with fetched data
             setClusterNamespaces({
@@ -152,6 +155,7 @@ export const ClusterEnvironmentDrawer = ({
             environmentName: environmentName ?? '',
             namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
             isProduction: !!isProduction,
+            category,
             description: description ?? '',
         },
         validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
@@ -171,7 +175,7 @@ export const ClusterEnvironmentDrawer = ({
         async (formData) => {
             const payload = getClusterEnvironmentUpdatePayload({
                 data: formData,
-                clusterId,
+                clusterId: +clusterId,
                 id,
                 namespaceLabels: namespaceLabels.labels,
                 resourceVersion: namespaceLabels.resourceVersion,
@@ -196,7 +200,7 @@ export const ClusterEnvironmentDrawer = ({
                 hideClusterDrawer()
             } catch (err) {
                 setCrudLoading(false)
-                if (err.code === 409) {
+                if (err.code === API_STATUS_CODES.CONFLICT) {
                     ToastManager.showToast({
                         variant: ToastVariantType.error,
                         title: 'Namespace manifest changed',
@@ -291,69 +295,83 @@ export const ClusterEnvironmentDrawer = ({
                 onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
                 noValidate
             >
-                <div className="dc__overflow-auto p-20 flex-grow-1">
-                    <div className="mb-16">
-                        <CustomInput
-                            disabled={!!environmentName}
-                            placeholder={id ? 'sample-env-name' : 'Eg. production'}
-                            value={data.environmentName}
-                            error={errors.environmentName}
-                            {...register('environmentName')}
-                            label="Environment Name"
-                            autoFocus={!id}
-                            shouldTrim={false}
-                            required
-                        />
-                    </div>
-                    <div className="mb-16">
-                        <CustomInput
-                            disabled={!!namespace}
-                            placeholder={id ? 'sample-namespace' : 'Eg. prod'}
-                            value={data.namespace}
-                            error={errors.namespace}
-                            {...register('namespace')}
-                            label="Namespace"
-                            shouldTrim={false}
-                            required={!isVirtual}
-                        />
-                    </div>
+                <div className="flexbox-col dc__overflow-auto p-20 flex-grow-1 dc__gap-16">
+                    <CustomInput
+                        disabled={!!environmentName}
+                        placeholder={id ? 'sample-env-name' : 'Eg. production'}
+                        value={data.environmentName}
+                        error={errors.environmentName}
+                        {...register('environmentName')}
+                        label="Environment Name"
+                        autoFocus={!id}
+                        shouldTrim={false}
+                        required
+                    />
+
+                    <CustomInput
+                        disabled={!!namespace}
+                        placeholder={id ? 'sample-namespace' : 'Eg. prod'}
+                        value={data.namespace}
+                        error={errors.namespace}
+                        {...register('namespace')}
+                        label="Namespace"
+                        shouldTrim={false}
+                        required={!isVirtual}
+                    />
+
+                    <CustomInput
+                        placeholder="Add a description for this environment"
+                        value={data.description}
+                        error={errors.description}
+                        {...register('description')}
+                        label="Description (Maximum 40 characters allowed)"
+                        autoFocus={!!id}
+                        shouldTrim={false}
+                    />
                     {!isVirtual && (
-                        <div className="mb-16 flex left">
-                            <label htmlFor="env-production-checkbox" className="pr-16 flex cursor">
-                                <input
-                                    id="env-production-checkbox"
-                                    data-testid="production"
-                                    type="radio"
-                                    checked={data.isProduction}
-                                    value="true"
-                                    {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
-                                />
-                                <span className="ml-10 fw-4 mt-4 fs-13">Production</span>
-                            </label>
-                            <label htmlFor="env-non-production-checkbox" className="flex cursor">
-                                <input
-                                    id="env-non-production-checkbox"
-                                    data-testid="nonProduction"
-                                    type="radio"
-                                    checked={!data.isProduction}
-                                    value="false"
-                                    {...register('isProduction', { sanitizeFn: (value) => value === 'true' })}
-                                />
-                                <span className="ml-10 fw-4 mt-4 fs-13">Non - Production</span>
-                            </label>
+                        <div className="flex left dc__gap-24 fs-13">
+                            <div className="dc__required-field cn-7">Type of Environment</div>
+                            <div className="flex left dc__gap-16">
+                                <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
+                                    <input
+                                        id="env-production-checkbox"
+                                        data-testid="production"
+                                        type="radio"
+                                        checked={data.isProduction}
+                                        value="true"
+                                        {...register('isProduction', {
+                                            sanitizeFn: (value) => value === 'true',
+                                            noTrim: true,
+                                        })}
+                                    />
+                                    <span className="ml-10 fw-4 mt-4">Production</span>
+                                </label>
+                                <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
+                                    <input
+                                        id="env-non-production-checkbox"
+                                        data-testid="nonProduction"
+                                        type="radio"
+                                        checked={!data.isProduction}
+                                        value="false"
+                                        {...register('isProduction', {
+                                            sanitizeFn: (value) => value === 'true',
+                                            noTrim: true,
+                                        })}
+                                    />
+                                    <span className="ml-10 fw-4 mt-4">Non - Production</span>
+                                </label>
+                            </div>
                         </div>
                     )}
-                    <div className="mb-16">
-                        <CustomInput
-                            placeholder="Add a description for this environment"
-                            value={data.description}
-                            error={errors.description}
-                            {...register('description')}
-                            label="Description (Maximum 40 characters allowed)"
-                            autoFocus={!!id}
-                            shouldTrim={false}
-                        />
-                    </div>
+                    {AssignCategorySelect && (
+                        <div className="w-250">
+                            <AssignCategorySelect
+                                selectedCategory={data.category}
+                                setSelectedCategory={register('category', { isCustomComponent: true }).onChange}
+                            />
+                        </div>
+                    )}
+
                     {EnvironmentLabels && !isVirtual && (
                         <div className="dc__border-top-n1 pt-16">
                             <EnvironmentLabels
@@ -402,7 +420,7 @@ export const ClusterEnvironmentDrawer = ({
     }
 
     return (
-        <Drawer position="right" width="800px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
+        <Drawer position="right" width="1024px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
             <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
                     {/* NOTE: only in case of add environment, can we have truncation */}

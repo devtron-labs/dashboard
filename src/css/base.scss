@@ -483,6 +483,10 @@ a:focus {
     cursor: default;
 }
 
+.cursor-default-imp {
+    cursor: default !important;
+}
+
 .cursor-wait {
     cursor: wait;
 }
@@ -3228,6 +3232,10 @@ button.anchor {
 
 .dc__mnw-100 {
     min-width: 100px;
+}
+
+.dc__mxw-fit-content {
+    max-width: fit-content
 }
 
 // width fix content

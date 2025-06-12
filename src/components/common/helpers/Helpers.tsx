@@ -33,7 +33,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
-import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
+import { getDateInMilliseconds } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { K8SObjectType } from '../../ResourceBrowser/Types'
 import {
