@@ -18,7 +18,6 @@ export const useOnline = ({ onOnline = noop, onOffline = noop }: { onOnline?: ()
     }
 
     const handleOnline = () => {
-        if (!navigator.onLine) return
         setOnline(navigator.onLine)
         onOnline()
     }
