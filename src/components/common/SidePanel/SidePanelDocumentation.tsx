@@ -19,9 +19,11 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink = DOCUMENTATION.DOC_HOME_PAGE, reinitialize },
+        sidePanelConfig: { docLink: sidePanelDocLink, reinitialize },
         setSidePanelConfig,
     } = useMainContext()
+
+    const docLink = sidePanelDocLink ?? DOCUMENTATION.DOC_HOME_PAGE
 
     // REFS
     const iframeRef = useRef<HTMLIFrameElement | null>(null)
