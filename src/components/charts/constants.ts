@@ -38,3 +38,12 @@ export enum CHART_KEYS {
     DEPRECATED = 'deprecated',
     SEARCH = 'search',
 }
+
+export const QueryParams = {
+    ChartRepoId: 'chartRepoId',
+    IncludeDeprecated: 'includeDeprecated',
+    AppStoreName: 'appStoreName',
+    RegistryId: 'registryId',
+    SearchKey: 'searchKey',
+    ChartCategoryId: 'chartCategoryId',
+}

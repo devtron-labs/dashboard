@@ -18,6 +18,7 @@ import {
     DeploymentStatusDetailsResponse,
     get,
     getUrlWithSearchParams,
+    ModuleConfigResponse,
     ResponseType,
     trash,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -30,7 +31,6 @@ import {
     DataSourceDetailsDTO,
     DataSourceDetailsQueryParams,
     DataSourceDetailsType,
-    ModuleConfigResponse,
 } from './appDetails.type'
 
 export const getDataSourceDetailsFromEnvironment = async (envName: string): Promise<DataSourceDetailsType> => {
