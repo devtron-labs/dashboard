@@ -6,19 +6,20 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    DOCUMENTATION,
     getUniqueId,
     Icon,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SidePanelDocumentationProps } from './types'
+import { SidePanelContentBaseProps } from './types'
 
-export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps) => {
+export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelContentBaseProps) => {
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink, reinitialize },
+        sidePanelConfig: { docLink = DOCUMENTATION.DOC_HOME_PAGE, reinitialize },
         setSidePanelConfig,
     } = useMainContext()
 
@@ -45,34 +46,21 @@ export const SidePanelDocumentation = ({ onClose }: SidePanelDocumentationProps)
 
     return (
         <>
-            <div className="side-panel-documentation__header px-16 pt-12 pb-11 border__primary--bottom flex dc__gap-12">
-                <Icon name="ic-book-open" color="N900" />
-                <h2 className="m-0 fs-16 lh-1-5 fw-6 cn-9 flex-grow-1">Documentation</h2>
-                <div className="flex dc__gap-8">
-                    <Button
-                        dataTestId="open-in-new-tab-button"
-                        ariaLabel="Open in new tab"
-                        icon={<Icon name="ic-arrow-square-out" color={null} />}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.xs}
-                        component={ButtonComponentType.anchor}
-                        anchorProps={{
-                            href: docLink,
-                        }}
-                    />
-                    <Button
-                        dataTestId="close-side-panel-button"
-                        ariaLabel="close-side-panel-button"
-                        showAriaLabelInTippy={false}
-                        icon={<Icon name="ic-close-large" color={null} />}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.negativeGrey}
-                        size={ComponentSizeType.xs}
-                        onClick={onClose}
-                    />
-                </div>
-            </div>
+            <SidePanelHeaderActions>
+                <Button
+                    dataTestId="open-in-new-tab-button"
+                    ariaLabel="Open in new tab"
+                    icon={<Icon name="ic-arrow-square-out" color={null} />}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    size={ComponentSizeType.xs}
+                    component={ButtonComponentType.anchor}
+                    anchorProps={{
+                        href: docLink,
+                    }}
+                />
+            </SidePanelHeaderActions>
+
             <div className="flex-grow-1">
                 {iframeSrc && (
                     <iframe

@@ -16,7 +16,13 @@
 
 import { SelectPicker, SelectPickerVariantType } from '@devtron-labs/devtron-fe-common-lib'
 
-export default function UserNameDropDownList({ clusterDetail, selectedUserNameOptions, onChangeUserName }) {
+import { UserNameDropDownListProps } from './cluster.type'
+
+const UserNameDropDownList = ({
+    clusterDetail,
+    selectedUserNameOptions,
+    onChangeUserName,
+}: UserNameDropDownListProps) => {
     const handleUserChange = (selectedOption) => {
         onChangeUserName(selectedOption, clusterDetail)
     }
@@ -24,14 +30,12 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
     if (clusterDetail.userInfos.length === 1) {
         return <span className="dc__ellipsis-right">{clusterDetail.userInfos[0].userName}</span>
     }
-    const userNameOptions = clusterDetail.userInfos.map((user) => {
-        return {
-            label: user.userName,
-            value: user.userName,
-            errorInConnecting: user.errorInConnecting,
-            config: user.config,
-        }
-    })
+    const userNameOptions = clusterDetail.userInfos.map((user) => ({
+        label: user.userName,
+        value: user.userName,
+        errorInConnecting: user.errorInConnecting,
+        config: user.config,
+    }))
 
     return (
         <SelectPicker
@@ -46,3 +50,5 @@ export default function UserNameDropDownList({ clusterDetail, selectedUserNameOp
         />
     )
 }
+
+export default UserNameDropDownList
