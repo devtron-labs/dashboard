@@ -2,7 +2,7 @@ import { IconName } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum CreateClusterTypeEnum {
     CONNECT_CLUSTER = 'connect-cluster',
-    CREATE_EKS_CLUSTER = 'create-eks-cluster',
+    CREATE_CLUSTER = 'create-cluster',
     ADD_ISOLATED_CLUSTER = 'add-isolated-cluster',
 }
 
@@ -36,4 +36,5 @@ export enum FooterComponentChildKey {
 export interface EnterpriseTrialDialogProps {
     featureTitle: string
     featureDescription: string
+    showBorder?: boolean
 }

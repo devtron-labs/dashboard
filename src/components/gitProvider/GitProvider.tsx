@@ -67,7 +67,7 @@ import { ReactComponent as Add } from '@Icons/ic-add.svg'
 import { ReactComponent as Warn } from '@Icons/ic-info-warn.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { DC_GIT_PROVIDER_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { AuthenticationType } from '../cluster/cluster.type'
+import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { safeTrim } from '../../util/Util'
 import { TLSInputType } from './types'
 
@@ -430,11 +430,11 @@ const GitForm = ({
         {
             name: {
                 required: true,
-                validator: { error: 'Name is required', regex: /^.{5,}$/ },
+                validator: { error: 'Min 5 characters required', regex: /^.{5,}$/ },
             },
             url: {
                 required: true,
-                validator: { error: 'URL is required', regex: /^.{10,}$/ },
+                validator: { error: 'Min 10 characters required', regex: /^.{10,}$/ },
             },
             auth: {
                 required: true,
