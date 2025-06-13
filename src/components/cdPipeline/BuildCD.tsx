@@ -81,6 +81,7 @@ export default function BuildCD({
     isGitOpsRepoNotConfigured,
     noGitOpsModuleInstalledAndConfigured,
     releaseMode,
+    isCustomChart,
     getMandatoryPluginData,
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
@@ -672,7 +673,7 @@ export default function BuildCD({
     }
 
     const renderAdvancedDeploymentStrategy = () => {
-        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
+        if (noStrategyAvailable.current || (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && isCustomChart)) {
             return null
         }
 
