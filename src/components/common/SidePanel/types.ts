@@ -11,7 +11,6 @@ export interface SidePanelContentBaseProps {
 }
 
 export interface SidePanelContentProps extends Pick<MainContext, 'sidePanelConfig' | 'setSidePanelConfig'> {
-    tab?: SidePanelTab
     onClose: () => void
 }
 

@@ -8,7 +8,6 @@ import {
     GenericEmptyState,
     Icon,
     ImageType,
-    logExceptionToSentry,
     SidePanelTab,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -20,7 +19,7 @@ import { TABS_CONFIG } from './constants'
 import { SidePanelDocumentation } from './SidePanelDocumentation'
 import { SidePanelHeaderActions } from './SidePanelHeaderActions'
 import { SidePanelContentProps } from './types'
-import { renderOpenTicketButton } from './utils'
+import { getContentWrapperClassNameForTab, renderOpenTicketButton } from './utils'
 
 const AIChat = importComponentFromFELibrary(
     'AIChat',
@@ -35,51 +34,24 @@ const AIChat = importComponentFromFELibrary(
 )
 
 export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig }: SidePanelContentProps) => {
-    const tab = sidePanelConfig.state
+    const tab = sidePanelConfig.state as SidePanelTab
 
-    const renderContent = () => {
-        switch (tab) {
-            case SidePanelTab.DOCUMENTATION:
-                return <SidePanelDocumentation SidePanelHeaderActions={SidePanelHeaderActions} />
-            case SidePanelTab.ASK_DEVTRON:
-                // NOTE: even if flag is off, for oss clients need to show EnterpriseTrialDialog
-                if (!AIChat || window._env_?.FEATURE_ASK_DEVTRON_EXPERT) {
-                    return <AIChat SidePanelHeaderActions={SidePanelHeaderActions} />
-                }
-
-                return (
-                    <GenericEmptyState
-                        title="AI Integration not configured"
-                        subTitle="For AI-powered insights, please follow documentation or contact the Devtron team."
-                        SvgImage={ICMaintenance}
-                        imageType={ImageType.Medium}
-                        isButtonAvailable
-                        renderButton={renderOpenTicketButton}
-                    />
-                )
-            default:
-                logExceptionToSentry(`Unknown ${tab} in SidePanelContent`)
-                return null
-        }
-    }
-
-    const getConfigForTab = (tabId: SidePanelTab) => {
-        if (sidePanelConfig.state === tabId) {
-            return sidePanelConfig
+    const renderAIChat = () => {
+        // NOTE: even if flag is off, for oss clients need to show EnterpriseTrialDialog
+        if (!AIChat || window._env_?.FEATURE_ASK_DEVTRON_EXPERT) {
+            return <AIChat SidePanelHeaderActions={SidePanelHeaderActions} />
         }
 
-        switch (tabId) {
-            case SidePanelTab.ASK_DEVTRON:
-                return {
-                    state: SidePanelTab.ASK_DEVTRON,
-                }
-            case SidePanelTab.DOCUMENTATION:
-            default:
-                return {
-                    state: SidePanelTab.DOCUMENTATION,
-                    docLink: null,
-                }
-        }
+        return (
+            <GenericEmptyState
+                title="AI Integration not configured"
+                subTitle="For AI-powered insights, please follow documentation or contact the Devtron team."
+                SvgImage={ICMaintenance}
+                imageType={ImageType.Medium}
+                isButtonAvailable
+                renderButton={renderOpenTicketButton}
+            />
+        )
     }
 
     return (
@@ -108,7 +80,6 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                                 onClick={onTabClick}
                                 style={{ ...(isSelected ? { boxShadow: '0 1px 0 0 var(--bg-primary)' } : {}) }}
                                 tabIndex={0}
-                                data-config={JSON.stringify(getConfigForTab(id))}
                                 onKeyDown={onKeyDown}
                             >
                                 <Icon name={iconName} color={isSelected ? 'N900' : 'N700'} />
@@ -137,7 +108,11 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
                 </div>
             </div>
 
-            {renderContent()}
+            <div className={getContentWrapperClassNameForTab(tab, SidePanelTab.DOCUMENTATION)}>
+                <SidePanelDocumentation SidePanelHeaderActions={SidePanelHeaderActions} />
+            </div>
+
+            <div className={getContentWrapperClassNameForTab(tab, SidePanelTab.ASK_DEVTRON)}>{renderAIChat()}</div>
         </>
     )
 }

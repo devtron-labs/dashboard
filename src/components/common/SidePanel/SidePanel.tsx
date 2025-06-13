@@ -90,7 +90,7 @@ export const SidePanel = ({ asideWidth }: SidePanelProps) => {
                             <div className="aside-drag__handle px-1 br-1" />
                         </div>
                     </Draggable>
-                    <div className="flex-grow-1 py-8 pr-8">
+                    <div className="flex-grow-1 py-8 pr-8 dc__overflow-hidden">
                         <div
                             className={`w-100 h-100 dc__position-rel br-6 bg__primary flexbox-col dc__overflow-hidden ${appTheme === AppThemeType.dark ? 'border__primary-translucent' : ''}`}
                         >
