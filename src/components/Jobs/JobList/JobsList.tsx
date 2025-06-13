@@ -41,20 +41,9 @@ import {
 } from '../Types'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import JobListContainer from './JobListContainer'
+import { renderAdditionalJobsHeaderInfo } from './utils'
 
 import '../../app/list/list.scss'
-
-// const renderAppGroupDescriptionContent = () =>
-//     ' Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
-
-// const renderAdditionalHeaderInfo = () => (
-//     <FeatureTitleWithInfo
-//         title="Application Group"
-//         docLink="APP_GROUP"
-//         showInfoIconTippy
-//         renderDescriptionContent={renderAppGroupDescriptionContent}
-//     />
-// )
 
 const JobsList = () => {
     const { path } = useRouteMatch()
@@ -169,7 +158,7 @@ const JobsList = () => {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="Jobs" />
+                    <HeaderWithCreateButton renderAdditionalHeaderInfo={renderAdditionalJobsHeaderInfo} />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         masterFilters={masterFilters}
