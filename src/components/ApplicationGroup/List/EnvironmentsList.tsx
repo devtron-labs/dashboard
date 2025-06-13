@@ -41,11 +41,11 @@ import EnvironmentsListView from './EnvironmentListView'
 import './EnvironmentsList.scss'
 
 const renderAppGroupDescriptionContent = () =>
-    ' Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
+    'Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
 
 const renderAdditionalHeaderInfo = () => (
     <FeatureTitleWithInfo
-        title="Application Group"
+        title="Application Groups"
         docLink="APP_GROUP"
         showInfoIconTippy
         renderDescriptionContent={renderAppGroupDescriptionContent}
