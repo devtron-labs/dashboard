@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
     Button,
@@ -9,6 +9,7 @@ import {
     DOCUMENTATION,
     getUniqueId,
     Icon,
+    ProgressBar,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -19,18 +20,20 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink = DOCUMENTATION.DOC_HOME_PAGE, reinitialize },
+        sidePanelConfig: { docLink: sidePanelDocLink, reinitialize },
         setSidePanelConfig,
     } = useMainContext()
+
+    const [isLoading, setIsLoading] = useState(true)
+
+    const docLink = sidePanelDocLink ?? DOCUMENTATION.DOC_HOME_PAGE
 
     // REFS
     const iframeRef = useRef<HTMLIFrameElement | null>(null)
     const iframeKeyRef = useRef<string | null>(`${docLink}-${getUniqueId()}`)
 
     // CONSTANTS
-    const iframeSrc = docLink
-        ? `${docLink}${docLink.includes('?') ? `&theme=${appTheme}` : `?theme=${appTheme}`}`
-        : null
+    const iframeSrc = `${docLink}${docLink.includes('?') ? `&theme=${appTheme}` : `?theme=${appTheme}`}`
 
     useEffect(() => {
         /**
@@ -43,6 +46,10 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
             setSidePanelConfig((prev) => ({ ...prev, reinitialize: false }))
         }
     }, [reinitialize])
+
+    const onLoad = () => {
+        setIsLoading(false)
+    }
 
     return (
         <>
@@ -61,7 +68,9 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
                 />
             </SidePanelHeaderActions>
 
-            <div className="flex-grow-1">
+            <div className="flex-grow-1 dc__position-rel">
+                <ProgressBar isLoading={isLoading} />
+
                 {iframeSrc && (
                     <iframe
                         key={iframeKeyRef.current}
@@ -74,6 +83,7 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
                         height="100%"
                         allow="clipboard-read; clipboard-write"
                         referrerPolicy="strict-origin-when-cross-origin"
+                        onLoad={onLoad}
                     />
                 )}
             </div>

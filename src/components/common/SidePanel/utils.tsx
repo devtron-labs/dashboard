@@ -5,6 +5,7 @@ import {
     ComponentSizeType,
     CONTACT_SUPPORT_LINK,
     OPEN_NEW_TICKET,
+    SidePanelTab,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 export const renderOpenTicketButton = () => (
@@ -29,3 +30,6 @@ export const renderOpenTicketButton = () => (
         />
     </div>
 )
+
+export const getContentWrapperClassNameForTab = (tab: SidePanelTab, expected: SidePanelTab) =>
+    `flexbox-col dc__overflow-hidden ${tab !== expected ? 'side-panel-content--hidden' : 'flex-grow-1'}`
