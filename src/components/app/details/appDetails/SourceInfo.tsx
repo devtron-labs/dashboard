@@ -38,7 +38,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../../../config'
-import { DeploymentAppTypeNameMapping } from '../../../../config/constantMessaging'
 import { Nodes, SourceInfoType } from '../../types'
 import DeploymentStatusCard from './DeploymentStatusCard'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
@@ -201,18 +200,9 @@ export const SourceInfo = ({
             <div className="flex left w-100">
                 <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
                 {appDetails?.deploymentAppType && (
-                    <Tooltip
-                        placement="top"
-                        alwaysShowTippyOnHover={!appDetails.isVirtualEnvironment}
-                        content={`Deployed using ${
-                            isArgoCdApp ? DeploymentAppTypeNameMapping.GitOps : DeploymentAppTypeNameMapping.Helm
-                        }`}
-                    >
-                        <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
-                            {/* TODO: verify what appType needs to be passed */}
-                            <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} appType={null} />
-                        </div>
-                    </Tooltip>
+                    <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
+                        <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} />
+                    </div>
                 )}
                 {appDetails?.resourceTree &&
                     !isIsolatedEnv &&

@@ -50,5 +50,6 @@
 | FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE                   | false                                    | If enabled user can pass the manual gitops repo                                                                  |
 | SENTRY_RELEASE_VERSION                                    |                                          | Sentry release Version                                                                                           |
 | LOGIN_PAGE_IMAGE                                          |                                          | Login page image url                                                                                             |
+| FEATURE_FLUX_DEPLOYMENTS_ENABLE                           | false                                    | Enables flux cd deployment type for devtron apps and devtron charts                                              |
 
 # DASHBOARD CONFIG SECRET
