@@ -44,6 +44,18 @@ import JobListContainer from './JobListContainer'
 
 import '../../app/list/list.scss'
 
+// const renderAppGroupDescriptionContent = () =>
+//     ' Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
+
+// const renderAdditionalHeaderInfo = () => (
+//     <FeatureTitleWithInfo
+//         title="Application Group"
+//         docLink="APP_GROUP"
+//         showInfoIconTippy
+//         renderDescriptionContent={renderAppGroupDescriptionContent}
+//     />
+// )
+
 const JobsList = () => {
     const { path } = useRouteMatch()
     const history = useHistory()
