@@ -10,6 +10,7 @@ import {
     getUniqueId,
     Icon,
     ProgressBar,
+    SidePanelTab,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -20,7 +21,7 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
     // HOOKS
     const { appTheme } = useTheme()
     const {
-        sidePanelConfig: { docLink: sidePanelDocLink, reinitialize },
+        sidePanelConfig: { state, docLink: sidePanelDocLink, reinitialize },
         setSidePanelConfig,
     } = useMainContext()
 
@@ -53,20 +54,22 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
 
     return (
         <>
-            <SidePanelHeaderActions>
-                <Button
-                    dataTestId="open-in-new-tab-button"
-                    ariaLabel="Open in new tab"
-                    icon={<Icon name="ic-arrow-square-out" color={null} />}
-                    variant={ButtonVariantType.borderLess}
-                    style={ButtonStyleType.neutral}
-                    size={ComponentSizeType.xs}
-                    component={ButtonComponentType.anchor}
-                    anchorProps={{
-                        href: docLink,
-                    }}
-                />
-            </SidePanelHeaderActions>
+            {state === SidePanelTab.DOCUMENTATION && (
+                <SidePanelHeaderActions>
+                    <Button
+                        dataTestId="open-in-new-tab-button"
+                        ariaLabel="Open in new tab"
+                        icon={<Icon name="ic-arrow-square-out" color={null} />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.xs}
+                        component={ButtonComponentType.anchor}
+                        anchorProps={{
+                            href: docLink,
+                        }}
+                    />
+                </SidePanelHeaderActions>
+            )}
 
             <div className="flex-grow-1 dc__position-rel">
                 <ProgressBar isLoading={isLoading} />
