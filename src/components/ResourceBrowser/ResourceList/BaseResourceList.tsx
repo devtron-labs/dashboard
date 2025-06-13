@@ -44,8 +44,6 @@ import {
     noop,
     Pagination,
     Progressing,
-    RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP,
-    RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP,
     ResourceRecommenderHeaderWithRecommendation,
     SelectAllDialogStatus,
     SortableTableHeaderCell,
@@ -106,6 +104,18 @@ const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', 
 const ApplyResourceRecommendationModal = importComponentFromFELibrary(
     'ApplyResourceRecommendationModal',
     null,
+    'function',
+)
+
+const RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP = importComponentFromFELibrary(
+    'RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP',
+    {},
+    'function',
+)
+
+const RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP = importComponentFromFELibrary(
+    'RESOURCE_RECOMMENDER_HEADER_TO_WIDTH_MAP',
+    {},
     'function',
 )
 
