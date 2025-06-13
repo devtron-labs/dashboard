@@ -78,7 +78,7 @@ const AppDetailsComponent = ({
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...(isVirtualEnv.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData()
-                : processDeploymentStatusDetailsData()),
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType)),
             deploymentStatus: DEFAULT_STATUS,
         })
 
@@ -121,7 +121,8 @@ const AppDetailsComponent = ({
         const processedDeploymentStatusDetailsData =
             isVirtualEnv.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType)
+
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {

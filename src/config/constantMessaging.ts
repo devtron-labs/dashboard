@@ -181,14 +181,6 @@ export const BUTTON_TEXT = {
     CANCEL: 'Cancel',
 }
 
-// Deployment App Types
-export enum DeploymentAppTypeNameMapping {
-    Helm = 'Helm',
-    GitOps = 'GitOps',
-    ArgoCD = 'ArgoCD',
-    FluxCD = 'FluxCD',
-}
-
 export const APP_GROUP_CD_DETAILS = {
     noSelectedApp: {
         title: 'No application selected',
