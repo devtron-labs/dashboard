@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { NO_MATCHING_RESULT, Nodes, URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
@@ -351,8 +351,6 @@ export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
 
 export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
 
-export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
-
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
@@ -392,3 +390,24 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
         excludeValues: new Set(['Approved,Issued']),
     },
 })
+
+export const RESOURCE_BROWSER_ROUTES = {
+    OVERVIEW: `${URLS.RESOURCE_BROWSER}/:clusterId/overview`,
+    MONITORING_DASHBOARD: `${URLS.RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`,
+    TERMINAL: `${URLS.RESOURCE_BROWSER}/:clusterId/terminal`,
+    CLUSTER_UPGRADE: `${URLS.RESOURCE_BROWSER}/:clusterId/cluster-upgrade`,
+    NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
+    K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
+    K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
+} as const
+
+export const DUMMY_RESOURCE_GVK_VERSION = 'v1'
+
+export const ResourceBrowserRouteToTabIdMap: Partial<
+    Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
+> = {
+    '/resource-browser/:clusterId/:kind/:group/:version': ResourceBrowserTabsId.k8s_Resources,
+    '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
+    '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
+    '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
+}

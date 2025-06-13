@@ -42,7 +42,7 @@ export interface ParamsType {
     actionName: string
     podName: string
     nodeType: string
-    node: string
+    name: string
     appId?: string
     envId?: string
     namespace?: string
@@ -172,4 +172,14 @@ export interface DeleteEphemeralButtonType {
     setContainers: React.Dispatch<React.SetStateAction<Options[]>>
     containers: Options[]
     isExternal: boolean
+}
+
+export interface TerminalParamsType {
+    actionName: string
+    podName: string
+    nodeType: string
+    name: string
+    clusterId?: string
+    namespace: string
+    kind?: string
 }

@@ -42,7 +42,7 @@ const ResourceBrowserRouter: React.FC = () => {
                 </Route>
             )}
 
-            <Route path={`${path}/:clusterId/:namespace/:nodeType/:group/:node?`}>
+            <Route path={`${path}/:clusterId`}>
                 <ResourceList />
             </Route>
 
