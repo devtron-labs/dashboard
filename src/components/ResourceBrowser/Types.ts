@@ -99,7 +99,7 @@ export interface ClusterOptionType extends OptionType {
 
 export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {
     selectedResource: ApiResourceGroupType
-    resourceList?: K8sResourceDetailType
+    filteredResourceList?: K8sResourceDetailDataType[]
     selectedCluster?: ClusterOptionType
     selectedNamespace?: typeof ALL_NAMESPACE_OPTION
     setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>

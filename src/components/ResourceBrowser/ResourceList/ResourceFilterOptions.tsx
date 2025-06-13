@@ -27,7 +27,6 @@ import {
     Nodes,
     OptionType,
     ResourceRecommenderHeaderType,
-    ResourceRecommenderHeaderWithRecommendation,
     SearchBar,
     SelectPicker,
     SelectPickerOptionType,
@@ -37,7 +36,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
-import { FILE_NAMES, RESOURCE_RECOMMENDATIONS_HEADERS } from '@Components/common/ExportToCsv/constants'
+import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
 import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 
 import { URLS } from '../../../config'
@@ -48,7 +47,11 @@ import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
-const getResourceRecommendationLabel = importComponentFromFELibrary('getResourceRecommendationLabel', null, 'function')
+const getResourceRecommendationsCSVData = importComponentFromFELibrary(
+    'getResourceRecommendationsCSVData',
+    null,
+    'function',
+)
 
 const ResourceFilterOptions = ({
     selectedResource,
@@ -64,7 +67,7 @@ const ResourceFilterOptions = ({
     areFiltersHidden = false,
     searchPlaceholder,
     resourceRecommenderConfig,
-    resourceList,
+    filteredResourceList,
     gvkFilterConfig,
     isResourceListLoading,
 }: ResourceFilterOptionsProps) => {
@@ -182,25 +185,7 @@ const ResourceFilterOptions = ({
     }
 
     const getResourcesToExport = (): Promise<Record<ResourceRecommenderHeaderType, string>[]> =>
-        Promise.resolve(
-            (resourceList?.data || []).map((resource) =>
-                RESOURCE_RECOMMENDATIONS_HEADERS.reduce<Record<ResourceRecommenderHeaderType, string>>(
-                    (acc, { key: headerKey }) => {
-                        const metadata =
-                            resource?.additionalMetadata?.[headerKey as ResourceRecommenderHeaderWithRecommendation]
-                        if (metadata) {
-                            acc[headerKey] =
-                                `${getResourceRecommendationLabel(metadata.current?.value)} -> ${getResourceRecommendationLabel(metadata.recommended?.value)} ${metadata.delta ? `(${metadata.delta})%` : ''}`
-                        } else {
-                            acc[headerKey as string] = resource?.[headerKey] || ''
-                        }
-
-                        return acc
-                    },
-                    {} as Record<ResourceRecommenderHeaderType, string>,
-                ),
-            ),
-        )
+        Promise.resolve(getResourceRecommendationsCSVData(filteredResourceList))
 
     return (
         <>
@@ -237,7 +222,7 @@ const ResourceFilterOptions = ({
                                         value={CHECKBOX_VALUE.CHECKED}
                                         onChange={handleToggleShowAbsoluteValues}
                                         dataTestId="resource-recommender-absolute-values-checkbox"
-                                        rootClassName="mb-0 "
+                                        rootClassName="mb-0"
                                     >
                                         <span className="cn-9 fs-13 fw-4 lh-20">Show absolute values</span>
                                     </Checkbox>
@@ -295,7 +280,7 @@ const ResourceFilterOptions = ({
                             />
                         </div>
 
-                        {isResourceRecommender && getResourceRecommendationLabel && (
+                        {isResourceRecommender && getResourceRecommendationsCSVData && (
                             <ExportToCsv
                                 fileName={FILE_NAMES.ResourceRecommendations}
                                 showOnlyIcon

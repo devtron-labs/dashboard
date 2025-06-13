@@ -405,7 +405,6 @@ const ResourceList = () => {
 
         const lowercaseKindFromResource = shouldOverrideSelectedResourceKind ? kindFromResource.toLowerCase() : null
 
-        // TODO: test this by comparing with response of getFirstResourceFromKindResourceMap
         let _group: string = apiVersion
             ? getGroupVersionFromApiVersion(apiVersion).group.toLowerCase() || K8S_EMPTY_GROUP
             : ''
@@ -514,7 +513,6 @@ const ResourceList = () => {
         hideDeleteResource: true,
         addTab,
         isOpen: true,
-        // TODO: Add this later if time permits
         renderRefreshBar: null,
         selectedCluster,
         selectedResource: {
