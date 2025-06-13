@@ -1657,6 +1657,7 @@ const DockerForm = ({
                                 {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                                     selectedDockerRegistryType.value === RegistryType.ACR ||
                                     selectedDockerRegistryType.value === RegistryType.QUAY ||
+                                    selectedDockerRegistryType.value === RegistryType.GITLAB ||
                                     selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                     <PasswordField
                                         shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
