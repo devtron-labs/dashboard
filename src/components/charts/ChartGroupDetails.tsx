@@ -38,7 +38,6 @@ import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
 import { URLS } from '../../config'
 import { ReactComponent as Pencil } from '@Icons/ic-pencil.svg'
-import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import {
     deployChartGroup,
     getChartGroupInstallationDetails,
@@ -51,6 +50,7 @@ import { DeleteComponentsName } from '../../config/constantMessaging'
 import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
+import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()

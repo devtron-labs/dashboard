@@ -30,6 +30,7 @@ import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvir
 import { sortObjectArrayAlphabetically } from '../common'
 import { renderNewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
+import { renderAdditionalBrowserHeaderInfo } from './Utils'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)
@@ -80,8 +81,8 @@ const ResourceBrowser: React.FC = () => {
     return (
         <div className="flexbox-col h-100 bg__primary" ref={parentRef}>
             <PageHeader
+                additionalHeaderInfo={renderAdditionalBrowserHeaderInfo}
                 isBreadcrumbs={false}
-                headerName="Kubernetes Resource Browser"
                 renderActionButtons={renderNewClusterButton(reloadDetailClusterList)}
             />
             {renderContent()}

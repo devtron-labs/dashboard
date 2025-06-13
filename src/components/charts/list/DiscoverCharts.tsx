@@ -43,7 +43,7 @@ import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
 import MultiChartSummary from '../MultiChartSummary'
 import AdvancedConfig from '../AdvancedConfig'
 import useChartGroup from '../useChartGroup'
-import { DeployableCharts, deployChartGroup, getChartProviderList } from '../charts.service'
+import { deployChartGroup, getChartProviderList } from '../charts.service'
 import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
@@ -62,23 +62,7 @@ import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
 import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import ChartListPopUp from './ChartListPopUp'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
-
-// TODO: move to service
-export function getDeployableChartsFromConfiguredCharts(charts: ChartGroupEntry[]): DeployableCharts[] {
-    return charts
-        .filter((chart) => chart.isEnabled)
-        .map((chart) => {
-            return {
-                appName: chart.name.value,
-                environmentId: chart.environment.id,
-                appStoreVersion: chart.appStoreApplicationVersionId,
-                valuesOverrideYaml: chart.valuesYaml,
-                referenceValueId: chart.appStoreValuesVersionId || chart.appStoreApplicationVersionId,
-                referenceValueKind: chart.kind,
-                chartGroupEntryId: chart.installedId,
-            }
-        })
-}
+import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
@@ -230,13 +214,6 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         toggleGitOpsWarningModal(false)
         if (isContinueWithHelm) {
             handleContinueWithHelm(clickedOnAdvance)
-        }
-    }
-
-    function reloadCallback(event): void {
-        event.preventDefault()
-        if (isLeavingPageNotAllowed.current) {
-            event.returnValue = 'Your changes will be lost. Do you want to reload without deploying?'
         }
     }
 
@@ -399,7 +376,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                     <div className="flex dc__gap-16">
                         {state.charts.length === 0 ? (
                             <>
-                                <span className="fs-16 cn-9">Chart Store</span>
+                                {renderAdditionalChartHeaderInfo()}
                                 {isSuperAdmin && (
                                     <Button
                                         dataTestId="chart-store-source-button"
@@ -526,7 +503,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                                                     !searchApplied &&
                                                     !selectedChartRepo.length &&
                                                     !chartCategoryIds.length &&
-                                                    !!state.charts.length && (
+                                                    !!chartList.length && (
                                                         <ChartGroupListMin
                                                             chartGroups={state.chartGroups.slice(0, isGrid ? 5 : 1)}
                                                             showChartGroupModal={showChartGroupModal}

@@ -18,6 +18,7 @@ import { useMemo } from 'react'
 
 import {
     ErrorScreenManager,
+    FeatureTitleWithInfo,
     FilterChips,
     FilterSelectPicker,
     GenericEmptyState,
@@ -38,6 +39,18 @@ import { parseSearchParams } from '../AppGroup.utils'
 import EnvironmentsListView from './EnvironmentListView'
 
 import './EnvironmentsList.scss'
+
+const renderAppGroupDescriptionContent = () =>
+    'Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
+
+const renderAdditionalHeaderInfo = () => (
+    <FeatureTitleWithInfo
+        title="Application Groups"
+        docLink="APP_GROUP"
+        showInfoIconTippy
+        renderDescriptionContent={renderAppGroupDescriptionContent}
+    />
+)
 
 const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const urlFilters = useUrlFilters<never, AppGroupUrlFiltersType>({
@@ -199,7 +212,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
 
     return (
         <div className="flexbox-col h-100 dc__overflow-auto">
-            <PageHeader headerName="Application Groups" />
+            <PageHeader additionalHeaderInfo={renderAdditionalHeaderInfo} />
             {renderBody()}
         </div>
     )

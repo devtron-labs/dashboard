@@ -32,10 +32,10 @@ import MultiChartSummary from './MultiChartSummary'
 import useChartGroup from './useChartGroup'
 import { Select, mapByKey } from '../common'
 import AdvancedConfig from './AdvancedConfig'
-import { getDeployableChartsFromConfiguredCharts } from './list/DiscoverCharts'
 import { deployChartGroup } from './charts.service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
+import { getDeployableChartsFromConfiguredCharts } from './list/utils'
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()

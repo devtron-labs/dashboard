@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import { ErrorBoundary } from '../common'
