@@ -63,13 +63,9 @@ const ResourceFilterOptions = ({
     updateK8sResourceTab,
     areFiltersHidden = false,
     searchPlaceholder,
-    showAbsoluteValuesInResourceRecommender,
-    setShowAbsoluteValuesInResourceRecommender,
-    gvkOptions,
+    resourceRecommenderConfig,
     resourceList,
-    areGVKOptionsLoading,
-    reloadGVKOptions,
-    gvkOptionsError,
+    gvkFilterConfig,
     isResourceListLoading,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
@@ -80,6 +76,10 @@ const ResourceFilterOptions = ({
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
+    const { showAbsoluteValuesInResourceRecommender, setShowAbsoluteValuesInResourceRecommender } =
+        resourceRecommenderConfig || {}
+
+    const { gvkOptions, areGVKOptionsLoading, reloadGVKOptions, gvkOptionsError } = gvkFilterConfig || {}
 
     const showShortcutKey = !isInputFocused && !searchText
     const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender

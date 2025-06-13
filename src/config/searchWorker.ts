@@ -107,7 +107,6 @@ export default () => {
         'mem usage (%)': numberInStringComparator,
         'mem allocatable': numberInStringComparator,
         'cpu usage (absolute)': numberInStringComparator,
-        // Add here as well
     }
 
     /**
@@ -147,7 +146,6 @@ export default () => {
             return 0
         }
 
-    // Need to search None and other stuff as well
     const debounceSearch = <T extends unknown[]>(callback: (...args: T) => void) => {
         let timeout: NodeJS.Timeout
         return (...args: T) => {

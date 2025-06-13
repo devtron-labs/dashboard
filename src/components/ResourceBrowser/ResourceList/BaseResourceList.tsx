@@ -135,12 +135,8 @@ const BaseResourceListContent = ({
     shouldOverrideSelectedResourceKind = false,
     lowercaseKindToResourceGroupMap,
     handleResourceClick: onResourceClick,
-    showAbsoluteValuesInResourceRecommender,
-    setShowAbsoluteValuesInResourceRecommender,
-    gvkOptions,
-    areGVKOptionsLoading,
-    reloadGVKOptions,
-    gvkOptionsError,
+    resourceRecommenderConfig,
+    gvkFilterConfig,
 }: BaseResourceListProps) => {
     const [filteredResourceList, setFilteredResourceList] = useState<K8sResourceDetailType['data']>(null)
     const [pageSize, setPageSize] = useState(DEFAULT_K8SLIST_PAGE_SIZE)
@@ -582,7 +578,7 @@ const BaseResourceListContent = ({
                         )}
                     </Tooltip>
 
-                    {showAbsoluteValuesInResourceRecommender && (
+                    {resourceRecommenderConfig?.showAbsoluteValuesInResourceRecommender && (
                         <div className="flexbox dc__align-items-center dc__gap-4 dc__word-break">
                             <span className="cn-7 fs-12 fw-5 lh-1-5">
                                 {getResourceRecommendationLabel(current?.value)}
@@ -955,12 +951,8 @@ const BaseResourceListContent = ({
                     updateK8sResourceTab={updateK8sResourceTab}
                     areFiltersHidden={areFiltersHidden}
                     searchPlaceholder={searchPlaceholder}
-                    showAbsoluteValuesInResourceRecommender={showAbsoluteValuesInResourceRecommender}
-                    setShowAbsoluteValuesInResourceRecommender={setShowAbsoluteValuesInResourceRecommender}
-                    gvkOptions={gvkOptions}
-                    areGVKOptionsLoading={areGVKOptionsLoading}
-                    gvkOptionsError={gvkOptionsError}
-                    reloadGVKOptions={reloadGVKOptions}
+                    resourceRecommenderConfig={resourceRecommenderConfig}
+                    gvkFilterConfig={gvkFilterConfig}
                     isResourceListLoading={isLoading}
                 />
             )}

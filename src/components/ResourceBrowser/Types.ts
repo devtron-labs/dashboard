@@ -118,13 +118,17 @@ export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8s
      * @default undefined
      */
     searchPlaceholder?: string
-    showAbsoluteValuesInResourceRecommender?: boolean
-    setShowAbsoluteValuesInResourceRecommender?: React.Dispatch<React.SetStateAction<boolean>>
-    gvkOptions?: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
-    areGVKOptionsLoading?: boolean
-    reloadGVKOptions?: () => void
-    gvkOptionsError?: ServerErrors
     isResourceListLoading?: boolean
+    resourceRecommenderConfig?: {
+        showAbsoluteValuesInResourceRecommender: boolean
+        setShowAbsoluteValuesInResourceRecommender: React.Dispatch<React.SetStateAction<boolean>>
+    }
+    gvkFilterConfig?: {
+        gvkOptions: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
+        areGVKOptionsLoading: boolean
+        reloadGVKOptions: () => void
+        gvkOptionsError: ServerErrors
+    }
 }
 
 export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'isLoading'> {

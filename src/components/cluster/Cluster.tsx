@@ -614,7 +614,7 @@ const Cluster = ({
                     ))}
             </article>
 
-            {showPodSpreadModal && (
+            {PodSpreadModal && showPodSpreadModal && (
                 <PodSpreadModal
                     clusterId={clusterId}
                     handleClose={handleClosePodSpreadModal}

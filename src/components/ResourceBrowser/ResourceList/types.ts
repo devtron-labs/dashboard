@@ -51,15 +51,7 @@ export interface BaseResourceListProps
         >,
         Pick<SidebarType, 'updateK8sResourceTab'>,
         Pick<URLParams, 'nodeType' | 'group'>,
-        Pick<
-            ResourceFilterOptionsProps,
-            | 'showAbsoluteValuesInResourceRecommender'
-            | 'setShowAbsoluteValuesInResourceRecommender'
-            | 'gvkOptions'
-            | 'areGVKOptionsLoading'
-            | 'reloadGVKOptions'
-            | 'gvkOptionsError'
-        > {
+        Pick<ResourceFilterOptionsProps, 'resourceRecommenderConfig' | 'gvkFilterConfig'> {
     isLoading: boolean
     resourceListError: ServerErrors
     resourceList: K8sResourceDetailType

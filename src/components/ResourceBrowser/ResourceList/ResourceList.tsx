@@ -538,12 +538,16 @@ const ResourceList = () => {
         showGenericNullState: false,
         lowercaseKindToResourceGroupMap,
         shouldOverrideSelectedResourceKind: true,
-        setShowAbsoluteValuesInResourceRecommender,
-        showAbsoluteValuesInResourceRecommender,
-        gvkOptions,
-        areGVKOptionsLoading,
-        reloadGVKOptions,
-        gvkOptionsError,
+        resourceRecommenderConfig: {
+            setShowAbsoluteValuesInResourceRecommender,
+            showAbsoluteValuesInResourceRecommender,
+        },
+        gvkFilterConfig: {
+            gvkOptions,
+            areGVKOptionsLoading,
+            reloadGVKOptions,
+            gvkOptionsError,
+        },
     })
 
     const fixedTabComponents = [
