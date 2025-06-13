@@ -46,9 +46,9 @@ import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps, URLParams } from '../Types'
-import { getResourceRecommendationLabel } from './utils'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
+const getResourceRecommendationLabel = importComponentFromFELibrary('getResourceRecommendationLabel', null, 'function')
 
 const ResourceFilterOptions = ({
     selectedResource,
@@ -295,7 +295,7 @@ const ResourceFilterOptions = ({
                             />
                         </div>
 
-                        {isResourceRecommender && (
+                        {isResourceRecommender && getResourceRecommendationLabel && (
                             <ExportToCsv
                                 fileName={FILE_NAMES.ResourceRecommendations}
                                 showOnlyIcon

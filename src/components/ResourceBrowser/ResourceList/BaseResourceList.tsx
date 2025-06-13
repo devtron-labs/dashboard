@@ -90,12 +90,7 @@ import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import ResourceFilterOptions from './ResourceFilterOptions'
 import ResourceListEmptyState from './ResourceListEmptyState'
 import { BaseResourceListProps, BulkOperationsModalState } from './types'
-import {
-    getAppliedColumnsFromLocalStorage,
-    getFirstResourceFromKindResourceMap,
-    getResourceRecommendationLabel,
-    getShowAIButton,
-} from './utils'
+import { getAppliedColumnsFromLocalStorage, getFirstResourceFromKindResourceMap, getShowAIButton } from './utils'
 
 const PodRestartIcon = importComponentFromFELibrary('PodRestartIcon')
 const RBBulkSelectionActionWidget = importComponentFromFELibrary('RBBulkSelectionActionWidget', null, 'function')
@@ -106,6 +101,7 @@ const ApplyResourceRecommendationModal = importComponentFromFELibrary(
     null,
     'function',
 )
+const getResourceRecommendationLabel = importComponentFromFELibrary('getResourceRecommendationLabel', null, 'function')
 
 const RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP = importComponentFromFELibrary(
     'RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP',
@@ -502,7 +498,7 @@ const BaseResourceListContent = ({
     }
 
     const renderColumnValue = (resourceData: K8sResourceDetailDataType, columnName: string, showAIButton: boolean) => {
-        if (isResourceRecommender && resourceData.additionalMetadata?.[columnName]) {
+        if (isResourceRecommender && getResourceRecommendationLabel && resourceData.additionalMetadata?.[columnName]) {
             const { delta, recommended, current } =
                 resourceData.additionalMetadata[columnName as ResourceRecommenderHeaderWithRecommendation]
             const { class: severityChipClass, iconProps } = getSeverityChipIconAndClass(
