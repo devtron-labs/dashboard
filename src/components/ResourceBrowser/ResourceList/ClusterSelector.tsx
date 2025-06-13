@@ -45,7 +45,7 @@ import {
 } from '../Constants'
 import { ClusterOptionType, ClusterSelectorType } from '../Types'
 
-const PageHeaderPopup = importComponentFromFELibrary('PageHeaderPopup', null, 'function')
+const RBPageHeaderPopup = importComponentFromFELibrary('RBPageHeaderPopup', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 
@@ -150,8 +150,8 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 
             {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
 
-            {PageHeaderPopup && !isInstallationStatusView ? (
-                <PageHeaderPopup
+            {RBPageHeaderPopup && !isInstallationStatusView ? (
+                <RBPageHeaderPopup
                     handleDelete={handleOpenDeleteModal}
                     handleHibernationRules={handleOpenHibernationRulesModal}
                     handlePodSpread={handleOpenPodSpreadModal}
