@@ -36,15 +36,12 @@ import {
     GVKType,
     highlightSearchText,
     Icon,
-    IconsProps,
-    isNullOrUndefined,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     Nodes,
     noop,
     Pagination,
     Progressing,
-    ResourceRecommenderHeaderWithRecommendation,
     SelectAllDialogStatus,
     SortableTableHeaderCell,
     Tooltip,
@@ -101,7 +98,7 @@ const ApplyResourceRecommendationModal = importComponentFromFELibrary(
     null,
     'function',
 )
-const getResourceRecommendationLabel = importComponentFromFELibrary('getResourceRecommendationLabel', null, 'function')
+const ResourceRecommendationChip = importComponentFromFELibrary('ResourceRecommendationChip', null, 'function')
 
 const RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP = importComponentFromFELibrary(
     'RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP',
@@ -452,152 +449,21 @@ const BaseResourceListContent = ({
         setShowCreateEnvironmentDrawer(false)
     }
 
-    // Move separately
-    const getSeverityChipIconAndClass = (
-        delta: number,
-        recommendedValue: string,
-        currentValue: string,
-        isTooltipView = false,
-    ): { class: string; iconProps: IconsProps } => {
-        const isRecommendedValueNull = !recommendedValue || recommendedValue === 'none'
-        const isCurrentValueNull = !currentValue || currentValue === 'none'
-
-        if (delta === 0 || (isCurrentValueNull && isRecommendedValueNull)) {
-            return {
-                class: isTooltipView ? 'cn-3' : 'severity-chip--unknown',
-                iconProps: {
-                    color: isTooltipView ? 'N300' : 'N700',
-                    name: 'ic-minus',
-                },
-            }
-        }
-
-        if (delta > 0 || (!isRecommendedValueNull && isCurrentValueNull)) {
-            return {
-                class: isTooltipView ? 'cr-5' : 'severity-chip--critical',
-                iconProps: {
-                    color: isTooltipView ? 'R500' : 'R700',
-                    name: 'ic-arrow-right',
-                    rotateBy: 270,
-                },
-            }
-        }
-
-        return {
-            class: isTooltipView ? 'cg-5' : 'severity-chip--passed',
-            iconProps: {
-                color: isTooltipView ? 'G500' : 'G700',
-                name: 'ic-arrow-right',
-                rotateBy: 90,
-            },
-        }
-    }
-
     const getOpenShowSingleApplyRecommendation = (resourceData: K8sResourceDetailDataType) => () => {
         setApplyResourceRecommendationConfig(resourceData)
     }
 
     const renderColumnValue = (resourceData: K8sResourceDetailDataType, columnName: string, showAIButton: boolean) => {
-        if (isResourceRecommender && getResourceRecommendationLabel && resourceData.additionalMetadata?.[columnName]) {
-            const { delta, recommended, current } =
-                resourceData.additionalMetadata[columnName as ResourceRecommenderHeaderWithRecommendation]
-            const { class: severityChipClass, iconProps } = getSeverityChipIconAndClass(
-                delta,
-                recommended?.value,
-                current?.value,
-            )
-
+        if (isResourceRecommender && ResourceRecommendationChip && resourceData.additionalMetadata?.[columnName]) {
             return (
-                <div key={`${resourceData.id}-${columnName}`} className="flexbox-col dc__gap-4 py-12">
-                    <Tooltip
-                        alwaysShowTippyOnHover
-                        className="no-content-padding"
-                        content={
-                            <div className="flexbox-col">
-                                <div className="flexbox border__white-10--bottom px-8">
-                                    <h6 className="m-0 fs-12 fw-6 lh-18 dc__word-break p-8">
-                                        {RESOURCE_RECOMMENDER_HEADER_TO_TITLE_MAP[columnName] || columnName}
-                                    </h6>
-                                </div>
-
-                                <div className="flexbox-col dc__gap-4 px-16 py-8">
-                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
-                                        <span className="fs-12 fw-4 lh-18">Current</span>
-                                        <span className="fs-12 fw-6 lh-18">
-                                            {getResourceRecommendationLabel(current?.value)}
-                                        </span>
-                                    </div>
-
-                                    <div className="flexbox dc__gap-8 dc__content-space w-100">
-                                        <span className="fs-12 fw-4 lh-18">Recommended</span>
-                                        <span className="fs-12 fw-6 lh-18">
-                                            {getResourceRecommendationLabel(recommended?.value)}
-                                        </span>
-                                    </div>
-
-                                    {isNullOrUndefined(recommended?.value) ? (
-                                        <span className="fs-11 fw-4 lh-1-5">
-                                            No recommendation available due to insufficient data
-                                        </span>
-                                    ) : (
-                                        <div className="flexbox dc__gap-8 dc__content-space w-100">
-                                            <span className="fs-12 fw-4 lh-18">Change</span>
-                                            <div className="flexbox dc__gap-2 dc__align-items-center">
-                                                <Icon
-                                                    {...getSeverityChipIconAndClass(
-                                                        delta,
-                                                        recommended?.value,
-                                                        current?.value,
-                                                        true,
-                                                    ).iconProps}
-                                                    size={12}
-                                                />
-
-                                                <span
-                                                    className={`fs-12 fw-6 lh-18 ${
-                                                        getSeverityChipIconAndClass(
-                                                            delta,
-                                                            recommended?.value,
-                                                            current?.value,
-                                                            true,
-                                                        ).class
-                                                    }`}
-                                                >
-                                                    {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        }
-                    >
-                        {isNullOrUndefined(recommended?.value) ? (
-                            <span>No Recommendation</span>
-                        ) : (
-                            <span
-                                className={`severity-chip ${severityChipClass} h-20 dc__no-border-imp dc_width-max-content dc__mxw-120`}
-                            >
-                                {!isNullOrUndefined(delta) && `${Math.abs(delta)}%`}
-                                <Icon {...iconProps} size={14} />
-                            </span>
-                        )}
-                    </Tooltip>
-
-                    {resourceRecommenderConfig?.showAbsoluteValuesInResourceRecommender && (
-                        <div className="flexbox dc__align-items-center dc__gap-4 dc__word-break">
-                            <span className="cn-7 fs-12 fw-5 lh-1-5">
-                                {getResourceRecommendationLabel(current?.value)}
-                            </span>
-
-                            <Icon name="ic-arrow-right" color="N700" size={12} />
-
-                            <span className="cn-7 fs-12 fw-5 lh-1-5">
-                                {getResourceRecommendationLabel(recommended?.value)}
-                            </span>
-                        </div>
-                    )}
-                </div>
+                <ResourceRecommendationChip
+                    key={`${resourceData.id}-${columnName}`}
+                    resourceInfo={resourceData.additionalMetadata[columnName]}
+                    columnName={columnName}
+                    showAbsoluteValuesInResourceRecommender={
+                        resourceRecommenderConfig?.showAbsoluteValuesInResourceRecommender
+                    }
+                />
             )
         }
 

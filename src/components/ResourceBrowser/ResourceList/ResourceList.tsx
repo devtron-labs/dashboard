@@ -529,7 +529,6 @@ const ResourceList = () => {
         resourceList,
         clusterId,
         reloadResourceListData,
-        // TODO: Have;nt added description since this component should only expect value instead these setters and all
         selectedNamespace:
             namespace === ALL_NAMESPACE_OPTION.value ? ALL_NAMESPACE_OPTION : { value: namespace, label: namespace },
         setSelectedNamespace: noop,
