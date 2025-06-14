@@ -293,7 +293,7 @@ export const DeploymentAppRadioGroup = ({
                         value={DeploymentAppTypes.GITOPS}
                         disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
                     >
-                        GitOps
+                        GitOps (Via Argo CD)
                     </RadioGroupItem>
                 </ConditionalWrap>
             )}
@@ -313,7 +313,7 @@ export const DeploymentAppRadioGroup = ({
                         value={DeploymentAppTypes.FLUX}
                         disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.FLUX) === -1}
                     >
-                        Flux
+                        GitOps (Via Flux CD)
                     </RadioGroupItem>
                 </ConditionalWrap>
             )}

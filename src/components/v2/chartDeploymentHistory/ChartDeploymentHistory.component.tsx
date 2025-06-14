@@ -511,7 +511,8 @@ const ChartDeploymentHistory = ({
                         isHelmApps
                         isGitops={
                             installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS ||
-                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD ||
+                            installedAppInfo?.deploymentType === DeploymentAppTypes.FLUX
                         }
                         installedAppVersionHistoryId={deployment.version}
                         isVirtualEnvironment={isVirtualEnvironment}
