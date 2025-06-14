@@ -490,6 +490,7 @@ export const RegistryType = {
     ECR: 'ecr',
     ARTIFACT_REGISTRY: 'artifact-registry',
     GCR: 'gcr',
+    GITLAB: 'gitlab',
 }
 
 export const RegistryTypeName = {
