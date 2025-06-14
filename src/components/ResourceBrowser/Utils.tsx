@@ -39,7 +39,6 @@ import {
     MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
-    RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -54,12 +53,6 @@ import {
 
 const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     'getMonitoringDashboardTabConfig',
-    null,
-    'function',
-)
-
-const getResourceRecommenderTabConfig = importComponentFromFELibrary(
-    'getResourceRecommenderTabConfig',
     null,
     'function',
 )
@@ -287,7 +280,6 @@ export const getTabsBasedOnRole = ({
     isTerminalSelected = false,
     isOverviewSelected = false,
     isMonitoringDashBoardSelected = false,
-    isResourceRecommenderSelected = false,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
@@ -304,12 +296,7 @@ export const getTabsBasedOnRole = ({
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
             url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
-            isSelected:
-                !isTerminalSelected &&
-                !dynamicTabData &&
-                !isOverviewSelected &&
-                !isMonitoringDashBoardSelected &&
-                !isResourceRecommenderSelected,
+            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
             type: 'fixed',
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -321,15 +308,6 @@ export const getTabsBasedOnRole = ({
                       getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
                       isMonitoringDashBoardSelected,
                       MONITORING_DASHBOARD_TAB_ID,
-                  ),
-              ]
-            : []),
-        ...(getResourceRecommenderTabConfig
-            ? [
-                  getResourceRecommenderTabConfig(
-                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.resourceRecommenderGVK.Kind, clusterId, namespace),
-                      isResourceRecommenderSelected,
-                      RESOURCE_RECOMMENDER_TAB_ID,
                   ),
               ]
             : []),

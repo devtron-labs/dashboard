@@ -253,7 +253,6 @@ export interface RBSidebarKeysType {
     overviewGVK: GVKType
     monitoringGVK: GVKType
     upgradeClusterGVK: GVKType
-    resourceRecommenderGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {

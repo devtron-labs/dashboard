@@ -19,8 +19,6 @@ import dayjs from 'dayjs'
 
 import { DynamicTabType, InitTabType, noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import { MONITORING_DASHBOARD_TAB_ID, RESOURCE_RECOMMENDER_TAB_ID } from '@Components/ResourceBrowser/Constants'
-
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
 
@@ -180,21 +178,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
-                    if (parsedTabsData.version !== TAB_DATA_VERSION) {
-                        // Adding resource recommender next to monitoring tab
-                        const resourceRecommenderInitTab = initTabsData.find(
-                            (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
-                        )
-
-                        const monitoringTabIndex = initTabsData.findIndex(
-                            (tab) => tab.id === MONITORING_DASHBOARD_TAB_ID,
-                        )
-
-                        if (!!resourceRecommenderInitTab && monitoringTabIndex > -1) {
-                            initTabsData.splice(monitoringTabIndex + 1, 0, resourceRecommenderInitTab)
-                        }
-                    }
-
                     _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
                 } catch {
                     _tabs = prevTabs
