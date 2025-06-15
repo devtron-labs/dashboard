@@ -49,7 +49,7 @@ const K8SResourceTabComponent = ({
                     Promise.all([
                         getResourceGroupList(clusterId, abortControllerRef.current?.signal),
                         // TODO: this api call is be to removed after airtel demo
-                        clusterId === '1' ? getPodAndPVCResourcesStatus(1) : null,
+                        getPodAndPVCResourcesStatus(Number(clusterId)),
                     ]),
                 abortControllerRef,
             ),
