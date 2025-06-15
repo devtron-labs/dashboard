@@ -184,14 +184,18 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                         // Adding resource recommender next to monitoring tab
                         const resourceRecommenderInitTab = initTabsData.find(
                             (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
-                        )
+                        ) as DynamicTabType
 
-                        const monitoringTabIndex = initTabsData.findIndex(
+                        const monitoringTabIndex = parsedTabsData.data[persistenceKey].findIndex(
                             (tab) => tab.id === MONITORING_DASHBOARD_TAB_ID,
                         )
 
                         if (!!resourceRecommenderInitTab && monitoringTabIndex > -1) {
-                            initTabsData.splice(monitoringTabIndex + 1, 0, resourceRecommenderInitTab)
+                            parsedTabsData.data[persistenceKey].splice(
+                                monitoringTabIndex + 1,
+                                0,
+                                resourceRecommenderInitTab,
+                            )
                         }
                     }
 
