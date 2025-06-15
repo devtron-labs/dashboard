@@ -81,13 +81,13 @@ export const getSortedClusterList = (
                 ),
             )
             break
-        case ClusterMapListSortableKeys.NODE_ERRORS:
-            updatedClusterOptions.sort((a, b) => {
-                const errorsA = a.nodeErrors ? Object.keys(a.nodeErrors).length : 0
-                const errorsB = b.nodeErrors ? Object.keys(b.nodeErrors).length : 0
-                return numberComparatorBySortOrder(errorsA, errorsB, sortOrder)
-            })
-            break
+        // case ClusterMapListSortableKeys.NODE_ERRORS:
+        //     updatedClusterOptions.sort((a, b) => {
+        //         const errorsA = a.nodeErrors ? Object.keys(a.nodeErrors).length : 0
+        //         const errorsB = b.nodeErrors ? Object.keys(b.nodeErrors).length : 0
+        //         return numberComparatorBySortOrder(errorsA, errorsB, sortOrder)
+        //     })
+        //     break
         default:
             break
     }

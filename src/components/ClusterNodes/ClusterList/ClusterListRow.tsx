@@ -40,7 +40,7 @@ const ClusterListRow = ({
 }: ClusterListRowTypes) => {
     const { selectedIdentifiers: bulkSelectionState, getSelectedIdentifiersCount } =
         useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
-    const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
+    // const errorCount = clusterData.nodeErrors ? Object.keys(clusterData.nodeErrors).length : 0
     const identifierCount = getSelectedIdentifiersCount()
 
     const hideDataOnLoad = (value) => {
@@ -136,7 +136,7 @@ const ClusterListRow = ({
                 {hideDataOnLoad(clusterData.isProd ? CLUSTER_PROD_TYPE.PRODUCTION : CLUSTER_PROD_TYPE.NON_PRODUCTION)}
             </div>
             <div className="child-shimmer-loading">{hideDataOnLoad(clusterData.nodeCount)}</div>
-            <div className="child-shimmer-loading">
+            {/* <div className="child-shimmer-loading">
                 {errorCount > 0 &&
                     hideDataOnLoad(
                         <Tooltip alwaysShowTippyOnHover content={`${errorCount} nodes with error`}>
@@ -146,7 +146,7 @@ const ClusterListRow = ({
                             </div>
                         </Tooltip>,
                     )}
-            </div>
+            </div> */}
             <div className="flexbox child-shimmer-loading">
                 {hideDataOnLoad(
                     <Tooltip content={clusterData.serverVersion}>
