@@ -612,6 +612,8 @@ export default function BuildCD({
                 isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                 gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+                // Want to show this when gitops module is installed, does not matter if it is configured or not
+                showGitOpsOption={!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured}
             />
         </div>
     )
@@ -802,8 +804,6 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
-                    // Want to show this when gitops module is installed, does not matter if it is configured or not
-                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
                     renderDeploymentAppType()}
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
