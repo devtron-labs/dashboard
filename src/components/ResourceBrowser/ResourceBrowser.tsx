@@ -77,7 +77,10 @@ const ResourceBrowser: React.FC = () => {
                                   {},
                               )
                             : item.nodeErrors,
-                        status: resourcesErrors.length ? ClusterStatusType.UNHEALTHY : item.status,
+                        status:
+                            item.id === DEFAULT_CLUSTER_ID && resourcesErrors.length
+                                ? ClusterStatusType.UNHEALTHY
+                                : item.status,
                     }
                 }),
         [detailClusterList, clusterListMinData, podAndPVCResourcesStatus],
