@@ -16,12 +16,11 @@
 
 import { useLocation } from 'react-router-dom'
 
-import { DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentHistoryDetail, DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 
 import { deepEqual } from '../../../common'
-import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { TRIGGER_VIEW_PARAMS } from './Constants'
 import { TriggerViewDeploymentConfigType } from './types'
 

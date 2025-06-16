@@ -20,7 +20,6 @@ import {
     showError,
     Progressing,
     ErrorScreenManager,
-    ConditionalWrap,
     WorkflowNodeType,
     PipelineType,
     AddPipelineType,
@@ -43,8 +42,8 @@ import {
     ComponentSizeType,
     ButtonVariantType,
     ButtonStyleType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType } from '../../config'
 import { importComponentFromFELibrary, InValidHostUrlWarningBlock } from '../common'
@@ -60,7 +59,6 @@ import emptyWorkflow from '../../assets/img/ic-empty-workflow@3x.png'
 import LinkedCIPipeline from '../ciPipeline/LinkedCIPipelineEdit'
 import LinkedCIPipelineView from '../ciPipeline/LinkedCIPipelineView'
 import { ReactComponent as ICHelpOutline } from '../../assets/img/ic-help-outline.svg'
-import { ReactComponent as ICAddWhite } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as ICClose } from '../../assets/icons/ic-close.svg'
 import { getHostURLConfiguration, isGitOpsModuleInstalledAndConfigured } from '../../services/service'
 import './workflowEditor.scss'
@@ -73,6 +71,7 @@ import { WorkflowCreate } from '../app/details/triggerView/config'
 import { LinkedCIDetail } from '../../Pages/Shared/LinkedCIDetailsModal'
 import { WORKFLOW_EDITOR_HEADER_TIPPY } from './constants'
 import { CreateCICDPipeline } from '@Pages/App/Configurations'
+import { getAnalyticsAction } from './utils'
 
 export const pipelineContext = createContext<PipelineContext>(null)
 const SyncEnvironment = importComponentFromFELibrary('SyncEnvironment')
@@ -336,6 +335,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     addCIPipeline = (type: CIPipelineNodeType, workflowId?: number | string) => {
         this.handleCISelect(workflowId || 0, type)
+        if (!workflowId) {
+            const action = getAnalyticsAction(type)
+            if (action) {
+                handleAnalyticsEvent({ category: 'New Workflow', action })
+            }
+        }
     }
 
     addWebhookCD = (workflowId?: number | string) => {
@@ -350,6 +355,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 workflowId || 0
             }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}/0/build`,
         )
+        if (!workflowId) {
+            handleAnalyticsEvent({ category: 'New Workflow', action: 'DA_NEW_WORKLFOW_EXTERNAL_IMAGE' })
+        }
     }
 
     // Replace this with addCISelect
@@ -367,6 +375,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 changeCIPayload?.switchFromCiPipelineId ?? 0
             }&switchFromExternalCiPipelineId=${changeCIPayload?.switchFromExternalCiPipelineId ?? 0}`,
         )
+        if (!changeCIPayload?.appWorkflowId) {
+            handleAnalyticsEvent({ category: 'New Workflow', action: 'DA_NEW_WORKLFOW_SYNC_WITH_CD' })
+        }
     }
 
     handleCDSelect = (
@@ -780,17 +791,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     renderNewJobPipelineButton = () => {
         return (
-            <button
-                type="button"
-                className="cta flexbox dc__align-items-center pt-6 pr-10 pb-6 pl-8 dc__gap-6 h-32"
-                data-testid="job-pipeline-button"
+            <Button
+                dataTestId="job-pipeline-button"
                 onClick={this.openCreateModal}
-            >
-                <div className="flexbox dc__content-space dc__align-items-center h-20">
-                    <ICAddWhite className="icon-dim-18 mr-5" />
-                    <p className="m-0 fs-13 lh-20 cn-0">Job pipeline</p>
-                </div>
-            </button>
+                text="Job pipeline"
+                startIcon={<Icon name="ic-add" color={null} />}
+                size={ComponentSizeType.medium}
+            />
         )
     }
 

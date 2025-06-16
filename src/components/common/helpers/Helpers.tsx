@@ -33,8 +33,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
-import ReactGA from 'react-ga4'
-import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
+import { getDateInMilliseconds } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { K8SObjectType } from '../../ResourceBrowser/Types'
 import {
@@ -972,13 +971,6 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     } catch (err) {
         return matchString
     }
-}
-
-export const trackByGAEvent = (category: string, action: string): void => {
-    ReactGA.event({
-        category,
-        action,
-    })
 }
 
 export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {

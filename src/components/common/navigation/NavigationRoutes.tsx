@@ -76,7 +76,7 @@ import {
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
 import { AppRouterType } from '../../../services/service.types'
-import { getUserRole } from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
+import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
@@ -112,6 +112,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
+const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
@@ -127,6 +128,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const location = useLocation()
     const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
+    const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -157,7 +159,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
 
     const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({
-        open: false,
+        state: 'closed',
         docLink: null,
         reinitialize: false,
     })
@@ -508,6 +510,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
+                aiAgentContext,
+                setAIAgentContext,
                 sidePanelConfig,
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
@@ -515,6 +519,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
             }}
         >
             <ConfirmationModalProvider>
+                <BaseConfirmationModal />
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                     {showThemeSwitcherDialog && (
                         <SwitchThemeDialog
@@ -541,7 +546,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                     {serverMode && (
                         <>
                             <div
-                                className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${!sidePanelConfig.open ? 'mr-8' : ''}`}
+                                className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                                 ref={navRouteRef}
                             >
                                 <Banner />
@@ -693,7 +698,6 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                         </>
                     )}
                 </motion.main>
-                <BaseConfirmationModal />
             </ConfirmationModalProvider>
         </MainContextProvider>
     )

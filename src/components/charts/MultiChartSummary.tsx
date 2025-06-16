@@ -248,7 +248,6 @@ const SelectedChartWidget: React.FC<SelectedChartWidget> = ({
             <div className="p-12 flex left" onClick={configureChart}>
                 <div className="chart-bg">
                     <img className="chart-icon" src={icon || ''} alt="" onError={handleImageError} />
-                    <Warning className="chart-warn" />
                 </div>
                 <div className="flex left column ml-18">
                     <b className="chart-name" data-testid={`selected-chart-${index}`}>
