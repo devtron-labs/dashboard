@@ -36,12 +36,7 @@ import { generatePath, Route, withRouter } from 'react-router-dom'
 import { ReactComponent as ClusterIcon } from '@Icons/ic-cluster.svg'
 import { importComponentFromFELibrary } from '../common'
 import { List } from '../globalConfigurations/GlobalConfiguration'
-import {
-    getClusterList,
-    getEnvironmentList,
-    getCluster,
-    deleteEnvironment,
-} from './cluster.service'
+import { getClusterList, getEnvironmentList, getCluster, deleteEnvironment } from './cluster.service'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
 import { ReactComponent as Database } from '@Icons/ic-env.svg'
 import { ReactComponent as PencilEdit } from '@Icons/ic-pencil.svg'
@@ -64,6 +59,7 @@ const getSSHConfig: (
 const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 const EditClusterPopup = importComponentFromFELibrary('EditClusterPopup', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
+const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 
 class ClusterList extends Component<ClusterListProps, any> {
     timerRef
@@ -255,9 +251,7 @@ class ClusterList extends Component<ClusterListProps, any> {
                 )}
 
                 <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <CreateCluster
-                        handleReloadClusterList={this.initialise}
-                    />
+                    <CreateCluster handleReloadClusterList={this.initialise} />
                 </Route>
 
                 <Route
@@ -314,6 +308,7 @@ const Cluster = ({
     const [showWindow, setShowWindow] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
     const [showPodSpreadModal, setShowPodSpreadModal] = useState(false)
+    const [showHibernationRulesModal, setShowHibernationRulesModal] = useState(false)
 
     const drawerRef = useRef(null)
 
@@ -412,6 +407,14 @@ const Cluster = ({
         setShowPodSpreadModal(true)
     }
 
+    const handleOpenHibernationRulesModal = () => {
+        setShowHibernationRulesModal(true)
+    }
+
+    const handleCloseHibernationRulesModal = () => {
+        setShowHibernationRulesModal(false)
+    }
+
     const renderEditButton = () => {
         if (!clusterId) {
             return null
@@ -422,6 +425,7 @@ const Cluster = ({
                 <EditClusterPopup
                     handleOpenEditClusterModal={handleEdit}
                     handleOpenPodSpreadModal={handleOpenPodSpreadModal}
+                    handleOpenHibernationRulesModal={handleOpenHibernationRulesModal}
                     clusterId={clusterId}
                 />
             )
@@ -615,10 +619,11 @@ const Cluster = ({
             </article>
 
             {PodSpreadModal && showPodSpreadModal && (
-                <PodSpreadModal
-                    clusterId={clusterId}
-                    handleClose={handleClosePodSpreadModal}
-                />
+                <PodSpreadModal clusterId={clusterId} handleClose={handleClosePodSpreadModal} />
+            )}
+
+            {HibernationRulesModal && showHibernationRulesModal && (
+                <HibernationRulesModal clusterId={clusterId} handleClose={handleCloseHibernationRulesModal} />
             )}
 
             {showWindow && (
