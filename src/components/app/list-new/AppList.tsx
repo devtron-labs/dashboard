@@ -29,6 +29,7 @@ import {
 
 import {
     AppListConstants,
+    FeatureTitleWithInfo,
     FilterChips,
     getNamespaceListMin,
     handleUTCTime,
@@ -420,9 +421,11 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         )
     }
 
+    const renderApplicationsInfo = () => <FeatureTitleWithInfo title="Applications" />
+
     return (
         <div ref={appListContainerRef} className="flexbox-col h-100 dc__overflow-auto">
-            <HeaderWithCreateButton headerName="Applications" />
+            <HeaderWithCreateButton headerName="" additionalHeaderInfo={renderApplicationsInfo} />
             <AppListFilters
                 filterConfig={filterConfig}
                 appCount={appCount}
