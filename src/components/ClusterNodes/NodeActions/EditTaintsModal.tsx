@@ -24,15 +24,12 @@ import {
     ComponentSizeType,
     Drawer,
     DynamicDataTable,
-    GenericEmptyState,
     Icon,
     InfoIconTippy,
     showError,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import ImgEmptyChartGroup from '@Images/ic-empty-chartgroup@2x.png'
 
 import { updateTaints } from '../clusterNodes.service'
 import { EDIT_TAINTS_MODAL_MESSAGING, TAINTS_TABLE_HEADERS } from '../constants'
@@ -76,9 +73,6 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
     // HOOKS
     const { clusterId } = useParams<{ clusterId: string }>()
 
-    // CONSTANTS
-    const isTaintListEmpty = taintList.length === 0
-
     // HANDLERS
     const onClose = () => {
         if (!apiCallInProgress) {
@@ -100,23 +94,29 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
         const updatedTaintCellError = structuredClone(taintCellError)
         delete updatedTaintCellError[row.id]
 
+        if (filteredTaintList.length === 0) {
+            const newTaintsRow = getTaintsTableRow()
+            filteredTaintList.push(newTaintsRow)
+            updatedTaintCellError[newTaintsRow.id] = getTaintsRowCellError()
+        }
+
         setTaintList(filteredTaintList)
         setTaintCellError(updatedTaintCellError)
     }
 
     const handleEditTaint: TaintsTableType['onRowEdit'] = (row, headerKey, value) => {
-        const updatedTaintList = taintList.map((taint) =>
-            taint.id === row.id
-                ? { ...taint, data: { ...taint.data, [headerKey]: { ...taint.data[headerKey], value } } }
-                : taint,
-        )
-        const updatedTaintCellError = {
-            ...taintCellError,
-            [row.id]: {
-                ...taintCellError[row.id],
-                [headerKey]: getTaintsTableCellValidateState(headerKey, value),
-            },
+        const indexToUpdateInTaintList = taintList.findIndex((taint) => taint.id === row.id)
+        if (indexToUpdateInTaintList === -1) {
+            return
         }
+
+        const updatedTaintList = taintList
+        const updatedTaintRow = taintList[indexToUpdateInTaintList]
+        updatedTaintRow.data[headerKey].value = value
+        updatedTaintList[indexToUpdateInTaintList] = updatedTaintRow
+
+        const updatedTaintCellError = structuredClone(taintCellError)
+        updatedTaintCellError[row.id][headerKey] = getTaintsTableCellValidateState(headerKey, updatedTaintRow)
         validateUniqueTaintKey({ taintCellError: updatedTaintCellError, taintList: updatedTaintList })
 
         setTaintList(updatedTaintList)
@@ -173,77 +173,56 @@ const EditTaintsModal = ({ name, version, kind, taints, closePopup }: EditTaints
                     />
                 </div>
                 <div className="flex-grow-1 dc__overflow-auto flexbox-col dc__gap-16 p-20">
-                    {isTaintListEmpty ? (
-                        <GenericEmptyState
-                            title={EDIT_TAINTS_MODAL_MESSAGING.emptyState.title}
-                            subTitle={EDIT_TAINTS_MODAL_MESSAGING.emptyState.subTitle}
-                            image={ImgEmptyChartGroup}
-                            isButtonAvailable
-                            renderButton={() => (
-                                <Button
-                                    dataTestId="add-taint"
-                                    text={EDIT_TAINTS_MODAL_MESSAGING.addTaint}
-                                    startIcon={<Icon name="ic-add" color={null} />}
-                                    onClick={handleAddTaint}
-                                />
-                            )}
-                        />
-                    ) : (
-                        <>
-                            <div className="flex dc__content-space">
-                                <div className="flex">
-                                    <Icon name="ic-spray-can" color="N900" />
-                                    <h3 className="fs-14 lh-20 fw-6 cn-9 mt-0 mb-0 ml-8 mr-4">
-                                        {EDIT_TAINTS_MODAL_MESSAGING.infoTitle}
-                                    </h3>
-                                    <InfoIconTippy
-                                        heading="Taints"
-                                        documentationLinkText="View documentation"
-                                        documentationLink="TAINT"
-                                        additionalContent={<AdditionalContent />}
-                                        openInNewTab
-                                    />
-                                </div>
-                                <Button
-                                    dataTestId="add-taint"
-                                    variant={ButtonVariantType.secondary}
-                                    startIcon={<Icon name="ic-add" color={null} />}
-                                    size={ComponentSizeType.small}
-                                    text={EDIT_TAINTS_MODAL_MESSAGING.addTaint}
-                                    onClick={handleAddTaint}
-                                />
-                            </div>
-                            <DynamicDataTable<TaintsTableHeaderKeys>
-                                headers={TAINTS_TABLE_HEADERS}
-                                rows={taintList}
-                                onRowAdd={handleAddTaint}
-                                onRowDelete={handleDeleteTaint}
-                                onRowEdit={handleEditTaint}
-                                cellError={taintCellError}
-                                isAdditionNotAllowed
-                                shouldAutoFocusOnMount
+                    <div className="flex dc__content-space">
+                        <div className="flex">
+                            <Icon name="ic-spray-can" color="N900" />
+                            <h3 className="fs-14 lh-20 fw-6 cn-9 mt-0 mb-0 ml-8 mr-4">
+                                {EDIT_TAINTS_MODAL_MESSAGING.infoTitle}
+                            </h3>
+                            <InfoIconTippy
+                                heading="Taints"
+                                documentationLinkText="View documentation"
+                                documentationLink="TAINT"
+                                additionalContent={<AdditionalContent />}
+                                openInNewTab
                             />
-                        </>
-                    )}
-                </div>
-                {!isTaintListEmpty && (
-                    <div className="dc__border-top flex right p-16 dc__gap-12">
+                        </div>
                         <Button
-                            dataTestId="edit-taints-modal-cancel"
+                            dataTestId="add-taint"
                             variant={ButtonVariantType.secondary}
-                            style={ButtonStyleType.neutral}
-                            disabled={apiCallInProgress}
-                            text={EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
-                            onClick={onClose}
-                        />
-                        <Button
-                            dataTestId="edit-taints-modal-save"
-                            isLoading={apiCallInProgress}
-                            text={EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
-                            onClick={onSave}
+                            startIcon={<Icon name="ic-add" color={null} />}
+                            size={ComponentSizeType.small}
+                            text={EDIT_TAINTS_MODAL_MESSAGING.addTaint}
+                            onClick={handleAddTaint}
                         />
                     </div>
-                )}
+                    <DynamicDataTable<TaintsTableHeaderKeys>
+                        headers={TAINTS_TABLE_HEADERS}
+                        rows={taintList}
+                        onRowAdd={handleAddTaint}
+                        onRowDelete={handleDeleteTaint}
+                        onRowEdit={handleEditTaint}
+                        cellError={taintCellError}
+                        isAdditionNotAllowed
+                        shouldAutoFocusOnMount
+                    />
+                </div>
+                <div className="dc__border-top flex right p-16 dc__gap-12">
+                    <Button
+                        dataTestId="edit-taints-modal-cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        disabled={apiCallInProgress}
+                        text={EDIT_TAINTS_MODAL_MESSAGING.Actions.cancel}
+                        onClick={onClose}
+                    />
+                    <Button
+                        dataTestId="edit-taints-modal-save"
+                        isLoading={apiCallInProgress}
+                        text={EDIT_TAINTS_MODAL_MESSAGING.Actions.save}
+                        onClick={onSave}
+                    />
+                </div>
             </div>
         </Drawer>
     )
