@@ -124,7 +124,7 @@ const ChartCard = ({
                         fontSize={14}
                     />
                     <div className="chart-name__arrow dc__no-shrink flex">
-                        <Icon name="ic-caret-right-small" color="B500" />
+                        <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
                     </div>
                 </div>
                 {chart.deprecated && renderDeprecatedWarning()}
