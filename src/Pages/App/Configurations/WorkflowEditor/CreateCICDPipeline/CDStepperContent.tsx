@@ -85,22 +85,22 @@ export const CDStepperContent = ({
         setCiCdPipeline({ ci, cd })
     }
 
-    const checkGitOpsRepoConflict = () => {
+    const checkGitOpsRepoConflict = async () => {
         setGitopsConflictLoading(true)
-        getGitOpsRepoConfig(+appId)
-            .then(() => {
-                push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
-            })
-            .catch((err) => {
-                if (err.code === API_STATUS_CODES.CONFLICT) {
-                    setReloadNoGitOpsRepoConfiguredModal(true)
-                } else {
-                    showError(err)
-                }
-            })
-            .finally(() => {
-                setGitopsConflictLoading(false)
-            })
+
+        try {
+            await getGitOpsRepoConfig(+appId)
+
+            setGitopsConflictLoading(false)
+            push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+        } catch (err) {
+            setGitopsConflictLoading(false)
+            if (err.code === API_STATUS_CODES.CONFLICT) {
+                setReloadNoGitOpsRepoConfiguredModal(true)
+            } else {
+                showError(err)
+            }
+        }
     }
 
     // RENDERERS

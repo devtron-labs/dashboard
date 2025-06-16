@@ -1,10 +1,12 @@
 import {
     DeploymentAppTypes,
+    DeploymentStrategy,
     getEnvironmentListMinPublic,
     getIsRequestAborted,
     ModuleNameMap,
     ModuleStatus,
     ReleaseMode,
+    SavedDeploymentStrategy,
     showError,
     TriggerType,
     YAMLStringify,
@@ -18,7 +20,7 @@ import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackMa
 
 import { CreateCICDPipelineData } from './types'
 
-const getSavedStrategies = (strategies: any[]) => {
+const getSavedStrategies = (strategies: DeploymentStrategy[]): SavedDeploymentStrategy[] => {
     if (strategies.length > 0) {
         const allStrategies = strategies.reduce((acc, strategy) => {
             acc[strategy.deploymentTemplate] = strategy.config

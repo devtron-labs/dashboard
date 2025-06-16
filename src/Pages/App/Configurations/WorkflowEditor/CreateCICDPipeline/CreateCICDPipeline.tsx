@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import {
+    API_STATUS_CODES,
     APIResponseHandler,
     ButtonStyleType,
     ComponentSizeType,
@@ -133,15 +134,11 @@ export const CreateCICDPipeline = ({
             })
         }
 
-        if (
+        return (
             gitOpsRepoNotConfiguredAndOptionsHidden ||
             isGitOpsRepoNotConfiguredAndGitopsEnforced ||
             isGitOpsRepoNotConfiguredAndOptionsVisible
-        ) {
-            return true
-        }
-
-        return false
+        )
     }
 
     const createWorkflow = async ({ shouldCreateCINode }: { shouldCreateCINode: boolean }) => {
@@ -239,7 +236,7 @@ export const CreateCICDPipeline = ({
                 setCdNodeCreateError(cdNodeRes.reason)
 
                 if (!shouldCreateCINode) {
-                    if (cdNodeRes.reason.code === 409) {
+                    if (cdNodeRes.reason.code === API_STATUS_CODES.CONFLICT) {
                         setReloadNoGitOpsRepoConfiguredModal(true)
                     } else {
                         showError(cdNodeRes.reason)
