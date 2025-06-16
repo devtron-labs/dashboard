@@ -362,5 +362,5 @@ export const NODE_RESOURCE_THRESHOLD_OPERATOR_MAP: Record<ResourceDetail['thresh
 
 export const NODE_RESOURCE_DEFAULT_THRESHOLD: ResourceDetail['threshold'] = {
     operator: 'greaterThan',
-    value: 20,
+    value: 90,
 }
