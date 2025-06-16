@@ -291,7 +291,7 @@ export const CreateCICDPipeline = ({
         {
             id: 'build',
             icon: 'ic-build-color',
-            title: 'Build and deploy from source code',
+            title: 'Select code source to build image',
             content: (
                 <CIStepperContent
                     ciCdPipeline={ciCdPipeline}
@@ -338,7 +338,7 @@ export const CreateCICDPipeline = ({
             >
                 <GenericModal.Header title="Build and deploy from source code" />
                 <GenericModal.Body>
-                    <div className="flex ci-cd-pipeline px-20 py-16 dc__overflow-auto">
+                    <div className="flex ci-cd-pipeline px-20 py-16 bg__secondary dc__overflow-auto">
                         <APIResponseHandler
                             isLoading={isCiCdPipelineLoading}
                             progressingProps={{ pageLoader: true }}

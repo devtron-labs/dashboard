@@ -17,7 +17,7 @@
             content: '';
             position: absolute;
             width: 1px;
-            background-color: var(--border-secondary);
+            background-color: var(--border-secondary-translucent);
         }
 
         &::before {
