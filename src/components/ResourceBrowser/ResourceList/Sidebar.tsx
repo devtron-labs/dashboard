@@ -23,6 +23,7 @@ import DOMPurify from 'dompurify'
 import {
     ApiResourceGroupType,
     highlightSearchText,
+    Icon,
     Nodes,
     ReactSelectInputAction,
     useRegisterShortcut,
@@ -386,14 +387,19 @@ const Sidebar = ({
                     )}
                 </div>
                 {!!list?.size &&
-                    [...list.values()].map((k8sObject) =>
-                        k8sObject.name === AggregationKeys.Events ||
-                        k8sObject.name === AggregationKeys.Namespaces ||
-                        k8sObject.name === AggregationKeys.Nodes ? null : (
+                    [...list.values()].map((k8sObject) => {
+                        const hasErrorsInChild = [...k8sObject.child.values()].flatMap((value) => {
+                            const filteredArr = value.data.filter((item) => !!resourceStatus[item.gvk.Kind])
+                            return filteredArr.length > 0 ? filteredArr : []
+                        })
+
+                        return k8sObject.name === AggregationKeys.Events ||
+                            k8sObject.name === AggregationKeys.Namespaces ||
+                            k8sObject.name === AggregationKeys.Nodes ? null : (
                             <div key={`${k8sObject.name}-parent`}>
                                 <button
                                     type="button"
-                                    className={`dc__unset-button-styles dc__zi-1 bg__primary w-100 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
+                                    className={`dc__unset-button-styles dc__zi-1 bg__primary w-100 pr-8 ${k8sObject.isExpanded ? 'dc__position-sticky' : ''}`}
                                     style={{ top: '-8px' }}
                                     data-group-name={k8sObject.name}
                                     onClick={getGroupHeadingClickHandler(false, true)}
@@ -411,6 +417,16 @@ const Sidebar = ({
                                         >
                                             {k8sObject.name}
                                         </span>
+                                        {!!hasErrorsInChild.length && (
+                                            <Icon
+                                                name={
+                                                    RESOURCE_STATUS_FILTER_ICON_MAP[
+                                                        resourceStatus[hasErrorsInChild[0].gvk.Kind]
+                                                    ]
+                                                }
+                                                color={null}
+                                            />
+                                        )}
                                     </div>
                                 </button>
                                 {k8sObject.isExpanded && (
@@ -421,8 +437,8 @@ const Sidebar = ({
                                     </div>
                                 )}
                             </div>
-                        ),
-                    )}
+                        )
+                    })}
             </div>
         </div>
     )
