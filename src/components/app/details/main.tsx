@@ -65,7 +65,15 @@ const AIAgentContextSetterWrapper = ({ children, appName }: PropsWithChildren<{ 
     const { path, url } = useRouteMatch()
 
     useEffect(() => {
-        setAIAgentContext({ path, context: { appName, ...params }})
+        const contextData: Record<string, string> = {
+            ...params,
+        }
+        if (contextData.buildId) {
+            // For build history page
+            contextData['Workflow_id'] = contextData.buildId
+            delete contextData.buildId
+        }
+        setAIAgentContext({ path, context: { appName, ...contextData }})
     }, [path, url])
 
     return <>{children}</>

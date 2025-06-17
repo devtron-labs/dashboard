@@ -27,7 +27,6 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICCaretSmall } from '@Icons/ic-caret-left-small.svg'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 import { ReactComponent as Helm } from '../../assets/icons/ic-default-chart.svg'
@@ -125,7 +124,7 @@ const ChartCard = ({
                         fontSize={14}
                     />
                     <div className="chart-name__arrow dc__no-shrink flex">
-                        <ICCaretSmall className="icon-dim-16 dc__flip-180 scb-5" />
+                        <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
                     </div>
                 </div>
                 {chart.deprecated && renderDeprecatedWarning()}
