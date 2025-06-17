@@ -186,6 +186,10 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
                         ) as DynamicTabType
 
+                        parsedTabsData.data[persistenceKey] = (parsedTabsData.data[persistenceKey] ?? []).filter(
+                            (tab) => tab.id !== RESOURCE_RECOMMENDER_TAB_ID,
+                        )
+
                         const monitoringTabIndex = parsedTabsData.data[persistenceKey].findIndex(
                             (tab) => tab.id === MONITORING_DASHBOARD_TAB_ID,
                         )
