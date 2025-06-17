@@ -169,7 +169,7 @@ export const CDStepperContent = ({
                 </div>
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !selectedEnvironment?.isVirtualEnvironment &&
-                    selectedEnvironment?.allowedDeploymentTypes.length > 0 &&
+                    selectedEnvironment?.allowedDeploymentTypes?.length > 0 &&
                     // Want to show this when gitops module is installed, does not matter if it is configured or not
                     (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) && (
                         <div className="mt-16">

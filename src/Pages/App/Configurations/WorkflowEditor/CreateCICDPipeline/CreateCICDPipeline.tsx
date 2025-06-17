@@ -102,7 +102,7 @@ export const CreateCICDPipeline = ({
 
     const checkForGitOpsRepoNotConfigured = () => {
         const isHelmEnforced =
-            selectedEnvironment.allowedDeploymentTypes.length === 1 &&
+            selectedEnvironment?.allowedDeploymentTypes?.length === 1 &&
             selectedEnvironment.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
 
         const gitOpsRepoNotConfiguredAndOptionsHidden =
@@ -121,7 +121,7 @@ export const CreateCICDPipeline = ({
             !window._env_.HIDE_GITOPS_OR_HELM_OPTION
 
         const isGitOpsRepoNotConfiguredAndGitopsEnforced =
-            isGitOpsRepoNotConfiguredAndOptionsVisible && selectedEnvironment.allowedDeploymentTypes.length === 1
+            isGitOpsRepoNotConfiguredAndOptionsVisible && selectedEnvironment?.allowedDeploymentTypes?.length === 1
 
         if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
             setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
