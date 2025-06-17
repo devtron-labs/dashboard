@@ -37,7 +37,6 @@ import Tippy from '@tippyjs/react'
 import { Select, mapByKey, sortOptionsByLabel } from '../../common'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import ChartCard from '../ChartCard'
-import ChartGroupList from './ChartGroup'
 import ChartGroupCard from '../util/ChartGroupCard'
 import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
 import MultiChartSummary from '../MultiChartSummary'
@@ -63,6 +62,7 @@ import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.sv
 import ChartListPopUp from './ChartListPopUp'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
 import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
+import ChartGroupRouter from './ChartGroup'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
@@ -712,7 +712,7 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
     return (
         <Switch>
             <Route path={`${path}/group`}>
-                <ChartGroupList />
+                <ChartGroupRouter />
             </Route>
             <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}`} component={SavedValuesList} exact />
             <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
