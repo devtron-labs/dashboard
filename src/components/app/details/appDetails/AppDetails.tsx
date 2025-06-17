@@ -235,7 +235,7 @@ const Details: React.FC<DetailsType> = ({
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
-    const [cdModalMaterialType, setCdModalMaterialType] = useState<string | null>(null)
+    const [CDModalMaterialType, setCDModalMaterialType] = useState<string | null>(null)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
 
     const [hibernationPatchChartName, setHibernationPatchChartName] = useState<string>('')
@@ -551,7 +551,7 @@ const Details: React.FC<DetailsType> = ({
                 mode: URL_PARAM_MODE_TYPE.LIST,
             }).toString(),
         })
-        setCdModalMaterialType(isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList)
+        setCDModalMaterialType(isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList)
 
         if (isForRollback) {
             handleAnalyticsEvent(
@@ -567,7 +567,7 @@ const Details: React.FC<DetailsType> = ({
     }
 
     const handleCloseCDModal = () => {
-        setCdModalMaterialType(null)
+        setCDModalMaterialType(null)
         push({ search: '' })
     }
 
@@ -582,7 +582,7 @@ const Details: React.FC<DetailsType> = ({
 
     const renderCDModal = () =>
         appDetails &&
-        cdModalMaterialType && (
+        CDModalMaterialType && (
             <AppDetailsCDModal
                 appId={appDetails.appId}
                 environmentId={appDetails.environmentId}
@@ -598,7 +598,7 @@ const Details: React.FC<DetailsType> = ({
                     triggerType: appDetails.triggerType,
                 }}
                 handleSuccess={callAppDetailsAPI}
-                materialType={cdModalMaterialType}
+                materialType={CDModalMaterialType}
                 closeCDModal={handleCloseCDModal}
             />
         )
