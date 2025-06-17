@@ -1100,16 +1100,16 @@ export const getPluginIdsFromBuildStage = (
     return pluginIds
 }
 
+const SEVERITY_ORDER = [
+    { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
+    { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
+    { key: SeveritiesDTO.MEDIUM, label: 'Medium', variant: 'custom', fontColor: 'O600', bgColor: 'O100' },
+    { key: SeveritiesDTO.LOW, label: 'Low', variant: 'warning' },
+    { key: SeveritiesDTO.UNKNOWN, label: 'Unknown', variant: 'neutral' },
+] as const
+
 export const getSeverityWithCount = (severityCount: SeverityCount) => {
-    const order = [
-        { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
-        { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
-        { key: SeveritiesDTO.MEDIUM, label: 'Medium', variant: 'custom', fontColor: 'O600', bgColor: 'O100' },
-        { key: SeveritiesDTO.LOW, label: 'Low', variant: 'warning' },
-        { key: SeveritiesDTO.UNKNOWN, label: 'Unknown', variant: 'neutral' },
-    ] as const
-    
-    for (const item of order) {
+    for (const item of SEVERITY_ORDER) {
         if (severityCount[item.key]) {
             if (item.variant === 'custom') {
                 return (
@@ -1119,18 +1119,12 @@ export const getSeverityWithCount = (severityCount: SeverityCount) => {
                         fontColor={item.fontColor}
                         bgColor={item.bgColor}
                     />
-                );
-            } else {
-                return (
-                    <Badge
-                        label={`${severityCount[item.key]} ${item.label}`}
-                        variant={item.variant}
-                    />
-                );
+                )
             }
+            return <Badge label={`${severityCount[item.key]} ${item.label}`} variant={item.variant} />
         }
     }
-    return <Badge label='Passed' variant='positive' />
+    return <Badge label="Passed" variant="positive" />
 }
 
 // FIXME: Ideally whole branch calculations should be in fe-lib
