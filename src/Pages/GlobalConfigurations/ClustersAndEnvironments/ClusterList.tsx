@@ -87,7 +87,7 @@ export const ClusterList = ({
             return null
         }
 
-        if (EditClusterPopup) {
+        if (EditClusterPopup && !isVirtualCluster) {
             return (
                 <EditClusterPopup
                     handleOpenEditClusterModal={handleEdit}

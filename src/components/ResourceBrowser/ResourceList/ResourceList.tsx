@@ -109,7 +109,7 @@ const ResourceList = () => {
     const [isDataStale, setIsDataStale] = useState(false)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
-    const { setIntelligenceConfig, setAIAgentContext } = useMainContext()
+    const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
         () => getResourceGroupListRaw(clusterId),
@@ -149,9 +149,12 @@ const ResourceList = () => {
         [k8SObjectMapRaw],
     )
 
+    const canRenderResourceRecommender = ResourceRecommender && isResourceRecommendationEnabled
+
     const isOverviewNodeType = nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()
     const isMonitoringNodeType = nodeType === SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()
-    const isResourceRecommenderNodeType = nodeType === SIDEBAR_KEYS.resourceRecommenderGVK.Kind.toLowerCase()
+    const isResourceRecommenderNodeType =
+        canRenderResourceRecommender && nodeType === SIDEBAR_KEYS.resourceRecommenderGVK.Kind.toLowerCase()
     const isTerminalNodeType = nodeType === AppDetailsTabs.terminal
     const isUpgradeClusterNodeType = nodeType === SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
     const isNodeTypeEvent = nodeType === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
@@ -213,6 +216,7 @@ const ResourceList = () => {
             isOverviewSelected: isOverviewNodeType,
             isMonitoringDashBoardSelected: isMonitoringNodeType,
             isResourceRecommenderSelected: isResourceRecommenderNodeType,
+            canRenderResourceRecommender,
         })
 
         initTabs(_tabs, reInit, null, true)
@@ -277,10 +281,12 @@ const ResourceList = () => {
         const nodeTypeToTabIdMap: Record<string, string> = {
             [SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()]: ResourceBrowserTabsId.cluster_overview,
             [SIDEBAR_KEYS.monitoringGVK.Kind.toLowerCase()]: MonitoringDashboard ? MONITORING_DASHBOARD_TAB_ID : null,
-            [SIDEBAR_KEYS.resourceRecommenderGVK.Kind.toLowerCase()]: ResourceRecommender
-                ? RESOURCE_RECOMMENDER_TAB_ID
-                : null,
             [AppDetailsTabs.terminal]: ResourceBrowserTabsId.terminal,
+            ...(canRenderResourceRecommender
+                ? {
+                      [SIDEBAR_KEYS.resourceRecommenderGVK.Kind.toLowerCase()]: RESOURCE_RECOMMENDER_TAB_ID,
+                  }
+                : {}),
         }
 
         if (nodeType in nodeTypeToTabIdMap) {
@@ -585,7 +591,7 @@ const ResourceList = () => {
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
         />,
         ...(MonitoringDashboard ? [<MonitoringDashboard />] : []),
-        ...(ResourceRecommender
+        ...(canRenderResourceRecommender
             ? [
                   <ResourceRecommender
                       getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}

@@ -180,16 +180,17 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
-                    if (parsedTabsData.version !== TAB_DATA_VERSION) {
+                    parsedTabsData.data[persistenceKey] = (parsedTabsData.data[persistenceKey] ?? []).filter(
+                        (tab) => tab.id !== RESOURCE_RECOMMENDER_TAB_ID,
+                    )
+                    const resourceRecommenderInitTab = initTabsData.find(
+                        (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
+                    ) as DynamicTabType
+
+                    // Simple migration to remove resource recommender tab from localStorage and add it next to monitoring tab
+                    // This is to ensure the order of tabs is maintained
+                    if (resourceRecommenderInitTab) {
                         // Adding resource recommender next to monitoring tab
-                        const resourceRecommenderInitTab = initTabsData.find(
-                            (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
-                        ) as DynamicTabType
-
-                        parsedTabsData.data[persistenceKey] = (parsedTabsData.data[persistenceKey] ?? []).filter(
-                            (tab) => tab.id !== RESOURCE_RECOMMENDER_TAB_ID,
-                        )
-
                         const monitoringTabIndex = parsedTabsData.data[persistenceKey].findIndex(
                             (tab) => tab.id === MONITORING_DASHBOARD_TAB_ID,
                         )

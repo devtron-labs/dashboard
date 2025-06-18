@@ -285,6 +285,7 @@ export const getTabsBasedOnRole = ({
     selectedCluster,
     namespace,
     dynamicTabData,
+    canRenderResourceRecommender,
     isTerminalSelected = false,
     isOverviewSelected = false,
     isMonitoringDashBoardSelected = false,
@@ -325,7 +326,7 @@ export const getTabsBasedOnRole = ({
                   ),
               ]
             : []),
-        ...(getResourceRecommenderTabConfig
+        ...(canRenderResourceRecommender && getResourceRecommenderTabConfig
             ? [
                   getResourceRecommenderTabConfig(
                       getURLBasedOnSidebarGVK(SIDEBAR_KEYS.resourceRecommenderGVK.Kind, clusterId, namespace),

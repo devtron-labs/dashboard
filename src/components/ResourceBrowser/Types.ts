@@ -260,6 +260,7 @@ export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
     namespace: string
     dynamicTabData: InitTabType
+    canRenderResourceRecommender: boolean
     /**
      * @default false
      */
