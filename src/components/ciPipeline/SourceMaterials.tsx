@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useMemo, useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 import {
     CiPipelineSourceTypeOption,
     InfoBlock,
-    MaterialType,
     SelectPickerProps,
     SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -44,24 +43,22 @@ export const SourceMaterials = ({
 }: SourceMaterialsProps) => {
     // STATES
     const [isProviderChanged, setProviderChanged] = useState(false)
-    const [materials, setMaterials] = useState<MaterialType[]>(initialMaterials)
 
     // HOOKS
     const location = useLocation()
 
     // CONSTANTS
     const isLinkedCI = location.pathname.includes('linked-ci')
-    const isMultiGit = materials.length > 1
-
-    useEffect(() => {
+    const isMultiGit = initialMaterials.length > 1
+    const materials = useMemo(() => {
         const webhookTypeMaterial = initialMaterials.find((material) => material.type === SourceTypeMap.WEBHOOK)
 
         if (isMultiGit && webhookTypeMaterial) {
-            setMaterials([webhookTypeMaterial])
-        } else {
-            setMaterials(initialMaterials)
+            return [webhookTypeMaterial]
         }
-    }, [initialMaterials])
+
+        return initialMaterials
+    }, [isMultiGit, initialMaterials])
 
     // HANDLERS
     const onBlur = async () => {
@@ -127,7 +124,7 @@ export const SourceMaterials = ({
         <div className="flexbox-col dc__gap-16">
             <h3 className="m-0 fs-14 lh-20 fw-6 cn-9">Select code source</h3>
             {materials.map((material, index) => {
-                const mat = material
+                const mat = structuredClone(material)
                 const isBranchRegex = mat.type === SourceTypeMap.BranchRegex || mat.isRegex
                 const isBranchFixed = mat.type === SourceTypeMap.BranchFixed && !mat.isRegex
                 const _selectedWebhookEvent =

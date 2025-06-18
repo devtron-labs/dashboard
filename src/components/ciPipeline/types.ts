@@ -423,3 +423,12 @@ export interface WebhookConditionType {
     deleteWebhookCondition: (index: number) => void
     canEditSelectorCondition: boolean
 }
+
+export interface CIPipelineInitData {
+    result: {
+        form: PipelineFormType
+        loadingData: boolean
+        isAdvanced: boolean
+        isBlobStorageConfigured: boolean
+    }
+}

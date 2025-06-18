@@ -92,6 +92,10 @@ export const CreateCICDPipeline = ({
     const { deploymentAppType, selectedEnvironment } = cd
 
     // HANDLERS
+    const handleOnEscape = () => {
+        onClose()
+    }
+
     const handleReloadNoGitOpsRepoConfiguredModalClose = () => {
         setReloadNoGitOpsRepoConfiguredModal(false)
     }
@@ -265,8 +269,7 @@ export const CreateCICDPipeline = ({
         }
     }
 
-    const handleCreateWorkflow = () =>
-        cdNodeCreateError ? createWorkflow({ shouldCreateCINode: false }) : createWorkflow({ shouldCreateCINode: true })
+    const handleCreateWorkflow = () => createWorkflow({ shouldCreateCINode: !cdNodeCreateError })
 
     // RESET
     const resetStateToDefault = () => {
@@ -331,7 +334,7 @@ export const CreateCICDPipeline = ({
                 open={open}
                 width={800}
                 onClose={onClose}
-                onEscape={onClose}
+                onEscape={handleOnEscape}
             >
                 <GenericModal.Header title="Build and deploy from source code" />
                 <GenericModal.Body>

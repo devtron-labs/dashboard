@@ -2,7 +2,6 @@ import {
     DeploymentAppTypes,
     DeploymentStrategy,
     getEnvironmentListMinPublic,
-    getIsRequestAborted,
     ModuleNameMap,
     ModuleStatus,
     ReleaseMode,
@@ -128,9 +127,7 @@ export const getCICDPipelineInitData = async (appId: string): Promise<CreateCICD
 
         return { ci, cd }
     } catch (err) {
-        if (!getIsRequestAborted(err)) {
-            showError(err)
-        }
+        showError(err)
         throw err
     }
 }

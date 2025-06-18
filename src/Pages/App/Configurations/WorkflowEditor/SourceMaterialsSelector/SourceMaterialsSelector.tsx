@@ -11,7 +11,7 @@ export const SourceMaterialsSelector = ({
         {repoName && (
             <div className="flex left dc__gap-8">
                 <Icon name="ic-git" color={null} size={24} />
-                <p className="m-0 fs-13 lh-20 fw-6 cn-9">{repoName}</p>
+                <p className="m-0 fs-13 lh-20 fw-6 cn-9 dc__truncate">{repoName}</p>
             </div>
         )}
         <div className="dc__grid-cols-2 dc__gap-12">

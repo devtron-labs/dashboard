@@ -37,7 +37,7 @@ import {
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
-import { CIPipelineBuildType, PatchAction } from './types'
+import { CIPipelineBuildType, CIPipelineInitData, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
 
 const emptyStepsData = () => {
@@ -64,9 +64,7 @@ export function getInitData(
     includeWebhookData: boolean = false,
     isJobCard: boolean,
     isTemplateView: AppConfigProps['isTemplateView'],
-): Promise<{
-    result: { form: PipelineFormType; loadingData: boolean; isAdvanced: boolean; isBlobStorageConfigured: boolean }
-}> {
+): Promise<CIPipelineInitData> {
     return Promise.all([
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),
