@@ -28,7 +28,9 @@ import {
 
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
-import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
+import { getArgoInstalledExternalApps, getFluxInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 import { Routes } from '@Config/constants'
 
 import {
@@ -98,7 +100,7 @@ export const getMigrateAppOptions = async ({
     abortControllerRef,
 }: GetMigrateAppOptionsParamsType): Promise<SelectMigrateAppOptionType[]> => {
     try {
-        if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+        if (deploymentAppType === DeploymentAppTypes.ARGO) {
             const { result } = await getArgoInstalledExternalApps(String(clusterId), abortControllerRef)
             return (result || [])
                 .map<SelectMigrateAppOptionType>((argoApp) =>
@@ -109,6 +111,19 @@ export const getMigrateAppOptions = async ({
                     }),
                 )
                 .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
+        }
+
+        if (deploymentAppType === DeploymentAppTypes.FLUX) {
+            const { result } = await getFluxInstalledExternalApps(String(clusterId), { abortControllerRef })
+            return (result.fluxApplication ?? [])
+                .filter(({ fluxAppDeploymentType }) => fluxAppDeploymentType === FluxCDTemplateType.HELM_RELEASE) // Only helmRelease deployment type is valid for migration
+                .map(({ appName, namespace }) =>
+                    generateMigrateAppOption({
+                        appName,
+                        namespace,
+                        startIcon: <ICFluxCDApp />,
+                    }),
+                )
         }
 
         const externalHelmApps = await getExternalHelmAppList(clusterId, abortControllerRef)

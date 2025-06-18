@@ -41,6 +41,7 @@ import {
     MigrateArgoAppToCDPipelineRequiredPayloadType,
     MigrateToDevtronFormState,
 } from './cdPipeline.types'
+import { getSelectedFormState } from './MigrateToDevtron/utils'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -413,7 +414,7 @@ export const handleDeletePipeline = (
         case DELETE_ACTION.DELETE:
             return deleteCD(false, true)
         case DELETE_ACTION.NONCASCADE_DELETE:
-            return deploymentAppType === DeploymentAppTypes.GITOPS ? deleteCD(false, false) : deleteCD(false, true)
+            return deploymentAppType === DeploymentAppTypes.ARGO ? deleteCD(false, false) : deleteCD(false, true)
         case DELETE_ACTION.FORCE_DELETE:
             return deleteCD(true, false)
     }
@@ -467,10 +468,9 @@ export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace
 export const getMigrateToDevtronRequiredPayload = (
     migrateToDevtronFormState: MigrateToDevtronFormState,
 ): MigrateArgoAppToCDPipelineRequiredPayloadType => {
-    const { migrateFromHelmFormState, migrateFromArgoFormState, deploymentAppType, triggerType } =
-        migrateToDevtronFormState
-    const requiredFormState =
-        deploymentAppType === DeploymentAppTypes.GITOPS ? migrateFromArgoFormState : migrateFromHelmFormState
+    const { deploymentAppType, triggerType } = migrateToDevtronFormState
+    const requiredFormState = getSelectedFormState(migrateToDevtronFormState)
+
     const {
         environmentId,
         environmentName,
@@ -485,12 +485,21 @@ export const getMigrateToDevtronRequiredPayload = (
         deploymentAppName: requiredFormState.appName,
     }
 
-    if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+    if (deploymentAppType === DeploymentAppTypes.ARGO) {
         return {
             ...basePayload,
             deploymentAppType,
             applicationObjectClusterId: requiredFormState.clusterId,
             applicationObjectNamespace: requiredFormState.namespace,
+        }
+    }
+
+    if (deploymentAppType === DeploymentAppTypes.FLUX) {
+        return {
+            ...basePayload,
+            deploymentAppType,
+            releaseClusterId: requiredFormState.clusterId,
+            releaseNamespace: requiredFormState.namespace,
         }
     }
 

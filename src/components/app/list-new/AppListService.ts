@@ -22,6 +22,7 @@ import {
     EnvironmentListHelmResult,
     Teams,
     getUrlWithSearchParams,
+    APIOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Cluster } from '@Services/service.types'
@@ -29,6 +30,7 @@ import { Moment12HourFormat, Routes } from '../../../config'
 import {
     AppListFilterConfig,
     AppListPayloadType,
+    GenericAppListResponse,
     GenericAppType,
     GetDevtronHelmAppListParamsType,
     HelmAppListResponse,
@@ -49,8 +51,13 @@ export const getDevtronInstalledHelmApps = (
     return get(url)
 }
 
-export const getArgoInstalledExternalApps = (clusterIdsCsv: string, abortControllerRef?: MutableRefObject<AbortController>): Promise<ResponseType<GenericAppType[]>> =>
-    get(`${Routes.ARGO_APPS}${clusterIdsCsv ? `?clusterIds=${clusterIdsCsv}` : ''}`, { abortControllerRef })
+export const getArgoInstalledExternalApps = (
+    clusterIdsCsv: string,
+    abortControllerRef?: MutableRefObject<AbortController>,
+): Promise<ResponseType<GenericAppType[]>> => {
+    const url = getUrlWithSearchParams(Routes.ARGO_APPS, { clusterIds: clusterIdsCsv })
+    return get(url, { abortControllerRef })
+}
 
 export const getDevtronAppListDataToExport = (
     filterConfig: AppListFilterConfig,
@@ -58,9 +65,13 @@ export const getDevtronAppListDataToExport = (
     namespaceList: EnvironmentListHelmResult[],
     clusterList: Cluster[],
     projectList: Teams[],
-    appCount: number
+    appCount: number,
 ) => {
-    const appListPayload: AppListPayloadType = {...getDevtronAppListPayload(filterConfig, environmentList, namespaceList), offset: 0, size: appCount} // Over riding size and offset as we need all list (no pagination)
+    const appListPayload: AppListPayloadType = {
+        ...getDevtronAppListPayload(filterConfig, environmentList, namespaceList),
+        offset: 0,
+        size: appCount,
+    } // Over riding size and offset as we need all list (no pagination)
     const clusterMap = new Map<string, number>()
     clusterList.forEach((cluster) => clusterMap.set(cluster.cluster_name, cluster.id))
     return getAppList(appListPayload).then(({ result }) => {
@@ -110,4 +121,9 @@ export const getDevtronAppListDataToExport = (
 
         return []
     })
+}
+
+export const getFluxInstalledExternalApps = (clusterIdsCsv: string, options?: APIOptions) => {
+    const url = getUrlWithSearchParams(Routes.FLUX_APPS, { clusterIds: clusterIdsCsv, noStream: true })
+    return get<GenericAppListResponse>(url, options)
 }

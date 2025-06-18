@@ -22,64 +22,74 @@ import { GenericAppType } from '@Components/app/list-new/AppListType'
 import { URLS } from '@Config/routes'
 
 import {
+    MigrateToDevtronBaseFormStateType,
+    MigrateToDevtronFormState,
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
-    ValidateMigrationSourceInfoBaseType,
     ValidateMigrationSourceInfoType,
     ValidateMigrationSourceServiceParamsType,
 } from '../cdPipeline.types'
 import { SelectClusterOptionType, SelectMigrateAppOptionType } from './types'
 
+const sanitizeDestinationData = (
+    destination: ValidateMigrationSourceInfoType['destination'],
+): ValidateMigrationSourceInfoType['destination'] => ({
+    clusterName: destination?.clusterName || '',
+    clusterServerUrl: destination?.clusterServerUrl || '',
+    namespace: destination?.namespace || '',
+    environmentName: destination?.environmentName || '',
+    environmentId: destination?.environmentId || null,
+})
+
 export const sanitizeValidateMigrationSourceResponse = (
     response: ValidateMigrationSourceDTO,
     deploymentAppType: ValidateMigrateToDevtronPayloadType['deploymentAppType'],
 ): ValidateMigrationSourceInfoType => {
-    const { isLinkable, errorDetail, applicationMetadata, helmReleaseMetadata } = response || {}
-    const {
-        source: argoAppSourceDetails,
-        destination: argoChartDestination,
-        status: argoAppStatus,
-    } = applicationMetadata || {}
+    const { isLinkable, errorDetail, applicationMetadata, helmReleaseMetadata, fluxReleaseMetadata } = response || {}
 
-    const destination =
-        deploymentAppType === DeploymentAppTypes.GITOPS ? argoChartDestination : helmReleaseMetadata?.destination
-
-    const chartInfoSource =
-        deploymentAppType === DeploymentAppTypes.GITOPS
-            ? argoAppSourceDetails?.chartMetadata
-            : helmReleaseMetadata?.chart?.metadata
-
-    const baseData: ValidateMigrationSourceInfoBaseType = {
+    const baseData = {
         isLinkable: isLinkable || false,
         errorDetail: {
             validationFailedReason: errorDetail?.validationFailedReason,
             validationFailedMessage: errorDetail?.validationFailedMessage || '',
         },
-        destination: {
-            clusterName: destination?.clusterName || '',
-            clusterServerUrl: destination?.clusterServerUrl || '',
-            namespace: destination?.namespace || '',
-            environmentName: destination?.environmentName || '',
-            environmentId: destination?.environmentId || null,
-        },
-
-        requiredChartName: chartInfoSource?.requiredChartName || '',
-        savedChartName: chartInfoSource?.savedChartName || '',
-        requiredChartVersion: chartInfoSource?.requiredChartVersion || '',
     }
 
+    if (deploymentAppType === DeploymentAppTypes.ARGO) {
+        const { destination, source, status } = applicationMetadata || {}
+        return {
+            ...baseData,
+            destination: sanitizeDestinationData(destination),
+            requiredChartName: source?.chartMetadata?.requiredChartName || '',
+            savedChartName: source?.chartMetadata?.savedChartName || '',
+            requiredChartVersion: source?.chartMetadata?.requiredChartVersion || '',
+            deploymentAppType,
+            status,
+        }
+    }
+    if (deploymentAppType === DeploymentAppTypes.FLUX) {
+        const { destination, savedChartName, requiredChartName, requiredChartVersion, status } =
+            fluxReleaseMetadata || {}
+        return {
+            ...baseData,
+            status,
+            deploymentAppType,
+            destination: sanitizeDestinationData(destination),
+            requiredChartName: requiredChartName || '',
+            savedChartName: savedChartName || '',
+            requiredChartVersion: requiredChartVersion || '',
+        }
+    }
+    const { destination, chart, info } = helmReleaseMetadata || {}
     return {
         ...baseData,
-        ...(deploymentAppType === DeploymentAppTypes.GITOPS
-            ? {
-                  deploymentAppType: DeploymentAppTypes.GITOPS,
-                  status: argoAppStatus,
-              }
-            : {
-                  deploymentAppType: DeploymentAppTypes.HELM,
-                  status: helmReleaseMetadata?.info?.status,
-                  chartIcon: helmReleaseMetadata?.chart?.metadata?.icon || null,
-              }),
+        destination: sanitizeDestinationData(destination),
+        requiredChartName: chart?.metadata?.requiredChartName || '',
+        savedChartName: chart?.metadata?.savedChartName || '',
+        requiredChartVersion: chart?.metadata?.requiredChartVersion || '',
+        deploymentAppType,
+        status: info?.status,
+        chartIcon: chart?.metadata?.icon,
     }
 }
 
@@ -117,7 +127,7 @@ export const getValidateMigrationSourcePayload = ({
     migrateToDevtronFormState,
     appId,
 }: ValidateMigrationSourceServiceParamsType): ValidateMigrateToDevtronPayloadType => {
-    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS) {
+    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.ARGO) {
         return {
             appId,
             deploymentAppType: migrateToDevtronFormState.deploymentAppType,
@@ -125,6 +135,18 @@ export const getValidateMigrationSourcePayload = ({
             applicationMetadata: {
                 applicationObjectClusterId: migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
                 applicationObjectNamespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace,
+            },
+        }
+    }
+
+    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.FLUX) {
+        return {
+            appId,
+            deploymentAppType: migrateToDevtronFormState.deploymentAppType,
+            deploymentAppName: migrateToDevtronFormState.migrateFromFluxFormState.appName,
+            fluxReleaseMetadata: {
+                releaseClusterId: migrateToDevtronFormState.migrateFromFluxFormState.clusterId,
+                releaseNamespace: migrateToDevtronFormState.migrateFromFluxFormState.namespace,
             },
         }
     }
@@ -140,17 +162,44 @@ export const getValidateMigrationSourcePayload = ({
     }
 }
 
-export const getDeploymentAppTypeLabel = (isMigratingFromHelm: boolean) =>
-    isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'
+export const getDeploymentAppTypeLabel = (deploymentAppType: DeploymentAppTypes) => {
+    switch (deploymentAppType) {
+        case DeploymentAppTypes.HELM:
+            return 'Helm Release'
+        case DeploymentAppTypes.ARGO:
+            return 'Argo CD Application'
+        case DeploymentAppTypes.FLUX:
+            return 'Flux CD Application'
+        default:
+            return ''
+    }
+}
 
-export const getTargetClusterTooltipInfo = (isMigratingFromHelm: boolean) => ({
+export const getTargetClusterTooltipInfo = (deploymentAppType: DeploymentAppTypes) => ({
     heading: 'Target cluster',
-    infoList: [`Cluster in which the ${getDeploymentAppTypeLabel(isMigratingFromHelm)} is deploying your microservice`],
+    infoList: [`Cluster in which the ${getDeploymentAppTypeLabel(deploymentAppType)} is deploying your microservice`],
 })
 
-export const getTargetNamespaceTooltipInfo = (isMigratingFromHelm: boolean) => ({
+export const getTargetNamespaceTooltipInfo = (deploymentAppType: DeploymentAppTypes) => ({
     heading: 'Target Namespace',
-    infoList: [
-        `Namespace in which the ${getDeploymentAppTypeLabel(isMigratingFromHelm)} is deploying your microservice`,
-    ],
+    infoList: [`Namespace in which the ${getDeploymentAppTypeLabel(deploymentAppType)} is deploying your microservice`],
 })
+
+export const getSelectedFormState = (
+    migrateToDevtronFormState: MigrateToDevtronFormState,
+): MigrateToDevtronBaseFormStateType => {
+    switch (migrateToDevtronFormState.deploymentAppType) {
+        case DeploymentAppTypes.ARGO:
+            return migrateToDevtronFormState.migrateFromArgoFormState
+        case DeploymentAppTypes.FLUX:
+            return migrateToDevtronFormState.migrateFromFluxFormState
+        case DeploymentAppTypes.HELM:
+        default:
+            return migrateToDevtronFormState.migrateFromHelmFormState
+    }
+}
+
+export const getIsExternalAppLinkable = (migrateToDevtronFormState: MigrateToDevtronFormState) => {
+    const { validationResponse } = getSelectedFormState(migrateToDevtronFormState)
+    return validationResponse.isLinkable
+}

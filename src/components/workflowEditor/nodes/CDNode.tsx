@@ -130,7 +130,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
     deleteCD = (force: boolean, cascadeDelete: boolean) => {
         const isPartialDelete =
-            this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.deploymentAppCreated && !force
+            this.props.deploymentAppType === DeploymentAppTypes.ARGO && this.props.deploymentAppCreated && !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: +this.props.appId,

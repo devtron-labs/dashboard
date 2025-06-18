@@ -158,12 +158,18 @@ interface ValidationPayloadApplicationMetaDataType {
     applicationObjectNamespace: string
 }
 
+interface ValidationPayloadFluxReleaseMetaDataType {
+    releaseClusterId: number
+    releaseNamespace: string
+}
+
 export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommonPayloadType &
     (
         | {
-              deploymentAppType: DeploymentAppTypes.GITOPS
+              deploymentAppType: DeploymentAppTypes.ARGO
               applicationMetadata: ValidationPayloadApplicationMetaDataType
               helmReleaseMetaData?: never
+              fluxReleaseMetadata?: never
           }
         | {
               deploymentAppType: DeploymentAppTypes.HELM
@@ -172,6 +178,13 @@ export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommon
                   releaseNamespace: string
               }
               applicationMetadata?: never
+              fluxReleaseMetadata?: never
+          }
+        | {
+              deploymentAppType: DeploymentAppTypes.FLUX
+              helmReleaseMetadata?: never
+              applicationMetadata?: never
+              fluxReleaseMetadata: ValidationPayloadFluxReleaseMetaDataType
           }
     )
 
@@ -190,17 +203,17 @@ interface ChartMetadataCommonDTO {
 }
 
 interface ValidateMigrationSourceDetailsDTO {
-    repoURL: string
-    chartPath: string
-    chartMetadata: ChartMetadataCommonDTO & {
-        valuesFileName: string
-    }
+    chartMetadata: ChartMetadataCommonDTO
 }
 
 export interface MigrateToDevtronFormState {
-    deploymentAppType: Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.GITOPS> | null
+    deploymentAppType: Extract<
+        DeploymentAppTypes,
+        DeploymentAppTypes.HELM | DeploymentAppTypes.ARGO | DeploymentAppTypes.FLUX
+    > | null
     migrateFromArgoFormState: MigrateToDevtronBaseFormStateType
     migrateFromHelmFormState: MigrateToDevtronBaseFormStateType
+    migrateFromFluxFormState: MigrateToDevtronBaseFormStateType
     triggerType: (typeof TriggerType)[keyof typeof TriggerType]
 }
 
@@ -222,10 +235,7 @@ export interface ValidateMigrationSourceDTO {
         }
         chart: {
             metadata: ChartMetadataCommonDTO & {
-                home: string
                 icon: string
-                apiVersion: string
-                deprecated: boolean
             }
         }
         destination: ValidateMigrationDestinationDetailsDTO
@@ -237,6 +247,13 @@ export interface ValidateMigrationSourceDTO {
         source: ValidateMigrationSourceDetailsDTO
         destination: ValidateMigrationDestinationDetailsDTO
         status: NodeStatusDTO
+    }
+    /**
+     * Data relevant to flux application
+     */
+    fluxReleaseMetadata: ChartMetadataCommonDTO & {
+        status: string
+        destination: ValidateMigrationDestinationDetailsDTO
     }
 }
 
@@ -250,7 +267,7 @@ export type ValidateMigrationSourceInfoBaseType = Pick<ValidateMigrationSourceDT
 export type ValidateMigrationSourceInfoType = ValidateMigrationSourceInfoBaseType &
     (
         | {
-              deploymentAppType: DeploymentAppTypes.GITOPS
+              deploymentAppType: DeploymentAppTypes.ARGO
               status: NodeStatusDTO
               chartIcon?: never
           }
@@ -258,6 +275,11 @@ export type ValidateMigrationSourceInfoType = ValidateMigrationSourceInfoBaseTyp
               deploymentAppType: DeploymentAppTypes.HELM
               status: string
               chartIcon: string
+          }
+        | {
+              deploymentAppType: DeploymentAppTypes.FLUX
+              status: string
+              chartIcon?: never
           }
     )
 
@@ -278,16 +300,19 @@ export interface MigrateArgoAppToCDPipelineRequiredBasePayloadType
 
 export type MigrateArgoAppToCDPipelineRequiredPayloadType = MigrateArgoAppToCDPipelineRequiredBasePayloadType &
     (
-        | {
-              deploymentAppType: DeploymentAppTypes.GITOPS
-              applicationObjectClusterId: ValidationPayloadApplicationMetaDataType['applicationObjectClusterId']
-              applicationObjectNamespace: ValidationPayloadApplicationMetaDataType['applicationObjectNamespace']
-          }
+        | ({
+              deploymentAppType: DeploymentAppTypes.ARGO
+          } & ValidationPayloadApplicationMetaDataType)
         | {
               deploymentAppType: DeploymentAppTypes.HELM
               applicationObjectClusterId?: never
               applicationObjectNamespace?: never
+              releaseClusterId?: never
+              releaseNamespace?: never
           }
+        | ({
+              deploymentAppType: DeploymentAppTypes.FLUX
+          } & ValidationPayloadFluxReleaseMetaDataType)
     )
 
 export interface TriggerTypeRadioProps {
