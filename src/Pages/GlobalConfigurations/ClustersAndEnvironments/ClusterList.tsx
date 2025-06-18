@@ -1,5 +1,4 @@
-import { useRef, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useHistory } from 'react-router-dom'
 
 import {
     Button,
@@ -7,11 +6,9 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    Drawer,
     getClassNameForStickyHeaderWithShadow,
     Icon,
-    noop,
-    showError,
+    URLS as COMMON_URLS,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -19,41 +16,23 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import { List } from '../../../components/globalConfigurations/GlobalConfiguration'
-import { getCluster } from './cluster.service'
-import { ClusterListProps, EditClusterFormProps } from './cluster.type'
+import { ClusterListProps } from './cluster.type'
 import { renderNoEnvironmentTab } from './cluster.util'
 import { ClusterEnvironmentList } from './ClusterEnvironmentList'
-import ClusterForm from './ClusterForm'
 
-const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 const EditClusterPopup = importComponentFromFELibrary('EditClusterPopup', null, 'function')
-const getSSHConfig: (
-    ...props
-) => Pick<EditClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
-    importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
 export const ClusterList = ({
     isVirtualCluster,
     environments,
     reload,
     clusterName,
-    sshTunnelConfig,
     isProd,
     serverURL,
-    prometheusURL,
-    proxyUrl,
-    insecureSkipTlsVerify,
-    installationId,
-    toConnectWithSSHTunnel,
     clusterId,
     category,
 }: ClusterListProps) => {
-    const [editMode, setEditMode] = useState(false)
-    const [prometheusAuth, setPrometheusAuth] = useState(null)
-
     const history = useHistory()
-
-    const drawerRef = useRef(null)
 
     const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
         containerSelector: '.global-configuration__component-wrapper',
@@ -61,17 +40,7 @@ export const ClusterList = ({
     })
 
     const handleEdit = async () => {
-        try {
-            const { result } = await getCluster(+clusterId)
-            setPrometheusAuth(result.prometheusAuth)
-            setEditMode(true)
-        } catch (err) {
-            showError(err)
-        }
-    }
-
-    const handleModalClose = () => {
-        setEditMode(false)
+        history.push(generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId }))
     }
 
     const handleOpenPodSpreadModal = () => {
@@ -152,6 +121,7 @@ export const ClusterList = ({
                 </div>
                 {renderEditButton()}
             </List>
+
             {!window._env_.K8S_CLIENT && Array.isArray(environments) && environments.length > 0 ? (
                 <ClusterEnvironmentList
                     clusterId={String(clusterId)}
@@ -163,37 +133,6 @@ export const ClusterList = ({
             ) : (
                 renderNoEnvironmentTab()
             )}
-            {editMode &&
-                (!isVirtualCluster ? (
-                    <Drawer position="right" width="1000px" onEscape={handleModalClose}>
-                        <div className="h-100 bg__primary" ref={drawerRef}>
-                            <ClusterForm
-                                {...getSSHConfig(sshTunnelConfig)}
-                                id={+clusterId}
-                                clusterName={clusterName}
-                                serverUrl={serverURL}
-                                reload={reload}
-                                prometheusUrl={prometheusURL}
-                                prometheusAuth={prometheusAuth}
-                                proxyUrl={proxyUrl}
-                                isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
-                                hideEditModal={handleModalClose}
-                                isProd={isProd}
-                                isTlsConnection={!insecureSkipTlsVerify}
-                                installationId={installationId}
-                                category={category}
-                            />
-                        </div>
-                    </Drawer>
-                ) : (
-                    <VirtualClusterForm
-                        id={+clusterId}
-                        clusterName={clusterName}
-                        handleModalClose={handleModalClose}
-                        reload={reload}
-                        category={category}
-                    />
-                ))}
         </article>
     )
 }

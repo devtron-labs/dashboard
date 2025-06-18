@@ -21,14 +21,17 @@ import {
     Button,
     ButtonComponentType,
     ComponentSizeType,
+    Drawer,
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
+    GenericEmptyState,
     Icon,
     Progressing,
     Reload,
     showError,
     sortCallback,
-    URLS as CommonURLS,
+    stopPropagation,
+    URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -42,11 +45,13 @@ import { getClusterList, getEnvironmentList } from './cluster.service'
 import { ClusterMetadataTypes, ClusterProps } from './cluster.type'
 import { getSelectParsedCategory } from './cluster.util'
 import { ClusterList } from './ClusterList'
+import EditClusterDrawerContent from './EditClusterDrawerContent'
 
 const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
 const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
+const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 
 const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
     const [view, setView] = useState(ViewType.LOADING)
@@ -140,22 +145,15 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
                     clusterName={cluster.cluster_name}
                     isVirtualCluster={cluster.isVirtualCluster}
                     environments={cluster.environments}
-                    sshTunnelConfig={cluster.sshTunnelConfig}
                     isProd={cluster.isProd}
                     serverURL={cluster.server_url}
-                    prometheusURL={cluster.prometheus_url}
-                    prometheusAuth={cluster.prometheusAuth}
-                    proxyUrl={cluster.proxyUrl}
-                    insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
-                    installationId={cluster.installationId}
                     category={cluster.category}
-                    toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
                     clusterId={cluster.id}
                 />
             ))}
 
             {ManageCategories && (
-                <Route path={CommonURLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>
+                <Route path={COMMON_URLS.GLOBAL_CONFIG_MANAGE_CATEGORIES}>
                     <ManageCategories />
                 </Route>
             )}
@@ -163,6 +161,55 @@ const ClusterComponents = ({ isSuperAdmin }: ClusterProps) => {
             <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
                 <CreateCluster handleReloadClusterList={initialize} />
             </Route>
+
+            <Route
+                path={COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER}
+                render={(props) => {
+                    const { clusterId } = props.match.params
+                    const cluster: ClusterMetadataTypes = clusters.find((c) => c.id === +clusterId)
+
+                    if (!cluster || !cluster.isVirtualCluster) {
+                        return (
+                            <Drawer position="right" width="1000px" onClose={handleRedirectToClusterList}>
+                                <div className="h-100 bg__primary" onClick={stopPropagation}>
+                                    {!cluster ? (
+                                        <GenericEmptyState
+                                            title="Cluster not found"
+                                            subTitle="The cluster that you are looking is not available."
+                                        />
+                                    ) : (
+                                        <EditClusterDrawerContent
+                                            handleModalClose={handleRedirectToClusterList}
+                                            sshTunnelConfig={cluster.sshTunnelConfig}
+                                            clusterId={cluster.id}
+                                            clusterName={cluster.cluster_name}
+                                            serverURL={cluster.server_url}
+                                            reload={initialize}
+                                            prometheusURL={cluster.prometheus_url}
+                                            proxyUrl={cluster.proxyUrl}
+                                            toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
+                                            isProd={cluster.isProd}
+                                            installationId={cluster.installationId}
+                                            category={cluster.category}
+                                            insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
+                                        />
+                                    )}
+                                </div>
+                            </Drawer>
+                        )
+                    }
+
+                    return (
+                        <VirtualClusterForm
+                            id={+cluster.id}
+                            clusterName={cluster.cluster_name}
+                            handleModalClose={handleRedirectToClusterList}
+                            reload={initialize}
+                            category={cluster.category}
+                        />
+                    )
+                }}
+            />
 
             {PodSpreadModal && (
                 <Route
