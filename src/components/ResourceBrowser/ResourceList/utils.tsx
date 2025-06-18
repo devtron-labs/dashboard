@@ -124,7 +124,7 @@ export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams):
 const numberInStringComparator = <T extends string>(a: T, b: T) =>
     numberComparatorBySortOrder(a ? parseInt(a.match(/^\d+/)[0], 10) : 0, b ? parseInt(b.match(/^\d+/)[0], 10) : 0)
 
-const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
+const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(a) - k8sStyledAgeToSeconds(b)
 
 const propertyComparatorMap = {
     age: durationComparator,
@@ -143,6 +143,7 @@ const propertyComparatorMap = {
     'mem usage (%)': numberInStringComparator,
     'mem allocatable': numberInStringComparator,
     'cpu usage (absolute)': numberInStringComparator,
+    restarts: numberInStringComparator,
 }
 
 /**
@@ -242,7 +243,7 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
         return {
             range: {
                 maxWidth: 600,
-                minWidth: field === 'name' ? 200 : 180,
+                minWidth: field === 'name' ? 200 : 120,
                 startWidth: field === 'name' ? 300 : 200,
             },
         }

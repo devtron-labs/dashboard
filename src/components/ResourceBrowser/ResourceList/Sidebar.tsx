@@ -113,6 +113,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
         const params = new URLSearchParams(location.search)
         params.delete('pageNumber')
         params.delete('sortBy')
+        params.delete('sortOrder')
         const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
             kind: _selectedKind,

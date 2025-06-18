@@ -177,7 +177,7 @@ const K8sResourceListTableCellComponent = ({
         <>
             {columnName === 'name' ? (
                 <div
-                    className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10"
+                    className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10 pr-6"
                     data-testid="created-resource-name"
                 >
                     <div className="flex left dc__gap-4">
