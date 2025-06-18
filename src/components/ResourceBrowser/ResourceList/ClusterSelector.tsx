@@ -21,6 +21,8 @@ import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
+    Badge,
+    ComponentSizeType,
     DocLink,
     DocLinkProps,
     Icon,
@@ -114,7 +116,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                 }}
             />
 
-            {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
+            {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
 
             {defaultOption?.value !== String(DEFAULT_CLUSTER_ID) && (
                 <PopupMenu autoClose>
