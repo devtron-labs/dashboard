@@ -13,8 +13,9 @@
     }
 }
 
-.side-panel-documentation {
-    &__header {
-        flex: 0 0 48px;
+.side-panel-content {
+    &--hidden {
+        visibility: hidden;
+        height: 0;
     }
 }

@@ -19,157 +19,10 @@
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     grid-auto-rows: min-content;
-    grid-gap: 12px;
+    grid-gap: 16px;
     padding: 16px 20px;
 }
 
-.chart-grid.list-view {
-    grid-template-columns: none;
-    grid-gap: 12px;
-}
-
-.chart-grid-item {
-    display: block;
-    padding: 16px;
-    cursor: pointer;
-    position: relative;
-}
-
-.chart-grid-item.flex-list {
-    display: grid;
-    grid-template-columns: 64px 1fr;
-}
-
-.chart-grid-item__flexbox {
-    display: flex;
-    justify-content: space-between;
-}
-
-.chart-grid-item__light-text {
-    font-size: 12px;
-    font-weight: 500;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: #646464;
-    margin-top: 4px;
-}
-
-.chart-grid-item__title {
-    font-size: 12px;
-    font-weight: 600;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-}
-
-.chart-grid-item__title-repo {
-    color: var(--N400);
-}
-
-.chart-grid-item__chart-version {
-    font-family: monospace;
-    font-weight: normal;
-    font-size: 12px;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N700);
-}
-
-.chart-grid-item--deployed {
-    height: 228px;
-}
-
-.chart-grid-item--discover {
-    height: 176px;
-}
-
-.chart-grid-item__env {
-    font-size: 12px;
-    font-weight: 500;
-    font-style: normal;
-    font-stretch: normal;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-top: 12px;
-}
-
-.env-badge {
-    padding: 2px 6px;
-    border-radius: 10px;
-    background-color: var(--N200);
-    font-size: 10px;
-    margin-right: 6px;
-    font-weight: 600;
-}
-
-.chart-grid-item__top-right {
-    text-transform: capitalize;
-    font-size: 12px;
-    font-weight: 500;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--G500);
-    user-select: none;
-    align-self: flex-start;
-}
-
-.chart-grid-item__top-right-icon {
-    height: 16px;
-    width: 16px;
-    margin-right: 5px;
-}
-
-.chart-grid-item:hover {
-    text-decoration: none;
-    box-shadow: 0 8px 12px 0 rgba(30, 35, 96, 0.1);
-}
-
-.select-chart-view__multi-chart-summary--chart-group {
-    width: 320px;
-}
-
-.multi-chart-summary {
-    display: grid;
-    grid-row-gap: 16px;
-    overflow: auto;
-    background: var(--bg-primary);
-    width: 100%;
-    padding: 16px;
-    height: 100%;
-    border-left: 1px solid var(--N200);
-}
-
-.multi-chart-summary__fs-16-bold-text {
-    font-size: 16px;
-    margin: 0px;
-    font-weight: 600;
-    line-height: 1.5;
-    letter-spacing: normal;
-    color: var(--N900);
-}
-
-.multi-chart-summary.multi-chart-summary--select-chart {
-    grid-template-rows: 56px 44px 1fr;
-}
-
-.multi-chart-summary.multi-chart-summary--configure {
-    grid-template-rows: 56px 44px 1fr;
-}
-
-.multi-chart-summary.multi-chart-summary--details {
-    grid-template-rows: 24px 1fr;
-}
-
-.multi-chart-summary.show {
-    flex-basis: 320px;
-    border-left: 1px solid var(--N200);
-    padding: 16px;
-}
 
 .selected-widgets-container {
     overflow: auto;
@@ -213,27 +66,6 @@
         background-size: contain;
     }
 
-    .chart-bg .chart-warn {
-        position: absolute;
-        top: 0;
-        right: 0;
-        height: 20px;
-        width: 20px;
-        background: var(--R500);
-        padding: 3px;
-        border-radius: 50%;
-        display: none;
-
-        g {
-            path:nth-child(2) {
-                fill: var(--N0);
-            }
-
-            path:nth-child(3) {
-                fill: var(--R500);
-            }
-        }
-    }
 
     .popup-button {
         border: unset;
@@ -286,10 +118,6 @@
     &.selected-chart-widget--error {
         border: solid 1px var(--R500);
         background-color: var(--R100);
-
-        .chart-bg .chart-warn {
-            display: block;
-        }
     }
 
     .version-values-label {
@@ -541,26 +369,6 @@
 
 .date-align-left {
     width: 230px;
-}
-
-.chart-list-apply-filter {
-    text-align: center;
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-    border-radius: 4px;
-    z-index: 1;
-}
-
-.empty-height {
-    height: 400px;
-}
-
-.cta--chart-store {
-    width: 93%;
-    padding: 8px 12px;
-    background: var(--B500);
-    color: var(--N0);
 }
 
 .filter-column-container {

@@ -20,9 +20,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
-import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
-import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import { importComponentFromFELibrary } from '@Components/common'
+import {
+    ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
+    AddEnvironmentFormPrefilledInfoType,
+} from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 
 import {
@@ -336,6 +338,7 @@ const K8sResourceListTableCellComponent = ({
                     description={null}
                     hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
                     isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
+                    category={null}
                 />
             )}
         </>

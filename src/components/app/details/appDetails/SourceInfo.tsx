@@ -307,7 +307,7 @@ export const SourceInfo = ({
                     <>
                         {!isdeploymentAppDeleting && (
                             <div style={{ marginLeft: 'auto' }} className="flex dc__gap-8">
-                                <div className="app-details-action-buttons flex border__primary br-6 dc__overflow-hidden">
+                                <div className="app-details-action-buttons flexbox border__primary br-6 dc__overflow-hidden">
                                     {!isVirtualEnvironment && showUrlInfo && (
                                         <>
                                             <Button
@@ -319,7 +319,7 @@ export const SourceInfo = ({
                                                 style={ButtonStyleType.neutral}
                                                 ariaLabel="URLs"
                                             />
-                                            <div className="divider__primary h-100" />
+                                            <div className="divider__secondary" />
                                         </>
                                     )}
 
@@ -355,7 +355,7 @@ export const SourceInfo = ({
                                                 }}
                                                 ariaLabel={isHibernated ? 'Unhibernate' : 'Hibernate'}
                                             />
-                                            <div className="divider__primary h-100" />
+                                            <div className="divider__secondary" />
                                         </>
                                     )}
 
@@ -387,7 +387,7 @@ export const SourceInfo = ({
                                                     }}
                                                     ariaLabel="restart workloads"
                                                 />
-                                                <div className="divider__primary h-100" />
+                                                <div className="divider__secondary" />
                                             </>
                                         )}
 
