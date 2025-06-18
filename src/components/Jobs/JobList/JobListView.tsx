@@ -22,9 +22,9 @@ import {
     DEFAULT_BASE_PAGE_SIZE,
     Pagination,
     SortableTableHeaderCell,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory, useLocation } from 'react-router-dom'
-import { trackByGAEvent } from '../../common'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -52,7 +52,7 @@ export default function JobListView(props: JobListViewProps) {
     const handleEditJob = (event): void => {
         event.stopPropagation()
         event.preventDefault()
-        trackByGAEvent('Job List', event.currentTarget.dataset.action)
+        handleAnalyticsEvent({ category: 'Job List', action: event.currentTarget.dataset.action })
         props.handleEditJob(event.currentTarget.dataset.key)
     }
 

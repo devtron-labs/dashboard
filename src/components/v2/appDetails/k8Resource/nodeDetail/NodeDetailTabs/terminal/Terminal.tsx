@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import React, { useEffect, useRef, useState } from 'react'
 import moment from 'moment'
 import SockJS from 'sockjs-client'
@@ -24,6 +23,7 @@ import * as XtermWebfont from 'xterm-webfont'
 import {
     AppThemeType,
     getComponentSpecificThemeClass,
+    handleAnalyticsEvent,
     IS_PLATFORM_MAC_OS,
     LogResizeButton,
     noop,
@@ -53,6 +53,7 @@ const TerminalView = ({
     terminalMessageData,
     clearTerminal,
     dataTestId,
+    isResourceBrowserView,
 }: TerminalViewType) => {
     const socket = useRef(null)
     const termDivRef = useRef(null)
@@ -252,6 +253,12 @@ const TerminalView = ({
     }, [firstMessageReceived, isTerminalTab])
 
     const handleToggleFullscreen = () => {
+        if (isResourceBrowserView) {
+            handleAnalyticsEvent({
+                category: 'Cluster Terminal',
+                action: 'RB_TERMINAL_FULLSCREEN',
+            })
+        }
         setFullScreenView((prev) => !prev)
         terminalRef.current?.focus()
     }

@@ -26,6 +26,7 @@ import {
     getGroupVersionFromApiVersion,
     getResourceGroupListRaw,
     GetResourceRecommenderResourceListPropsType,
+    handleAnalyticsEvent,
     Icon,
     InitTabType,
     noop,
@@ -43,9 +44,9 @@ import { ReactComponent as ICTerminalFill } from '@Icons/ic-terminal-fill.svg'
 import { ReactComponent as ICWorldBlack } from '@Icons/ic-world-black.svg'
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
+import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
 import { URLS } from '../../../config'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import NodeDetails from '../../ClusterNodes/NodeDetails'
 import { importComponentFromFELibrary } from '../../common'
@@ -85,9 +86,10 @@ const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton'
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ResourceList = () => {
-    const { clusterId, namespace, nodeType, node, group } = useParams<URLParams>()
+    const params = useParams<URLParams>()
+    const { clusterId, namespace, nodeType, node, group } = params
     const { replace, push } = useHistory()
-    const { url } = useRouteMatch()
+    const { url, path } = useRouteMatch()
     const location = useLocation()
     const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
@@ -107,7 +109,7 @@ const ResourceList = () => {
     const [isDataStale, setIsDataStale] = useState(false)
     const [selectedResource, setSelectedResource] = useState<ApiResourceGroupType>(null)
     const { targetK8sVersion } = useUrlFilters<never, ResourceListUrlFiltersType>({ parseSearchParams })
-    const { setIntelligenceConfig } = useMainContext()
+    const { setIntelligenceConfig, setAIAgentContext } = useMainContext()
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
         () => getResourceGroupListRaw(clusterId),
@@ -221,6 +223,7 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
+            setAIAgentContext(null)
         }
     }, [])
 
@@ -293,7 +296,22 @@ const ResourceList = () => {
         markTabActiveById(ResourceBrowserTabsId.k8s_Resources).catch(noop)
     }, [location.pathname])
 
+    useEffect(() => {
+        setAIAgentContext({
+            path,
+            context: {
+                ...params,
+                clusterName: selectedCluster.label,
+                search: location.search,
+            },
+        })
+    }, [location.pathname, location.search, selectedCluster.label])
+
     const onClusterChange = (selected: ClusterOptionType) => {
+        handleAnalyticsEvent({
+            category: 'Resource Browser',
+            action: 'RB_CLUSTER_SWITCH_CLUSTER',
+        })
         if (selected.value === selectedCluster?.value) {
             return
         }
@@ -308,13 +326,13 @@ const ResourceList = () => {
             return
         }
 
-        const path = getClusterChangeRedirectionUrl(
+        const newPath = getClusterChangeRedirectionUrl(
             selected.isClusterInCreationPhase,
             String(selected.isClusterInCreationPhase ? selected.installationId : selected.value),
         )
 
         replace({
-            pathname: path,
+            pathname: newPath,
         })
     }
 

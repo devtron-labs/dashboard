@@ -17,17 +17,17 @@
 import { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import {
+    Collapse,
+    DTSwitch,
     OptionType,
     RegistryIcon,
     RegistryType,
     SelectPicker,
     Textarea,
-    Toggle,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { CustomImageTagsType } from './CustomImageTag.type'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import { CustomErrorMessage, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as GeneratedImage } from '../../assets/icons/ic-generated-image.svg'
@@ -263,15 +263,16 @@ function CustomImageTags({
                             </div>
                         </div>
                     </div>
-                    <div className="" style={{ width: '32px', height: '20px' }}>
-                        <Toggle
-                            selected={formData.enableCustomTag}
-                            onSelect={handleCustomTagToggle}
-                            dataTestId="create-build-pipeline-custom-tag-enabled-toggle"
-                        />
-                    </div>
+                    <DTSwitch
+                        name="create-build-pipeline-custom-tag-enabled-toggle"
+                        ariaLabel="Toggle enable custom image tag"
+                        isChecked={formData.enableCustomTag}
+                        onChange={handleCustomTagToggle}
+                    />
                 </div>
-                {formData.enableCustomTag && renderCustomImageDetails()}
+                <Collapse expand={formData.enableCustomTag}>
+                    {renderCustomImageDetails()}
+                </Collapse>
                 <hr />
             </div>
         )

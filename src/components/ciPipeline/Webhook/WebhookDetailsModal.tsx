@@ -19,7 +19,6 @@ import {
     showError,
     Progressing,
     Drawer,
-    InfoColourBar,
     Reload,
     copyToClipboard,
     CustomInput,
@@ -44,7 +43,6 @@ import Tippy from '@tippyjs/react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as InfoIcon } from '../../../assets/icons/info-filled.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
@@ -52,9 +50,9 @@ import './webhookDetails.scss'
 import {
     getUserRole,
     createOrUpdateUser,
-} from '../../../Pages/GlobalConfigurations/Authorization/authorization.service'
+} from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
-import { createGeneratedAPIToken } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/service'
+import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
     getWebhookTokenListOptions,
@@ -66,13 +64,13 @@ import {
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
-import { createUserPermissionPayload } from '../../../Pages/GlobalConfigurations/Authorization/utils'
-import { ChartGroupPermissionsFilter } from '../../../Pages/GlobalConfigurations/Authorization/types'
-import { PermissionType } from '../../../Pages/GlobalConfigurations/Authorization/constants'
+import { createUserPermissionPayload } from '@Pages/GlobalConfigurations/Authorization/utils'
+import { ChartGroupPermissionsFilter } from '@Pages/GlobalConfigurations/Authorization/types'
+import { PermissionType } from '@Pages/GlobalConfigurations/Authorization/constants'
 import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,
-} from '../../../Pages/GlobalConfigurations/Authorization/libUtils'
+} from '@Pages/GlobalConfigurations/Authorization/libUtils'
 
 export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -311,21 +309,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         setShowTokenSection(true)
     }
 
-    const renderActionButton = (): JSX.Element => {
-        if (generateTokenLoader) {
-            return (
-                <div className="w-120">
-                    <Progressing />
-                </div>
-            )
-        }
-        return (
-            <span className="cb-5 cursor top fw-6" onClick={generateToken}>
-                Generate token
-            </span>
-        )
-    }
-
     const renderWebhookURLContainer = (): JSX.Element => {
         return (
             <div className="flexbox dc__content-space mb-16">
@@ -444,7 +427,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
 
     const renderGenerateTokenSection = (): JSX.Element => {
         return (
-            <div>
+            <div className="flexbox-col dc__gap-16">
                 <div className="mt-16">
                     <CustomInput
                         placeholder="Enter token name"
@@ -454,16 +437,18 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
                         error={showTokenNameError && GENERATE_TOKEN_NAME_VALIDATION}
+                        helperText="An API token with the required permissions will be auto-generated."
                     />
                     {generatedAPIToken && renderSelectedToken('Generated', generatedAPIToken)}
                 </div>
                 {!generatedAPIToken && (
-                    <InfoColourBar
-                        message="An API token with the required permissions will be auto-generated."
-                        classname="info_bar mt-16"
-                        Icon={InfoIcon}
-                        iconClass="h-20"
-                        renderActionButton={renderActionButton}
+                    <Button
+                        dataTestId="generate-token"
+                        variant={ButtonVariantType.secondary}
+                        size={ComponentSizeType.medium}
+                        onClick={generateToken}
+                        text="Generate token"
+                        isLoading={generateTokenLoader}
                     />
                 )}
             </div>
@@ -482,11 +467,14 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             )
         }
         return !showTokenSection ? (
-            <div className="cb-5 fs-13 mt-16 pointer" onClick={toggleTokenSection}>
-                Select or auto-generate token with required permissions
-            </div>
+            <Button
+                dataTestId="select-or-generate-token"
+                variant={ButtonVariantType.text}
+                onClick={toggleTokenSection}
+                text="Select or auto-generate token with required permissions"
+            />
         ) : (
-            <div className="mt-16">
+            <div>
                 {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
                 {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
                 {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
@@ -716,20 +704,22 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
 
     const renderTokenPermissionSection = (): JSX.Element | null => {
         return (
-            <div className="bg__primary p-16 mb-16 br-4 bw-1 en-2">
+            <div className="bg__primary p-16 mb-16 br-4 bw-1 en-2 flexbox-col dc__gap-16">
                 <InfoBlock description="Authentication via API token is required to allow requests from an external service." />
-                <div className="fw-6 fs-13 cn-9 pb-16">Use API token with below permissions in the cURL request</div>
-                <div className="permission-row dc__border-bottom pt-8 pb-8">
-                    <span>Project</span>
-                    <span>Environment</span>
-                    <span>Application</span>
-                    <span>Role</span>
-                </div>
-                <div className="permission-row pt-8 pb-8">
-                    <span>{webhookDetails?.projectName}</span>
-                    <span>{webhookDetails?.environmentName}</span>
-                    <span>{webhookDetails?.appName}</span>
-                    <span>{webhookDetails?.role}</span>
+                <div className="fw-6 fs-13 cn-9">Use API token with below permissions in the cURL request</div>
+                <div>
+                    <div className="permission-row dc__border-bottom pt-8 pb-8">
+                        <span>Project</span>
+                        <span>Environment</span>
+                        <span>Application</span>
+                        <span>Role</span>
+                    </div>
+                    <div className="permission-row pt-8 pb-8">
+                        <span>{webhookDetails?.projectName}</span>
+                        <span>{webhookDetails?.environmentName}</span>
+                        <span>{webhookDetails?.appName}</span>
+                        <span>{webhookDetails?.role}</span>
+                    </div>
                 </div>
                 {renderTokenSection()}
             </div>
