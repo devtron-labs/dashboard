@@ -121,7 +121,9 @@ const DynamicTabs = ({
                         </span>
                     )}
 
-                    {isAlpha && <span className="dc__no-shrink py-1 px-4 br-4 bcy-1 cy-7 fs-11 fw-5 lh-16">Alpha</span>}
+                    {shouldRenderTitle && isAlpha && (
+                        <span className="dc__no-shrink py-1 px-4 br-4 bcy-1 cy-7 fs-11 fw-5 lh-16">Alpha</span>
+                    )}
                 </div>
             </button>
         )

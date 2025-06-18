@@ -238,7 +238,7 @@ const ResourceFilterOptions = ({
                                     <SelectPicker<GVKOptionValueType, false>
                                         inputId="resource-filter__gvk-select"
                                         placeholder="Select Resource Kind"
-                                        options={gvkOptions}
+                                        options={gvkOptions || []}
                                         value={{
                                             label: selectedKindGVKFilter || 'All Kinds',
                                             value:
@@ -289,7 +289,7 @@ const ResourceFilterOptions = ({
                             <ExportToCsv
                                 fileName={FILE_NAMES.ResourceRecommendations}
                                 showOnlyIcon
-                                disabled={isResourceListLoading}
+                                disabled={isResourceListLoading || !filteredResourceList?.length}
                                 apiPromise={getResourcesToExport}
                             />
                         )}
