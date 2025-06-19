@@ -21,17 +21,16 @@ import { ActionMeta } from 'react-select'
 import {
     AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
     BaseAppMetaData,
-    ComponentSizeType,
     getNoMatchingResultText,
     ResourceKindType,
-    SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
-    SelectPickerVariantType,
     useAsync,
     UserPreferenceResourceActions,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
 
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
 import { appListOptions } from './AppSelectorUtil'
@@ -65,7 +64,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
     // fetching recently visited apps only in case of devtron apps
     useAsync(
-        () => fetchRecentlyVisitedParsedApps({ appId, appName }),
+        () => fetchRecentlyVisitedParsedApps({ appId, appName, resourceKind: ResourceKindType.devtronApplication }),
         [appId, appName],
         isAppDataAvailable && !isJobView,
     )
@@ -73,13 +72,6 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
     }
-
-    const customSelect: SelectPickerProps['filterOption'] = (option, searchText: string) => {
-        const label = option.data.label as string
-        return option.data.value === 0 || label.toLowerCase().includes(searchText.toLowerCase())
-    }
-
-    const getDisabledOptions = (option: RecentlyVisitedOptions): SelectPickerProps['isDisabled'] => option.isDisabled
 
     const noOptionsMessage = () =>
         isJobView
@@ -111,7 +103,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     }
 
     return (
-        <SelectPicker
+        <ContextSwitcher
             inputId={`${isJobView ? 'job' : 'app'}-name`}
             options={_selectOption || []}
             inputValue={inputValue}
@@ -120,11 +112,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             noOptionsMessage={noOptionsMessage}
             onChange={handleChange}
             value={{ value: appId, label: appName }}
-            variant={SelectPickerVariantType.BORDER_LESS}
             placeholder={appName}
-            isOptionDisabled={getDisabledOptions}
-            size={ComponentSizeType.xl}
-            filterOption={customSelect}
         />
     )
 }
