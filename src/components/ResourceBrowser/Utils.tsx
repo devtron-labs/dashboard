@@ -24,10 +24,14 @@ import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     FeatureTitleWithInfo,
+    getUrlWithSearchParams,
+    GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
+    GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
+    Nodes,
     ResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -329,7 +333,13 @@ export const getTabsBasedOnRole = ({
         ...(canRenderResourceRecommender && getResourceRecommenderTabConfig
             ? [
                   getResourceRecommenderTabConfig(
-                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.resourceRecommenderGVK.Kind, clusterId, namespace),
+                      `${getURLBasedOnSidebarGVK(SIDEBAR_KEYS.resourceRecommenderGVK.Kind, clusterId, namespace)}${getUrlWithSearchParams(
+                          '',
+                          {
+                              [GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]: 'apps/v1',
+                              [GVK_FILTER_KIND_QUERY_PARAM_KEY]: Nodes.Deployment,
+                          },
+                      )}`,
                       isResourceRecommenderSelected,
                       RESOURCE_RECOMMENDER_TAB_ID,
                   ),

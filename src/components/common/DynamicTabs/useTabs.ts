@@ -72,6 +72,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         tippyConfig,
         lastActiveTabId,
         shouldRemainMounted,
+        isAlpha,
     }: PopulateTabDataPropsType): DynamicTabType => ({
         id,
         name,
@@ -88,6 +89,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         tippyConfig,
         lastActiveTabId,
         shouldRemainMounted,
+        isAlpha: isAlpha || false,
     })
 
     const getTabDataFromLocalStorage = () => localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
@@ -131,10 +133,12 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
      * @returns {DynamicTabType} - Tab data for initialization
      */
     const populateInitTab = (_initTab: InitTabType): DynamicTabType => {
-        const title = getTitleFromKindAndName({
-            kind: _initTab.kind,
-            name: _initTab.name,
-        })
+        const title =
+            _initTab.title ||
+            getTitleFromKindAndName({
+                kind: _initTab.kind,
+                name: _initTab.name,
+            })
 
         const _id =
             _initTab.id ??
@@ -157,6 +161,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
             tippyConfig: _initTab.tippyConfig,
             lastActiveTabId: null,
             shouldRemainMounted: _initTab.shouldRemainMounted,
+            isAlpha: _initTab.isAlpha,
         })
     }
 
@@ -180,6 +185,10 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
+                    const storedResourceRecommenderTab = (parsedTabsData.data[persistenceKey] ?? []).find(
+                        (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
+                    )
+
                     parsedTabsData.data[persistenceKey] = (parsedTabsData.data[persistenceKey] ?? []).filter(
                         (tab) => tab.id !== RESOURCE_RECOMMENDER_TAB_ID,
                     )
@@ -199,7 +208,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             parsedTabsData.data[persistenceKey].splice(
                                 monitoringTabIndex + 1,
                                 0,
-                                resourceRecommenderInitTab,
+                                storedResourceRecommenderTab || resourceRecommenderInitTab,
                             )
                         }
                     }
@@ -325,6 +334,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             tippyConfig,
                             lastActiveTabId: getLastActiveTabIdFromTabs(prevTabs, _id),
                             shouldRemainMounted: false,
+                            isAlpha: false,
                         }),
                     )
                 }

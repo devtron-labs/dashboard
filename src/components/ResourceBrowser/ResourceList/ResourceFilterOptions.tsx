@@ -182,6 +182,10 @@ const ResourceFilterOptions = ({
             newSearchParams.set(GVK_FILTER_KIND_QUERY_PARAM_KEY, kind)
         }
 
+        updateK8sResourceTab({
+            url: `${location.pathname}?${newSearchParams.toString()}`,
+        })
+
         replace({
             pathname: location.pathname,
             search: newSearchParams.toString(),

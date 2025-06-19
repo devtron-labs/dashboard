@@ -15,7 +15,7 @@
  */
 
 import React, { Fragment, useEffect, useMemo, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { useHistory, useParams } from 'react-router-dom'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import DOMPurify from 'dompurify'
@@ -49,7 +49,6 @@ const Sidebar = ({
     isOpen,
 }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
-    const location = useLocation()
     const { push } = useHistory()
     const { clusterId, namespace, nodeType } = useParams<URLParams>()
     const [searchText, setSearchText] = useState('')
@@ -125,8 +124,8 @@ const Sidebar = ({
         }
         setSelectedResource(_selectedResource)
         updateK8sResourceTabLastSyncMoment()
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}${location.search}`
-        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
+        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${_selectedKind}/${_selectedGroup || K8S_EMPTY_GROUP}`
+        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind, retainSearchParams: true })
         if (shouldPushUrl) {
             push(_url)
         }

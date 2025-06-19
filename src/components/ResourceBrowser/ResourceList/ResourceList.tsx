@@ -545,7 +545,7 @@ const ResourceList = () => {
         },
         clusterName: selectedCluster.label,
         handleResourceClick,
-        updateK8sResourceTab: noop,
+        updateK8sResourceTab: getUpdateTabUrlForId(RESOURCE_RECOMMENDER_TAB_ID),
         nodeType: null,
         group: K8S_EMPTY_GROUP,
         isLoading: isResourceListLoading,
