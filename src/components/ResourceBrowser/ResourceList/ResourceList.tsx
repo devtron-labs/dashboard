@@ -657,7 +657,11 @@ const ResourceList = () => {
                         const currentTab = tabs[index]
                         // We will render the fixed tab if it is selected, alive or it should remain mounted
                         // Not using filter, as the index is directly coupled with tabs indexes
-                        if (currentTab.isSelected || currentTab.shouldRemainMounted || currentTab.isAlive) {
+                        if (
+                            currentTab.isSelected ||
+                            currentTab.shouldRemainMounted ||
+                            (currentTab.isAlive && currentTab.id === ResourceBrowserTabsId.terminal)
+                        ) {
                             /* NOTE: need to retain terminal layout. Thus hiding it through visibility */
                             const hideClassName =
                                 tabs[index].name === AppDetailsTabs.terminal

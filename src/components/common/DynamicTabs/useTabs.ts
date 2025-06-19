@@ -73,6 +73,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         lastActiveTabId,
         shouldRemainMounted,
         isAlpha,
+        defaultUrl,
     }: PopulateTabDataPropsType): DynamicTabType => ({
         id,
         name,
@@ -90,6 +91,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         lastActiveTabId,
         shouldRemainMounted,
         isAlpha: isAlpha || false,
+        defaultUrl: defaultUrl || null,
     })
 
     const getTabDataFromLocalStorage = () => localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
@@ -162,6 +164,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
             lastActiveTabId: null,
             shouldRemainMounted: _initTab.shouldRemainMounted,
             isAlpha: _initTab.isAlpha,
+            defaultUrl: _initTab.defaultUrl,
         })
     }
 
@@ -335,6 +338,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             lastActiveTabId: getLastActiveTabIdFromTabs(prevTabs, _id),
                             shouldRemainMounted: false,
                             isAlpha: false,
+                            defaultUrl: null,
                         }),
                     )
                 }
@@ -373,6 +377,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                                       ...tab,
                                       isSelected: false,
                                       isAlive: false,
+                                      url: tab.defaultUrl || tab.url,
                                   }
                               }
 
