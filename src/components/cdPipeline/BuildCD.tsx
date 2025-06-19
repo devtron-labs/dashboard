@@ -64,6 +64,7 @@ import { BuildCDProps } from './types'
 import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
 import { MigrateToDevtronProps } from './MigrateToDevtron/types'
+import { CDPipelineDeploymentAppType } from '@Pages/App/Configurations'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -598,23 +599,6 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const renderDeploymentAppType = () => (
-        <div className="cd-pipeline__deployment-type mt-16">
-            <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-            <DeploymentAppRadioGroup
-                isDisabled={!!cdPipelineId}
-                deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
-                handleOnChange={handleDeploymentAppTypeChange}
-                allowedDeploymentTypes={formData.allowedDeploymentTypes}
-                rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                isFromCDPipeline
-                isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
-                areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
-            />
-        </div>
-    )
-
     const renderStrategyOptions = () => {
         return (
             <Select rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150" onChange={selectStrategy}>
@@ -798,12 +782,19 @@ export default function BuildCD({
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
 
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-                    !isVirtualEnvironment &&
-                    formData.allowedDeploymentTypes.length > 0 &&
-                    // Want to show this when gitops module is installed, does not matter if it is configured or not
-                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
-                    renderDeploymentAppType()}
+                <CDPipelineDeploymentAppType
+                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                    isDisabled={!!cdPipelineId}
+                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
+                    handleChange={handleDeploymentAppTypeChange}
+                    allowedDeploymentTypes={formData.allowedDeploymentTypes}
+                    rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
+                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+                    areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+                />
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
                 {isAdvanced && (

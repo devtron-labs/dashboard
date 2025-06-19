@@ -30,6 +30,7 @@ import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { getSelectedWebhookEvent } from '@Pages/App/Configurations'
 
 export const Build = ({
     isAdvanced,
@@ -129,11 +130,6 @@ export const Build = ({
         setFormData(_formData)
         getPluginData(_formData)
     }
-    const getSelectedWebhookEvent = (material) => {
-        const _materialValue = JSON.parse(material.value)
-        const _selectedEventId = _materialValue?.eventId
-        return _selectedEventId && formData.webhookEvents.find((we) => we.id === _selectedEventId)
-    }
 
     const addWebhookCondition = (): void => {
         const _form = { ...formData }
@@ -172,7 +168,7 @@ export const Build = ({
         const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
             gitHost: formData.gitHost,
-            getSelectedWebhookEvent,
+            getSelectedWebhookEvent: (material) => getSelectedWebhookEvent(material, formData.webhookEvents),
             addWebhookCondition,
             deleteWebhookCondition,
             onWebhookConditionSelectorChange,

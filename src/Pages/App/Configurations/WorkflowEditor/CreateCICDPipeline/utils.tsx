@@ -70,14 +70,6 @@ export const getCiCdPipelineDefaultState = (): CreateCICDPipelineData => ({
 
 export const getCiCdPipelineFormErrorDefaultState = (): CreateCICDPipelineFormError => ({ ci: {}, cd: {} })
 
-export const getSelectedWebhookEvent = (
-    material: MaterialType,
-    webhookEvents: CreateCICDPipelineData['ci']['webhookEvents'],
-) => {
-    const selectedEventId = JSON.parse(material.value)?.eventId
-    return selectedEventId ? webhookEvents.find(({ id }) => id === selectedEventId) : null
-}
-
 export const getSelectedMaterial = ({
     type,
     selectedWebhookEvent,

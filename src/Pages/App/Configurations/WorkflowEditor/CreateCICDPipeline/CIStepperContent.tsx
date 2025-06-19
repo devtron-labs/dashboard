@@ -12,9 +12,10 @@ import { createWebhookConditionList } from '@Components/ciPipeline/ciPipeline.se
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 import { SourceMaterialsSelector } from '../SourceMaterialsSelector'
+import { getSelectedWebhookEvent } from '../utils'
 import { ConfigureWebhookWrapper } from './ConfigureWebhookWrapper'
 import { CIStepperContentProps } from './types'
-import { getBranchValue, getMenuListFooterConfig, getSelectedMaterial, getSelectedWebhookEvent } from './utils'
+import { getBranchValue, getMenuListFooterConfig, getSelectedMaterial } from './utils'
 
 const validationRules = new ValidationRules()
 

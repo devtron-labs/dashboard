@@ -18,16 +18,12 @@ import {
 
 import { saveCIPipeline } from '@Components/ciPipeline/ciPipeline.service'
 import { CIPipelineBuildType } from '@Components/ciPipeline/types'
-import {
-    gitOpsRepoNotConfigured,
-    gitOpsRepoNotConfiguredWithEnforcedEnv,
-    gitOpsRepoNotConfiguredWithOptionsHidden,
-} from '@Components/gitOps/constants'
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '@Components/workflowEditor/NoGitOpsRepoConfiguredWarning'
 
+import { checkForGitOpsRepoNotConfigured } from '../utils'
 import { CDStepperContent } from './CDStepperContent'
 import { CICDStepper } from './CICDStepper'
 import { CIStepperContent } from './CIStepperContent'
@@ -105,47 +101,6 @@ export const CreateCICDPipeline = ({
         setGitOpsRepoConfiguredWarning({ show: false, text: '' })
     }
 
-    const checkForGitOpsRepoNotConfigured = () => {
-        const isHelmEnforced =
-            selectedEnvironment?.allowedDeploymentTypes?.length === 1 &&
-            selectedEnvironment.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
-
-        const gitOpsRepoNotConfiguredAndOptionsHidden =
-            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-            !noGitOpsModuleInstalledAndConfigured &&
-            !isHelmEnforced &&
-            isGitOpsRepoNotConfigured
-
-        if (gitOpsRepoNotConfiguredAndOptionsHidden) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
-        }
-
-        const isGitOpsRepoNotConfiguredAndOptionsVisible =
-            deploymentAppType === DeploymentAppTypes.GITOPS &&
-            isGitOpsRepoNotConfigured &&
-            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
-
-        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
-            isGitOpsRepoNotConfiguredAndOptionsVisible && selectedEnvironment?.allowedDeploymentTypes?.length === 1
-
-        if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
-        }
-
-        if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
-            setGitOpsRepoConfiguredWarning({
-                show: true,
-                text: gitOpsRepoNotConfiguredWithEnforcedEnv(selectedEnvironment.name),
-            })
-        }
-
-        return (
-            gitOpsRepoNotConfiguredAndOptionsHidden ||
-            isGitOpsRepoNotConfiguredAndGitopsEnforced ||
-            isGitOpsRepoNotConfiguredAndOptionsVisible
-        )
-    }
-
     const createWorkflow = async ({ shouldCreateCINode }: { shouldCreateCINode: boolean }) => {
         if (shouldCreateCINode) {
             const scanValidation = !window._env_.FORCE_SECURITY_SCANNING || !isSecurityModuleInstalled || scanEnabled
@@ -171,7 +126,17 @@ export const CreateCICDPipeline = ({
             return
         }
 
-        if (checkForGitOpsRepoNotConfigured()) {
+        if (
+            checkForGitOpsRepoNotConfigured({
+                allowedDeploymentTypes: selectedEnvironment?.allowedDeploymentTypes,
+                deploymentAppType: deploymentAppType as DeploymentAppTypes,
+                environmentName: selectedEnvironment?.name,
+                isGitOpsRepoNotConfigured,
+                isTemplateView,
+                noGitOpsModuleInstalledAndConfigured,
+                setGitOpsRepoConfiguredWarning,
+            })
+        ) {
             return
         }
 

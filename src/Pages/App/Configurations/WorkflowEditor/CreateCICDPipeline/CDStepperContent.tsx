@@ -15,12 +15,12 @@ import {
 import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-import { DeploymentAppRadioGroup } from '@Components/v2/values/chartValuesDiff/ChartValuesView.component'
 import { GITOPS_REPO_REQUIRED } from '@Components/v2/values/chartValuesDiff/constant'
 import { ENV_ALREADY_EXIST_ERROR } from '@Config/constants'
 import { URLS } from '@Config/routes'
 import { getGitOpsRepoConfig } from '@Services/service'
 
+import { CDPipelineDeploymentAppType } from '../CDPipelineDeploymentAppType'
 import { SourceMaterialsSelector } from '../SourceMaterialsSelector'
 import { CDStepperContentProps } from './types'
 import { getEnvironmentOptions } from './utils'
@@ -167,27 +167,19 @@ export const CDStepperContent = ({
                 <div className="mt-16">
                     {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
                 </div>
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-                    !selectedEnvironment?.isVirtualEnvironment &&
-                    selectedEnvironment?.allowedDeploymentTypes?.length > 0 &&
-                    // Want to show this when gitops module is installed, does not matter if it is configured or not
-                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) && (
-                        <div className="mt-16">
-                            {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                            <label className="form__label form__label--sentence">How do you want to deploy?</label>
-                            <DeploymentAppRadioGroup
-                                deploymentAppType={deploymentAppType ?? DeploymentAppTypes.HELM}
-                                handleOnChange={handleDeploymentAppTypeChange}
-                                allowedDeploymentTypes={selectedEnvironment?.allowedDeploymentTypes}
-                                rootClassName="chartrepo-type__radio-group"
-                                isDisabled={isFormDisabled}
-                                isFromCDPipeline
-                                isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                                gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
-                                areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
-                            />
-                        </div>
-                    )}
+                <CDPipelineDeploymentAppType
+                    isVirtualEnvironment={selectedEnvironment?.isVirtualEnvironment}
+                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
+                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                    deploymentAppType={deploymentAppType ?? DeploymentAppTypes.HELM}
+                    handleChange={handleDeploymentAppTypeChange}
+                    allowedDeploymentTypes={selectedEnvironment?.allowedDeploymentTypes}
+                    rootClassName="chartrepo-type__radio-group"
+                    isDisabled={isFormDisabled}
+                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+                    areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+                />
             </div>
         </div>
     )

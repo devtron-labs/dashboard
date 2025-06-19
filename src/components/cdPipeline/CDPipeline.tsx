@@ -104,14 +104,10 @@ import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums 
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import {
-    gitOpsRepoNotConfigured,
-    gitOpsRepoNotConfiguredWithEnforcedEnv,
-    gitOpsRepoNotConfiguredWithOptionsHidden,
-} from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
+import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -928,50 +924,6 @@ export default function CDPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const checkForGitOpsRepoNotConfigured = () => {
-        const isHelmEnforced =
-            formData.allowedDeploymentTypes.length === 1 &&
-            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
-
-        const gitOpsRepoNotConfiguredAndOptionsHidden =
-            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-            !noGitOpsModuleInstalledAndConfigured &&
-            !isHelmEnforced &&
-            isGitOpsRepoNotConfigured
-
-        if (gitOpsRepoNotConfiguredAndOptionsHidden) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
-        }
-        const isGitOpsRepoNotConfiguredAndOptionsVisible =
-            formData.deploymentAppType === DeploymentAppTypes.GITOPS &&
-            isGitOpsRepoNotConfigured &&
-            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
-
-        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
-            isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
-
-        if (!isTemplateView) {
-            if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
-                setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
-            }
-            if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
-                setGitOpsRepoConfiguredWarning({
-                    show: true,
-                    text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
-                })
-            }
-
-            if (
-                gitOpsRepoNotConfiguredAndOptionsHidden ||
-                isGitOpsRepoNotConfiguredAndGitopsEnforced ||
-                isGitOpsRepoNotConfiguredAndOptionsVisible
-            ) {
-                return true
-            }
-        }
-        return false
-    }
-
     const savePipeline = async () => {
         if (!isMigratingFromExternalApp) {
             if (formData.deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
@@ -988,7 +940,17 @@ export default function CDPipeline({
                 return
             }
 
-            if (checkForGitOpsRepoNotConfigured()) {
+            if (
+                checkForGitOpsRepoNotConfigured({
+                    allowedDeploymentTypes: formData.allowedDeploymentTypes,
+                    deploymentAppType: formData.deploymentAppType as DeploymentAppTypes,
+                    environmentName: formData.environmentName,
+                    isGitOpsRepoNotConfigured,
+                    isTemplateView,
+                    noGitOpsModuleInstalledAndConfigured,
+                    setGitOpsRepoConfiguredWarning,
+                })
+            ) {
                 return
             }
             const isUnique = checkUniqueness(formData, true)
