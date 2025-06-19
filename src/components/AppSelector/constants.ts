@@ -1,9 +1,9 @@
 import { RecentlyVisitedGroupedOptionsType } from './AppSelector.types'
 
-export const AllApplicationsMetaData: RecentlyVisitedGroupedOptionsType = {
-    label: 'All Applications',
+export const getMinCharSearchPlaceholderGroup = (isJobView): RecentlyVisitedGroupedOptionsType => ({
+    label: `All ${isJobView ? 'Jobs' : 'Apps'}`,
     options: [{ value: 0, label: 'Type 3 characters to search', isDisabled: true }],
-}
+})
 
 export const APP_DETAILS_GA_EVENTS = {
     RecentlyVisitedApps: {

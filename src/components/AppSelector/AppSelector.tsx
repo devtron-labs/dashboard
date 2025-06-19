@@ -19,9 +19,7 @@ import ReactGA from 'react-ga4'
 import { ActionMeta } from 'react-select'
 
 import {
-    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
     BaseAppMetaData,
-    getNoMatchingResultText,
     ResourceKindType,
     SelectPickerOptionType,
     SelectPickerProps,
@@ -42,13 +40,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
     const [inputValue, setInputValue] = useState('')
 
+    const resourceKind = isJobView ? ResourceKindType.job : ResourceKindType.devtronApplication
+
     const recentlyVisitedDevtronApps =
-        userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
-            UserPreferenceResourceActions.RECENTLY_VISITED
-        ] || ([] as BaseAppMetaData[])
+        userPreferences?.resources?.[resourceKind]?.[UserPreferenceResourceActions.RECENTLY_VISITED] ||
+        ([] as BaseAppMetaData[])
 
     const isAppDataAvailable = !!appId && !!appName
-    const shouldFetchAppOptions = isJobView ? true : !!recentlyVisitedDevtronApps.length
+    const shouldFetchAppOptions = !!recentlyVisitedDevtronApps.length
 
     const [loading, selectOptions] = useAsync(
         () =>
@@ -64,26 +63,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
     // fetching recently visited apps only in case of devtron apps
     useAsync(
-        () => fetchRecentlyVisitedParsedApps({ appId, appName, resourceKind: ResourceKindType.devtronApplication }),
+        () => fetchRecentlyVisitedParsedApps({ appId, appName, resourceKind }),
         [appId, appName],
-        isAppDataAvailable && !isJobView,
+        isAppDataAvailable,
     )
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
     }
-
-    const noOptionsMessage = () =>
-        isJobView
-            ? appSelectorNoOptionsMessage({
-                  inputValue,
-              })
-            : getNoMatchingResultText()
-
-    const _selectOption = selectOptions?.map((section) => ({
-        ...section,
-        options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
-    }))
 
     const handleChange = (
         selectedOption: RecentlyVisitedOptions,
@@ -105,11 +92,10 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     return (
         <ContextSwitcher
             inputId={`${isJobView ? 'job' : 'app'}-name`}
-            options={_selectOption || []}
+            options={selectOptions}
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}
-            noOptionsMessage={noOptionsMessage}
             onChange={handleChange}
             value={{ value: appId, label: appName }}
             placeholder={appName}

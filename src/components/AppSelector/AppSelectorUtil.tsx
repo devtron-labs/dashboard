@@ -18,7 +18,7 @@ import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@
 
 import { getAppListMin } from '../../services/service'
 import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
-import { AllApplicationsMetaData } from './constants'
+import { getMinCharSearchPlaceholderGroup } from './constants'
 
 let timeoutId
 
@@ -37,7 +37,7 @@ export const appListOptions = ({
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
                 resolve(
-                    recentlyVisitedDevtronApps?.length && !isJobView
+                    recentlyVisitedDevtronApps?.length
                         ? [
                               {
                                   label: 'Recently Visited',
@@ -47,12 +47,12 @@ export const appListOptions = ({
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },
-                              AllApplicationsMetaData,
+                              getMinCharSearchPlaceholderGroup(isJobView),
                           ]
                         : [],
                 )
             } else {
-                getAppListMin(null, options, inputValue, isJobView ?? false)
+                getAppListMin(null, options, inputValue, isJobView)
                     .then((response) => {
                         const appList = response.result
                             ? ([

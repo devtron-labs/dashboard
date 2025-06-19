@@ -18,20 +18,26 @@ export const ContextSwitcher = ({
     value,
     onChange,
     placeholder,
-}: ContextSwitcherTypes) => (
-    <SelectPicker
-        inputId={inputId}
-        options={options}
-        inputValue={inputValue}
-        onInputChange={onInputChange}
-        isLoading={isLoading}
-        noOptionsMessage={noOptionsMessage ?? getNoMatchingResultText}
-        onChange={onChange}
-        value={value}
-        variant={SelectPickerVariantType.BORDER_LESS}
-        placeholder={placeholder}
-        isOptionDisabled={getDisabledOptions}
-        size={ComponentSizeType.xl}
-        filterOption={customSelect}
-    />
-)
+}: ContextSwitcherTypes) => {
+    const selectedOptions = options?.map((section) => ({
+        ...section,
+        options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
+    }))
+    return (
+        <SelectPicker
+            inputId={inputId}
+            options={selectedOptions}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            isLoading={isLoading}
+            noOptionsMessage={noOptionsMessage ?? getNoMatchingResultText}
+            onChange={onChange}
+            value={value}
+            variant={SelectPickerVariantType.BORDER_LESS}
+            placeholder={placeholder}
+            isOptionDisabled={getDisabledOptions}
+            size={ComponentSizeType.xl}
+            filterOption={customSelect}
+        />
+    )
+}
