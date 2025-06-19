@@ -99,31 +99,26 @@ export const getMigrateAppOptions = async ({
     deploymentAppType,
     abortControllerRef,
 }: GetMigrateAppOptionsParamsType): Promise<SelectMigrateAppOptionType[]> => {
+    const isFlux = deploymentAppType === DeploymentAppTypes.FLUX
+    const isArgo = deploymentAppType === DeploymentAppTypes.ARGO
     try {
-        if (deploymentAppType === DeploymentAppTypes.ARGO) {
-            const { result } = await getArgoInstalledExternalApps(String(clusterId), abortControllerRef)
+        if (isFlux || isArgo) {
+            const { result } = await (isFlux
+                ? getFluxInstalledExternalApps(
+                      String(clusterId),
+                      { abortControllerRef },
+                      FluxCDTemplateType.HELM_RELEASE,
+                  )
+                : getArgoInstalledExternalApps(String(clusterId), abortControllerRef))
             return (result || [])
                 .map<SelectMigrateAppOptionType>((argoApp) =>
                     generateMigrateAppOption({
                         appName: argoApp.appName,
                         namespace: argoApp.namespace,
-                        startIcon: <ICArgoCDApp />,
+                        startIcon: isFlux ? <ICFluxCDApp /> : <ICArgoCDApp />,
                     }),
                 )
                 .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))
-        }
-
-        if (deploymentAppType === DeploymentAppTypes.FLUX) {
-            const { result } = await getFluxInstalledExternalApps(String(clusterId), { abortControllerRef })
-            return (result.fluxApplication ?? [])
-                .filter(({ fluxAppDeploymentType }) => fluxAppDeploymentType === FluxCDTemplateType.HELM_RELEASE) // Only helmRelease deployment type is valid for migration
-                .map(({ appName, namespace }) =>
-                    generateMigrateAppOption({
-                        appName,
-                        namespace,
-                        startIcon: <ICFluxCDApp />,
-                    }),
-                )
         }
 
         const externalHelmApps = await getExternalHelmAppList(clusterId, abortControllerRef)

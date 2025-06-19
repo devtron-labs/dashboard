@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
+import { ReactElement } from 'react'
+
 import { DeploymentAppTypes, GenericSectionErrorStateProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
 import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
+
+import { MigrateToDevtronFormState } from '../cdPipeline.types'
 
 export const GENERIC_SECTION_ERROR_STATE_COMMON_PROPS: Readonly<
     Pick<GenericSectionErrorStateProps, 'rootClassName' | 'description'>
@@ -35,26 +39,32 @@ export const TARGET_ENVIRONMENT_INFO_LIST = {
     ],
 }
 
+export const DEPLOYMENT_APP_TYPE_LABEL: Record<MigrateToDevtronFormState['deploymentAppType'], string> = {
+    [DeploymentAppTypes.HELM]: 'Helm Release',
+    [DeploymentAppTypes.ARGO]: 'Argo CD Application',
+    [DeploymentAppTypes.FLUX]: 'Flux CD Application',
+}
+
 export const MIGRATE_FROM_RADIO_GROUP_CONFIG: Record<
-    Extract<DeploymentAppTypes, DeploymentAppTypes.HELM | DeploymentAppTypes.ARGO | DeploymentAppTypes.FLUX>,
+    MigrateToDevtronFormState['deploymentAppType'],
     { title: string; tooltipContent: { title: string; subtitle: string } }
 > = {
     [DeploymentAppTypes.HELM]: {
-        title: 'Helm Release',
+        title: DEPLOYMENT_APP_TYPE_LABEL[DeploymentAppTypes.HELM],
         tooltipContent: {
             title: 'Migrate helm release',
             subtitle: 'Migrate an existing Helm Release to manage deployments via CD pipeline',
         },
     },
     [DeploymentAppTypes.ARGO]: {
-        title: 'Argo CD Application',
+        title: DEPLOYMENT_APP_TYPE_LABEL[DeploymentAppTypes.ARGO],
         tooltipContent: {
             title: 'Migrate Argo CD Application',
             subtitle: 'Migrate an existing Argo CD Application to manage deployments via CD pipeline',
         },
     },
     [DeploymentAppTypes.FLUX]: {
-        title: 'Flux CD Application',
+        title: DEPLOYMENT_APP_TYPE_LABEL[DeploymentAppTypes.FLUX],
         tooltipContent: {
             title: 'Migrate Flux CD Application',
             subtitle: 'Migrate an existing Flux CD Application to manage deployments via CD pipeline',
@@ -62,7 +72,10 @@ export const MIGRATE_FROM_RADIO_GROUP_CONFIG: Record<
     },
 }
 
-export const MIGRATE_FROM_CLUSTER_APP_SELECT_CONFIG = {
+export const MIGRATE_FROM_CLUSTER_APP_SELECT_CONFIG: Record<
+    MigrateToDevtronFormState['deploymentAppType'],
+    { clusterSelectLabel: string; appSelectLabel: string; appSelectPlaceholder: string; icon: ReactElement }
+> = {
     [DeploymentAppTypes.HELM]: {
         clusterSelectLabel: 'Cluster containing Helm Release',
         appSelectLabel: 'Release name',
@@ -81,4 +94,16 @@ export const MIGRATE_FROM_CLUSTER_APP_SELECT_CONFIG = {
         appSelectPlaceholder: 'Select an Flux CD application',
         icon: <ICFluxCDApp />,
     },
+}
+
+export const SELECTED_FORM_STATE_KEY: Record<
+    MigrateToDevtronFormState['deploymentAppType'],
+    keyof Pick<
+        MigrateToDevtronFormState,
+        'migrateFromArgoFormState' | 'migrateFromFluxFormState' | 'migrateFromHelmFormState'
+    >
+> = {
+    [DeploymentAppTypes.HELM]: 'migrateFromHelmFormState',
+    [DeploymentAppTypes.ARGO]: 'migrateFromArgoFormState',
+    [DeploymentAppTypes.FLUX]: 'migrateFromFluxFormState',
 }

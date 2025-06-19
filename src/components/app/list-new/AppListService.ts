@@ -30,6 +30,7 @@ import { Moment12HourFormat, Routes } from '../../../config'
 import {
     AppListFilterConfig,
     AppListPayloadType,
+    FluxCDTemplateType,
     GenericAppListResponse,
     GenericAppType,
     GetDevtronHelmAppListParamsType,
@@ -123,7 +124,18 @@ export const getDevtronAppListDataToExport = (
     })
 }
 
-export const getFluxInstalledExternalApps = (clusterIdsCsv: string, options?: APIOptions) => {
+export const getFluxInstalledExternalApps = async (
+    clusterIdsCsv: string,
+    options?: APIOptions,
+    templateType?: FluxCDTemplateType,
+): Promise<ResponseType<GenericAppType[]>> => {
     const url = getUrlWithSearchParams(Routes.FLUX_APPS, { clusterIds: clusterIdsCsv, noStream: true })
-    return get<GenericAppListResponse>(url, options)
+    const response = await get<GenericAppListResponse>(url, options)
+    const appList = response.result?.fluxApplication ?? []
+    return {
+        ...response,
+        result: templateType
+            ? appList.filter(({ fluxAppDeploymentType }) => fluxAppDeploymentType === templateType)
+            : appList,
+    }
 }

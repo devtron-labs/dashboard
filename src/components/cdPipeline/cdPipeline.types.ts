@@ -21,6 +21,7 @@ import {
     DeploymentAppTypes,
     DeploymentStrategy,
     Environment,
+    Never,
     NodeStatusDTO,
     SavedDeploymentStrategy,
     SelectPickerOptionType,
@@ -302,17 +303,15 @@ export type MigrateArgoAppToCDPipelineRequiredPayloadType = MigrateArgoAppToCDPi
     (
         | ({
               deploymentAppType: DeploymentAppTypes.ARGO
-          } & ValidationPayloadApplicationMetaDataType)
-        | {
+          } & ValidationPayloadApplicationMetaDataType &
+              Never<ValidationPayloadFluxReleaseMetaDataType>)
+        | ({
               deploymentAppType: DeploymentAppTypes.HELM
-              applicationObjectClusterId?: never
-              applicationObjectNamespace?: never
-              releaseClusterId?: never
-              releaseNamespace?: never
-          }
+          } & Never<ValidationPayloadFluxReleaseMetaDataType & ValidationPayloadApplicationMetaDataType>)
         | ({
               deploymentAppType: DeploymentAppTypes.FLUX
-          } & ValidationPayloadFluxReleaseMetaDataType)
+          } & ValidationPayloadFluxReleaseMetaDataType &
+              Never<ValidationPayloadApplicationMetaDataType>)
     )
 
 export interface TriggerTypeRadioProps {

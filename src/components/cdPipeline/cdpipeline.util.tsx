@@ -41,7 +41,7 @@ import {
     MigrateArgoAppToCDPipelineRequiredPayloadType,
     MigrateToDevtronFormState,
 } from './cdPipeline.types'
-import { getSelectedFormState } from './MigrateToDevtron/utils'
+import { SELECTED_FORM_STATE_KEY } from './MigrateToDevtron'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -469,7 +469,7 @@ export const getMigrateToDevtronRequiredPayload = (
     migrateToDevtronFormState: MigrateToDevtronFormState,
 ): MigrateArgoAppToCDPipelineRequiredPayloadType => {
     const { deploymentAppType, triggerType } = migrateToDevtronFormState
-    const requiredFormState = getSelectedFormState(migrateToDevtronFormState)
+    const requiredFormState = migrateToDevtronFormState[SELECTED_FORM_STATE_KEY[deploymentAppType]]
 
     const {
         environmentId,
@@ -507,4 +507,10 @@ export const getMigrateToDevtronRequiredPayload = (
         ...basePayload,
         deploymentAppType,
     }
+}
+
+export const getIsExternalAppLinkable = (migrateToDevtronFormState: MigrateToDevtronFormState) => {
+    const { deploymentAppType } = migrateToDevtronFormState
+    const { validationResponse } = migrateToDevtronFormState[SELECTED_FORM_STATE_KEY[deploymentAppType]]
+    return validationResponse.isLinkable
 }

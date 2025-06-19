@@ -42,19 +42,16 @@ import {
 import TriggerTypeRadio from '../TriggerTypeRadio'
 import ClusterSelect from './ClusterSelect'
 import {
+    DEPLOYMENT_APP_TYPE_LABEL,
     GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
     MIGRATE_FROM_CLUSTER_APP_SELECT_CONFIG,
     MIGRATE_FROM_RADIO_GROUP_CONFIG,
+    SELECTED_FORM_STATE_KEY,
 } from './constants'
 import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFactory'
 import { getMigrateAppOptions, validateMigrationSource } from './service'
 import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
-import {
-    generateMigrateAppOption,
-    getDeploymentAppTypeLabel,
-    getSelectedFormState,
-    sanitizeValidateMigrationSourceResponse,
-} from './utils'
+import { generateMigrateAppOption, sanitizeValidateMigrationSourceResponse } from './utils'
 
 const SelectMigrateFromRadio = ({ deploymentAppType }: Pick<MigrateToDevtronFormState, 'deploymentAppType'>) => {
     const { title, tooltipContent } = MIGRATE_FROM_RADIO_GROUP_CONFIG[deploymentAppType]
@@ -83,6 +80,7 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
         isSuperAdmin,
         featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
     } = useMainContext()
+    const isFeatureFluxCdMigrationEnabled = window._env_.FEATURE_LINK_EXTERNAL_FLUX_ENABLE
     const migrateAppOptionsControllerRef = useRef<AbortController>(new AbortController())
     const validateMigrationSourceControllerRef = useRef<AbortController>(new AbortController())
 
@@ -92,7 +90,7 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
     const isMigratingFromArgo = deploymentAppType === DeploymentAppTypes.ARGO
     const isMigratingFromFlux = deploymentAppType === DeploymentAppTypes.FLUX
 
-    const selectedFormState = getSelectedFormState(migrateToDevtronFormState)
+    const selectedFormState = migrateToDevtronFormState[SELECTED_FORM_STATE_KEY[deploymentAppType]]
 
     const { clusterId, clusterName, appName, namespace, validationResponse, appIcon } = selectedFormState
     const { isLinkable } = validationResponse || {}
@@ -233,37 +231,25 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
             return
         }
 
+        const appInfo = {
+            appName: appOption.value.appName,
+            namespace: appOption.value.namespace,
+            appIcon: appOption.startIcon,
+        }
+
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {
                 ...prevState.migrateFromArgoFormState,
-                ...(isMigratingFromArgo
-                    ? {
-                          appName: appOption.value.appName,
-                          namespace: appOption.value.namespace,
-                          appIcon: appOption.startIcon,
-                      }
-                    : {}),
+                ...(isMigratingFromArgo ? appInfo : {}),
             },
             migrateFromHelmFormState: {
                 ...prevState.migrateFromHelmFormState,
-                ...(isMigratingFromHelm
-                    ? {
-                          appName: appOption.value.appName,
-                          namespace: appOption.value.namespace,
-                          appIcon: appOption.startIcon,
-                      }
-                    : {}),
+                ...(isMigratingFromHelm ? appInfo : {}),
             },
             migrateFromFluxFormState: {
                 ...prevState.migrateFromFluxFormState,
-                ...(isMigratingFromFlux
-                    ? {
-                          appName: appOption.value.appName,
-                          namespace: appOption.value.namespace,
-                          appIcon: appOption.startIcon,
-                      }
-                    : {}),
+                ...(isMigratingFromFlux ? appInfo : {}),
             },
         }))
     }
@@ -298,22 +284,26 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
 
     return (
         <div className="flexbox-col dc__gap-20">
-            <div className="flexbox-col dc__gap-8">
-                <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
+            {(isFeatureArgoCdMigrationEnabled || isFeatureFluxCdMigrationEnabled) && (
+                <div className="flexbox-col dc__gap-8">
+                    <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
 
-                <RadioGroup
-                    className="radio-group-no-border migrate-to-devtron__deployment-app-type-radio-group"
-                    value={deploymentAppType}
-                    name="migrate-from-app-type"
-                    onChange={handleMigrateFromAppTypeChange}
-                >
-                    <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.HELM} />
-                    {isFeatureArgoCdMigrationEnabled && (
-                        <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.ARGO} />
-                    )}
-                    <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.FLUX} />
-                </RadioGroup>
-            </div>
+                    <RadioGroup
+                        className="radio-group-no-border migrate-to-devtron__deployment-app-type-radio-group"
+                        value={deploymentAppType}
+                        name="migrate-from-app-type"
+                        onChange={handleMigrateFromAppTypeChange}
+                    >
+                        <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.HELM} />
+                        {isFeatureArgoCdMigrationEnabled && (
+                            <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.ARGO} />
+                        )}
+                        {isFeatureFluxCdMigrationEnabled && (
+                            <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.FLUX} />
+                        )}
+                    </RadioGroup>
+                </div>
+            )}
 
             <div className="flexbox dc__gap-8 dc__align-end">
                 <ClusterSelect
@@ -331,7 +321,7 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                         classNamePrefix="migrate-from-source-app-select"
                         label={appSelectLabel}
                         placeholder={appSelectPlaceholder}
-                        disabledTippyContent={`Select a cluster to view and select ${getDeploymentAppTypeLabel(deploymentAppType)} in that cluster`}
+                        disabledTippyContent={`Select a cluster to view and select ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} in that cluster`}
                         icon={icon}
                         isDisabled={!clusterId}
                         isLoading={isLoadingAppListOptions}
@@ -368,13 +358,13 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                                         color: 'N700',
                                     }}
                                     title="Checking compatibility"
-                                    subTitle={`Checking if ${getDeploymentAppTypeLabel(deploymentAppType)} and its configurations are compatible for migration to deployment pipeline`}
+                                    subTitle={`Checking if ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} and its configurations are compatible for migration to deployment pipeline`}
                                     {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                                 />
                             }
                             genericSectionErrorProps={{
                                 title: 'Error checking compatibility',
-                                subTitle: `An error occurred while checking if ${getDeploymentAppTypeLabel(deploymentAppType)} and its configurations are compatible for migration to deployment pipeline`,
+                                subTitle: `An error occurred while checking if ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} and its configurations are compatible for migration to deployment pipeline`,
                                 reload: reloadValidationResponse,
                                 ...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
                             }}

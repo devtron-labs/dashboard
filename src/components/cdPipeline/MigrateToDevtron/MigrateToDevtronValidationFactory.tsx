@@ -45,10 +45,13 @@ import { URLS } from '@Config/routes'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
-import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS, TARGET_ENVIRONMENT_INFO_LIST } from './constants'
+import {
+    DEPLOYMENT_APP_TYPE_LABEL,
+    GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
+    TARGET_ENVIRONMENT_INFO_LIST,
+} from './constants'
 import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowProps } from './types'
 import {
-    getDeploymentAppTypeLabel,
     getTargetClusterTooltipInfo,
     getTargetNamespaceTooltipInfo,
     renderGitOpsNotConfiguredDescription,
@@ -97,9 +100,11 @@ const MigratingFromIcon = ({
     deploymentAppType: DeploymentAppTypes
     chartIcon: string
 }) => {
+    const iconClass = 'icon-dim-36 dc__no-shrink'
+
     switch (deploymentAppType) {
         case DeploymentAppTypes.ARGO:
-            return <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />
+            return <ICArgoCDApp className={iconClass} />
         case DeploymentAppTypes.HELM:
             return (
                 <ImageWithFallback
@@ -109,13 +114,13 @@ const MigratingFromIcon = ({
                         src: chartIcon,
                         alt: 'Helm Release',
                     }}
-                    fallbackImage={<ICDefaultChart className="icon-dim-36 dc__no-shrink" />}
+                    fallbackImage={<ICDefaultChart className={iconClass} />}
                 />
             )
         case DeploymentAppTypes.FLUX:
-            return <ICFluxCDApp className="icon-dim-36 dc__no-shrink" />
+            return <ICFluxCDApp className={iconClass} />
         default:
-            return <ICDefaultChart className="icon-dim-36 dc__no-shrink" />
+            return <ICDefaultChart className={iconClass} />
     }
 }
 
@@ -141,7 +146,7 @@ const MigrateToDevtronValidationFactory = ({
     } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
 
-    const deploymentAppTypeLabel = getDeploymentAppTypeLabel(deploymentAppType)
+    const deploymentAppTypeLabel = DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]
 
     const targetClusterTooltipInfo = getTargetClusterTooltipInfo(deploymentAppType)
     const targetNamespaceTooltipInfo = getTargetNamespaceTooltipInfo(deploymentAppType)

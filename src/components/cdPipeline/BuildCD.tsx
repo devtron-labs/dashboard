@@ -63,7 +63,7 @@ import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { BuildCDProps } from './types'
 import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
-import { getDeploymentAppTypeLabel } from './MigrateToDevtron/utils'
+import { DEPLOYMENT_APP_TYPE_LABEL } from './MigrateToDevtron/constants'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -776,7 +776,7 @@ export default function BuildCD({
                                 <ICInfo className="dc__no-shrink icon-dim-20 dc__no-shrink" />
                                 <span className="fs-13 fw-4 lh-20 cn-9 dc__word-break">
                                     This deployment pipeline was linked to&nbsp;
-                                    {getDeploymentAppTypeLabel(formData.deploymentAppType as DeploymentAppTypes)}
+                                    {DEPLOYMENT_APP_TYPE_LABEL[formData.deploymentAppType as DeploymentAppTypes]}
                                     &nbsp;: {formData.deploymentAppName}
                                 </span>
                             </div>

@@ -90,6 +90,7 @@ import {
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
+    getIsExternalAppLinkable,
     getMigrateToDevtronRequiredPayload,
     handleDeleteCDNodePipeline,
     validateTask,
@@ -109,7 +110,6 @@ import {
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
-import { getIsExternalAppLinkable } from './MigrateToDevtron/utils'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -1219,7 +1219,7 @@ export default function CDPipeline({
                 >
                     Advanced options
                     {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                        <Icon name='ic-warning' color='Y700' />
+                        <Icon name="ic-warning" color="Y700" />
                     )}
                 </button>
             )

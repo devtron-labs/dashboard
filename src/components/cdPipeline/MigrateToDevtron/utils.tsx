@@ -22,13 +22,12 @@ import { GenericAppType } from '@Components/app/list-new/AppListType'
 import { URLS } from '@Config/routes'
 
 import {
-    MigrateToDevtronBaseFormStateType,
-    MigrateToDevtronFormState,
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
     ValidateMigrationSourceInfoType,
     ValidateMigrationSourceServiceParamsType,
 } from '../cdPipeline.types'
+import { DEPLOYMENT_APP_TYPE_LABEL } from './constants'
 import { SelectClusterOptionType, SelectMigrateAppOptionType } from './types'
 
 const sanitizeDestinationData = (
@@ -162,44 +161,12 @@ export const getValidateMigrationSourcePayload = ({
     }
 }
 
-export const getDeploymentAppTypeLabel = (deploymentAppType: DeploymentAppTypes) => {
-    switch (deploymentAppType) {
-        case DeploymentAppTypes.HELM:
-            return 'Helm Release'
-        case DeploymentAppTypes.ARGO:
-            return 'Argo CD Application'
-        case DeploymentAppTypes.FLUX:
-            return 'Flux CD Application'
-        default:
-            return ''
-    }
-}
-
 export const getTargetClusterTooltipInfo = (deploymentAppType: DeploymentAppTypes) => ({
     heading: 'Target cluster',
-    infoList: [`Cluster in which the ${getDeploymentAppTypeLabel(deploymentAppType)} is deploying your microservice`],
+    infoList: [`Cluster in which the ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} is deploying your microservice`],
 })
 
 export const getTargetNamespaceTooltipInfo = (deploymentAppType: DeploymentAppTypes) => ({
     heading: 'Target Namespace',
-    infoList: [`Namespace in which the ${getDeploymentAppTypeLabel(deploymentAppType)} is deploying your microservice`],
+    infoList: [`Namespace in which the ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} is deploying your microservice`],
 })
-
-export const getSelectedFormState = (
-    migrateToDevtronFormState: MigrateToDevtronFormState,
-): MigrateToDevtronBaseFormStateType => {
-    switch (migrateToDevtronFormState.deploymentAppType) {
-        case DeploymentAppTypes.ARGO:
-            return migrateToDevtronFormState.migrateFromArgoFormState
-        case DeploymentAppTypes.FLUX:
-            return migrateToDevtronFormState.migrateFromFluxFormState
-        case DeploymentAppTypes.HELM:
-        default:
-            return migrateToDevtronFormState.migrateFromHelmFormState
-    }
-}
-
-export const getIsExternalAppLinkable = (migrateToDevtronFormState: MigrateToDevtronFormState) => {
-    const { validationResponse } = getSelectedFormState(migrateToDevtronFormState)
-    return validationResponse.isLinkable
-}
