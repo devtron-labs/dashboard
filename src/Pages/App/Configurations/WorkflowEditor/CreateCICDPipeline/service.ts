@@ -45,10 +45,10 @@ const getSavedStrategies = (strategies: DeploymentStrategy[]): SavedDeploymentSt
     return []
 }
 
-const getCDInitData = async (appId: string): Promise<CreateCICDPipelineData['cd']> => {
+const getCDInitData = async (appId: string, isTemplateView: boolean): Promise<CreateCICDPipelineData['cd']> => {
     const [pipelineStrategyResponse, cpPipelineName, envList] = await Promise.all([
-        getDeploymentStrategyList(appId, false),
-        getCDPipelineNameSuggestion(appId, false),
+        getDeploymentStrategyList(appId, isTemplateView),
+        getCDPipelineNameSuggestion(appId, isTemplateView),
         getEnvironmentListMinPublic(true),
     ])
     const strategies = pipelineStrategyResponse.result.pipelineStrategy || []
@@ -104,7 +104,7 @@ const getCDInitData = async (appId: string): Promise<CreateCICDPipelineData['cd'
     }
 }
 
-const getCIInitData = async (appId: string) => {
+const getCIInitData = async (appId: string, isTemplateView: boolean) => {
     const [
         {
             result: { form, isBlobStorageConfigured },
@@ -112,7 +112,10 @@ const getCIInitData = async (appId: string) => {
         {
             result: { status },
         },
-    ] = await Promise.all([getInitData(appId.toString(), true, false, false), getModuleInfo(ModuleNameMap.SECURITY)])
+    ] = await Promise.all([
+        getInitData(appId.toString(), true, false, isTemplateView),
+        getModuleInfo(ModuleNameMap.SECURITY),
+    ])
 
     return {
         ...form,
@@ -121,9 +124,12 @@ const getCIInitData = async (appId: string) => {
     }
 }
 
-export const getCICDPipelineInitData = async (appId: string): Promise<CreateCICDPipelineData> => {
+export const getCICDPipelineInitData = async (
+    appId: string,
+    isTemplateView: boolean,
+): Promise<CreateCICDPipelineData> => {
     try {
-        const [ci, cd] = await Promise.all([getCIInitData(appId), getCDInitData(appId)])
+        const [ci, cd] = await Promise.all([getCIInitData(appId, isTemplateView), getCDInitData(appId, isTemplateView)])
 
         return { ci, cd }
     } catch (err) {

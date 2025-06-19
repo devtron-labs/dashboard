@@ -325,7 +325,7 @@ export function saveCIPipeline(
             undefined,
             ciPipelineSourceTypeOptions,
             false,
-            response.result.appWorkflowId,
+            response.result.appWorkflowId ?? ciPipelineFromRes.appWorkflowId,
         )
     })
 }

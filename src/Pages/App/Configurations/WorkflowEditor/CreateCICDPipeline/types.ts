@@ -18,6 +18,7 @@ export interface CreateCICDPipelineProps extends Pick<GenericModalProps, 'open' 
     isGitOpsRepoNotConfigured: boolean
     envIds: number[]
     reloadAppConfig: () => void
+    isTemplateView: boolean
 }
 
 export interface CICDStepperProps {

@@ -608,6 +608,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                         isGitOpsRepoNotConfigured={this.state.isGitOpsRepoNotConfigured}
                         envIds={this.state.envIds}
                         reloadAppConfig={this.props.reloadAppConfig}
+                        isTemplateView={this.props.isTemplateView}
                     />
                 )}
                 <Switch>

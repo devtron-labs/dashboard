@@ -60,6 +60,7 @@ export const CreateCICDPipeline = ({
     isGitOpsInstalledButNotConfigured,
     isGitOpsRepoNotConfigured,
     envIds,
+    isTemplateView,
     reloadAppConfig,
 }: CreateCICDPipelineProps) => {
     // STATES
@@ -79,8 +80,8 @@ export const CreateCICDPipeline = ({
 
     // ASYNC CALLS
     const [isCiCdPipelineLoading, ciCdPipelineRes, ciCdPipelineErr, reloadCiCdPipeline, setter] = useAsync(
-        () => getCICDPipelineInitData(appId),
-        [open],
+        () => getCICDPipelineInitData(appId, isTemplateView),
+        [open, isTemplateView],
         open,
     )
 
@@ -202,6 +203,21 @@ export const CreateCICDPipeline = ({
                     },
                     {
                         pipelineType: CIPipelineBuildType.CI_BUILD,
+                        name: '',
+                        active: true,
+                        ciMaterial: [],
+                        dockerArgs: {},
+                        externalCiConfig: {},
+                        id: 0,
+                        isExternal: false,
+                        isManual: false,
+                        linkedCount: 0,
+                        scanEnabled: false,
+                        environmentId: 0,
+                        customTag: {
+                            tagPattern: '',
+                            counterX: '',
+                        },
                     },
                     materialsPayload,
                     +appId,
@@ -210,7 +226,7 @@ export const CreateCICDPipeline = ({
                     webhookConditionList,
                     ciPipelineSourceTypeOptions,
                     null,
-                    false,
+                    isTemplateView,
                 )
 
                 ciPipelineResRef.current = {
@@ -229,7 +245,7 @@ export const CreateCICDPipeline = ({
                             ciPipelineId: ciPipelineResRef.current.id,
                         }),
                     },
-                    { isTemplateView: false },
+                    { isTemplateView },
                 ),
             ])
 
