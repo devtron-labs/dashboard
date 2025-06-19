@@ -163,6 +163,7 @@ export const SourceMaterials = ({
                                     label: 'Source Type',
                                     placeholder: 'Source Type',
                                     classNamePrefix: `select-build-pipeline-sourcetype-${index}`,
+                                    isSearchable: false,
                                     options: !isMultiGit
                                         ? ciPipelineSourceTypeOptions
                                         : ciPipelineSourceTypeOptions.slice(0, 2),

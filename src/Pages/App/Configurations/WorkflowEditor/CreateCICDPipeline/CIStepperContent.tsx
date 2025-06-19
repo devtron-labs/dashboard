@@ -172,6 +172,7 @@ export const CIStepperContent = ({
                                 label: 'Source Type',
                                 placeholder: 'Source Type',
                                 classNamePrefix: `sourceType-${name}`,
+                                isSearchable: false,
                                 options: !isMultiGit
                                     ? ciPipelineSourceTypeOptions
                                     : ciPipelineSourceTypeOptions.slice(0, 2),

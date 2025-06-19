@@ -4,7 +4,7 @@ export interface SourceMaterialsSelectorProps {
     repoName?: string
     sourceTypePickerProps: Omit<
         SelectPickerProps<string | number, false>,
-        'required' | 'isSearchable' | 'isClearable' | 'closeMenuOnSelect' | 'size'
+        'required' | 'isClearable' | 'closeMenuOnSelect' | 'size'
     >
     branchInputProps: Omit<CustomInputProps, 'required' | 'type'> & {
         hideInput?: boolean

@@ -139,7 +139,7 @@ export const CDStepperContent = ({
             <div>
                 <SourceMaterialsSelector
                     branchInputProps={{
-                        name: 'create-ci-cd-pipeline-modal-namespace',
+                        name: 'cd-pipeline-namespace',
                         onChange: noop,
                         placeholder:
                             selectedEnvironment?.isVirtualEnvironment && !selectedEnvironment?.namespace
@@ -150,8 +150,8 @@ export const CDStepperContent = ({
                         disabled: true,
                     }}
                     sourceTypePickerProps={{
-                        inputId: 'create-ci-cd-pipeline-modal-select-environment',
-                        classNamePrefix: 'create-ci-cd-pipeline-modal-select-environment',
+                        inputId: 'cd-pipeline-environment',
+                        classNamePrefix: 'cd-pipeline-environment',
                         label: 'Environment',
                         placeholder: 'Select environment',
                         isDisabled: isFormDisabled,

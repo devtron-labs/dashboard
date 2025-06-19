@@ -18,7 +18,6 @@ export const SourceMaterialsSelector = ({
             <SelectPicker<string | number, false>
                 {...sourceTypePickerProps}
                 required
-                isSearchable={false}
                 isClearable={false}
                 closeMenuOnSelect
                 size={ComponentSizeType.large}
