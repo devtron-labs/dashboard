@@ -179,6 +179,7 @@ export default function CDPipeline({
         deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         deploymentAppName: '',
         releaseMode: ReleaseMode.NEW_DEPLOYMENT,
+        isCustomChart: false,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -601,6 +602,7 @@ export default function CDPipeline({
         form.name = pipelineConfigFromRes.name
         form.deploymentAppName = pipelineConfigFromRes.deploymentAppName
         form.releaseMode = pipelineConfigFromRes.releaseMode
+        form.isCustomChart = pipelineConfigFromRes.isCustomChart
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
@@ -731,7 +733,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && formData.isCustomChart ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -1369,6 +1371,7 @@ export default function CDPipeline({
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
+                                    isCustomChart={formData.isCustomChart}
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
