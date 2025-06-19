@@ -56,7 +56,6 @@ export interface CreateCICDPipelineData {
         | 'savedStrategies'
         | 'strategies'
         | 'releaseMode'
-        | 'triggerType'
         | 'preStageConfigMapSecretNames'
         | 'postStageConfigMapSecretNames'
         | 'preBuildStage'

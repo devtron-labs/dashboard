@@ -32,7 +32,6 @@ import {
     GetTemplateAPIRouteType,
     getTemplateAPIRoute,
     SourceTypeMap,
-    PipelineFormType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
