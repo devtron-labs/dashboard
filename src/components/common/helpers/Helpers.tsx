@@ -30,11 +30,12 @@ import {
     useMainContext,
     SelectPickerOptionType,
     InfoBlock,
+    Badge,
+    SeveritiesDTO,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
-import ReactGA from 'react-ga4'
-import { getDateInMilliseconds } from '../../../Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
+import { getDateInMilliseconds } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 import { ClusterImageList, ImageList, SelectGroupType } from '../../ClusterNodes/types'
 import { K8SObjectType } from '../../ResourceBrowser/Types'
 import {
@@ -974,13 +975,6 @@ export const highlightSearchedText = (searchText: string, matchString: string): 
     }
 }
 
-export const trackByGAEvent = (category: string, action: string): void => {
-    ReactGA.event({
-        category,
-        action,
-    })
-}
-
 export const createGroupSelectList = (list, nodeLabel): SelectGroupType[] => {
     if (!list) {
         return []
@@ -1106,33 +1100,31 @@ export const getPluginIdsFromBuildStage = (
     return pluginIds
 }
 
+const SEVERITY_ORDER = [
+    { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
+    { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
+    { key: SeveritiesDTO.MEDIUM, label: 'Medium', variant: 'custom', fontColor: 'O600', bgColor: 'O100' },
+    { key: SeveritiesDTO.LOW, label: 'Low', variant: 'warning' },
+    { key: SeveritiesDTO.UNKNOWN, label: 'Unknown', variant: 'neutral' },
+] as const
+
 export const getSeverityWithCount = (severityCount: SeverityCount) => {
-    if (severityCount.critical) {
-        return (
-            <span className="severity-chip severity-chip--critical dc__w-fit-content">
-                {severityCount.critical} Critical
-            </span>
-        )
+    for (const item of SEVERITY_ORDER) {
+        if (severityCount[item.key]) {
+            if (item.variant === 'custom') {
+                return (
+                    <Badge
+                        label={`${severityCount[item.key]} ${item.label}`}
+                        variant="custom"
+                        fontColor={item.fontColor}
+                        bgColor={item.bgColor}
+                    />
+                )
+            }
+            return <Badge label={`${severityCount[item.key]} ${item.label}`} variant={item.variant} />
+        }
     }
-    if (severityCount.high) {
-        return <span className="severity-chip severity-chip--high dc__w-fit-content">{severityCount.high} High</span>
-    }
-    if (severityCount.medium) {
-        return (
-            <span className="severity-chip severity-chip--medium dc__w-fit-content">{severityCount.medium} Medium</span>
-        )
-    }
-    if (severityCount.low) {
-        return <span className="severity-chip severity-chip--low dc__w-fit-content">{severityCount.low} Low</span>
-    }
-    if (severityCount.unknown) {
-        return (
-            <span className="severity-chip severity-chip--unknown dc__w-fit-content">
-                {severityCount.unknown} Unknown
-            </span>
-        )
-    }
-    return <span className="severity-chip severity-chip--passed dc__w-fit-content">Passed</span>
+    return <Badge label="Passed" variant="positive" />
 }
 
 // FIXME: Ideally whole branch calculations should be in fe-lib

@@ -15,10 +15,10 @@
  */
 
 #root > div > main {
-    width: 100%;
+    width: 100vw;
     min-height: 100vh;
     display: grid;
-    overflow-y: hidden;
+    overflow: hidden;
 }
 
 .main {

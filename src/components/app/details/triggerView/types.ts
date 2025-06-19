@@ -32,6 +32,7 @@ import {
     CommonNodeAttr,
     ConsequenceType,
     DeploymentAppTypes,
+    DeploymentHistoryDetail,
     DeploymentNodeType,
     DeploymentWithConfigType,
     DynamicDataTableCellValidationState,
@@ -52,7 +53,6 @@ import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { AppContextType } from '@Components/common'
 
 import { HostURLConfig } from '../../../../services/service.types'
-import { DeploymentHistoryDetail } from '../cdDetails/cd.type'
 import { Offset, WorkflowDimensions } from './config'
 import { TIME_STAMP_ORDER } from './Constants'
 
