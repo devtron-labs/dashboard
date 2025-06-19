@@ -91,6 +91,7 @@ export interface BuildCDProps
     isWebhookCD: boolean
     dockerRegistries: any[]
     releaseMode: ReleaseMode
+    isCustomChart: boolean
     getMandatoryPluginData: (
         form: PipelineFormType,
         requiredPluginIds?: PluginDetailPayloadType['pluginIds'],
