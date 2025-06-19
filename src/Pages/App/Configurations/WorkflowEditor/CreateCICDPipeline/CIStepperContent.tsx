@@ -168,10 +168,10 @@ export const CIStepperContent = ({
                         <SourceMaterialsSelector
                             repoName={name}
                             sourceTypePickerProps={{
-                                inputId: `sourceType-${name}`,
+                                inputId: 'ci-pipeline-sourceType',
                                 label: 'Source Type',
                                 placeholder: 'Source Type',
-                                classNamePrefix: `sourceType-${name}`,
+                                classNamePrefix: 'ci-pipeline-sourceType',
                                 isSearchable: false,
                                 options: !isMultiGit
                                     ? ciPipelineSourceTypeOptions

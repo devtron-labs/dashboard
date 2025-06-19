@@ -100,10 +100,10 @@ export const SourceMaterials = ({
                             <SourceMaterialsSelector
                                 repoName={mat.name}
                                 sourceTypePickerProps={{
-                                    inputId: `sourceType-${mat.name}`,
+                                    inputId: 'ci-pipeline-sourceType',
                                     label: 'Source Type',
                                     placeholder: 'Source Type',
-                                    classNamePrefix: `select-build-pipeline-sourcetype-${index}`,
+                                    classNamePrefix: 'ci-pipeline-sourceType',
                                     isSearchable: false,
                                     options: !isMultiGit
                                         ? ciPipelineSourceTypeOptions
