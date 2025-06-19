@@ -11,6 +11,8 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     const timeoutRef = useRef<NodeJS.Timeout>(null)
     const { isAirgapped } = useMainContext()
 
+    const hideInternetConnectivityBanner = isAirgapped || window._env_.FEATURE_INTERNET_CONNECTIVITY_ENABLE
+
     const handleClearTimeout = () => {
         if (timeoutRef.current) {
             clearTimeout(timeoutRef.current)
@@ -27,7 +29,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     }
 
     const checkConnectivity = async () => {
-        if (isAirgapped) return
+        if (hideInternetConnectivityBanner) return
 
         handleClearTimeout()
         const controller = new AbortController()
@@ -78,7 +80,7 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     }, [])
 
     useEffect(() => {
-        if (isAirgapped) return null
+        if (hideInternetConnectivityBanner) return null
         window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
 

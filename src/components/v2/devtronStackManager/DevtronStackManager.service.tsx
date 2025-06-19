@@ -17,13 +17,13 @@
 import {
     get,
     getUrlWithSearchParams,
+    Icon,
     InstallationType,
     post,
     refresh,
     ToastManager,
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ICSparkles } from '@Icons/ic-sparkles.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ModuleNameMap, Routes, UPDATE_AVAILABLE_TOAST_PROGRESS_BG } from '../../../config'
 import {
@@ -121,7 +121,7 @@ export const getModuleInfo = async (moduleName: string, forceReload?: boolean): 
                     onClick: refresh,
                     startIcon: <ICArrowClockwise />,
                 },
-                icon: <ICSparkles />,
+                icon: <Icon name="ic-sparkle-color" color={null} />,
                 progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
             })
             isReloadToastShown = true

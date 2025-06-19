@@ -32,6 +32,8 @@ import {
     getAppDetailsURL,
     getAppsInfoForEnv,
     getIsRequestAborted,
+    handleAnalyticsEvent,
+    Icon,
     MODAL_TYPE,
     noop,
     processDeploymentStatusDetailsData,
@@ -43,12 +45,14 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-dots.svg'
 import AppNotConfiguredIcon from '@Images/app-not-configured.png'
 import noGroups from '@Images/ic-feature-deploymentgroups@3x.png'
+import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
 
 import {
     DEFAULT_STATUS,
@@ -76,6 +80,7 @@ import { TriggerUrlModal } from '../../list/TriggerUrl'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
 import { AggregatedNodes } from '../../types'
 import { renderCIListHeader } from '../cdDetails/utils'
+import { MATERIAL_TYPE } from '../triggerView/types'
 import AppEnvSelector from './AppDetails.components'
 import { getDeploymentStatusDetail } from './appDetails.service'
 import {
@@ -85,8 +90,9 @@ import {
     ErrorItem,
     HibernationModalTypes,
 } from './appDetails.type'
-import AppDetailsCDButton from './AppDetailsCDButton'
+import AppDetailsCDModal from './AppDetailsCDModal'
 import { AppMetrics } from './AppMetrics'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
@@ -204,7 +210,21 @@ const Details: React.FC<DetailsType> = ({
 }) => {
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
-    const { replace } = useHistory()
+    const { replace, push } = useHistory()
+    const { path, url } = useRouteMatch()
+
+    const { setAIAgentContext } = useMainContext()
+
+    useEffect(() => {
+        setAIAgentContext({
+            path,
+            context: {
+                ...params,
+                environmentName: appDetails?.environmentName ?? '',
+                appName: appDetails?.appName ?? '',
+            },
+        })
+    }, [appDetails?.environmentName, appDetails?.appName, url])
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
@@ -215,6 +235,7 @@ const Details: React.FC<DetailsType> = ({
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
+    const [CDModalMaterialType, setCDModalMaterialType] = useState<string | null>(null)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
 
     const [hibernationPatchChartName, setHibernationPatchChartName] = useState<string>('')
@@ -524,9 +545,45 @@ const Details: React.FC<DetailsType> = ({
         setShowAppStatusModal(true)
     }
 
-    const renderAppDetailsCDButton = () =>
-        appDetails && (
-            <AppDetailsCDButton
+    const handleOpenCDModal = (isForRollback?: boolean) => () => {
+        push({
+            search: new URLSearchParams({
+                mode: URL_PARAM_MODE_TYPE.LIST,
+            }).toString(),
+        })
+        setCDModalMaterialType(isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList)
+
+        if (isForRollback) {
+            handleAnalyticsEvent(
+                isAppView
+                    ? DA_APP_DETAILS_GA_EVENTS.RollbackButtonClicked
+                    : AG_APP_DETAILS_GA_EVENTS.RollbackButtonClicked,
+            )
+            return
+        }
+        handleAnalyticsEvent(
+            isAppView ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked,
+        )
+    }
+
+    const handleCloseCDModal = () => {
+        setCDModalMaterialType(null)
+        push({ search: '' })
+    }
+
+    const renderSelectImageButton = () => (
+        <Button
+            dataTestId="select-image-to-deploy"
+            startIcon={<Icon name="ic-hand-pointing" color={null} />}
+            text="Select Image to deploy"
+            onClick={handleOpenCDModal()}
+        />
+    )
+
+    const renderCDModal = () =>
+        appDetails &&
+        CDModalMaterialType && (
+            <AppDetailsCDModal
                 appId={appDetails.appId}
                 environmentId={appDetails.environmentId}
                 environmentName={appDetails.environmentName}
@@ -540,9 +597,9 @@ const Details: React.FC<DetailsType> = ({
                     deploymentUserActionState,
                     triggerType: appDetails.triggerType,
                 }}
-                isForEmptyState
                 handleSuccess={callAppDetailsAPI}
-                isAppView={isAppView}
+                materialType={CDModalMaterialType}
+                closeCDModal={handleCloseCDModal}
             />
         )
 
@@ -573,12 +630,15 @@ const Details: React.FC<DetailsType> = ({
                         showApplicationDetailedModal={showApplicationDetailedModal}
                     />
                 ) : (
-                    <AppNotConfigured
-                        image={noGroups}
-                        title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
-                        subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
-                        renderCustomButton={renderAppDetailsCDButton}
-                    />
+                    <>
+                        <AppNotConfigured
+                            image={noGroups}
+                            title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
+                            subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
+                            renderCustomButton={renderSelectImageButton}
+                        />
+                        {renderCDModal()}
+                    </>
                 )}
             </>
         )
@@ -680,6 +740,7 @@ const Details: React.FC<DetailsType> = ({
                     setHibernationPatchChartName={setHibernationPatchChartName}
                     applications={applications}
                     isResourceTreeReloading={isReloadResourceTreeInProgress}
+                    handleOpenCDModal={handleOpenCDModal}
                 />
             </div>
             {!loadingDetails && !loadingResourceTree && !appDetails?.deploymentAppDeleteRequest && (
@@ -749,6 +810,7 @@ const Details: React.FC<DetailsType> = ({
             )}
             {appDetails && !!hibernateConfirmationModal && renderHibernateModal()}
             {rotateModal && renderRestartWorkload()}
+            {renderCDModal()}
         </>
     )
 }

@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, CustomInput, DialogForm, DialogFormSubmit, SelectPicker, showError, DEFAULT_ROUTE_PROMPT_MESSAGE, handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 import { ProjectType, ChartGroupEntry, EnvironmentType } from '../charts.types'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-edit.svg'
 import { ReactComponent as Error } from '../../../assets/icons/ic-warning.svg'
@@ -71,6 +71,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
 
     toggleShowAppName(event): void {
         this.setState({ showAppNames: !this.state.showAppNames })
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_EDIT_APP_NAME'})
     }
 
     handleEnvironmentChange(envId: number) {
@@ -80,6 +81,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
 
     async deployChartGroup() {
         const validated = await this.props.validateData()
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_DEPLOY'})
         if (validated) {
             await this.props.deployChartGroup()
         } else {
@@ -112,6 +114,11 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                 </button>
             </div>
         )
+    }
+
+    handleAdvancedOptions = () => {
+        handleAnalyticsEvent({category: 'Chart Store', action: 'CS_BULK_DEPLOY_TO_ADV_OPTIONS'})
+        this.props.redirectToAdvancedOptions()
     }
 
     render() {
@@ -215,7 +222,7 @@ export default class ChartGroupBasicDeploy extends Component<ChartGroupBasicDepl
                     <button
                         type="button"
                         className="cta cancel"
-                        onClick={this.props.redirectToAdvancedOptions}
+                        onClick={this.handleAdvancedOptions}
                         data-testid="deployment-advance-button"
                     >
                         Advanced Options

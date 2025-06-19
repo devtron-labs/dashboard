@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Toggle } from '@devtron-labs/devtron-fe-common-lib'
+import { Collapse, DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
 
 import TLSInputField from './TLSInputField'
 import { TLSConnectionFormActionType, TLSConnectionFormProps } from './types'
@@ -45,51 +45,52 @@ const TLSConnectionForm = ({
                     </p>
                 </div>
 
-                <div className="h-20 w-32">
-                    <Toggle selected={enableTLSVerification} onSelect={handleToggle} />
-                </div>
+                <DTSwitch
+                    name="toggle-enable-tls-verification"
+                    ariaLabel="Toggle enable TLS verification"
+                    isChecked={enableTLSVerification}
+                    onChange={handleToggle}
+                />
             </div>
 
-            {enableTLSVerification && (
-                <>
-                    <TLSInputField
-                        label="Certificate Authority Data"
-                        id="certificate-authority-data"
-                        placeholder="Enter CA data"
-                        error={caData.error}
-                        value={caData.value}
-                        isSensitive={isTLSInitiallyConfigured && isCADataPresent}
-                        handleChange={handleChange}
-                        updateAction={TLSConnectionFormActionType.UPDATE_CA_DATA}
-                        clearAction={TLSConnectionFormActionType.CLEAR_CA_DATA}
-                        showClearButton={isCADataPresent}
-                    />
-                    <TLSInputField
-                        label="TLS Key"
-                        id="tls-key"
-                        placeholder="Enter TLS key"
-                        error={tlsKeyData.error}
-                        value={tlsKeyData.value}
-                        isSensitive={isTLSInitiallyConfigured && isTLSKeyDataPresent}
-                        handleChange={handleChange}
-                        updateAction={TLSConnectionFormActionType.UPDATE_KEY_DATA}
-                        clearAction={TLSConnectionFormActionType.CLEAR_KEY_DATA}
-                        showClearButton={isTLSKeyDataPresent}
-                    />
-                    <TLSInputField
-                        label="TLS Certificate"
-                        id="tsl-certificate"
-                        placeholder="Enter TLS certificate"
-                        error={tlsCertData.error}
-                        value={tlsCertData.value}
-                        isSensitive={isTLSInitiallyConfigured && isTLSCertDataPresent}
-                        handleChange={handleChange}
-                        updateAction={TLSConnectionFormActionType.UPDATE_CERT_DATA}
-                        clearAction={TLSConnectionFormActionType.CLEAR_CERT_DATA}
-                        showClearButton={isTLSCertDataPresent}
-                    />
-                </>
-            )}
+            <Collapse expand={enableTLSVerification}>
+                <TLSInputField
+                    label="Certificate Authority Data"
+                    id="certificate-authority-data"
+                    placeholder="Enter CA data"
+                    error={caData.error}
+                    value={caData.value}
+                    isSensitive={isTLSInitiallyConfigured && isCADataPresent}
+                    handleChange={handleChange}
+                    updateAction={TLSConnectionFormActionType.UPDATE_CA_DATA}
+                    clearAction={TLSConnectionFormActionType.CLEAR_CA_DATA}
+                    showClearButton={isCADataPresent}
+                />
+                <TLSInputField
+                    label="TLS Key"
+                    id="tls-key"
+                    placeholder="Enter TLS key"
+                    error={tlsKeyData.error}
+                    value={tlsKeyData.value}
+                    isSensitive={isTLSInitiallyConfigured && isTLSKeyDataPresent}
+                    handleChange={handleChange}
+                    updateAction={TLSConnectionFormActionType.UPDATE_KEY_DATA}
+                    clearAction={TLSConnectionFormActionType.CLEAR_KEY_DATA}
+                    showClearButton={isTLSKeyDataPresent}
+                />
+                <TLSInputField
+                    label="TLS Certificate"
+                    id="tsl-certificate"
+                    placeholder="Enter TLS certificate"
+                    error={tlsCertData.error}
+                    value={tlsCertData.value}
+                    isSensitive={isTLSInitiallyConfigured && isTLSCertDataPresent}
+                    handleChange={handleChange}
+                    updateAction={TLSConnectionFormActionType.UPDATE_CERT_DATA}
+                    clearAction={TLSConnectionFormActionType.CLEAR_CERT_DATA}
+                    showClearButton={isTLSCertDataPresent}
+                />
+            </Collapse>
         </div>
     )
 }

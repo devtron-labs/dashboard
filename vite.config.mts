@@ -133,9 +133,7 @@ export default defineConfig(({ mode }) => {
                         if (id.includes('node_modules/react-mde')) {
                             return '@react-mde'
                         }
-                        if (
-                            id.includes('dist/@code-editor')
-                        ) {
+                        if (id.includes('dist/@code-editor')) {
                             return '@code-editor'
                         }
 
@@ -200,64 +198,59 @@ export default defineConfig(({ mode }) => {
             //     cache: true,
             //     cacheLocation: '.build-cache/vite-image-optimizer',
             // }),
-            // VitePWA and jsToBottomNoModule is not to be added for storybook
-            ...(process.env.IS_STORYBOOK
-                ? []
-                : [
-                      VitePWA({
-                          filename: 'service-worker.js',
-                          injectRegister: 'script',
-                          workbox: {
-                              globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-                              cleanupOutdatedCaches: true,
-                              maximumFileSizeToCacheInBytes: 10000000,
-                              runtimeCaching: [
-                                  {
-                                      urlPattern: ({ request }) => request.destination === 'style',
-                                      handler: 'NetworkFirst',
-                                      options: {
-                                          cacheName: 'css-cache',
-                                          expiration: {
-                                              maxEntries: 30,
-                                              maxAgeSeconds: 60 * 60 * 24 * 15,
-                                          },
-                                      },
-                                  },
-                                  {
-                                      urlPattern: ({ request }) => request.destination === 'script',
-                                      handler: 'NetworkFirst',
-                                      options: {
-                                          cacheName: 'js-cache',
-                                          expiration: {
-                                              maxEntries: 30,
-                                              maxAgeSeconds: 60 * 60 * 24 * 15,
-                                          },
-                                      },
-                                  },
-                              ],
-                          },
-                          manifest: {
-                              short_name: 'Devtron',
-                              name: 'Devtron Dashboard',
-                              description:
-                                  'Easily containerize your application to move it to Kubernetes in the cloud or in your own data center. Build, test, secure, deploy, and manage your applications on Kubernetes using open-source software.',
-                              icons: [
-                                  {
-                                      src: 'favicon.ico',
-                                      sizes: '64x64 32x32 24x24 16x16',
-                                      type: 'image/x-icon',
-                                  },
-                              ],
-                              start_url: '.',
-                              display: 'standalone',
-                              theme_color: '#0066cc',
-                              background_color: '#ffffff',
-                          },
-                          strategies: 'generateSW',
-                          registerType: 'prompt',
-                      }),
-                      jsToBottomNoModule(),
-                  ]),
+            VitePWA({
+                filename: 'service-worker.js',
+                injectRegister: 'script',
+                workbox: {
+                    globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                    cleanupOutdatedCaches: true,
+                    maximumFileSizeToCacheInBytes: 10000000,
+                    runtimeCaching: [
+                        {
+                            urlPattern: ({ request }) => request.destination === 'style',
+                            handler: 'NetworkFirst',
+                            options: {
+                                cacheName: 'css-cache',
+                                expiration: {
+                                    maxEntries: 30,
+                                    maxAgeSeconds: 60 * 60 * 24 * 15,
+                                },
+                            },
+                        },
+                        {
+                            urlPattern: ({ request }) => request.destination === 'script',
+                            handler: 'NetworkFirst',
+                            options: {
+                                cacheName: 'js-cache',
+                                expiration: {
+                                    maxEntries: 30,
+                                    maxAgeSeconds: 60 * 60 * 24 * 15,
+                                },
+                            },
+                        },
+                    ],
+                },
+                manifest: {
+                    short_name: 'Devtron',
+                    name: 'Devtron Dashboard',
+                    description:
+                        'Easily containerize your application to move it to Kubernetes in the cloud or in your own data center. Build, test, secure, deploy, and manage your applications on Kubernetes using open-source software.',
+                    icons: [
+                        {
+                            src: 'favicon.ico',
+                            sizes: '64x64 32x32 24x24 16x16',
+                            type: 'image/x-icon',
+                        },
+                    ],
+                    start_url: '.',
+                    display: 'standalone',
+                    theme_color: '#0066cc',
+                    background_color: '#ffffff',
+                },
+                strategies: 'generateSW',
+                registerType: 'prompt',
+            }),
+            jsToBottomNoModule(),
         ],
         // test: {
         //     globals: true,

@@ -50,8 +50,6 @@ import {
 
 import { ReactComponent as ICErrorExclamation } from '@Icons/ic-error-exclamation.svg'
 import WebWorker from '@Components/app/WebWorker'
-import { AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
-import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Components/cluster/constants'
 import NodeActionsMenu from '@Components/ResourceBrowser/ResourceList/NodeActionsMenu'
 import {
     getManifestResource,
@@ -59,7 +57,9 @@ import {
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 import { URLS } from '@Config/routes'
 import searchWorker from '@Config/searchWorker'
+import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
+import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
 import {
@@ -705,6 +705,7 @@ const BaseResourceListContent = ({
             description={null}
             hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
             isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
+            category={null}
         />
     )
 

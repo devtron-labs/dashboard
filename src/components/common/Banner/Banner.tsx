@@ -164,7 +164,6 @@ export const Banner = () => {
         <AnimatePresence custom={!!bannerVariant}>
             {bannerVariant && config && (
                 <motion.div
-                    layout
                     key={bannerVariant}
                     variants={bannerVariants}
                     initial="enter"

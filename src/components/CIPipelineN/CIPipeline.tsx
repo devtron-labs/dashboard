@@ -49,6 +49,7 @@ import {
     FloatingVariablesSuggestions,
     TriggerType,
     DeleteCINodeButton,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -541,6 +542,11 @@ export default function CIPipeline({
         handleClose()
     }
 
+    const handleAdvancedOptions = () => {
+        setIsAdvanced(true)
+        handleAnalyticsEvent({category: 'CI Pipeline', action: 'DA_BUILD_ADVANCED'})
+    }
+
     const renderSecondaryButton = () => {
         if (ciPipelineId) {
             const canDeletePipeline = connectCDPipelines === 0 && ciPipeline.linkedCount === 0
@@ -582,9 +588,7 @@ export default function CIPipeline({
                     type="button"
                     data-testid="create-build-pipeline-advanced-options-button"
                     className="cta cta--workflow cancel mr-16 flex"
-                    onClick={() => {
-                        setIsAdvanced(true)
-                    }}
+                    onClick={handleAdvancedOptions}
                 >
                     Advanced options
                     {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (

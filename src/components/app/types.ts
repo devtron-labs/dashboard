@@ -15,22 +15,25 @@
  */
 
 import React, { Dispatch, SetStateAction } from 'react'
+
 import {
     ACTION_STATE,
+    AppEnvironment,
+    BaseAppMetaData,
     DeploymentAppTypes,
-    TagType,
-    Teams,
+    DeploymentStatusDetailsBreakdownDataType,
+    HelmReleaseStatus,
     PodMetadatum,
     ReleaseMode,
-    AppEnvironment,
-    HelmReleaseStatus,
-    BaseAppMetaData,
-    DeploymentStatusDetailsBreakdownDataType,
+    TagType,
+    Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
-import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
+
 import { APP_TYPE } from '@Config/constants'
 import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
+
+import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
+import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { CDMaterialProps } from './details/triggerView/types'
 
 interface CDModalProps {
@@ -409,6 +412,7 @@ export enum AggregationKeys {
     'Other Resources' = 'Other Resources',
     Events = 'Events',
     Namespaces = 'Namespaces',
+    // eslint-disable-next-line @typescript-eslint/no-shadow
     Nodes = 'Nodes',
 }
 export type AggregationKeysType = keyof typeof AggregationKeys
@@ -524,20 +528,20 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     deploymentUserActionState?: ACTION_STATE
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
     isResourceTreeReloading?: boolean
+    handleOpenCDModal?: (isForRollback?: boolean) => () => void
 }
 
-export interface AppDetailsCDButtonType
+export interface AppDetailsCDModalType
     extends Pick<
             AppDetails,
             'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
-        Pick<SourceInfoType, 'deploymentUserActionState' | 'loadingDetails' | 'isAppView'> {
-    isRedirectedFromAppDetails?: boolean
+        Pick<SourceInfoType, 'loadingDetails'> {
     cdModal: CDModalProps
-    isForEmptyState?: boolean
-    isForRollback?: boolean
     appName?: string
     handleSuccess?: CDMaterialProps['handleSuccess']
+    materialType: string
+    closeCDModal: () => void
 }
 
 export interface EnvironmentListMinType {
