@@ -1,10 +1,7 @@
-import { Link } from 'react-router-dom'
-
 import {
     DeploymentAppTypes,
     MaterialType,
     ReleaseMode,
-    SelectPickerProps,
     SourceTypeMap,
     TriggerType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -13,7 +10,6 @@ import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 import { createClusterEnvGroup, getDeploymentAppType } from '@Components/common'
 import { ENV_ALREADY_EXIST_ERROR } from '@Config/constants'
-import { URLS } from '@Config/routes'
 
 import { CreateCICDPipelineData, CreateCICDPipelineFormError } from './types'
 
@@ -270,70 +266,4 @@ export const getSaveCDPipelinesPayload = ({
     }
 
     return [pipeline]
-}
-
-export const getMenuListFooterConfig = (materials: MaterialType[]): SelectPickerProps['menuListFooterConfig'] => {
-    if (!materials) {
-        return null
-    }
-
-    const isMultiGit = materials.length > 1
-    const type: SelectPickerProps['menuListFooterConfig']['type'] = 'text'
-
-    if (isMultiGit) {
-        return {
-            type,
-            value: (
-                <span>
-                    If you need webhook based CI for apps with multiple code sources,&nbsp;
-                    <a
-                        className="anchor"
-                        rel="noreferrer"
-                        href="https://github.com/devtron-labs/devtron/issues"
-                        target="_blank"
-                    >
-                        Create a GitHub issue
-                    </a>
-                </span>
-            ),
-        }
-    }
-
-    if (!materials[0].gitHostId) {
-        return {
-            type,
-            value: (
-                <span>
-                    Select git host for this git account to view all supported options.&nbsp;
-                    <Link className="anchor" to={URLS.GLOBAL_CONFIG_GIT}>
-                        Select git host
-                    </Link>
-                </span>
-            ),
-        }
-    }
-
-    if (materials[0].gitHostId > 0) {
-        return {
-            type,
-            value: (
-                <span>
-                    If you want to trigger CI using any other mechanism,&nbsp;
-                    <a
-                        className="anchor"
-                        rel="noreferrer"
-                        href="https://github.com/devtron-labs/devtron/issues"
-                        target="_blank"
-                    >
-                        Create a GitHub issue
-                    </a>
-                </span>
-            ),
-        }
-    }
-
-    return {
-        type,
-        value: null,
-    }
 }

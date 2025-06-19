@@ -15,17 +15,11 @@
  */
 
 import { Fragment, useMemo, useState } from 'react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
-import {
-    CiPipelineSourceTypeOption,
-    InfoBlock,
-    SelectPickerProps,
-    SourceTypeMap,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { CiPipelineSourceTypeOption, InfoBlock, SourceTypeMap } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-import { SourceMaterialsSelector } from '@Pages/App/Configurations'
+import { getCIPipelineBranchSelectorFooterConfig, SourceMaterialsSelector } from '@Pages/App/Configurations'
 
 import { ConfigureWebhook } from './ConfigureWebhook'
 import { SourceMaterialsProps } from './types'
@@ -64,59 +58,6 @@ export const SourceMaterials = ({
     const onBlur = async () => {
         if (handleOnBlur) {
             await handleOnBlur()
-        }
-    }
-
-    const getMenuListFooterConfig = (): SelectPickerProps['menuListFooterConfig'] => {
-        const _isMultiGit = includeWebhookEvents && isMultiGit
-        const _isSingleGit = includeWebhookEvents && !isMultiGit
-
-        let value: SelectPickerProps['menuListFooterConfig']['value'] = null
-
-        if (_isMultiGit) {
-            value = (
-                <span>
-                    If you need webhook based CI for apps with multiple code sources,&nbsp;
-                    <a
-                        className="anchor"
-                        rel="noreferrer"
-                        href="https://github.com/devtron-labs/devtron/issues"
-                        target="_blank"
-                    >
-                        Create a GitHub issue
-                    </a>
-                </span>
-            )
-        } else if (_isSingleGit) {
-            if (!materials[0].gitHostId) {
-                value = (
-                    <span>
-                        Select git host for this git account to view all supported options.&nbsp;
-                        <Link className="anchor" to={URLS.GLOBAL_CONFIG_GIT}>
-                            Select git host
-                        </Link>
-                    </span>
-                )
-            } else if (materials[0].gitHostId > 0) {
-                value = (
-                    <span>
-                        If you want to trigger CI using any other mechanism,&nbsp;
-                        <a
-                            className="anchor"
-                            rel="noreferrer"
-                            href="https://github.com/devtron-labs/devtron/issues"
-                            target="_blank"
-                        >
-                            Create a GitHub issue
-                        </a>
-                    </span>
-                )
-            }
-        }
-
-        return {
-            type: 'text',
-            value,
         }
     }
 
@@ -170,7 +111,7 @@ export const SourceMaterials = ({
                                     isDisabled: isLinkedCI || isMultiGitAndWebhook,
                                     value: selectedMaterial,
                                     onChange: (selected) => selectSourceType(selected, mat.gitMaterialId),
-                                    menuListFooterConfig: getMenuListFooterConfig(),
+                                    menuListFooterConfig: getCIPipelineBranchSelectorFooterConfig(materials),
                                     getOptionValue: (option) => `${option.value}-${option.label}`,
                                     disabledTippyContent: isMultiGitAndWebhook
                                         ? `Cannot change source type ${_selectedWebhookEvent.name} for multi-git applications`

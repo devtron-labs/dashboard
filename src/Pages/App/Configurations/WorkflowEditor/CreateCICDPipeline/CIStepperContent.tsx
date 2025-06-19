@@ -12,10 +12,10 @@ import { createWebhookConditionList } from '@Components/ciPipeline/ciPipeline.se
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 import { SourceMaterialsSelector } from '../SourceMaterialsSelector'
-import { getSelectedWebhookEvent } from '../utils'
+import { getCIPipelineBranchSelectorFooterConfig, getSelectedWebhookEvent } from '../utils'
 import { ConfigureWebhookWrapper } from './ConfigureWebhookWrapper'
 import { CIStepperContentProps } from './types'
-import { getBranchValue, getMenuListFooterConfig, getSelectedMaterial } from './utils'
+import { getBranchValue, getSelectedMaterial } from './utils'
 
 const validationRules = new ValidationRules()
 
@@ -179,7 +179,7 @@ export const CIStepperContent = ({
                                 value: selectedMaterial,
                                 onChange: handleSourceTypeChange(gitMaterialId),
                                 getOptionValue: (option) => `${option.value}-${option.label}`,
-                                menuListFooterConfig: getMenuListFooterConfig(materials),
+                                menuListFooterConfig: getCIPipelineBranchSelectorFooterConfig(materials),
                                 isDisabled: isFormDisabled || isMultiGitAndWebhook,
                                 disabledTippyContent: isMultiGitAndWebhook
                                     ? `Cannot change source type ${selectedWebhookEvent.name} for multi-git applications`
