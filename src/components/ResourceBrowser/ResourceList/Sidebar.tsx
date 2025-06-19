@@ -55,7 +55,10 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, kind))
     const preventScrollRef = useRef(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
-    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
+    const k8sObjectOptionsList = useMemo(
+        () => convertK8sObjectMapToOptionsList(convertResourceGroupListToK8sObjectList(apiResources || null, kind)),
+        [apiResources],
+    )
     const sortedK8sObjectOptionsList = useMemo(() => {
         if (!searchText) {
             return k8sObjectOptionsList
@@ -149,7 +152,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
+        if (!k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */

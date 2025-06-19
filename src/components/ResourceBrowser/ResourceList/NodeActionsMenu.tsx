@@ -189,7 +189,7 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
                     position="right"
                 >
                     <Button
-                        buttonRef={forwardedRef}
+                        ref={forwardedRef}
                         dataTestId={`node-actions-button-${nodeData.name}`}
                         icon={<MenuDots className="fcn-7" />}
                         variant={ButtonVariantType.borderLess}

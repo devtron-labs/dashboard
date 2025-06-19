@@ -197,7 +197,7 @@ const ResourceBrowserActionMenu = forwardRef(
                     ]}
                 >
                     <Button
-                        buttonRef={forwardedRef}
+                        ref={forwardedRef}
                         dataTestId={`node-actions-button-${id}`}
                         icon={<MenuDots className="fcn-7" />}
                         variant={ButtonVariantType.borderLess}
