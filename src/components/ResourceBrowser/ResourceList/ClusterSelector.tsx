@@ -21,6 +21,8 @@ import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
+    Badge,
+    ComponentSizeType,
     DocLink,
     DocLinkProps,
     Icon,
@@ -31,11 +33,11 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
-import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
 import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
+import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,
@@ -148,7 +150,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                 }}
             />
 
-            {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
+            {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
 
             {RBPageHeaderPopup && !isInstallationStatusView ? (
                 <RBPageHeaderPopup
@@ -157,25 +159,30 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                     handlePodSpread={handleOpenPodSpreadModal}
                 />
             ) : (
-                <PopupMenu autoClose>
-                    <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
-                        <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
-                    </PopupMenu.Button>
+                // eslint-disable-next-line react/jsx-no-useless-fragment
+                <>
+                    {defaultOption?.value !== String(DEFAULT_CLUSTER_ID) && (
+                        <PopupMenu autoClose>
+                            <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
+                                <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
+                            </PopupMenu.Button>
 
-                    <PopupMenu.Body rootClassName="dc__border p-4">
-                        <div className="w-150 flexbox-col">
-                            <button
-                                type="button"
-                                className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
-                                onClick={handleOpenDeleteModal}
-                                data-testid="delete_cluster_button"
-                            >
-                                <Icon name="ic-delete" color="R500" />
-                                <span className="fs-14 lh-1-5 cr-5">Delete</span>
-                            </button>
-                        </div>
-                    </PopupMenu.Body>
-                </PopupMenu>
+                            <PopupMenu.Body rootClassName="dc__border p-4">
+                                <div className="w-150 flexbox-col">
+                                    <button
+                                        type="button"
+                                        className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
+                                        onClick={handleOpenDeleteModal}
+                                        data-testid="delete_cluster_button"
+                                    >
+                                        <Icon name="ic-delete" color="R500" />
+                                        <span className="fs-14 lh-1-5 cr-5">Delete</span>
+                                    </button>
+                                </div>
+                            </PopupMenu.Body>
+                        </PopupMenu>
+                    )}
+                </>
             )}
 
             {PodSpreadModal && showEditPodSpreadModal && (

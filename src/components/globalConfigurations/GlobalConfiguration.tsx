@@ -19,7 +19,6 @@ import { Route, NavLink, Router, Switch, Redirect, useHistory, useLocation } fro
 import {
     showError,
     Progressing,
-    Toggle,
     ConditionalWrap,
     TippyCustomized,
     TippyTheme,
@@ -49,12 +48,13 @@ import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/Plugi
 import { getShouldHidePageHeaderAndSidebar } from './utils'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { ListProps } from './types'
+import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
-const ClusterList = lazy(() => import('../cluster/Cluster'))
+const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterComponent'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
@@ -62,7 +62,7 @@ const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorizati
 const DeploymentChartsRouter = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
 const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
-const BuildInfra = lazy(() => import('../../Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
+const BuildInfra = lazy(() => import('@Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
@@ -154,7 +154,9 @@ export default function GlobalConfiguration(props) {
     }
 
     return (
-        <main className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}>
+        <main
+            className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}
+        >
             {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
@@ -222,7 +224,7 @@ const NavItem = ({ serverMode }) => {
         {
             name: `Clusters${serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'}`,
             href: URLS.GLOBAL_CONFIG_CLUSTER,
-            component: ClusterList,
+            component: Clusters,
             isAvailableInEA: true,
             isAvailableInDesktop: true,
         },
@@ -622,7 +624,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={(props) => {
-                    return <ClusterList {...props} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
+                    return <Clusters {...props} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
                 }}
             />
             {!window._env_.K8S_CLIENT && [
@@ -808,31 +810,21 @@ const Logo = ({ src = '', style = {}, className = '', children = null }) => {
     )
 }
 
-const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', ...props }) => {
+const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = '', category = '' }) => {
     return (
         <div className="flex column left">
-            <div className={`list__title ${className}`} style={style}>
-                {title} {tag && <span className="tag">{tag}</span>}
+            <div className={`list__title ${className} flex left w-100`} style={style}>
+                <div className='dc__no-shrink dc__mxw-400 dc__truncate'><InteractiveCellText text={title} /></div>
+                {tag && <div className="tag dc__no-shrink">{tag}</div>}
+                {category && (
+                    <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate dc__text-center">
+                        <InteractiveCellText text={category} fontSize={12} />
+                    </div>
+                )}
+
             </div>
             {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
         </div>
-    )
-}
-
-const ListToggle = ({ onSelect, enabled = false, isButtonDisabled = false, ...props }) => {
-    const handleToggle = () => {
-        if (!isButtonDisabled) {
-            onSelect(!enabled)
-        }
-    }
-    return (
-        <Toggle
-            dataTestId="toggle-button"
-            {...props}
-            onSelect={handleToggle}
-            selected={enabled}
-            disabled={isButtonDisabled}
-        />
     )
 }
 
@@ -866,5 +858,4 @@ export const List = ({
 
 List.Logo = Logo
 List.Title = Title
-List.Toggle = ListToggle
 List.DropDown = DropDown

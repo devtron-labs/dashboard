@@ -15,4 +15,3 @@
  */
 
 export * from './OrganizationFrame'
-export * from './SwitchThemeDialog'

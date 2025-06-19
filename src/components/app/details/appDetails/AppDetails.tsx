@@ -32,6 +32,7 @@ import {
     getAppDetailsURL,
     getAppsInfoForEnv,
     getIsRequestAborted,
+    Icon,
     MODAL_TYPE,
     noop,
     processDeploymentStatusDetailsData,
@@ -43,6 +44,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-forward.svg'
@@ -87,6 +89,7 @@ import {
 } from './appDetails.type'
 import AppDetailsCDButton from './AppDetailsCDButton'
 import { AppMetrics } from './AppMetrics'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
@@ -205,6 +208,20 @@ const Details: React.FC<DetailsType> = ({
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     const { replace } = useHistory()
+    const { path, url } = useRouteMatch()
+
+    const { setAIAgentContext } = useMainContext()
+
+    useEffect(() => {
+        setAIAgentContext({
+            path,
+            context: {
+                ...params,
+                environmentName: appDetails?.environmentName ?? '',
+                appName: appDetails?.appName ?? '',
+            },
+        })
+    }, [appDetails?.environmentName, appDetails?.appName, url])
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
@@ -524,7 +541,7 @@ const Details: React.FC<DetailsType> = ({
         setShowAppStatusModal(true)
     }
 
-    const renderAppDetailsCDButton = () =>
+    const renderSelectImageButton = () =>
         appDetails && (
             <AppDetailsCDButton
                 appId={appDetails.appId}
@@ -540,9 +557,17 @@ const Details: React.FC<DetailsType> = ({
                     deploymentUserActionState,
                     triggerType: appDetails.triggerType,
                 }}
-                isForEmptyState
                 handleSuccess={callAppDetailsAPI}
-                isAppView={isAppView}
+                gaEvent={
+                    isAppView
+                        ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked
+                        : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked
+                }
+                buttonProps={{
+                    dataTestId: 'select-image-to-deploy',
+                    startIcon: <Icon name="ic-hand-pointing" color={null} />,
+                    text: 'Select Image to deploy',
+                }}
             />
         )
 
@@ -577,7 +602,7 @@ const Details: React.FC<DetailsType> = ({
                         image={noGroups}
                         title={ERROR_EMPTY_SCREEN.ALL_SET_GO_CONFIGURE}
                         subtitle={ERROR_EMPTY_SCREEN.DEPLOYEMENT_WILL_BE_HERE}
-                        renderCustomButton={renderAppDetailsCDButton}
+                        renderCustomButton={renderSelectImageButton}
                     />
                 )}
             </>

@@ -15,25 +15,21 @@
  */
 
 import { useState } from 'react'
-import { generatePath, Link, NavLink } from 'react-router-dom'
 import {
     ComponentSizeType,
     CustomInput,
     Icon,
-    InfoColourBar,
     REGISTRY_TYPE_MAP,
     RegistryIcon,
     SelectPicker,
-    URLS as CommonURLs,
     ButtonVariantType,
     ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as ArrowIcon } from '../../assets/icons/ic-arrow-left.svg'
-import { ReactComponent as InfoIcon } from '../../assets/icons/info-filled.svg'
-import { Routes, URLS } from '../../config'
+import { URLS } from '../../config'
 import { _multiSelectStyles } from './CIConfig.utils'
 import { CIContainerRegistryConfigProps } from './types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
+import { CIContainerRegistryInfoBlock } from './CIContainerRegistryInfoBlock'
 
 export default function CIContainerRegistryConfig({
     appId,
@@ -67,47 +63,6 @@ export default function CIContainerRegistryConfig({
     const onClickRedirectLink = (e) => {
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('takeMeThereClicked', '1')
-        }
-    }
-
-    const getInfoColourBarProps = () => {
-        if (configOverridenPipelines?.length > 0) {
-            return {
-                message: (
-                    <>
-                        <span className="fw-6">Overrides:</span>&nbsp;
-                        <span className="mr-4">This configuration is overridden for build pipeline of</span>
-                    </>
-                ),
-                linkText: (
-                    <span className="flex">
-                        {`${configOverridenPipelines.length} Workflow${configOverridenPipelines.length > 1 ? 's' : ''}`}
-                        <ArrowIcon className="icon-dim-16 fcb-5 dc__flip-180" />
-                    </span>
-                ),
-                linkClass: 'flex left',
-                linkOnClick: toggleConfigOverrideDiffModal,
-            }
-        }
-        return {
-            message: (
-                <>
-                    <span className="fw-6">Overrides:</span>&nbsp;
-                    <span className="mr-8">
-                        Container registry & docker file location for build pipelines can be overridden.
-                    </span>
-                    {isCDPipeline && (
-                        <Link
-                            to={`${isTemplateView ? generatePath(CommonURLs.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
-                                appId,
-                            }) : `/${Routes.APP}/${appId}`}/${Routes.WORKFLOW_EDITOR}`}
-                            onClick={onClickRedirectLink}
-                        >
-                            Take me there
-                        </Link>
-                    )}
-                </>
-            ),
         }
     }
 
@@ -208,14 +163,16 @@ export default function CIContainerRegistryConfig({
                     )}
                 </div>
             </div>
-            {!isCreateAppView && !configOverrideView && (
-                <InfoColourBar
-                    classname="info_bar"
-                    Icon={InfoIcon}
-                    iconClass="icon-dim-20"
-                    {...getInfoColourBarProps()}
+            {!isCreateAppView && !configOverrideView ? (
+                <CIContainerRegistryInfoBlock
+                    configOverriddenPipelines={configOverridenPipelines}
+                    toggleConfigOverrideDiffModal={toggleConfigOverrideDiffModal}
+                    isCDPipeline={isCDPipeline}
+                    isTemplateView={isTemplateView}
+                    appId={appId}
+                    onClickRedirectLink={onClickRedirectLink}
                 />
-            )}
+            ) : null}
         </div>
     )
 }
