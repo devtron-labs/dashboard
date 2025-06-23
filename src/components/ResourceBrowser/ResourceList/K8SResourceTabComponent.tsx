@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import { abortPreviousRequests, ErrorScreenManager, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { K8S_EMPTY_GROUP } from '../Constants'
+import { K8S_EMPTY_GROUP, ResourceBrowserTabsId } from '../Constants'
 import { getResourceGroupList } from '../ResourceBrowser.service'
 import { K8SResourceTabComponentProps } from '../Types'
-import Cache from './Cache'
 import ConnectingToClusterState from './ConnectingToClusterState'
 import { K8SResourceList } from './K8SResourceList'
 import Sidebar from './Sidebar'
@@ -35,10 +34,16 @@ const K8SResourceTabComponent = ({
     updateK8sResourceTab,
     clusterName,
     lowercaseKindToResourceGroupMap,
+    updateTabLastSyncMoment,
 }: K8SResourceTabComponentProps) => {
     const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
 
     const abortControllerRef = useRef(new AbortController())
+
+    useEffect(() => {
+        // TODO: once we get tab retention logic, we can remove this
+        updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
+    }, [])
 
     const selectedResource = useMemo(
         () => lowercaseKindToResourceGroupMap?.[`${group === K8S_EMPTY_GROUP ? '' : group}-${kind}`.toLowerCase()],
@@ -48,10 +53,7 @@ const K8SResourceTabComponent = ({
     const [loading, k8SObjectMap, error, reload] = useAsync(
         () =>
             abortPreviousRequests(
-                () =>
-                    Cache.get(`${clusterId}/k8s-object-map`, () =>
-                        getResourceGroupList(clusterId, abortControllerRef.current?.signal),
-                    ),
+                () => getResourceGroupList(clusterId, abortControllerRef.current?.signal),
                 abortControllerRef,
             ),
         [clusterId],
@@ -81,6 +83,7 @@ const K8SResourceTabComponent = ({
                 apiResources={k8SObjectMap?.result.apiResources || null}
                 selectedResource={selectedResource}
                 updateK8sResourceTab={updateK8sResourceTab}
+                updateTabLastSyncMoment={updateTabLastSyncMoment}
             />
             <K8SResourceList
                 clusterName={clusterName}

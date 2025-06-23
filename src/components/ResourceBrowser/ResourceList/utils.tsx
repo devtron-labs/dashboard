@@ -102,7 +102,7 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
 
 export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
     const namespace = searchParams.get('namespace')
-    const eventType = searchParams.get('eventType') ?? 'warning'
+    const eventType = searchParams.get('eventType')
 
     return {
         ...(namespace ? { selectedNamespace: namespace } : {}),
@@ -117,7 +117,7 @@ export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams):
         ...(searchParams.get(NODE_K8S_VERSION_FILTER_KEY)
             ? { [NODE_K8S_VERSION_FILTER_KEY]: searchParams.get(NODE_K8S_VERSION_FILTER_KEY) }
             : {}),
-        eventType,
+        ...(eventType ? { eventType } : {}),
     }
 }
 

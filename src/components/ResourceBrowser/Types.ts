@@ -77,6 +77,7 @@ export interface SidebarType {
     apiResources: ApiResourceGroupType[]
     isClusterError?: boolean
     updateK8sResourceTab: ClusterListType['updateTabUrl']
+    updateTabLastSyncMoment: UseTabsReturnType['updateTabLastSyncMoment']
     selectedResource: ApiResourceGroupType
 }
 
@@ -187,7 +188,7 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends Pick<SidebarType, 'updateK8sResourceTab'>,
+    extends Pick<SidebarType, 'updateK8sResourceTab' | 'updateTabLastSyncMoment'>,
         Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element

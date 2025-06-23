@@ -54,7 +54,6 @@ import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from 
 import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
 import AdminTerminalDummy from './AdminTerminalDummy'
-import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import { DynamicTabComponentWrapper } from './DynamicTabComponentWrapper'
@@ -142,7 +141,6 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
-            Cache.clear()
             setAIAgentContext(null)
         }
     }, [])
@@ -231,7 +229,6 @@ const ResourceList = () => {
     )
 
     const refreshData = () => {
-        Cache.clear()
         const activeTab = tabs.find((tab) => tab.isSelected)
         updateTabComponentKey(activeTab.id)
         updateTabLastSyncMoment(activeTab.id)
@@ -412,7 +409,8 @@ const ResourceList = () => {
                             updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
                             clusterName={selectedCluster.label}
                             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                            key={getTabById(ResourceBrowserTabsId.k8s_Resources).lastSyncMoment.toString()}
+                            updateTabLastSyncMoment={updateTabLastSyncMoment}
+                            key={getTabById(ResourceBrowserTabsId.k8s_Resources).componentKey}
                         />
                     </DynamicTabComponentWrapper>
                 </Route>

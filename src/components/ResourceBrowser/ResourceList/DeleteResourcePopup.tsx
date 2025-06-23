@@ -26,7 +26,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DeleteResourcePopupType } from '../Types'
-import Cache from './Cache'
 
 const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
     clusterId,
@@ -55,7 +54,6 @@ const DeleteResourcePopup: React.FC<DeleteResourcePopupType> = ({
 
         await deleteResource(resourceDeletePayload)
         await getResourceListData()
-        Cache.clear()
         handleClearBulkSelection()
         if (removeTabByIdentifier) {
             removeTabByIdentifier(

@@ -151,24 +151,24 @@ const ResourceBrowserActionMenu = forwardRef(
                             items: [
                                 {
                                     id: RESOURCE_ACTION_MENU.manifest,
-                                    label: RESOURCE_ACTION_MENU.manifest,
+                                    label: 'Manifest',
                                     startIcon: { name: 'ic-file-code' },
                                 },
                                 {
                                     id: RESOURCE_ACTION_MENU.Events,
-                                    label: RESOURCE_ACTION_MENU.Events,
+                                    label: 'Events',
                                     startIcon: { name: 'ic-calendar' },
                                 },
                                 ...(selectedResource?.gvk?.Kind === Nodes.Pod
                                     ? [
                                           {
                                               id: RESOURCE_ACTION_MENU.logs,
-                                              label: RESOURCE_ACTION_MENU.logs,
+                                              label: 'Logs',
                                               startIcon: { name: 'ic-logs' },
                                           } as ActionMenuItemType,
                                           {
                                               id: RESOURCE_ACTION_MENU.terminal,
-                                              label: RESOURCE_ACTION_MENU.terminal,
+                                              label: 'Terminal',
                                               startIcon: { name: 'ic-terminal-fill' },
                                           } as ActionMenuItemType,
                                       ]
@@ -186,7 +186,7 @@ const ResourceBrowserActionMenu = forwardRef(
                                     ? [
                                           {
                                               id: RESOURCE_ACTION_MENU.delete,
-                                              label: RESOURCE_ACTION_MENU.delete,
+                                              label: 'Delete',
                                               type: 'negative',
                                               startIcon: { name: 'ic-delete' },
                                           } as ActionMenuItemType,

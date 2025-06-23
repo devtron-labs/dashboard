@@ -22,7 +22,6 @@ import {
     deleteNodeCapacity,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import Cache from '@Components/ResourceBrowser/ResourceList/Cache'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
 import { DeleteNodeModalProps } from '../types'
@@ -42,7 +41,6 @@ const DeleteNodeModal = ({ name, version, kind, closePopup, handleClearBulkSelec
             kind,
         }
         await deleteNodeCapacity(payload)
-        Cache.clear()
         handleClearBulkSelection()
         closePopup(true)
     }

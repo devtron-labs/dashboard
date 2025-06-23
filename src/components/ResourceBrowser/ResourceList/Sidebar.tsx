@@ -34,6 +34,7 @@ import {
     K8S_EMPTY_GROUP,
     KIND_SEARCH_COMMON_STYLES,
     RESOURCE_BROWSER_ROUTES,
+    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
@@ -45,7 +46,7 @@ import {
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
 import { K8sResourceListURLParams } from './types'
 
-const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: SidebarType) => {
+const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateTabLastSyncMoment }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
@@ -127,6 +128,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
 
         if (shouldPushUrl) {
+            updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
             push(_url)
         }
 

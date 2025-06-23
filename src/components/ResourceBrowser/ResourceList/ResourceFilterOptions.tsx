@@ -40,7 +40,6 @@ import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps } from '../Types'
-import Cache from './Cache'
 import { K8sResourceListURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
@@ -71,10 +70,7 @@ const ResourceFilterOptions = ({
 
     const showShortcutKey = !isInputFocused && !searchText
 
-    const [, namespaceByClusterIdList] = useAsync(
-        () => Cache.get(`${clusterId}/namespaces`, () => namespaceListByClusterId(clusterId)),
-        [clusterId],
-    )
+    const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
     const namespaceOptions = useMemo(
         () => [ALL_NAMESPACE_OPTION, ...convertToOptionsList(namespaceByClusterIdList?.result?.sort() || [])],

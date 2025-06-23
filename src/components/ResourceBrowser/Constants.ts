@@ -103,11 +103,11 @@ export const KIND_SEARCH_COMMON_STYLES = {
 }
 
 export const RESOURCE_ACTION_MENU = {
-    manifest: 'Manifest',
-    Events: 'Events',
-    logs: 'Logs',
-    terminal: 'Terminal',
-    delete: 'Delete',
+    manifest: 'manifest',
+    Events: 'events',
+    logs: 'logs',
+    terminal: 'terminal',
+    delete: 'delete',
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
@@ -312,7 +312,7 @@ export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[num
     'cpu usage (absolute)': 'cpu.usage',
     'cpu allocatable': 'cpu.allocatable',
     'mem usage (%)': 'memory.usagePercentage',
-    'mem usage (absolute)': 'memory.usageInBytes',
+    'mem usage (absolute)': 'memory.usage',
     'mem allocatable': 'memory.allocatable',
     age: 'age',
     unschedulable: 'unschedulable',

@@ -40,7 +40,6 @@ import {
 import { NODE_LIST_HEADERS_TO_KEY_MAP, RESOURCE_PAGE_SIZE_OPTIONS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
-import Cache from './Cache'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -73,7 +72,7 @@ const K8SResourceListViewWrapper = ({
     allColumns,
     setVisibleColumns,
     updateSearchParams,
-    eventType,
+    eventType = 'warning',
     ...restProps
 }: K8SResourceListViewWrapperProps) => (
     <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
@@ -138,15 +137,13 @@ export const K8SResourceList = ({
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
-                    return Cache.get(`${location.pathname}${location.search}`, () =>
-                        getResourceData({
-                            selectedResource,
-                            selectedNamespace,
-                            clusterId,
-                            filters: resourceFilters,
-                            abortControllerRef,
-                        }),
-                    )
+                    return getResourceData({
+                        selectedResource,
+                        selectedNamespace,
+                        clusterId,
+                        filters: resourceFilters,
+                        abortControllerRef,
+                    })
                 }
 
                 return null
@@ -198,7 +195,6 @@ export const K8SResourceList = ({
     )
 
     const handleClearCacheAndReload = () => {
-        Cache.clear()
         reloadResourceList()
     }
 
@@ -217,7 +213,7 @@ export const K8SResourceList = ({
         if (isEventListing) {
             return (
                 (row.data.type as string)?.toLowerCase() ===
-                    (filterData as unknown as K8sResourceListFilterType).eventType && isSearchMatch
+                    ((filterData as unknown as K8sResourceListFilterType).eventType ?? 'warning') && isSearchMatch
             )
         }
 
@@ -266,7 +262,7 @@ export const K8SResourceList = ({
             emptyStateConfig={{
                 noRowsConfig: {
                     image: emptyCustomChart,
-                    title: 'No resources found',
+                    title: `No ${selectedResource?.gvk.Kind ?? 'Resource'} found`,
                     subTitle: `We could not find any ${selectedResource?.gvk.Kind ?? 'Resource'}. Try selecting a different cluster or namespace.`,
                 },
             }}
