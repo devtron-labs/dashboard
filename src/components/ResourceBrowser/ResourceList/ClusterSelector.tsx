@@ -27,10 +27,13 @@ import {
     DocLinkProps,
     Icon,
     PopupMenu,
+    ToastManager,
+    ToastVariantType,
     ValueContainerWithLoadingShimmer,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
+import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
@@ -44,6 +47,10 @@ import {
 } from '../Constants'
 import { ClusterOptionType, ClusterSelectorType } from '../Types'
 
+const RBPageHeaderPopup = importComponentFromFELibrary('RBPageHeaderPopup', null, 'function')
+const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
+const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
+
 const ClusterSelector: React.FC<ClusterSelectorType> = ({
     onChange,
     clusterList,
@@ -54,6 +61,9 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const { replace } = useHistory()
 
     const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
+    const [showEditPodSpreadModal, setShowEditPodSpreadModal] = useState(false)
+    const [showHibernationRulesModal, setShowHibernationRulesModal] = useState(false)
+
     const selectRef = useRef<SelectInstance>(null)
 
     let filteredClusterList = clusterList
@@ -71,11 +81,35 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     }
 
     const handleOpenDeleteModal = () => {
+        if (+clusterId === DEFAULT_CLUSTER_ID) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Default cluster cannot be deleted.',
+            })
+            return
+        }
+
         setOpenDeleteClusterModal(true)
     }
 
     const handleCloseDeleteModal = () => {
         setOpenDeleteClusterModal(false)
+    }
+
+    const handleOpenPodSpreadModal = () => {
+        setShowEditPodSpreadModal(true)
+    }
+
+    const handleClosePodSpreadModal = () => {
+        setShowEditPodSpreadModal(false)
+    }
+
+    const handleOpenHibernationRulesModal = () => {
+        setShowHibernationRulesModal(true)
+    }
+
+    const handleCloseHibernationRulesModal = () => {
+        setShowHibernationRulesModal(false)
     }
 
     const handleRedirectToClusterList = () => {
@@ -118,7 +152,13 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 
             {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
 
-            {defaultOption?.value !== String(DEFAULT_CLUSTER_ID) && (
+            {RBPageHeaderPopup && !isInstallationStatusView ? (
+                <RBPageHeaderPopup
+                    handleDelete={handleOpenDeleteModal}
+                    handleHibernationRules={handleOpenHibernationRulesModal}
+                    handlePodSpread={handleOpenPodSpreadModal}
+                />
+            ) : (
                 <PopupMenu autoClose>
                     <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
                         <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
@@ -138,6 +178,14 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                         </div>
                     </PopupMenu.Body>
                 </PopupMenu>
+            )}
+
+            {PodSpreadModal && showEditPodSpreadModal && (
+                <PodSpreadModal clusterId={clusterId} handleClose={handleClosePodSpreadModal} />
+            )}
+
+            {HibernationRulesModal && showHibernationRulesModal && (
+                <HibernationRulesModal clusterId={clusterId} handleClose={handleCloseHibernationRulesModal} />
             )}
 
             {openDeleteClusterModal && (

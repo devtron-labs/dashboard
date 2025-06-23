@@ -2,10 +2,16 @@ FROM node:22-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock .
+RUN corepack enable yarn && \
+    yarn set version 4.9.2
+
+COPY package.json .
+COPY yarn.lock .
+COPY .yarn/ .yarn/
+COPY .yarnrc.yml ./
 
 RUN apk add --no-cache git
-RUN yarn install --frozen-lockfile --network-timeout 600000
+RUN yarn install --immutable --network-timeout 600000
 
 COPY . .
 

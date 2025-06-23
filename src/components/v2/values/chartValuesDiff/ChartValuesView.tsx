@@ -1289,7 +1289,7 @@ const ChartValuesView = ({
             >
                 {(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson) && (
                     <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
-                        {ConfigurationType.GUI} (Beta)
+                        {ConfigurationType.GUI}
                     </RadioGroup.Radio>
                 )}
                 <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()} dataTestId="yaml-radio-button">

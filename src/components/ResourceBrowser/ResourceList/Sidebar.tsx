@@ -125,10 +125,10 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             version: DUMMY_RESOURCE_GVK_VERSION,
         })}?${params.toString()}`
 
-        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
+        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind, retainSearchParams: true })
+        updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
 
         if (shouldPushUrl) {
-            updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
             push(_url)
         }
 

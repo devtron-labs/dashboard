@@ -399,6 +399,7 @@ export enum Nodes {
     Overview = 'Overview',
     MonitoringDashboard = 'MonitoringDashboard',
     UpgradeCluster = 'UpgradeCluster',
+    ResourceRecommender = 'ResourceRecommender',
 }
 /**
  * @deprecated - use from fe-common

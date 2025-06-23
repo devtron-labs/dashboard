@@ -363,6 +363,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ??
                     ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
+                isResourceRecommendationEnabled: result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK['isResourceRecommendationEnabled']
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -387,6 +388,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
+                isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -516,6 +518,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
+                isResourceRecommendationEnabled: environmentDataState.isResourceRecommendationEnabled,
             }}
         >
             <ConfirmationModalProvider>

@@ -207,7 +207,10 @@ export const K8SResourceList = ({
             !filterData.searchKey ||
             Object.entries(row.data).some(
                 ([key, value]) =>
-                    key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+                    key !== 'id' &&
+                    value !== null &&
+                    value !== undefined &&
+                    String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
             )
 
         if (isEventListing) {
@@ -245,7 +248,7 @@ export const K8SResourceList = ({
                               isNodeListing,
                               getManifestResource,
                               updateManifestResourceHelmApps,
-                              clusterId,
+                              clusterId: +clusterId,
                               clusterName: selectedCluster?.label ?? '',
                               handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
                           },

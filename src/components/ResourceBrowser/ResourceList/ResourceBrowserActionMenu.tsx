@@ -118,7 +118,7 @@ const ResourceBrowserActionMenu = forwardRef(
                     handleResourceClick({
                         currentTarget: {
                             dataset: {
-                                ...resourceData,
+                                ...(resourceData as Record<string, string>),
                                 kind: selectedResource.gvk.Kind,
                                 group: selectedResource.gvk.Group,
                                 tab: item.id,

@@ -204,6 +204,11 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
         Version: '',
         Kind: Nodes.UpgradeCluster,
     },
+    resourceRecommenderGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.ResourceRecommender,
+    },
 }
 
 export const UPGRADE_CLUSTER_CONSTANTS = {
@@ -349,6 +354,7 @@ export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
+export const RESOURCE_RECOMMENDER_TAB_ID = 'resource_recommender'
 
 // Note: can't change the snake case to camel case since that would be breaking change
 // while reading from local storage in useTabs
@@ -394,6 +400,7 @@ export const RESOURCE_BROWSER_ROUTES = {
     NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
     K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
     K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
+    RESOURCE_RECOMMENDER: `${URLS.RESOURCE_BROWSER}/:clusterId/resource-recommender`,
 } as const
 
 export const DUMMY_RESOURCE_GVK_VERSION = 'v1'

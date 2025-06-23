@@ -23,9 +23,13 @@ import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     FeatureTitleWithInfo,
+    getUrlWithSearchParams,
+    GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
+    GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
+    Nodes,
     ResponseType,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -41,6 +45,7 @@ import {
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
     RESOURCE_BROWSER_ROUTES,
+    RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -55,6 +60,12 @@ import {
 
 const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     'getMonitoringDashboardTabConfig',
+    null,
+    'function',
+)
+
+const getResourceRecommenderTabConfig = importComponentFromFELibrary(
+    'getResourceRecommenderTabConfig',
     null,
     'function',
 )
@@ -272,7 +283,10 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
+export const getTabsBasedOnRole = ({
+    selectedCluster,
+    canRenderResourceRecommender,
+}: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
     const tabs: InitTabType[] = [
@@ -299,13 +313,31 @@ export const getTabsBasedOnRole = ({ selectedCluster }: GetTabsBasedOnRoleParams
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
             shouldRemainMounted: true,
         },
-        getMonitoringDashboardTabConfig(
-            generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
-                clusterId,
-            }),
-            false,
-            MONITORING_DASHBOARD_TAB_ID,
-        ),
+        ...(getMonitoringDashboardTabConfig
+            ? [
+                  getMonitoringDashboardTabConfig(
+                      generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
+                          clusterId,
+                      }),
+                      false,
+                      MONITORING_DASHBOARD_TAB_ID,
+                  ),
+              ]
+            : []),
+        ...(canRenderResourceRecommender && getResourceRecommenderTabConfig
+            ? [
+                  getResourceRecommenderTabConfig(
+                      `${generatePath(RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER, {
+                          clusterId,
+                      })}${getUrlWithSearchParams('', {
+                          [GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]: 'apps/v1',
+                          [GVK_FILTER_KIND_QUERY_PARAM_KEY]: Nodes.Deployment,
+                      })}`,
+                      false,
+                      RESOURCE_RECOMMENDER_TAB_ID,
+                  ),
+              ]
+            : []),
         {
             id: ResourceBrowserTabsId.terminal,
             name: AppDetailsTabs.terminal,

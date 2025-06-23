@@ -21,7 +21,9 @@ import {
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    GetResourceRecommenderResourceListPropsType,
     handleAnalyticsEvent,
+    Icon,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -44,6 +46,7 @@ import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
     MONITORING_DASHBOARD_TAB_ID,
     RESOURCE_BROWSER_ROUTES,
+    RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
@@ -64,8 +67,9 @@ import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
 import { getClusterOptions } from './utils'
 
-const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')
+const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
 const ResourceList = () => {
     const params = useParams<ClusterDetailBaseParams>()
@@ -89,7 +93,9 @@ const ResourceList = () => {
     } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
-    const { setIntelligenceConfig, setAIAgentContext } = useMainContext()
+    const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
+
+    const canRenderResourceRecommender = ResourceRecommender && isResourceRecommendationEnabled
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
         () => getResourceGroupListRaw(clusterId),
@@ -132,6 +138,7 @@ const ResourceList = () => {
     const initTabsBasedOnRole = (reInit: boolean) => {
         const _tabs = getTabsBasedOnRole({
             selectedCluster,
+            canRenderResourceRecommender,
         })
         initTabs(_tabs, reInit, null)
     }
@@ -271,6 +278,30 @@ const ResourceList = () => {
         ({ url: _url, dynamicTitle, retainSearchParams }: Omit<UpdateTabUrlParamsType, 'id'>) =>
             updateTabUrl({ id, url: _url, dynamicTitle, retainSearchParams })
 
+    const getResourceRecommenderBaseResourceListProps = ({
+        setShowAbsoluteValuesInResourceRecommender,
+        showAbsoluteValuesInResourceRecommender,
+        gvkOptions,
+        areGVKOptionsLoading,
+        reloadGVKOptions,
+        gvkOptionsError,
+    }: GetResourceRecommenderResourceListPropsType) => ({
+        addTab,
+        selectedCluster,
+        updateK8sResourceTab: getUpdateTabUrlForId(RESOURCE_RECOMMENDER_TAB_ID),
+        lowercaseKindToResourceGroupMap,
+        resourceRecommenderConfig: {
+            setShowAbsoluteValuesInResourceRecommender,
+            showAbsoluteValuesInResourceRecommender,
+        },
+        gvkFilterConfig: {
+            gvkOptions,
+            areGVKOptionsLoading,
+            reloadGVKOptions,
+            gvkOptionsError,
+        },
+    })
+
     const renderPageHeaderActionButtons = () => {
         const clusterConnectionFailed = !!clusterList?.find(({ id }) => clusterId === String(id))?.errorInNodeListing
 
@@ -335,6 +366,7 @@ const ResourceList = () => {
                         [ResourceBrowserTabsId.cluster_overview]: <ICWorldBlack className="scn-7" />,
                         [ResourceBrowserTabsId.k8s_Resources]: <ICObject className="fcn-7" />,
                         [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
+                        [RESOURCE_RECOMMENDER_TAB_ID]: <Icon name="ic-speedometer" color="N700" />,
                     }}
                 />
                 <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
@@ -412,6 +444,11 @@ const ResourceList = () => {
                             updateTabLastSyncMoment={updateTabLastSyncMoment}
                             key={getTabById(ResourceBrowserTabsId.k8s_Resources).componentKey}
                         />
+                    </DynamicTabComponentWrapper>
+                </Route>
+                <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST} exact>
+                    <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
+                        <ResourceRecommender getBaseResourceListProps={getResourceRecommenderBaseResourceListProps} />
                     </DynamicTabComponentWrapper>
                 </Route>
 

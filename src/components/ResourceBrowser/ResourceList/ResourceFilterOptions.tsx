@@ -15,14 +15,20 @@
  */
 
 import { ComponentProps, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
 import { SelectInstance } from 'react-select'
 
 import {
     ALL_NAMESPACE_OPTION,
+    Checkbox,
+    CHECKBOX_VALUE,
     ComponentSizeType,
+    GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
+    GVK_FILTER_KIND_QUERY_PARAM_KEY,
+    GVKOptionValueType,
     Nodes,
     OptionType,
+    ResourceRecommenderHeaderType,
     SearchBar,
     SegmentedControl,
     SegmentedControlProps,
@@ -30,19 +36,31 @@ import {
     SelectPickerOptionType,
     useAsync,
     useRegisterShortcut,
+    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
+import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
+import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 
-import { URLS } from '../../../config'
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
+import {
+    DUMMY_RESOURCE_GVK_VERSION,
+    NAMESPACE_NOT_APPLICABLE_OPTION,
+    NAMESPACE_NOT_APPLICABLE_TEXT,
+    RESOURCE_BROWSER_ROUTES,
+} from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps } from '../Types'
 import { K8sResourceListURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
+const getResourceRecommendationsCSVData = importComponentFromFELibrary(
+    'getResourceRecommendationsCSVData',
+    null,
+    'function',
+)
 
 const ResourceFilterOptions = ({
     selectedResource,
@@ -56,19 +74,32 @@ const ResourceFilterOptions = ({
     searchPlaceholder,
     eventType = 'warning',
     updateSearchParams,
+    resourceRecommenderConfig,
+    filteredResourceList,
+    gvkFilterConfig,
+    isResourceListLoading,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { replace } = useHistory()
-    const { clusterId, group } = useParams<K8sResourceListURLParams>()
+    const { clusterId, group, kind } = useParams<K8sResourceListURLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
     const namespaceFilterRef = useRef<SelectInstance<SelectPickerOptionType>>(null)
 
     const isEventListing = selectedResource?.gvk?.Kind === Nodes.Event
+    const { searchParams } = useSearchString()
+    const { showAbsoluteValuesInResourceRecommender, setShowAbsoluteValuesInResourceRecommender } =
+        resourceRecommenderConfig || {}
+
+    const { gvkOptions, areGVKOptionsLoading, reloadGVKOptions, gvkOptionsError } = gvkFilterConfig || {}
 
     const showShortcutKey = !isInputFocused && !searchText
+    const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
+
+    const selectedAPIVersionGVKFilter = searchParams[GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]
+    const selectedKindGVKFilter = searchParams[GVK_FILTER_KIND_QUERY_PARAM_KEY]
 
     const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
@@ -133,7 +164,12 @@ const ResourceFilterOptions = ({
         }
         const parsedUrlSearchParams = new URLSearchParams(location.search)
         parsedUrlSearchParams.set('namespace', selected.value)
-        const url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${selectedResource.gvk.Kind.toLowerCase()}/${group}/v1?${parsedUrlSearchParams.toString()}`
+        const url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+            clusterId,
+            group,
+            kind,
+            version: DUMMY_RESOURCE_GVK_VERSION,
+        })}?${parsedUrlSearchParams.toString()}`
         replace(url)
     }
 
@@ -144,6 +180,42 @@ const ResourceFilterOptions = ({
     const handleOnEventTypeChange: SegmentedControlProps['onChange'] = ({ value }) => {
         updateSearchParams({ eventType: value })
     }
+
+    const handleToggleShowAbsoluteValues = () => {
+        setShowAbsoluteValuesInResourceRecommender((prev) => !prev)
+    }
+
+    const getIsGVKOptionSelected = (option: SelectPickerOptionType<GVKOptionValueType>): boolean => {
+        if (!option.value) {
+            return !selectedKindGVKFilter || !selectedAPIVersionGVKFilter
+        }
+
+        return option.value.kind === selectedKindGVKFilter && option.value.apiVersion === selectedAPIVersionGVKFilter
+    }
+
+    const handleGVKFilterChange = (option: SelectPickerOptionType<GVKOptionValueType> | null): void => {
+        if (!option) {
+            return
+        }
+
+        const newSearchParams = new URLSearchParams(location.search)
+        if (!option.value) {
+            newSearchParams.delete(GVK_FILTER_API_VERSION_QUERY_PARAM_KEY)
+            newSearchParams.delete(GVK_FILTER_KIND_QUERY_PARAM_KEY)
+        } else {
+            const { kind: kindValue, apiVersion } = option.value
+            newSearchParams.set(GVK_FILTER_API_VERSION_QUERY_PARAM_KEY, apiVersion)
+            newSearchParams.set(GVK_FILTER_KIND_QUERY_PARAM_KEY, kindValue)
+        }
+
+        replace({
+            pathname: location.pathname,
+            search: newSearchParams.toString(),
+        })
+    }
+
+    const getResourcesToExport = (): Promise<Record<ResourceRecommenderHeaderType, string>[]> =>
+        Promise.resolve(getResourceRecommendationsCSVData(filteredResourceList))
 
     return (
         <>
@@ -195,8 +267,49 @@ const ResourceFilterOptions = ({
                     </div>
                 </div>
                 {!areFiltersHidden && (
-                    <div className="flexbox dc__gap-8 dc__zi-3">
-                        {FilterButton && (
+                    <div className="flexbox dc__gap-8 dc__zi-3 dc__align-items-center">
+                        {isResourceRecommender && (
+                            <>
+                                <div className="flexbox dc__align-items-center p-6">
+                                    <Checkbox
+                                        isChecked={showAbsoluteValuesInResourceRecommender}
+                                        value={CHECKBOX_VALUE.CHECKED}
+                                        onChange={handleToggleShowAbsoluteValues}
+                                        dataTestId="resource-recommender-absolute-values-checkbox"
+                                        rootClassName="mb-0"
+                                    >
+                                        <span className="cn-9 fs-13 fw-4 lh-20">Show absolute values</span>
+                                    </Checkbox>
+                                </div>
+
+                                <div className="dc__divider h-20" />
+
+                                <div className="dc__mxw-200">
+                                    <SelectPicker<GVKOptionValueType, false>
+                                        inputId="resource-filter__gvk-select"
+                                        placeholder="Select Resource Kind"
+                                        options={gvkOptions || []}
+                                        value={{
+                                            label: selectedKindGVKFilter || 'All Kinds',
+                                            value:
+                                                selectedKindGVKFilter && selectedAPIVersionGVKFilter
+                                                    ? {
+                                                          kind: selectedKindGVKFilter,
+                                                          apiVersion: selectedAPIVersionGVKFilter,
+                                                      }
+                                                    : null,
+                                        }}
+                                        isOptionSelected={getIsGVKOptionSelected}
+                                        onChange={handleGVKFilterChange}
+                                        isLoading={areGVKOptionsLoading}
+                                        optionListError={gvkOptionsError}
+                                        reloadOptionList={reloadGVKOptions}
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        {FilterButton && !isResourceRecommender && (
                             <FilterButton
                                 clusterName={selectedCluster?.label || ''}
                                 showModal={showFilterModal}
@@ -204,18 +317,29 @@ const ResourceFilterOptions = ({
                                 handleCloseFilterModal={handleCloseFilterModal}
                             />
                         )}
-                        <SelectPicker
-                            selectRef={namespaceFilterRef}
-                            inputId="resource-filter-select"
-                            placeholder="Select Namespace"
-                            options={namespaceOptions}
-                            value={selectedNamespaceOption}
-                            onChange={handleNamespaceChange}
-                            isDisabled={!selectedResource?.namespaced}
-                            icon={<NamespaceIcon className="fcn-6" />}
-                            disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
-                            shouldMenuAlignRight
-                        />
+
+                        <div className="dc__mxw-200">
+                            <SelectPicker
+                                inputId="resource-filter-select"
+                                placeholder="Select Namespace"
+                                options={namespaceOptions}
+                                value={selectedNamespaceOption}
+                                onChange={handleNamespaceChange}
+                                isDisabled={!selectedResource?.namespaced}
+                                icon={<NamespaceIcon className="fcn-6" />}
+                                disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
+                                shouldMenuAlignRight
+                            />
+                        </div>
+
+                        {isResourceRecommender && getResourceRecommendationsCSVData && (
+                            <ExportToCsv
+                                fileName={FILE_NAMES.ResourceRecommendations}
+                                showOnlyIcon
+                                disabled={isResourceListLoading || !filteredResourceList?.length}
+                                apiPromise={getResourcesToExport}
+                            />
+                        )}
                     </div>
                 )}
             </div>

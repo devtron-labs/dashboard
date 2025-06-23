@@ -15,10 +15,12 @@
  */
 
 import React, { RefObject } from 'react'
+import { GroupBase } from 'react-select'
 
 import {
     ApiResourceGroupType,
     FiltersTypeEnum,
+    GVKOptionValueType,
     GVKType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
@@ -26,6 +28,8 @@ import {
     OptionType,
     ResourceDetail,
     SelectedResourceType,
+    SelectPickerOptionType,
+    ServerErrors,
     TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -91,7 +95,7 @@ export interface ResourceFilterOptionsProps
     extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams'>,
         Pick<K8sResourceListFilterType, 'eventType'> {
     selectedResource: ApiResourceGroupType
-    resourceList?: K8sResourceDetailType
+    filteredResourceList?: K8sResourceDetailDataType[]
     selectedCluster?: ClusterOptionType
     selectedNamespace?: string
     searchText?: string
@@ -108,6 +112,17 @@ export interface ResourceFilterOptionsProps
      * @default undefined
      */
     searchPlaceholder?: string
+    isResourceListLoading?: boolean
+    resourceRecommenderConfig?: {
+        showAbsoluteValuesInResourceRecommender: boolean
+        setShowAbsoluteValuesInResourceRecommender: React.Dispatch<React.SetStateAction<boolean>>
+    }
+    gvkFilterConfig?: {
+        gvkOptions: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
+        areGVKOptionsLoading: boolean
+        reloadGVKOptions: () => void
+        gvkOptionsError: ServerErrors
+    }
 }
 
 export interface K8SResourceListType
@@ -233,10 +248,12 @@ export interface RBSidebarKeysType {
     overviewGVK: GVKType
     monitoringGVK: GVKType
     upgradeClusterGVK: GVKType
+    resourceRecommenderGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
+    canRenderResourceRecommender: boolean
 }
 
 export interface NodeRowDetail {
