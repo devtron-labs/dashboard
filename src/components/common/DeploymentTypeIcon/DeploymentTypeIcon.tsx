@@ -22,7 +22,10 @@ import { ReactComponent as FluxCD } from '@Icons/ic-fluxcd.svg'
 
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
-export const DEPLOYMENT_TYPE_TO_TEXT_MAP = {
+export const DEPLOYMENT_TYPE_TO_TEXT_MAP: Record<
+    Extract<DeploymentAppTypes, DeploymentAppTypes.ARGO | DeploymentAppTypes.FLUX | DeploymentAppTypes.HELM>,
+    string
+> = {
     [DeploymentAppTypes.ARGO]: 'ArgoCD',
     [DeploymentAppTypes.FLUX]: 'FluxCD',
     [DeploymentAppTypes.HELM]: 'Helm',

@@ -67,9 +67,7 @@ import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
 import { ConfigureGitopsInfoBlock } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
-import DeploymentTypeIcon, {
-    DEPLOYMENT_TYPE_TO_TEXT_MAP,
-} from '@Components/common/DeploymentTypeIcon/DeploymentTypeIcon'
+import { DeploymentTypeIcon, DEPLOYMENT_TYPE_TO_TEXT_MAP } from '@Components/common/DeploymentTypeIcon'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -157,8 +155,7 @@ export const DeploymentAppSelector = ({
             </h2>
             <div className="flex left">
                 <span className="fs-13 fw-6  cn-9 md-6" data-testid="deployment-type">
-                    {DEPLOYMENT_TYPE_TO_TEXT_MAP[commonState.installedConfig.deploymentAppType as DeploymentAppTypes] ??
-                        ''}
+                    {DEPLOYMENT_TYPE_TO_TEXT_MAP[commonState.installedConfig.deploymentAppType as DeploymentAppTypes]}
                 </span>
                 <DeploymentTypeIcon
                     deploymentAppType={commonState.installedConfig.deploymentAppType as DeploymentAppTypes}
