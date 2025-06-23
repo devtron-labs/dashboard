@@ -23,6 +23,7 @@ import {
     ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
+    FeatureTitleWithInfo,
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
@@ -416,3 +417,15 @@ export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatu
         : `${URLS.RESOURCE_BROWSER}/${id}/${
               ALL_NAMESPACE_OPTION.value
           }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
+const renderAppGroupDescriptionContent = () =>
+    'Job allows execution of repetitive tasks in a manual or automated manner. Execute custom tasks or choose from a library of preset plugins in your job pipeline.'
+
+export const renderAdditionalBrowserHeaderInfo = () => (
+    <FeatureTitleWithInfo
+        title="Kubernetes Resource Browser"
+        docLink="RESOURCE_BROWSER"
+        renderDescriptionContent={renderAppGroupDescriptionContent}
+        showInfoIconTippy
+    />
+)

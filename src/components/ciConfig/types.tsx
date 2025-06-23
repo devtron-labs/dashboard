@@ -473,3 +473,12 @@ export interface GetCIPipelineModalURLType {
     ciNode: CommonNodeAttr
     workflowId: number
 }
+
+export interface CIContainerRegistryInfoBlockProps {
+    configOverriddenPipelines: CiPipeline[]
+    toggleConfigOverrideDiffModal: () => void
+    isCDPipeline: boolean
+    isTemplateView: boolean
+    appId: string
+    onClickRedirectLink: (e) => void
+}

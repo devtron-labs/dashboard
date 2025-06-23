@@ -76,6 +76,10 @@ const ResourceFilterOptions = ({
         setShowFilterModal(true)
     }
 
+    const handleCloseFilterModal = () => {
+        setShowFilterModal(false)
+    }
+
     useEffect(() => {
         if (registerShortcut && isOpen) {
             registerShortcut({ keys: ['R'], callback: handleInputShortcut })
@@ -154,7 +158,8 @@ const ResourceFilterOptions = ({
                                 clusterName={selectedCluster?.label || ''}
                                 updateTabUrl={updateK8sResourceTab}
                                 showModal={showFilterModal}
-                                setShowModal={setShowFilterModal}
+                                handleShowFilterModal={handleShowFilterModal}
+                                handleCloseFilterModal={handleCloseFilterModal}
                             />
                         )}
                         <SelectPicker
