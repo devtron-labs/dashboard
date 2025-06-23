@@ -2,8 +2,6 @@ import {
     DeploymentAppTypes,
     DeploymentStrategy,
     getEnvironmentListMinPublic,
-    ModuleNameMap,
-    ModuleStatus,
     ReleaseMode,
     SavedDeploymentStrategy,
     showError,
@@ -15,7 +13,6 @@ import { getCDPipelineNameSuggestion, getDeploymentStrategyList } from '@Compone
 import { GeneratedHelmPush } from '@Components/cdPipeline/cdPipeline.types'
 import { getInitData } from '@Components/ciPipeline/ciPipeline.service'
 import { sortObjectArrayAlphabetically } from '@Components/common'
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 import { CreateCICDPipelineData } from './types'
 
@@ -105,22 +102,14 @@ const getCDInitData = async (appId: string, isTemplateView: boolean): Promise<Cr
 }
 
 const getCIInitData = async (appId: string, isTemplateView: boolean) => {
-    const [
-        {
-            result: { form, isBlobStorageConfigured },
-        },
-        {
-            result: { status },
-        },
-    ] = await Promise.all([
-        getInitData(appId.toString(), true, false, isTemplateView),
-        getModuleInfo(ModuleNameMap.SECURITY),
-    ])
+    const {
+        result: { form, isBlobStorageConfigured, isSecurityModuleInstalled },
+    } = await getInitData(appId.toString(), true, false, isTemplateView)
 
     return {
         ...form,
         isBlobStorageConfigured,
-        isSecurityModuleInstalled: status === ModuleStatus.INSTALLED,
+        isSecurityModuleInstalled,
     }
 }
 

@@ -430,5 +430,6 @@ export interface CIPipelineInitData {
         loadingData: boolean
         isAdvanced: boolean
         isBlobStorageConfigured: boolean
+        isSecurityModuleInstalled: boolean
     }
 }

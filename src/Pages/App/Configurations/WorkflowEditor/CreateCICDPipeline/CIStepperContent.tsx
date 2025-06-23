@@ -85,10 +85,6 @@ export const CIStepperContent = ({
         (gitMaterialId: MaterialType['gitMaterialId']) => (selectedOption: CiPipelineSourceTypeOption) => {
             const { ci, cd } = structuredClone(ciCdPipeline)
 
-            // Determine if the previously selected source was a webhook
-            const wasWebhookPreviously =
-                ci.ciPipelineSourceTypeOptions.find((opt) => opt.isSelected)?.value === SourceTypeMap.WEBHOOK
-
             // Find the material index to update
             const materialIndex = ci.materials.findIndex((mat) => mat.gitMaterialId === gitMaterialId)
 
@@ -96,6 +92,10 @@ export const CIStepperContent = ({
                 const currentMaterial = ci.materials[materialIndex]
                 const newSourceType = selectedOption.value
                 const isRegexType = newSourceType === SourceTypeMap.BranchRegex
+
+                // Determine if the previously selected source was a webhook
+                const wasWebhookPreviously =
+                    ci.ciPipelineSourceTypeOptions.find((opt) => opt.isSelected)?.value === SourceTypeMap.WEBHOOK
 
                 // Update material with new type and adjusted values
                 ci.materials[materialIndex] = {

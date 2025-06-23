@@ -215,7 +215,6 @@ export const CreateCICDPipeline = ({
             ])
 
             setIsCreatingWorkflow(false)
-            await getWorkflows()
 
             if (cdNodeRes.status === 'rejected') {
                 setCdNodeCreateError(cdNodeRes.reason)
@@ -238,6 +237,7 @@ export const CreateCICDPipeline = ({
                     variant: ToastVariantType.success,
                     description: CREATE_CI_CD_PIPELINE_TOAST_MESSAGES.CREATE_WORKFLOW_SUCCESS,
                 })
+                getWorkflows()
                 onClose()
             }
         } catch {

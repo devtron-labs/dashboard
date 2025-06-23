@@ -32,12 +32,14 @@ import {
     GetTemplateAPIRouteType,
     getTemplateAPIRoute,
     SourceTypeMap,
+    ModuleStatus,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes, ViewType } from '../../config'
 import { getSourceConfig, getWebhookDataMetaConfig } from '../../services/service'
 import { CiPipelineSourceTypeBaseOptions } from '../CIPipelineN/ciPipeline.utils'
 import { CIPipelineBuildType, CIPipelineInitData, PatchAction } from './types'
 import { safeTrim } from '../../util/Util'
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 const emptyStepsData = () => {
     return { id: 0, steps: [] }
@@ -68,12 +70,16 @@ export function getInitData(
         getCIPipelineNameSuggestion(appId, isTemplateView),
         getPipelineMetaConfiguration(appId.toString(), includeWebhookData, true, isJobCard, isTemplateView),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+        getModuleInfo(ModuleNameMap.SECURITY),
     ]).then(
         ([
             pipelineNameRes,
             pipelineMetaConfig,
             {
                 result: { enabled: isBlobStorageConfigured },
+            },
+            {
+                result: { status },
             },
         ]) => {
             const scanEnabled =
@@ -102,6 +108,7 @@ export function getInitData(
                     loadingData: false,
                     isAdvanced: false,
                     isBlobStorageConfigured,
+                    isSecurityModuleInstalled: status === ModuleStatus.INSTALLED,
                 },
             }
         },
@@ -221,12 +228,16 @@ export function getInitDataWithCIPipeline(
         // by default BE will send global cache config for that pipelineType (JOB or CI_BUILD)
         getPipelineMetaConfiguration(appId, includeWebhookData, false, false, isTemplateView),
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+        getModuleInfo(ModuleNameMap.SECURITY),
     ]).then(
         ([
             ciPipelineRes,
             pipelineMetaConfig,
             {
                 result: { enabled: isBlobStorageConfigured },
+            },
+            {
+                result: { status },
             },
         ]) => {
             const ciPipeline = ciPipelineRes?.result
@@ -239,6 +250,7 @@ export function getInitDataWithCIPipeline(
                 pipelineMetaConfigResult.webhookEvents,
                 pipelineMetaConfigResult.ciPipelineSourceTypeOptions,
                 isBlobStorageConfigured,
+                status === ModuleStatus.INSTALLED,
             )
         },
     )
@@ -323,6 +335,7 @@ export function saveCIPipeline(
             undefined,
             undefined,
             ciPipelineSourceTypeOptions,
+            false,
             false,
             response.result.appWorkflowId ?? ciPipelineFromRes.appWorkflowId,
         )
@@ -555,6 +568,7 @@ function parseCIResponse(
     webhookEvents,
     ciPipelineSourceTypeOptions,
     isBlobStorageConfigured?: boolean,
+    isSecurityModuleInstalled?: boolean,
     appWorkflowId?: number,
 ) {
     if (ciPipeline) {
@@ -628,6 +642,7 @@ function parseCIResponse(
             showPreBuild: ciPipeline.beforeDockerBuildScripts?.length > 0,
             showPostBuild: ciPipeline.afterDockerBuildScripts?.length > 0,
             isBlobStorageConfigured: isBlobStorageConfigured ?? false,
+            isSecurityModuleInstalled: isSecurityModuleInstalled ?? false,
         }
     }
 }

@@ -52,7 +52,7 @@ export const SourceMaterials = ({
         }
 
         return initialMaterials
-    }, [isMultiGit, initialMaterials])
+    }, [initialMaterials])
 
     // HANDLERS
     const onBlur = async () => {

@@ -20,11 +20,9 @@ import {
     ServerErrors,
     showError,
     ConditionalWrap,
-    VisibleModal,
     Drawer,
     VariableType,
     MandatoryPluginDataType,
-    ButtonWithLoader,
     PluginDataStoreType,
     ProcessPluginDataReturnType,
     PluginDetailPayloadType,
@@ -34,11 +32,9 @@ import {
     getUpdatedPluginStore,
     TabProps,
     TabGroup,
-    ModuleNameMap,
     SourceTypeMap,
     DEFAULT_ENV,
     getEnvironmentListMinPublic,
-    ModuleStatus,
     PipelineFormType,
     ToastVariantType,
     ToastManager,
@@ -69,7 +65,6 @@ import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
-import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -230,17 +225,6 @@ export default function CIPipeline({
 
     const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
         setAvailableTags(tags)
-    }
-
-    const getSecurityModuleStatus = async (): Promise<void> => {
-        try {
-            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
-            if (result?.status === ModuleStatus.INSTALLED) {
-                setSecurityModuleInstalled(true)
-            }
-        } catch (error) {
-            showError(error)
-        }
     }
 
     // mandatory plugins are applicable for job ci but not jobs
@@ -454,7 +438,6 @@ export default function CIPipeline({
     const handleOnMountAPICalls = async () => {
         try {
             setPageState(ViewType.LOADING)
-            await getSecurityModuleStatus()
             if (ciPipelineId) {
                 const ciPipelineResponse = await getInitDataWithCIPipeline(appId, ciPipelineId, true, isTemplateView)
                 if (ciPipelineResponse) {
@@ -477,6 +460,7 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.PostBuild, ciPipelineResponse.form)
                     setFormData(ciPipelineResponse.form)
                     setIsBlobStorageConfigured(ciPipelineResponse.isBlobStorageConfigured)
+                    setSecurityModuleInstalled(ciPipelineResponse.isSecurityModuleInstalled)
                     setCIPipeline(ciPipelineResponse.ciPipeline)
                     await getInitialPlugins(ciPipelineResponse.form)
                     await getEnvironments(ciPipelineResponse.ciPipeline.environmentId)
@@ -486,6 +470,7 @@ export default function CIPipeline({
                 const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
+                    setSecurityModuleInstalled(ciPipelineResponse.result.isSecurityModuleInstalled)
                     await getInitialPlugins(ciPipelineResponse.result.form)
                     await getEnvironments(0)
                 }
@@ -541,7 +526,7 @@ export default function CIPipeline({
 
     const handleAdvancedOptions = () => {
         setIsAdvanced(true)
-        handleAnalyticsEvent({category: 'CI Pipeline', action: 'DA_BUILD_ADVANCED'})
+        handleAnalyticsEvent({ category: 'CI Pipeline', action: 'DA_BUILD_ADVANCED' })
     }
 
     const renderSecondaryButton = () => {
