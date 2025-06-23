@@ -22,7 +22,8 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     ConditionalWrap,
-    ConfirmationDialog,
+    ConfirmationModal,
+    ConfirmationModalVariantType,
     DeploymentAppTypes,
     Icon,
     MODAL_TYPE,
@@ -41,7 +42,6 @@ import {
     TOAST_INFO,
     VIEW_DELETION_STATUS,
 } from '../../../config/constantMessaging'
-import warningIconSrc from '../../../assets/icons/info-filled.svg'
 import { URLS } from '../../../config'
 import { envDescriptionTippy } from '../../app/details/triggerView/workflow/nodes/workflow.utils'
 import DeleteCDNode from '../../cdPipeline/DeleteCDNode'
@@ -236,23 +236,22 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
         return `${this.props.match.url.replace('edit/workflow', url)}`
     }
 
+    redirectToAppDetails = () => {
+        this.props.history.push(this.getAppDetailsURL())
+    }
+
     renderConfirmationModal = (): JSX.Element => {
         return (
-            <ConfirmationDialog>
-                <ConfirmationDialog.Icon src={warningIconSrc} />
-                <ConfirmationDialog.Body
-                    title={`Deployment pipeline for ${this.props.environmentName} environment is being deleted`}
-                />
-                <p className="fs-13 cn-7 lh-1-54 mt-20">{CONFIRMATION_DIALOG_MESSAGING.DELETION_IN_PROGRESS}</p>
-                <ConfirmationDialog.ButtonGroup>
-                    <button type="button" className="cta cancel" onClick={this.onClickHideDeletePipelinePopup}>
-                        {BUTTON_TEXT.CANCEL}
-                    </button>
-                    <Link to={this.getAppDetailsURL()}>
-                        <button className="cta ml-12 dc__no-decor">{VIEW_DELETION_STATUS}</button>
-                    </Link>
-                </ConfirmationDialog.ButtonGroup>
-            </ConfirmationDialog>
+            <ConfirmationModal
+                variant={ConfirmationModalVariantType.warning}
+                title={`Deployment pipeline for ${this.props.environmentName} environment is being deleted`}
+                subtitle={CONFIRMATION_DIALOG_MESSAGING.DELETION_IN_PROGRESS}
+                handleClose={this.onClickHideDeletePipelinePopup}
+                buttonConfig={{
+                    secondaryButtonConfig: { text: BUTTON_TEXT.CANCEL, onClick: this.onClickHideDeletePipelinePopup },
+                    primaryButtonConfig: { text: VIEW_DELETION_STATUS, onClick: this.redirectToAppDetails },
+                }}
+            />
         )
     }
 
@@ -356,9 +355,7 @@ export class CDNode extends Component<CDNodeProps, CDNodeState> {
 
                         {!this.props.isOffendingPipelineView && selectedNodeKey !== currentNodeKey && (
                             <div className="flexbox-col h-100 dc__border-left-n1 w-24 dc__align-items-center">
-                                <div
-                                    className="dc__grid-rows-2 ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center"
-                                >
+                                <div className="dc__grid-rows-2 ci-node__action-button dc__right-radius-8 h-100 dc__border-left-n1 w-24 dc__align-items-center">
                                     <div className="dc__border-bottom-n1">
                                         <Button
                                             ariaLabel={

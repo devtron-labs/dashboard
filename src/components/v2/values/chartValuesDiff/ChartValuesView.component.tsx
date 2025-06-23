@@ -33,6 +33,7 @@ import {
     MarkDown,
     ComponentSizeType,
     ButtonVariantType,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -595,8 +596,14 @@ export const ChartValuesSelector = ({
     const getOptionValue: SelectPickerProps<ChartValuesType>['getOptionValue'] = (option) =>
         `${option.value.id} ${option.value.kind}`
 
-    const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) =>
+    const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) => {
+        const kind = selectedOption.value.kind
+        handleAnalyticsEvent({
+            category: 'Chart Store',
+            action: `CS_CHART_CONFIGURE_&_DEPLOY_${kind === 'TEMPLATE' ? 'PRESET' : kind}_VALUE_SELECTED`,
+        })
         handleChartValuesSelection(selectedOption.value)
+    }
 
     const chartValuesOptionValue = getOptionValue({
         // Setting label null since the getOptionValue is not consuming it

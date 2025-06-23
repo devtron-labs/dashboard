@@ -22,6 +22,8 @@ import {
     CHECKBOX_VALUE,
     ComponentSizeType,
     get,
+    getIsRequestAborted,
+    handleAnalyticsEvent,
     NodeTaintType,
     noop,
     OptionType,
@@ -33,8 +35,9 @@ import {
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { getClusterTerminalParamsData } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
+
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
-import { getClusterTerminalParamsData } from '../cluster/cluster.util'
 import { clusterImageDescription, convertToOptionsList } from '../common'
 import { URLParams } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
@@ -198,6 +201,10 @@ const ClusterTerminal = ({
     }
 
     function sessionError(error): void {
+        if (getIsRequestAborted(error)) {
+            return
+        }
+
         showError(error)
         if (error instanceof ServerErrors && Array.isArray(error.errors)) {
             error.errors.forEach(({ userMessage }) => {
@@ -637,7 +644,13 @@ const ClusterTerminal = ({
     }
 
     const toggleScreenView = (): void => {
-        setFullScreen(!isFullScreen)
+        if (!isFullScreen) {
+            handleAnalyticsEvent({
+                category: 'Cluster Terminal',
+                action: 'RB_TERMINAL_FULLSCREEN',
+            })
+        }
+        setFullScreen((prev) => !prev)
     }
 
     const selectEventsTab = (): void => {
@@ -885,6 +898,10 @@ const ClusterTerminal = ({
         return nodeGroupOptions
     }
 
+    const toggleDebugMode = (): void => {
+        setDebugMode((prev) => !prev)
+    }
+
     const selectionListData: TerminalSelectionListDataType = {
         firstRow: [
             {
@@ -990,7 +1007,7 @@ const ClusterTerminal = ({
                 type: TerminalWrapperType.DEBUG_MODE_TOGGLE_BUTTON,
                 hideTerminalStripComponent: hideShell || selectedNodeName.value === AUTO_SELECT.value,
                 showInfoTippy: true,
-                onToggle: setDebugMode,
+                onToggle: toggleDebugMode,
                 isEnabled: debugMode,
             },
             {

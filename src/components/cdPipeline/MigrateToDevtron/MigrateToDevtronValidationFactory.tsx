@@ -36,12 +36,15 @@ import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
 import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
-import { AddClusterFormPrefilledInfoType, AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
+import { URLS } from '@Config/routes'
+import {
+    AddClusterFormPrefilledInfoType,
+    AddEnvironmentFormPrefilledInfoType,
+} from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import {
     ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
     ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
-} from '@Components/cluster/constants'
-import { URLS } from '@Config/routes'
+} from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'

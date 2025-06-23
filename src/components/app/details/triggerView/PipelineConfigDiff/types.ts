@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+
 import {
     DeploymentConfigDiffProps,
+    DeploymentConfigDiffRadioSelectConfig,
+    DeploymentStrategyType,
     DeploymentWithConfigType,
-    SelectPickerProps,
+    Strategy,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,6 +33,9 @@ export interface UsePipelineDeploymentConfigProps {
     pipelineId: number
     wfrId: number
     isRollbackTriggerSelected?: boolean
+    deploymentStrategy: DeploymentStrategyType
+    setDeploymentStrategy: Dispatch<SetStateAction<DeploymentStrategyType>>
+    pipelineStrategyOptions: Strategy[]
 }
 
 export type PipelineConfigDiffProps = Pick<
@@ -36,12 +43,12 @@ export type PipelineConfigDiffProps = Pick<
     'configList' | 'collapsibleNavList' | 'navList' | 'scopeVariablesConfig' | 'errorConfig'
 > & {
     isLoading?: boolean
-    deploymentConfigSelectorProps: SelectPickerProps
+    radioSelectConfig: DeploymentConfigDiffRadioSelectConfig
     urlFilters: UseUrlFiltersReturnType<string, PipelineConfigDiffQueryParamsType>
 }
 
 export interface PipelineConfigDiffStatusTileProps
-    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'deploymentConfigSelectorProps' | 'urlFilters'> {
+    extends Pick<PipelineConfigDiffProps, 'isLoading' | 'radioSelectConfig'> {
     hasDiff?: boolean
     noLastDeploymentConfig?: boolean
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
@@ -57,4 +64,14 @@ export interface PipelineConfigDiffQueryParamsType {
 export enum PipelineConfigDiffQueryParams {
     DEPLOY = 'deploy',
     MODE = 'mode',
+}
+
+export interface GetPipelineDeploymentConfigSelectorConfigParams
+    extends Pick<UsePipelineDeploymentConfigProps, 'deploymentStrategy' | 'pipelineStrategyOptions'> {
+    isLastDeployedConfigAvailable: boolean
+    isRollbackTriggerSelected: boolean
+    isConfigAvailable: (configType: DeploymentWithConfigType) => boolean
+    deploy: DeploymentWithConfigType
+    onDeploymentConfigChange: (updatedConfigType: DeploymentWithConfigType) => void
+    onStrategyChange: (updatedStrategy: DeploymentStrategyType) => void
 }

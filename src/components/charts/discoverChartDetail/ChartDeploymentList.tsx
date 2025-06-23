@@ -21,7 +21,6 @@ import {
     ServerErrors,
     showError,
     Progressing,
-    ConfirmationDialog,
     PopupMenu,
     ResponseType,
     DeploymentAppTypes,

@@ -54,6 +54,7 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     Icon,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
@@ -1164,6 +1165,7 @@ export default function CDPipeline({
         form.strategies = strategies
         setFormData(form)
         setIsAdvanced(true)
+        handleAnalyticsEvent({ category: 'CD Pipeline', action: 'DA_DEPLOY_ADVANCED' })
     }
 
     const openDeleteModal = () => {

@@ -23,10 +23,8 @@ import {
     DocLink,
     Icon,
     InfoBlock,
-    InfoColourBar,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as InfoIcon } from '@Icons/info-filled.svg'
 import { URLS } from '@Config/routes'
 
 import { EXTERNAL_INFO_TEXT } from './constants'
@@ -54,20 +52,12 @@ export const renderExternalInfo = (
     externalType: CMSecretExternalType,
     external: boolean,
     componentType: CMSecretComponentType,
-    className?: string,
 ) =>
     externalType === CMSecretExternalType.KubernetesSecret ||
     (componentType === CMSecretComponentType.ConfigMap && external) ? (
-        <InfoColourBar
-            classname={`info_bar ${className || ''}`}
-            message={
-                <div className="flex column left">
-                    <h4 className="m-0 lh-20 dc__info-title">{EXTERNAL_INFO_TEXT[componentType].title}</h4>
-                    <p className="m-0 lh-20 dc__info-subtitle">{EXTERNAL_INFO_TEXT[componentType].infoText}</p>
-                </div>
-            }
-            Icon={InfoIcon}
-            iconSize={20}
+        <InfoBlock
+            heading={EXTERNAL_INFO_TEXT[componentType].title}
+            description={EXTERNAL_INFO_TEXT[componentType].infoText}
         />
     ) : null
 
