@@ -408,7 +408,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     })
                     history.listen((locationObj) => {
                         let { pathname } = locationObj
-                        pathname = pathname.replace(/[0-9]/g, '')
+                        pathname = pathname.replace(/\d/g, '')
                         pathname = pathname.replace(/\/\//g, '/')
                         ReactGA.send({ hitType: 'pageview', page: pathname })
                         ReactGA.event({
