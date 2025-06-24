@@ -294,8 +294,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     useEffect(() => {
         if (pageState === ViewType.FORM) {
             const controls = animate(navBarWidth, NAVBAR_WIDTH, {
-                duration: 0.35,
-                ease: 'easeIn',
+                duration: 0.2,
+                ease: 'easeOut',
             })
             return controls.stop
         }
