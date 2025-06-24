@@ -412,4 +412,5 @@ export const ResourceBrowserRouteToTabIdMap: Partial<
     '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
     '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
     '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
+    '/resource-browser/:clusterId/resource-recommender': RESOURCE_RECOMMENDER_TAB_ID,
 }

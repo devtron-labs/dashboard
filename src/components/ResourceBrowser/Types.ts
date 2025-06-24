@@ -92,10 +92,9 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams'>,
+    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
         Pick<K8sResourceListFilterType, 'eventType'> {
     selectedResource: ApiResourceGroupType
-    filteredResourceList?: K8sResourceDetailDataType[]
     selectedCluster?: ClusterOptionType
     selectedNamespace?: string
     searchText?: string
@@ -103,30 +102,25 @@ export interface ResourceFilterOptionsProps
     isSearchInputDisabled?: boolean
     renderRefreshBar?: () => JSX.Element
     /**
-     * If true, the filters are hidden except search
-     */
-    areFiltersHidden: boolean
-    /**
      * Placeholder override for the search bar
      *
      * @default undefined
      */
     searchPlaceholder?: string
     isResourceListLoading?: boolean
-    resourceRecommenderConfig?: {
-        showAbsoluteValuesInResourceRecommender: boolean
-        setShowAbsoluteValuesInResourceRecommender: React.Dispatch<React.SetStateAction<boolean>>
-    }
     gvkFilterConfig?: {
         gvkOptions: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
         areGVKOptionsLoading: boolean
         reloadGVKOptions: () => void
         gvkOptionsError: ServerErrors
     }
+    showAbsoluteValuesInResourceRecommender?: boolean
+    selectedAPIVersionGVKFilter?: string
+    selectedKindGVKFilter?: string
 }
 
 export interface K8SResourceListType
-    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType'>,
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType' | 'filteredRows'>,
         Pick<SidebarType, 'updateK8sResourceTab'> {
     addTab: UseTabsReturnType['addTab']
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>

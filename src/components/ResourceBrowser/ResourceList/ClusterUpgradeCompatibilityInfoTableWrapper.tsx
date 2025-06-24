@@ -1,6 +1,6 @@
-import { ComponentProps, useRef, useState } from 'react'
+import { ComponentProps, useEffect, useRef, useState } from 'react'
 
-import { SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { SearchBar, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ShortcutKeyBadge } from '@Components/common/formFields/Widgets/Widgets'
 
@@ -13,6 +13,8 @@ const ClusterUpgradeCompatibilityInfoTableWrapper = ({
 }: ClusterUpgradeCompatibilityInfoTableWrapperProps) => {
     const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
+
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     const handleInputBlur = () => setIsInputFocused(false)
 
@@ -36,6 +38,15 @@ const ClusterUpgradeCompatibilityInfoTableWrapper = ({
     const handleInputShortcut = () => {
         searchInputRef.current?.focus()
     }
+
+    useEffect(() => {
+        if (registerShortcut) {
+            registerShortcut({ keys: ['R'], callback: handleInputShortcut })
+        }
+        return (): void => {
+            unregisterShortcut(['R'])
+        }
+    }, [])
 
     return (
         <div className="resource-list-container flexbox-col flex-grow-1 border__primary--left dc__overflow-hidden">

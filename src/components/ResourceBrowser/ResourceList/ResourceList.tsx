@@ -65,7 +65,9 @@ import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
-import { getClusterOptions } from './utils'
+import ResourceRecommenderTableCellComponent from './ResourceRecommenderTableCellComponent'
+import { ResourceRecommenderTableViewWrapper } from './ResourceRecommenderTableViewWrapper'
+import { dynamicSort, getClusterOptions } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')
@@ -288,6 +290,10 @@ const ResourceList = () => {
     }: GetResourceRecommenderResourceListPropsType) => ({
         addTab,
         selectedCluster,
+        selectedResource: {
+            gvk: SIDEBAR_KEYS.resourceRecommenderGVK,
+            namespaced: true,
+        },
         updateK8sResourceTab: getUpdateTabUrlForId(RESOURCE_RECOMMENDER_TAB_ID),
         lowercaseKindToResourceGroupMap,
         resourceRecommenderConfig: {
@@ -446,9 +452,14 @@ const ResourceList = () => {
                         />
                     </DynamicTabComponentWrapper>
                 </Route>
-                <Route path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST} exact>
+                <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
                     <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
-                        <ResourceRecommender getBaseResourceListProps={getResourceRecommenderBaseResourceListProps} />
+                        <ResourceRecommender
+                            getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
+                            ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
+                            ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
+                            dynamicSort={dynamicSort}
+                        />
                     </DynamicTabComponentWrapper>
                 </Route>
 

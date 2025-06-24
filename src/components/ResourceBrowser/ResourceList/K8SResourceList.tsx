@@ -73,6 +73,7 @@ const K8SResourceListViewWrapper = ({
     setVisibleColumns,
     updateSearchParams,
     eventType = 'warning',
+    filteredRows,
     ...restProps
 }: K8SResourceListViewWrapperProps) => (
     <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
@@ -92,9 +93,9 @@ const K8SResourceListViewWrapper = ({
                 setSearchText={handleSearch}
                 isSearchInputDisabled={false}
                 renderRefreshBar={renderRefreshBar}
-                areFiltersHidden={false}
                 updateSearchParams={updateSearchParams}
                 eventType={eventType}
+                filteredRows={filteredRows}
             />
         )}
         {children}
@@ -256,7 +257,7 @@ export const K8SResourceList = ({
                               showBulkRestartOption:
                                   window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
                                       .map((feat: string) => feat.trim().toUpperCase())
-                                      .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1,
+                                      .indexOf(selectedResource?.gvk.Kind.toUpperCase()) > -1,
                               showNodeListingOptions: isNodeListing,
                           },
                       },
