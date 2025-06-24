@@ -25,3 +25,14 @@ export interface AppListOptionsTypes {
     signal?: AbortSignal
     recentlyVisitedDevtronApps?: BaseAppMetaData[] | []
 }
+
+export interface ChartSelectorType {
+    primaryKey: string // url match
+    primaryValue: string
+    matchedKeys: string[]
+    api: (queryString?: string) => Promise<any>
+    apiPrimaryKey?: string // primary key to generate map
+    onChange?: ({ label, value }) => void
+    formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode
+    filterOption?: (option: any, searchString: string) => boolean
+}

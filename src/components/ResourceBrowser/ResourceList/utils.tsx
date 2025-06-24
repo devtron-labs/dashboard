@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { ClusterDetail, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterDetail, DocLink, DocLinkProps, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
 
 import { sortObjectArrayAlphabetically } from '@Components/common'
 
 import {
+    clusterOverviewNodeText,
+    ERROR_SCREEN_LEARN_MORE,
+    ERROR_SCREEN_SUBTITLE,
+    LEARN_MORE,
     LOCAL_STORAGE_EXISTS,
     LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS,
     OPTIONAL_NODE_LIST_HEADERS,
+    SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
 } from '../Constants'
 import { ClusterOptionType, K8SResourceListType, ShowAIButtonConfig } from '../Types'
@@ -114,3 +119,40 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
     }
     return !aiButtonConfig.excludeValues.has(value)
 }
+
+export const unauthorizedInfoText = (nodeType?: string) => {
+    const emptyStateData = {
+        text: ERROR_SCREEN_SUBTITLE,
+        link: 'K8S_RESOURCES_PERMISSIONS' as DocLinkProps['docLinkKey'],
+        linkText: ERROR_SCREEN_LEARN_MORE,
+    }
+
+    if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
+        emptyStateData.text = clusterOverviewNodeText(true)
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
+        emptyStateData.linkText = LEARN_MORE
+    } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
+        emptyStateData.text = clusterOverviewNodeText(false)
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
+        emptyStateData.linkText = LEARN_MORE
+    }
+
+    return (
+        <>
+            {emptyStateData.text}&nbsp;
+            <DocLink
+                dataTestId="rb-permission-error-documentation"
+                docLinkKey={emptyStateData.link}
+                text={emptyStateData.linkText}
+                fontWeight="normal"
+            />
+        </>
+    )
+}
+
+export const getOptionsValue = (option: ClusterOptionType, isInstallationStatusView: boolean) =>
+    // NOTE: all the options with value equal to that of the selected option will be highlighted
+    // therefore, since installed clusters that are in creation phase have value = '0', we need to instead
+    // get its value as installationId. Prefixing it with installation- to avoid collision with normal clusters have same value of
+    // clusterId as this installationId
+    isInstallationStatusView ? `installation-${String(option.installationId)}` : option.value

@@ -14,15 +14,21 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
-import AsyncSelect from 'react-select/async'
+import { useRef, useState } from 'react'
+import ReactGA from 'react-ga4'
 
 import {
-    abortPreviousRequests,
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
-    AppSelectorNoOptionsMessage,
+    BaseAppMetaData,
+    ResourceKindType,
+    SelectPickerProps,
+    useAsync,
+    UserPreferenceResourceActions,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { RecentlyVisitedOptions } from '@Components/AppSelector/AppSelector.types'
+import { APP_DETAILS_GA_EVENTS } from '@Components/AppSelector/constants'
+import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
 
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
@@ -31,21 +37,53 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const defaultOptions = { value: envId, label: envName }
 
-    const handleFetchOptions = (inputValue: string) =>
-        abortPreviousRequests(() => envListOptions(inputValue, abortControllerRef.current.signal), abortControllerRef)
+    const [inputValue, setInputValue] = useState('')
+    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
+    const isAppDataAvailable = !!envId && !!envName
+
+    useAsync(
+        () =>
+            fetchRecentlyVisitedParsedApps({ appId: envId, appName: envName, resourceKind: ResourceKindType.appGroup }),
+        [envId, envName],
+        isAppDataAvailable,
+    )
+
+    const recentlyVisitedDevtronApps =
+        userPreferences?.resources?.[ResourceKindType.appGroup]?.[UserPreferenceResourceActions.RECENTLY_VISITED] ||
+        ([] as BaseAppMetaData[])
+
+    const [loading, selectOptions] = useAsync(
+        () => envListOptions(inputValue, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
+        [inputValue, recentlyVisitedDevtronApps],
+        isAppDataAvailable && !!recentlyVisitedDevtronApps.length,
+    )
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+    }
+
+    const handleChange = (selectedOption: RecentlyVisitedOptions) => {
+        if (selectedOption.label === envName) return
+
+        onChange(selectedOption)
+
+        ReactGA.event(
+            selectedOption.isRecentlyVisited
+                ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
+                : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
+        )
+    }
 
     return (
-        <AsyncSelect
-            loadOptions={handleFetchOptions}
-            noOptionsMessage={AppSelectorNoOptionsMessage}
-            onChange={onChange}
+        <ContextSwitcher
+            isLoading={loading}
+            onChange={handleChange}
             value={defaultOptions}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            styles={APP_SELECTOR_STYLES}
+            options={selectOptions}
+            inputId="app-group"
+            placeholder={envName}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
         />
     )
 }

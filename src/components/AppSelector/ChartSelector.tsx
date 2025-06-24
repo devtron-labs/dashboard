@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import { useState } from 'react'
 import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
-import Select from 'react-select'
-import { useAsync, APP_SELECTOR_STYLES, AppSelectorDropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
+import { GroupBase } from 'react-select'
+import { useAsync, SelectPickerProps, SelectPicker, SelectPickerOptionType, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'
+import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
+import { ChartSelectorType } from './AppSelector.types'
+import { getMinCharSearchPlaceholderGroup } from './constants'
 
-interface ChartSelectorType {
-    primaryKey: string // url match
-    primaryValue: string
-    matchedKeys: string[]
-    api: () => Promise<any>
-    apiPrimaryKey?: string // primary key to generate map
-    onChange?: ({ label, value }) => void
-    formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode
-    filterOption?: (option: any, searchString: string) => boolean
-}
 export default function ChartSelector({
     primaryKey,
     primaryValue,
@@ -46,7 +39,7 @@ export default function ChartSelector({
     const params = useParams()
     const { push } = useHistory()
     const _primaryKey = Number(params[primaryKey])
-    function selectApp(selected) {
+    const selectApp = (selected) => {
         if (onChange) {
             onChange(selected)
             return
@@ -56,25 +49,42 @@ export default function ChartSelector({
         const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value })
         push(newUrl)
     }
+    const [inputValue, setInputValue] = useState('')
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+    }
+
+    const getChartsOptions = (): GroupBase<SelectPickerOptionType<string | number>>[] => {
+        if(inputValue.length < 3) {
+            return [getMinCharSearchPlaceholderGroup('Charts')]
+        }
+        return [
+        {
+            label: 'All Charts',
+            options:
+                result?.result?.map((res) => ({
+                    value: res[apiPrimaryKey || primaryKey],
+                    label: res[primaryValue],
+                })) || [],
+        },
+    ]}
+
     return (
-        <Select
-            options={result?.result?.map((res) => ({
-                value: res[apiPrimaryKey || primaryKey],
-                label: res[primaryValue],
-                ...res,
-            }))}
+        <ContextSwitcher
+            inputId="chart-select"
+            options={getChartsOptions()}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            isLoading={loading}
+            onChange={selectApp}
             value={{
                 value: _primaryKey,
                 label: listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : '',
             }}
+            placeholder={_primaryKey}
             {...(formatOptionLabel ? { formatOptionLabel } : {})}
             {...(filterOption ? { filterOption } : {})}
-            onChange={selectApp}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-            }}
-            styles={APP_SELECTOR_STYLES}
         />
     )
 }

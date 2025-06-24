@@ -69,12 +69,12 @@ import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './c
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
-import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
-import { unauthorizedInfoText } from '../ResourceBrowser/ResourceList/ClusterSelector'
 import './clusterNodes.scss'
-import ResourceBrowserActionMenu from '../ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
+import ResourceBrowserActionMenu from '@Components/ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { importComponentFromFELibrary } from '@Components/common'
+import { unauthorizedInfoText } from '@Components/ResourceBrowser/ResourceList/utils'
 
 const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
 

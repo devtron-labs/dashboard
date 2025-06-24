@@ -8,11 +8,13 @@ export interface ContextSwitcherTypes
         | 'placeholder'
         | 'onChange'
         | 'value'
-        | 'noOptionsMessage'
         | 'isLoading'
         | 'onInputChange'
         | 'inputValue'
         | 'inputId'
+        | 'formatOptionLabel'
+        | 'filterOption'
     > {
     options: GroupBase<SelectPickerOptionType<string | number>>[]
+    isAppDataAvailable?: boolean
 }

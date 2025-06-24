@@ -1,7 +1,7 @@
 import { RecentlyVisitedGroupedOptionsType } from './AppSelector.types'
 
-export const getMinCharSearchPlaceholderGroup = (isJobView): RecentlyVisitedGroupedOptionsType => ({
-    label: `All ${isJobView ? 'Jobs' : 'Apps'}`,
+export const getMinCharSearchPlaceholderGroup = (resourceKind): RecentlyVisitedGroupedOptionsType => ({
+    label: `All ${resourceKind}`,
     options: [{ value: 0, label: 'Type 3 characters to search', isDisabled: true }],
 })
 

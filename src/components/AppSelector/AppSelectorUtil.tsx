@@ -47,7 +47,7 @@ export const appListOptions = ({
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },
-                              getMinCharSearchPlaceholderGroup(isJobView),
+                              getMinCharSearchPlaceholderGroup(isJobView ? 'Jobs' : 'Apps'),
                           ]
                         : [],
                 )
@@ -80,3 +80,41 @@ export const appListOptions = ({
         }, 300)
     })
 }
+
+export const contextSwitcherOptions = ({
+    recentlyVisitedDevtronApps,
+    selectOptions,
+    inputValue,
+    resourceKind,
+}): Promise<RecentlyVisitedGroupedOptionsType[]> =>
+    new Promise((resolve) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+            if (inputValue.length < 3) {
+                resolve(
+                    recentlyVisitedDevtronApps?.length
+                        ? [
+                              {
+                                  label: 'Recently Visited',
+                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
+                                      label: app.appName,
+                                      value: app.appId,
+                                      isRecentlyVisited: true,
+                                  })) as RecentlyVisitedOptions[],
+                              },
+                              getMinCharSearchPlaceholderGroup(resourceKind),
+                          ]
+                        : [],
+                )
+            } else {
+                resolve([
+                    {
+                        label: `All ${resourceKind}`,
+                        options: selectOptions as RecentlyVisitedOptions[],
+                    },
+                ] as RecentlyVisitedGroupedOptionsType[])
+            }
+        }, 300)
+    })
