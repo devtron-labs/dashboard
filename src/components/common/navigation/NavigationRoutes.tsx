@@ -592,10 +592,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 initialDialogType={licenseInfoDialogType}
             />
         ) : (
-            <AboutDevtronDialog
-                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
-                isFELibAvailable={!!LicenseInfoDialog}
-            />
+            <AboutDevtronDialog handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog} />
         )
     }
 
