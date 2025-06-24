@@ -1442,7 +1442,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     // Helper to get selected CD nodes
-    const getSelectedCDNodesWithArtifacts = (selectedWorkflows: WorkflowType[]): { node: CommonNodeAttr; wf: WorkflowType }[] =>
+    const getSelectedCDNodesWithArtifacts = (
+        selectedWorkflows: WorkflowType[],
+    ): { node: CommonNodeAttr; wf: WorkflowType }[] =>
         selectedWorkflows
             .filter((wf) => wf.isSelected)
             .map((wf) => {
@@ -1452,7 +1454,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 if (!_cdNode) return null
 
                 const _selectedNode: CommonNodeAttr | undefined = getSelectedCDNode(bulkTriggerType, _cdNode)
-            
+
                 const selectedArtifacts = _selectedNode?.[materialType]?.filter((artifact) => artifact.isSelected) ?? []
                 if (selectedArtifacts.length > 0) {
                     return { node: _selectedNode, wf }
@@ -1499,7 +1501,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const strategy = pipelineIdVsStrategyMap[pipelineId]
 
             // skip app if bulkDeploymentStrategy is not default and strategy is not configured for app
-            if (ciArtifact && (bulkDeploymentStrategy === 'DEFAULT' || !!strategy)) {   
+            if (ciArtifact && (bulkDeploymentStrategy === 'DEFAULT' || !!strategy)) {
                 _CDTriggerPromiseFunctionList.push(() =>
                     triggerCDNode({
                         pipelineId,
@@ -2094,7 +2096,9 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
         const { uniqueReleaseTags } = bulkCDDetailTypeResponse
 
-        const feasiblePipelineIds = new Set(getSelectedCDNodesWithArtifacts(filteredWorkflows).map(({ node }) => +node.id))
+        const feasiblePipelineIds = new Set(
+            getSelectedCDNodesWithArtifacts(filteredWorkflows).map(({ node }) => +node.id),
+        )
 
         // Have to look for its each prop carefully
         // No need to send uniqueReleaseTags will get those in BulkCDTrigger itself
@@ -2117,7 +2121,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setRuntimeParamsErrorState={setRuntimeParamsErrorState}
                 bulkDeploymentStrategy={bulkDeploymentStrategy}
                 setBulkDeploymentStrategy={setBulkDeploymentStrategy}
-                />
+            />
         )
     }
 

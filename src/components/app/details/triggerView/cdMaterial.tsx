@@ -23,6 +23,7 @@ import {
     abortPreviousRequests,
     ACTION_STATE,
     AnimatedDeployButton,
+    API_STATUS_CODES,
     ApprovalRuntimeStateType,
     ArtifactInfo,
     ArtifactInfoProps,
@@ -135,6 +136,7 @@ import {
     RuntimeParamsErrorState,
     TriggerViewContextType,
 } from './types'
+import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -303,7 +305,7 @@ const CDMaterial = ({
         !!pipelineId && !isTriggerBlockedDueToPlugin,
     )
 
-    const [pipelineStrategiesLoading, pipelineStrategies] = useAsync(
+    const [pipelineStrategiesLoading, pipelineStrategies, pipelineStrategiesError, reloadStrategies] = useAsync(
         () => getDeploymentStrategies([pipelineId]),
         [pipelineId],
         !!getDeploymentStrategies && !!pipelineId,
@@ -336,7 +338,7 @@ const CDMaterial = ({
         materialsResult?.deploymentApprovalInfo?.approvalConfigData,
     )
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
+    const showConfigDiffView = searchParams.mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG && searchParams.deploy
     const isExceptionUser = materialsResult?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
 
     const pipelineStrategyOptions = useMemo(
@@ -823,7 +825,7 @@ const CDMaterial = ({
         return DeploymentWithConfigType.LAST_SAVED_CONFIG
     }
 
-    const onClickSetInitialParams = (modeParamValue: 'list' | 'review-config') => {
+    const onClickSetInitialParams = (modeParamValue: URL_PARAM_MODE_TYPE) => {
         const newParams = new URLSearchParams({
             ...searchParams,
             sortBy: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
@@ -832,14 +834,14 @@ const CDMaterial = ({
             deploy: getConfigToDeployValue(),
         })
 
-        if (modeParamValue === 'list') {
+        if (modeParamValue === URL_PARAM_MODE_TYPE.LIST) {
             newParams.delete('sortOrder')
             newParams.delete('sortBy')
         }
 
         history.push({
             pathname:
-                modeParamValue === 'review-config'
+                modeParamValue === URL_PARAM_MODE_TYPE.REVIEW_CONFIG
                     ? // Replace consecutive trailing single slashes
                       `${pathname.replace(/\/+$/g, '')}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
                     : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
@@ -1792,7 +1794,7 @@ const CDMaterial = ({
                         isLoading={pipelineDeploymentConfigLoading}
                         radioSelectConfig={radioSelectConfig}
                         hasDiff={diffFound}
-                        onClick={() => onClickSetInitialParams('review-config')}
+                        onClick={() => onClickSetInitialParams(URL_PARAM_MODE_TYPE.REVIEW_CONFIG)}
                         noLastDeploymentConfig={noLastDeploymentConfig}
                         canReviewConfig={canReviewConfig()}
                         renderConfigNotAvailableTooltip={renderTippyContent}
@@ -1802,15 +1804,21 @@ const CDMaterial = ({
                     <div />
                 )}
                 <div className="flex dc__gap-8">
-                    {SelectDeploymentStrategy && isCDNode && (
-                        <SelectDeploymentStrategy
-                            pipelineIds={[pipelineId]}
-                            deploymentStrategy={deploymentStrategy}
-                            setDeploymentStrategy={setDeploymentStrategy}
-                            possibleStrategyOptions={pipelineStrategyOptions}
-                            pipelineStrategiesLoading={pipelineStrategiesLoading}
-                        />
-                    )}
+                    {/* == as we are expecting number but receiving string, 404 means custom charts */}
+                    {SelectDeploymentStrategy &&
+                        isCDNode &&
+                        pipelineStrategies?.[0]?.error?.code != API_STATUS_CODES.NOT_FOUND && (
+                            <SelectDeploymentStrategy
+                                pipelineIds={[pipelineId]}
+                                deploymentStrategy={deploymentStrategy}
+                                setDeploymentStrategy={setDeploymentStrategy}
+                                isBulkStrategyChange={false}
+                                possibleStrategyOptions={pipelineStrategyOptions}
+                                pipelineStrategiesLoading={pipelineStrategiesLoading}
+                                pipelineStrategiesError={pipelineStrategiesError ?? pipelineStrategies?.[0]?.error}
+                                reloadPipelineStrategies={reloadStrategies}
+                            />
+                        )}
                     <ConditionalWrap
                         condition={!pipelineDeploymentConfigLoading && isDeployButtonDisabled()}
                         wrap={(children) => (
@@ -1882,7 +1890,7 @@ const CDMaterial = ({
                         <button
                             type="button"
                             className="dc__transparent icon-dim-24 flex"
-                            onClick={() => onClickSetInitialParams('list')}
+                            onClick={() => onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)}
                         >
                             <BackIcon />
                         </button>
