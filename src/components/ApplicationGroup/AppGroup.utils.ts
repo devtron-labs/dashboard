@@ -193,7 +193,7 @@ export const envListOptions = (
                         const appList = response.result
                             ? ([
                                   {
-                                      label: `All Environments`,
+                                      label: 'All Environments',
                                       options: response.result.envList.map((res) => ({
                                           value: res.id,
                                           label: res.environment_name,

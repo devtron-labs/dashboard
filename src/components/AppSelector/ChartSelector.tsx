@@ -73,7 +73,7 @@ export default function ChartSelector({
 
     return (
         <ContextSwitcher
-            inputId="chart-select"
+            inputId={`chart-switcher-${_primaryKey}`}
             options={getChartsOptions()}
             inputValue={inputValue}
             onInputChange={onInputChange}

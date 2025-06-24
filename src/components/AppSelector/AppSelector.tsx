@@ -83,7 +83,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
     return (
         <ContextSwitcher
-            inputId={`${isJobView ? 'job' : 'app'}-name`}
+            inputId={`${isJobView ? `job-switcher-${appId}` : `app-switcher-${appId}`}`}
             options={selectOptions}
             inputValue={inputValue}
             onInputChange={onInputChange}

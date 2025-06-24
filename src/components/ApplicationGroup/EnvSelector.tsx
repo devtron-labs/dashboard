@@ -73,7 +73,7 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
             onChange={handleChange}
             value={defaultOptions}
             options={selectOptions}
-            inputId={`app-group-${envId}`}
+            inputId={`app-group-switcher-${envId}`}
             placeholder={envName}
             inputValue={inputValue}
             onInputChange={onInputChange}

@@ -74,7 +74,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     return (
         <div className="flexbox dc__align-items-center dc__gap-12">
             <ContextSwitcher
-                inputId="cluster-select-header"
+                inputId={`cluster-switcher-${clusterId}`}
                 isLoading={isClusterListLoading}
                 onChange={onChange}
                 value={defaultOption}
