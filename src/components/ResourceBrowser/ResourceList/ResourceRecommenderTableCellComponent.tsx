@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState } from 'react'
+import { MouseEvent, useEffect, useState } from 'react'
 import { generatePath, useHistory, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 
@@ -25,7 +25,7 @@ import {
     RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
 } from '../Constants'
-import { ClusterDetailBaseParams } from '../Types'
+import { ClusterDetailBaseParams, ResourceFilterOptionsProps } from '../Types'
 
 const ApplyResourceRecommendationModal = importComponentFromFELibrary(
     'ApplyResourceRecommendationModal',
@@ -34,9 +34,10 @@ const ApplyResourceRecommendationModal = importComponentFromFELibrary(
 )
 const ResourceRecommendationChip = importComponentFromFELibrary('ResourceRecommendationChip', null, 'function')
 
-interface ResourceRecommenderTableCellComponentProps extends TableCellComponentProps<FiltersTypeEnum.URL> {
+interface ResourceRecommenderTableCellComponentProps
+    extends TableCellComponentProps<FiltersTypeEnum.URL>,
+        Pick<ResourceFilterOptionsProps, 'resourceRecommenderConfig'> {
     handleReloadDataAfterBulkOperation: () => void
-    showAbsoluteValuesInResourceRecommender: boolean
 }
 
 const ResourceRecommenderTableCellComponent = ({
@@ -45,11 +46,10 @@ const ResourceRecommenderTableCellComponent = ({
     filterData: { searchKey: searchText },
     signals,
     handleReloadDataAfterBulkOperation,
-    showAbsoluteValuesInResourceRecommender,
+    resourceRecommenderConfig: { showAbsoluteValuesInResourceRecommender },
 }: ResourceRecommenderTableCellComponentProps) => {
     const { push } = useHistory()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
-    const nameButtonRef = useRef<HTMLButtonElement>(null)
     const [applyResourceRecommendationConfig, setApplyResourceRecommendationConfig] = useState<any>(null)
 
     const handleResourceClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -76,7 +76,7 @@ const ResourceRecommenderTableCellComponent = ({
     useEffect(() => {
         const handleEnterPressed = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
-                nameButtonRef.current?.click()
+                setApplyResourceRecommendationConfig(activeRowData.data)
             }
         }
 

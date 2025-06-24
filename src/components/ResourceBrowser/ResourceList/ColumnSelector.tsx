@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { MultiValue, SelectInstance } from 'react-select'
 
 import {
@@ -45,10 +45,12 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
         }))
     }, [])
 
+    const getSelectedColumns = () =>
+        columnOptions.filter((option) => visibleColumns.find(({ label }) => label === option.label))
+
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<SelectPickerOptionType<TableColumnType>>>(() =>
-        columnOptions.filter((option) => visibleColumns.find(({ label }) => label === option.label)),
-    )
+    const [selectedColumns, setSelectedColumns] =
+        useState<MultiValue<SelectPickerOptionType<TableColumnType>>>(getSelectedColumns)
 
     const selectRef = useRef<SelectInstance<SelectPickerOptionType<TableColumnType>, true>>(null)
 
@@ -57,6 +59,10 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
 
         selectRef.current?.focus()
     }
+
+    useEffect(() => {
+        setSelectedColumns(getSelectedColumns())
+    }, [allColumns])
 
     const handleMenuClose = () => {
         setIsMenuOpen(false)

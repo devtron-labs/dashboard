@@ -98,6 +98,7 @@ const K8SResourceListViewWrapper = ({
                 filteredRows={filteredRows}
             />
         )}
+
         {children}
     </div>
 )
@@ -217,7 +218,7 @@ export const K8SResourceList = ({
         if (isEventListing) {
             return (
                 (row.data.type as string)?.toLowerCase() ===
-                    ((filterData as unknown as K8sResourceListFilterType).eventType ?? 'warning') && isSearchMatch
+                    ((filterData as unknown as K8sResourceListFilterType).eventType || 'warning') && isSearchMatch
             )
         }
 
@@ -234,7 +235,7 @@ export const K8SResourceList = ({
 
     return (
         <Table
-            key={JSON.stringify(selectedResource)}
+            // key={JSON.stringify(selectedResource)}
             loading={resourceListLoader || !resourceList}
             columns={columns}
             rows={rows}

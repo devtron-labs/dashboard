@@ -93,7 +93,7 @@ export interface ClusterOptionType extends OptionType {
 
 export interface ResourceFilterOptionsProps
     extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
-        Pick<K8sResourceListFilterType, 'eventType'> {
+        Partial<Pick<K8sResourceListFilterType, 'eventType'>> {
     selectedResource: ApiResourceGroupType
     selectedCluster?: ClusterOptionType
     selectedNamespace?: string

@@ -12,10 +12,35 @@ export const ResourceRecommenderTableViewWrapper = ({
     children,
     resourceListError,
     reloadResourceListData,
-    ...props
+    searchKey,
+    handleSearch,
+    filteredRows,
+    isResourceListLoading,
+    selectedResource,
+    gvkFilterConfig,
+    updateSearchParams,
+    selectedNamespace,
+    selectedCluster,
+    resourceRecommenderConfig,
+    selectedKindGVKFilter,
+    selectedAPIVersionGVKFilter,
 }: ResourceRecommenderTableViewWrapperProps) => (
     <div className="resource-list-container flexbox-col flex-grow-1 border__primary--left dc__overflow-hidden">
-        <ResourceFilterOptions searchPlaceholder="Search" {...props} />
+        <ResourceFilterOptions
+            searchText={searchKey}
+            setSearchText={handleSearch}
+            searchPlaceholder="Search"
+            filteredRows={filteredRows}
+            isResourceListLoading={isResourceListLoading}
+            selectedResource={selectedResource}
+            gvkFilterConfig={gvkFilterConfig}
+            updateSearchParams={updateSearchParams}
+            selectedNamespace={selectedNamespace}
+            selectedCluster={selectedCluster}
+            resourceRecommenderConfig={resourceRecommenderConfig}
+            selectedKindGVKFilter={selectedKindGVKFilter}
+            selectedAPIVersionGVKFilter={selectedAPIVersionGVKFilter}
+        />
 
         {resourceListError ? (
             <ErrorScreenManager

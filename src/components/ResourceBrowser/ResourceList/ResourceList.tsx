@@ -248,9 +248,11 @@ const ResourceList = () => {
         () =>
             tabs.reduce(
                 (acc, tab) => {
-                    acc[tab.id] = {
-                        reload: refreshData,
-                        showTimeSinceLastSync: tab.id === ResourceBrowserTabsId.k8s_Resources,
+                    if (tab.id === ResourceBrowserTabsId.k8s_Resources) {
+                        acc[tab.id] = {
+                            reload: refreshData,
+                            showTimeSinceLastSync: true,
+                        }
                     }
 
                     return acc
@@ -375,7 +377,11 @@ const ResourceList = () => {
                 />
                 <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
                     <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                        <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
+                        <ClusterOverview
+                            selectedCluster={selectedCluster}
+                            addTab={addTab}
+                            key={getTabById(ResourceBrowserTabsId.cluster_overview).componentKey}
+                        />
                     </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD} exact>
@@ -390,6 +396,17 @@ const ResourceList = () => {
                             clusterName={selectedCluster.label}
                             getTabById={getTabById}
                             updateTabUrl={updateTabUrl}
+                        />
+                    </DynamicTabComponentWrapper>
+                </Route>
+                <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
+                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
+                        <ResourceRecommender
+                            // key={getTabById(RESOURCE_RECOMMENDER_TAB_ID).componentKey}
+                            getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
+                            ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
+                            ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
+                            dynamicSort={dynamicSort}
                         />
                     </DynamicTabComponentWrapper>
                 </Route>
@@ -447,16 +464,6 @@ const ResourceList = () => {
                             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                             updateTabLastSyncMoment={updateTabLastSyncMoment}
                             key={getTabById(ResourceBrowserTabsId.k8s_Resources).componentKey}
-                        />
-                    </DynamicTabComponentWrapper>
-                </Route>
-                <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
-                    <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
-                        <ResourceRecommender
-                            getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
-                            ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
-                            ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
-                            dynamicSort={dynamicSort}
                         />
                     </DynamicTabComponentWrapper>
                 </Route>
