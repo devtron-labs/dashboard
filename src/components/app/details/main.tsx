@@ -73,7 +73,7 @@ const AIAgentContextSetterWrapper = ({ children, appName }: PropsWithChildren<{ 
             contextData['Workflow_id'] = contextData.buildId
             delete contextData.buildId
         }
-        setAIAgentContext({ path, context: { appName, ...contextData }})
+        setAIAgentContext({ path, context: { appName, ...contextData } })
     }, [path, url])
 
     return <>{children}</>
@@ -101,7 +101,10 @@ export default function AppDetailsPage() {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
-    const { fetchRecentlyVisitedParsedEntities } = useUserPreferences({recentlyVisitedFetchConfig: { id: appId, name: '', resourceKind: ResourceKindType.devtronApplication }})
+    // Passing name value as empty string to check if app exists
+    const { fetchRecentlyVisitedParsedEntities } = useUserPreferences({
+        recentlyVisitedFetchConfig: { id: appId, name: '', resourceKind: ResourceKindType.devtronApplication },
+    })
 
     const getAppMetaInfoRes = async (shouldResetAppName: boolean = false): Promise<AppMetaInfo> => {
         try {

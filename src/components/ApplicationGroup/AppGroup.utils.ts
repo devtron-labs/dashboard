@@ -177,9 +177,9 @@ export const envListOptions = (
                         ? [
                               {
                                   label: 'Recently Visited',
-                                  options: recentlyVisitedDevtronApps.map((app: BaseRecentlyVisitedEntitiesTypes) => ({
-                                      label: app.name,
-                                      value: app.id,
+                                  options: recentlyVisitedDevtronApps.map((env: BaseRecentlyVisitedEntitiesTypes) => ({
+                                      label: env.name,
+                                      value: env.id,
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },

@@ -23,10 +23,7 @@ import {
     ContextSwitcher,
     Icon,
     PopupMenu,
-    ResourceKindType,
     SelectPickerProps,
-    useAsync,
-    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
@@ -34,8 +31,8 @@ import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvir
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
-import { clusterListOptions } from '../ResourceBrowser.service'
 import { ClusterSelectorType } from '../Types'
+import { getClusterSelectOptions } from './utils'
 
 const ClusterSelector: React.FC<ClusterSelectorType> = ({
     onChange,
@@ -54,19 +51,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
         isInstallationStatusView ? String(item.installationId) === clusterId : String(item.value) === clusterId,
     )
 
-    const clusterName = defaultOption?.label
-
     const [inputValue, setInputValue] = useState('')
-    const isAppDataAvailable = !!clusterId && !!clusterName
-
-    const { recentlyVisitedResources } = useUserPreferences({
-        recentlyVisitedFetchConfig: {
-            id: +clusterId,
-            name: clusterName,
-            resourceKind: ResourceKindType.cluster,
-            isDataAvailable: isAppDataAvailable,
-        },
-    })
 
     const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
 
@@ -86,26 +71,14 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
         replace(URLS.RESOURCE_BROWSER)
     }
 
-    const [loading, selectOption] = useAsync(
-        () =>
-            clusterListOptions({
-                clusterList: filteredClusterList,
-                inputValue,
-                recentlyVisitedResources,
-                isInstallationStatusView,
-            }),
-        [filteredClusterList, inputValue, recentlyVisitedResources],
-        isAppDataAvailable && !!recentlyVisitedResources.length,
-    )
-
     return (
         <div className="flexbox dc__align-items-center dc__gap-12">
             <ContextSwitcher
                 inputId="cluster-select-header"
-                isLoading={loading || isClusterListLoading}
+                isLoading={isClusterListLoading}
                 onChange={onChange}
                 value={defaultOption}
-                options={selectOption}
+                options={getClusterSelectOptions(filteredClusterList, isInstallationStatusView)}
                 inputValue={inputValue}
                 onInputChange={onInputChange}
             />

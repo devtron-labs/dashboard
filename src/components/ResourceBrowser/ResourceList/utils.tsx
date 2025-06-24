@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { ClusterDetail, DocLink, DocLinkProps, logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterDetail,
+    DocLink,
+    DocLinkProps,
+    logExceptionToSentry,
+    noop,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { sortObjectArrayAlphabetically } from '@Components/common'
 
@@ -156,3 +164,13 @@ export const getOptionsValue = (option: ClusterOptionType, isInstallationStatusV
     // get its value as installationId. Prefixing it with installation- to avoid collision with normal clusters have same value of
     // clusterId as this installationId
     isInstallationStatusView ? `installation-${String(option.installationId)}` : option.value
+
+export const getClusterSelectOptions = (clusterList, isInstallationStatusView): RecentlyVisitedGroupedOptionsType[] => [
+    {
+        label: 'All Clusters',
+        options: clusterList?.map((option) => ({
+            ...option,
+            value: +getOptionsValue(option, isInstallationStatusView),
+        })) as RecentlyVisitedOptions[],
+    },
+]

@@ -69,6 +69,8 @@ export default function ChartSelector({
         },
     ]
 
+    const selectedChartLabel = listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : ''
+
     return (
         <ContextSwitcher
             inputId="chart-select"
@@ -79,9 +81,9 @@ export default function ChartSelector({
             onChange={selectApp}
             value={{
                 value: _primaryKey,
-                label: listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : '',
+                label: selectedChartLabel,
             }}
-            placeholder={_primaryKey}
+            placeholder={selectedChartLabel}
             {...(formatOptionLabel ? { formatOptionLabel } : {})}
             {...(filterOption ? { filterOption } : {})}
         />

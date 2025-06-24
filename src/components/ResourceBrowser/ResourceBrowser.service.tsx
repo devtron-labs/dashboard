@@ -19,7 +19,6 @@ import { RefObject } from 'react'
 import {
     APIOptions,
     ApiResourceType,
-    BaseRecentlyVisitedEntitiesTypes,
     ClusterDetail,
     get,
     getIsRequestAborted,
@@ -28,23 +27,17 @@ import {
     getNamespaceListMin,
     getUrlWithSearchParams,
     Nodes,
-    RecentlyVisitedGroupedOptionsType,
-    RecentlyVisitedOptions,
     ResponseType,
     showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {} from '@Components/AppSelector/AppSelector.types'
-import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
 import {
     getClusterListMinWithInstalledClusters,
     getClusterListWithInstalledClusters,
 } from '@Components/ClusterNodes/clusterNodes.service'
 
 import { Routes } from '../../config'
-import { ClusterListOptionsTypes } from './ResourceList/types'
-import { getOptionsValue } from './ResourceList/utils'
 import { SIDEBAR_KEYS } from './Constants'
 import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
@@ -154,41 +147,3 @@ export const getClusterListing = async (
         throw err
     }
 }
-
-export const clusterListOptions = ({
-    clusterList,
-    isInstallationStatusView = false,
-    inputValue,
-    recentlyVisitedResources,
-}: ClusterListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> =>
-    new Promise((resolve) => {
-        setTimeout(() => {
-            if (inputValue.length < 3) {
-                resolve(
-                    recentlyVisitedResources?.length
-                        ? [
-                              {
-                                  label: 'Recently Visited',
-                                  options: recentlyVisitedResources.map((app: BaseRecentlyVisitedEntitiesTypes) => ({
-                                      label: app.name,
-                                      value: app.id,
-                                      isRecentlyVisited: true,
-                                  })) as RecentlyVisitedOptions[],
-                              },
-                              getMinCharSearchPlaceholderGroup('Clusters'),
-                          ]
-                        : [],
-                )
-            } else {
-                resolve([
-                    {
-                        label: 'All Clusters',
-                        options: clusterList?.map((option) => ({
-                            ...option,
-                            value: +getOptionsValue(option, isInstallationStatusView),
-                        })) as RecentlyVisitedOptions[],
-                    },
-                ] as RecentlyVisitedGroupedOptionsType[])
-            }
-        }, 300)
-    })

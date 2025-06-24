@@ -33,7 +33,7 @@ import { envListOptions } from './AppGroup.utils'
 export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const defaultOptions = { value: envId, label: envName }
-    const isAppDataAvailable = !!envId && !!envName
+    const isEnvDataAvailable = !!envId && !!envName
 
     const [inputValue, setInputValue] = useState('')
     const { recentlyVisitedResources } = useUserPreferences({
@@ -41,14 +41,14 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
             id: envId,
             name: envName,
             resourceKind: 'app-group',
-            isDataAvailable: isAppDataAvailable,
+            isDataAvailable: isEnvDataAvailable,
         },
     })
 
     const [loading, selectOptions] = useAsync(
         () => envListOptions(inputValue, abortControllerRef.current.signal, recentlyVisitedResources),
         [inputValue, recentlyVisitedResources],
-        isAppDataAvailable && !!recentlyVisitedResources.length,
+        isEnvDataAvailable && !!recentlyVisitedResources.length,
     )
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
