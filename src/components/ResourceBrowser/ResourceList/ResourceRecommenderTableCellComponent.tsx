@@ -37,17 +37,15 @@ const ResourceRecommendationChip = importComponentFromFELibrary('ResourceRecomme
 interface ResourceRecommenderTableCellComponentProps extends TableCellComponentProps<FiltersTypeEnum.URL> {
     handleReloadDataAfterBulkOperation: () => void
     showAbsoluteValuesInResourceRecommender: boolean
-    filterData: TableCellComponentProps<FiltersTypeEnum.URL>['filterData'] & {
-        showAbsoluteValuesInResourceRecommender: boolean
-    }
 }
 
 const ResourceRecommenderTableCellComponent = ({
     field: columnName,
     row: { id, data: resourceData },
-    filterData: { searchKey: searchText, showAbsoluteValuesInResourceRecommender },
+    filterData: { searchKey: searchText },
     signals,
     handleReloadDataAfterBulkOperation,
+    showAbsoluteValuesInResourceRecommender,
 }: ResourceRecommenderTableCellComponentProps) => {
     const { push } = useHistory()
     const { clusterId } = useParams<ClusterDetailBaseParams>()

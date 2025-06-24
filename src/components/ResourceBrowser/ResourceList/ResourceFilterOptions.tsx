@@ -27,6 +27,7 @@ import {
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKOptionValueType,
     Nodes,
+    noop,
     OptionType,
     ResourceRecommenderHeaderType,
     SearchBar,
@@ -70,7 +71,7 @@ const ResourceFilterOptions = ({
     filteredRows,
     gvkFilterConfig,
     isResourceListLoading,
-    showAbsoluteValuesInResourceRecommender,
+    resourceRecommenderConfig,
     selectedAPIVersionGVKFilter,
     selectedKindGVKFilter,
 }: ResourceFilterOptionsProps) => {
@@ -87,6 +88,9 @@ const ResourceFilterOptions = ({
 
     const showShortcutKey = !isInputFocused && !searchText
     const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
+
+    const { showAbsoluteValuesInResourceRecommender = false, setShowAbsoluteValuesInResourceRecommender = noop } =
+        resourceRecommenderConfig ?? {}
 
     const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 
@@ -165,11 +169,7 @@ const ResourceFilterOptions = ({
     }
 
     const handleToggleShowAbsoluteValues = () => {
-        const newValue = !showAbsoluteValuesInResourceRecommender
-        updateSearchParams(
-            { showAbsoluteValuesInResourceRecommender: newValue ? true : null },
-            { redirectionMethod: 'replace' },
-        )
+        setShowAbsoluteValuesInResourceRecommender((prevValue) => !prevValue)
     }
 
     const getIsGVKOptionSelected = (option: SelectPickerOptionType<GVKOptionValueType>): boolean => {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { RefObject } from 'react'
+import React, { Dispatch, RefObject, SetStateAction } from 'react'
 import { GroupBase } from 'react-select'
 
 import {
@@ -114,9 +114,12 @@ export interface ResourceFilterOptionsProps
         reloadGVKOptions: () => void
         gvkOptionsError: ServerErrors
     }
-    showAbsoluteValuesInResourceRecommender?: boolean
     selectedAPIVersionGVKFilter?: string
     selectedKindGVKFilter?: string
+    resourceRecommenderConfig?: {
+        showAbsoluteValuesInResourceRecommender: boolean
+        setShowAbsoluteValuesInResourceRecommender: Dispatch<SetStateAction<boolean>>
+    }
 }
 
 export interface K8SResourceListType

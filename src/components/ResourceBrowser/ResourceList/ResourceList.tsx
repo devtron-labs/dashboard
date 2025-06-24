@@ -288,13 +288,11 @@ const ResourceList = () => {
         reloadGVKOptions,
         gvkOptionsError,
     }: GetResourceRecommenderResourceListPropsType) => ({
-        addTab,
         selectedCluster,
         selectedResource: {
             gvk: SIDEBAR_KEYS.resourceRecommenderGVK,
             namespaced: true,
         },
-        updateK8sResourceTab: getUpdateTabUrlForId(RESOURCE_RECOMMENDER_TAB_ID),
         lowercaseKindToResourceGroupMap,
         resourceRecommenderConfig: {
             setShowAbsoluteValuesInResourceRecommender,
