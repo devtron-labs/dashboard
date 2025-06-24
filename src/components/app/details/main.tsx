@@ -119,7 +119,7 @@ export default function AppDetailsPage() {
         } catch (err) {
             if (err.code === API_STATUS_CODES.NOT_FOUND || err.code === API_STATUS_CODES.PERMISSION_DENIED) {
                 try {
-                    await fetchRecentlyVisitedParsedApps({ appId, appName: '' })
+                    await fetchRecentlyVisitedParsedApps({ appId, appName: '', resourceKind: ResourceKindType.devtronApplication })
                 } catch {
                     // Do nothing
                 }

@@ -18,6 +18,7 @@ import { Dispatch, ReactNode, SetStateAction } from 'react'
 
 import {
     ALL_NAMESPACE_OPTION,
+    BaseAppMetaData,
     K8sResourceDetailType,
     RBBulkOperationType,
     ServerErrors,
@@ -28,6 +29,7 @@ import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import {
+    ClusterOptionType,
     K8SResourceListType,
     ResourceBrowserActionMenuType,
     ResourceFilterOptionsProps,
@@ -86,4 +88,11 @@ export type BulkOperationsModalState = RBBulkOperationType | 'closed'
 export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
     renderPageHeaderActionButtons?: () => JSX.Element
+}
+
+export interface ClusterListOptionsTypes {
+    clusterList: ClusterOptionType[]
+    inputValue: string
+    recentlyVisitedDevtronApps: BaseAppMetaData[]
+    isInstallationStatusView?: boolean
 }

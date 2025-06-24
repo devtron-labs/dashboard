@@ -15,6 +15,8 @@
  */
 
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { getAvailableCharts } from '@Services/service'
+import { CHART_LIST_SELECT_QUERY } from './constants'
 
 export const PaginationParams = {
     pageOffset: 0,
@@ -46,3 +48,5 @@ export const renderDeprecatedWarning = () => {
         </div>
     )
 }
+
+export const getChartSelectAPI = () => getAvailableCharts(CHART_LIST_SELECT_QUERY)

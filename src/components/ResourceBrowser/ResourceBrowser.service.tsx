@@ -19,6 +19,7 @@ import { RefObject } from 'react'
 import {
     APIOptions,
     ApiResourceType,
+    BaseAppMetaData,
     ClusterDetail,
     get,
     getIsRequestAborted,
@@ -32,12 +33,16 @@ import {
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from '@Components/AppSelector/AppSelector.types'
+import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
 import {
     getClusterListMinWithInstalledClusters,
     getClusterListWithInstalledClusters,
 } from '@Components/ClusterNodes/clusterNodes.service'
 
 import { Routes } from '../../config'
+import { ClusterListOptionsTypes } from './ResourceList/types'
+import { getOptionsValue } from './ResourceList/utils'
 import { SIDEBAR_KEYS } from './Constants'
 import { GetResourceDataType, NodeRowDetail, URLParams } from './Types'
 import { parseNodeList } from './Utils'
@@ -147,3 +152,41 @@ export const getClusterListing = async (
         throw err
     }
 }
+
+export const clusterListOptions = ({
+    clusterList,
+    isInstallationStatusView = false,
+    inputValue,
+    recentlyVisitedDevtronApps,
+}: ClusterListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> =>
+    new Promise((resolve) => {
+        setTimeout(() => {
+            if (inputValue.length < 3) {
+                resolve(
+                    recentlyVisitedDevtronApps?.length
+                        ? [
+                              {
+                                  label: 'Recently Visited',
+                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
+                                      label: app.appName,
+                                      value: app.appId,
+                                      isRecentlyVisited: true,
+                                  })) as RecentlyVisitedOptions[],
+                              },
+                              getMinCharSearchPlaceholderGroup('Clusters'),
+                          ]
+                        : [],
+                )
+            } else {
+                resolve([
+                    {
+                        label: 'All Clusters',
+                        options: clusterList?.map((option) => ({
+                            ...option,
+                            value: +getOptionsValue(option, isInstallationStatusView),
+                        })) as RecentlyVisitedOptions[],
+                    },
+                ] as RecentlyVisitedGroupedOptionsType[])
+            }
+        }, 300)
+    })

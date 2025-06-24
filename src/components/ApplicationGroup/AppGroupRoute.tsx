@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 import { URLS } from '../../config'
 import EnvironmentsList from './List/EnvironmentsList'

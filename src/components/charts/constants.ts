@@ -47,3 +47,5 @@ export const QueryParams = {
     SearchKey: 'searchKey',
     ChartCategoryId: 'chartCategoryId',
 }
+
+export const CHART_LIST_SELECT_QUERY = '?includeDeprecated=1'

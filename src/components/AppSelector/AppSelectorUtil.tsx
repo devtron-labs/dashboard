@@ -18,7 +18,7 @@ import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@
 
 import { getAppListMin } from '../../services/service'
 import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
-import { AllApplicationsMetaData } from './constants'
+import { getMinCharSearchPlaceholderGroup } from './constants'
 
 let timeoutId
 
@@ -37,7 +37,7 @@ export const appListOptions = ({
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
                 resolve(
-                    recentlyVisitedDevtronApps?.length && !isJobView
+                    recentlyVisitedDevtronApps?.length
                         ? [
                               {
                                   label: 'Recently Visited',
@@ -47,12 +47,12 @@ export const appListOptions = ({
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },
-                              AllApplicationsMetaData,
+                              getMinCharSearchPlaceholderGroup(isJobView ? 'Jobs' : 'Apps'),
                           ]
                         : [],
                 )
             } else {
-                getAppListMin(null, options, inputValue, isJobView ?? false)
+                getAppListMin(null, options, inputValue, isJobView)
                     .then((response) => {
                         const appList = response.result
                             ? ([
@@ -80,3 +80,41 @@ export const appListOptions = ({
         }, 300)
     })
 }
+
+export const contextSwitcherOptions = ({
+    recentlyVisitedDevtronApps,
+    selectOptions,
+    inputValue,
+    resourceKind,
+}): Promise<RecentlyVisitedGroupedOptionsType[]> =>
+    new Promise((resolve) => {
+        if (timeoutId) {
+            clearTimeout(timeoutId)
+        }
+        timeoutId = setTimeout(() => {
+            if (inputValue.length < 3) {
+                resolve(
+                    recentlyVisitedDevtronApps?.length
+                        ? [
+                              {
+                                  label: 'Recently Visited',
+                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
+                                      label: app.appName,
+                                      value: app.appId,
+                                      isRecentlyVisited: true,
+                                  })) as RecentlyVisitedOptions[],
+                              },
+                              getMinCharSearchPlaceholderGroup(resourceKind),
+                          ]
+                        : [],
+                )
+            } else {
+                resolve([
+                    {
+                        label: `All ${resourceKind}`,
+                        options: selectOptions as RecentlyVisitedOptions[],
+                    },
+                ] as RecentlyVisitedGroupedOptionsType[])
+            }
+        }, 300)
+    })

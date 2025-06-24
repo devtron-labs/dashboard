@@ -19,19 +19,16 @@ import ReactGA from 'react-ga4'
 import { ActionMeta } from 'react-select'
 
 import {
-    AppSelectorNoOptionsMessage as appSelectorNoOptionsMessage,
     BaseAppMetaData,
-    ComponentSizeType,
-    getNoMatchingResultText,
     ResourceKindType,
-    SelectPicker,
     SelectPickerOptionType,
     SelectPickerProps,
-    SelectPickerVariantType,
     useAsync,
     UserPreferenceResourceActions,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
 
 import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
 import { appListOptions } from './AppSelectorUtil'
@@ -43,13 +40,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
     const [inputValue, setInputValue] = useState('')
 
+    const resourceKind = isJobView ? ResourceKindType.job : ResourceKindType.devtronApplication
+
     const recentlyVisitedDevtronApps =
-        userPreferences?.resources?.[ResourceKindType.devtronApplication]?.[
-            UserPreferenceResourceActions.RECENTLY_VISITED
-        ] || ([] as BaseAppMetaData[])
+        userPreferences?.resources?.[resourceKind]?.[UserPreferenceResourceActions.RECENTLY_VISITED] ||
+        ([] as BaseAppMetaData[])
 
     const isAppDataAvailable = !!appId && !!appName
-    const shouldFetchAppOptions = isJobView ? true : !!recentlyVisitedDevtronApps.length
+    const shouldFetchAppOptions = !!recentlyVisitedDevtronApps.length
 
     const [loading, selectOptions] = useAsync(
         () =>
@@ -65,33 +63,14 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
     // fetching recently visited apps only in case of devtron apps
     useAsync(
-        () => fetchRecentlyVisitedParsedApps({ appId, appName }),
+        () => fetchRecentlyVisitedParsedApps({ appId, appName, resourceKind }),
         [appId, appName],
-        isAppDataAvailable && !isJobView,
+        isAppDataAvailable,
     )
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
     }
-
-    const customSelect: SelectPickerProps['filterOption'] = (option, searchText: string) => {
-        const label = option.data.label as string
-        return option.data.value === 0 || label.toLowerCase().includes(searchText.toLowerCase())
-    }
-
-    const getDisabledOptions = (option: RecentlyVisitedOptions): SelectPickerProps['isDisabled'] => option.isDisabled
-
-    const noOptionsMessage = () =>
-        isJobView
-            ? appSelectorNoOptionsMessage({
-                  inputValue,
-              })
-            : getNoMatchingResultText()
-
-    const _selectOption = selectOptions?.map((section) => ({
-        ...section,
-        options: section.label === 'Recently Visited' ? section.options.slice(1) : section.options,
-    }))
 
     const handleChange = (
         selectedOption: RecentlyVisitedOptions,
@@ -111,20 +90,15 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
     }
 
     return (
-        <SelectPicker
+        <ContextSwitcher
             inputId={`${isJobView ? 'job' : 'app'}-name`}
-            options={_selectOption || []}
+            options={selectOptions}
             inputValue={inputValue}
             onInputChange={onInputChange}
             isLoading={loading}
-            noOptionsMessage={noOptionsMessage}
             onChange={handleChange}
             value={{ value: appId, label: appName }}
-            variant={SelectPickerVariantType.BORDER_LESS}
             placeholder={appName}
-            isOptionDisabled={getDisabledOptions}
-            size={ComponentSizeType.xl}
-            filterOption={customSelect}
         />
     )
 }
