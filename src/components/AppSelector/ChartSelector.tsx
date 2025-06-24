@@ -17,11 +17,14 @@
 import { useState } from 'react'
 import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
 import { GroupBase } from 'react-select'
-import { useAsync, SelectPickerProps, SelectPicker, SelectPickerOptionType, ResourceKindType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    useAsync,
+    SelectPickerProps,
+    SelectPickerOptionType,
+    ContextSwitcher,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'
-import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
 import { ChartSelectorType } from './AppSelector.types'
-import { getMinCharSearchPlaceholderGroup } from './constants'
 
 export default function ChartSelector({
     primaryKey,
@@ -55,11 +58,7 @@ export default function ChartSelector({
         setInputValue(val)
     }
 
-    const getChartsOptions = (): GroupBase<SelectPickerOptionType<string | number>>[] => {
-        if(inputValue.length < 3) {
-            return [getMinCharSearchPlaceholderGroup('Charts')]
-        }
-        return [
+    const getChartsOptions = (): GroupBase<SelectPickerOptionType<string | number>>[] => [
         {
             label: 'All Charts',
             options:
@@ -68,7 +67,7 @@ export default function ChartSelector({
                     label: res[primaryValue],
                 })) || [],
         },
-    ]}
+    ]
 
     return (
         <ContextSwitcher

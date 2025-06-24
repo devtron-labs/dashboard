@@ -18,7 +18,7 @@ import { Dispatch, ReactNode, SetStateAction } from 'react'
 
 import {
     ALL_NAMESPACE_OPTION,
-    BaseAppMetaData,
+    BaseRecentlyVisitedEntitiesTypes,
     K8sResourceDetailType,
     RBBulkOperationType,
     ServerErrors,
@@ -93,6 +93,6 @@ export interface ResourcePageHeaderProps {
 export interface ClusterListOptionsTypes {
     clusterList: ClusterOptionType[]
     inputValue: string
-    recentlyVisitedDevtronApps: BaseAppMetaData[]
+    recentlyVisitedResources: BaseRecentlyVisitedEntitiesTypes[]
     isInstallationStatusView?: boolean
 }

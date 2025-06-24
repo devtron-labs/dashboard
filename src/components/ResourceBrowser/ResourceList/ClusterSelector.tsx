@@ -19,19 +19,17 @@ import { useHistory } from 'react-router-dom'
 
 import {
     Badge,
-    BaseAppMetaData,
     ComponentSizeType,
+    ContextSwitcher,
     Icon,
     PopupMenu,
     ResourceKindType,
     SelectPickerProps,
     useAsync,
-    UserPreferenceResourceActions,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
-import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
@@ -59,19 +57,16 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const clusterName = defaultOption?.label
 
     const [inputValue, setInputValue] = useState('')
-    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
     const isAppDataAvailable = !!clusterId && !!clusterName
 
-    useAsync(
-        () =>
-            fetchRecentlyVisitedParsedApps({
-                appId: +clusterId,
-                appName: clusterName,
-                resourceKind: ResourceKindType.cluster,
-            }),
-        [clusterId, clusterName],
-        isAppDataAvailable,
-    )
+    const { recentlyVisitedResources } = useUserPreferences({
+        recentlyVisitedFetchConfig: {
+            id: +clusterId,
+            name: clusterName,
+            resourceKind: ResourceKindType.cluster,
+            isDataAvailable: isAppDataAvailable,
+        },
+    })
 
     const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
 
@@ -91,20 +86,16 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
         replace(URLS.RESOURCE_BROWSER)
     }
 
-    const recentlyVisitedDevtronApps =
-        userPreferences?.resources?.[ResourceKindType.cluster]?.[UserPreferenceResourceActions.RECENTLY_VISITED] ||
-        ([] as BaseAppMetaData[])
-
     const [loading, selectOption] = useAsync(
         () =>
             clusterListOptions({
                 clusterList: filteredClusterList,
                 inputValue,
-                recentlyVisitedDevtronApps,
+                recentlyVisitedResources,
                 isInstallationStatusView,
             }),
-        [filteredClusterList, inputValue, recentlyVisitedDevtronApps],
-        isAppDataAvailable && !!recentlyVisitedDevtronApps.length,
+        [filteredClusterList, inputValue, recentlyVisitedResources],
+        isAppDataAvailable && !!recentlyVisitedResources.length,
     )
 
     return (

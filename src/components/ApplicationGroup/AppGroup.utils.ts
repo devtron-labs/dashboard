@@ -26,7 +26,9 @@ import {
     SourceTypeMap,
     DEPLOYMENT_STATUS,
     WorkflowStatusEnum,
-    BaseAppMetaData,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
+    BaseRecentlyVisitedEntitiesTypes
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
@@ -39,7 +41,6 @@ import {
     AppGroupListType,
 } from './AppGroup.types'
 import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
-import { RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from '@Components/AppSelector/AppSelector.types'
 
 let timeoutId
 
@@ -163,8 +164,8 @@ export const handleSourceNotConfigured = (
 export const envListOptions = (
     inputValue: string,
     signal: AbortSignal,
-    recentlyVisitedDevtronApps: BaseAppMetaData[],
-): Promise<any> =>
+    recentlyVisitedDevtronApps: BaseRecentlyVisitedEntitiesTypes[],
+): Promise<RecentlyVisitedGroupedOptionsType[]> =>
     new Promise((resolve) => {
         if (timeoutId) {
             clearTimeout(timeoutId)
@@ -176,9 +177,9 @@ export const envListOptions = (
                         ? [
                               {
                                   label: 'Recently Visited',
-                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
-                                      label: app.appName,
-                                      value: app.appId,
+                                  options: recentlyVisitedDevtronApps.map((app: BaseRecentlyVisitedEntitiesTypes) => ({
+                                      label: app.name,
+                                      value: app.id,
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },

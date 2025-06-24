@@ -1,4 +1,4 @@
-import { RecentlyVisitedGroupedOptionsType } from './AppSelector.types'
+import { RecentlyVisitedGroupedOptionsType } from '@devtron-labs/devtron-fe-common-lib/dist'
 
 export const getMinCharSearchPlaceholderGroup = (resourceKind): RecentlyVisitedGroupedOptionsType => ({
     label: `All ${resourceKind}`,

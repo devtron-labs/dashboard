@@ -19,7 +19,7 @@ import { RefObject } from 'react'
 import {
     APIOptions,
     ApiResourceType,
-    BaseAppMetaData,
+    BaseRecentlyVisitedEntitiesTypes,
     ClusterDetail,
     get,
     getIsRequestAborted,
@@ -28,12 +28,14 @@ import {
     getNamespaceListMin,
     getUrlWithSearchParams,
     Nodes,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
     ResponseType,
     showError,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from '@Components/AppSelector/AppSelector.types'
+import {} from '@Components/AppSelector/AppSelector.types'
 import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
 import {
     getClusterListMinWithInstalledClusters,
@@ -157,19 +159,19 @@ export const clusterListOptions = ({
     clusterList,
     isInstallationStatusView = false,
     inputValue,
-    recentlyVisitedDevtronApps,
+    recentlyVisitedResources,
 }: ClusterListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> =>
     new Promise((resolve) => {
         setTimeout(() => {
             if (inputValue.length < 3) {
                 resolve(
-                    recentlyVisitedDevtronApps?.length
+                    recentlyVisitedResources?.length
                         ? [
                               {
                                   label: 'Recently Visited',
-                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
-                                      label: app.appName,
-                                      value: app.appId,
+                                  options: recentlyVisitedResources.map((app: BaseRecentlyVisitedEntitiesTypes) => ({
+                                      label: app.name,
+                                      value: app.id,
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },

@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BaseAppMetaData,
+    BaseRecentlyVisitedEntitiesTypes,
+    getIsRequestAborted,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
+    ServerErrors,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { getAppListMin } from '../../services/service'
-import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
+import { AppListOptionsTypes } from './AppSelector.types'
 import { getMinCharSearchPlaceholderGroup } from './constants'
 
 let timeoutId
@@ -26,7 +34,7 @@ export const appListOptions = ({
     inputValue,
     isJobView = false,
     signal,
-    recentlyVisitedDevtronApps,
+    recentlyVisitedResources,
 }: AppListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> => {
     const options = signal ? { signal } : null
 
@@ -37,13 +45,13 @@ export const appListOptions = ({
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
                 resolve(
-                    recentlyVisitedDevtronApps?.length
+                    recentlyVisitedResources?.length
                         ? [
                               {
                                   label: 'Recently Visited',
-                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
-                                      label: app.appName,
-                                      value: app.appId,
+                                  options: recentlyVisitedResources.map((app: BaseRecentlyVisitedEntitiesTypes) => ({
+                                      label: app.name,
+                                      value: app.id,
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },

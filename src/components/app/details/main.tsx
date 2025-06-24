@@ -101,7 +101,7 @@ export default function AppDetailsPage() {
     const [apiError, setApiError] = useState(null)
     const [initLoading, setInitLoading] = useState<boolean>(false)
 
-    const { fetchRecentlyVisitedParsedApps } = useUserPreferences({})
+    const { fetchRecentlyVisitedParsedEntities } = useUserPreferences({recentlyVisitedFetchConfig: { id: appId, name: '', resourceKind: ResourceKindType.devtronApplication }})
 
     const getAppMetaInfoRes = async (shouldResetAppName: boolean = false): Promise<AppMetaInfo> => {
         try {
@@ -119,7 +119,7 @@ export default function AppDetailsPage() {
         } catch (err) {
             if (err.code === API_STATUS_CODES.NOT_FOUND || err.code === API_STATUS_CODES.PERMISSION_DENIED) {
                 try {
-                    await fetchRecentlyVisitedParsedApps({ appId, appName: '', resourceKind: ResourceKindType.devtronApplication })
+                    await fetchRecentlyVisitedParsedEntities()
                 } catch {
                     // Do nothing
                 }

@@ -19,35 +19,35 @@ import ReactGA from 'react-ga4'
 import { ActionMeta } from 'react-select'
 
 import {
-    BaseAppMetaData,
+    ContextSwitcher,
+    RecentlyVisitedOptions,
     ResourceKindType,
     SelectPickerOptionType,
     SelectPickerProps,
     useAsync,
-    UserPreferenceResourceActions,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
-
-import { AppSelectorType, RecentlyVisitedOptions } from './AppSelector.types'
+import { AppSelectorType } from './AppSelector.types'
 import { appListOptions } from './AppSelectorUtil'
 import { APP_DETAILS_GA_EVENTS } from './constants'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const isAppDataAvailable = !!appId && !!appName
 
-    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
+    const { recentlyVisitedResources } = useUserPreferences({
+        recentlyVisitedFetchConfig: {
+            id: appId,
+            name: appName,
+            resourceKind: isJobView ? ResourceKindType.job : ResourceKindType.devtronApplication,
+            isDataAvailable: isAppDataAvailable,
+        },
+    })
+
     const [inputValue, setInputValue] = useState('')
 
-    const resourceKind = isJobView ? ResourceKindType.job : ResourceKindType.devtronApplication
-
-    const recentlyVisitedDevtronApps =
-        userPreferences?.resources?.[resourceKind]?.[UserPreferenceResourceActions.RECENTLY_VISITED] ||
-        ([] as BaseAppMetaData[])
-
-    const isAppDataAvailable = !!appId && !!appName
-    const shouldFetchAppOptions = !!recentlyVisitedDevtronApps.length
+    const shouldFetchAppOptions = !!recentlyVisitedResources.length
 
     const [loading, selectOptions] = useAsync(
         () =>
@@ -55,19 +55,11 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
                 inputValue,
                 isJobView,
                 signal: abortControllerRef.current.signal,
-                recentlyVisitedDevtronApps,
+                recentlyVisitedResources,
             }),
-        [inputValue, isJobView],
+        [inputValue, appId, appName],
         isAppDataAvailable && shouldFetchAppOptions,
     )
-
-    // fetching recently visited apps only in case of devtron apps
-    useAsync(
-        () => fetchRecentlyVisitedParsedApps({ appId, appName, resourceKind }),
-        [appId, appName],
-        isAppDataAvailable,
-    )
-
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
         setInputValue(val)
     }

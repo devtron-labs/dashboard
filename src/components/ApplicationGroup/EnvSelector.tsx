@@ -18,17 +18,14 @@ import { useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 
 import {
-    BaseAppMetaData,
-    ResourceKindType,
+    ContextSwitcher,
+    RecentlyVisitedOptions,
     SelectPickerProps,
     useAsync,
-    UserPreferenceResourceActions,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { RecentlyVisitedOptions } from '@Components/AppSelector/AppSelector.types'
 import { APP_DETAILS_GA_EVENTS } from '@Components/AppSelector/constants'
-import { ContextSwitcher } from '@Components/common/ContextSwitcher/ContextSwitcher'
 
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
@@ -36,26 +33,22 @@ import { envListOptions } from './AppGroup.utils'
 export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const defaultOptions = { value: envId, label: envName }
-
-    const [inputValue, setInputValue] = useState('')
-    const { userPreferences, fetchRecentlyVisitedParsedApps } = useUserPreferences({})
     const isAppDataAvailable = !!envId && !!envName
 
-    useAsync(
-        () =>
-            fetchRecentlyVisitedParsedApps({ appId: envId, appName: envName, resourceKind: ResourceKindType.appGroup }),
-        [envId, envName],
-        isAppDataAvailable,
-    )
-
-    const recentlyVisitedDevtronApps =
-        userPreferences?.resources?.[ResourceKindType.appGroup]?.[UserPreferenceResourceActions.RECENTLY_VISITED] ||
-        ([] as BaseAppMetaData[])
+    const [inputValue, setInputValue] = useState('')
+    const { recentlyVisitedResources } = useUserPreferences({
+        recentlyVisitedFetchConfig: {
+            id: envId,
+            name: envName,
+            resourceKind: 'app-group',
+            isDataAvailable: isAppDataAvailable,
+        },
+    })
 
     const [loading, selectOptions] = useAsync(
-        () => envListOptions(inputValue, abortControllerRef.current.signal, recentlyVisitedDevtronApps),
-        [inputValue, recentlyVisitedDevtronApps],
-        isAppDataAvailable && !!recentlyVisitedDevtronApps.length,
+        () => envListOptions(inputValue, abortControllerRef.current.signal, recentlyVisitedResources),
+        [inputValue, recentlyVisitedResources],
+        isAppDataAvailable && !!recentlyVisitedResources.length,
     )
 
     const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
@@ -80,7 +73,7 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
             onChange={handleChange}
             value={defaultOptions}
             options={selectOptions}
-            inputId="app-group"
+            inputId={`app-group-${envId}`}
             placeholder={envName}
             inputValue={inputValue}
             onInputChange={onInputChange}
