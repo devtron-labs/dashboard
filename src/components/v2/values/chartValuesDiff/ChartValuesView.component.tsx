@@ -34,6 +34,8 @@ import {
     ComponentSizeType,
     ButtonVariantType,
     handleAnalyticsEvent,
+    Button,
+    ButtonStyleType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -56,11 +58,9 @@ import {
     DeleteApplicationButtonProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
-    UpdateApplicationButtonProps,
     ValueNameInputType,
     gitOpsDrawerType,
 } from './ChartValuesView.type'
-import { UPDATE_APP_BUTTON_TEXTS } from './ChartValuesView.constants'
 import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
@@ -717,74 +717,22 @@ export const DeleteApplicationButton = ({
     isDeleteInProgress,
     dispatch,
 }: DeleteApplicationButtonProps) => {
-    return (
-        <button
-            className="chart-values-view__delete-cta cta delete"
-            disabled={isUpdateInProgress || isDeleteInProgress}
-            onClick={(e) =>
-                dispatch({
-                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                    payload: true,
-                })
-            }
-            data-testid="delete-preset-value"
-        >
-            {isDeleteInProgress ? (
-                <div className="flex">
-                    <span>Deleting</span>
-                    <span className="ml-10">
-                        <Progressing />
-                    </span>
-                </div>
-            ) : (
-                `Delete ${type}`
-            )}
-        </button>
-    )
-}
-
-export const UpdateApplicationButton = ({
-    isUpdateInProgress,
-    isDeleteInProgress,
-    isDeployChartView,
-    isCreateValueView,
-    deployOrUpdateApplication,
-}: UpdateApplicationButtonProps) => {
-    const { chartValueId } = useParams<{ chartValueId: string }>()
+    const handleClick = () =>
+        dispatch({
+            type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+            payload: true,
+        })
 
     return (
-        <button
-            type="button"
-            tabIndex={6}
-            disabled={isUpdateInProgress || isDeleteInProgress}
-            className={`cta ${isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''}`}
-            onClick={deployOrUpdateApplication}
-            data-testid="preset-save-values-button"
-        >
-            {isUpdateInProgress ? (
-                <div className="flex">
-                    <span>
-                        {isCreateValueView
-                            ? `${UPDATE_APP_BUTTON_TEXTS.Saving} ${
-                                  chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
-                              }`
-                            : isDeployChartView
-                              ? UPDATE_APP_BUTTON_TEXTS.Deploying
-                              : UPDATE_APP_BUTTON_TEXTS.Updating}
-                    </span>
-                    <span className="ml-10">
-                        <Progressing />
-                    </span>
-                </div>
-            ) : isCreateValueView ? (
-                `${UPDATE_APP_BUTTON_TEXTS.Save} ${
-                    chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
-                }`
-            ) : isDeployChartView ? (
-                UPDATE_APP_BUTTON_TEXTS.Deploy
-            ) : (
-                UPDATE_APP_BUTTON_TEXTS.Update
-            )}
-        </button>
+        <Button
+            onClick={handleClick}
+            dataTestId="delete-preset-value"
+            isLoading={isDeleteInProgress}
+            disabled={isUpdateInProgress}
+            text={`Delete ${type}`}
+            variant={ButtonVariantType.secondary}
+            style={ButtonStyleType.negative}
+            fullWidth
+        />
     )
 }
