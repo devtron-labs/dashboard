@@ -601,11 +601,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
 
     const renderMainContent = () => {
         if (pageState === ViewType.LOADING) {
-            return (
-                <div className="flex flex-grow-1">
-                    <DevtronProgressing classes="icon-dim-80" />
-                </div>
-            )
+            return <DevtronProgressing parentClasses="flex flex-grow-1 bg__primary" classes="icon-dim-80" />
         }
 
         if (pageState === ViewType.ERROR) {
@@ -619,7 +615,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                         <Suspense
                             fallback={
-                                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+                                <DevtronProgressing
+                                    parentClasses="flex flex-grow-1 bg__primary"
+                                    classes="icon-dim-80"
+                                />
                             }
                         >
                             <ErrorBoundary>
