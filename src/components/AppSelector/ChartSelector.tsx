@@ -71,7 +71,6 @@ export default function ChartSelector({
         },
     ]
 
-    console.log(result)
     const selectedChartLabel = listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : ''
 
     return (
