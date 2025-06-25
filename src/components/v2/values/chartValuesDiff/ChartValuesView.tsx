@@ -45,6 +45,7 @@ import {
     handleAnalyticsEvent,
     Button,
     Icon,
+    AnimatedDeployButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -1540,13 +1541,14 @@ const ChartValuesView = ({
                     />
                 )}
                 <footer className="flexbox dc__content-end dc__border-top px-16 py-12">
-                    <Button
+                    <AnimatedDeployButton
                         dataTestId="preset-save-values-button"
                         disabled={commonState.isUpdateInProgress || commonState.isDeleteInProgress}
-                        onClick={deployOrUpdateApplication}
+                        onButtonClick={deployOrUpdateApplication}
                         isLoading={commonState.isUpdateInProgress}
                         text={isCreateValueView ? `Save ${chartValueId !== '0' ? 'Changes' : 'Value'}` : 'Deploy'}
                         {...(isCreateValueView ? {} : { startIcon: <Icon name="ic-rocket-launch" color={null} /> })}
+                        animateStartIcon={!isCreateValueView}
                     />
                 </footer>
             </div>
