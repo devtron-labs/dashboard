@@ -24,6 +24,7 @@ export const ResourceRecommenderTableViewWrapper = ({
     resourceRecommenderConfig,
     selectedKindGVKFilter,
     selectedAPIVersionGVKFilter,
+    resourceLastScannedOnDetails,
 }: ResourceRecommenderTableViewWrapperProps) => (
     <div className="resource-list-container flexbox-col flex-grow-1 border__primary--left dc__overflow-hidden">
         <ResourceFilterOptions
@@ -40,6 +41,7 @@ export const ResourceRecommenderTableViewWrapper = ({
             resourceRecommenderConfig={resourceRecommenderConfig}
             selectedKindGVKFilter={selectedKindGVKFilter}
             selectedAPIVersionGVKFilter={selectedAPIVersionGVKFilter}
+            resourceLastScannedOnDetails={resourceLastScannedOnDetails}
         />
 
         {resourceListError ? (

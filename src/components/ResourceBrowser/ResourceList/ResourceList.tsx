@@ -402,7 +402,6 @@ const ResourceList = () => {
                 <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
                     <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
                         <ResourceRecommender
-                            // key={getTabById(RESOURCE_RECOMMENDER_TAB_ID).componentKey}
                             getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
                             ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
                             ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
