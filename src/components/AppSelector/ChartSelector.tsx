@@ -86,6 +86,8 @@ export default function ChartSelector({
             placeholder={selectedChartLabel}
             {...(formatOptionLabel ? { formatOptionLabel } : {})}
             {...(filterOption ? { filterOption } : {})}
+            optionListError={error}
+            reloadOptionList={reload}
         />
     )
 }

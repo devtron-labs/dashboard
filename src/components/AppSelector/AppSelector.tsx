@@ -49,7 +49,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
     const shouldFetchAppOptions = !!recentlyVisitedResources.length
 
-    const [loading, selectOptions] = useAsync(
+    const [loading, selectOptions, error, reload] = useAsync(
         () =>
             appListOptions({
                 inputValue,
@@ -91,6 +91,8 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             onChange={handleChange}
             value={{ value: appId, label: appName }}
             placeholder={appName}
+            optionListError={error}
+            reloadOptionList={reload}
         />
     )
 }

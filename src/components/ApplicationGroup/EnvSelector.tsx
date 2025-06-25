@@ -45,7 +45,7 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
         },
     })
 
-    const [loading, selectOptions] = useAsync(
+    const [loading, selectOptions, error, reload] = useAsync(
         () => envListOptions(inputValue, abortControllerRef.current.signal, recentlyVisitedResources),
         [inputValue, recentlyVisitedResources],
         isEnvDataAvailable && !!recentlyVisitedResources.length,
@@ -77,6 +77,8 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
             placeholder={envName}
             inputValue={inputValue}
             onInputChange={onInputChange}
+            optionListError={error}
+            reloadOptionList={reload}
         />
     )
 }
