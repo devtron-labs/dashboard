@@ -356,8 +356,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                         history.push(`/${URLS.GETTING_STARTED}`)
                     }
                 }
-                // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            } catch (e) {
+            } catch {
                 history.push(`/${URLS.GETTING_STARTED}`)
             }
         }
