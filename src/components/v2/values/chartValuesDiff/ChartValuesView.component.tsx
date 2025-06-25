@@ -36,6 +36,7 @@ import {
     handleAnalyticsEvent,
     Button,
     ButtonStyleType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -727,6 +728,7 @@ export const DeleteApplicationButton = ({
         <Button
             onClick={handleClick}
             dataTestId="delete-preset-value"
+            startIcon={<Icon name='ic-delete' color={null} />}
             isLoading={isDeleteInProgress}
             disabled={isUpdateInProgress}
             text={`Delete ${type}`}
