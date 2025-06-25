@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
 import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
 import { GroupBase } from 'react-select'
 import {
     useAsync,
-    SelectPickerProps,
     SelectPickerOptionType,
     ContextSwitcher,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'
 import { ChartSelectorType } from './AppSelector.types'
@@ -59,10 +58,14 @@ export default function ChartSelector({
             options:
                 result?.result?.map((res) => ({
                     value: res[apiPrimaryKey || primaryKey],
-                    label: `${res.chart_name} / ${res[primaryValue]}`,
+                    label: res[primaryValue],
+                    description: res.chart_name || res.docker_artifact_store_id,
+                    endIcon: res.deprecated && <Icon name="ic-warning" color={null} size={16} />,
                 })) || [],
         },
     ]
+
+    console.log(result)
     const selectedChartLabel = listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : ''
 
     return (
