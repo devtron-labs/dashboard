@@ -27,6 +27,7 @@ import {
     K8sResourceDetailType,
     OptionType,
     ResourceDetail,
+    ResourceRecommenderActionMenuProps,
     SelectedResourceType,
     SelectPickerOptionType,
     ServerErrors,
@@ -114,6 +115,7 @@ export interface ResourceFilterOptionsProps
         reloadGVKOptions: () => void
         gvkOptionsError: ServerErrors
     }
+    resourceLastScannedOnDetails?: Omit<ResourceRecommenderActionMenuProps, 'children'>
     selectedAPIVersionGVKFilter?: string
     selectedKindGVKFilter?: string
     resourceRecommenderConfig?: {
