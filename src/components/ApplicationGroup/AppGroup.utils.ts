@@ -164,7 +164,7 @@ export const handleSourceNotConfigured = (
 export const envListOptions = (
     inputValue: string,
     signal: AbortSignal,
-    recentlyVisitedDevtronApps: BaseRecentlyVisitedEntitiesTypes[],
+    recentlyVisitedResources: BaseRecentlyVisitedEntitiesTypes[],
 ): Promise<RecentlyVisitedGroupedOptionsType[]> =>
     new Promise((resolve) => {
         if (timeoutId) {
@@ -173,11 +173,11 @@ export const envListOptions = (
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
                 resolve(
-                    recentlyVisitedDevtronApps?.length
+                    recentlyVisitedResources?.length
                         ? [
                               {
                                   label: 'Recently Visited',
-                                  options: recentlyVisitedDevtronApps.map((env: BaseRecentlyVisitedEntitiesTypes) => ({
+                                  options: recentlyVisitedResources.map((env: BaseRecentlyVisitedEntitiesTypes) => ({
                                       label: env.name,
                                       value: env.id,
                                       isRecentlyVisited: true,
