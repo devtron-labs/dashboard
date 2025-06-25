@@ -33,6 +33,7 @@ import {
     NO_MATCHING_RESULT,
     TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
     TYPE_TO_SEE_MATCHING_RESULTS,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { components } from 'react-select'
@@ -47,7 +48,7 @@ import { ReactComponent as Filter } from '../../assets/icons/ic-filter.svg'
 import { ReactComponent as Folder } from '../../assets/icons/img-folder-empty.svg'
 import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { getAddNotificationInitData, getPipelines, saveNotification, getChannelConfigs } from './notifications.service'
-import { ViewType, URLS, SourceTypeMap } from '../../config'
+import { ViewType, URLS } from '../../config'
 import {
     multiSelectStyles,
     DropdownIndicator,
