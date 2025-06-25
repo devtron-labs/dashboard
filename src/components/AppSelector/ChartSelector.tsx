@@ -52,11 +52,6 @@ export default function ChartSelector({
         const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value })
         push(newUrl)
     }
-    const [inputValue, setInputValue] = useState('')
-
-    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
-        setInputValue(val)
-    }
 
     const getChartsOptions = (): GroupBase<SelectPickerOptionType<string | number>>[] => [
         {
@@ -64,19 +59,16 @@ export default function ChartSelector({
             options:
                 result?.result?.map((res) => ({
                     value: res[apiPrimaryKey || primaryKey],
-                    label: res[primaryValue],
+                    label: `${res.chart_name} / ${res[primaryValue]}`,
                 })) || [],
         },
     ]
-
     const selectedChartLabel = listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : ''
 
     return (
         <ContextSwitcher
             inputId={`chart-switcher-${_primaryKey}`}
             options={getChartsOptions()}
-            inputValue={inputValue}
-            onInputChange={onInputChange}
             isLoading={loading}
             onChange={selectApp}
             value={{
