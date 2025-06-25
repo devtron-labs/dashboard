@@ -15,20 +15,19 @@
  */
 
 import { useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
 
 import {
     ContextSwitcher,
+    handleAnalyticsEvent,
     RecentlyVisitedOptions,
     SelectPickerProps,
     useAsync,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { APP_DETAILS_GA_EVENTS } from '@Components/AppSelector/constants'
-
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
+import { ENV_APP_GROUP_GA_EVENTS } from './Constants'
 
 export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -60,11 +59,12 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
 
         onChange(selectedOption)
 
-        ReactGA.event(
-            selectedOption.isRecentlyVisited
-                ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
-                : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
-        )
+        handleAnalyticsEvent({
+            category: 'Environment',
+            action: selectedOption.isRecentlyVisited
+                ? ENV_APP_GROUP_GA_EVENTS.EnvironmentHeaderRecentlyVisitedClicked.action
+                : ENV_APP_GROUP_GA_EVENTS.EnvironmentHeaderSearchedItemClicked.action,
+        })
     }
 
     return (

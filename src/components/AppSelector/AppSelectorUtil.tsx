@@ -25,7 +25,7 @@ import {
 
 import { getAppListMin } from '../../services/service'
 import { AppListOptionsTypes } from './AppSelector.types'
-import { getMinCharSearchPlaceholderGroup } from './constants'
+import { appSelectorGAEvents, getMinCharSearchPlaceholderGroup } from './constants'
 
 let timeoutId
 
@@ -86,4 +86,17 @@ export const appListOptions = ({
             }
         }, 300)
     })
+}
+
+export const getAppSelectGAEvent = (selectedOption: RecentlyVisitedOptions, isJobView) => {
+    if (isJobView) {
+        if (selectedOption.isRecentlyVisited) {
+            return appSelectorGAEvents.JOB_SWITCH_RECENTLY_VISITED_CLICKED
+        }
+        return appSelectorGAEvents.JOB_SWITCH_SEARCHED_ITEM_CLICKED
+    }
+    if (selectedOption.isRecentlyVisited) {
+        return appSelectorGAEvents.DA_SWITCH_RECENTLY_VISITED_CLICKED
+    }
+    return appSelectorGAEvents.DA_SWITCH_SEARCHED_APP_CLICKED
 }

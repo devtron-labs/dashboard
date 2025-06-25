@@ -15,6 +15,7 @@
  */
 
 import {
+    BaseRecentlyVisitedEntitiesTypes,
     ClusterDetail,
     DocLink,
     DocLinkProps,
@@ -165,12 +166,29 @@ export const getOptionsValue = (option: ClusterOptionType, isInstallationStatusV
     // clusterId as this installationId
     isInstallationStatusView ? `installation-${String(option.installationId)}` : option.value
 
-export const getClusterSelectOptions = (clusterList, isInstallationStatusView): RecentlyVisitedGroupedOptionsType[] => [
-    {
-        label: 'All Clusters',
-        options: clusterList?.map((option) => ({
-            ...option,
-            value: +getOptionsValue(option, isInstallationStatusView),
-        })) as RecentlyVisitedOptions[],
-    },
-]
+const getAllCluster = ({ clusterList, isInstallationStatusView }) => ({
+    label: 'All Clusters',
+    options: clusterList?.map((option) => ({
+        ...option,
+        value: +getOptionsValue(option, isInstallationStatusView),
+    })) as RecentlyVisitedOptions[],
+})
+
+export const getClusterSelectOptions = (
+    clusterList,
+    recentlyVisitedResources,
+    isInstallationStatusView,
+): RecentlyVisitedGroupedOptionsType[] =>
+    recentlyVisitedResources?.length
+        ? [
+              {
+                  label: 'Recently Visited',
+                  options: recentlyVisitedResources.map((cluster: BaseRecentlyVisitedEntitiesTypes) => ({
+                      label: cluster.name,
+                      value: cluster.id,
+                      isRecentlyVisited: true,
+                  })) as RecentlyVisitedOptions[],
+              },
+              getAllCluster({ clusterList, isInstallationStatusView }),
+          ]
+        : [getAllCluster({ clusterList, isInstallationStatusView })]

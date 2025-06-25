@@ -21,9 +21,11 @@ import {
     SelectPickerOptionType,
     ContextSwitcher,
     Icon,
+    handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'
 import { ChartSelectorType } from './AppSelector.types'
+import { appSelectorGAEvents } from './constants'
 
 export default function ChartSelector({
     primaryKey,
@@ -46,6 +48,10 @@ export default function ChartSelector({
             onChange(selected)
             return
         }
+        handleAnalyticsEvent({
+            category: 'Chart Store',
+            action: appSelectorGAEvents.CS_CHART_DETAIL_SWITCH_ITEM_CLICKED,
+        })
         const keys = listMap.get(selected.value)
         const replacements = [...matchedKeys].reduce((agg, curr) => ({ ...agg, [curr]: keys[curr] }), {})
         const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value })

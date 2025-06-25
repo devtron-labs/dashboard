@@ -21,9 +21,13 @@ import {
     Badge,
     ComponentSizeType,
     ContextSwitcher,
+    handleAnalyticsEvent,
     Icon,
     PopupMenu,
+    RecentlyVisitedOptions,
+    ResourceKindType,
     SelectPickerProps,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
@@ -31,6 +35,7 @@ import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvir
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
+import { ResourceBrowserGAEvent } from '../Constants'
 import { ClusterSelectorType } from '../Types'
 import { getClusterSelectOptions } from './utils'
 
@@ -50,6 +55,33 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const defaultOption = filteredClusterList.find((item) =>
         isInstallationStatusView ? String(item.installationId) === clusterId : String(item.value) === clusterId,
     )
+    const clusterName = defaultOption?.label
+
+    const handleOnChange = (selected: RecentlyVisitedOptions) => {
+        if (selected.value === Number(defaultOption?.value)) {
+            return
+        }
+
+        handleAnalyticsEvent({
+            category: 'Resource Browser',
+            action: selected.isRecentlyVisited
+                ? ResourceBrowserGAEvent.RB_SWITCH_CLUSTER_RECENTLY_VISITED_CLICKED
+                : ResourceBrowserGAEvent.RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED,
+        })
+
+        onChange(selected)
+    }
+
+    const isAppDataAvailable = !!clusterId
+
+    const { recentlyVisitedResources } = useUserPreferences({
+        recentlyVisitedFetchConfig: {
+            id: +clusterId,
+            name: clusterName,
+            resourceKind: ResourceKindType.cluster,
+            isDataAvailable: isAppDataAvailable,
+        },
+    })
 
     const [inputValue, setInputValue] = useState('')
 
@@ -76,9 +108,13 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
             <ContextSwitcher
                 inputId={`cluster-switcher-${clusterId}`}
                 isLoading={isClusterListLoading}
-                onChange={onChange}
+                onChange={handleOnChange}
                 value={defaultOption}
-                options={getClusterSelectOptions(filteredClusterList, isInstallationStatusView)}
+                options={getClusterSelectOptions(
+                    filteredClusterList,
+                    recentlyVisitedResources,
+                    isInstallationStatusView,
+                )}
                 inputValue={inputValue}
                 onInputChange={onInputChange}
             />

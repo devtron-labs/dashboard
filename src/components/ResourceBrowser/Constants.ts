@@ -392,3 +392,8 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
         excludeValues: new Set(['Approved,Issued']),
     },
 })
+
+export const ResourceBrowserGAEvent = {
+    RB_SWITCH_CLUSTER_RECENTLY_VISITED_CLICKED: 'RB_SWITCH_CLUSTER_RECENTLY_VISITED_CLICKED',
+    RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED: 'RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED',
+}

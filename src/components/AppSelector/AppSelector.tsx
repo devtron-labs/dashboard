@@ -15,11 +15,11 @@
  */
 
 import { useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
 import { ActionMeta } from 'react-select'
 
 import {
     ContextSwitcher,
+    handleAnalyticsEvent,
     RecentlyVisitedOptions,
     ResourceKindType,
     SelectPickerOptionType,
@@ -29,8 +29,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { AppSelectorType } from './AppSelector.types'
-import { appListOptions } from './AppSelectorUtil'
-import { APP_DETAILS_GA_EVENTS } from './constants'
+import { appListOptions, getAppSelectGAEvent } from './AppSelectorUtil'
 
 const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
@@ -72,13 +71,10 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
 
         onChange(selectedOption, actionMeta)
 
-        if (!isJobView) {
-            ReactGA.event(
-                selectedOption.isRecentlyVisited
-                    ? APP_DETAILS_GA_EVENTS.RecentlyVisitedApps
-                    : APP_DETAILS_GA_EVENTS.SearchesAppClicked,
-            )
-        }
+        handleAnalyticsEvent({
+            category: isJobView ? 'Job Selector' : 'App Selector',
+            action: getAppSelectGAEvent(selectedOption, isJobView),
+        })
     }
 
     return (
