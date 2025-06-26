@@ -30,6 +30,7 @@ import {
     RefVariableType,
     SelectPickerOptionType,
     SystemVariableIcon,
+    VALUE_COLUMN_DROPDOWN_LABEL,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -43,7 +44,6 @@ import {
     FILE_MOUNT_DIR,
     FILE_UPLOAD_SIZE_UNIT_OPTIONS,
     FORMAT_COLUMN_OPTIONS,
-    VAL_COLUMN_DROPDOWN_LABEL,
     VARIABLE_DATA_TABLE_CELL_BOOL_VALUES,
 } from './constants'
 import {
@@ -175,11 +175,11 @@ const getOptionsForValColumn = ({
 
     return [
         {
-            label: VAL_COLUMN_DROPDOWN_LABEL.CHOICES,
+            label: VALUE_COLUMN_DROPDOWN_LABEL.CHOICES,
             options: choices,
         },
         {
-            label: VAL_COLUMN_DROPDOWN_LABEL.SUPPORTED_DATE_FORMATS,
+            label: VALUE_COLUMN_DROPDOWN_LABEL.SUPPORTED_DATE_FORMATS,
             options: supportedDataFormats,
         },
         ...(!valueConstraint?.blockCustomValue
@@ -187,22 +187,22 @@ const getOptionsForValColumn = ({
                   ...(isBuildStagePostBuild
                       ? [
                             {
-                                label: VAL_COLUMN_DROPDOWN_LABEL.PRE_BUILD_STAGE,
+                                label: VALUE_COLUMN_DROPDOWN_LABEL.PRE_BUILD_STAGE,
                                 options: filteredPreBuildStageVariablesBasedOnFormat,
                             },
                             {
-                                label: VAL_COLUMN_DROPDOWN_LABEL.POST_BUILD_STAGE,
+                                label: VALUE_COLUMN_DROPDOWN_LABEL.POST_BUILD_STAGE,
                                 options: filteredPreviousStepVariablesBasedOnFormat,
                             },
                         ]
                       : [
                             {
-                                label: VAL_COLUMN_DROPDOWN_LABEL.PREVIOUS_STEPS,
+                                label: VALUE_COLUMN_DROPDOWN_LABEL.PREVIOUS_STEPS,
                                 options: filteredPreviousStepVariablesBasedOnFormat,
                             },
                         ]),
                   {
-                      label: VAL_COLUMN_DROPDOWN_LABEL.SYSTEM_VARIABLES,
+                      label: VALUE_COLUMN_DROPDOWN_LABEL.SYSTEM_VARIABLES,
                       options: filteredGlobalVariablesBasedOnFormat,
                   },
               ]

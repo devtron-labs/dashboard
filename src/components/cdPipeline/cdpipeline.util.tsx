@@ -217,6 +217,13 @@ export const validateTask = (
                         }
                     }
 
+                    const variableType =
+                        taskData[currentStepTypeVariable][
+                            element.conditionType === ConditionType.FAIL || element.conditionType === ConditionType.PASS
+                                ? 'outputVariables'
+                                : 'inputVariables'
+                        ].find(({ name }) => name === element.conditionOnVariable)?.format ?? null
+
                     acc[element.id] = Object.values(ConditionDataTableHeaderKeys).reduce((keyAcc, key) => {
                         const validationState = validationRules.validateConditionDataCell({
                             key,
@@ -225,6 +232,7 @@ export const validateTask = (
                                 conditionOnVariable: element.conditionOnVariable,
                                 conditionOperator: element.conditionOperator,
                             },
+                            variableType,
                         })
 
                         taskErrorObj[currentStepTypeVariable].isConditionDetailsValid =

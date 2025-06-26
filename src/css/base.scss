@@ -4991,6 +4991,11 @@ details[open] {
     background: var(--backdrop-bg);
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
+
+    &--transparent {
+        background: transparent;
+        backdrop-filter: none;
+    }
 }
 
 // NOTE: used for divider separated flexbox row lists
