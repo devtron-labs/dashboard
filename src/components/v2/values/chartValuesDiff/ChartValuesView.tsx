@@ -43,7 +43,6 @@ import {
     InfoBlock,
     ButtonVariantType,
     handleAnalyticsEvent,
-    Button,
     Icon,
     AnimatedDeployButton,
 } from '@devtron-labs/devtron-fe-common-lib'

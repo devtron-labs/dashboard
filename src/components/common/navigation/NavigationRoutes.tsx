@@ -23,7 +23,6 @@ import * as Sentry from '@sentry/browser'
 import {
     AboutDevtronDialog,
     animate,
-    AppListConstants,
     AppThemeType,
     BaseConfirmationModal,
     ConfirmationModalProvider,
@@ -54,8 +53,6 @@ import {
     ToastManager,
     ToastVariantType,
     URLS as CommonURLS,
-    useAsync,
-    useMainContext,
     useMotionTemplate,
     useMotionValue,
     UserPreferencesType,
@@ -69,7 +66,6 @@ import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authoriza
 import { Configurations } from '@Pages/Releases/Detail'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
-import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 import {
     dashboardLoggedIn,
     getAppListMin,
@@ -77,7 +73,7 @@ import {
     getLoginData,
     updateLoginCount,
 } from '../../../services/service'
-import { AppRouterType, LoginCountType } from '../../../services/service.types'
+import { LoginCountType } from '../../../services/service.types'
 import { HelmAppListResponse } from '../../app/list-new/AppListType'
 import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
 import { Security } from '../../security/Security'
@@ -94,14 +90,11 @@ import { SidePanel } from '../SidePanel'
 import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
 import Navigation from './Navigation'
+import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 
 const Charts = lazy(() => import('../../charts/Charts'))
-const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
-const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
-const AppDetailsPage = lazy(() => import('../../app/details/main'))
-const NewAppList = lazy(() => import('../../app/list-new/AppList'))
-const DevtronChartRouter = lazy(() => import('../../v2/index'))
+
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -129,124 +122,6 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
-
-const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser: boolean }) => {
-    const { push } = useHistory()
-    const { pathname } = useLocation()
-    const { serverMode } = useMainContext()
-    useEffect(() => {
-        if (pathname && pathname !== '/') {
-            Sentry.captureMessage(
-                `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
-                'warning',
-            )
-        }
-
-        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
-            push(CommonURLS.NETWORK_STATUS_INTERFACE)
-            return
-        }
-
-        if (window._env_.K8S_CLIENT) {
-            push(URLS.RESOURCE_BROWSER)
-        } else if (isFirstLoginUser) {
-            push(URLS.GETTING_STARTED)
-        } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
-            push(URLS.RESOURCE_BROWSER)
-        } else {
-            push(`${URLS.APP}/${URLS.APP_LIST}`)
-        }
-    }, [])
-    return null
-}
-
-const RedirectToAppList = () => {
-    const { replace } = useHistory()
-    const { serverMode } = useMainContext()
-    useEffect(() => {
-        const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
-        if (serverMode === SERVER_MODE.FULL) {
-            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
-        } else {
-            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
-        }
-    }, [])
-    return null
-}
-
-const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
-    const { path } = useRouteMatch()
-    const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
-    const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
-
-    return (
-        <ErrorBoundary>
-            <Switch>
-                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
-                <Route exact path="">
-                    <RedirectToAppList />
-                </Route>
-                <Route>
-                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
-                </Route>
-            </Switch>
-        </ErrorBoundary>
-    )
-}
-
-const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
-    const { path } = useRouteMatch()
-    const [environmentId, setEnvironmentId] = useState(null)
-    const [currentAppName, setCurrentAppName] = useState<string>('')
-
-    const appContextValue = useMemo(
-        () => ({ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }),
-        [environmentId, currentAppName],
-    )
-
-    return (
-        <ErrorBoundary>
-            <AppContext.Provider value={appContextValue}>
-                <Switch>
-                    <Route
-                        path={`${path}/${URLS.APP_LIST}`}
-                        render={() => (
-                            <AppListRouter
-                                isSuperAdmin={isSuperAdmin}
-                                appListCount={appListCount}
-                                loginCount={loginCount}
-                            />
-                        )}
-                    />
-                    <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
-                    <Route
-                        path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
-                        render={() => <ExternalArgoApps />}
-                    />
-                    {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
-                        <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
-                            <ExternalFluxAppDetailsRoute />
-                        </Route>
-                    )}
-                    <Route
-                        path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={() => <DevtronChartRouter />}
-                    />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
-
-                    <Route exact path="">
-                        <RedirectToAppList />
-                    </Route>
-                    <Route>
-                        <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
-                        />
-                    </Route>
-                </Switch>
-            </AppContext.Provider>
-        </ErrorBoundary>
-    )
-}
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
