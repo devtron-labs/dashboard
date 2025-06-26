@@ -124,6 +124,7 @@ export interface DeploymentAppRadioGroupType {
     areGitopsCredentialsConfigured?: boolean
     isGitOpsRepoNotConfigured?: boolean
     gitOpsRepoConfigInfoBar?: (content: string) => JSX.Element
+    showGitOpsOption?: boolean
 }
 
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {

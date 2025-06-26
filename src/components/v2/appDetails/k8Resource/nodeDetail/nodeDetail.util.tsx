@@ -416,7 +416,7 @@ export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sRes
     if (deploymentAppType === DeploymentAppTypes.HELM) {
         return K8sResourcePayloadDeploymentType.HELM_INSTALLED
     }
-    if (deploymentAppType === DeploymentAppTypes.GITOPS) {
+    if (deploymentAppType === DeploymentAppTypes.ARGO) {
         return K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     return K8sResourcePayloadDeploymentType.FLUXCD_INSTALLED

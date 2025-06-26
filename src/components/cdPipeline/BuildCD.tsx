@@ -63,7 +63,7 @@ import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { BuildCDProps } from './types'
 import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
-import { MigrateToDevtronProps } from './MigrateToDevtron/types'
+import { DEPLOYMENT_APP_TYPE_LABEL } from './MigrateToDevtron/constants'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
@@ -138,14 +138,6 @@ export default function BuildCD({
         const _form = { ...formData }
         _form.triggerType = event.target.value as MigrateToDevtronFormState['triggerType']
         setFormData(_form)
-    }
-
-    const handleMigrateFromAppTypeChange: MigrateToDevtronProps['handleMigrateFromAppTypeChange'] = (event) => {
-        const { value } = event.target as HTMLInputElement
-        setMigrateToDevtronFormState((prevState) => ({
-            ...prevState,
-            deploymentAppType: value as MigrateToDevtronFormState['deploymentAppType'],
-        }))
     }
 
     const handleNamespaceChange = (event): void => {
@@ -611,6 +603,8 @@ export default function BuildCD({
                 isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                 gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+                // Want to show this when gitops module is installed, does not matter if it is configured or not
+                showGitOpsOption={!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured}
             />
         </div>
     )
@@ -769,7 +763,6 @@ export default function BuildCD({
                 <MigrateToDevtron
                     migrateToDevtronFormState={migrateToDevtronFormState}
                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
-                    handleMigrateFromAppTypeChange={handleMigrateFromAppTypeChange}
                 />
             )
         }
@@ -783,9 +776,7 @@ export default function BuildCD({
                                 <ICInfo className="dc__no-shrink icon-dim-20 dc__no-shrink" />
                                 <span className="fs-13 fw-4 lh-20 cn-9 dc__word-break">
                                     This deployment pipeline was linked to&nbsp;
-                                    {formData.deploymentAppType === DeploymentAppTypes.GITOPS
-                                        ? 'Argo CD application'
-                                        : 'helm release'}
+                                    {DEPLOYMENT_APP_TYPE_LABEL[formData.deploymentAppType as DeploymentAppTypes]}
                                     &nbsp;: {formData.deploymentAppName}
                                 </span>
                             </div>
@@ -801,8 +792,6 @@ export default function BuildCD({
                 {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
                     !isVirtualEnvironment &&
                     formData.allowedDeploymentTypes.length > 0 &&
-                    // Want to show this when gitops module is installed, does not matter if it is configured or not
-                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
                     renderDeploymentAppType()}
 
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}

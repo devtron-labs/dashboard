@@ -82,7 +82,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     }, [appDetails])
 
     useEffect(() => {
-        if (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest) {
+        if (appDetails.deploymentAppType === DeploymentAppTypes.ARGO && appDetails.deploymentAppDeleteRequest) {
             verifyDeployedClusterConnectionStatus()
         }
     }, [appDetails.appId, appDetails.environmentId])
@@ -90,8 +90,8 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     const verifyDeployedClusterConnectionStatus = async (): Promise<void> => {
         await getClusterConnectionStatus(appDetails.environmentId).then((response: ClusterConnectionResponse) => {
             if (response.result) {
-                response.result?.clusterReachable ? setClusterConnectionError(false) : setClusterConnectionError(true)
-                setClusterName(response.result.clusterName)
+                setClusterConnectionError(response.result.clusterReachable ?? false)
+                setClusterName(response.result.clusterName ?? '')
             }
         })
     }

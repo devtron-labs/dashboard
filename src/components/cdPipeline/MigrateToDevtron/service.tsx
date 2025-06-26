@@ -28,7 +28,9 @@ import {
 
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
-import { getArgoInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
+import { getArgoInstalledExternalApps, getFluxInstalledExternalApps } from '@Components/app/list-new/AppListService'
+import { FluxCDTemplateType } from '@Components/app/list-new/AppListType'
 import { Routes } from '@Config/constants'
 
 import {
@@ -97,15 +99,23 @@ export const getMigrateAppOptions = async ({
     deploymentAppType,
     abortControllerRef,
 }: GetMigrateAppOptionsParamsType): Promise<SelectMigrateAppOptionType[]> => {
+    const isFlux = deploymentAppType === DeploymentAppTypes.FLUX
+    const isArgo = deploymentAppType === DeploymentAppTypes.ARGO
     try {
-        if (deploymentAppType === DeploymentAppTypes.GITOPS) {
-            const { result } = await getArgoInstalledExternalApps(String(clusterId), abortControllerRef)
+        if (isFlux || isArgo) {
+            const { result } = await (isFlux
+                ? getFluxInstalledExternalApps(
+                      String(clusterId),
+                      { abortControllerRef },
+                      FluxCDTemplateType.HELM_RELEASE,
+                  )
+                : getArgoInstalledExternalApps(String(clusterId), abortControllerRef))
             return (result || [])
                 .map<SelectMigrateAppOptionType>((argoApp) =>
                     generateMigrateAppOption({
                         appName: argoApp.appName,
                         namespace: argoApp.namespace,
-                        startIcon: <ICArgoCDApp />,
+                        startIcon: isFlux ? <ICFluxCDApp /> : <ICArgoCDApp />,
                     }),
                 )
                 .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string))

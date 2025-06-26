@@ -175,6 +175,8 @@ if (!window || !window._env_) {
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
         FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,
+        FEATURE_FLUX_DEPLOYMENTS_ENABLE: false,
+        FEATURE_LINK_EXTERNAL_FLUX_ENABLE: false,
     }
 }
 

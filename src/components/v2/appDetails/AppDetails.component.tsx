@@ -71,14 +71,14 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
     const history = useHistory()
-    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...(isVirtualEnv.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData()
-                : processDeploymentStatusDetailsData()),
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType)),
             deploymentStatus: DEFAULT_STATUS,
         })
 
@@ -121,7 +121,8 @@ const AppDetailsComponent = ({
         const processedDeploymentStatusDetailsData =
             isVirtualEnv.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType, deploymentStatusDetailRes)
+
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {

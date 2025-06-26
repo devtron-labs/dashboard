@@ -88,7 +88,7 @@ const SyncErrorComponent: React.FC<SyncErrorType> = ({ showApplicationDetailedMo
     }, [appDetails])
 
     useEffect(() => {
-        if (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest) {
+        if (appDetails.deploymentAppType === DeploymentAppTypes.ARGO && appDetails.deploymentAppDeleteRequest) {
             verifyDeployedClusterConnectionStatus()
         }
     }, [appDetails.appId, appDetails.environmentId])

@@ -262,7 +262,7 @@ const Details: React.FC<DetailsType> = ({
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...(isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData()
-                : processDeploymentStatusDetailsData()),
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType)),
             deploymentStatus: DEFAULT_STATUS,
         })
     const isConfigDriftEnabled: boolean = window._env_.FEATURE_CONFIG_DRIFT_ENABLE && !!ConfigDriftModal
@@ -287,7 +287,7 @@ const Details: React.FC<DetailsType> = ({
             const processedDeploymentStatusDetailsData =
                 isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
                     ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-                    : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+                    : processDeploymentStatusDetailsData(appDetails?.deploymentAppType, deploymentStatusDetailRes)
 
             clearDeploymentStatusTimer()
 
@@ -433,7 +433,10 @@ const Details: React.FC<DetailsType> = ({
                         const processedDeploymentStatusData =
                             isVirtualEnvRef.current && processVirtualEnvironmentDeploymentData
                                 ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes.result)
-                                : processDeploymentStatusDetailsData(deploymentStatusDetailRes.result)
+                                : processDeploymentStatusDetailsData(
+                                      appDetails?.deploymentAppType,
+                                      deploymentStatusDetailRes.result,
+                                  )
 
                         setDeploymentStatusDetailsBreakdownData(processedDeploymentStatusData)
                     } else {
