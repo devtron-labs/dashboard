@@ -67,6 +67,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
 
         const openContextMenuCallback = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
+                contextMenuRef.current?.focus()
                 contextMenuRef.current?.click()
             }
         }
@@ -140,7 +141,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                     </button>
                 </Tooltip>
                 {!shouldHideContextMenu && (
-                    <ClipboardButton content={String(resourceData.name)} rootClassName="p-4 dc__visible-hover--child" />
+                    <ClipboardButton content={String(resourceData.name)} rootClassName="p-2 dc__visible-hover--child" />
                 )}
             </div>
 

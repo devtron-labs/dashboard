@@ -248,11 +248,9 @@ const ResourceList = () => {
         () =>
             tabs.reduce(
                 (acc, tab) => {
-                    if (tab.id === ResourceBrowserTabsId.k8s_Resources) {
-                        acc[tab.id] = {
-                            reload: refreshData,
-                            showTimeSinceLastSync: true,
-                        }
+                    acc[tab.id] = {
+                        reload: refreshData,
+                        showTimeSinceLastSync: tab.id === ResourceBrowserTabsId.k8s_Resources,
                     }
 
                     return acc
@@ -330,7 +328,7 @@ const ResourceList = () => {
 
         return (
             <div className={!tab?.isSelected ? 'cluster-terminal-hidden' : 'flexbox-col flex-grow-1'}>
-                <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
+                <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} key={tab.componentKey} />
             </div>
         )
     }
@@ -377,11 +375,7 @@ const ResourceList = () => {
                 />
                 <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
                     <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                        <ClusterOverview
-                            selectedCluster={selectedCluster}
-                            addTab={addTab}
-                            key={getTabById(ResourceBrowserTabsId.cluster_overview).componentKey}
-                        />
+                        <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
                     </DynamicTabComponentWrapper>
                 </Route>
                 <Route path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD} exact>
@@ -462,7 +456,6 @@ const ResourceList = () => {
                             clusterName={selectedCluster.label}
                             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                             updateTabLastSyncMoment={updateTabLastSyncMoment}
-                            key={getTabById(ResourceBrowserTabsId.k8s_Resources).componentKey}
                         />
                     </DynamicTabComponentWrapper>
                 </Route>

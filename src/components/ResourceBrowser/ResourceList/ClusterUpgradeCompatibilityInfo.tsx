@@ -15,7 +15,7 @@
  */
 
 import { useMemo } from 'react'
-import { useParams } from 'react-router-dom'
+import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     CollapsibleList,
@@ -23,10 +23,12 @@ import {
     FiltersTypeEnum,
     GenericEmptyState,
     ImageType,
+    LARGE_PAGE_SIZE_OPTIONS,
     PaginationEnum,
     Progressing,
     Table,
     TableColumnType,
+    TableProps,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -55,6 +57,8 @@ const ClusterUpgradeCompatibilityInfo = ({
 }: ClusterUpgradeCompatibilityInfoProps) => {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const targetK8sVersion = useSearchString().queryParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
+    const { push } = useHistory()
+    const location = useLocation()
 
     const {
         isLoading,
@@ -136,6 +140,26 @@ const ClusterUpgradeCompatibilityInfo = ({
         )
     }
 
+    const tableFilter: TableProps['filter'] = (row, filterData) =>
+        !filterData.searchKey ||
+        Object.entries(row.data).some(
+            ([key, value]) =>
+                key !== 'id' &&
+                value !== null &&
+                value !== undefined &&
+                String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+        )
+
+    const clearFilters = () => {
+        const searchParams = new URLSearchParams(location.search)
+        Array.from(searchParams.keys()).forEach((key) => {
+            if (key !== TARGET_K8S_VERSION_SEARCH_KEY) {
+                searchParams.delete(key)
+            }
+        })
+        push({ search: searchParams.toString() })
+    }
+
     return (
         <div className="flexbox h-100 dc__overflow-hidden">
             <div className="dc__overflow-auto p-8 w-220 dc__no-shrink">
@@ -156,9 +180,16 @@ const ClusterUpgradeCompatibilityInfo = ({
                 id="table__cluster-upgrade-compatibility-info"
                 paginationVariant={PaginationEnum.PAGINATED}
                 ViewWrapper={ClusterUpgradeCompatibilityInfoTableWrapper}
+                additionalFilterProps={{
+                    initialSortKey: 'namespace',
+                    defaultPageSize: LARGE_PAGE_SIZE_OPTIONS[0].value,
+                }}
+                filter={tableFilter}
                 additionalProps={{
                     lowercaseKindToResourceGroupMap,
                 }}
+                pageSizeOptions={LARGE_PAGE_SIZE_OPTIONS}
+                clearFilters={clearFilters}
             />
         </div>
     )

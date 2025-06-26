@@ -101,4 +101,6 @@ export type DynamicTabComponentWrapperProps = Pick<
     UseTabsReturnType,
     'updateTabUrl' | 'markTabActiveById' | 'getTabId' | 'getTabById'
 > &
-    ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] })
+    ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
+        children: React.ReactElement
+    }

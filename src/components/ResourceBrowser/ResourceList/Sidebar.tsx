@@ -23,6 +23,7 @@ import DOMPurify from 'dompurify'
 import {
     ApiResourceGroupType,
     highlightSearchText,
+    Nodes,
     ReactSelectInputAction,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -118,6 +119,9 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
         params.delete('pageNumber')
         params.delete('sortBy')
         params.delete('sortOrder')
+        if (_selectedKind !== Nodes.Event.toLowerCase()) {
+            params.delete('eventType')
+        }
         const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
             kind: _selectedKind,
