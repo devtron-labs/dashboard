@@ -139,6 +139,5 @@
         "rollup": "^4.22.4",
         "path-to-regexp": "^1.9.0",
         "cross-spawn": "^7.0.5"
-    },
-    "packageManager": "yarn@4.9.2"
+    }
 }
