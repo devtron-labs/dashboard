@@ -4826,55 +4826,6 @@ textarea::placeholder {
     background-color: var(--Y200);
 }
 
-.severity-chip {
-    display: flex;
-    padding: 0px 6px;
-    align-items: center;
-    gap: 4px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 20px;
-    text-transform: capitalize;
-
-    &--passed {
-        color: var(--G500);
-        border: 1px solid var(--G200);
-        background: var(--G100);
-    }
-
-    &--critical {
-        color: var(--R700);
-        border: 1px solid var(--R700);
-        background: var(--R100);
-    }
-
-    &--high {
-        color: var(--R500);
-        border: 1px solid var(--R200);
-        background: var(--R100);
-    }
-
-    &--medium {
-        color: var(--O600);
-        border: 1px solid var(--O200);
-        background: var(--O100);
-    }
-
-    &--low {
-        color: var(--Y700);
-        border: 1px solid var(--Y200);
-        background: var(--Y100);
-    }
-
-    &--unknown {
-        color: var(--N700);
-        border: 1px solid var(--N200);
-        background: var(--N100);
-    }
-}
-
 .dc__grid-full {
     display: grid;
     grid-template-columns: 100% 0;
@@ -5040,6 +4991,11 @@ details[open] {
     background: var(--backdrop-bg);
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
+
+    &--transparent {
+        background: transparent;
+        backdrop-filter: none;
+    }
 }
 
 // NOTE: used for divider separated flexbox row lists

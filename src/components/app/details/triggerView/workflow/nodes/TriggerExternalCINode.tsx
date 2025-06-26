@@ -59,7 +59,7 @@ export class TriggerExternalCINode extends Component<CINodeProps> {
                             <div className="dc__ellipsis-left">{this.props.title}</div>
                         </Tippy>
                     </div>
-                    <Icon name="ic-ci-webhook" size={20} color={null} />
+                    <Icon name="ic-webhook" size={20} color={null} />
                 </div>
             </div>
         )
