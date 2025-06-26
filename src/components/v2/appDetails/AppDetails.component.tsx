@@ -71,7 +71,7 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
     const history = useHistory()
-    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =

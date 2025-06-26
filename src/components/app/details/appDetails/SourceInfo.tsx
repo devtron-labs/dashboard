@@ -94,7 +94,6 @@ export const SourceInfo = ({
     const [hibernationPatchResponseLoading, setHibernationPatchResponseLoading] = useState<boolean>(false)
 
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
-    const isArgoCdApp = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
     const status = appDetails?.resourceTree?.status || ''
     const conditions = appDetails?.resourceTree?.conditions
     let message = null

@@ -51,5 +51,6 @@
 | SENTRY_RELEASE_VERSION                                    |                                          | Sentry release Version                                                                                           |
 | LOGIN_PAGE_IMAGE                                          |                                          | Login page image url                                                                                             |
 | FEATURE_FLUX_DEPLOYMENTS_ENABLE                           | false                                    | Enables flux cd deployment type for devtron apps and devtron charts                                              |
+| FEATURE_LINK_EXTERNAL_FLUX_ENABLE                         | false                                    | Enables external flux cd migration                                                                               |
 
 # DASHBOARD CONFIG SECRET

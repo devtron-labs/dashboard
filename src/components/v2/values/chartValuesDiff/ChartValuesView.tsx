@@ -171,7 +171,7 @@ const ChartValuesView = ({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
     const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
@@ -708,7 +708,7 @@ const ChartValuesView = ({
                 if (
                     deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
                     !response.result.deleteResponse?.clusterReachable &&
-                    commonState.deploymentAppType === DeploymentAppTypes.GITOPS
+                    commonState.deploymentAppType === DeploymentAppTypes.ARGO
                 ) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
