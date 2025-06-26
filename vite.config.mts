@@ -184,7 +184,7 @@ export default defineConfig(({ mode }) => {
                 svgrOptions: {},
             }),
             compression({
-                algorithm: 'brotliCompress',
+                algorithm: 'gzip',
             }),
             reactVirtualized(),
             requireTransform(),
