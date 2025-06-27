@@ -221,29 +221,32 @@ const AppListFilters = ({
                     size={ComponentSizeType.medium}
                 />
                 {window._env_.FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE && (
-                    <GroupedFilterSelectPicker<AppListUrlFilters>
-                        id="app-list-filters"
-                        width={200}
-                        isFilterApplied={
-                            !!(
-                                selectedAppStatus.length ||
-                                selectedProjects.length ||
-                                selectedEnvironments.length ||
-                                selectedTemplateTypes.length ||
-                                selectedClusters.length ||
-                                selectedNamespaces.length
-                            )
-                        }
-                        options={getAppListFilters({
-                            clusterIdsCsv,
-                            isExternalArgo,
-                            isExternalFlux,
-                            isArgoInstalled,
-                            serverMode,
-                            selectedEnvironments,
-                        })}
-                        filterSelectPickerPropsMap={appListFiltersSelectPickerMap}
-                    />
+                    <div className="dc__position-rel">
+                        <GroupedFilterSelectPicker<AppListUrlFilters>
+                            id="app-list-filters"
+                            width={200}
+                            isFilterApplied={
+                                !!(
+                                    selectedAppStatus.length ||
+                                    selectedProjects.length ||
+                                    selectedEnvironments.length ||
+                                    selectedTemplateTypes.length ||
+                                    selectedClusters.length ||
+                                    selectedNamespaces.length
+                                )
+                            }
+                            options={getAppListFilters({
+                                clusterIdsCsv,
+                                isExternalArgo,
+                                isExternalFlux,
+                                isArgoInstalled,
+                                serverMode,
+                                selectedEnvironments,
+                            })}
+                            filterSelectPickerPropsMap={appListFiltersSelectPickerMap}
+                        />
+                        {showPulsatingDot && <div className="dc__position-abs dc__pulsating-dot-new" />}
+                    </div>
                 )}
             </div>
 
