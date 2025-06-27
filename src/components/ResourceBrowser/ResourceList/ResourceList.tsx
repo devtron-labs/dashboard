@@ -21,7 +21,9 @@ import {
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
+    GetResourceRecommenderResourceListPropsType,
     handleAnalyticsEvent,
+    Icon,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -44,6 +46,7 @@ import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
     MONITORING_DASHBOARD_TAB_ID,
     RESOURCE_BROWSER_ROUTES,
+    RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
     UPGRADE_CLUSTER_CONSTANTS,
@@ -54,7 +57,6 @@ import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from 
 import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
 import AdminTerminalDummy from './AdminTerminalDummy'
-import Cache from './Cache'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import { DynamicTabComponentWrapper } from './DynamicTabComponentWrapper'
@@ -63,17 +65,20 @@ import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
-import { getClusterOptions } from './utils'
+import ResourceRecommenderTableCellComponent from './ResourceRecommenderTableCellComponent'
+import { ResourceRecommenderTableViewWrapper } from './ResourceRecommenderTableViewWrapper'
+import { dynamicSort, getClusterOptions } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
+const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
 
 const ResourceList = () => {
     const params = useParams<ClusterDetailBaseParams>()
     const { clusterId } = params
     const { replace } = useHistory()
-    const location = useLocation()
     const { path } = useRouteMatch()
+    const location = useLocation()
     const resourceBrowserRef = useRef<HTMLDivElement>()
     const {
         tabs,
@@ -90,7 +95,9 @@ const ResourceList = () => {
     } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
-    const { setIntelligenceConfig, setAIAgentContext } = useMainContext()
+    const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
+
+    const canRenderResourceRecommender = ResourceRecommender && isResourceRecommendationEnabled
 
     const [rawGVKLoader, k8SObjectMapRaw, , reloadK8sObjectMapRaw] = useAsync(
         () => getResourceGroupListRaw(clusterId),
@@ -133,6 +140,7 @@ const ResourceList = () => {
     const initTabsBasedOnRole = (reInit: boolean) => {
         const _tabs = getTabsBasedOnRole({
             selectedCluster,
+            canRenderResourceRecommender,
         })
         initTabs(_tabs, reInit, null)
     }
@@ -142,7 +150,6 @@ const ResourceList = () => {
 
         return () => {
             setIntelligenceConfig(null)
-            Cache.clear()
             setAIAgentContext(null)
         }
     }, [])
@@ -231,7 +238,6 @@ const ResourceList = () => {
     )
 
     const refreshData = () => {
-        Cache.clear()
         const activeTab = tabs.find((tab) => tab.isSelected)
         updateTabComponentKey(activeTab.id)
         updateTabLastSyncMoment(activeTab.id)
@@ -274,6 +280,32 @@ const ResourceList = () => {
         ({ url: _url, dynamicTitle, retainSearchParams }: Omit<UpdateTabUrlParamsType, 'id'>) =>
             updateTabUrl({ id, url: _url, dynamicTitle, retainSearchParams })
 
+    const getResourceRecommenderBaseResourceListProps = ({
+        setShowAbsoluteValuesInResourceRecommender,
+        showAbsoluteValuesInResourceRecommender,
+        gvkOptions,
+        areGVKOptionsLoading,
+        reloadGVKOptions,
+        gvkOptionsError,
+    }: GetResourceRecommenderResourceListPropsType) => ({
+        selectedCluster,
+        selectedResource: {
+            gvk: SIDEBAR_KEYS.resourceRecommenderGVK,
+            namespaced: true,
+        },
+        lowercaseKindToResourceGroupMap,
+        resourceRecommenderConfig: {
+            setShowAbsoluteValuesInResourceRecommender,
+            showAbsoluteValuesInResourceRecommender,
+        },
+        gvkFilterConfig: {
+            gvkOptions,
+            areGVKOptionsLoading,
+            reloadGVKOptions,
+            gvkOptionsError,
+        },
+    })
+
     const renderPageHeaderActionButtons = () => {
         const clusterConnectionFailed = !!clusterList?.find(({ id }) => clusterId === String(id))?.errorInNodeListing
 
@@ -296,7 +328,7 @@ const ResourceList = () => {
 
         return (
             <div className={!tab?.isSelected ? 'cluster-terminal-hidden' : 'flexbox-col flex-grow-1'}>
-                <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} />
+                <AdminTerminal updateTerminalTabUrl={updateTerminalTabUrl} key={tab.componentKey} />
             </div>
         )
     }
@@ -313,7 +345,7 @@ const ResourceList = () => {
             return <ErrorScreenManager code={error.code} />
         }
 
-        if (loading || !tabs.length) {
+        if (loading || !tabs.length || rawGVKLoader) {
             return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
         }
 
@@ -338,6 +370,7 @@ const ResourceList = () => {
                         [ResourceBrowserTabsId.cluster_overview]: <ICWorldBlack className="scn-7" />,
                         [ResourceBrowserTabsId.k8s_Resources]: <ICObject className="fcn-7" />,
                         [MONITORING_DASHBOARD_TAB_ID]: <ICChartLineUp className="scn-7" />,
+                        [RESOURCE_RECOMMENDER_TAB_ID]: <Icon name="ic-speedometer" color="N700" />,
                     }}
                 />
                 <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
@@ -357,6 +390,16 @@ const ResourceList = () => {
                             clusterName={selectedCluster.label}
                             getTabById={getTabById}
                             updateTabUrl={updateTabUrl}
+                        />
+                    </DynamicTabComponentWrapper>
+                </Route>
+                <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
+                    <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
+                        <ResourceRecommender
+                            getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
+                            ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
+                            ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
+                            dynamicSort={dynamicSort}
                         />
                     </DynamicTabComponentWrapper>
                 </Route>
@@ -412,7 +455,7 @@ const ResourceList = () => {
                             updateK8sResourceTab={getUpdateTabUrlForId(ResourceBrowserTabsId.k8s_Resources)}
                             clusterName={selectedCluster.label}
                             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-                            key={getTabById(ResourceBrowserTabsId.k8s_Resources).lastSyncMoment.toString()}
+                            updateTabLastSyncMoment={updateTabLastSyncMoment}
                         />
                     </DynamicTabComponentWrapper>
                 </Route>

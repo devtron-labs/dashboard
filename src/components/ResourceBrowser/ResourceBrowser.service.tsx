@@ -97,6 +97,10 @@ export const getResourceData = async ({
 
         const response = k8sResponse.status === 'fulfilled' ? k8sResponse.value : null
 
+        if (k8sResponse.status === 'rejected') {
+            throw k8sResponse.reason
+        }
+
         if (isNamespaceList && namespaceListResponse?.status === 'fulfilled') {
             const { result } = namespaceListResponse.value
             const [{ environments }] = result

@@ -103,11 +103,11 @@ export const KIND_SEARCH_COMMON_STYLES = {
 }
 
 export const RESOURCE_ACTION_MENU = {
-    manifest: 'Manifest',
-    Events: 'Events',
-    logs: 'Logs',
-    terminal: 'Terminal',
-    delete: 'Delete',
+    manifest: 'manifest',
+    Events: 'events',
+    logs: 'logs',
+    terminal: 'terminal',
+    delete: 'delete',
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
@@ -204,6 +204,11 @@ export const SIDEBAR_KEYS: RBSidebarKeysType = {
         Version: '',
         Kind: Nodes.UpgradeCluster,
     },
+    resourceRecommenderGVK: {
+        Group: '',
+        Version: '',
+        Kind: Nodes.ResourceRecommender,
+    },
 }
 
 export const UPGRADE_CLUSTER_CONSTANTS = {
@@ -251,11 +256,6 @@ export const RESOURCE_PAGE_SIZE_OPTIONS = [
     { value: 100, selected: true },
     { value: 150, selected: false },
     { value: 200, selected: false },
-]
-export const NODE_DETAILS_PAGE_SIZE_OPTIONS = [
-    { value: 20, selected: true },
-    { value: 40, selected: false },
-    { value: 50, selected: false },
 ]
 
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
@@ -317,7 +317,7 @@ export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[num
     'cpu usage (absolute)': 'cpu.usage',
     'cpu allocatable': 'cpu.allocatable',
     'mem usage (%)': 'memory.usagePercentage',
-    'mem usage (absolute)': 'memory.usageInBytes',
+    'mem usage (absolute)': 'memory.usage',
     'mem allocatable': 'memory.allocatable',
     age: 'age',
     unschedulable: 'unschedulable',
@@ -354,6 +354,7 @@ export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
 export const MONITORING_DASHBOARD_TAB_ID = 'monitoring_dashboard'
+export const RESOURCE_RECOMMENDER_TAB_ID = 'resource_recommender'
 
 // Note: can't change the snake case to camel case since that would be breaking change
 // while reading from local storage in useTabs
@@ -399,6 +400,7 @@ export const RESOURCE_BROWSER_ROUTES = {
     NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
     K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
     K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
+    RESOURCE_RECOMMENDER: `${URLS.RESOURCE_BROWSER}/:clusterId/resource-recommender`,
 } as const
 
 export const DUMMY_RESOURCE_GVK_VERSION = 'v1'
@@ -410,4 +412,5 @@ export const ResourceBrowserRouteToTabIdMap: Partial<
     '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
     '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
     '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
+    '/resource-browser/:clusterId/resource-recommender': RESOURCE_RECOMMENDER_TAB_ID,
 }

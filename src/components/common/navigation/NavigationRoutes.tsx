@@ -112,7 +112,6 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
-const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
@@ -363,6 +362,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ??
                     ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
+                isResourceRecommendationEnabled: result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK['isResourceRecommendationEnabled']
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -387,6 +387,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
+                isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -516,6 +517,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
+                isResourceRecommendationEnabled: true,
             }}
         >
             <ConfirmationModalProvider>

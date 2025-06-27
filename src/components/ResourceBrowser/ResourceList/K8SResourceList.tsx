@@ -37,10 +37,9 @@ import {
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
-import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
+import { NODE_LIST_HEADERS_TO_KEY_MAP, RESOURCE_PAGE_SIZE_OPTIONS } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
-import Cache from './Cache'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import ResourceFilterOptions from './ResourceFilterOptions'
@@ -73,7 +72,8 @@ const K8SResourceListViewWrapper = ({
     allColumns,
     setVisibleColumns,
     updateSearchParams,
-    eventType,
+    eventType = 'warning',
+    filteredRows,
     ...restProps
 }: K8SResourceListViewWrapperProps) => (
     <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
@@ -93,11 +93,12 @@ const K8SResourceListViewWrapper = ({
                 setSearchText={handleSearch}
                 isSearchInputDisabled={false}
                 renderRefreshBar={renderRefreshBar}
-                areFiltersHidden={false}
                 updateSearchParams={updateSearchParams}
                 eventType={eventType}
+                filteredRows={filteredRows}
             />
         )}
+
         {children}
     </div>
 )
@@ -138,15 +139,13 @@ export const K8SResourceList = ({
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
-                    return Cache.get(`${location.pathname}${location.search}`, () =>
-                        getResourceData({
-                            selectedResource,
-                            selectedNamespace,
-                            clusterId,
-                            filters: resourceFilters,
-                            abortControllerRef,
-                        }),
-                    )
+                    return getResourceData({
+                        selectedResource,
+                        selectedNamespace,
+                        clusterId,
+                        filters: resourceFilters,
+                        abortControllerRef,
+                    })
                 }
 
                 return null
@@ -178,7 +177,8 @@ export const K8SResourceList = ({
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
                         isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
-                        horizontallySticky: header === 'name',
+                        horizontallySticky:
+                            header === 'name' || (isEventListing && (header === 'message' || header === 'type')),
                     }) as TableColumnType,
             ) ?? [],
         [resourceList?.headers],
@@ -197,7 +197,6 @@ export const K8SResourceList = ({
     )
 
     const handleClearCacheAndReload = () => {
-        Cache.clear()
         reloadResourceList()
     }
 
@@ -210,22 +209,33 @@ export const K8SResourceList = ({
             !filterData.searchKey ||
             Object.entries(row.data).some(
                 ([key, value]) =>
-                    key !== 'id' && String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+                    key !== 'id' &&
+                    value !== null &&
+                    value !== undefined &&
+                    String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
             )
 
         if (isEventListing) {
             return (
                 (row.data.type as string)?.toLowerCase() ===
-                    (filterData as unknown as K8sResourceListFilterType).eventType && isSearchMatch
+                    ((filterData as unknown as K8sResourceListFilterType).eventType || 'warning') && isSearchMatch
             )
         }
 
         return isSearchMatch
     }
 
+    const getDefaultSortKey = () => {
+        if (isEventListing) {
+            return 'last seen'
+        }
+
+        return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
+    }
+
     return (
         <Table
-            key={JSON.stringify(selectedResource)}
+            // key={JSON.stringify(selectedResource)}
             loading={resourceListLoader || !resourceList}
             columns={columns}
             rows={rows}
@@ -240,7 +250,7 @@ export const K8SResourceList = ({
                               isNodeListing,
                               getManifestResource,
                               updateManifestResourceHelmApps,
-                              clusterId,
+                              clusterId: +clusterId,
                               clusterName: selectedCluster?.label ?? '',
                               handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
                           },
@@ -248,7 +258,7 @@ export const K8SResourceList = ({
                               showBulkRestartOption:
                                   window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
                                       .map((feat: string) => feat.trim().toUpperCase())
-                                      .indexOf(selectedResource.gvk.Kind.toUpperCase()) > -1,
+                                      .indexOf(selectedResource?.gvk.Kind.toUpperCase()) > -1,
                               showNodeListingOptions: isNodeListing,
                           },
                       },
@@ -257,7 +267,7 @@ export const K8SResourceList = ({
             emptyStateConfig={{
                 noRowsConfig: {
                     image: emptyCustomChart,
-                    title: 'No resources found',
+                    title: `No ${selectedResource?.gvk.Kind ?? 'Resource'} found`,
                     subTitle: `We could not find any ${selectedResource?.gvk.Kind ?? 'Resource'}. Try selecting a different cluster or namespace.`,
                 },
             }}
@@ -265,7 +275,11 @@ export const K8SResourceList = ({
             paginationVariant={PaginationEnum.PAGINATED}
             areColumnsConfigurable={isNodeListing}
             id="table__gvk-resource-list"
-            additionalFilterProps={{ parseSearchParams: parseK8sResourceListSearchParams }}
+            additionalFilterProps={{
+                parseSearchParams: parseK8sResourceListSearchParams,
+                defaultPageSize: RESOURCE_PAGE_SIZE_OPTIONS[0].value,
+                initialSortKey: getDefaultSortKey(),
+            }}
             ViewWrapper={K8SResourceListViewWrapper}
             filter={tableFilter}
             additionalProps={{
@@ -277,7 +291,9 @@ export const K8SResourceList = ({
                 isEventListing,
                 lowercaseKindToResourceGroupMap,
                 reloadResourceListData: handleClearCacheAndReload,
+                clusterName: selectedCluster?.label ?? '',
             }}
+            pageSizeOptions={!isNodeListing ? RESOURCE_PAGE_SIZE_OPTIONS : undefined}
         />
     )
 }

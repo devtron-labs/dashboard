@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactElement, useEffect } from 'react'
+import { cloneElement, ReactElement, useEffect } from 'react'
 import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
@@ -12,8 +12,9 @@ export const DynamicTabComponentWrapper = ({
     markTabActiveById,
     getTabId,
     addTab,
+    getTabById,
     children,
-}: PropsWithChildren<DynamicTabComponentWrapperProps>) => {
+}: DynamicTabComponentWrapperProps) => {
     const { pathname, search } = useLocation()
     const { path } = useRouteMatch()
     const params = useParams<Record<string, string>>()
@@ -60,5 +61,5 @@ export const DynamicTabComponentWrapper = ({
         updateTabUrl({ id: tabId, url: `${pathname}${search}` })
     }, [pathname, search])
 
-    return children as ReactElement
+    return cloneElement(children, { ...children.props, key: getTabById(tabId)?.componentKey }) as ReactElement
 }

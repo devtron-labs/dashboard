@@ -23,6 +23,7 @@ import DOMPurify from 'dompurify'
 import {
     ApiResourceGroupType,
     highlightSearchText,
+    Nodes,
     ReactSelectInputAction,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -34,6 +35,7 @@ import {
     K8S_EMPTY_GROUP,
     KIND_SEARCH_COMMON_STYLES,
     RESOURCE_BROWSER_ROUTES,
+    ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
@@ -45,7 +47,7 @@ import {
 import { KindSearchClearIndicator, KindSearchValueContainer, SidebarChildButton } from './ResourceList.component'
 import { K8sResourceListURLParams } from './types'
 
-const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: SidebarType) => {
+const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateTabLastSyncMoment }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
@@ -55,7 +57,10 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, kind))
     const preventScrollRef = useRef(false)
     const searchInputRef = useRef<Select<K8sObjectOptionType, false, GroupBase<K8sObjectOptionType>>>(null)
-    const k8sObjectOptionsList = useMemo(() => convertK8sObjectMapToOptionsList(list), [list])
+    const k8sObjectOptionsList = useMemo(
+        () => convertK8sObjectMapToOptionsList(convertResourceGroupListToK8sObjectList(apiResources || null, kind)),
+        [apiResources],
+    )
     const sortedK8sObjectOptionsList = useMemo(() => {
         if (!searchText) {
             return k8sObjectOptionsList
@@ -113,6 +118,10 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
         const params = new URLSearchParams(location.search)
         params.delete('pageNumber')
         params.delete('sortBy')
+        params.delete('sortOrder')
+        if (_selectedKind !== Nodes.Event.toLowerCase()) {
+            params.delete('eventType')
+        }
         const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
             kind: _selectedKind,
@@ -120,7 +129,8 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
             version: DUMMY_RESOURCE_GVK_VERSION,
         })}?${params.toString()}`
 
-        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind })
+        updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind, retainSearchParams: true })
+        updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
 
         if (shouldPushUrl) {
             push(_url)
@@ -148,7 +158,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab }: Sideb
 
     useEffect(() => {
         /* NOTE: this effect accommodates for user navigating through browser history (push) */
-        if (kind === selectedResource?.gvk.Kind.toLowerCase() || !k8sObjectOptionsList.length) {
+        if (!k8sObjectOptionsList.length) {
             return
         }
         /* NOTE: match will never be null; due to node fallback */

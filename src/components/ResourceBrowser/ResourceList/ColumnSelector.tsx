@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { MultiValue, SelectInstance } from 'react-select'
 
 import {
@@ -23,12 +23,16 @@ import {
     SelectPicker,
     SelectPickerOptionType,
     TableColumnType,
+    useTriggerAutoClickTimestamp,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { OPTIONAL_NODE_LIST_HEADERS } from '../Constants'
 import { ColumnSelectorType } from '../Types'
 
 const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: ColumnSelectorType) => {
+    const { triggerAutoClickTimestamp, setTriggerAutoClickTimestampToNow, resetTriggerAutoClickTimestamp } =
+        useTriggerAutoClickTimestamp()
+
     const columnOptions = useMemo(() => {
         const headerToColumnMap = allColumns.reduce((acc, column) => {
             acc[column.label] = column
@@ -41,10 +45,12 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
         }))
     }, [])
 
+    const getSelectedColumns = () =>
+        columnOptions.filter((option) => visibleColumns.find(({ label }) => label === option.label))
+
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [selectedColumns, setSelectedColumns] = useState<MultiValue<SelectPickerOptionType<TableColumnType>>>(
-        visibleColumns.map((column) => ({ value: column, label: column.label })),
-    )
+    const [selectedColumns, setSelectedColumns] =
+        useState<MultiValue<SelectPickerOptionType<TableColumnType>>>(getSelectedColumns)
 
     const selectRef = useRef<SelectInstance<SelectPickerOptionType<TableColumnType>, true>>(null)
 
@@ -54,10 +60,20 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
         selectRef.current?.focus()
     }
 
+    useEffect(() => {
+        setSelectedColumns(getSelectedColumns())
+    }, [allColumns])
+
     const handleMenuClose = () => {
         setIsMenuOpen(false)
+        resetTriggerAutoClickTimestamp()
 
         selectRef.current?.blur()
+    }
+
+    const onChange = (newValue: MultiValue<SelectPickerOptionType<TableColumnType>>) => {
+        setTriggerAutoClickTimestampToNow()
+        setSelectedColumns(newValue)
     }
 
     const handleApplySelectedColumns = (): void => {
@@ -91,7 +107,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
             onMenuOpen={handleMenuOpen}
             onMenuClose={handleMenuClose}
             isMulti
-            onChange={setSelectedColumns}
+            onChange={onChange}
             placeholder="Column"
             options={columnOptions}
             value={selectedColumns}
@@ -102,6 +118,7 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
                     onClick: handleApplySelectedColumns,
                     variant: ButtonVariantType.primary,
                     dataTestId: 'apply-column-selector',
+                    triggerAutoClickTimestamp,
                 },
             }}
             isClearable={false}

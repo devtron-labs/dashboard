@@ -102,7 +102,7 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
 
 export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
     const namespace = searchParams.get('namespace')
-    const eventType = searchParams.get('eventType') ?? 'warning'
+    const eventType = searchParams.get('eventType')
 
     return {
         ...(namespace ? { selectedNamespace: namespace } : {}),
@@ -117,14 +117,14 @@ export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams):
         ...(searchParams.get(NODE_K8S_VERSION_FILTER_KEY)
             ? { [NODE_K8S_VERSION_FILTER_KEY]: searchParams.get(NODE_K8S_VERSION_FILTER_KEY) }
             : {}),
-        eventType,
+        ...(eventType ? { eventType } : {}),
     }
 }
 
 const numberInStringComparator = <T extends string>(a: T, b: T) =>
     numberComparatorBySortOrder(a ? parseInt(a.match(/^\d+/)[0], 10) : 0, b ? parseInt(b.match(/^\d+/)[0], 10) : 0)
 
-const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(b) - k8sStyledAgeToSeconds(a)
+const durationComparator = <T extends string>(a: T, b: T) => k8sStyledAgeToSeconds(a) - k8sStyledAgeToSeconds(b)
 
 const propertyComparatorMap = {
     age: durationComparator,
@@ -143,6 +143,7 @@ const propertyComparatorMap = {
     'mem usage (%)': numberInStringComparator,
     'mem allocatable': numberInStringComparator,
     'cpu usage (absolute)': numberInStringComparator,
+    restarts: numberInStringComparator,
 }
 
 /**
@@ -242,7 +243,7 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
         return {
             range: {
                 maxWidth: 600,
-                minWidth: field === 'name' ? 200 : 180,
+                minWidth: field === 'name' ? 200 : 120,
                 startWidth: field === 'name' ? 300 : 200,
             },
         }
@@ -254,7 +255,7 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
                 range: {
                     maxWidth: 800,
                     minWidth: 180,
-                    startWidth: 400,
+                    startWidth: 460,
                 },
             }
         case 'type':
@@ -274,7 +275,7 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
                 range: {
                     maxWidth: 300,
                     minWidth: 80,
-                    startWidth: 80,
+                    startWidth: 100,
                 },
             }
     }

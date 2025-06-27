@@ -312,13 +312,17 @@ const NodeListSearchFilter = ({
 
             <div className="dc__border-left h-20 mt-6" />
 
-            <ColumnSelector
-                {...{
-                    setVisibleColumns,
-                    visibleColumns,
-                    allColumns,
-                }}
-            />
+            {allColumns.length ? (
+                <ColumnSelector
+                    {...{
+                        setVisibleColumns,
+                        visibleColumns,
+                        allColumns,
+                    }}
+                />
+            ) : (
+                <div className="shimmer h-32" />
+            )}
         </div>
     )
 }

@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-import React, { RefObject } from 'react'
+import React, { Dispatch, RefObject, SetStateAction } from 'react'
+import { GroupBase } from 'react-select'
 
 import {
     ApiResourceGroupType,
     FiltersTypeEnum,
+    GVKOptionValueType,
     GVKType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     OptionType,
     ResourceDetail,
+    ResourceRecommenderActionMenuProps,
     SelectedResourceType,
+    SelectPickerOptionType,
+    ServerErrors,
     TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -77,6 +82,7 @@ export interface SidebarType {
     apiResources: ApiResourceGroupType[]
     isClusterError?: boolean
     updateK8sResourceTab: ClusterListType['updateTabUrl']
+    updateTabLastSyncMoment: UseTabsReturnType['updateTabLastSyncMoment']
     selectedResource: ApiResourceGroupType
 }
 
@@ -87,10 +93,9 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams'>,
-        Pick<K8sResourceListFilterType, 'eventType'> {
+    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
+        Partial<Pick<K8sResourceListFilterType, 'eventType'>> {
     selectedResource: ApiResourceGroupType
-    resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
     selectedNamespace?: string
     searchText?: string
@@ -98,19 +103,29 @@ export interface ResourceFilterOptionsProps
     isSearchInputDisabled?: boolean
     renderRefreshBar?: () => JSX.Element
     /**
-     * If true, the filters are hidden except search
-     */
-    areFiltersHidden: boolean
-    /**
      * Placeholder override for the search bar
      *
      * @default undefined
      */
     searchPlaceholder?: string
+    isResourceListLoading?: boolean
+    gvkFilterConfig?: {
+        gvkOptions: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
+        areGVKOptionsLoading: boolean
+        reloadGVKOptions: () => void
+        gvkOptionsError: ServerErrors
+    }
+    resourceLastScannedOnDetails?: Omit<ResourceRecommenderActionMenuProps, 'children'>
+    selectedAPIVersionGVKFilter?: string
+    selectedKindGVKFilter?: string
+    resourceRecommenderConfig?: {
+        showAbsoluteValuesInResourceRecommender: boolean
+        setShowAbsoluteValuesInResourceRecommender: Dispatch<SetStateAction<boolean>>
+    }
 }
 
 export interface K8SResourceListType
-    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType'>,
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType' | 'filteredRows'>,
         Pick<SidebarType, 'updateK8sResourceTab'> {
     addTab: UseTabsReturnType['addTab']
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
@@ -121,7 +136,9 @@ export interface ResourceBrowserActionMenuType {
     clusterId: string
     resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    handleResourceClick: (e: {
+        currentTarget: Pick<React.MouseEvent<HTMLButtonElement>['currentTarget'], 'dataset'>
+    }) => void
     handleClearBulkSelection: () => void
     removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
@@ -185,7 +202,7 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends Pick<SidebarType, 'updateK8sResourceTab'>,
+    extends Pick<SidebarType, 'updateK8sResourceTab' | 'updateTabLastSyncMoment'>,
         Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
@@ -230,10 +247,12 @@ export interface RBSidebarKeysType {
     overviewGVK: GVKType
     monitoringGVK: GVKType
     upgradeClusterGVK: GVKType
+    resourceRecommenderGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
+    canRenderResourceRecommender: boolean
 }
 
 export interface NodeRowDetail {

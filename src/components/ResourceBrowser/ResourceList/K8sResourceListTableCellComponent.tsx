@@ -92,7 +92,7 @@ const K8sResourceListTableCellComponent = ({
             namespace,
             name,
             kind: kind.toLowerCase(),
-            group: _group ?? K8S_EMPTY_GROUP,
+            group: _group || K8S_EMPTY_GROUP,
             version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
@@ -116,6 +116,7 @@ const K8sResourceListTableCellComponent = ({
         const handleOpenContextMenu = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
                 contextMenuRef.current?.click()
+                contextMenuRef.current?.focus()
             }
         }
 
@@ -176,7 +177,7 @@ const K8sResourceListTableCellComponent = ({
         <>
             {columnName === 'name' ? (
                 <div
-                    className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10"
+                    className="flexbox dc__align-items-center dc__gap-4 dc__content-space dc__visible-hover dc__visible-hover--parent py-10 pr-6"
                     data-testid="created-resource-name"
                 >
                     <div className="flex left dc__gap-4">
@@ -209,7 +210,8 @@ const K8sResourceListTableCellComponent = ({
                         </Tooltip>
                         <ClipboardButton
                             content={String(resourceData.name)}
-                            rootClassName="p-4 dc__visible-hover--child"
+                            rootClassName="p-2 dc__visible-hover--child"
+                            iconSize={16}
                         />
                     </div>
                     {!isNodeListing ? (
@@ -234,7 +236,7 @@ const K8sResourceListTableCellComponent = ({
                 </div>
             ) : (
                 <div
-                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-self-start'} py-10 ${
+                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start'} py-10 ${
                         columnName === 'status' || columnName === 'type'
                             ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]), isNodeListing)}`
                             : ''

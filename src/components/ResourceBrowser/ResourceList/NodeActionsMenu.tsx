@@ -17,29 +17,30 @@
 import { forwardRef, useState } from 'react'
 import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
 
-import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ActionMenu,
+    ActionMenuProps,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    noop,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
-import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { TaintType } from '@Components/ClusterNodes/types'
 
-import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
-import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
-import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
-import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
-import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
-import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
-import { CLUSTER_NODE_ACTIONS_LABELS } from '../../ClusterNodes/constants'
 import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
 import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
 import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
 import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP, RESOURCE_BROWSER_ROUTES } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
+import { getNodeActions } from './constants'
 import { K8sResourceListURLParams } from './types'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
-const NodeActionsMenu = forwardRef(
+const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
     ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps, forwardedRef) => {
         const history = useHistory()
         const { clusterId } = useParams<K8sResourceListURLParams>()
@@ -151,82 +152,53 @@ const NodeActionsMenu = forwardRef(
             )
         }
 
-        const menuListItemButtonClassName = 'flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__transparent w-100'
+        const onActionMenuClick: ActionMenuProps['onClick'] = (item) => {
+            switch (item.id) {
+                case 'terminal':
+                    handleOpenTerminalAction()
+                    break
+                case 'cordon':
+                    showCordonNodeModal()
+                    break
+                case 'uncordon':
+                    showCordonNodeModal()
+                    break
+                case 'drain':
+                    showDrainNodeModal()
+                    break
+                case 'edit-taints':
+                    showEditTaintsModal()
+                    break
+                case 'edit-yaml':
+                    handleEditYamlAction()
+                    break
+                case 'delete':
+                    showDeleteNodeModal()
+                    break
+                default:
+                    break
+            }
+        }
 
         return (
             <>
-                <PopupMenu autoClose>
-                    <PopupMenu.Button ref={forwardedRef} rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
-                        <MenuDots className="fcn-7 icon-dim-16" />
-                    </PopupMenu.Button>
-                    <PopupMenu.Body rootClassName="dc__border">
-                        <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
-                            <button
-                                type="button"
-                                aria-label="Open the node in terminal"
-                                className={menuListItemButtonClassName}
-                                onClick={handleOpenTerminalAction}
-                            >
-                                <TerminalIcon className="icon-dim-16 mr-8" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.terminal}
-                            </button>
-                            <button
-                                type="button"
-                                aria-label="Cordon the node"
-                                className={menuListItemButtonClassName}
-                                onClick={showCordonNodeModal}
-                            >
-                                {nodeData.unschedulable ? (
-                                    <>
-                                        <UncordonIcon className="icon-dim-16 mr-8 scn-7" />
-                                        {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
-                                    </>
-                                ) : (
-                                    <>
-                                        <CordonIcon className="icon-dim-16 mr-8" />
-                                        {CLUSTER_NODE_ACTIONS_LABELS.cordon}
-                                    </>
-                                )}
-                            </button>
-                            <button
-                                type="button"
-                                className={menuListItemButtonClassName}
-                                onClick={showDrainNodeModal}
-                                aria-label="Drain the node"
-                            >
-                                <DrainIcon className="icon-dim-16 mr-8" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.drain}
-                            </button>
-                            <button
-                                type="button"
-                                className={menuListItemButtonClassName}
-                                aria-label="Edit taints for the node"
-                                onClick={showEditTaintsModal}
-                            >
-                                <EditTaintsIcon className="icon-dim-16 mr-8" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.taints}
-                            </button>
-                            <button
-                                type="button"
-                                aria-label="Edit the node's yaml"
-                                className={menuListItemButtonClassName}
-                                onClick={handleEditYamlAction}
-                            >
-                                <EditFileIcon className="icon-dim-16 mr-8" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.yaml}
-                            </button>
-                            <button
-                                type="button"
-                                aria-label="Delete the node"
-                                className={menuListItemButtonClassName}
-                                onClick={showDeleteNodeModal}
-                            >
-                                <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
-                                {CLUSTER_NODE_ACTIONS_LABELS.delete}
-                            </button>
-                        </div>
-                    </PopupMenu.Body>
-                </PopupMenu>
+                <ActionMenu
+                    id={nodeData.name as string}
+                    onClick={onActionMenuClick}
+                    options={[{ items: getNodeActions(!!nodeData.unschedulable) }]}
+                    position="right"
+                >
+                    <Button
+                        ref={forwardedRef}
+                        dataTestId={`node-actions-button-${nodeData.name}`}
+                        icon={<MenuDots className="fcn-7" />}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Open action menu"
+                        style={ButtonStyleType.neutral}
+                        size={ComponentSizeType.xxs}
+                        showAriaLabelInTippy={false}
+                    />
+                </ActionMenu>
                 {renderModal()}
             </>
         )
