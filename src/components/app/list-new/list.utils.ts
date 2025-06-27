@@ -15,12 +15,15 @@
  */
 
 import { useMemo } from 'react'
+import { GroupBase } from 'react-select'
 
 import {
     AppListConstants,
+    GroupedFilterSelectPickerProps,
     GroupedOptionsType,
     OptionType,
     SelectPickerOptionType,
+    SERVER_MODE,
     stringComparatorBySortOrder,
     Teams,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -31,13 +34,14 @@ import { Cluster } from '@Services/service.types'
 
 import { URLS } from '../../../config'
 import {
+    AppListFilterMenuItemType,
     AppListUrlFilters,
     AppListUrlFiltersType,
     AppStatuses,
     AppStatusesDTO,
     useFilterOptionsProps,
 } from './AppListType'
-import { APPS_WITH_NO_PROJECT_OPTION } from './Constants'
+import { APPS_WITH_NO_PROJECT_OPTION, SELECT_CLUSTER_TIPPY } from './Constants'
 
 export const getChangeAppTabURL = (appTabType) => {
     switch (appTabType) {
@@ -170,11 +174,15 @@ export const useFilterOptions = ({
             }))
             .sort((a, b) => stringComparatorBySortOrder(a.label, b.label))
 
-    const clusterOptions: SelectPickerOptionType[] = useMemo(
-        () =>
-            appListFiltersResponse?.isFullMode
-                ? getClusterOptions(appListFiltersResponse?.appListFilters.result.clusters)
-                : getClusterOptions(appListFiltersResponse?.clusterList.result),
+    const clusterOptions: GroupBase<SelectPickerOptionType>[] = useMemo(
+        () => [
+            {
+                label: 'Cluster',
+                options: appListFiltersResponse?.isFullMode
+                    ? getClusterOptions(appListFiltersResponse?.appListFilters.result.clusters)
+                    : getClusterOptions(appListFiltersResponse?.clusterList.result),
+            },
+        ],
         [appListFiltersResponse, isExternalArgo, isExternalFlux],
     )
 
@@ -212,3 +220,87 @@ export const getFilterChipConfig = (
             return { ...filterConfig, templateType: [] }
     }
 }
+
+export const getAppListFilters = ({
+    clusterIdsCsv,
+    isExternalArgo,
+    isExternalFlux,
+    isArgoInstalled,
+    serverMode,
+    selectedEnvironments,
+}: {
+    clusterIdsCsv: string
+    isExternalArgo: boolean
+    isExternalFlux: boolean
+    isArgoInstalled: boolean
+    serverMode: SERVER_MODE
+    selectedEnvironments: { label: string; value: string }[]
+}): GroupedFilterSelectPickerProps<AppListUrlFilters>['options'] => [
+    {
+        items: [
+            ...((!(isExternalArgo || isExternalFlux)
+                ? [
+                      ...((isArgoInstalled
+                          ? [
+                                {
+                                    id: AppListUrlFilters.appStatus,
+                                    label: 'App Status',
+                                    startIcon: { name: 'ic-activity' },
+                                },
+                            ]
+                          : []) as AppListFilterMenuItemType[]),
+                      {
+                          id: AppListUrlFilters.project,
+                          label: 'Project',
+                          startIcon: { name: 'ic-folder' },
+                      },
+                      ...((serverMode === SERVER_MODE.FULL
+                          ? [
+                                {
+                                    id: AppListUrlFilters.environment,
+                                    label: 'Environment',
+                                    startIcon: { name: 'ic-environment' },
+                                    isDisabled: !!clusterIdsCsv,
+                                    tooltipProps: {
+                                        content: clusterIdsCsv
+                                            ? 'Remove cluster filters to use environment filter'
+                                            : null,
+                                    },
+                                },
+                            ]
+                          : []) as AppListFilterMenuItemType[]),
+                  ]
+                : []) as AppListFilterMenuItemType[]),
+            ...((isExternalFlux
+                ? [
+                      {
+                          id: AppListUrlFilters.templateType,
+                          label: 'Template Type',
+                          startIcon: { name: 'ic-cube' },
+                          isDisabled: !clusterIdsCsv,
+                          tooltipProps: { content: !clusterIdsCsv ? SELECT_CLUSTER_TIPPY : null },
+                      },
+                  ]
+                : []) as AppListFilterMenuItemType[]),
+            {
+                id: AppListUrlFilters.cluster,
+                label: 'Cluster',
+                startIcon: { name: 'ic-cluster' },
+                isDisabled: !(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length,
+                tooltipProps: {
+                    content:
+                        !(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length
+                            ? 'Remove environment filters to use cluster filter'
+                            : null,
+                },
+            },
+            {
+                id: AppListUrlFilters.namespace,
+                label: 'Namespace',
+                startIcon: { name: 'ic-namespace' },
+                isDisabled: !clusterIdsCsv,
+                tooltipProps: { content: !clusterIdsCsv ? SELECT_CLUSTER_TIPPY : null },
+            },
+        ],
+    },
+]
