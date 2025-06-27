@@ -983,44 +983,6 @@ button.anchor {
     height: 100%;
 }
 
-.dc__configuration-list {
-    display: grid;
-    grid-template-columns: 24px 1fr 200px;
-    grid-column-gap: 10px;
-
-    .tag {
-        border: 1px solid var(--N200);
-        height: 20px;
-        line-height: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--N900);
-        padding: 0 6px;
-        border-radius: 4px;
-        text-transform: uppercase;
-    }
-}
-
-.animate-background {
-    animation: colorchange 0.5s ease-in 2;
-    background: linear-gradient(-45deg, rgba(102, 163, 225, 100), white);
-    background-size: 400% 400%;
-}
-
-@keyframes colorchange {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
 .dc__element-scroller {
     background: var(--bg-overlay-secondary);
     border: 1px solid var(--border-primary);
@@ -1079,27 +1041,6 @@ button.anchor {
 
     div:hover {
         @include dc__striped-row(var(--B50));
-    }
-}
-
-.dc__app-update-toast {
-    font-size: 14px;
-
-    .info {
-        line-height: 1.43;
-        color: var(--N0);
-        font-size: 13px;
-        text-transform: none;
-    }
-
-    button {
-        outline: unset;
-        border: unset;
-        margin-left: auto;
-        background: transparent;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin: 14px 0 0 auto;
     }
 }
 
@@ -4991,6 +4932,11 @@ details[open] {
     background: var(--backdrop-bg);
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
+
+    &--transparent {
+        background: transparent;
+        backdrop-filter: none;
+    }
 }
 
 // NOTE: used for divider separated flexbox row lists

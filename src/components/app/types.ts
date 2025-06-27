@@ -15,14 +15,11 @@
  */
 
 import React, { Dispatch, SetStateAction } from 'react'
-import { UaEventOptions } from 'react-ga4/types/ga4'
 
 import {
     ACTION_STATE,
     AppEnvironment,
     BaseAppMetaData,
-    ButtonComponentType,
-    ButtonProps,
     DeploymentAppTypes,
     DeploymentStatusDetailsBreakdownDataType,
     HelmReleaseStatus,
@@ -532,20 +529,20 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     deploymentUserActionState?: ACTION_STATE
     setHibernationPatchChartName?: Dispatch<SetStateAction<string>>
     isResourceTreeReloading?: boolean
+    handleOpenCDModal?: (isForRollback?: boolean) => () => void
 }
 
-export interface AppDetailsCDButtonType
+export interface AppDetailsCDModalType
     extends Pick<
             AppDetails,
             'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
         >,
         Pick<SourceInfoType, 'loadingDetails'> {
     cdModal: CDModalProps
-    isForRollback?: boolean
     appName?: string
-    buttonProps: ButtonProps<ButtonComponentType.button>
-    gaEvent: Pick<UaEventOptions, 'action' | 'category'>
     handleSuccess?: CDMaterialProps['handleSuccess']
+    materialType: string
+    closeCDModal: () => void
 }
 
 export interface EnvironmentListMinType {

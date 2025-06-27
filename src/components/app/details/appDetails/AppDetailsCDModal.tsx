@@ -14,29 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import ReactGA from 'react-ga4'
 import { useHistory, useLocation } from 'react-router-dom'
 
-import {
-    Button,
-    DeploymentNodeType,
-    stopPropagation,
-    useSearchString,
-    VisibleModal,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentNodeType, stopPropagation, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { AppDetailsCDButtonType } from '../../types'
+import { AppDetailsCDModalType } from '../../types'
 import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
-import { MATERIAL_TYPE } from '../triggerView/types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
-const AppDetailsCDButton = ({
+const AppDetailsCDModal = ({
     appId,
     appName,
     environmentId,
@@ -46,39 +37,13 @@ const AppDetailsCDButton = ({
     loadingDetails,
     environmentName,
     handleSuccess,
-    isForRollback = false,
-    buttonProps,
-    gaEvent,
-}: AppDetailsCDButtonType): JSX.Element => {
+    materialType,
+    closeCDModal,
+}: AppDetailsCDModalType): JSX.Element => {
     const history = useHistory()
-    const { searchParams } = useSearchString()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const mode = queryParams.get('mode')
-
-    // deriving from URL and not props as on app details multiple instances exist, but we are rendering only one at a time
-    const materialType = queryParams.get('materialType')
-
-    const onClickDeployButton = (event) => {
-        stopPropagation(event)
-        const newParams = {
-            ...searchParams,
-            mode: URL_PARAM_MODE_TYPE.LIST,
-            // setting materialType from props acc to rollback or input material list
-            materialType: isForRollback ? MATERIAL_TYPE.rollbackMaterialList : MATERIAL_TYPE.inputMaterialList,
-        }
-
-        history.push({
-            search: new URLSearchParams(newParams).toString(),
-        })
-
-        ReactGA.event(gaEvent)
-    }
-
-    const closeCDModal = (e: React.MouseEvent): void => {
-        stopPropagation(e)
-        history.push({ search: '' })
-    }
 
     const node = {
         environmentName,
@@ -131,10 +96,9 @@ const AppDetailsCDButton = ({
 
     return (
         <>
-            <Button {...buttonProps} onClick={onClickDeployButton} />
             {renderCDModal()}
             {renderApprovalMaterial()}
         </>
     )
 }
-export default AppDetailsCDButton
+export default AppDetailsCDModal

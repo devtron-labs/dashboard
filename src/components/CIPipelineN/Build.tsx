@@ -15,8 +15,14 @@
  */
 
 import { useContext } from 'react'
-import { Progressing, CiPipelineSourceTypeOption, CustomInput, DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
-import { SourceTypeMap, ViewType } from '../../config'
+import {
+    Progressing,
+    DTSwitch,
+    CiPipelineSourceTypeOption,
+    CustomInput,
+    SourceTypeMap,
+} from '@devtron-labs/devtron-fe-common-lib'
+import { ViewType } from '../../config'
 import { createWebhookConditionList } from '../ciPipeline/ciPipeline.service'
 import { SourceMaterials } from '../ciPipeline/SourceMaterials'
 import { ValidationRules } from '../ciPipeline/validationRules'
@@ -24,9 +30,9 @@ import { BuildType, WebhookCIProps } from '../ciPipeline/types'
 import { ReactComponent as BugScanner } from '../../assets/icons/scanner.svg'
 import AdvancedConfigOptions from './AdvancedConfigOptions'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { getSelectedWebhookEvent } from '@Pages/App/Configurations'
 
 export const Build = ({
-    showFormError,
     isAdvanced,
     ciPipeline,
     pageState,
@@ -124,11 +130,6 @@ export const Build = ({
         setFormData(_formData)
         getPluginData(_formData)
     }
-    const getSelectedWebhookEvent = (material) => {
-        const _materialValue = JSON.parse(material.value)
-        const _selectedEventId = _materialValue?.eventId
-        return _selectedEventId && formData.webhookEvents.find((we) => we.id === _selectedEventId)
-    }
 
     const addWebhookCondition = (): void => {
         const _form = { ...formData }
@@ -157,17 +158,6 @@ export const Build = ({
         setFormData(_form)
     }
 
-    const copyToClipboard = (text: string, callback = () => {}): void => {
-        const textarea = document.createElement('textarea')
-        const main = document.getElementsByClassName('main')[0]
-        main.appendChild(textarea)
-        textarea.value = text
-        textarea.select()
-        document.execCommand('copy')
-        main.removeChild(textarea)
-        callback()
-    }
-
     const handleScanToggle = (): void => {
         const _formData = { ...formData }
         _formData.scanEnabled = !_formData.scanEnabled
@@ -178,8 +168,7 @@ export const Build = ({
         const _webhookData: WebhookCIProps = {
             webhookConditionList: formData.webhookConditionList,
             gitHost: formData.gitHost,
-            getSelectedWebhookEvent,
-            copyToClipboard,
+            getSelectedWebhookEvent: (material) => getSelectedWebhookEvent(material, formData.webhookEvents),
             addWebhookCondition,
             deleteWebhookCondition,
             onWebhookConditionSelectorChange,
@@ -190,7 +179,6 @@ export const Build = ({
             <>
                 {isAdvanced && renderPipelineName()}
                 <SourceMaterials
-                    showError={showFormError}
                     validationRules={validationRules}
                     materials={formData.materials}
                     selectSourceType={selectSourceType}
@@ -199,7 +187,6 @@ export const Build = ({
                     ciPipelineSourceTypeOptions={formData.ciPipelineSourceTypeOptions}
                     webhookData={_webhookData}
                     canEditPipeline={formData.ciPipelineEditable}
-                    isAdvanced={isAdvanced}
                     handleOnBlur={handleOnBlur}
                 />
             </>

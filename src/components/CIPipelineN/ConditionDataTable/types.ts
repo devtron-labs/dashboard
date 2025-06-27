@@ -1,11 +1,17 @@
 import { ChangeEvent } from 'react'
 
-import { ConditionDataTableHeaderKeys, ConditionType, DynamicDataTableProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ConditionDataTableHeaderKeys,
+    ConditionType,
+    DynamicDataTableProps,
+    VariableTypeFormat,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConditionContainerType } from '@Components/ciPipeline/types'
 
 export interface ConditionDataTableCustomState {
     conditionType: ConditionType
+    variableType: VariableTypeFormat | null
 }
 
 export type ConditionDataTableType = DynamicDataTableProps<ConditionDataTableHeaderKeys, ConditionDataTableCustomState>
