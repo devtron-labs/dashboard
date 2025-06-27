@@ -31,16 +31,16 @@ import {
     NODE_SEARCH_KEY_OPTIONS,
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
-import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
+import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
 import ColumnSelector from './ColumnSelector'
 
 const NodeListSearchFilter = ({
     visibleColumns,
     setVisibleColumns,
-    isOpen,
     searchParams,
+    allColumns,
 }: NodeListSearchFilterType) => {
-    const { clusterId } = useParams<URLParams>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
         if (searchParams[key]) {
@@ -106,7 +106,7 @@ const NodeListSearchFilter = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     useEffect(() => {
-        if (registerShortcut && isOpen) {
+        if (registerShortcut) {
             registerShortcut({ keys: ['R'], callback: handleFocusInput })
             registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
         }
@@ -115,7 +115,7 @@ const NodeListSearchFilter = ({
             unregisterShortcut(['R'])
             unregisterShortcut(['Escape'])
         }
-    }, [isOpen])
+    }, [])
 
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {
@@ -312,12 +312,17 @@ const NodeListSearchFilter = ({
 
             <div className="dc__border-left h-20 mt-6" />
 
-            <ColumnSelector
-                {...{
-                    setVisibleColumns,
-                    visibleColumns,
-                }}
-            />
+            {allColumns.length ? (
+                <ColumnSelector
+                    {...{
+                        setVisibleColumns,
+                        visibleColumns,
+                        allColumns,
+                    }}
+                />
+            ) : (
+                <div className="shimmer h-32" />
+            )}
         </div>
     )
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { NO_MATCHING_RESULT, Nodes } from '@devtron-labs/devtron-fe-common-lib'
+import { NO_MATCHING_RESULT, Nodes, URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
@@ -103,11 +103,11 @@ export const KIND_SEARCH_COMMON_STYLES = {
 }
 
 export const RESOURCE_ACTION_MENU = {
-    manifest: 'Manifest',
-    Events: 'Events',
-    logs: 'Logs',
-    terminal: 'Terminal',
-    delete: 'Delete',
+    manifest: 'manifest',
+    Events: 'events',
+    logs: 'logs',
+    terminal: 'terminal',
+    delete: 'delete',
 }
 
 export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
@@ -252,17 +252,6 @@ export const RESOURCE_EMPTY_PAGE_STATE = {
         }`,
 }
 
-export const RESOURCE_PAGE_SIZE_OPTIONS = [
-    { value: 100, selected: true },
-    { value: 150, selected: false },
-    { value: 200, selected: false },
-]
-export const NODE_DETAILS_PAGE_SIZE_OPTIONS = [
-    { value: 20, selected: true },
-    { value: 40, selected: false },
-    { value: 50, selected: false },
-]
-
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
 export const TAKING_LONGER_TO_CONNECT =
     'It is taking longer than usual to connect to the cluster. If cluster is reachable it may take up to 30 seconds.'
@@ -322,7 +311,7 @@ export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[num
     'cpu usage (absolute)': 'cpu.usage',
     'cpu allocatable': 'cpu.allocatable',
     'mem usage (%)': 'memory.usagePercentage',
-    'mem usage (absolute)': 'memory.usageInBytes',
+    'mem usage (absolute)': 'memory.usage',
     'mem allocatable': 'memory.allocatable',
     age: 'age',
     unschedulable: 'unschedulable',
@@ -355,8 +344,6 @@ export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
 }
 
 export const LOCAL_STORAGE_EXISTS = !!(Storage && localStorage)
-
-export const LOCAL_STORAGE_KEY_FOR_APPLIED_COLUMNS = 'appliedColumns'
 
 export const NODE_K8S_VERSION_FILTER_KEY = 'k8sVersion'
 
@@ -398,3 +385,26 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
         excludeValues: new Set(['Approved,Issued']),
     },
 })
+
+export const RESOURCE_BROWSER_ROUTES = {
+    OVERVIEW: `${URLS.RESOURCE_BROWSER}/:clusterId/overview`,
+    MONITORING_DASHBOARD: `${URLS.RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`,
+    TERMINAL: `${URLS.RESOURCE_BROWSER}/:clusterId/terminal`,
+    CLUSTER_UPGRADE: `${URLS.RESOURCE_BROWSER}/:clusterId/cluster-upgrade`,
+    NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
+    K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
+    K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
+    RESOURCE_RECOMMENDER: `${URLS.RESOURCE_BROWSER}/:clusterId/resource-recommender`,
+} as const
+
+export const DUMMY_RESOURCE_GVK_VERSION = 'v1'
+
+export const ResourceBrowserRouteToTabIdMap: Partial<
+    Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
+> = {
+    '/resource-browser/:clusterId/:kind/:group/:version': ResourceBrowserTabsId.k8s_Resources,
+    '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
+    '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
+    '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
+    '/resource-browser/:clusterId/resource-recommender': RESOURCE_RECOMMENDER_TAB_ID,
+}

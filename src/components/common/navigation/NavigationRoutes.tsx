@@ -112,7 +112,6 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
-const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
@@ -518,7 +517,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
-                isResourceRecommendationEnabled: environmentDataState.isResourceRecommendationEnabled,
+                isResourceRecommendationEnabled: true,
             }}
         >
             <ConfirmationModalProvider>
