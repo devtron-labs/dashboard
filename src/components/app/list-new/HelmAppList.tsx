@@ -472,7 +472,11 @@ const HelmAppList = ({
                             </span>
                             <div className="flexbox">
                                 {SELECT_CLUSTER_FROM_FILTER_NOTE}&nbsp;
-                                <DocLink docLinkKey="HYPERION" dataTestId="learn-more-about-hyperion-link" size={ComponentSizeType.xs} />
+                                <DocLink
+                                    docLinkKey="HYPERION"
+                                    dataTestId="learn-more-about-hyperion-link"
+                                    size={ComponentSizeType.xs}
+                                />
                             </div>
                         </div>
                     </div>
@@ -534,11 +538,7 @@ const HelmAppList = ({
     }
 
     function askToClearFiltersWithSelectClusterTip() {
-        return (
-            <div className="flex column">
-                <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
-            </div>
-        )
+        return <AskToClearFilters clearAllFilters={clearAllFilters} showTipToSelectCluster />
     }
 
     function askToConnectAClusterForNoResult() {
@@ -643,7 +643,7 @@ const HelmAppList = ({
                 </>
             )}
             {dataStateType === AppListViewType.LIST && (
-                <div>
+                <div className="flex-grow-1 flexbox-col">
                     {renderFullModeApplicationListContainer()}
                     {renderPagination()}
                 </div>
