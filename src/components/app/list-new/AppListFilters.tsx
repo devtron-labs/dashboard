@@ -20,11 +20,11 @@ import ReactGA from 'react-ga4'
 import {
     AppListConstants,
     ComponentSizeType,
-    FilterSelectPicker,
+    GroupedFilterSelectPicker,
+    GroupedFilterSelectPickerProps,
     SearchBar,
     SelectPickerOptionType,
     SERVER_MODE,
-    Tooltip,
     useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -33,8 +33,8 @@ import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 
 import { getDevtronAppListDataToExport } from './AppListService'
 import { AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
-import { APP_STATUS_FILTER_OPTIONS, SELECT_CLUSTER_TIPPY, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
-import { getAppTabNameFromAppType, useFilterOptions } from './list.utils'
+import { APP_STATUS_FILTER_OPTIONS, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
+import { getAppListFilters, getAppTabNameFromAppType, useFilterOptions } from './list.utils'
 
 const AppListFilters = ({
     filterConfig,
@@ -44,7 +44,8 @@ const AppListFilters = ({
     isExternalArgo,
     isExternalFlux,
     appListFiltersResponse,
-    showPulsatingDot,
+    // TODO: need to handle this
+    // showPulsatingDot,
     appListFiltersError,
     reloadAppListFilters,
     serverMode,
@@ -122,7 +123,7 @@ const AppListFilters = ({
         }
     }, [filterConfig])
 
-    const appStatusFilters: SelectPickerOptionType[] = structuredClone(APP_STATUS_FILTER_OPTIONS)
+    const appStatusFilters: typeof APP_STATUS_FILTER_OPTIONS = structuredClone(APP_STATUS_FILTER_OPTIONS)
 
     const showExportCsvButton =
         isSuperAdmin && appType === AppListConstants.AppType.DEVTRON_APPS && serverMode !== SERVER_MODE.EA_ONLY
@@ -132,153 +133,123 @@ const AppListFilters = ({
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
     }
 
+    const appListFiltersSelectPickerMap: GroupedFilterSelectPickerProps<AppListUrlFilters>['filterSelectPickerPropsMap'] =
+        {
+            [AppListUrlFilters.appStatus]: {
+                placeholder: 'App Status',
+                inputId: 'app-list-app-status-select',
+                options: appStatusFilters,
+                appliedFilterOptions: selectedAppStatus,
+                handleApplyFilter: handleUpdateFilters(AppListUrlFilters.appStatus),
+                isDisabled: false,
+                isLoading: false,
+                isOptionDisabled: getIsAppStatusDisabled,
+            },
+            [AppListUrlFilters.project]: {
+                placeholder: 'Project',
+                inputId: 'app-list-project-select',
+                options: projectOptions,
+                appliedFilterOptions: selectedProjects,
+                handleApplyFilter: handleUpdateFilters(AppListUrlFilters.project),
+                isDisabled: appListFiltersLoading,
+                isLoading: appListFiltersLoading,
+                optionListError: appListFiltersError,
+                reloadOptionList: reloadAppListFilters,
+            },
+            [AppListUrlFilters.environment]: {
+                placeholder: 'Environment',
+                inputId: 'app-list-environment-select',
+                options: environmentOptions,
+                appliedFilterOptions: selectedEnvironments,
+                handleApplyFilter: handleUpdateFilters(AppListUrlFilters.environment),
+                isDisabled: appListFiltersLoading || !!clusterIdsCsv,
+                isLoading: appListFiltersLoading,
+                optionListError: appListFiltersError,
+                reloadOptionList: reloadAppListFilters,
+            },
+            [AppListUrlFilters.templateType]: {
+                placeholder: 'Template Type',
+                inputId: 'app-list-template-type-filter',
+                options: TEMPLATE_TYPE_FILTER_OPTIONS,
+                appliedFilterOptions: selectedTemplateTypes,
+                handleApplyFilter: handleUpdateFilters(AppListUrlFilters.templateType),
+                isDisabled: !clusterIdsCsv,
+                isLoading: false,
+            },
+            [AppListUrlFilters.cluster]: {
+                placeholder: 'Cluster',
+                inputId: 'app-list-cluster-filter',
+                options: clusterOptions,
+                appliedFilterOptions: selectedClusters,
+                isDisabled: !(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length,
+                isLoading: appListFiltersLoading,
+                handleApplyFilter: handleUpdateFilters(AppListUrlFilters.cluster),
+                optionListError: appListFiltersError,
+                reloadOptionList: reloadAppListFilters,
+                isOptionDisabled: getIsClusterOptionDisabled,
+            },
+            [AppListUrlFilters.namespace]: {
+                placeholder: 'Namespace',
+                inputId: 'app-list-namespace-filter',
+                options: namespaceOptions,
+                appliedFilterOptions: selectedNamespaces,
+                isDisabled: appListFiltersLoading || !clusterIdsCsv,
+                isLoading: appListFiltersLoading,
+                handleApplyFilter: handleUpdateFilters(AppListUrlFilters.namespace),
+                shouldMenuAlignRight: !showExportCsvButton,
+                optionListError: appListFiltersError,
+                reloadOptionList: reloadAppListFilters,
+            },
+        }
+
     return (
         <div className="search-filter-section">
-            <SearchBar
-                containerClassName="w-250"
-                dataTestId="search-by-app-name"
-                initialSearchText={searchKey}
-                inputProps={{
-                    placeholder: `${
-                        appType === AppListConstants.AppType.HELM_APPS
-                            ? 'Search by app or chart name'
-                            : 'Search by app name'
-                    }`,
-                }}
-                handleEnter={handleSearch}
-                size={ComponentSizeType.medium}
-            />
-            <div className="flexbox dc__gap-8 dc__align-items-center">
-                {!(isExternalArgo || isExternalFlux) && (
-                    <>
-                        {isArgoInstalled && (
-                            <>
-                                <FilterSelectPicker
-                                    placeholder="App Status"
-                                    inputId="app-list-app-status-select"
-                                    options={appStatusFilters}
-                                    appliedFilterOptions={selectedAppStatus}
-                                    handleApplyFilter={handleUpdateFilters(AppListUrlFilters.appStatus)}
-                                    isDisabled={false}
-                                    isLoading={false}
-                                    isOptionDisabled={getIsAppStatusDisabled}
-                                />
-                                <div className="dc__border-right h-16" />
-                            </>
-                        )}
-                        <FilterSelectPicker
-                            placeholder="Project"
-                            inputId="app-list-project-select"
-                            options={projectOptions}
-                            appliedFilterOptions={selectedProjects}
-                            handleApplyFilter={handleUpdateFilters(AppListUrlFilters.project)}
-                            isDisabled={appListFiltersLoading}
-                            isLoading={appListFiltersLoading}
-                            optionListError={appListFiltersError}
-                            reloadOptionList={reloadAppListFilters}
-                        />
-                        <div className="dc__border-right h-16" />
-                        {serverMode === SERVER_MODE.FULL && (
-                            <>
-                                <Tooltip
-                                    content="Remove cluster filters to use environment filter"
-                                    alwaysShowTippyOnHover={!!clusterIdsCsv}
-                                    wordBreak={false}
-                                >
-                                    <div>
-                                        <FilterSelectPicker
-                                            placeholder="Environment"
-                                            inputId="app-list-environment-select"
-                                            options={environmentOptions}
-                                            appliedFilterOptions={selectedEnvironments}
-                                            handleApplyFilter={handleUpdateFilters(AppListUrlFilters.environment)}
-                                            isDisabled={appListFiltersLoading || !!clusterIdsCsv}
-                                            isLoading={appListFiltersLoading}
-                                            optionListError={appListFiltersError}
-                                            reloadOptionList={reloadAppListFilters}
-                                        />
-                                    </div>
-                                </Tooltip>
-                                <div className="dc__border-right h-16" />
-                            </>
-                        )}
-                    </>
-                )}
-                {isExternalFlux && (
-                    <>
-                        <Tooltip content={SELECT_CLUSTER_TIPPY} alwaysShowTippyOnHover={!clusterIdsCsv}>
-                            <div>
-                                <FilterSelectPicker
-                                    placeholder="Template Type"
-                                    inputId="app-list-template-type-filter"
-                                    options={TEMPLATE_TYPE_FILTER_OPTIONS}
-                                    appliedFilterOptions={selectedTemplateTypes}
-                                    handleApplyFilter={handleUpdateFilters(AppListUrlFilters.templateType)}
-                                    isDisabled={!clusterIdsCsv}
-                                    isLoading={false}
-                                />
-                            </div>
-                        </Tooltip>
-                        <div className="dc__border-right h-16" />
-                    </>
-                )}
-                <Tooltip
-                    content="Remove environment filters to use cluster filter"
-                    alwaysShowTippyOnHover={!(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length}
-                    wordBreak={false}
-                >
-                    <div className="flexbox dc__position-rel">
-                        <FilterSelectPicker
-                            placeholder="Cluster"
-                            inputId="app-list-cluster-filter"
-                            options={clusterOptions}
-                            appliedFilterOptions={selectedClusters}
-                            isDisabled={!(isExternalArgo || isExternalFlux) && !!selectedEnvironments.length}
-                            isLoading={appListFiltersLoading}
-                            handleApplyFilter={handleUpdateFilters(AppListUrlFilters.cluster)}
-                            optionListError={appListFiltersError}
-                            reloadOptionList={reloadAppListFilters}
-                            isOptionDisabled={getIsClusterOptionDisabled}
-                        />
-                        {showPulsatingDot && <div className="dc__pulsating-dot dc__position-abs" />}
-                    </div>
-                </Tooltip>
-                <Tooltip content={SELECT_CLUSTER_TIPPY} alwaysShowTippyOnHover={!clusterIdsCsv}>
-                    <div>
-                        <FilterSelectPicker
-                            placeholder="Namespace"
-                            inputId="app-list-namespace-filter"
-                            options={namespaceOptions}
-                            appliedFilterOptions={selectedNamespaces}
-                            isDisabled={appListFiltersLoading || !clusterIdsCsv}
-                            isLoading={appListFiltersLoading}
-                            handleApplyFilter={handleUpdateFilters(AppListUrlFilters.namespace)}
-                            shouldMenuAlignRight={!showExportCsvButton}
-                            optionListError={appListFiltersError}
-                            reloadOptionList={reloadAppListFilters}
-                        />
-                    </div>
-                </Tooltip>
-                {showExportCsvButton && (
-                    <>
-                        <div className="dc__border-right h-16" />
-                        <ExportToCsv
-                            apiPromise={() =>
-                                getDevtronAppListDataToExport(
-                                    filterConfig,
-                                    appListFiltersResponse?.appListFilters.result.environments,
-                                    namespaceListResponse?.result,
-                                    appListFiltersResponse?.appListFilters.result.clusters,
-                                    appListFiltersResponse?.appListFilters.result.teams,
-                                    appCount,
-                                )
-                            }
-                            fileName={FILE_NAMES.Apps}
-                            disabled={!appCount}
-                        />
-                    </>
-                )}
+            <div className="flex left dc__gap-8">
+                <SearchBar
+                    containerClassName="w-250"
+                    dataTestId="search-by-app-name"
+                    initialSearchText={searchKey}
+                    inputProps={{
+                        placeholder: `${
+                            appType === AppListConstants.AppType.HELM_APPS
+                                ? 'Search by app or chart name'
+                                : 'Search by app name'
+                        }`,
+                    }}
+                    handleEnter={handleSearch}
+                    size={ComponentSizeType.medium}
+                />
+                <GroupedFilterSelectPicker<AppListUrlFilters>
+                    id="app-list-filters"
+                    isFilterApplied={!!(selectedAppStatus.length || selectedProjects.length)}
+                    options={getAppListFilters({
+                        clusterIdsCsv,
+                        isExternalArgo,
+                        isExternalFlux,
+                        isArgoInstalled,
+                        serverMode,
+                        selectedEnvironments,
+                    })}
+                    filterSelectPickerPropsMap={appListFiltersSelectPickerMap}
+                />
             </div>
+
+            {showExportCsvButton && (
+                <ExportToCsv
+                    apiPromise={() =>
+                        getDevtronAppListDataToExport(
+                            filterConfig,
+                            appListFiltersResponse?.appListFilters.result.environments,
+                            namespaceListResponse?.result,
+                            appListFiltersResponse?.appListFilters.result.clusters,
+                            appListFiltersResponse?.appListFilters.result.teams,
+                            appCount,
+                        )
+                    }
+                    fileName={FILE_NAMES.Apps}
+                    disabled={!appCount}
+                />
+            )}
         </div>
     )
 }

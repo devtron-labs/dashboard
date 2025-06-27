@@ -16,6 +16,7 @@
 
 import {
     EnvironmentListHelmResponse,
+    GroupedFilterSelectPickerProps,
     ResponseType,
     SERVER_MODE,
     SortingOrder,
@@ -210,3 +211,6 @@ export interface GetDevtronHelmAppListParamsType {
 export interface AskToClearFiltersProps extends Pick<DevtronAppListProps, 'clearAllFilters'> {
     showTipToSelectCluster?: boolean
 }
+
+export type AppListFilterMenuItemType =
+    GroupedFilterSelectPickerProps<AppListUrlFilters>['options'][number]['items'][number]
