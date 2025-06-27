@@ -221,7 +221,17 @@ const AppListFilters = ({
                 />
                 <GroupedFilterSelectPicker<AppListUrlFilters>
                     id="app-list-filters"
-                    isFilterApplied={!!(selectedAppStatus.length || selectedProjects.length)}
+                    width={200}
+                    isFilterApplied={
+                        !!(
+                            selectedAppStatus.length ||
+                            selectedProjects.length ||
+                            selectedEnvironments.length ||
+                            selectedTemplateTypes.length ||
+                            selectedClusters.length ||
+                            selectedNamespaces.length
+                        )
+                    }
                     options={getAppListFilters({
                         clusterIdsCsv,
                         isExternalArgo,
