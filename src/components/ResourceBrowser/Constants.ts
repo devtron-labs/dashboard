@@ -252,12 +252,6 @@ export const RESOURCE_EMPTY_PAGE_STATE = {
         }`,
 }
 
-export const RESOURCE_PAGE_SIZE_OPTIONS = [
-    { value: 100, selected: true },
-    { value: 150, selected: false },
-    { value: 200, selected: false },
-]
-
 export const TRYING_TO_CONNECT = 'Trying to connect to the Kubernetes cluster and fetch resources.'
 export const TAKING_LONGER_TO_CONNECT =
     'It is taking longer than usual to connect to the cluster. If cluster is reachable it may take up to 30 seconds.'

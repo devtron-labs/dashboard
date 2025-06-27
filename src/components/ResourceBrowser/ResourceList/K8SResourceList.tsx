@@ -20,6 +20,7 @@ import { useLocation, useParams } from 'react-router-dom'
 import {
     abortPreviousRequests,
     FiltersTypeEnum,
+    LARGE_PAGE_SIZE_OPTIONS,
     Nodes,
     PaginationEnum,
     SelectAllDialogStatus,
@@ -37,7 +38,7 @@ import {
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
-import { NODE_LIST_HEADERS_TO_KEY_MAP, RESOURCE_PAGE_SIZE_OPTIONS } from '../Constants'
+import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
@@ -277,7 +278,7 @@ export const K8SResourceList = ({
             id="table__gvk-resource-list"
             additionalFilterProps={{
                 parseSearchParams: parseK8sResourceListSearchParams,
-                defaultPageSize: RESOURCE_PAGE_SIZE_OPTIONS[0].value,
+                defaultPageSize: LARGE_PAGE_SIZE_OPTIONS[0].value,
                 initialSortKey: getDefaultSortKey(),
             }}
             ViewWrapper={K8SResourceListViewWrapper}
@@ -293,7 +294,7 @@ export const K8SResourceList = ({
                 reloadResourceListData: handleClearCacheAndReload,
                 clusterName: selectedCluster?.label ?? '',
             }}
-            pageSizeOptions={!isNodeListing ? RESOURCE_PAGE_SIZE_OPTIONS : undefined}
+            pageSizeOptions={!isNodeListing ? LARGE_PAGE_SIZE_OPTIONS : undefined}
         />
     )
 }

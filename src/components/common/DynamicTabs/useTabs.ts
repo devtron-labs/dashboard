@@ -207,7 +207,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             (tab) => tab.id === MONITORING_DASHBOARD_TAB_ID,
                         )
 
-                        if (!!resourceRecommenderInitTab && monitoringTabIndex > -1) {
+                        if (monitoringTabIndex > -1) {
                             parsedTabsData.data[persistenceKey].splice(
                                 monitoringTabIndex + 1,
                                 0,
