@@ -238,7 +238,6 @@ src/components/common/hooks/__tests__/FileReader.test.tsx
 src/components/common/icons/Icons.tsx
 src/components/common/lineChart/lineChart.tsx
 src/components/common/navigation/Navigation.tsx
-src/components/common/navigation/NavigationRoutes.tsx
 src/components/dockerRegistry/Docker.tsx
 src/components/dockerRegistry/ManageRegistry.tsx
 src/components/dockerRegistry/service.tsx

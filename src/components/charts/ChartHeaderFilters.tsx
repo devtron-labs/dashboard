@@ -250,13 +250,10 @@ const ChartHeaderFilter = ({
                     <div> Show deprecated charts</div>
                 </Checkbox>
                 {ChartCategoryFilters && (
-                    <>
-                        <hr className="mt-8 mb-8" />
-                        <ChartCategoryFilters
-                            selectedCategories={chartCategoryIds}
-                            handleUpdateCategoryFilter={handleUpdateCategoryFilter}
-                        />
-                    </>
+                    <ChartCategoryFilters
+                        selectedCategories={chartCategoryIds}
+                        handleUpdateCategoryFilter={handleUpdateCategoryFilter}
+                    />
                 )}
                 <hr className="mt-8 mb-8" />
                 <Accordian
