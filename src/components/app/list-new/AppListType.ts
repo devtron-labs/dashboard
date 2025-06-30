@@ -214,3 +214,12 @@ export interface AskToClearFiltersProps extends Pick<DevtronAppListProps, 'clear
 
 export type AppListFilterMenuItemType =
     GroupedFilterSelectPickerProps<AppListUrlFilters>['options'][number]['items'][number]
+
+export interface GetAppListFiltersParams {
+    clusterIdsCsv: string
+    isExternalArgo: boolean
+    isExternalFlux: boolean
+    isArgoInstalled: boolean
+    serverMode: SERVER_MODE
+    selectedEnvironments: { label: string; value: string }[]
+}

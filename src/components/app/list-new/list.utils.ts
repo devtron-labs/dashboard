@@ -39,6 +39,7 @@ import {
     AppListUrlFiltersType,
     AppStatuses,
     AppStatusesDTO,
+    GetAppListFiltersParams,
     useFilterOptionsProps,
 } from './AppListType'
 import { APPS_WITH_NO_PROJECT_OPTION, SELECT_CLUSTER_TIPPY } from './Constants'
@@ -228,14 +229,7 @@ export const getAppListFilters = ({
     isArgoInstalled,
     serverMode,
     selectedEnvironments,
-}: {
-    clusterIdsCsv: string
-    isExternalArgo: boolean
-    isExternalFlux: boolean
-    isArgoInstalled: boolean
-    serverMode: SERVER_MODE
-    selectedEnvironments: { label: string; value: string }[]
-}): GroupedFilterSelectPickerProps<AppListUrlFilters>['options'] => [
+}: GetAppListFiltersParams): GroupedFilterSelectPickerProps<AppListUrlFilters>['options'] => [
     {
         items: [
             ...((!(isExternalArgo || isExternalFlux)
