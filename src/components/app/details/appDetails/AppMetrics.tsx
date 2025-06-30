@@ -23,6 +23,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, Link, NavLink } from 'react-router-dom'
@@ -63,6 +64,7 @@ export const AppMetrics: React.FC<{
     addExtraSpace: boolean
 }> = ({ appName, podMap, k8sVersion, addExtraSpace, environment }) => {
     const { appTheme } = useTheme()
+    const { setTempAppWindowConfig } = useMainContext()
     const { appMetrics, infraMetrics, environmentName } = environment
     const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
@@ -85,7 +87,6 @@ export const AppMetrics: React.FC<{
     })
     const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate)
-    const [chartName, setChartName] = useState<ChartTypes>(null)
     const { appId, envId } = useParams<AppDetailsPathParams>()
     const [calendarValue, setCalendarValue] = useState('')
     const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput)
@@ -302,6 +303,31 @@ export const AppMetrics: React.FC<{
         })
     }
 
+    const openTempAppWindow = (chartName: ChartTypes) => () => {
+        setTempAppWindowConfig({
+            open: true,
+            title: `${appName}/application metrics`,
+            component: (
+                <GraphModal
+                    appId={appId}
+                    envId={envId}
+                    appName={appName}
+                    infraMetrics={environment.infraMetrics}
+                    appMetrics={environment.appMetrics}
+                    dataSourceName={dataSourceName}
+                    chartName={chartName}
+                    newPodHash={newPodHash}
+                    calendar={calendar}
+                    calendarInputs={calendarInputs}
+                    tab={tab}
+                    k8sVersion={k8sVersion}
+                    selectedLatency={selectedLatency}
+                    getIframeSrcWrapper={getIframeSrcWrapper}
+                />
+            ),
+        })
+    }
+
     useEffect(() => {
         const inputCalendarValue: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
         if (inputCalendarValue !== calendarValue) {
@@ -366,25 +392,6 @@ export const AppMetrics: React.FC<{
                                 />
                                 <span className="dc__tertiary-tab">Per Pod</span>
                             </label>
-                            {chartName ? (
-                                <GraphModal
-                                    appId={appId}
-                                    envId={envId}
-                                    appName={appName}
-                                    infraMetrics={environment.infraMetrics}
-                                    appMetrics={environment.appMetrics}
-                                    dataSourceName={dataSourceName}
-                                    chartName={chartName}
-                                    newPodHash={newPodHash}
-                                    calendar={calendar}
-                                    calendarInputs={calendarInputs}
-                                    tab={tab}
-                                    k8sVersion={k8sVersion}
-                                    selectedLatency={selectedLatency}
-                                    close={() => setChartName(null)}
-                                    getIframeSrcWrapper={getIframeSrcWrapper}
-                                />
-                            ) : null}
                         </div>
                         <DateRangePicker
                             calendar={calendar}
@@ -410,9 +417,7 @@ export const AppMetrics: React.FC<{
                                     <div className="flex">
                                         <Fullscreen
                                             className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Cpu)
-                                            }}
+                                            onClick={openTempAppWindow(ChartType.Cpu)}
                                         />
                                     </div>
                                 </Tippy>
@@ -426,9 +431,7 @@ export const AppMetrics: React.FC<{
                                     <div className="flex">
                                         <Fullscreen
                                             className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Ram)
-                                            }}
+                                            onClick={openTempAppWindow(ChartType.Ram)}
                                         />
                                     </div>
                                 </Tippy>
@@ -450,9 +453,7 @@ export const AppMetrics: React.FC<{
                                     <div className="flex">
                                         <Fullscreen
                                             className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Status)
-                                            }}
+                                            onClick={openTempAppWindow(ChartType.Status)}
                                         />
                                     </div>
                                 </Tippy>
@@ -478,9 +479,7 @@ export const AppMetrics: React.FC<{
                                     <div className="flex">
                                         <Fullscreen
                                             className="icon-dim-16 cursor fcn-5"
-                                            onClick={(e) => {
-                                                setChartName(ChartType.Latency)
-                                            }}
+                                            onClick={openTempAppWindow(ChartType.Latency)}
                                         />
                                     </div>
                                 </Tippy>

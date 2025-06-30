@@ -51,6 +51,8 @@ import {
     SwitchThemeDialog,
     ConfirmationModalProvider,
     BaseConfirmationModal,
+    TempAppWindow,
+    TempAppWindowConfig,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
@@ -164,6 +166,12 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
         reinitialize: false,
     })
     const asideWidth = useMotionValue(0)
+
+    const [tempAppWindowConfig, setTempAppWindowConfig] = useState<TempAppWindowConfig>({
+        open: false,
+        title: null,
+        url: null,
+    })
 
     const {
         userPreferences,
@@ -516,6 +524,8 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
+                tempAppWindowConfig,
+                setTempAppWindowConfig,
             }}
         >
             <ConfirmationModalProvider>
@@ -546,7 +556,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                     {serverMode && (
                         <>
                             <div
-                                className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                                className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                                 ref={navRouteRef}
                             >
                                 <Banner />
@@ -693,6 +703,7 @@ export default function NavigationRoutes({ reloadVersionConfig }: Readonly<Navig
                                         </ErrorBoundary>
                                     </Suspense>
                                 </div>
+                                <TempAppWindow />
                             </div>
                             <SidePanel asideWidth={asideWidth} />
                         </>
