@@ -18,7 +18,10 @@ import { generatePath, useHistory } from 'react-router-dom'
 
 import {
     AppThemeType,
+    DUMMY_RESOURCE_GVK_VERSION,
     getComponentSpecificThemeClass,
+    K8S_EMPTY_GROUP,
+    RESOURCE_BROWSER_ROUTES,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -28,7 +31,6 @@ import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-res
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { URLS } from '../../../config'
 import { NodeDetailTabs } from '../../app/types'
-import { DUMMY_RESOURCE_GVK_VERSION, K8S_EMPTY_GROUP, RESOURCE_BROWSER_ROUTES } from '../../ResourceBrowser/Constants'
 import { ClusterMetaDataBarProps } from './types'
 
 import './ClusterMetaData.scss'

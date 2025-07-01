@@ -16,6 +16,7 @@
 
 import {
     FiltersTypeEnum,
+    ServerErrors,
     TableCellComponentProps,
     TableViewWrapperProps,
     useBreadcrumb,
@@ -106,25 +107,6 @@ export type DynamicTabComponentWrapperProps = Pick<
     }
 
 export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
-    resourceListError: any
+    resourceListError: ServerErrors
     reloadResourceListData: () => void
-}
-
-export enum NodeActionMenuOptionIdEnum {
-    terminal = 'terminal',
-    cordon = 'cordon',
-    uncordon = 'uncordon',
-    drain = 'drain',
-    editTaints = 'edit-taints',
-    editYaml = 'edit-yaml',
-    delete = 'delete',
-}
-
-export enum ResourceBrowserActionMenuEnum {
-    manifest = 'manifest',
-    events = 'events',
-    logs = 'logs',
-    terminal = 'terminal',
-    delete = 'delete',
-    vulnerability = 'vulnerability',
 }

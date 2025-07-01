@@ -22,23 +22,18 @@ import DOMPurify from 'dompurify'
 
 import {
     ApiResourceGroupType,
+    DUMMY_RESOURCE_GVK_VERSION,
     highlightSearchText,
     Nodes,
     ReactSelectInputAction,
+    RESOURCE_BROWSER_ROUTES,
     URL_FILTER_KEYS,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
 import { AggregationKeys } from '../../app/types'
-import {
-    DUMMY_RESOURCE_GVK_VERSION,
-    K8S_EMPTY_GROUP,
-    KIND_SEARCH_COMMON_STYLES,
-    RESOURCE_BROWSER_ROUTES,
-    ResourceBrowserTabsId,
-    SIDEBAR_KEYS,
-} from '../Constants'
+import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, ResourceBrowserTabsId, SIDEBAR_KEYS } from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
 import {
     convertK8sObjectMapToOptionsList,

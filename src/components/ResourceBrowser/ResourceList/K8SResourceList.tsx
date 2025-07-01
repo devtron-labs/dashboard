@@ -19,6 +19,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
+    ErrorScreenManager,
     FiltersTypeEnum,
     getAIAnalyticsEvents,
     getIsRequestAborted,
@@ -26,6 +27,7 @@ import {
     Nodes,
     PaginationEnum,
     SelectAllDialogStatus,
+    ServerErrors,
     Table,
     TableColumnType,
     TableProps,
@@ -234,10 +236,13 @@ export const K8SResourceList = ({
         return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
     }
 
+    if (resourceListError) {
+        return <ErrorScreenManager code={(resourceListError as ServerErrors).code} />
+    }
+
     return (
         <>
             <Table
-                // key={JSON.stringify(selectedResource)}
                 loading={isResourceListLoading}
                 columns={columns}
                 rows={rows}

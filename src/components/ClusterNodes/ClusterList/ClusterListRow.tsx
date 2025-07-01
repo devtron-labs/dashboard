@@ -12,13 +12,13 @@ import {
     ConditionalWrap,
     Icon,
     InstallationClusterStatus,
+    RESOURCE_BROWSER_ROUTES,
     Tooltip,
     useBulkSelection,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { RESOURCE_BROWSER_ROUTES } from '@Components/ResourceBrowser/Constants'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 
 import { ClusterMapInitialStatus } from '../ClusterMapInitialStatus'

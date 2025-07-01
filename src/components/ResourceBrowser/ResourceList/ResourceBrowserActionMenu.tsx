@@ -26,6 +26,7 @@ import {
     GetResourceScanDetailsPayloadType,
     ModuleNameMap,
     Nodes,
+    ResourceBrowserActionMenuEnum,
     ResponseType,
     ScanResultDTO,
     SecurityModal,
@@ -39,7 +40,6 @@ import { getShowResourceScanModal, importComponentFromFELibrary } from '../../co
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 import { ResourceBrowserActionMenuType } from '../Types'
 import DeleteResourcePopup from './DeleteResourcePopup'
-import { ResourceBrowserActionMenuEnum } from './types'
 
 const getResourceScanDetails: ({
     name,

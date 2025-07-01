@@ -18,6 +18,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams } from 'react-router-dom'
 
 import {
+    DUMMY_RESOURCE_GVK_VERSION,
     EditableTextArea,
     ErrorScreenManager,
     getRandomColor,
@@ -26,6 +27,7 @@ import {
     InfoIconTippy,
     InstallationClusterConfigType,
     noop,
+    RESOURCE_BROWSER_ROUTES,
     ResourceKindType,
     showError,
     StatusComponent,
@@ -43,9 +45,7 @@ import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import GenericDescription from '../common/Description/GenericDescription'
 import {
-    DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
-    RESOURCE_BROWSER_ROUTES,
     SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,

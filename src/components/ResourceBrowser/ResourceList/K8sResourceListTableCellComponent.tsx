@@ -8,6 +8,7 @@ import {
     ButtonVariantType,
     ClipboardButton,
     ConditionalWrap,
+    DUMMY_RESOURCE_GVK_VERSION,
     getAIAnalyticsEvents,
     highlightSearchText,
     Icon,
@@ -15,6 +16,8 @@ import {
     K8sResourceDetailDataType,
     Nodes,
     noop,
+    RESOURCE_BROWSER_ROUTES,
+    ResourceBrowserActionMenuEnum,
     TableSignalEnum,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -25,17 +28,12 @@ import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
-import {
-    AI_BUTTON_CONFIG_MAP,
-    DUMMY_RESOURCE_GVK_VERSION,
-    K8S_EMPTY_GROUP,
-    RESOURCE_BROWSER_ROUTES,
-} from '../Constants'
+import { AI_BUTTON_CONFIG_MAP, K8S_EMPTY_GROUP } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
 import NodeActionsMenu from './NodeActionsMenu'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { K8sResourceListTableCellComponentProps, ResourceBrowserActionMenuEnum } from './types'
+import { K8sResourceListTableCellComponentProps } from './types'
 import { getClassNameForColumn, getFirstResourceFromKindResourceMap, getShowAIButton, getStatusClass } from './utils'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
