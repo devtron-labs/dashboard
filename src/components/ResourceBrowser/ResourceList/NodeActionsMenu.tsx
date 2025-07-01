@@ -20,7 +20,6 @@ import { generatePath, useHistory, useLocation, useParams } from 'react-router-d
 import {
     ActionMenu,
     ActionMenuProps,
-    Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
@@ -37,7 +36,7 @@ import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP, RESOURCE_BROWSER_ROUTES } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
 import { getNodeActions } from './constants'
-import { K8sResourceListURLParams } from './types'
+import { K8sResourceListURLParams, NodeActionMenuOptionIdEnum } from './types'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
@@ -154,25 +153,25 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
 
         const onActionMenuClick: ActionMenuProps['onClick'] = (item) => {
             switch (item.id) {
-                case 'terminal':
+                case NodeActionMenuOptionIdEnum.terminal:
                     handleOpenTerminalAction()
                     break
-                case 'cordon':
+                case NodeActionMenuOptionIdEnum.cordon:
                     showCordonNodeModal()
                     break
-                case 'uncordon':
+                case NodeActionMenuOptionIdEnum.uncordon:
                     showCordonNodeModal()
                     break
-                case 'drain':
+                case NodeActionMenuOptionIdEnum.drain:
                     showDrainNodeModal()
                     break
-                case 'edit-taints':
+                case NodeActionMenuOptionIdEnum['edit-taints']:
                     showEditTaintsModal()
                     break
-                case 'edit-yaml':
+                case NodeActionMenuOptionIdEnum['edit-yaml']:
                     handleEditYamlAction()
                     break
-                case 'delete':
+                case NodeActionMenuOptionIdEnum.delete:
                     showDeleteNodeModal()
                     break
                 default:
@@ -182,23 +181,22 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
 
         return (
             <>
-                <ActionMenu
+                <ActionMenu<NodeActionMenuOptionIdEnum>
                     id={nodeData.name as string}
                     onClick={onActionMenuClick}
                     options={[{ items: getNodeActions(!!nodeData.unschedulable) }]}
                     position="right"
-                >
-                    <Button
-                        ref={forwardedRef}
-                        dataTestId={`node-actions-button-${nodeData.name}`}
-                        icon={<MenuDots className="fcn-7" />}
-                        variant={ButtonVariantType.borderLess}
-                        ariaLabel="Open action menu"
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.xxs}
-                        showAriaLabelInTippy={false}
-                    />
-                </ActionMenu>
+                    buttonProps={{
+                        ref: forwardedRef,
+                        dataTestId: `node-actions-button-${nodeData.name}`,
+                        icon: <MenuDots className="fcn-7" />,
+                        variant: ButtonVariantType.borderLess,
+                        ariaLabel: 'Open action menu',
+                        style: ButtonStyleType.neutral,
+                        size: ComponentSizeType.xxs,
+                        showAriaLabelInTippy: false,
+                    }}
+                />
                 {renderModal()}
             </>
         )

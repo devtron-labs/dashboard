@@ -182,6 +182,7 @@ const K8sResourceListTableCellComponent = ({
                 >
                     <div className="flex left dc__gap-4">
                         <Tooltip content={resourceData.name}>
+                            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                             <button
                                 type="button"
                                 className="dc__unset-button-styles dc__align-left dc__truncate"
@@ -190,7 +191,6 @@ const K8sResourceListTableCellComponent = ({
                                 data-kind={selectedResource.gvk.Kind}
                                 data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
                                 onClick={isNodeListing ? handleNodeClick : handleResourceClick}
-                                aria-label={`Select ${resourceData.name}`}
                                 ref={nameButtonRef}
                             >
                                 <span

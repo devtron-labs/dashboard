@@ -76,7 +76,6 @@ const ResourceFilterOptions = ({
     resourceRecommenderConfig,
     selectedAPIVersionGVKFilter,
     selectedKindGVKFilter,
-    resourceLastScannedOnDetails,
 }: ResourceFilterOptionsProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const { clusterId } = useParams<K8sResourceListURLParams>()
@@ -92,8 +91,11 @@ const ResourceFilterOptions = ({
     const showShortcutKey = !isInputFocused && !searchText
     const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
 
-    const { showAbsoluteValuesInResourceRecommender = false, setShowAbsoluteValuesInResourceRecommender = noop } =
-        resourceRecommenderConfig ?? {}
+    const {
+        showAbsoluteValuesInResourceRecommender = false,
+        setShowAbsoluteValuesInResourceRecommender = noop,
+        resourceLastScannedOnDetails,
+    } = resourceRecommenderConfig ?? {}
 
     const [, namespaceByClusterIdList] = useAsync(() => namespaceListByClusterId(clusterId), [clusterId])
 

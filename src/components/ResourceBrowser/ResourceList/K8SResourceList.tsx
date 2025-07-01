@@ -236,7 +236,6 @@ export const K8SResourceList = ({
 
     return (
         <Table
-            // key={JSON.stringify(selectedResource)}
             loading={resourceListLoader || !resourceList}
             columns={columns}
             rows={rows}

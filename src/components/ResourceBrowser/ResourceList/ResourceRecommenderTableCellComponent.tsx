@@ -119,15 +119,15 @@ const ResourceRecommenderTableCellComponent = ({
                     <div className="flexbox dc__align-start dc__content-space dc__gap-8 flex-grow-1">
                         <div className="flexbox dc__align-start dc__gap-4 flex-grow-1">
                             <Tooltip content={resourceData.name}>
+                                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                                 <button
                                     type="button"
-                                    className={`dc__unset-button-styles dc__align-left dc__truncate ${'cursor-default'}`}
+                                    className="dc__unset-button-styles dc__align-left dc__truncate cursor-default"
                                     data-name={resourceData.name}
                                     data-namespace={resourceData.namespace}
                                     data-kind={resourceData.kind}
                                     data-api-version={resourceData.apiVersion}
                                     onClick={handleResourceClick}
-                                    aria-label={`Select ${resourceData.name}`}
                                 >
                                     <span
                                         className="dc__link cursor"
@@ -150,7 +150,6 @@ const ResourceRecommenderTableCellComponent = ({
                             />
                         </div>
 
-                        {/* Maybe move to separate */}
                         <div className="dc__visible-hover--child">
                             <Button
                                 dataTestId={`apply-recommendation-${resourceData.id as string}`}

@@ -104,3 +104,13 @@ export type DynamicTabComponentWrapperProps = Pick<
     ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
         children: React.ReactElement
     }
+
+export enum NodeActionMenuOptionIdEnum {
+    terminal = 'terminal',
+    cordon = 'cordon',
+    uncordon = 'uncordon',
+    drain = 'drain',
+    editTaints = 'edit-taints',
+    editYaml = 'edit-yaml',
+    delete = 'delete',
+}

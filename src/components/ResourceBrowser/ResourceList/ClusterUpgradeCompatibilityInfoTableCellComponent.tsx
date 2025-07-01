@@ -115,6 +115,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
         >
             <div className="flex left dc__gap-4">
                 <Tooltip content={resourceData.name}>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <button
                         type="button"
                         className="dc__unset-button-styles dc__align-left dc__truncate"
@@ -122,7 +123,6 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                         data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
                         data-kind={resourceData.kind}
                         onClick={!shouldHideContextMenu ? handleResourceClick : noop}
-                        aria-label={`Select ${resourceData.name}`}
                         ref={nameButtonRef}
                     >
                         <span

@@ -771,7 +771,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             {sortedPodList.map((pod) => (
                                 <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
-                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center dc__content-space">
                                         <Tooltip content={pod.name} interactive>
                                             <span
                                                 className="dc__inline-block dc__ellipsis-right cb-5 cursor"
@@ -942,7 +942,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             const parsedManifest = YAML.parse(modifiedManifest)
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
-                name: name,
+                name,
                 manifestPatch: JSON.stringify(parsedManifest),
                 version: nodeDetail.version,
                 kind: nodeDetail.kind,

@@ -19,7 +19,6 @@ import { useMemo, useState } from 'react'
 import {
     ActionMenu,
     ActionMenuItemType,
-    Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
@@ -73,17 +72,16 @@ const DynamicTabsSelect = ({ tabs, getMarkTabActiveHandler, handleTabCloseAction
             isSearchable
             onOpen={setIsMenuOpen}
             options={[{ items: options }]}
-        >
-            <Button
-                dataTestId="close-dynamic-tab-option"
-                icon={<Icon name="ic-caret-down-small" color={null} rotateBy={isMenuOpen ? 180 : 0} />}
-                variant={ButtonVariantType.secondary}
-                style={ButtonStyleType.neutral}
-                size={ComponentSizeType.xxs}
-                ariaLabel="Open dynamic tabs select menu"
-                showAriaLabelInTippy={false}
-            />
-        </ActionMenu>
+            buttonProps={{
+                dataTestId: 'close-dynamic-tab-option',
+                icon: <Icon name="ic-caret-down-small" color={null} rotateBy={isMenuOpen ? 180 : 0} />,
+                variant: ButtonVariantType.secondary,
+                style: ButtonStyleType.neutral,
+                size: ComponentSizeType.xxs,
+                ariaLabel: 'Open dynamic tabs select menu',
+                showAriaLabelInTippy: false,
+            }}
+        />
     )
 }
 

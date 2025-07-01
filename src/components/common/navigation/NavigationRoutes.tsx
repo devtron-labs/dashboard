@@ -663,7 +663,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
-                isResourceRecommendationEnabled: true,
+                isResourceRecommendationEnabled: environmentDataState.isResourceRecommendationEnabled,
             }}
         >
             <ConfirmationModalProvider>
