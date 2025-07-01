@@ -135,7 +135,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     return (
         <>
             {renderClusterBulkSelection()}
-            <div className="flexbox-col flex-grow-1">
+            <div className="flexbox-col flex-grow-1 dc__overflow-auto">
                 {renderClusterList()}
                 {showKubeConfigModal && KubeConfigModal && (
                     <KubeConfigModal
