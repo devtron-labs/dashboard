@@ -29,6 +29,7 @@ import {
     Table,
     TableColumnType,
     TableProps,
+    URL_FILTER_KEYS,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -152,11 +153,7 @@ const ClusterUpgradeCompatibilityInfo = ({
 
     const clearFilters = () => {
         const searchParams = new URLSearchParams(location.search)
-        Array.from(searchParams.keys()).forEach((key) => {
-            if (key !== TARGET_K8S_VERSION_SEARCH_KEY) {
-                searchParams.delete(key)
-            }
-        })
+        searchParams.delete(URL_FILTER_KEYS.SEARCH_KEY)
         push({ search: searchParams.toString() })
     }
 

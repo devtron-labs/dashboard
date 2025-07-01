@@ -333,7 +333,6 @@ export const getTabsBasedOnRole = ({
                           [GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]: 'apps/v1',
                           [GVK_FILTER_KIND_QUERY_PARAM_KEY]: Nodes.Deployment,
                       })}`,
-                      false,
                       RESOURCE_RECOMMENDER_TAB_ID,
                   ),
               ]

@@ -115,12 +115,12 @@ export interface ResourceFilterOptionsProps
         reloadGVKOptions: () => void
         gvkOptionsError: ServerErrors
     }
-    resourceLastScannedOnDetails?: Omit<ResourceRecommenderActionMenuProps, 'children'>
     selectedAPIVersionGVKFilter?: string
     selectedKindGVKFilter?: string
     resourceRecommenderConfig?: {
         showAbsoluteValuesInResourceRecommender: boolean
         setShowAbsoluteValuesInResourceRecommender: Dispatch<SetStateAction<boolean>>
+        resourceLastScannedOnDetails: Omit<ResourceRecommenderActionMenuProps, 'children'>
     }
 }
 

@@ -41,7 +41,6 @@ const K8SResourceTabComponent = ({
     const abortControllerRef = useRef(new AbortController())
 
     useEffect(() => {
-        // TODO: once we get tab retention logic, we can remove this
         updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
     }, [])
 

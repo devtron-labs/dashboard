@@ -201,10 +201,6 @@ export const K8SResourceList = ({
         [resourceList?.data],
     )
 
-    const handleClearCacheAndReload = () => {
-        reloadResourceList()
-    }
-
     const tableFilter: TableProps['filter'] = (row, filterData) => {
         if (isNodeListing) {
             return isItemASearchMatchForNodeListing(row.data, filterData)
@@ -258,7 +254,7 @@ export const K8SResourceList = ({
                                   updateManifestResourceHelmApps,
                                   clusterId: +clusterId,
                                   clusterName: selectedCluster?.label ?? '',
-                                  handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
+                                  handleReloadDataAfterBulkOperation: reloadResourceList,
                               },
                               bulkActionsData: {
                                   showBulkRestartOption:
@@ -296,7 +292,7 @@ export const K8SResourceList = ({
                     isNodeListing,
                     isEventListing,
                     lowercaseKindToResourceGroupMap,
-                    reloadResourceListData: handleClearCacheAndReload,
+                    reloadResourceListData: reloadResourceList,
                     clusterName: selectedCluster?.label ?? '',
                 }}
                 pageSizeOptions={!isNodeListing ? LARGE_PAGE_SIZE_OPTIONS : undefined}

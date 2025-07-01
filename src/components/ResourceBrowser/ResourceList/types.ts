@@ -105,13 +105,26 @@ export type DynamicTabComponentWrapperProps = Pick<
         children: React.ReactElement
     }
 
-export interface ResourceRecommenderTableCellComponentProps
-    extends TableCellComponentProps<FiltersTypeEnum.URL>,
-        Pick<ResourceFilterOptionsProps, 'resourceRecommenderConfig'> {
-    handleReloadDataAfterBulkOperation: () => void
-}
-
 export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
     resourceListError: any
     reloadResourceListData: () => void
+}
+
+export enum NodeActionMenuOptionIdEnum {
+    terminal = 'terminal',
+    cordon = 'cordon',
+    uncordon = 'uncordon',
+    drain = 'drain',
+    editTaints = 'edit-taints',
+    editYaml = 'edit-yaml',
+    delete = 'delete',
+}
+
+export enum ResourceBrowserActionMenuEnum {
+    manifest = 'manifest',
+    events = 'events',
+    logs = 'logs',
+    terminal = 'terminal',
+    delete = 'delete',
+    vulnerability = 'vulnerability',
 }
