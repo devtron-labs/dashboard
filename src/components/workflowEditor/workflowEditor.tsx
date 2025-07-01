@@ -43,6 +43,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     handleAnalyticsEvent,
+    GenericEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType } from '../../config'
@@ -832,28 +833,26 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     renderEmptyState() {
         return (
-            <div className="create-here">
-                {this.props.isJobView ? (
-                    <img src={nojobs} width="250" height="200" alt="create-job-workflow" />
-                ) : (
-                    <img src={emptyWorkflow} alt="create-app-workflow" height="200" />
-                )}
-                <h1 className="form__title form__title--workflow-editor">Workflows</h1>
-                <p className="form__subtitle form__subtitle--workflow-editor">
-                    {this.props.isJobView
-                        ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
-                        : 'Workflows consist of pipelines from build to deployment stages of an application.'}
-                    <br />
-                    {!this.props.isJobView && (
+            <GenericEmptyState
+                title="Workflows"
+                subTitle={
+                    <div className="flexbox-col dc__gap-4">
+                        <span>
+                            {this.props.isJobView
+                                ? 'Configure job pipelines to be executed. Pipelines can be configured to be triggered automatically based on code change or time.'
+                                : 'Workflows consist of pipelines from build to deployment stages of an application.'}
+                        </span>
                         <DocLink
                             text="Learn about creating workflows"
                             docLinkKey="APP_CREATE_WORKFLOW"
                             dataTestId="learn-more-about-creating-workflow-link"
                         />
-                    )}
-                </p>
-                {this.renderWorkflowControlButton()}
-            </div>
+                    </div>
+                }
+                image={this.props.isJobView ? nojobs : emptyWorkflow}
+                isButtonAvailable
+                renderButton={this.renderWorkflowControlButton}
+            />
         )
     }
 
