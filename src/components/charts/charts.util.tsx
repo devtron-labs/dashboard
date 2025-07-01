@@ -15,6 +15,7 @@
  */
 
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartDescriptionTypes, ChartGroupEntry } from './charts.types'
 
 export const PaginationParams = {
     pageOffset: 0,
@@ -45,4 +46,19 @@ export const renderDeprecatedWarning = () => {
             <Icon name="ic-warning" color={null} size={16} />
         </div>
     )
+}
+
+export const getChartGroupSubgroup = (chartGroupEntries): ChartGroupEntry[] => {
+    let len = chartGroupEntries.length
+    len = len < 8 ? len : 8
+    return chartGroupEntries.slice(0, len)
+}
+
+export const getDescriptionTruncate = ({ isListView = false, isDeprecated = false }: ChartDescriptionTypes) => {
+    if (isListView) {
+        return 'dc__truncate--clamp-4'
+    }
+
+    if (isDeprecated) return 'dc__truncate'
+    return 'dc__truncate--clamp-2 cn-7'
 }

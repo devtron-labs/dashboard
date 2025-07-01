@@ -444,3 +444,8 @@ export interface ChartGroupDeploymentsProps {
     installedChartData: InstalledChartGroup[]
     deleteInstalledChart: (e) => void
 }
+
+export interface ChartDescriptionTypes {
+    isDeprecated?: boolean
+    isListView?: boolean
+}

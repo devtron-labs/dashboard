@@ -142,42 +142,13 @@
     margin-right: 16px;
 }
 
-.chart-group-item__title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 4px;
-}
-
-.chart-group-item__desc {
-    font-size: 12px;
-    height: 20px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N700);
-}
-
-.chart-grid-item__chart-icons {
-    height: 108px;
-    margin-bottom: 16px;
-}
-
 .chart-group-deployments {
     padding: 16px 24px;
     flex: 1;
 }
 
-.chart-group__chart-icon {
-    margin: 6px;
-    height: 40px;
-    width: 40px;
-}
-
 .chart-grid--chart-group-snapshot {
-    height: 228px;
+    height: 238px;
     overflow: hidden;
 }
 
