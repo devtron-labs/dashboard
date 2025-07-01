@@ -94,11 +94,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
         ).gvk
 
         return {
-            gvk: {
-                Group: gvkFromRawData.Group,
-                Kind: gvkFromRawData.Kind,
-                Version: gvkFromRawData.Version,
-            },
+            gvk: gvkFromRawData,
         }
     }
 
@@ -151,10 +147,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                     clusterId={clusterId}
                     resourceData={resourceData as K8sResourceDetailDataType}
                     getResourceListData={reloadResourceListData as () => Promise<void>}
-                    selectedResource={{
-                        ...getSelectedResourceKindOverride((resourceData.kind as string).toLowerCase()),
-                        namespaced: !!resourceData.namespace,
-                    }}
+                    selectedResource={selectedResource}
                     hideDeleteResource
                     handleResourceClick={handleResourceClick}
                     handleClearBulkSelection={noop}

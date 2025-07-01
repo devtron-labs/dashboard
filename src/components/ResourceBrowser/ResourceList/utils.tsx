@@ -20,6 +20,7 @@ import { generatePath } from 'react-router-dom'
 import {
     ALL_NAMESPACE_OPTION,
     ClusterDetail,
+    getGroupVersionFromApiVersion,
     logExceptionToSentry,
     numberComparatorBySortOrder,
     stringComparatorBySortOrder,
@@ -35,7 +36,6 @@ import {
     K8S_EMPTY_GROUP,
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
-    RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
     ResourceBrowserRouteToTabIdMap,
     SIDEBAR_KEYS,
@@ -43,7 +43,7 @@ import {
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import { ClusterOptionType, K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
-import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
+import { K8sResourceListFilterType, ResourceBrowserActionMenuEnum, ResourceListUrlFiltersType } from './types'
 
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     'getFilterOptionsFromSearchParams',
@@ -332,22 +332,18 @@ export const getTabIdForTab = (
 }
 
 export const getResourceRecommenderResourceDetailURL = (e: MouseEvent<HTMLButtonElement>) => {
-    const {
-        name,
-        namespace = ALL_NAMESPACE_OPTION.value,
-        kind,
-        group: _group,
-        tab = RESOURCE_ACTION_MENU.manifest,
-    } = e.currentTarget.dataset
+    const { name, namespace = ALL_NAMESPACE_OPTION.value, kind, apiVersion } = e.currentTarget.dataset
+
+    const group = getGroupVersionFromApiVersion(apiVersion).group.toLowerCase() || K8S_EMPTY_GROUP
 
     const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
         clusterId,
         namespace,
         name,
         kind: kind.toLowerCase(),
-        group: _group || K8S_EMPTY_GROUP,
+        group,
         version: DUMMY_RESOURCE_GVK_VERSION,
     })
 
-    return `${url}/${tab}`
+    return `${url}/${ResourceBrowserActionMenuEnum.manifest}`
 }

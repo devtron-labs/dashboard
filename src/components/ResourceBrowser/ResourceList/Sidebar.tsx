@@ -25,6 +25,7 @@ import {
     highlightSearchText,
     Nodes,
     ReactSelectInputAction,
+    URL_FILTER_KEYS,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -116,9 +117,9 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
         const params = new URLSearchParams(location.search)
-        params.delete('pageNumber')
-        params.delete('sortBy')
-        params.delete('sortOrder')
+        params.delete(URL_FILTER_KEYS.PAGE_NUMBER)
+        params.delete(URL_FILTER_KEYS.SORT_BY)
+        params.delete(URL_FILTER_KEYS.SORT_ORDER)
         if (_selectedKind !== Nodes.Event.toLowerCase()) {
             params.delete('eventType')
         }

@@ -29,14 +29,13 @@ import {
     AI_BUTTON_CONFIG_MAP,
     DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
-    RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
 } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
 import NodeActionsMenu from './NodeActionsMenu'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
-import { K8sResourceListTableCellComponentProps } from './types'
+import { K8sResourceListTableCellComponentProps, ResourceBrowserActionMenuEnum } from './types'
 import { getClassNameForColumn, getFirstResourceFromKindResourceMap, getShowAIButton, getStatusClass } from './utils'
 
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
@@ -84,7 +83,7 @@ const K8sResourceListTableCellComponent = ({
             namespace = ALL_NAMESPACE_OPTION.value,
             kind,
             group: _group,
-            tab = RESOURCE_ACTION_MENU.manifest,
+            tab = ResourceBrowserActionMenuEnum.manifest,
         } = e.currentTarget.dataset
 
         const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
@@ -162,6 +161,34 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
+    const onClickHandler = isNodeListing ? handleNodeClick : handleResourceClick
+
+    const renderActionMenu = () =>
+        !isNodeListing ? (
+            <ResourceBrowserActionMenu
+                ref={contextMenuRef}
+                clusterId={clusterId}
+                resourceData={resourceData as K8sResourceDetailDataType}
+                getResourceListData={reloadResourceListData as () => Promise<void>}
+                selectedResource={selectedResource}
+                handleResourceClick={handleResourceClick}
+                handleClearBulkSelection={noop}
+            />
+        ) : (
+            <NodeActionsMenu
+                ref={contextMenuRef}
+                getNodeListData={reloadResourceListData as () => Promise<void>}
+                addTab={addTab}
+                nodeData={resourceData as K8sResourceDetailDataType}
+                handleClearBulkSelection={noop}
+            />
+        )
+
+    const getConditionalWrap = () =>
+        columnName === 'node'
+            ? getRenderNodeButton(resourceData as K8sResourceDetailDataType, columnName, handleNodeClick)
+            : getRenderInvolvedObjectButton(resourceData[columnName] as string, handleEventInvolvedObjectClick)
+
     if (columnName === 'type' && isEventListing) {
         const iconName: IconName =
             (resourceData.type as string).toLowerCase() === 'normal' ? 'ic-info-filled-color' : 'ic-warning'
@@ -190,7 +217,7 @@ const K8sResourceListTableCellComponent = ({
                                 data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
                                 data-kind={selectedResource.gvk.Kind}
                                 data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
-                                onClick={isNodeListing ? handleNodeClick : handleResourceClick}
+                                onClick={onClickHandler}
                                 ref={nameButtonRef}
                             >
                                 <span
@@ -214,25 +241,7 @@ const K8sResourceListTableCellComponent = ({
                             iconSize={16}
                         />
                     </div>
-                    {!isNodeListing ? (
-                        <ResourceBrowserActionMenu
-                            ref={contextMenuRef}
-                            clusterId={clusterId}
-                            resourceData={resourceData as K8sResourceDetailDataType}
-                            getResourceListData={reloadResourceListData as () => Promise<void>}
-                            selectedResource={selectedResource}
-                            handleResourceClick={handleResourceClick}
-                            handleClearBulkSelection={noop}
-                        />
-                    ) : (
-                        <NodeActionsMenu
-                            ref={contextMenuRef}
-                            getNodeListData={reloadResourceListData as () => Promise<void>}
-                            addTab={addTab}
-                            nodeData={resourceData as K8sResourceDetailDataType}
-                            handleClearBulkSelection={noop}
-                        />
-                    )}
+                    {renderActionMenu()}
                 </div>
             ) : (
                 <div
@@ -244,18 +253,7 @@ const K8sResourceListTableCellComponent = ({
                 >
                     <ConditionalWrap
                         condition={columnName === 'node' || columnName === 'involved object'}
-                        wrap={
-                            columnName === 'node'
-                                ? getRenderNodeButton(
-                                      resourceData as K8sResourceDetailDataType,
-                                      columnName,
-                                      handleNodeClick,
-                                  )
-                                : getRenderInvolvedObjectButton(
-                                      resourceData[columnName] as string,
-                                      handleEventInvolvedObjectClick,
-                                  )
-                        }
+                        wrap={getConditionalWrap()}
                     >
                         {columnName === 'errors' && isNodeListingAndNodeHasErrors && (
                             <ICErrorExclamation className="icon-dim-16 dc__no-shrink mr-4" />
