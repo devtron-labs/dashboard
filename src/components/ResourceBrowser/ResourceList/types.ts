@@ -26,7 +26,7 @@ import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
-import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS } from '../Types'
+import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS, ResourceFilterOptionsProps } from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ClusterListType, 'updateTabUrl'>,
@@ -104,3 +104,14 @@ export type DynamicTabComponentWrapperProps = Pick<
     ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
         children: React.ReactElement
     }
+
+export interface ResourceRecommenderTableCellComponentProps
+    extends TableCellComponentProps<FiltersTypeEnum.URL>,
+        Pick<ResourceFilterOptionsProps, 'resourceRecommenderConfig'> {
+    handleReloadDataAfterBulkOperation: () => void
+}
+
+export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
+    resourceListError: any
+    reloadResourceListData: () => void
+}

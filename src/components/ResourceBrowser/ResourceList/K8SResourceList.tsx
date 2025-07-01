@@ -21,6 +21,7 @@ import {
     abortPreviousRequests,
     FiltersTypeEnum,
     getAIAnalyticsEvents,
+    getIsRequestAborted,
     LARGE_PAGE_SIZE_OPTIONS,
     Nodes,
     PaginationEnum,
@@ -139,7 +140,7 @@ export const K8SResourceList = ({
           }, {})
         : null
 
-    const [resourceListLoader, resourceList, , reloadResourceList] = useAsync(
+    const [resourceListLoader, resourceList, resourceListError, reloadResourceList] = useAsync(
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
@@ -155,9 +156,9 @@ export const K8SResourceList = ({
                 return null
             }, abortControllerRef),
         [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
-        true,
-        { resetOnChange: false },
     )
+
+    const isResourceListLoading = !resourceList || resourceListLoader || getIsRequestAborted(resourceListError)
 
     useEffect(
         () => () => {
@@ -241,7 +242,7 @@ export const K8SResourceList = ({
         <>
             <Table
                 // key={JSON.stringify(selectedResource)}
-                loading={resourceListLoader || !resourceList}
+                loading={isResourceListLoading}
                 columns={columns}
                 rows={rows}
                 {...(RBBulkSelectionActions && !isEventListing

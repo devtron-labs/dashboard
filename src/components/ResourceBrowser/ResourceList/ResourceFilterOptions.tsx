@@ -302,6 +302,7 @@ const ResourceFilterOptions = ({
 
                     <div className="dc__mxw-200">
                         <SelectPicker
+                            selectRef={namespaceFilterRef}
                             inputId="resource-filter-select"
                             placeholder="Select Namespace"
                             options={namespaceOptions}

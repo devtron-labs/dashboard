@@ -186,7 +186,7 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
                     id={nodeData.name as string}
                     onClick={onActionMenuClick}
                     options={[{ items: getNodeActions(!!nodeData.unschedulable) }]}
-                    position="right"
+                    position="bottom"
                 >
                     <Button
                         ref={forwardedRef}

@@ -162,6 +162,12 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
+    const onAddEnvironmentKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>) => {
+        if (e.key === 'Enter') {
+            e.stopPropagation()
+        }
+    }
+
     if (columnName === 'type' && isEventListing) {
         const iconName: IconName =
             (resourceData.type as string).toLowerCase() === 'normal' ? 'ic-info-filled-color' : 'ic-warning'
@@ -284,6 +290,9 @@ const K8sResourceListTableCellComponent = ({
                                     dataTestId="add-environment"
                                     variant={ButtonVariantType.text}
                                     onClick={getAddEnvironmentClickHandler(resourceData.name as string)}
+                                    buttonProps={{
+                                        onKeyDown: onAddEnvironmentKeyDown,
+                                    }}
                                 />
                             )}
                         {columnName === 'status' && isNodeUnschedulable && (

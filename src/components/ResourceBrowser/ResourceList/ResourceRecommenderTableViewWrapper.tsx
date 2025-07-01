@@ -1,12 +1,7 @@
-import { ErrorScreenManager, TableViewWrapperProps, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { ErrorScreenManager, URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ResourceFilterOptionsProps } from '../Types'
 import ResourceFilterOptions from './ResourceFilterOptions'
-
-interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
-    resourceListError: any
-    reloadResourceListData: () => void
-}
+import { ResourceRecommenderTableViewWrapperProps } from './types'
 
 export const ResourceRecommenderTableViewWrapper = ({
     children,

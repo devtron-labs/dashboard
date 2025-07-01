@@ -8,11 +8,10 @@ import {
     ButtonVariantType,
     ClipboardButton,
     ComponentSizeType,
-    FiltersTypeEnum,
+    getGroupVersionFromApiVersion,
     highlightSearchText,
     Icon,
     ResourceRecommenderHeaderWithRecommendation,
-    TableCellComponentProps,
     TableSignalEnum,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -25,7 +24,8 @@ import {
     RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
 } from '../Constants'
-import { ClusterDetailBaseParams, ResourceFilterOptionsProps } from '../Types'
+import { ClusterDetailBaseParams } from '../Types'
+import { ResourceRecommenderTableCellComponentProps } from './types'
 
 const ApplyResourceRecommendationModal = importComponentFromFELibrary(
     'ApplyResourceRecommendationModal',
@@ -33,12 +33,6 @@ const ApplyResourceRecommendationModal = importComponentFromFELibrary(
     'function',
 )
 const ResourceRecommendationChip = importComponentFromFELibrary('ResourceRecommendationChip', null, 'function')
-
-interface ResourceRecommenderTableCellComponentProps
-    extends TableCellComponentProps<FiltersTypeEnum.URL>,
-        Pick<ResourceFilterOptionsProps, 'resourceRecommenderConfig'> {
-    handleReloadDataAfterBulkOperation: () => void
-}
 
 const ResourceRecommenderTableCellComponent = ({
     field: columnName,
@@ -57,16 +51,18 @@ const ResourceRecommenderTableCellComponent = ({
             name,
             namespace = ALL_NAMESPACE_OPTION.value,
             kind,
-            group: _group,
             tab = RESOURCE_ACTION_MENU.manifest,
+            apiVersion,
         } = e.currentTarget.dataset
+
+        const group = getGroupVersionFromApiVersion(apiVersion).group.toLowerCase() || K8S_EMPTY_GROUP
 
         const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
             clusterId,
             namespace,
             name,
             kind: kind.toLowerCase(),
-            group: _group || K8S_EMPTY_GROUP,
+            group,
             version: DUMMY_RESOURCE_GVK_VERSION,
         })
 

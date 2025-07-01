@@ -145,7 +145,7 @@ const ResourceBrowserActionMenu = forwardRef(
                 <ActionMenu
                     id={id}
                     onClick={onActionMenuClick}
-                    position="right"
+                    position="bottom"
                     options={[
                         {
                             items: [
