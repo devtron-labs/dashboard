@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
+import { MouseEvent } from 'react'
+import { generatePath } from 'react-router-dom'
+
 import {
+    ALL_NAMESPACE_OPTION,
     ClusterDetail,
     logExceptionToSentry,
     numberComparatorBySortOrder,
@@ -22,13 +26,16 @@ import {
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { clusterId } from '@Components/ClusterNodes/__mocks__/clusterAbout.mock'
 import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import {
+    DUMMY_RESOURCE_GVK_VERSION,
     K8S_EMPTY_GROUP,
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
+    RESOURCE_ACTION_MENU,
     RESOURCE_BROWSER_ROUTES,
     ResourceBrowserRouteToTabIdMap,
     SIDEBAR_KEYS,
@@ -322,4 +329,25 @@ export const getTabIdForTab = (
 
     const functionParams = getTabIdParamsForPath(path, params)
     return functionParams ? getTabId(...functionParams) : null
+}
+
+export const getResourceRecommenderResourceDetailURL = (e: MouseEvent<HTMLButtonElement>) => {
+    const {
+        name,
+        namespace = ALL_NAMESPACE_OPTION.value,
+        kind,
+        group: _group,
+        tab = RESOURCE_ACTION_MENU.manifest,
+    } = e.currentTarget.dataset
+
+    const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
+        clusterId,
+        namespace,
+        name,
+        kind: kind.toLowerCase(),
+        group: _group || K8S_EMPTY_GROUP,
+        version: DUMMY_RESOURCE_GVK_VERSION,
+    })
+
+    return `${url}/${tab}`
 }

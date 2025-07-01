@@ -64,9 +64,8 @@ import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
-import ResourceRecommenderTableCellComponent from './ResourceRecommenderTableCellComponent'
 import { ResourceRecommenderTableViewWrapper } from './ResourceRecommenderTableViewWrapper'
-import { dynamicSort, getClusterOptions } from './utils'
+import { dynamicSort, getClusterOptions, getResourceRecommenderResourceDetailURL } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')
@@ -370,8 +369,8 @@ const ResourceList = () => {
                     <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
                         <ResourceRecommender
                             selectedCluster={selectedCluster}
-                            ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
                             ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
+                            getResourceRecommenderResourceDetailURL={getResourceRecommenderResourceDetailURL}
                             dynamicSort={dynamicSort}
                         />
                     </DynamicTabComponentWrapper>

@@ -170,7 +170,7 @@ const ResourceFilterOptions = ({
     const handleInputFocus = () => setIsInputFocused(true)
 
     const handleOnEventTypeChange: SegmentedControlProps['onChange'] = ({ value }) => {
-        updateSearchParams({ eventType: value })
+        updateSearchParams({ eventType: value === 'normal' ? value : null })
     }
 
     const handleToggleShowAbsoluteValues = () => {

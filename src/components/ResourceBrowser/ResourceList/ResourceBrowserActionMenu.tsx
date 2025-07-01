@@ -40,6 +40,7 @@ import { getShowResourceScanModal, importComponentFromFELibrary } from '../../co
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 import { ResourceBrowserActionMenuType } from '../Types'
 import DeleteResourcePopup from './DeleteResourcePopup'
+import { ResourceBrowserActionMenuEnum } from './types'
 
 const getResourceScanDetails: ({
     name,
@@ -57,15 +58,6 @@ const getResourceScanDetails: ({
     null,
     'function',
 )
-
-enum ResourceBrowserActionMenuEnum {
-    manifest = 'manifest',
-    events = 'events',
-    logs = 'logs',
-    terminal = 'terminal',
-    delete = 'delete',
-    vulnerability = 'vulnerability',
-}
 
 const ResourceBrowserActionMenu = forwardRef(
     (

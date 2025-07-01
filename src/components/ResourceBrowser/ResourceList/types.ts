@@ -114,3 +114,12 @@ export enum NodeActionMenuOptionIdEnum {
     editYaml = 'edit-yaml',
     delete = 'delete',
 }
+
+export enum ResourceBrowserActionMenuEnum {
+    manifest = 'manifest',
+    events = 'events',
+    logs = 'logs',
+    terminal = 'terminal',
+    delete = 'delete',
+    vulnerability = 'vulnerability',
+}
