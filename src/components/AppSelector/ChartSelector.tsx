@@ -14,22 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { useParams, useHistory, generatePath, useRouteMatch } from 'react-router-dom'
-import Select from 'react-select'
-import { useAsync, APP_SELECTOR_STYLES, AppSelectorDropdownIndicator } from '@devtron-labs/devtron-fe-common-lib'
+import { GroupBase } from 'react-select'
+import {
+    useAsync,
+    SelectPickerOptionType,
+    ContextSwitcher,
+    Icon,
+    handleAnalyticsEvent,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { mapByKey } from '../common'
+import { ChartSelectorType } from './AppSelector.types'
+import { appSelectorGAEvents } from './constants'
 
-interface ChartSelectorType {
-    primaryKey: string // url match
-    primaryValue: string
-    matchedKeys: string[]
-    api: () => Promise<any>
-    apiPrimaryKey?: string // primary key to generate map
-    onChange?: ({ label, value }) => void
-    formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode
-    filterOption?: (option: any, searchString: string) => boolean
-}
 export default function ChartSelector({
     primaryKey,
     primaryValue,
@@ -46,35 +43,51 @@ export default function ChartSelector({
     const params = useParams()
     const { push } = useHistory()
     const _primaryKey = Number(params[primaryKey])
-    function selectApp(selected) {
+    const selectApp = (selected) => {
         if (onChange) {
             onChange(selected)
             return
         }
+        handleAnalyticsEvent({
+            category: 'Chart Store',
+            action: appSelectorGAEvents.CS_CHART_DETAIL_SWITCH_ITEM_CLICKED,
+        })
         const keys = listMap.get(selected.value)
         const replacements = [...matchedKeys].reduce((agg, curr) => ({ ...agg, [curr]: keys[curr] }), {})
         const newUrl = generatePath(path, { ...replacements, [primaryKey]: selected.value })
         push(newUrl)
     }
+
+    const getChartsOptions = (): GroupBase<SelectPickerOptionType<string | number>>[] => [
+        {
+            label: 'All Charts',
+            options:
+                result?.result?.map((res) => ({
+                    value: res[apiPrimaryKey || primaryKey],
+                    label: res[primaryValue],
+                    description: res.chart_name || res.docker_artifact_store_id,
+                    endIcon: res.deprecated && <Icon name="ic-warning" color={null} size={16} />,
+                })) || [],
+        },
+    ]
+
+    const selectedChartLabel = listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : ''
+
     return (
-        <Select
-            options={result?.result?.map((res) => ({
-                value: res[apiPrimaryKey || primaryKey],
-                label: res[primaryValue],
-                ...res,
-            }))}
+        <ContextSwitcher
+            inputId={`chart-switcher-${_primaryKey}`}
+            options={getChartsOptions()}
+            isLoading={loading}
+            onChange={selectApp}
             value={{
                 value: _primaryKey,
-                label: listMap.has(_primaryKey) ? (listMap.get(_primaryKey)[primaryValue] as string) : '',
+                label: selectedChartLabel,
             }}
+            placeholder={selectedChartLabel}
             {...(formatOptionLabel ? { formatOptionLabel } : {})}
             {...(filterOption ? { filterOption } : {})}
-            onChange={selectApp}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-            }}
-            styles={APP_SELECTOR_STYLES}
+            optionListError={error}
+            reloadOptionList={reload}
         />
     )
 }

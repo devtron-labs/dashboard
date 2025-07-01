@@ -173,6 +173,14 @@ export const ENV_APP_GROUP_GA_EVENTS = {
         category: 'Configuration',
         action: 'Configuration Clicked',
     },
+    EnvironmentHeaderRecentlyVisitedClicked: {
+        category: 'Environment',
+        action: 'AG_SWITCH_RECENTLY_VISITED_CLICKED',
+    },
+    EnvironmentHeaderSearchedItemClicked: {
+        category: 'Environment',
+        action: 'AG_SWITCH_SEARCHED_ITEM_CLICKED',
+    },
 }
 
 export const GROUP_LIST_HEADER = {
