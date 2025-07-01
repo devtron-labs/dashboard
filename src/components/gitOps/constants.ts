@@ -106,12 +106,6 @@ export const LinkAndLabelSpec = {
         label: 'Bitbucket Project Key',
     },
 }
-export const gitOpsRepoNotConfiguredWithOptionsHidden =
-    'Deployment via GitOps requires a repository to save deployment manifests. Please configure and try again.'
-export const gitOpsRepoNotConfiguredWithEnforcedEnv = (env: string): string =>
-    `Deployment to ‘${env}’ requires a GitOps repository. Please configure and try again.`
-export const gitOpsRepoNotConfigured =
-    'GitOps repository is required to deploy using GitOps. You can deploy using helm or configure GitOps repository and try again.'
 
 export const PROVIDER_DOC_LINK_MAP: Record<
     Exclude<GitProvider, GitProvider.OTHER_GIT_OPS | GitProvider.AWS_CODE_COMMIT>,

@@ -1537,7 +1537,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codemirror/autocomplete@npm:^6.0.0, @codemirror/autocomplete@npm:^6.16.2":
+"@codemirror/autocomplete@npm:6.18.6, @codemirror/autocomplete@npm:^6.0.0, @codemirror/autocomplete@npm:^6.16.2":
   version: 6.18.6
   resolution: "@codemirror/autocomplete@npm:6.18.6"
   dependencies:
@@ -1722,10 +1722,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.15.3-beta-3":
-  version: 1.15.3-beta-3
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.15.3-beta-3"
+"@devtron-labs/devtron-fe-common-lib@npm:1.16.0-pre-3":
+  version: 1.16.0-pre-3
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.16.0-pre-3"
   dependencies:
+    "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
     "@codemirror/lang-yaml": "npm:6.1.2"
     "@codemirror/language": "npm:6.10.8"
@@ -1772,7 +1773,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/8f75bc079fc39b8114fd701ef13f72d70b2996108af0879a3e365701c16e03c7d4e3115c297552f13f4a02549e783f4a2dcd9cd9d081c86dd027ee81e83adcac
+  checksum: 10c0/ae28afdc051d536dbaa5248ad05c460008c1244253f30128bc47ba52ccf1128e6e68e76a9720316c5e0891872db4290c2ccbcb601e6121579df7f87409f1b533
   languageName: node
   linkType: hard
 
@@ -5684,7 +5685,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.15.3-beta-3"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.16.0-pre-3"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"

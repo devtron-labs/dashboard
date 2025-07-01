@@ -49,3 +49,17 @@
         }
     }
 }
+
+@mixin divider($name, $color) {
+    &__#{$name} {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(#{$color});
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(#{$color});
+        }
+    }
+}

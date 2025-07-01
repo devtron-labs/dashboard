@@ -50,7 +50,6 @@ import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import { Nodes, SourceInfoType } from '../../types'
 import AppEnvSelector from './AppDetails.components'
 import { HibernationModalTypes } from './appDetails.type'
-import AppDetailsCDButton from './AppDetailsCDButton'
 import AppStatusCard from './AppStatusCard'
 import { ACTION_DISABLED_TEXT, AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
 import DeployedCommitCard from './DeployedCommitCard'
@@ -89,6 +88,7 @@ export const SourceInfo = ({
     applications,
     isAppView,
     isResourceTreeReloading,
+    handleOpenCDModal,
 }: SourceInfoType) => {
     const params = useParams<{ appId: string; envId?: string }>()
 
@@ -171,68 +171,34 @@ export const SourceInfo = ({
         )
     }
 
-    const appDetailsCDButtonProps = useMemo(
-        () => ({
-            appId: appDetails?.appId,
-            appName: appDetails?.appName,
-            environmentId: appDetails?.environmentId,
-            environmentName: appDetails?.environmentName,
-            isVirtualEnvironment: appDetails?.isVirtualEnvironment,
-            deploymentAppType: appDetails?.deploymentAppType,
-            loadingDetails,
-            cdModal: {
-                cdPipelineId: appDetails?.cdPipelineId,
-                ciPipelineId: appDetails?.ciPipelineId,
-                parentEnvironmentName: appDetails?.parentEnvironmentName,
-                deploymentUserActionState,
-                triggerType: appDetails?.triggerType,
-            },
-        }),
-        [appDetails],
-    )
-
     const renderAppDetailsCDButton = () => {
         const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState)
+        
         return (
-            <AppDetailsCDButton
-                {...appDetailsCDButtonProps}
-                gaEvent={
-                    isAppView
-                        ? DA_APP_DETAILS_GA_EVENTS.DeployButtonClicked
-                        : AG_APP_DETAILS_GA_EVENTS.DeployButtonClicked
-                }
-                buttonProps={{
-                    dataTestId: 'deploy-button',
-                    size: ComponentSizeType.medium,
-                    text: 'Deploy',
-                    startIcon: <Icon name={iconName} color={null} />,
-                    style: buttonStyle,
-                }}
+            <Button
+                dataTestId="deploy-button"
+                size={ComponentSizeType.medium}
+                text="Deploy"
+                startIcon={<Icon name={iconName} color={null} />}
+                style={buttonStyle}
+                onClick={handleOpenCDModal()}
             />
         )
     }
 
     const renderRollbackButton = (isIcon?: boolean) => (
-        <AppDetailsCDButton
-            {...appDetailsCDButtonProps}
-            gaEvent={
-                isAppView
-                    ? DA_APP_DETAILS_GA_EVENTS.RollbackButtonClicked
-                    : AG_APP_DETAILS_GA_EVENTS.RollbackButtonClicked
-            }
-            isForRollback
-            buttonProps={{
-                dataTestId: 'rollback-button',
-                size: isIcon ? ComponentSizeType.medium : ComponentSizeType.small,
-                variant: isIcon ? ButtonVariantType.secondary : ButtonVariantType.text,
-                ...(isIcon
-                    ? {
-                          icon: <ICRollback />,
-                          ariaLabel: 'Rollback',
-                          style: ButtonStyleType.neutral,
-                      }
-                    : { text: 'Rollback' }),
-            }}
+        <Button
+            dataTestId="rollback-button"
+            size={isIcon ? ComponentSizeType.medium : ComponentSizeType.small}
+            variant={isIcon ? ButtonVariantType.secondary : ButtonVariantType.text}
+            {...(isIcon
+                ? {
+                      icon: <ICRollback />,
+                      ariaLabel: 'Rollback',
+                      style: ButtonStyleType.neutral,
+                  }
+                : { text: 'Rollback' })}
+            onClick={handleOpenCDModal(true)}
         />
     )
 
@@ -519,6 +485,7 @@ export const SourceInfo = ({
                               />
                           )}
                           {window._env_.FEATURE_MANAGE_TRAFFIC_ENABLE &&
+                              appDetails &&
                               !isVirtualEnvironment &&
                               DeploymentStrategyCard && (
                                   <DeploymentStrategyCard
