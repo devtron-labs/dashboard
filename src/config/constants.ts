@@ -311,15 +311,6 @@ export const repoType = {
     CONFIGURE: 'CONFIGURE',
 }
 
-/**
- * @deprecated use from fe-common
- */
-export const SourceTypeMap = {
-    BranchFixed: 'SOURCE_TYPE_BRANCH_FIXED',
-    WEBHOOK: 'WEBHOOK',
-    BranchRegex: 'SOURCE_TYPE_BRANCH_REGEX',
-}
-
 export const Moment12HourFormat = 'ddd, DD MMM YYYY, hh:mm A'
 export const MomentDateFormat = 'ddd, DD MMM YYYY'
 export const Moment12HourExportFormat = 'DD-MMM-YYYY hh.mm A'

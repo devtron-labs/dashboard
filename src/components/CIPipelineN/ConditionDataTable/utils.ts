@@ -4,8 +4,12 @@ import {
     ConditionType,
     DynamicDataTableCellValidationState,
     DynamicDataTableRowDataType,
+    IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS,
+    IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS,
+    PATTERNS,
     PluginType,
     SelectPickerOptionType,
+    VALUE_COLUMN_DROPDOWN_LABEL,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -36,16 +40,27 @@ export const getConditionDataTableHeaders = (conditionType: ConditionType): Cond
 
 const getConditionDataTableVariableOptions = (ioVariables: VariableType[]): SelectPickerOptionType<string>[] =>
     (ioVariables || [])
-        .filter((variable) => variable.name)
+        .filter((variable) => variable.name && variable.format !== VariableTypeFormat.FILE)
         .map((variable) => ({ label: variable.name, value: variable.name }))
 
-const getOperatorOptionsBasedOnVariableTypeFormat = (
-    conditionOnVariable: ConditionDetails['conditionOnVariable'],
-    ioVariables: VariableType[],
-) => {
-    const type = ioVariables.find(({ name }) => name === conditionOnVariable)?.format
+const getIOVariableBasedOnConditionOnVariable = ({
+    conditionOnVariable,
+    ioVariables,
+}: {
+    conditionOnVariable: ConditionDetails['conditionOnVariable']
+    ioVariables: VariableType[]
+}) => ioVariables.find(({ name }) => name === conditionOnVariable)
 
-    switch (type) {
+export const getConditionVariableTypeFormat = ({
+    conditionOnVariable,
+    ioVariables,
+}: {
+    conditionOnVariable: ConditionDetails['conditionOnVariable']
+    ioVariables: VariableType[]
+}) => getIOVariableBasedOnConditionOnVariable({ conditionOnVariable, ioVariables })?.format ?? null
+
+const getOperatorOptionsBasedOnVariableTypeFormat = (variableType: VariableTypeFormat) => {
+    switch (variableType) {
         case VariableTypeFormat.STRING:
         case VariableTypeFormat.BOOL:
         case VariableTypeFormat.FILE:
@@ -54,6 +69,81 @@ const getOperatorOptionsBasedOnVariableTypeFormat = (
         case VariableTypeFormat.NUMBER:
         default:
             return CONDITION_DATA_TABLE_OPERATOR_OPTIONS
+    }
+}
+
+const getConditionDataTableValColumnProps = ({
+    conditionalValue,
+    conditionOnVariable,
+    ioVariables,
+}: {
+    ioVariables: VariableType[]
+} & Pick<
+    ConditionDetails,
+    'conditionOnVariable' | 'conditionalValue'
+>): ConditionDataTableType['rows'][number]['data']['val'] => {
+    const { valueConstraint, format } =
+        getIOVariableBasedOnConditionOnVariable({ conditionOnVariable, ioVariables }) ?? {}
+
+    const choices = (valueConstraint?.choices || []).map<SelectPickerOptionType<string>>((value) => ({
+        label: value,
+        value,
+    }))
+
+    if (format === VariableTypeFormat.NUMBER || format === VariableTypeFormat.STRING) {
+        if (!choices.length) {
+            return {
+                type: DynamicDataTableRowDataType.TEXT,
+                props: { placeholder: 'Enter value' },
+                value: conditionalValue,
+            }
+        }
+
+        if (valueConstraint?.blockCustomValue) {
+            return {
+                type: DynamicDataTableRowDataType.DROPDOWN,
+                props: {
+                    options: [{ label: VALUE_COLUMN_DROPDOWN_LABEL.CHOICES, options: choices }],
+                    placeholder: 'Select value',
+                },
+                value: conditionalValue,
+            }
+        }
+    }
+
+    const formatConfig = {
+        [VariableTypeFormat.BOOL]: {
+            type: DynamicDataTableRowDataType.DROPDOWN,
+            props: {
+                options: [
+                    { label: VALUE_COLUMN_DROPDOWN_LABEL.CHOICES, options: IO_VARIABLES_VALUE_COLUMN_BOOL_OPTIONS },
+                ],
+                placeholder: 'Select value',
+            },
+        },
+        [VariableTypeFormat.DATE]: {
+            type: DynamicDataTableRowDataType.SELECT_TEXT,
+            props: {
+                options: [
+                    {
+                        label: VALUE_COLUMN_DROPDOWN_LABEL.SUPPORTED_DATE_FORMATS,
+                        options: IO_VARIABLES_VALUE_COLUMN_DATE_OPTIONS,
+                    },
+                ],
+                placeholder: 'Enter value',
+            },
+        },
+    }
+
+    return {
+        ...(formatConfig[format] || {
+            type: DynamicDataTableRowDataType.SELECT_TEXT,
+            props: {
+                options: [{ label: VALUE_COLUMN_DROPDOWN_LABEL.CHOICES, options: choices }],
+                placeholder: 'Enter value',
+            },
+        }),
+        value: conditionalValue,
     }
 }
 
@@ -69,39 +159,40 @@ export const getConditionDataTableRows = ({
     (conditionDetails || [])
         .filter(({ conditionType }) => conditionType === parentConditionType)
         .map<ConditionDataTableType['rows'][number]>(
-            ({ conditionOnVariable, conditionOperator, conditionalValue, conditionType, id }) => ({
-                data: {
-                    variable: {
-                        type: DynamicDataTableRowDataType.DROPDOWN,
-                        props: {
-                            options: getConditionDataTableVariableOptions(ioVariables),
-                            placeholder: 'Select variable',
-                            isSearchable: false,
-                            autoFocus: true,
+            ({ conditionOnVariable, conditionOperator, conditionalValue, conditionType, id }) => {
+                const variableType = getConditionVariableTypeFormat({ conditionOnVariable, ioVariables })
+                return {
+                    data: {
+                        variable: {
+                            type: DynamicDataTableRowDataType.DROPDOWN,
+                            props: {
+                                options: getConditionDataTableVariableOptions(ioVariables),
+                                placeholder: 'Select variable',
+                                autoFocus: true,
+                            },
+                            value: conditionOnVariable,
                         },
-                        value: conditionOnVariable,
-                    },
-                    operator: {
-                        type: DynamicDataTableRowDataType.DROPDOWN,
-                        props: {
-                            options: getOperatorOptionsBasedOnVariableTypeFormat(conditionOnVariable, ioVariables),
-                            isSearchable: false,
+                        operator: {
+                            type: DynamicDataTableRowDataType.DROPDOWN,
+                            props: {
+                                options: getOperatorOptionsBasedOnVariableTypeFormat(variableType),
+                                isSearchable: false,
+                            },
+                            value: conditionOperator,
                         },
-                        value: conditionOperator,
+                        val: getConditionDataTableValColumnProps({
+                            conditionalValue,
+                            conditionOnVariable,
+                            ioVariables,
+                        }),
                     },
-                    val: {
-                        type: DynamicDataTableRowDataType.TEXT,
-                        props: {
-                            placeholder: 'Enter value',
-                        },
-                        value: conditionalValue,
+                    id,
+                    customState: {
+                        conditionType,
+                        variableType,
                     },
-                },
-                id,
-                customState: {
-                    conditionType,
-                },
-            }),
+                }
+            },
         )
 
 export const getConditionDataTableInitialCellError = (
@@ -199,16 +290,38 @@ export const convertConditionDataTableToFormData = ({
 export const validateConditionDataCell = ({
     key,
     condition: { conditionOnVariable, conditionOperator, conditionalValue },
+    variableType,
 }: {
     key: ConditionDataTableHeaderKeys
     condition: Pick<ConditionDetails, 'conditionOnVariable' | 'conditionOperator' | 'conditionalValue'>
-}): DynamicDataTableCellValidationState => {
+} & Pick<
+    ConditionDataTableType['rows'][number]['customState'],
+    'variableType'
+>): DynamicDataTableCellValidationState => {
     if (key === ConditionDataTableHeaderKeys.VARIABLE && !conditionOnVariable) {
         return { errorMessages: ['Condition on variable is required'], isValid: false }
     }
 
-    if (key === ConditionDataTableHeaderKeys.VALUE && !conditionalValue) {
-        return { errorMessages: ['Conditional value is required'], isValid: false }
+    if (key === ConditionDataTableHeaderKeys.VALUE) {
+        const numberReg = new RegExp(PATTERNS.NUMBERS_WITH_SCOPE_VARIABLES)
+        const boolReg = new RegExp(PATTERNS.BOOLEAN_WITH_SCOPE_VARIABLES)
+
+        if (!conditionalValue) {
+            return { errorMessages: ['Conditional value is required'], isValid: false }
+        }
+
+        if (variableType === VariableTypeFormat.NUMBER && !numberReg.test(conditionalValue)) {
+            return {
+                errorMessages: ['Conditional value is not a number'],
+                isValid: false,
+            }
+        }
+        if (variableType === VariableTypeFormat.BOOL && !boolReg.test(conditionalValue)) {
+            return {
+                errorMessages: ['Conditional value is not a boolean'],
+                isValid: false,
+            }
+        }
     }
 
     if (key === ConditionDataTableHeaderKeys.OPERATOR && !conditionOperator) {
@@ -219,7 +332,7 @@ export const validateConditionDataCell = ({
 }
 
 export const getConditionDataTableCellValidateState = ({
-    row: { data },
+    row: { data, customState },
     key,
     value,
 }: {
@@ -234,4 +347,5 @@ export const getConditionDataTableCellValidateState = ({
             conditionOnVariable: key === ConditionDataTableHeaderKeys.VARIABLE ? value : data.variable.value,
             conditionOperator: key === ConditionDataTableHeaderKeys.OPERATOR ? value : data.operator.value,
         },
+        variableType: customState.variableType,
     })

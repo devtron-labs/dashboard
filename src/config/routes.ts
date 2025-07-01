@@ -60,6 +60,7 @@ export const URLS = {
     APP_EXTERNAL_LINKS: 'external-links',
     APP_CI_CONFIG: 'ci-pipeline',
     APP_CD_CONFIG: 'cd-pipeline',
+    APP_CI_CD_CONFIG: 'ci-cd-pipeline',
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
     APP_LINKED_CI_CONFIG: 'linked-ci',
     APP_JOB_CI_CONFIG: 'ci-job',
