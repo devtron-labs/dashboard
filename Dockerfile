@@ -15,7 +15,7 @@ RUN yarn install --immutable --network-timeout 600000
 
 COPY . .
 
-RUN echo `git rev-parse --short HEAD` > health.html && \
+RUN echo `git rev-parse --short=9 HEAD` > health.html && \
     echo "" >> .env && \
     echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short=9 HEAD)" >> .env && \
     yarn build
