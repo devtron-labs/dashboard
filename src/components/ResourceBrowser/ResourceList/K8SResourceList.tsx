@@ -19,6 +19,7 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
+    ErrorScreenManager,
     FiltersTypeEnum,
     getAIAnalyticsEvents,
     getIsRequestAborted,
@@ -26,9 +27,11 @@ import {
     Nodes,
     PaginationEnum,
     SelectAllDialogStatus,
+    ServerErrors,
     Table,
     TableColumnType,
     TableProps,
+    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -158,7 +161,7 @@ export const K8SResourceList = ({
         [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
     )
 
-    const isResourceListLoading = !resourceList || resourceListLoader || getIsRequestAborted(resourceListError)
+    const isResourceListLoading = resourceListLoader || getIsRequestAborted(resourceListError)
 
     useEffect(
         () => () => {
@@ -201,10 +204,6 @@ export const K8SResourceList = ({
         [resourceList?.data],
     )
 
-    const handleClearCacheAndReload = () => {
-        reloadResourceList()
-    }
-
     const tableFilter: TableProps['filter'] = (row, filterData) => {
         if (isNodeListing) {
             return isItemASearchMatchForNodeListing(row.data, filterData)
@@ -238,10 +237,21 @@ export const K8SResourceList = ({
         return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
     }
 
+    if (resourceListError && !isResourceListLoading) {
+        return (
+            <div className="flexbox-col flex-grow-1 border__primary--left">
+                <ErrorScreenManager
+                    code={(resourceListError as ServerErrors).code}
+                    reload={reloadResourceList}
+                    redirectURL={URLS.RESOURCE_BROWSER}
+                />
+            </div>
+        )
+    }
+
     return (
         <>
             <Table
-                // key={JSON.stringify(selectedResource)}
                 loading={isResourceListLoading}
                 columns={columns}
                 rows={rows}
@@ -258,7 +268,7 @@ export const K8SResourceList = ({
                                   updateManifestResourceHelmApps,
                                   clusterId: +clusterId,
                                   clusterName: selectedCluster?.label ?? '',
-                                  handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
+                                  handleReloadDataAfterBulkOperation: reloadResourceList,
                               },
                               bulkActionsData: {
                                   showBulkRestartOption:
@@ -296,7 +306,7 @@ export const K8SResourceList = ({
                     isNodeListing,
                     isEventListing,
                     lowercaseKindToResourceGroupMap,
-                    reloadResourceListData: handleClearCacheAndReload,
+                    reloadResourceListData: reloadResourceList,
                     clusterName: selectedCluster?.label ?? '',
                 }}
                 pageSizeOptions={!isNodeListing ? LARGE_PAGE_SIZE_OPTIONS : undefined}

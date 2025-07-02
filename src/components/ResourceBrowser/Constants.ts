@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { NO_MATCHING_RESULT, Nodes, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    K8S_EMPTY_GROUP as K8S_EMPTY_GROUP_FROM_COMMON,
+    NO_MATCHING_RESULT,
+    Nodes,
+    RESOURCE_BROWSER_ROUTES,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
@@ -110,7 +115,10 @@ export const RESOURCE_ACTION_MENU = {
     delete: 'delete',
 }
 
-export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
+/**
+ * @deprecated Use from common-lib instead
+ */
+export const K8S_EMPTY_GROUP = K8S_EMPTY_GROUP_FROM_COMMON
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',
@@ -385,19 +393,6 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
         excludeValues: new Set(['Approved,Issued']),
     },
 })
-
-export const RESOURCE_BROWSER_ROUTES = {
-    OVERVIEW: `${URLS.RESOURCE_BROWSER}/:clusterId/overview`,
-    MONITORING_DASHBOARD: `${URLS.RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`,
-    TERMINAL: `${URLS.RESOURCE_BROWSER}/:clusterId/terminal`,
-    CLUSTER_UPGRADE: `${URLS.RESOURCE_BROWSER}/:clusterId/cluster-upgrade`,
-    NODE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/node/:name`,
-    K8S_RESOURCE_DETAIL: `${URLS.RESOURCE_BROWSER}/:clusterId/:namespace/:kind/:group/:version/:name`,
-    K8S_RESOURCE_LIST: `${URLS.RESOURCE_BROWSER}/:clusterId/:kind/:group/:version`,
-    RESOURCE_RECOMMENDER: `${URLS.RESOURCE_BROWSER}/:clusterId/resource-recommender`,
-} as const
-
-export const DUMMY_RESOURCE_GVK_VERSION = 'v1'
 
 export const ResourceBrowserRouteToTabIdMap: Partial<
     Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>

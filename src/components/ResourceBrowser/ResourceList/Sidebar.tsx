@@ -22,22 +22,18 @@ import DOMPurify from 'dompurify'
 
 import {
     ApiResourceGroupType,
+    DUMMY_RESOURCE_GVK_VERSION,
     highlightSearchText,
     Nodes,
     ReactSelectInputAction,
+    RESOURCE_BROWSER_ROUTES,
+    URL_FILTER_KEYS,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
 import { AggregationKeys } from '../../app/types'
-import {
-    DUMMY_RESOURCE_GVK_VERSION,
-    K8S_EMPTY_GROUP,
-    KIND_SEARCH_COMMON_STYLES,
-    RESOURCE_BROWSER_ROUTES,
-    ResourceBrowserTabsId,
-    SIDEBAR_KEYS,
-} from '../Constants'
+import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, ResourceBrowserTabsId, SIDEBAR_KEYS } from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
 import {
     convertK8sObjectMapToOptionsList,
@@ -110,31 +106,34 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
     const selectNode = (
         e: React.MouseEvent<HTMLButtonElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
         groupName?: string,
-        shouldPushUrl = true,
     ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
 
         const params = new URLSearchParams(location.search)
-        params.delete('pageNumber')
-        params.delete('sortBy')
-        params.delete('sortOrder')
+        params.delete(URL_FILTER_KEYS.PAGE_NUMBER)
+        params.delete(URL_FILTER_KEYS.SORT_BY)
+        params.delete(URL_FILTER_KEYS.SORT_ORDER)
         if (_selectedKind !== Nodes.Event.toLowerCase()) {
             params.delete('eventType')
         }
-        const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+        const path = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
             kind: _selectedKind,
             group: _selectedGroup || K8S_EMPTY_GROUP,
             version: DUMMY_RESOURCE_GVK_VERSION,
-        })}?${params.toString()}`
+        })
+
+        if (path === location.pathname) {
+            return
+        }
+
+        const _url = `${path}?${params.toString()}`
 
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind, retainSearchParams: true })
         updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
 
-        if (shouldPushUrl) {
-            push(_url)
-        }
+        push(_url)
 
         /**
          * If groupName present then kind selection is from search dropdown,
@@ -172,8 +171,6 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
                 },
             },
             match.groupName,
-            /* NOTE: if we push here the history will be lost */
-            !selectedResource,
         )
     }, [kind, k8sObjectOptionsList])
 

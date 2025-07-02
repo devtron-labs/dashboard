@@ -18,6 +18,7 @@ import {
     ClusterDetail,
     logExceptionToSentry,
     numberComparatorBySortOrder,
+    RESOURCE_BROWSER_ROUTES,
     stringComparatorBySortOrder,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -29,7 +30,6 @@ import {
     K8S_EMPTY_GROUP,
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
-    RESOURCE_BROWSER_ROUTES,
     ResourceBrowserRouteToTabIdMap,
     SIDEBAR_KEYS,
     TARGET_K8S_VERSION_SEARCH_KEY,

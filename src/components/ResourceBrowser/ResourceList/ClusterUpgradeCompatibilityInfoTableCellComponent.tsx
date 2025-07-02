@@ -5,21 +5,18 @@ import DOMPurify from 'dompurify'
 import {
     ALL_NAMESPACE_OPTION,
     ClipboardButton,
+    DUMMY_RESOURCE_GVK_VERSION,
     GVKType,
     highlightSearchText,
     K8sResourceDetailDataType,
     Nodes,
     noop,
+    RESOURCE_BROWSER_ROUTES,
     TableSignalEnum,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    DUMMY_RESOURCE_GVK_VERSION,
-    K8S_EMPTY_GROUP,
-    RESOURCE_ACTION_MENU,
-    RESOURCE_BROWSER_ROUTES,
-} from '../Constants'
+import { K8S_EMPTY_GROUP, RESOURCE_ACTION_MENU } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { renderResourceValue } from '../Utils'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
@@ -94,11 +91,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
         ).gvk
 
         return {
-            gvk: {
-                Group: gvkFromRawData.Group,
-                Kind: gvkFromRawData.Kind,
-                Version: gvkFromRawData.Version,
-            },
+            gvk: gvkFromRawData,
         }
     }
 
@@ -115,6 +108,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
         >
             <div className="flex left dc__gap-4">
                 <Tooltip content={resourceData.name}>
+                    {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <button
                         type="button"
                         className="dc__unset-button-styles dc__align-left dc__truncate"
@@ -122,7 +116,6 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                         data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
                         data-kind={resourceData.kind}
                         onClick={!shouldHideContextMenu ? handleResourceClick : noop}
-                        aria-label={`Select ${resourceData.name}`}
                         ref={nameButtonRef}
                     >
                         <span
@@ -151,10 +144,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                     clusterId={clusterId}
                     resourceData={resourceData as K8sResourceDetailDataType}
                     getResourceListData={reloadResourceListData as () => Promise<void>}
-                    selectedResource={{
-                        ...getSelectedResourceKindOverride((resourceData.kind as string).toLowerCase()),
-                        namespaced: !!resourceData.namespace,
-                    }}
+                    selectedResource={selectedResource}
                     hideDeleteResource
                     handleResourceClick={handleResourceClick}
                     handleClearBulkSelection={noop}

@@ -16,6 +16,7 @@
 
 import {
     FiltersTypeEnum,
+    ServerErrors,
     TableCellComponentProps,
     TableViewWrapperProps,
     useBreadcrumb,
@@ -105,13 +106,7 @@ export type DynamicTabComponentWrapperProps = Pick<
         children: React.ReactElement
     }
 
-export interface ResourceRecommenderTableCellComponentProps
-    extends TableCellComponentProps<FiltersTypeEnum.URL>,
-        Pick<ResourceFilterOptionsProps, 'resourceRecommenderConfig'> {
-    handleReloadDataAfterBulkOperation: () => void
-}
-
 export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
-    resourceListError: any
+    resourceListError: ServerErrors
     reloadResourceListData: () => void
 }

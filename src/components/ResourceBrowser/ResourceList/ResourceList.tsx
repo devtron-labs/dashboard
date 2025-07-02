@@ -21,9 +21,9 @@ import {
     DevtronProgressing,
     ErrorScreenManager,
     getResourceGroupListRaw,
-    GetResourceRecommenderResourceListPropsType,
     handleAnalyticsEvent,
     Icon,
+    RESOURCE_BROWSER_ROUTES,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -45,7 +45,6 @@ import { importComponentFromFELibrary } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
     MONITORING_DASHBOARD_TAB_ID,
-    RESOURCE_BROWSER_ROUTES,
     RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
@@ -65,7 +64,6 @@ import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
 import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
-import ResourceRecommenderTableCellComponent from './ResourceRecommenderTableCellComponent'
 import { ResourceRecommenderTableViewWrapper } from './ResourceRecommenderTableViewWrapper'
 import { dynamicSort, getClusterOptions } from './utils'
 
@@ -280,32 +278,6 @@ const ResourceList = () => {
         ({ url: _url, dynamicTitle, retainSearchParams }: Omit<UpdateTabUrlParamsType, 'id'>) =>
             updateTabUrl({ id, url: _url, dynamicTitle, retainSearchParams })
 
-    const getResourceRecommenderBaseResourceListProps = ({
-        setShowAbsoluteValuesInResourceRecommender,
-        showAbsoluteValuesInResourceRecommender,
-        gvkOptions,
-        areGVKOptionsLoading,
-        reloadGVKOptions,
-        gvkOptionsError,
-    }: GetResourceRecommenderResourceListPropsType) => ({
-        selectedCluster,
-        selectedResource: {
-            gvk: SIDEBAR_KEYS.resourceRecommenderGVK,
-            namespaced: true,
-        },
-        lowercaseKindToResourceGroupMap,
-        resourceRecommenderConfig: {
-            setShowAbsoluteValuesInResourceRecommender,
-            showAbsoluteValuesInResourceRecommender,
-        },
-        gvkFilterConfig: {
-            gvkOptions,
-            areGVKOptionsLoading,
-            reloadGVKOptions,
-            gvkOptionsError,
-        },
-    })
-
     const renderPageHeaderActionButtons = () => {
         const clusterConnectionFailed = !!clusterList?.find(({ id }) => clusterId === String(id))?.errorInNodeListing
 
@@ -396,8 +368,7 @@ const ResourceList = () => {
                 <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
                     <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
                         <ResourceRecommender
-                            getBaseResourceListProps={getResourceRecommenderBaseResourceListProps}
-                            ResourceRecommenderTableCellComponent={ResourceRecommenderTableCellComponent}
+                            selectedCluster={selectedCluster}
                             ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
                             dynamicSort={dynamicSort}
                         />

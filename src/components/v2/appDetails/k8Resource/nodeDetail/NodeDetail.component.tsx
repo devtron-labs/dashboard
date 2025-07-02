@@ -418,7 +418,7 @@ const NodeDetailComponent = ({
     const isManifestEditable =
         isExternalApp ||
         isResourceBrowserView ||
-        (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
+        (appDetails.deploymentAppType === DeploymentAppTypes.ARGO && appDetails.deploymentAppDeleteRequest)
 
     const renderManifestTabHeader = () => (
         <>

@@ -273,9 +273,6 @@ export default defineConfig(({ mode }) => {
                 },
                 '/grafana': TARGET_URL,
             },
-            fs: {
-                allow: ['..']
-            }
         },
     }
     if (mode === 'development') {

@@ -20,13 +20,13 @@ import {
     ActionMenu,
     ActionMenuItemType,
     ActionMenuProps,
-    Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     GetResourceScanDetailsPayloadType,
     ModuleNameMap,
     Nodes,
+    ResourceBrowserActionMenuEnum,
     ResponseType,
     ScanResultDTO,
     SecurityModal,
@@ -38,7 +38,6 @@ import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../common'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
-import { RESOURCE_ACTION_MENU } from '../Constants'
 import { ResourceBrowserActionMenuType } from '../Types'
 import DeleteResourcePopup from './DeleteResourcePopup'
 
@@ -109,12 +108,12 @@ const ResourceBrowserActionMenu = forwardRef(
             installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
         )
 
-        const onActionMenuClick: ActionMenuProps['onClick'] = (item) => {
+        const onActionMenuClick: ActionMenuProps<ResourceBrowserActionMenuEnum>['onClick'] = (item) => {
             switch (item.id) {
-                case RESOURCE_ACTION_MENU.manifest:
-                case RESOURCE_ACTION_MENU.Events:
-                case RESOURCE_ACTION_MENU.logs:
-                case RESOURCE_ACTION_MENU.terminal:
+                case ResourceBrowserActionMenuEnum.manifest:
+                case ResourceBrowserActionMenuEnum.events:
+                case ResourceBrowserActionMenuEnum.logs:
+                case ResourceBrowserActionMenuEnum.terminal:
                     handleResourceClick({
                         currentTarget: {
                             dataset: {
@@ -126,10 +125,10 @@ const ResourceBrowserActionMenu = forwardRef(
                         },
                     })
                     return
-                case RESOURCE_ACTION_MENU.delete:
+                case ResourceBrowserActionMenuEnum.delete:
                     toggleDeleteDialog()
                     return
-                case 'vulnerability':
+                case ResourceBrowserActionMenuEnum.vulnerability:
                     handleShowVulnerabilityModal()
                     return
                 default:
@@ -142,7 +141,7 @@ const ResourceBrowserActionMenu = forwardRef(
 
         return (
             <>
-                <ActionMenu
+                <ActionMenu<ResourceBrowserActionMenuEnum>
                     id={id}
                     onClick={onActionMenuClick}
                     position="bottom"
@@ -150,63 +149,62 @@ const ResourceBrowserActionMenu = forwardRef(
                         {
                             items: [
                                 {
-                                    id: RESOURCE_ACTION_MENU.manifest,
+                                    id: ResourceBrowserActionMenuEnum.manifest,
                                     label: 'Manifest',
                                     startIcon: { name: 'ic-file-code' },
                                 },
                                 {
-                                    id: RESOURCE_ACTION_MENU.Events,
+                                    id: ResourceBrowserActionMenuEnum.events,
                                     label: 'Events',
                                     startIcon: { name: 'ic-calendar' },
                                 },
                                 ...(selectedResource?.gvk?.Kind === Nodes.Pod
                                     ? [
                                           {
-                                              id: RESOURCE_ACTION_MENU.logs,
+                                              id: ResourceBrowserActionMenuEnum.logs,
                                               label: 'Logs',
                                               startIcon: { name: 'ic-logs' },
-                                          } as ActionMenuItemType,
+                                          } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
                                           {
-                                              id: RESOURCE_ACTION_MENU.terminal,
+                                              id: ResourceBrowserActionMenuEnum.terminal,
                                               label: 'Terminal',
                                               startIcon: { name: 'ic-terminal-fill' },
-                                          } as ActionMenuItemType,
+                                          } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
                                       ]
                                     : []),
                                 ...(showResourceScanModal && SecurityModal
                                     ? [
                                           {
-                                              id: 'vulnerability',
+                                              id: ResourceBrowserActionMenuEnum.vulnerability,
                                               label: 'Check vulnerabilities',
                                               startIcon: { name: 'ic-bug' },
-                                          } as ActionMenuItemType,
+                                          } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
                                       ]
                                     : []),
                                 ...(!hideDeleteResource
                                     ? [
                                           {
-                                              id: RESOURCE_ACTION_MENU.delete,
+                                              id: ResourceBrowserActionMenuEnum.delete,
                                               label: 'Delete',
                                               type: 'negative',
                                               startIcon: { name: 'ic-delete' },
-                                          } as ActionMenuItemType,
+                                          } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
                                       ]
                                     : []),
                             ],
                         },
                     ]}
-                >
-                    <Button
-                        ref={forwardedRef}
-                        dataTestId={`node-actions-button-${id}`}
-                        icon={<MenuDots className="fcn-7" />}
-                        variant={ButtonVariantType.borderLess}
-                        ariaLabel="Open action menu"
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.xxs}
-                        showAriaLabelInTippy={false}
-                    />
-                </ActionMenu>
+                    buttonProps={{
+                        ref: forwardedRef,
+                        dataTestId: `node-actions-button-${id}`,
+                        icon: <MenuDots className="fcn-7" />,
+                        variant: ButtonVariantType.borderLess,
+                        ariaLabel: 'Open action menu',
+                        style: ButtonStyleType.neutral,
+                        size: ComponentSizeType.xxs,
+                        showAriaLabelInTippy: false,
+                    }}
+                />
 
                 {showDeleteDialog && (
                     <DeleteResourcePopup
