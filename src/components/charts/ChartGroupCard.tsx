@@ -24,6 +24,7 @@ import ChartIcon from './ChartIcon'
 import { getChartGroupURL } from './charts.helper'
 import { ChartGroupCardProps } from './charts.types'
 import { getChartGroupSubgroup, getDescriptionTruncate } from './charts.util'
+import { CHART_CARD_MAX_LENGTH } from './constants'
 
 export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
     const chartGroupEntries = getChartGroupSubgroup(chartGroup.chartGroupEntries)
@@ -77,9 +78,18 @@ export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
             <div className="flexbox-col h-166 dc__gap-12 px-20 pt-20 pb-16">
                 <div className="flexbox">
                     {chartGroupEntries?.length ? (
-                        chartGroupEntries.map((chart) => (
-                            <ChartIcon icon={chart.chartMetaData.icon} key={chart.id} isChartGroupCard />
-                        ))
+                        <>
+                            {chartGroupEntries.map((chart) => (
+                                <ChartIcon icon={chart.chartMetaData.icon} key={chart.id} isChartGroupCard />
+                            ))}
+                            {chartGroup.chartGroupEntries.length > CHART_CARD_MAX_LENGTH && (
+                                <div className="chart-group-card__icon-wrapper border__secondary-translucent bg__secondary br-8 p-8 dc__w-fit-content h-50">
+                                    <span className="fs-20 lh-1-5 cn-8">
+                                        +{chartGroup.chartGroupEntries.length - CHART_CARD_MAX_LENGTH}
+                                    </span>
+                                </div>
+                            )}
+                        </>
                     ) : (
                         <div className="dc__border-dashed bg__secondary br-8 p-8 dc__w-fit-content h-50">
                             <Icon name="ic-folder-color" size={32} color={null} />

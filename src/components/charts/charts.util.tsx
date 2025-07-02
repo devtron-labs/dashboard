@@ -16,6 +16,7 @@
 
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
 import { ChartDescriptionTypes, ChartGroupEntry } from './charts.types'
+import { CHART_CARD_MAX_LENGTH } from './constants'
 
 export const PaginationParams = {
     pageOffset: 0,
@@ -50,7 +51,7 @@ export const renderDeprecatedWarning = () => {
 
 export const getChartGroupSubgroup = (chartGroupEntries): ChartGroupEntry[] => {
     let len = chartGroupEntries.length
-    len = len < 4 ? len : 4
+    len = len < CHART_CARD_MAX_LENGTH ? len : CHART_CARD_MAX_LENGTH
     return chartGroupEntries.slice(0, len)
 }
 

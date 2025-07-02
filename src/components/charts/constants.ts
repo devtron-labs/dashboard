@@ -47,3 +47,5 @@ export const QueryParams = {
     SearchKey: 'searchKey',
     ChartCategoryId: 'chartCategoryId',
 }
+
+export const CHART_CARD_MAX_LENGTH = 4
