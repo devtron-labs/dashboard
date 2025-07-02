@@ -379,6 +379,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
+                isResourceRecommendationEnabled:
+                    result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -403,6 +405,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
+                isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -660,6 +663,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
+                isResourceRecommendationEnabled: environmentDataState.isResourceRecommendationEnabled,
             }}
         >
             <ConfirmationModalProvider>

@@ -127,6 +127,8 @@ export const URLS = {
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
     CREATE_ENVIRONMENT: '/create/environment',
+    POD_SPREAD: 'pod-spread',
+    HIBERNATION_RULES: 'hibernation-rules',
 } as const
 
 export enum APP_COMPOSE_STAGE {

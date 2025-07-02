@@ -40,9 +40,11 @@ const EventsComponent = ({
         actionName: string
         podName: string
         nodeType: string
-        node: string
+        name: string
         namespace: string
+        kind?: string
     }>()
+    params.nodeType = params.kind ?? params.nodeType
     const { url } = useRouteMatch()
     const [events, setEvents] = useState([])
     const [loading, setLoading] = useState(true)
@@ -50,7 +52,7 @@ const EventsComponent = ({
 
     useEffect(() => {
         selectedTab(NodeDetailTab.EVENTS, url)
-    }, [params.podName, params.node, params.namespace])
+    }, [params.podName, params.name, params.namespace])
 
     useEffect(() => {
         if (isDeleted) {
@@ -84,7 +86,7 @@ const EventsComponent = ({
             setEvents([])
             setLoading(false)
         }
-    }, [params.podName, params.node, params.nodeType, params.namespace])
+    }, [params.podName, params.name, params.nodeType, params.namespace])
 
     const renderContent = () => {
         if (isDeleted) {

@@ -35,11 +35,11 @@ import {
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { K8sResourceListURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 import { getClusterTerminalParamsData } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import { clusterImageDescription, convertToOptionsList } from '../common'
-import { URLParams } from '../ResourceBrowser/Types'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     EditModeType,
@@ -86,7 +86,7 @@ const ClusterTerminal = ({
     taints,
     updateTerminalTabUrl,
 }: ClusterTerminalType) => {
-    const { nodeType } = useParams<URLParams>()
+    const { kind } = useParams<K8sResourceListURLParams>()
     const { replace } = useHistory()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
@@ -157,11 +157,7 @@ const ClusterTerminal = ({
     }
 
     useEffect(() => {
-        if (
-            nodeType !== AppDetailsTabs.terminal ||
-            queryParamsData.selectedNode.value === selectedNodeName.value ||
-            !update
-        ) {
+        if (kind !== 'terminal' || queryParamsData.selectedNode.value === selectedNodeName.value || !update) {
             return
         }
         /* NOTE: update selectedNodeName */
@@ -187,7 +183,7 @@ const ClusterTerminal = ({
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
         updateTerminalTabUrl(queryParams.toString())
-        if (nodeType === AppDetailsTabs.terminal) {
+        if (kind === AppDetailsTabs.terminal) {
             replace({ search: queryParams.toString() })
         }
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
@@ -1035,7 +1031,7 @@ const ClusterTerminal = ({
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: selectedTabIndex === 0 && nodeType === AppDetailsTabs.terminal,
+                isTerminalTab: selectedTabIndex === 0 && kind === 'terminal',
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
