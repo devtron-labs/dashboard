@@ -17,7 +17,7 @@ COPY . .
 
 RUN echo `git rev-parse --short HEAD` > health.html && \
     echo "" >> .env && \
-    echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short HEAD)" >> .env && \
+    echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short=9 HEAD)" >> .env && \
     yarn build
 
 FROM fholzer/nginx-brotli:v1.26.2
