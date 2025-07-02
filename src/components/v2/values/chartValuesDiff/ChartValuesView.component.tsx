@@ -154,7 +154,7 @@ export const DeploymentAppSelector = ({
                 Deploy app using
             </h2>
             <div className="flex left">
-                <span className="fs-13 fw-6  cn-9 md-6" data-testid="deployment-type">
+                <span className="fs-13 fw-6 cn-9 md-6" data-testid="deployment-type">
                     {DEPLOYMENT_TYPE_TO_TEXT_MAP[commonState.installedConfig.deploymentAppType as DeploymentAppTypes]}
                 </span>
                 <DeploymentTypeIcon
@@ -754,7 +754,7 @@ export const DeleteApplicationButton = ({
         <Button
             onClick={handleClick}
             dataTestId="delete-preset-value"
-            startIcon={<Icon name='ic-delete' color={null} />}
+            startIcon={<Icon name="ic-delete" color={null} />}
             isLoading={isDeleteInProgress}
             disabled={isUpdateInProgress}
             text={`Delete ${type}`}

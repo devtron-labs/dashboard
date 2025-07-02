@@ -90,7 +90,7 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     const verifyDeployedClusterConnectionStatus = async (): Promise<void> => {
         await getClusterConnectionStatus(appDetails.environmentId).then((response: ClusterConnectionResponse) => {
             if (response.result) {
-                setClusterConnectionError(response.result.clusterReachable ?? false)
+                setClusterConnectionError(!response.result.clusterReachable)
                 setClusterName(response.result.clusterName ?? '')
             }
         })

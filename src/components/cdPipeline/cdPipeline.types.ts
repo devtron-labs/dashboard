@@ -159,7 +159,7 @@ interface ValidationPayloadApplicationMetaDataType {
     applicationObjectNamespace: string
 }
 
-interface ValidationPayloadFluxReleaseMetaDataType {
+interface ReleaseMetaDataType {
     releaseClusterId: number
     releaseNamespace: string
 }
@@ -174,10 +174,7 @@ export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommon
           }
         | {
               deploymentAppType: DeploymentAppTypes.HELM
-              helmReleaseMetadata: {
-                  releaseClusterId: number
-                  releaseNamespace: string
-              }
+              helmReleaseMetadata: ReleaseMetaDataType
               applicationMetadata?: never
               fluxReleaseMetadata?: never
           }
@@ -185,7 +182,7 @@ export type ValidateMigrateToDevtronPayloadType = ValidateMigrateToDevtronCommon
               deploymentAppType: DeploymentAppTypes.FLUX
               helmReleaseMetadata?: never
               applicationMetadata?: never
-              fluxReleaseMetadata: ValidationPayloadFluxReleaseMetaDataType
+              fluxReleaseMetadata: ReleaseMetaDataType
           }
     )
 
@@ -304,13 +301,13 @@ export type MigrateArgoAppToCDPipelineRequiredPayloadType = MigrateArgoAppToCDPi
         | ({
               deploymentAppType: DeploymentAppTypes.ARGO
           } & ValidationPayloadApplicationMetaDataType &
-              Never<ValidationPayloadFluxReleaseMetaDataType>)
+              Never<ReleaseMetaDataType>)
         | ({
               deploymentAppType: DeploymentAppTypes.HELM
-          } & Never<ValidationPayloadFluxReleaseMetaDataType & ValidationPayloadApplicationMetaDataType>)
+          } & Never<ReleaseMetaDataType & ValidationPayloadApplicationMetaDataType>)
         | ({
               deploymentAppType: DeploymentAppTypes.FLUX
-          } & ValidationPayloadFluxReleaseMetaDataType &
+          } & ReleaseMetaDataType &
               Never<ValidationPayloadApplicationMetaDataType>)
     )
 
