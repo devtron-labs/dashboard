@@ -41,3 +41,5 @@ export const INITIAL_ENV_DATA_STATE: EnvironmentDataStateType = {
     ...COMMON_ENV_FALLBACK,
     isAirgapped: structuredClone(ENVIRONMENT_DATA_FALLBACK).isAirGapEnvironment,
 }
+
+export const NAVBAR_WIDTH = 56

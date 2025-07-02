@@ -54,11 +54,12 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     Icon,
+    SourceTypeMap,
     handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import {
@@ -103,14 +104,10 @@ import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums 
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import {
-    gitOpsRepoNotConfigured,
-    gitOpsRepoNotConfiguredWithEnforcedEnv,
-    gitOpsRepoNotConfiguredWithOptionsHidden,
-} from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
+import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -179,6 +176,7 @@ export default function CDPipeline({
         deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         deploymentAppName: '',
         releaseMode: ReleaseMode.NEW_DEPLOYMENT,
+        isCustomChart: false,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -601,6 +599,7 @@ export default function CDPipeline({
         form.name = pipelineConfigFromRes.name
         form.deploymentAppName = pipelineConfigFromRes.deploymentAppName
         form.releaseMode = pipelineConfigFromRes.releaseMode
+        form.isCustomChart = pipelineConfigFromRes.isCustomChart
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
@@ -731,7 +730,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && formData.isCustomChart ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -927,50 +926,6 @@ export default function CDPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const checkForGitOpsRepoNotConfigured = () => {
-        const isHelmEnforced =
-            formData.allowedDeploymentTypes.length === 1 &&
-            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
-
-        const gitOpsRepoNotConfiguredAndOptionsHidden =
-            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-            !noGitOpsModuleInstalledAndConfigured &&
-            !isHelmEnforced &&
-            isGitOpsRepoNotConfigured
-
-        if (gitOpsRepoNotConfiguredAndOptionsHidden) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
-        }
-        const isGitOpsRepoNotConfiguredAndOptionsVisible =
-            formData.deploymentAppType === DeploymentAppTypes.ARGO &&
-            isGitOpsRepoNotConfigured &&
-            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
-
-        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
-            isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
-
-        if (!isTemplateView) {
-            if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
-                setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
-            }
-            if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
-                setGitOpsRepoConfiguredWarning({
-                    show: true,
-                    text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
-                })
-            }
-
-            if (
-                gitOpsRepoNotConfiguredAndOptionsHidden ||
-                isGitOpsRepoNotConfiguredAndGitopsEnforced ||
-                isGitOpsRepoNotConfiguredAndOptionsVisible
-            ) {
-                return true
-            }
-        }
-        return false
-    }
-
     const savePipeline = async () => {
         if (!isMigratingFromExternalApp) {
             if (formData.deploymentAppType === DeploymentAppTypes.ARGO && isGitOpsInstalledButNotConfigured) {
@@ -987,7 +942,17 @@ export default function CDPipeline({
                 return
             }
 
-            if (checkForGitOpsRepoNotConfigured()) {
+            if (
+                checkForGitOpsRepoNotConfigured({
+                    allowedDeploymentTypes: formData.allowedDeploymentTypes,
+                    deploymentAppType: formData.deploymentAppType as DeploymentAppTypes,
+                    environmentName: formData.environmentName,
+                    isGitOpsRepoNotConfigured,
+                    isTemplateView,
+                    noGitOpsModuleInstalledAndConfigured,
+                    setGitOpsRepoConfiguredWarning,
+                })
+            ) {
                 return
             }
             const isUnique = checkUniqueness(formData, true)
@@ -1369,6 +1334,7 @@ export default function CDPipeline({
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
+                                    isCustomChart={formData.isCustomChart}
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}

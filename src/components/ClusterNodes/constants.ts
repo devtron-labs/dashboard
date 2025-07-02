@@ -115,11 +115,6 @@ export const EDIT_TAINTS_MODAL_MESSAGING = {
             'Combination of <key, effect> must be unique',
         ],
     },
-    emptyState: {
-        title: 'Manage node taints',
-        subTitle:
-            'Add taints to nodes to prevent or discourage pods from being scheduled on them. Use tolerations on pods to let them run on nodes with matching taints.',
-    },
     addTaint: 'Add taint',
     Actions: {
         cancel: 'Cancel',

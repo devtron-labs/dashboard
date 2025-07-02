@@ -444,6 +444,7 @@ const NodeComponent = ({
                                                 className="dc__mxw-250--imp"
                                                 followCursor="horizontal"
                                                 plugins={[followCursor]}
+                                                placement="bottom"
                                             >
                                                 <span className="dc__truncate">
                                                     {node.health.message.toLowerCase()}

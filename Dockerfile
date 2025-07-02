@@ -1,12 +1,17 @@
-FROM node:20-alpine AS builder
-
-RUN apk add --no-cache git
+FROM node:22-alpine AS builder
 
 WORKDIR /app
+
+RUN corepack enable yarn && \
+    yarn set version 4.9.2
+
 COPY package.json .
 COPY yarn.lock .
+COPY .yarn/ .yarn/
+COPY .yarnrc.yml ./
 
-RUN yarn install --frozen-lockfile --network-timeout 600000
+RUN apk add --no-cache git
+RUN yarn install --immutable --network-timeout 600000
 
 COPY src/ src
 COPY nginx.conf .
