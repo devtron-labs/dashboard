@@ -171,7 +171,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             const controls = animate(navBarWidth, NAVBAR_WIDTH, {
                 duration: 0.3,
                 ease: 'easeOut',
-                delay: 1,
+                delay: 0.6,
             })
             return controls.stop
         }
