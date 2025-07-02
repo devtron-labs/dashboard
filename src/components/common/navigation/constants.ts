@@ -30,7 +30,7 @@ const COMMON_ENV_FALLBACK: Omit<EnvironmentDataValuesDTO, 'isAirGapEnvironment'>
     featureGitOpsFlags: structuredClone(DEFAULT_GIT_OPS_FEATURE_FLAGS),
     canFetchHelmAppStatus: false,
     devtronManagedLicensingEnabled: false,
-    isResourceRecommendationEnabled: true,
+    isResourceRecommendationEnabled: false,
 }
 
 export const ENVIRONMENT_DATA_FALLBACK: EnvironmentDataValuesDTO = {
