@@ -107,12 +107,12 @@ const NodeListSearchFilter = ({
 
     useEffect(() => {
         if (registerShortcut) {
-            registerShortcut({ keys: ['R'], callback: handleFocusInput })
+            registerShortcut({ keys: ['/'], callback: handleFocusInput })
             registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
         }
 
         return (): void => {
-            unregisterShortcut(['R'])
+            unregisterShortcut(['/'])
             unregisterShortcut(['Escape'])
         }
     }, [])
@@ -249,7 +249,7 @@ const NodeListSearchFilter = ({
                     )}
 
                     {!searchTextType && (
-                        <ShortcutKeyBadge shortcutKey="r" rootClassName="node-listing-search-container__shortcut-key" />
+                        <ShortcutKeyBadge shortcutKey="/" rootClassName="node-listing-search-container__shortcut-key" />
                     )}
                 </button>
 
