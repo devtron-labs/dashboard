@@ -161,7 +161,7 @@ export const K8SResourceList = ({
         [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
     )
 
-    const isResourceListLoading = !resourceList || resourceListLoader || getIsRequestAborted(resourceListError)
+    const isResourceListLoading = resourceListLoader || getIsRequestAborted(resourceListError)
 
     useEffect(
         () => () => {
