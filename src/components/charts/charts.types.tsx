@@ -444,3 +444,31 @@ export interface ChartGroupDeploymentsProps {
     installedChartData: InstalledChartGroup[]
     deleteInstalledChart: (e) => void
 }
+
+export interface ChartDetailsDTO {
+    id: number
+    version: string
+    appVersion: string
+    created: string
+    deprecated: boolean
+    description: string
+    digest: string
+    icon: string
+    name: string
+    chartName: string
+    appStoreApplicationName: string
+    home: string
+    source: string
+    valuesYaml: string
+    chartYaml: string
+    appStoreId: number
+    latest: boolean
+    createdOn: string
+    rawValues: string
+    readme: string
+    valuesSchemaJson: string
+    notes: string
+    updatedOn: string
+    isChartRepoActive: boolean
+    isOCICompliantChart: boolean
+}

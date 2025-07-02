@@ -22,7 +22,7 @@ import {
     sortCallback,
     ResponseType,
     getUrlWithSearchParams,
-    getAPIOptionsWithTriggerTimeout
+    getAPIOptionsWithTriggerTimeout,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { DELETE_ACTION, Routes } from '../../config'
 import { handleUTCTime } from '../common'
@@ -32,6 +32,7 @@ import {
     HelmTemplateChartRequest,
     HelmProjectUpdatePayload,
     DeleteInstalledChartParamsType,
+    ChartDetailsDTO,
 } from './charts.types'
 import { SavedValueListResponse } from './SavedValues/types'
 
@@ -40,11 +41,13 @@ interface RootObject {
     status: string
     result?: any
 }
-export function getChartVersionsMin(chartId: number | string) {
+export function getChartVersionsMin(
+    chartId: number | string,
+): Promise<ResponseType<{ id: number; version: string }[]>> {
     return get(`app-store/discover/application/${chartId}/version/autocomplete`)
 }
 
-export function getChartVersionDetails(versionId) {
+export function getChartVersionDetails(versionId): Promise<ResponseType<ChartDetailsDTO>> {
     return get(`app-store/discover/application/${versionId}`)
 }
 

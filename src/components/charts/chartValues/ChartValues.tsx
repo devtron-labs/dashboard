@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { useParams } from 'react-router-dom'
 import {
     showError,
@@ -143,10 +143,20 @@ const Header = ({ appStoreApplicationName, name }) => {
         [appStoreApplicationName, name],
     )
 
+    const updatedBreadcrumbs = useMemo(
+        () =>
+            breadcrumbs.map((item) =>
+                item.name === 'Preset values'
+                    ? { ...item, to: `${item.to.replace('/preset-values', '')}?tab=preset-values` }
+                    : item,
+            ),
+        [breadcrumbs],
+    )
+
     const renderChartValueBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb breadcrumbs={breadcrumbs} sep="/" />
+                <BreadCrumb breadcrumbs={updatedBreadcrumbs} sep="/" />
             </div>
         )
     }

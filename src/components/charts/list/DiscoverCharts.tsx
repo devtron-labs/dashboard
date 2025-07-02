@@ -14,55 +14,58 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo } from 'react'
-import {
-    showError,
-    Progressing,
-    ConditionalWrap,
-    DevtronProgressing,
-    PageHeader,
-    useMainContext,
-    DetectBottom,
-    FeatureTitleWithInfo,
-    ToastVariantType,
-    ToastManager,
-    DocLink,
-    Button,
-    ComponentSizeType,
-    ButtonVariantType,
-    handleAnalyticsEvent,
-} from '@devtron-labs/devtron-fe-common-lib'
-import { Switch, Route, NavLink, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import { NavLink, Prompt, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { Select, mapByKey, sortOptionsByLabel } from '../../common'
+
+import {
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ConditionalWrap,
+    DetectBottom,
+    DevtronProgressing,
+    DocLink,
+    FeatureTitleWithInfo,
+    handleAnalyticsEvent,
+    PageHeader,
+    Progressing,
+    showError,
+    ToastManager,
+    ToastVariantType,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { ChartDetails } from '@Pages/ChartStore'
+
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import ChartCard from '../ChartCard'
-import ChartGroupCard from '../util/ChartGroupCard'
-import DiscoverChartDetails from '../discoverChartDetail/DiscoverChartDetails'
-import MultiChartSummary from '../MultiChartSummary'
+import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
+import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
+import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
+import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
+import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
+import { SERVER_MODE, URLS } from '../../../config'
+import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
+import { mapByKey, Select, sortOptionsByLabel } from '../../common'
+import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
+import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
 import AdvancedConfig from '../AdvancedConfig'
-import useChartGroup from '../useChartGroup'
+import ChartCard from '../ChartCard'
+import ChartHeaderFilter from '../ChartHeaderFilters'
 import { deployChartGroup, getChartProviderList } from '../charts.service'
-import { ChartGroupEntry, Chart, EmptyCharts, ChartListType } from '../charts.types'
+import { Chart, ChartGroupEntry, ChartListType, EmptyCharts } from '../charts.types'
+import ChartValues from '../chartValues/ChartValues'
+import { QueryParams } from '../constants'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
-import { URLS, SERVER_MODE } from '../../../config'
-import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
-import ChartHeaderFilter from '../ChartHeaderFilters'
-import { QueryParams } from '../constants'
-import ChartEmptyState from '../../common/emptyState/ChartEmptyState'
+import MultiChartSummary from '../MultiChartSummary'
 import SavedValuesList from '../SavedValues/SavedValuesList'
-import ChartValues from '../chartValues/ChartValues'
-import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
-import NoGitOpsConfiguredWarning from '../../workflowEditor/NoGitOpsConfiguredWarning'
-import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
-import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
-import ChartListPopUp from './ChartListPopUp'
+import useChartGroup from '../useChartGroup'
+import ChartGroupCard from '../util/ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
-import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
 import ChartGroupRouter from './ChartGroup'
+import ChartListPopUp from './ChartListPopUp'
+import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
@@ -120,9 +123,10 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
-    isLeavingPageNotAllowed.current = !state.charts.reduce((acc: boolean, chart: ChartGroupEntry) => {
-        return (acc = acc && chart.originalValuesYaml === chart.valuesYaml)
-    }, true)
+    isLeavingPageNotAllowed.current = !state.charts.reduce(
+        (acc: boolean, chart: ChartGroupEntry) => (acc = acc && chart.originalValuesYaml === chart.valuesYaml),
+        true,
+    )
 
     useEffect(() => {
         getChartFilter()
@@ -132,13 +136,11 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         () =>
             chartLists
                 .filter((chartRepo) => chartRepo.active)
-                .map((chartRepo) => {
-                    return {
-                        value: chartRepo.id,
-                        label: chartRepo.name,
-                        isOCIRegistry: chartRepo.isOCIRegistry,
-                    }
-                })
+                .map((chartRepo) => ({
+                    value: chartRepo.id,
+                    label: chartRepo.name,
+                    isOCIRegistry: chartRepo.isOCIRegistry,
+                }))
                 .sort(sortOptionsByLabel),
         [chartLists],
     )
@@ -156,7 +158,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         setIsLoading(true)
         try {
             const chartRepos = (await getChartProviderList()).result || []
-            chartRepos.sort((a, b) => a['name'].localeCompare(b['name']))
+            chartRepos.sort((a, b) => a.name.localeCompare(b.name))
             setChartLists(chartRepos)
             setFilteredChartList(chartRepos)
             setChartActiveMap(
@@ -419,8 +421,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         history.push(url)
     }
 
-    const renderChartStoreEmptyState = (): JSX.Element => {
-        return chartRepos?.length > 0 && noChartAvailable && searchApplied ? (
+    const renderChartStoreEmptyState = (): JSX.Element =>
+        chartRepos?.length > 0 && noChartAvailable && searchApplied ? (
             <ChartEmptyState onClickViewChartButton={clearSearch} />
         ) : (
             <ChartEmptyState
@@ -430,7 +432,6 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 buttonText="View connected chart repositories"
             />
         )
-    }
 
     return (
         <>
@@ -714,11 +715,13 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
             <Route path={`${path}/group`}>
                 <ChartGroupRouter />
             </Route>
+            {/* TODO: remove this */}
             <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}`} component={SavedValuesList} exact />
             <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
                 <ChartValues />
             </Route>
-            <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} />
+            {/* <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} /> */}
+            <Route path={`${path}${URLS.CHART}/:chartId`} component={ChartDetails} />
             <Route>
                 <DiscoverChartList isSuperAdmin={isSuperAdmin} />
             </Route>
@@ -726,25 +729,23 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
     )
 }
 
-const ChartListHeader = ({ charts }) => {
-    return (
-        <div>
-            <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
-                {charts.length === 0 ? 'All Charts' : 'Select Charts'}
-            </h3>
-            <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
-                Select chart to deploy. &nbsp;
-                <DocLink
-                    dataTestId="chart-group-link"
-                    docLinkKey="CHART_LIST"
-                    text="Learn how to deploy charts"
-                    fontWeight="normal"
-                    size={ComponentSizeType.small}
-                />
-            </p>
-        </div>
-    )
-}
+const ChartListHeader = ({ charts }) => (
+    <div>
+        <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
+            {charts.length === 0 ? 'All Charts' : 'Select Charts'}
+        </h3>
+        <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
+            Select chart to deploy. &nbsp;
+            <DocLink
+                dataTestId="chart-group-link"
+                docLinkKey="CHART_LIST"
+                text="Learn how to deploy charts"
+                fontWeight="normal"
+                size={ComponentSizeType.small}
+            />
+        </p>
+    </div>
+)
 
 export const EmptyChartGroup = ({
     title,
