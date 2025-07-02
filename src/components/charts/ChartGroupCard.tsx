@@ -83,10 +83,8 @@ export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
                                 <ChartIcon icon={chart.chartMetaData.icon} key={chart.id} isChartGroupCard />
                             ))}
                             {chartGroup.chartGroupEntries.length > CHART_CARD_MAX_LENGTH && (
-                                <div className="chart-group-card__icon-wrapper border__secondary-translucent bg__secondary br-8 p-8 dc__w-fit-content h-50">
-                                    <span className="fs-20 lh-1-5 cn-8">
-                                        +{chartGroup.chartGroupEntries.length - CHART_CARD_MAX_LENGTH}
-                                    </span>
+                                <div className="flex chart-group-card__icon-wrapper border__secondary-translucent bg__secondary br-8 p-8 h-50 fs-20 lh-1-5 cn-8 icon-dim-50">
+                                    +{chartGroup.chartGroupEntries.length - CHART_CARD_MAX_LENGTH}
                                 </div>
                             )}
                         </>
