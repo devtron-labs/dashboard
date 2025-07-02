@@ -21,7 +21,7 @@ RUN echo `git rev-parse --short=9 HEAD` > health.html && \
 
 RUN yarn build
 
-FROM fholzer/nginx-brotli:v1.26.2Add commentMore actions
+FROM fholzer/nginx-brotli:v1.26.2
 
 # Install bash
 RUN apk add --no-cache bash shadow
