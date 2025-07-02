@@ -16,7 +16,7 @@
 
 import { Link } from 'react-router-dom'
 
-import { handleAnalyticsEvent, Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { getAlphabetIcon, handleAnalyticsEvent, Icon } from '@devtron-labs/devtron-fe-common-lib'
 
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
@@ -27,6 +27,7 @@ import { getChartGroupSubgroup, getDescriptionTruncate } from './charts.util'
 
 export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
     const chartGroupEntries = getChartGroupSubgroup(chartGroup.chartGroupEntries)
+
     const GROUP_EDIT_LINK = getChartGroupURL(chartGroup.id)
 
     const renderCardInfo = () => (
@@ -56,9 +57,9 @@ export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
 
     const renderFooter = () => (
         <div className="flex left dc__content-space dc__border-top-n1 px-20 py-16 dc__gap-6">
-            <div className="flex dc__gap-6">
-                <Icon name="ic-folder-color" size={18} color={null} />
-                <InteractiveCellText text="" rootClassName="cn-7 lh-1-5" fontSize={12} />
+            <div className="flex">
+                {getAlphabetIcon(chartGroup.createdBy)}
+                <InteractiveCellText text={chartGroup.createdBy} rootClassName="cn-7 lh-1-5" fontSize={12} />
             </div>
             <span className="lh-20 dc__truncate m-0 dc__align-item-left cn-7 lh-1-5 dc__mxw-120 fs-12">
                 {chartGroup.chartGroupEntries?.length || 0} charts
@@ -75,7 +76,15 @@ export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
         >
             <div className="flexbox-col h-166 dc__gap-12 px-20 pt-20 pb-16">
                 <div className="flexbox">
-                    {chartGroupEntries?.map((chart) => <ChartIcon icon={chart.chartMetaData.icon} key={chart.id} />)}
+                    {chartGroupEntries?.length ? (
+                        chartGroupEntries.map((chart) => (
+                            <ChartIcon icon={chart.chartMetaData.icon} key={chart.id} isChartGroupCard />
+                        ))
+                    ) : (
+                        <div className="dc__border-dashed bg__secondary br-8 p-8 dc__w-fit-content h-50">
+                            <Icon name="ic-folder-color" size={32} color={null} />
+                        </div>
+                    )}
                 </div>
                 {renderCardInfo()}
             </div>

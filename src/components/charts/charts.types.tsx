@@ -160,6 +160,7 @@ export interface ChartGroup {
     name: string
     description: string
     chartGroupEntries: ChartGroupEntry[]
+    createdBy: string
 }
 
 export interface ChartEntryIdType {

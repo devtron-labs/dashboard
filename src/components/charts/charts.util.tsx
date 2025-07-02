@@ -50,7 +50,7 @@ export const renderDeprecatedWarning = () => {
 
 export const getChartGroupSubgroup = (chartGroupEntries): ChartGroupEntry[] => {
     let len = chartGroupEntries.length
-    len = len < 8 ? len : 8
+    len = len < 4 ? len : 4
     return chartGroupEntries.slice(0, len)
 }
 
