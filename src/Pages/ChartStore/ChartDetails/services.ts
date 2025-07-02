@@ -7,6 +7,7 @@ import {
 
 import {
     getChartValuesCategorizedListParsed,
+    getChartValuesTemplateList,
     getChartVersionDetails,
     getChartVersionsMin,
 } from '@Components/charts/charts.service'
@@ -45,6 +46,16 @@ export const fetchChartValuesList = async (chartId: string) => {
     try {
         const { result } = await getChartValuesCategorizedListParsed(chartId)
         return result
+    } catch (err) {
+        showError(err)
+        throw err
+    }
+}
+
+export const fetchChartValuesTemplateList = async (chartId: string) => {
+    try {
+        const { result } = await getChartValuesTemplateList(chartId)
+        return result || []
     } catch (err) {
         showError(err)
         throw err

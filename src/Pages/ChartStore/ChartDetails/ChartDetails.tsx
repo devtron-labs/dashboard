@@ -5,11 +5,13 @@ import {
     APIResponseHandler,
     BreadCrumb,
     PageHeader,
+    SearchBar,
     SegmentedControl,
     SegmentedControlProps,
     SelectPickerProps,
     useAsync,
     useBreadcrumb,
+    useStateFilters,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -19,10 +21,11 @@ import { getAvailableCharts } from '@Services/service'
 
 import { ChartDetailsAbout } from './ChartDetailsAbout'
 import { ChartDetailsDeploy } from './ChartDetailsDeploy'
+import { ChartDetailsPresetValues } from './ChartDetailsPresetValues'
 import { ChartDetailsReadme } from './ChartDetailsReadme'
-import { CHART_DETAILS_SEGMENTS } from './constants'
+import { CHART_DETAILS_PORTAL_CONTAINER_ID, CHART_DETAILS_SEGMENTS } from './constants'
 import { fetchChartDetails, fetchChartVersions } from './services'
-import { ChartDetailsSearchParams, ChartDetailsSegment } from './types'
+import { ChartDetailsRouteParams, ChartDetailsSearchParams, ChartDetailsSegment } from './types'
 import { chartSelectorFilterOption, chartSelectorFormatOptionLabel, parseChartDetailsSearchParams } from './utils'
 
 import './chartDetails.scss'
@@ -35,11 +38,13 @@ export const ChartDetails = () => {
     const {
         path,
         params: { chartId },
-    } = useRouteMatch<{ chartId: string; chartSegment: ChartDetailsSegment }>()
+    } = useRouteMatch<ChartDetailsRouteParams>()
 
     const { tab, updateSearchParams } = useUrlFilters<void, ChartDetailsSearchParams>({
         parseSearchParams: parseChartDetailsSearchParams,
     })
+
+    const { searchKey, handleSearch, clearFilters } = useStateFilters()
 
     // ASYNC CALLS
     const [isFetchingChartVersions, chartVersions, chartVersionsErr, reloadChartVersions] = useAsync(
@@ -59,6 +64,10 @@ export const ChartDetails = () => {
             setSelectedChartVersion(chartVersions[0].id)
         }
     }, [isFetchingChartVersions, chartVersions])
+
+    useEffect(() => {
+        clearFilters()
+    }, [tab])
 
     // CONFIGS
     const { breadcrumbs } = useBreadcrumb(
@@ -123,7 +132,7 @@ export const ChartDetails = () => {
                     />
                 )
             case ChartDetailsSegment.PRESET_VALUES:
-                return <div>PRESET VALUES</div>
+                return <ChartDetailsPresetValues searchKey={searchKey} onClearFilters={clearFilters} />
             case ChartDetailsSegment.DEPLOYMENTS:
                 return <div>DEPLOYMENTS</div>
             default:
@@ -151,13 +160,26 @@ export const ChartDetails = () => {
                     </Route>
                     <Route>
                         <div className="chart-details flex-grow-1 p-20 dc__overflow-auto">
-                            <div className="flex column left top dc__gap-16 mw-none">
-                                <SegmentedControl
-                                    name="chart-details-segmented-control"
-                                    segments={CHART_DETAILS_SEGMENTS}
-                                    value={tab}
-                                    onChange={handleSegmentChange}
-                                />
+                            <div className="flexbox-col dc__gap-16 mw-none">
+                                <div className="flex dc__content-space">
+                                    <SegmentedControl
+                                        name="chart-details-segmented-control"
+                                        segments={CHART_DETAILS_SEGMENTS}
+                                        value={tab}
+                                        onChange={handleSegmentChange}
+                                    />
+                                    {(tab === ChartDetailsSegment.PRESET_VALUES ||
+                                        tab === ChartDetailsSegment.DEPLOYMENTS) && (
+                                        <div id={CHART_DETAILS_PORTAL_CONTAINER_ID} className="flex dc__gap-8">
+                                            <SearchBar
+                                                containerClassName="w-250"
+                                                dataTestId="chart-details-search-bar"
+                                                initialSearchText={searchKey}
+                                                handleEnter={handleSearch}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
                                 {renderSegments()}
                             </div>
                             <ChartDetailsAbout isLoading={isFetchingChartDetails} chartDetails={chartDetails} />

@@ -30,7 +30,7 @@ export function getDiscoverChartDetailsURL(chartId: string | number) {
 }
 
 export function getSavedValuesListURL(chartId): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}/preset-values`
+    return `${URLS.CHARTS}/discover/chart/${chartId}?tab=preset-values`
 }
 
 export function getChartValuesURL(chartId: number | string, chartValueId?: number | string): string {

@@ -146,7 +146,7 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
                         />
                     )}
                     <div className="flexbox-col dc__gap-12">
-                        <ChartMetaData title="Chart repository" subtitle={chartName} />
+                        <ChartMetaData title="Chart source" subtitle={chartName} />
                         <ChartMetaData title="Home" subtitle={home} isLink />
                         <ChartMetaData
                             title="Application Version"

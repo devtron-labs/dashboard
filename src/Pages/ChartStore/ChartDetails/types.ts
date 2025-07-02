@@ -10,31 +10,39 @@ export enum ChartDetailsSegment {
     'DEPLOYMENTS' = 'deployments',
 }
 
-export interface ChartDetailsReadmeProps {
+export interface ChartDetailsSearchParams {
+    tab: ChartDetailsSegment
+}
+
+export interface ChartDetailsRouteParams {
+    chartId: string
+}
+
+interface CommonChartDetailsProps {
     isLoading?: boolean
+    chartDetails: ChartDetailsDTO
+    selectedChartVersion: number
+    searchKey?: string
+    onClearFilters?: () => void
+}
+
+export interface ChartDetailsReadmeProps extends Pick<CommonChartDetailsProps, 'isLoading' | 'selectedChartVersion'> {
     error?: ServerErrors
     reload?: () => void
     chartName: string
     readme: string
-    selectedChartVersion: number
     onChartChange: SelectPickerProps<number>['onChange']
     chartsOptions: SelectPickerProps<number>['options']
 }
 
-export interface ChartDetailsAboutProps {
-    isLoading?: boolean
-    chartDetails: ChartDetailsDTO
-}
+export interface ChartDetailsAboutProps extends Pick<CommonChartDetailsProps, 'isLoading' | 'chartDetails'> {}
 
-export interface ChartDetailsDeployProps {
-    chartDetails: ChartDetailsDTO
+export interface ChartDetailsDeployProps
+    extends Pick<CommonChartDetailsProps, 'selectedChartVersion' | 'chartDetails'> {
     chartVersions: {
         id: number
         version: string
     }[]
-    selectedChartVersion: number
 }
 
-export interface ChartDetailsSearchParams {
-    tab: ChartDetailsSegment
-}
+export interface ChartDetailsPresetValuesProps extends Pick<CommonChartDetailsProps, 'searchKey' | 'onClearFilters'> {}

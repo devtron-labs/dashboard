@@ -9,3 +9,12 @@
     width: 56px;
     height: 56px;
 }
+
+.chart-details-preset-value {
+    &__row {
+        display: grid;
+        align-items: center;
+        grid-template-columns: 24px 200px 1fr;
+        gap: 16px;
+    }
+}

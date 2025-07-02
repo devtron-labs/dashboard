@@ -7,10 +7,10 @@ import ChartValuesView from '@Components/v2/values/chartValuesDiff/ChartValuesVi
 import { ChartInstalledConfig } from '@Components/v2/values/chartValuesDiff/ChartValuesView.type'
 
 import { fetchChartValuesList } from './services'
-import { ChartDetailsDeployProps } from './types'
+import { ChartDetailsDeployProps, ChartDetailsRouteParams } from './types'
 
 export const ChartDetailsDeploy = ({ chartDetails, chartVersions, selectedChartVersion }: ChartDetailsDeployProps) => {
-    const { chartId } = useParams<{ chartId: string }>()
+    const { chartId } = useParams<ChartDetailsRouteParams>()
 
     const [isFetchingChartValuesList, chartValuesList, chartValuesListErr, reloadChartValuesList] = useAsync(
         () => fetchChartValuesList(chartId),
@@ -31,7 +31,7 @@ export const ChartDetailsDeploy = ({ chartDetails, chartVersions, selectedChartV
     return (
         <APIResponseHandler
             isLoading={isChartValuesViewLoading}
-            progressingProps={{ pageLoader: true }}
+            progressingProps={{ size: 24 }}
             error={chartValuesListErr}
             errorScreenManagerProps={{ code: chartValuesListErr?.code, reload: reloadChartValuesList }}
         >
