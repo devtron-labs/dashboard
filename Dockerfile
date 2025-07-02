@@ -1,18 +1,17 @@
-FROM node:22-alpine AS builder
-
-WORKDIR /app
-
-RUN corepack enable yarn && \
-    yarn set version 4.9.2
-
-COPY package.json .
-COPY yarn.lock .
-COPY .yarn/ .yarn/
-COPY .yarnrc.yml ./
+FROM node:20-alpine AS builder
 
 RUN apk add --no-cache git
-RUN yarn install --immutable --network-timeout 600000
 
+WORKDIR /app
+COPY package.json .
+COPY yarn.lock .
+
+RUN yarn install --frozen-lockfile --network-timeout 600000
+
+COPY src/ src
+COPY nginx.conf .
+COPY tsconfig.json .
+COPY vite.config.mts .
 COPY . .
 
 RUN echo `git rev-parse --short=9 HEAD` > health.html && \
@@ -27,7 +26,6 @@ FROM fholzer/nginx-brotli:v1.26.2
 RUN apk add --no-cache bash shadow
 
 RUN useradd -m -s /bin/bash devtron
-
 
 COPY --from=builder /app/dist/ /usr/share/nginx/html
 COPY ./nginx.conf /etc/nginx/nginx.conf
