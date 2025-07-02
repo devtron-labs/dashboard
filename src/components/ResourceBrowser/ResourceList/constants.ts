@@ -1,8 +1,6 @@
-import { ActionMenuItemType } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenuItemType, NodeActionMenuOptionIdEnum } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CLUSTER_NODE_ACTIONS_LABELS } from '@Components/ClusterNodes/constants'
-
-import { NodeActionMenuOptionIdEnum } from './types'
 
 export const getNodeActions = (unschedulable: boolean): ActionMenuItemType<NodeActionMenuOptionIdEnum>[] => [
     {

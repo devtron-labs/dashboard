@@ -1,9 +1,9 @@
 import { cloneElement, ReactElement, useEffect } from 'react'
 import { useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
-import { logExceptionToSentry, noop } from '@devtron-labs/devtron-fe-common-lib'
+import { logExceptionToSentry, noop, RESOURCE_BROWSER_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
 
-import { RESOURCE_BROWSER_ROUTES, UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
+import { UPGRADE_CLUSTER_CONSTANTS } from '../Constants'
 import { DynamicTabComponentWrapperProps } from './types'
 import { getTabIdForTab, getTabIdParamsForPath, getUpgradeCompatibilityTippyConfig } from './utils'
 

@@ -5,21 +5,18 @@ import DOMPurify from 'dompurify'
 import {
     ALL_NAMESPACE_OPTION,
     ClipboardButton,
+    DUMMY_RESOURCE_GVK_VERSION,
     GVKType,
     highlightSearchText,
     K8sResourceDetailDataType,
     Nodes,
     noop,
+    RESOURCE_BROWSER_ROUTES,
     TableSignalEnum,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    DUMMY_RESOURCE_GVK_VERSION,
-    K8S_EMPTY_GROUP,
-    RESOURCE_ACTION_MENU,
-    RESOURCE_BROWSER_ROUTES,
-} from '../Constants'
+import { K8S_EMPTY_GROUP, RESOURCE_ACTION_MENU } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { renderResourceValue } from '../Utils'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'

@@ -23,7 +23,9 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    NodeActionMenuOptionIdEnum,
     noop,
+    RESOURCE_BROWSER_ROUTES,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
@@ -33,10 +35,10 @@ import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
 import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
 import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
 import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
-import { K8S_EMPTY_GROUP, RESOURCE_BROWSER_ROUTES } from '../Constants'
+import { K8S_EMPTY_GROUP } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
 import { getNodeActions } from './constants'
-import { K8sResourceListURLParams, NodeActionMenuOptionIdEnum } from './types'
+import { K8sResourceListURLParams } from './types'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
@@ -185,7 +187,7 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
                     id={nodeData.name as string}
                     onClick={onActionMenuClick}
                     options={[{ items: getNodeActions(!!nodeData.unschedulable) }]}
-                    position="right"
+                    position="bottom"
                     buttonProps={{
                         ref: forwardedRef,
                         dataTestId: `node-actions-button-${nodeData.name}`,

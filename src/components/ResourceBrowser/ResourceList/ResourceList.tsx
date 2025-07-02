@@ -23,6 +23,7 @@ import {
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
+    RESOURCE_BROWSER_ROUTES,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -44,7 +45,6 @@ import { importComponentFromFELibrary } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
 import {
     MONITORING_DASHBOARD_TAB_ID,
-    RESOURCE_BROWSER_ROUTES,
     RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
@@ -65,7 +65,7 @@ import NodeDetailWrapper from './NodeDetailWrapper'
 import { renderRefreshBar } from './ResourceList.component'
 import ResourcePageHeader from './ResourcePageHeader'
 import { ResourceRecommenderTableViewWrapper } from './ResourceRecommenderTableViewWrapper'
-import { dynamicSort, getClusterOptions, getResourceRecommenderResourceDetailURL } from './utils'
+import { dynamicSort, getClusterOptions } from './utils'
 
 const MonitoringDashboard = importComponentFromFELibrary('MonitoringDashboard', null, 'function')
 const ResourceRecommender = importComponentFromFELibrary('ResourceRecommender', null, 'function')
@@ -370,7 +370,6 @@ const ResourceList = () => {
                         <ResourceRecommender
                             selectedCluster={selectedCluster}
                             ResourceRecommenderTableViewWrapper={ResourceRecommenderTableViewWrapper}
-                            getResourceRecommenderResourceDetailURL={getResourceRecommenderResourceDetailURL}
                             dynamicSort={dynamicSort}
                         />
                     </DynamicTabComponentWrapper>

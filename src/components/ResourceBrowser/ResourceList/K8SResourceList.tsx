@@ -19,14 +19,19 @@ import { useLocation, useParams } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
+    ErrorScreenManager,
     FiltersTypeEnum,
+    getAIAnalyticsEvents,
+    getIsRequestAborted,
     LARGE_PAGE_SIZE_OPTIONS,
     Nodes,
     PaginationEnum,
     SelectAllDialogStatus,
+    ServerErrors,
     Table,
     TableColumnType,
     TableProps,
+    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -35,6 +40,7 @@ import emptyCustomChart from '@Images/empty-noresult@2x.png'
 import { importComponentFromFELibrary } from '@Components/common'
 import {
     getManifestResource,
+    getPodRestartRBACPayload,
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
@@ -59,6 +65,7 @@ const RESOURCE_FILTER_KEYS: Record<string, unknown> = importComponentFromFELibra
 )
 const RBBulkSelectionActions = importComponentFromFELibrary('RBBulkSelectionActions', null, 'function')
 const RBBulkOperations = importComponentFromFELibrary('RBBulkOperations', null, 'function')
+const PodRestart = importComponentFromFELibrary('PodRestart')
 
 const K8SResourceListViewWrapper = ({
     children,
@@ -136,7 +143,7 @@ export const K8SResourceList = ({
           }, {})
         : null
 
-    const [resourceListLoader, resourceList, , reloadResourceList] = useAsync(
+    const [resourceListLoader, resourceList, resourceListError, reloadResourceList] = useAsync(
         () =>
             abortPreviousRequests(async () => {
                 if (selectedResource) {
@@ -152,9 +159,9 @@ export const K8SResourceList = ({
                 return null
             }, abortControllerRef),
         [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
-        true,
-        { resetOnChange: false },
     )
+
+    const isResourceListLoading = !resourceList || resourceListLoader || getIsRequestAborted(resourceListError)
 
     useEffect(
         () => () => {
@@ -197,10 +204,6 @@ export const K8SResourceList = ({
         [resourceList?.data],
     )
 
-    const handleClearCacheAndReload = () => {
-        reloadResourceList()
-    }
-
     const tableFilter: TableProps['filter'] = (row, filterData) => {
         if (isNodeListing) {
             return isItemASearchMatchForNodeListing(row.data, filterData)
@@ -234,66 +237,87 @@ export const K8SResourceList = ({
         return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
     }
 
+    if (resourceListError && !isResourceListLoading) {
+        return (
+            <div className="flexbox-col flex-grow-1 border__primary--left">
+                <ErrorScreenManager
+                    code={(resourceListError as ServerErrors).code}
+                    reload={reloadResourceList}
+                    redirectURL={URLS.RESOURCE_BROWSER}
+                />
+            </div>
+        )
+    }
+
     return (
-        <Table
-            loading={resourceListLoader || !resourceList}
-            columns={columns}
-            rows={rows}
-            {...(RBBulkSelectionActions && !isEventListing
-                ? {
-                      bulkSelectionConfig: {
-                          BulkActionsComponent: RBBulkSelectionActions,
-                          getSelectAllDialogStatus: () => SelectAllDialogStatus.CLOSED,
-                          BulkOperationModal: RBBulkOperations,
-                          bulkOperationModalData: {
-                              selectedResource,
-                              isNodeListing,
-                              getManifestResource,
-                              updateManifestResourceHelmApps,
-                              clusterId: +clusterId,
-                              clusterName: selectedCluster?.label ?? '',
-                              handleReloadDataAfterBulkOperation: handleClearCacheAndReload,
+        <>
+            <Table
+                loading={isResourceListLoading}
+                columns={columns}
+                rows={rows}
+                {...(RBBulkSelectionActions && !isEventListing
+                    ? {
+                          bulkSelectionConfig: {
+                              BulkActionsComponent: RBBulkSelectionActions,
+                              getSelectAllDialogStatus: () => SelectAllDialogStatus.CLOSED,
+                              BulkOperationModal: RBBulkOperations,
+                              bulkOperationModalData: {
+                                  selectedResource,
+                                  isNodeListing,
+                                  getManifestResource,
+                                  updateManifestResourceHelmApps,
+                                  clusterId: +clusterId,
+                                  clusterName: selectedCluster?.label ?? '',
+                                  handleReloadDataAfterBulkOperation: reloadResourceList,
+                              },
+                              bulkActionsData: {
+                                  showBulkRestartOption:
+                                      window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
+                                          .map((feat: string) => feat.trim().toUpperCase())
+                                          .indexOf(selectedResource?.gvk.Kind.toUpperCase()) > -1,
+                                  showNodeListingOptions: isNodeListing,
+                              },
                           },
-                          bulkActionsData: {
-                              showBulkRestartOption:
-                                  window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.split(',')
-                                      .map((feat: string) => feat.trim().toUpperCase())
-                                      .indexOf(selectedResource?.gvk.Kind.toUpperCase()) > -1,
-                              showNodeListingOptions: isNodeListing,
-                          },
-                      },
-                  }
-                : {})}
-            emptyStateConfig={{
-                noRowsConfig: {
-                    image: emptyCustomChart,
-                    title: `No ${selectedResource?.gvk.Kind ?? 'Resource'} found`,
-                    subTitle: `We could not find any ${selectedResource?.gvk.Kind ?? 'Resource'}. Try selecting a different cluster or namespace.`,
-                },
-            }}
-            filtersVariant={FiltersTypeEnum.URL}
-            paginationVariant={PaginationEnum.PAGINATED}
-            areColumnsConfigurable={isNodeListing}
-            id="table__gvk-resource-list"
-            additionalFilterProps={{
-                parseSearchParams: parseK8sResourceListSearchParams,
-                defaultPageSize: LARGE_PAGE_SIZE_OPTIONS[0].value,
-                initialSortKey: getDefaultSortKey(),
-            }}
-            ViewWrapper={K8SResourceListViewWrapper}
-            filter={tableFilter}
-            additionalProps={{
-                renderRefreshBar,
-                selectedResource,
-                selectedCluster,
-                addTab,
-                isNodeListing,
-                isEventListing,
-                lowercaseKindToResourceGroupMap,
-                reloadResourceListData: handleClearCacheAndReload,
-                clusterName: selectedCluster?.label ?? '',
-            }}
-            pageSizeOptions={!isNodeListing ? LARGE_PAGE_SIZE_OPTIONS : undefined}
-        />
+                      }
+                    : {})}
+                emptyStateConfig={{
+                    noRowsConfig: {
+                        image: emptyCustomChart,
+                        title: `No ${selectedResource?.gvk.Kind ?? 'Resource'} found`,
+                        subTitle: `We could not find any ${selectedResource?.gvk.Kind ?? 'Resource'}. Try selecting a different cluster or namespace.`,
+                    },
+                }}
+                filtersVariant={FiltersTypeEnum.URL}
+                paginationVariant={PaginationEnum.PAGINATED}
+                areColumnsConfigurable={isNodeListing}
+                id="table__gvk-resource-list"
+                additionalFilterProps={{
+                    parseSearchParams: parseK8sResourceListSearchParams,
+                    defaultPageSize: LARGE_PAGE_SIZE_OPTIONS[0].value,
+                    initialSortKey: getDefaultSortKey(),
+                }}
+                ViewWrapper={K8SResourceListViewWrapper}
+                filter={tableFilter}
+                additionalProps={{
+                    renderRefreshBar,
+                    selectedResource,
+                    selectedCluster,
+                    addTab,
+                    isNodeListing,
+                    isEventListing,
+                    lowercaseKindToResourceGroupMap,
+                    reloadResourceListData: reloadResourceList,
+                    clusterName: selectedCluster?.label ?? '',
+                }}
+                pageSizeOptions={!isNodeListing ? LARGE_PAGE_SIZE_OPTIONS : undefined}
+            />
+
+            {PodRestart && (
+                <PodRestart
+                    aiWidgetAnalyticsEvent={getAIAnalyticsEvents('RB_POD_RESTART')}
+                    rbacPayload={getPodRestartRBACPayload()}
+                />
+            )}
+        </>
     )
 }

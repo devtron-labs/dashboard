@@ -22,6 +22,7 @@ import queryString from 'query-string'
 import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
+    DUMMY_RESOURCE_GVK_VERSION,
     FeatureTitleWithInfo,
     getUrlWithSearchParams,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
@@ -30,6 +31,7 @@ import {
     InitTabType,
     K8sResourceDetailDataType,
     Nodes,
+    RESOURCE_BROWSER_ROUTES,
     ResponseType,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -38,13 +40,11 @@ import { LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
-    DUMMY_RESOURCE_GVK_VERSION,
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
-    RESOURCE_BROWSER_ROUTES,
     RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
@@ -319,7 +319,6 @@ export const getTabsBasedOnRole = ({
                       generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
                           clusterId,
                       }),
-                      false,
                       MONITORING_DASHBOARD_TAB_ID,
                   ),
               ]

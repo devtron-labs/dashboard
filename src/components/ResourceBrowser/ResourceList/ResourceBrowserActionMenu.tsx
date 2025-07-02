@@ -20,13 +20,13 @@ import {
     ActionMenu,
     ActionMenuItemType,
     ActionMenuProps,
-    Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     GetResourceScanDetailsPayloadType,
     ModuleNameMap,
     Nodes,
+    ResourceBrowserActionMenuEnum,
     ResponseType,
     ScanResultDTO,
     SecurityModal,
@@ -40,7 +40,6 @@ import { getShowResourceScanModal, importComponentFromFELibrary } from '../../co
 import { NodeType } from '../../v2/appDetails/appDetails.type'
 import { ResourceBrowserActionMenuType } from '../Types'
 import DeleteResourcePopup from './DeleteResourcePopup'
-import { ResourceBrowserActionMenuEnum } from './types'
 
 const getResourceScanDetails: ({
     name,
@@ -145,7 +144,7 @@ const ResourceBrowserActionMenu = forwardRef(
                 <ActionMenu<ResourceBrowserActionMenuEnum>
                     id={id}
                     onClick={onActionMenuClick}
-                    position="right"
+                    position="bottom"
                     options={[
                         {
                             items: [
@@ -195,18 +194,17 @@ const ResourceBrowserActionMenu = forwardRef(
                             ],
                         },
                     ]}
-                >
-                    <Button
-                        ref={forwardedRef}
-                        dataTestId={`node-actions-button-${id}`}
-                        icon={<MenuDots className="fcn-7" />}
-                        variant={ButtonVariantType.borderLess}
-                        ariaLabel="Open action menu"
-                        style={ButtonStyleType.neutral}
-                        size={ComponentSizeType.xxs}
-                        showAriaLabelInTippy={false}
-                    />
-                </ActionMenu>
+                    buttonProps={{
+                        ref: forwardedRef,
+                        dataTestId: `node-actions-button-${id}`,
+                        icon: <MenuDots className="fcn-7" />,
+                        variant: ButtonVariantType.borderLess,
+                        ariaLabel: 'Open action menu',
+                        style: ButtonStyleType.neutral,
+                        size: ComponentSizeType.xxs,
+                        showAriaLabelInTippy: false,
+                    }}
+                />
 
                 {showDeleteDialog && (
                     <DeleteResourcePopup

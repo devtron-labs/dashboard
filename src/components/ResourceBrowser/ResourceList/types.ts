@@ -16,6 +16,7 @@
 
 import {
     FiltersTypeEnum,
+    ServerErrors,
     TableCellComponentProps,
     TableViewWrapperProps,
     useBreadcrumb,
@@ -26,7 +27,7 @@ import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
-import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS } from '../Types'
+import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS, ResourceFilterOptionsProps } from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ClusterListType, 'updateTabUrl'>,
@@ -105,21 +106,7 @@ export type DynamicTabComponentWrapperProps = Pick<
         children: React.ReactElement
     }
 
-export enum NodeActionMenuOptionIdEnum {
-    terminal = 'terminal',
-    cordon = 'cordon',
-    uncordon = 'uncordon',
-    drain = 'drain',
-    editTaints = 'edit-taints',
-    editYaml = 'edit-yaml',
-    delete = 'delete',
-}
-
-export enum ResourceBrowserActionMenuEnum {
-    manifest = 'manifest',
-    events = 'events',
-    logs = 'logs',
-    terminal = 'terminal',
-    delete = 'delete',
-    vulnerability = 'vulnerability',
+export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
+    resourceListError: ServerErrors
+    reloadResourceListData: () => void
 }
