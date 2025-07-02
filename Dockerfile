@@ -21,7 +21,7 @@ RUN echo `git rev-parse --short=9 HEAD` > health.html && \
 
 RUN yarn build
 
-FROM nginx:stable
+FROM fholzer/nginx-brotli:v1.26.2
 
 RUN useradd -ms /bin/bash devtron
 COPY --from=builder /app/dist/ /usr/share/nginx/html
