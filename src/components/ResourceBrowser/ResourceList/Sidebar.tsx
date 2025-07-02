@@ -22,7 +22,6 @@ import DOMPurify from 'dompurify'
 
 import {
     ApiResourceGroupType,
-    DUMMY_RESOURCE_GVK_VERSION,
     highlightSearchText,
     K8S_EMPTY_GROUP,
     Nodes,
@@ -122,7 +121,6 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             clusterId,
             kind: _selectedKind,
             group: _selectedGroup || K8S_EMPTY_GROUP,
-            version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
         if (path === location.pathname) {

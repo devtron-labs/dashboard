@@ -18,7 +18,6 @@ import React, { useEffect, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams } from 'react-router-dom'
 
 import {
-    DUMMY_RESOURCE_GVK_VERSION,
     EditableTextArea,
     ErrorScreenManager,
     getRandomColor,
@@ -216,7 +215,6 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
             clusterId,
             kind: 'node',
             group: K8S_EMPTY_GROUP,
-            version: DUMMY_RESOURCE_GVK_VERSION,
         })}?${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
     }

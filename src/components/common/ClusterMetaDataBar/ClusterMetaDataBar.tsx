@@ -18,7 +18,6 @@ import { generatePath, useHistory } from 'react-router-dom'
 
 import {
     AppThemeType,
-    DUMMY_RESOURCE_GVK_VERSION,
     getComponentSpecificThemeClass,
     K8S_EMPTY_GROUP,
     RESOURCE_BROWSER_ROUTES,
@@ -56,7 +55,7 @@ export const ClusterMetaDataBar = ({
         <a
             className={`${darkTheme ? 'icon-stroke__white resource-link__dark-theme text__white' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
-            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, { clusterId, group: K8S_EMPTY_GROUP, kind: 'pod', version: DUMMY_RESOURCE_GVK_VERSION })}?namespace=${namespace}`}
+            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, { clusterId, group: K8S_EMPTY_GROUP, kind: 'pod' })}?namespace=${namespace}`}
             rel="noreferrer"
         >
             <AllResourcesIcon />
