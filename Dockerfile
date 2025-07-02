@@ -13,15 +13,10 @@ COPY .yarnrc.yml ./
 RUN apk add --no-cache git
 RUN yarn install --immutable --network-timeout 600000
 
-COPY src/ src
-COPY nginx.conf .
-COPY tsconfig.json .
-COPY vite.config.mts .
 COPY . .
 
-RUN echo `git rev-parse --short=9 HEAD` > health.html
-
-RUN echo "" >> .env && \
+RUN echo `git rev-parse --short=9 HEAD` > health.html && \
+    echo "" >> .env && \
     echo "SENTRY_RELEASE_VERSION=dashboard@$(git rev-parse --short=9 HEAD)" >> .env
 
 RUN yarn build
