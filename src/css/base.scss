@@ -483,6 +483,10 @@ a:focus {
     cursor: default;
 }
 
+.cursor-default-imp {
+    cursor: default !important;
+}
+
 .cursor-wait {
     cursor: wait;
 }
@@ -979,44 +983,6 @@ button.anchor {
     height: 100%;
 }
 
-.dc__configuration-list {
-    display: grid;
-    grid-template-columns: 24px 1fr 200px;
-    grid-column-gap: 10px;
-
-    .tag {
-        border: 1px solid var(--N200);
-        height: 20px;
-        line-height: 20px;
-        font-size: 12px;
-        font-weight: 600;
-        color: var(--N900);
-        padding: 0 6px;
-        border-radius: 4px;
-        text-transform: uppercase;
-    }
-}
-
-.animate-background {
-    animation: colorchange 0.5s ease-in 2;
-    background: linear-gradient(-45deg, rgba(102, 163, 225, 100), white);
-    background-size: 400% 400%;
-}
-
-@keyframes colorchange {
-    0% {
-        background-position: 0% 50%;
-    }
-
-    50% {
-        background-position: 100% 50%;
-    }
-
-    100% {
-        background-position: 0% 50%;
-    }
-}
-
 .dc__element-scroller {
     background: var(--bg-overlay-secondary);
     border: 1px solid var(--border-primary);
@@ -1075,27 +1041,6 @@ button.anchor {
 
     div:hover {
         @include dc__striped-row(var(--B50));
-    }
-}
-
-.dc__app-update-toast {
-    font-size: 14px;
-
-    .info {
-        line-height: 1.43;
-        color: var(--N0);
-        font-size: 13px;
-        text-transform: none;
-    }
-
-    button {
-        outline: unset;
-        border: unset;
-        margin-left: auto;
-        background: transparent;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin: 14px 0 0 auto;
     }
 }
 
@@ -1897,6 +1842,10 @@ button.anchor {
 // Border
 .dc__border {
     border: 1px solid var(--border-primary);
+
+    &--b5 {
+        border: 1px solid var(--B500);
+    }
 
     &--n9 {
         border: 1px solid var(--N900);
@@ -2939,6 +2888,10 @@ button.anchor {
     width: 64px;
 }
 
+.w-69 {
+    width: 69px;
+}
+
 .w-80px {
     width: 80px;
 }
@@ -3222,6 +3175,10 @@ button.anchor {
     min-width: 100px;
 }
 
+.dc__mxw-fit-content {
+    max-width: fit-content
+}
+
 // width fix content
 .dc__w-fit-content {
     width: fit-content;
@@ -3385,6 +3342,10 @@ button.anchor {
     height: 80px !important;
 }
 
+.h-86 {
+    height: 86px;
+}
+
 .h-90 {
     height: 90px !important;
 }
@@ -3403,6 +3364,10 @@ button.anchor {
 
 .h-132 {
     height: 132px;
+}
+
+.h-166 {
+    height: 166px;
 }
 
 .h-192 {
@@ -4135,29 +4100,38 @@ textarea::placeholder {
     -webkit-box-orient: vertical;
     -webkit-line-clamp: 1;
     word-break: break-all;
-}
 
-.dc__truncate--clamp-6 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 6;
-}
+    &--clamp-2 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        word-break: break-all;
+    }
 
-.dc__truncate--clamp-3 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 3;
-    word-break: break-word;
-}
+    &--clamp-3 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        word-break: break-all;
+    }
 
-.dc__truncate--clamp-4 {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4;
-    word-break: break-word;
+    &--clamp-4 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 4;
+        word-break: break-all;
+    }
+
+    &--clamp-6 {
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 6;
+        word-break: break-all;
+    }
 }
 
 // opacity
@@ -4605,11 +4579,6 @@ textarea::placeholder {
     border-radius: 48px;
 }
 
-.fetch-more-loading-button svg {
-    width: 100% !important;
-    height: 100% !important;
-}
-
 .fs-11-imp {
     font-size: 11px !important;
 }
@@ -4798,55 +4767,6 @@ textarea::placeholder {
     background-color: var(--Y200);
 }
 
-.severity-chip {
-    display: flex;
-    padding: 0px 6px;
-    align-items: center;
-    gap: 4px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-style: normal;
-    font-weight: 600;
-    line-height: 20px;
-    text-transform: capitalize;
-
-    &--passed {
-        color: var(--G500);
-        border: 1px solid var(--G200);
-        background: var(--G100);
-    }
-
-    &--critical {
-        color: var(--R700);
-        border: 1px solid var(--R700);
-        background: var(--R100);
-    }
-
-    &--high {
-        color: var(--R500);
-        border: 1px solid var(--R200);
-        background: var(--R100);
-    }
-
-    &--medium {
-        color: var(--O600);
-        border: 1px solid var(--O200);
-        background: var(--O100);
-    }
-
-    &--low {
-        color: var(--Y700);
-        border: 1px solid var(--Y200);
-        background: var(--Y100);
-    }
-
-    &--unknown {
-        color: var(--N700);
-        border: 1px solid var(--N200);
-        background: var(--N100);
-    }
-}
-
 .dc__grid-full {
     display: grid;
     grid-template-columns: 100% 0;
@@ -5012,6 +4932,11 @@ details[open] {
     background: var(--backdrop-bg);
     z-index: var(--modal-index);
     backdrop-filter: blur(1px);
+
+    &--transparent {
+        background: transparent;
+        backdrop-filter: none;
+    }
 }
 
 // NOTE: used for divider separated flexbox row lists

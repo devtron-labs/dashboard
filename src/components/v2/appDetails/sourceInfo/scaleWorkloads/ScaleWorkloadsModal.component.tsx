@@ -126,7 +126,7 @@ export default function ScaleWorkloadsModal({ appId, onClose, history }: ScaleWo
 
     const _getAndSetAppDetail = async () => {
         try {
-            if (appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS && isHelmApp) {
+            if (appDetails?.deploymentAppType === DeploymentAppTypes.ARGO && isHelmApp) {
                 const response = await abortPreviousRequests(
                     () =>
                         getInstalledChartDetailWithResourceTree(

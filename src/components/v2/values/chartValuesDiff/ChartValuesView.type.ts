@@ -460,14 +460,6 @@ export interface DeleteApplicationButtonProps {
     clickHandler?: () => void
 }
 
-export interface UpdateApplicationButtonProps {
-    isUpdateInProgress: boolean
-    isDeleteInProgress: boolean
-    isDeployChartView: boolean
-    isCreateValueView: boolean
-    deployOrUpdateApplication: () => Promise<void>
-}
-
 export interface ErrorScreenWithInfoProps {
     info: string
 }

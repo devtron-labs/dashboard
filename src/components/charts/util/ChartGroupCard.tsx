@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { ChartGroup, ChartGroupEntry } from '../charts.types'
+import { ChartGroupCardProps, ChartGroupEntry } from '../charts.types'
 import { getChartGroupURL } from '../charts.helper'
 import placeHolder from '../../../assets/icons/ic-plc-chart.svg'
-
-export interface ChartGroupCardProps {
-    chartGroup: ChartGroup
-}
+import { handleAnalyticsEvent } from '@devtron-labs/devtron-fe-common-lib'
 
 export default class ChartGroupCard extends Component<ChartGroupCardProps> {
     handleImageError = (e) => {
@@ -41,9 +38,18 @@ export default class ChartGroupCard extends Component<ChartGroupCardProps> {
         const { chartGroup } = this.props
         const chartGroupEntries = this.getChartGroupSubgroup()
         const GROUP_EDIT_LINK = getChartGroupURL(chartGroup.id)
-        const classes = 'chart-grid-item chart-grid-item--chart-group white-card dc__no-decor'
+
+        const handleClick = () => {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_GROUP_CARD_CLICKED' })
+        }
+
         return (
-            <Link key={chartGroup.id} className={classes} to={GROUP_EDIT_LINK}>
+            <Link
+                key={chartGroup.id}
+                className="chart-grid-item chart-grid-item--chart-group white-card dc__no-decor"
+                to={GROUP_EDIT_LINK}
+                onClick={handleClick}
+            >
                 <div className="chart-grid-item__chart-icons">
                     {chartGroupEntries?.map((chart, index) => {
                         return (

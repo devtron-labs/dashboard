@@ -19,10 +19,14 @@ import { DeploymentAppTypes, Tooltip } from '@devtron-labs/devtron-fe-common-lib
 import { ReactComponent as ArgoCD } from '@Icons/argo-cd-app.svg'
 import { ReactComponent as Helm } from '@Icons/helm-app.svg'
 import { ReactComponent as FluxCD } from '@Icons/ic-fluxcd.svg'
+
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
-export const DEPLOYMENT_TYPE_TO_TEXT_MAP = {
-    [DeploymentAppTypes.GITOPS]: 'GitOps',
+export const DEPLOYMENT_TYPE_TO_TEXT_MAP: Record<
+    Extract<DeploymentAppTypes, DeploymentAppTypes.ARGO | DeploymentAppTypes.FLUX | DeploymentAppTypes.HELM>,
+    string
+> = {
+    [DeploymentAppTypes.ARGO]: 'ArgoCD',
     [DeploymentAppTypes.FLUX]: 'FluxCD',
     [DeploymentAppTypes.HELM]: 'Helm',
 }
@@ -37,7 +41,7 @@ const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
 const getDeploymentTypeIcon = ({ deploymentAppType, iconSize = 32 }: DeploymentTypeIconProps) => {
     const className = `icon-dim-${iconSize}`
     switch (deploymentAppType) {
-        case DeploymentAppTypes.GITOPS:
+        case DeploymentAppTypes.ARGO:
             return <ArgoCD data-testid="argo-cd-app-logo" className={className} />
         case DeploymentAppTypes.FLUX:
             return <FluxCD data-testid="flux-cd-app-logo" className={className} />
@@ -53,7 +57,7 @@ const DeploymentTypeIcon = ({ deploymentAppType, iconSize }: DeploymentTypeIconP
         case DeploymentAppTypes.MANIFEST_DOWNLOAD:
         case DeploymentAppTypes.MANIFEST_PUSH:
             return VirtualEnvHelpTippy ? <VirtualEnvHelpTippy isVirtualIcon /> : null
-        case DeploymentAppTypes.GITOPS:
+        case DeploymentAppTypes.ARGO:
         case DeploymentAppTypes.FLUX:
         case DeploymentAppTypes.HELM:
             return (

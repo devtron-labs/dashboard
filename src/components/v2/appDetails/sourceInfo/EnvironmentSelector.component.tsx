@@ -76,7 +76,7 @@ const EnvironmentSelectorComponent = ({
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState<string>('')
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const isExternalArgo = appDetails.appType === AppType.EXTERNAL_ARGO_APP
     const isExternalFlux = appDetails.appType === AppType.EXTERNAL_FLUX_APP
 
@@ -165,7 +165,7 @@ const EnvironmentSelectorComponent = ({
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
                 !response.result.deleteResponse?.clusterReachable &&
-                appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+                appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 setShowDeleteConfirmation(false)

@@ -35,19 +35,26 @@ import {
 import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
 import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
-import { AddClusterFormPrefilledInfoType, AddEnvironmentFormPrefilledInfoType } from '@Components/cluster/cluster.type'
+import { ReactComponent as ICFluxCDApp } from '@Icons/ic-fluxcd-app.svg'
+import { URLS } from '@Config/routes'
+import {
+    AddClusterFormPrefilledInfoType,
+    AddEnvironmentFormPrefilledInfoType,
+} from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import {
     ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY,
     ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY,
-} from '@Components/cluster/constants'
-import { URLS } from '@Config/routes'
+} from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
 import { MigrationSourceValidationReasonType } from '../cdPipeline.types'
-import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS, TARGET_ENVIRONMENT_INFO_LIST } from './constants'
+import {
+    DEPLOYMENT_APP_TYPE_LABEL,
+    GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
+    TARGET_ENVIRONMENT_INFO_LIST,
+} from './constants'
 import { MigrateToDevtronValidationFactoryProps, ValidationResponseContentRowProps } from './types'
 import {
-    getDeploymentAppTypeLabel,
     getTargetClusterTooltipInfo,
     getTargetNamespaceTooltipInfo,
     renderGitOpsNotConfiguredDescription,
@@ -89,6 +96,37 @@ const ContentRow = ({ title, value, buttonProps, titleTooltip }: ValidationRespo
     </>
 )
 
+const MigratingFromIcon = ({
+    deploymentAppType,
+    chartIcon,
+}: {
+    deploymentAppType: DeploymentAppTypes
+    chartIcon: string
+}) => {
+    const iconClass = 'icon-dim-36 dc__no-shrink'
+
+    switch (deploymentAppType) {
+        case DeploymentAppTypes.ARGO:
+            return <ICArgoCDApp className={iconClass} />
+        case DeploymentAppTypes.HELM:
+            return (
+                <ImageWithFallback
+                    imageProps={{
+                        height: 36,
+                        width: 36,
+                        src: chartIcon,
+                        alt: 'Helm Release',
+                    }}
+                    fallbackImage={<ICDefaultChart className={iconClass} />}
+                />
+            )
+        case DeploymentAppTypes.FLUX:
+            return <ICFluxCDApp className={iconClass} />
+        default:
+            return <ICDefaultChart className={iconClass} />
+    }
+}
+
 const MigrateToDevtronValidationFactory = ({
     validationResponse,
     appName,
@@ -111,11 +149,10 @@ const MigrateToDevtronValidationFactory = ({
     } = validationResponse
     const { validationFailedReason, validationFailedMessage } = errorDetail || {}
 
-    const isMigratingFromHelm = deploymentAppType === DeploymentAppTypes.HELM
-    const deploymentAppTypeLabel = getDeploymentAppTypeLabel(isMigratingFromHelm)
+    const deploymentAppTypeLabel = DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]
 
-    const targetClusterTooltipInfo = getTargetClusterTooltipInfo(isMigratingFromHelm)
-    const targetNamespaceTooltipInfo = getTargetNamespaceTooltipInfo(isMigratingFromHelm)
+    const targetClusterTooltipInfo = getTargetClusterTooltipInfo(deploymentAppType)
+    const targetNamespaceTooltipInfo = getTargetNamespaceTooltipInfo(deploymentAppType)
 
     const renderChartVersionNotFoundDescription = () => (
         <p className="m-0">
@@ -403,19 +440,7 @@ const MigrateToDevtronValidationFactory = ({
         <div className="flexbox-col dc__gap-16 w-100 dc__overflow-hidden">
             <div className="flexbox px-16 pt-16 dc__content-space">
                 <div className="flexbox dc__gap-12">
-                    {isMigratingFromHelm ? (
-                        <ImageWithFallback
-                            imageProps={{
-                                height: 36,
-                                width: 36,
-                                src: chartIcon,
-                                alt: 'Helm Release',
-                            }}
-                            fallbackImage={<ICDefaultChart className="icon-dim-36 dc__no-shrink" />}
-                        />
-                    ) : (
-                        <ICArgoCDApp className="icon-dim-36 dc__no-shrink" />
-                    )}
+                    <MigratingFromIcon chartIcon={chartIcon} deploymentAppType={deploymentAppType} />
 
                     <div className="flexbox-col">
                         <Tooltip content={appName}>

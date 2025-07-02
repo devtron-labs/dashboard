@@ -120,12 +120,6 @@
         }
       }
 
-      .chart-values-view__delete-cta {
-        position: absolute;
-        bottom: 12px;
-        width: 268px;
-      }
-
       .chart-deprecated-wrapper {
         padding: 10px 12px;
         line-height: 18px;
@@ -211,16 +205,6 @@
 
         svg g path:nth-of-type(2) {
           fill: var(--R500);
-        }
-      }
-
-      .connect-to-chart-wrapper {
-        padding: 8px 10px !important;
-
-        .connect-to-chart-icon {
-          path:last-of-type {
-            fill: var(--B500);
-          }
         }
       }
     }
