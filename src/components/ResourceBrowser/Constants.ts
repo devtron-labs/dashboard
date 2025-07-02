@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { NO_MATCHING_RESULT, Nodes, RESOURCE_BROWSER_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    K8S_EMPTY_GROUP as K8S_EMPTY_GROUP_FROM_COMMON,
+    NO_MATCHING_RESULT,
+    Nodes,
+    RESOURCE_BROWSER_ROUTES,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
 
@@ -113,7 +118,7 @@ export const RESOURCE_ACTION_MENU = {
 /**
  * @deprecated Use from common-lib instead
  */
-export const K8S_EMPTY_GROUP = 'k8sEmptyGroup'
+export const K8S_EMPTY_GROUP = K8S_EMPTY_GROUP_FROM_COMMON
 export const NAMESPACE_NOT_APPLICABLE_OPTION = {
     label: 'Namespace: Not applicable',
     value: 'not-applicable',

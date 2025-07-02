@@ -106,7 +106,6 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
     const selectNode = (
         e: React.MouseEvent<HTMLButtonElement> | { currentTarget: Pick<K8sObjectOptionType, 'dataset'> },
         groupName?: string,
-        shouldPushUrl = true,
     ): void => {
         const _selectedKind = e.currentTarget.dataset.kind.toLowerCase()
         const _selectedGroup = e.currentTarget.dataset.group.toLowerCase()
@@ -118,19 +117,23 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
         if (_selectedKind !== Nodes.Event.toLowerCase()) {
             params.delete('eventType')
         }
-        const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+        const path = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
             kind: _selectedKind,
             group: _selectedGroup || K8S_EMPTY_GROUP,
             version: DUMMY_RESOURCE_GVK_VERSION,
-        })}?${params.toString()}`
+        })
+
+        if (path === location.pathname) {
+            return
+        }
+
+        const _url = `${path}?${params.toString()}`
 
         updateK8sResourceTab({ url: _url, dynamicTitle: e.currentTarget.dataset.kind, retainSearchParams: true })
         updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
 
-        if (shouldPushUrl) {
-            push(_url)
-        }
+        push(_url)
 
         /**
          * If groupName present then kind selection is from search dropdown,
@@ -168,8 +171,6 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
                 },
             },
             match.groupName,
-            /* NOTE: if we push here the history will be lost */
-            !selectedResource,
         )
     }, [kind, k8sObjectOptionsList])
 

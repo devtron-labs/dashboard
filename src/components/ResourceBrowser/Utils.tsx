@@ -319,7 +319,6 @@ export const getTabsBasedOnRole = ({
                       generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
                           clusterId,
                       }),
-                      false,
                       MONITORING_DASHBOARD_TAB_ID,
                   ),
               ]

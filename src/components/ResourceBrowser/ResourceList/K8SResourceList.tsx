@@ -31,6 +31,7 @@ import {
     Table,
     TableColumnType,
     TableProps,
+    URLS,
     useAsync,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -236,8 +237,16 @@ export const K8SResourceList = ({
         return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
     }
 
-    if (resourceListError) {
-        return <ErrorScreenManager code={(resourceListError as ServerErrors).code} />
+    if (resourceListError && !isResourceListLoading) {
+        return (
+            <div className="flexbox-col flex-grow-1 border__primary--left">
+                <ErrorScreenManager
+                    code={(resourceListError as ServerErrors).code}
+                    reload={reloadResourceList}
+                    redirectURL={URLS.RESOURCE_BROWSER}
+                />
+            </div>
+        )
     }
 
     return (
