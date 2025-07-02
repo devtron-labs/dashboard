@@ -37,8 +37,8 @@ COPY --from=builder  /app/./env.sh .
 COPY --from=builder  /app/.env .
 COPY --from=builder  /app/health.html .
 
-RUN chown -R devtron:devtron /usr/share/nginx/html
 # Make our shell script executable
-RUN chmod +x env.sh
+RUN chown -R devtron:devtron /usr/share/nginx/html && \
+    chmod +x env.sh 
 USER devtron
 CMD ["/bin/bash", "-c", "/usr/share/nginx/html/env.sh && nginx -g \"daemon off;\""]
