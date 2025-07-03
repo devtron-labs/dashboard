@@ -104,6 +104,9 @@ export const ChartDetails = () => {
         [JSON.stringify(chartVersions)],
     )
 
+    // CONSTANTS
+    const isChartDetailsLoading = isFetchingChartDetails || !chartDetails
+
     // HANDLERS
     const handleSegmentChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
         updateSearchParams({ tab: selectedSegment.value as ChartDetailsSegment })
@@ -126,7 +129,7 @@ export const ChartDetails = () => {
                         chartsOptions={chartOptions}
                         selectedChartVersion={selectedChartVersion}
                         onChartChange={handleChartChange}
-                        isLoading={isFetchingChartDetails}
+                        isLoading={isChartDetailsLoading}
                         error={chartDetailsErr}
                         reload={reloadChartDetails}
                     />
@@ -182,7 +185,7 @@ export const ChartDetails = () => {
                                 </div>
                                 {renderSegments()}
                             </div>
-                            <ChartDetailsAbout isLoading={isFetchingChartDetails} chartDetails={chartDetails} />
+                            <ChartDetailsAbout isLoading={isChartDetailsLoading} chartDetails={chartDetails} />
                         </div>
                     </Route>
                 </Switch>

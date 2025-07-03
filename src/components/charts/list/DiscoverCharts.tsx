@@ -721,7 +721,10 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
                 <ChartValues />
             </Route>
             {/* <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} /> */}
-            <Route path={`${path}${URLS.CHART}/:chartId`} component={ChartDetails} />
+            <Route
+                path={`${path}${URLS.CHART}/:chartId`}
+                render={({ match: { params } }) => <ChartDetails key={params.chartId} />}
+            />
             <Route>
                 <DiscoverChartList isSuperAdmin={isSuperAdmin} />
             </Route>

@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { generatePath, Link, useRouteMatch } from 'react-router-dom'
+import moment from 'moment'
 
 import {
     APIResponseHandler,
@@ -10,17 +11,20 @@ import {
     ComponentSizeType,
     DeleteConfirmationModal,
     GenericEmptyState,
+    getAlphabetIcon,
     handleAnalyticsEvent,
     Icon,
     PortalContainer,
     SortableTableHeaderCell,
     stringComparatorBySortOrder,
+    Tooltip,
     useAsync,
     useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { deleteChartValues } from '@Components/charts/charts.service'
 import { SavedValueType } from '@Components/charts/SavedValues/types'
+import { Moment12HourFormat } from '@Config/constants'
 import { URLS } from '@Config/routes'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
@@ -66,7 +70,7 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
         chartValuesTemplateList,
         chartValuesTemplateListErr,
         reloadChartValuesTemplateList,
-    ] = useAsync(() => fetchChartValuesTemplateList(chartId), [chartId])
+    ] = useAsync(() => fetchChartValuesTemplateList(chartId), [chartId], true, { resetOnChange: false })
 
     const { sortBy, sortOrder, handleSorting } = useStateFilters<'name'>({ initialSortKey: 'name' })
 
@@ -103,10 +107,10 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
     }
 
     return (
-        <div className="flex-grow-1 flexbox-col bg__primary border__primary br-4 w-100 dc__overflow-hidden">
+        <div className="mh-500 flexbox-col bg__primary border__primary br-4 w-100 dc__overflow-hidden">
             <PortalContainer
                 portalParentId={CHART_DETAILS_PORTAL_CONTAINER_ID}
-                condition={!isFetchingChartValuesTemplateList && !!chartValuesTemplateList?.length}
+                condition={Array.isArray(chartValuesTemplateList) && !!chartValuesTemplateList.length}
             >
                 <Button
                     dataTestId="chart-preset-values-clear-filters"
@@ -149,26 +153,38 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
                                     disabled={false}
                                 />
                                 <SortableTableHeaderCell title="Version" isSortable={false} />
+                                <SortableTableHeaderCell title="Last updated by" isSortable={false} />
+                                <SortableTableHeaderCell title="Updated at" isSortable={false} />
                             </div>
-                            {filteredChartValuesTemplateList.map(({ chartVersion, id, name, ...rest }) => (
+                            {filteredChartValuesTemplateList.map(({ chartVersion, id, name, updatedBy, updatedOn }) => (
                                 <div
                                     key={id}
                                     className="chart-details-preset-value__row px-16 py-12 bg__hover dc__visible-hover dc__visible-hover--parent"
                                 >
                                     <Icon name="ic-file" color="N700" size={24} />
                                     <Link
-                                        className="fs-13 lh-20"
+                                        className="fs-13 lh-20 dc__truncate"
                                         to={`${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${id}`}
                                     >
                                         {name}
                                     </Link>
+                                    <span className="fs-13 lh-20 cn-9">{chartVersion}</span>
+                                    <span className="flex left">
+                                        {updatedBy && getAlphabetIcon(updatedBy)}
+                                        <Tooltip content={updatedBy}>
+                                            <span className="fs-13 lh-20 cn-9 dc__truncate">{updatedBy || '-'}</span>
+                                        </Tooltip>
+                                    </span>
                                     <div className="flex dc__content-space">
-                                        <span className="fs-13 lh-20 cn-9">{chartVersion}</span>
+                                        <span className="fs-13 lh-20 cn-9">
+                                            {updatedOn && !updatedOn.startsWith('0001-01-01')
+                                                ? moment(updatedOn).format(Moment12HourFormat)
+                                                : '-'}
+                                        </span>
                                         <div className="flex dc__gap-4 dc__visible-hover--child">
                                             <Button
                                                 dataTestId="chart-deploy-with-preset-value"
-                                                ariaLabel="chart-deploy-with-preset-value"
-                                                showAriaLabelInTippy={false}
+                                                ariaLabel="Use value to deploy"
                                                 icon={<Icon name="ic-rocket-launch" color={null} />}
                                                 variant={ButtonVariantType.borderLess}
                                                 style={ButtonStyleType.neutral}
@@ -181,8 +197,7 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
                                             />
                                             <Button
                                                 dataTestId="chart-preset-value-edit"
-                                                ariaLabel="chart-preset-value-edit"
-                                                showAriaLabelInTippy={false}
+                                                ariaLabel="Edit value"
                                                 icon={<Icon name="ic-edit" color={null} />}
                                                 variant={ButtonVariantType.borderLess}
                                                 style={ButtonStyleType.neutral}
@@ -195,13 +210,19 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
                                             />
                                             <Button
                                                 dataTestId="chart-preset-value-delete"
-                                                ariaLabel="chart-preset-value-delete"
-                                                showAriaLabelInTippy={false}
+                                                ariaLabel="Delete value"
                                                 icon={<Icon name="ic-delete" color={null} />}
                                                 variant={ButtonVariantType.borderLess}
-                                                style={ButtonStyleType.neutral}
+                                                style={ButtonStyleType.negativeGrey}
                                                 size={ComponentSizeType.xs}
-                                                onClick={showDeleteModal({ chartVersion, id, name, ...rest })}
+                                                onClick={showDeleteModal({
+                                                    chartVersion,
+                                                    id,
+                                                    name,
+                                                    updatedBy,
+                                                    updatedOn,
+                                                    isLoading: false,
+                                                })}
                                             />
                                         </div>
                                     </div>
