@@ -44,6 +44,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ForwardArrow } from '@Icons/ic-arrow-right.svg'
@@ -149,6 +150,8 @@ const ClusterForm = ({
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(isConnectedViaProxy)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
+    const { isResourceRecommendationEnabled } = useMainContext()
+
     useEffect(
         () => () => {
             if (localStorage.getItem(ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY)) {
@@ -188,6 +191,7 @@ const ClusterForm = ({
     const [SSHConnectionType, setSSHConnectionType] = useState(resolveSSHAuthType)
 
     const isGrafanaModuleInstalled = grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED
+    const canShowConfigurePrometheus = isResourceRecommendationEnabled || isGrafanaModuleInstalled
 
     const handleEditConfigClick = () => {
         setClusterSelected({})
@@ -873,7 +877,7 @@ const ClusterForm = ({
                         )}
                     </>
                 )}
-                {isGrafanaModuleInstalled && (
+                {canShowConfigurePrometheus && (
                     <div className={getGrafanaModuleSectionClassName()}>
                         <div className="dc__content-space flex">
                             <span className="form__input-header">See metrics for applications in this cluster</span>
@@ -890,8 +894,8 @@ const ClusterForm = ({
                         </span>
                     </div>
                 )}
-                {isGrafanaModuleInstalled && !prometheusToggleEnabled && prometheusUrl && <PrometheusWarningInfo />}
-                {isGrafanaModuleInstalled && prometheusToggleEnabled && (
+                {canShowConfigurePrometheus && !prometheusToggleEnabled && prometheusUrl && <PrometheusWarningInfo />}
+                {canShowConfigurePrometheus && prometheusToggleEnabled && (
                     <div className="flexbox-col dc__gap-16">
                         {(state.userName.error || state.password.error || state.endpoint.error) && (
                             <PrometheusRequiredFieldInfo />
