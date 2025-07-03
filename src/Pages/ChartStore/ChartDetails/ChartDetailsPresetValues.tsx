@@ -135,6 +135,7 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
                     <GenericEmptyState
                         title="Create your first Preset Template"
                         subTitle="Create reusable Helm config templates for different scenarios. Set them up once and let your team deploy with confidence."
+                        illustrationName="illustration-code"
                         isButtonAvailable
                         renderButton={renderEmptyStateButton(generatePath(path, { chartId }))}
                     />
@@ -233,6 +234,7 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
                         <GenericEmptyState
                             title="No results"
                             subTitle="We couldn’t find any matching results"
+                            illustrationName="illustration-no-result"
                             isButtonAvailable
                             renderButton={renderFilterEmptyStateButton(onClearFilters)}
                         />
