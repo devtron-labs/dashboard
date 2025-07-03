@@ -61,6 +61,8 @@ const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: Pr
                 onChange={handleChange}
                 error={error}
                 autoFocus
+                // Not to be removed, this is expected to open by default
+                defaultMenuIsOpen
             />
         </div>
     )
