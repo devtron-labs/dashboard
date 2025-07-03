@@ -21,6 +21,7 @@ import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import DOMPurify from 'dompurify'
 
 import {
+    capitalizeFirstLetter,
     GVKType,
     highlightSearchText,
     K8S_EMPTY_GROUP,
@@ -114,9 +115,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
         }
 
         const _url = `${path}?${params.toString()}`
-
-        // Using lowercase here need to confirm
-        updateK8sResourceTab({ url: _url, dynamicTitle: selectedKind, retainSearchParams: true })
+        updateK8sResourceTab({ url: _url, dynamicTitle: capitalizeFirstLetter(selectedKind), retainSearchParams: true })
         updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
 
         push(_url)
@@ -209,31 +208,33 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
     })
 
     const getTreeViewNodes = () => {
-        const fixedNodes: TreeNode<RBResourceSidebarDataAttributeType>[] = [
-            !!list?.size &&
-                !!list.get(AggregationKeys.Nodes) && {
-                    type: 'item',
-                    title: SIDEBAR_KEYS.nodes,
-                    id: getTreeViewNodeId(SIDEBAR_KEYS.nodeGVK),
-                    dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.nodeGVK),
-                },
+        const fixedNodes: TreeNode<RBResourceSidebarDataAttributeType>[] = (
+            [
+                !!list?.size &&
+                    !!list.get(AggregationKeys.Nodes) && {
+                        type: 'item',
+                        title: SIDEBAR_KEYS.nodes,
+                        id: getTreeViewNodeId(SIDEBAR_KEYS.nodeGVK),
+                        dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.nodeGVK),
+                    },
 
-            !!list?.size &&
-                !!list.get(AggregationKeys.Events) && {
-                    type: 'item',
-                    title: SIDEBAR_KEYS.events,
-                    id: getTreeViewNodeId(SIDEBAR_KEYS.eventGVK),
-                    dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.eventGVK),
-                },
+                !!list?.size &&
+                    !!list.get(AggregationKeys.Events) && {
+                        type: 'item',
+                        title: SIDEBAR_KEYS.events,
+                        id: getTreeViewNodeId(SIDEBAR_KEYS.eventGVK),
+                        dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.eventGVK),
+                    },
 
-            !!list?.size &&
-                !!list.get(AggregationKeys.Namespaces) && {
-                    type: 'item',
-                    title: SIDEBAR_KEYS.namespaces,
-                    id: getTreeViewNodeId(SIDEBAR_KEYS.namespaceGVK),
-                    dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.namespaceGVK),
-                },
-        ]
+                !!list?.size &&
+                    !!list.get(AggregationKeys.Namespaces) && {
+                        type: 'item',
+                        title: SIDEBAR_KEYS.namespaces,
+                        id: getTreeViewNodeId(SIDEBAR_KEYS.namespaceGVK),
+                        dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.namespaceGVK),
+                    },
+            ] satisfies TreeNode<RBResourceSidebarDataAttributeType>[]
+        ).filter(Boolean)
 
         const dynamicNodesList = list?.size
             ? [...list.values()].filter(
