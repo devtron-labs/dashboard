@@ -8,11 +8,10 @@ import { K8S_EMPTY_GROUP } from '../Constants'
 import { NodeDetailURLParams } from './types'
 
 const NodeDetailWrapper = ({
-    addTab,
     getTabId,
     updateTabUrl,
     lowercaseKindToResourceGroupMap,
-}: Omit<ClusterListType, 'updateTabUrl'> & Pick<UseTabsReturnType, 'addTab' | 'getTabId' | 'updateTabUrl'>) => {
+}: Omit<ClusterListType, 'updateTabUrl'> & Pick<UseTabsReturnType, 'getTabId' | 'updateTabUrl'>) => {
     const { name } = useParams<NodeDetailURLParams>()
 
     const id = getTabId(K8S_EMPTY_GROUP, name, 'node')
@@ -23,7 +22,6 @@ const NodeDetailWrapper = ({
         <NodeDetails
             updateTabUrl={updateTabUrlHandler}
             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
-            addTab={addTab}
         />
     )
 }
