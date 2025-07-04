@@ -16,13 +16,18 @@
 
 import {
     ClusterDetail,
+    GVKType,
     logExceptionToSentry,
     numberComparatorBySortOrder,
     RESOURCE_BROWSER_ROUTES,
     stringComparatorBySortOrder,
+    TreeHeading,
+    TreeItem,
+    TreeNode,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { AggregationKeys } from '@Components/app/types'
 import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlphabetically } from '@Components/common'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
@@ -35,7 +40,14 @@ import {
     TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
-import { ClusterOptionType, K8SResourceListType, NODE_SEARCH_KEYS, ShowAIButtonConfig } from '../Types'
+import {
+    ClusterOptionType,
+    K8SResourceListType,
+    NODE_SEARCH_KEYS,
+    RBResourceSidebarDataAttributeType,
+    ShowAIButtonConfig,
+} from '../Types'
+import { convertResourceGroupListToK8sObjectList } from '../Utils'
 import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
 
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
@@ -322,4 +334,104 @@ export const getTabIdForTab = (
 
     const functionParams = getTabIdParamsForPath(path, params)
     return functionParams ? getTabId(...functionParams) : null
+}
+
+export const getRBSidebarTreeViewNodeId = ({ Group, Version, Kind }: GVKType) =>
+    `${Group.toLowerCase()}-${Version.toLowerCase()}-${Kind.toLowerCase()}`
+
+const getRBSidebarTreeViewNodeDataAttributes = ({
+    Group,
+    Version,
+    Kind,
+}: GVKType): RBResourceSidebarDataAttributeType => ({
+    'data-group': Group.toLowerCase(),
+    'data-version': Version.toLowerCase(),
+    'data-kind': Kind.toLowerCase(),
+})
+
+export const getRBSidebarTreeViewNodes = (list: ReturnType<typeof convertResourceGroupListToK8sObjectList>) => {
+    const fixedNodes: TreeNode<RBResourceSidebarDataAttributeType>[] = (
+        [
+            !!list?.size &&
+                !!list.get(AggregationKeys.Nodes) && {
+                    type: 'item',
+                    title: SIDEBAR_KEYS.nodes,
+                    id: getRBSidebarTreeViewNodeId(SIDEBAR_KEYS.nodeGVK),
+                    dataAttributes: getRBSidebarTreeViewNodeDataAttributes(SIDEBAR_KEYS.nodeGVK),
+                },
+
+            !!list?.size &&
+                !!list.get(AggregationKeys.Events) && {
+                    type: 'item',
+                    title: SIDEBAR_KEYS.events,
+                    id: getRBSidebarTreeViewNodeId(SIDEBAR_KEYS.eventGVK),
+                    dataAttributes: getRBSidebarTreeViewNodeDataAttributes(SIDEBAR_KEYS.eventGVK),
+                },
+
+            !!list?.size &&
+                !!list.get(AggregationKeys.Namespaces) && {
+                    type: 'item',
+                    title: SIDEBAR_KEYS.namespaces,
+                    id: getRBSidebarTreeViewNodeId(SIDEBAR_KEYS.namespaceGVK),
+                    dataAttributes: getRBSidebarTreeViewNodeDataAttributes(SIDEBAR_KEYS.namespaceGVK),
+                },
+        ] satisfies TreeNode<RBResourceSidebarDataAttributeType>[]
+    ).filter(Boolean)
+
+    const dynamicNodesList = list?.size
+        ? [...list.values()].filter(
+              (k8sObject) =>
+                  !(
+                      k8sObject.name === AggregationKeys.Events ||
+                      k8sObject.name === AggregationKeys.Namespaces ||
+                      k8sObject.name === AggregationKeys.Nodes
+                  ),
+          )
+        : []
+
+    const dynamicNodes = dynamicNodesList.map<TreeHeading<RBResourceSidebarDataAttributeType>>((k8sObject) => ({
+        id: `${k8sObject.name}-parent`,
+        type: 'heading',
+        title: k8sObject.name,
+        items: [...k8sObject.child.entries()]
+            .filter(([key]) => {
+                const keyLowerCased = key.toLowerCase()
+                return !(
+                    keyLowerCased === 'node' ||
+                    keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
+                    keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
+                )
+            })
+            .map<TreeNode<RBResourceSidebarDataAttributeType>>(([key, value]) => {
+                if (value.data.length === 1) {
+                    const childData = value.data[0]
+                    const nodeName = childData.gvk.Kind
+                    return {
+                        type: 'item',
+                        title: nodeName,
+                        id: getRBSidebarTreeViewNodeId(childData.gvk),
+                        dataAttributes: getRBSidebarTreeViewNodeDataAttributes(childData.gvk),
+                    } satisfies TreeItem<RBResourceSidebarDataAttributeType>
+                }
+
+                return {
+                    type: 'heading',
+                    id: `${k8sObject.name}/${key}-child`,
+                    title: key,
+                    dataAttributes: null,
+                    items: value.data.map<TreeItem<RBResourceSidebarDataAttributeType>>((childData) => {
+                        const nodeName = childData.gvk.Group ? childData.gvk.Group : childData.gvk.Kind
+
+                        return {
+                            type: 'item',
+                            title: nodeName,
+                            id: getRBSidebarTreeViewNodeId(childData.gvk),
+                            dataAttributes: getRBSidebarTreeViewNodeDataAttributes(childData.gvk),
+                        }
+                    }),
+                } satisfies TreeHeading<RBResourceSidebarDataAttributeType>
+            }),
+    }))
+
+    return fixedNodes.concat(dynamicNodes)
 }

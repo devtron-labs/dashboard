@@ -17,7 +17,7 @@
 import React, { MouseEventHandler, useEffect, useState } from 'react'
 import { ClearIndicatorProps, components, ValueContainerProps } from 'react-select'
 
-import { Button, ButtonVariantType, ComponentSizeType, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ClearIcon } from '@Icons/ic-error.svg'
 import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
@@ -25,7 +25,6 @@ import { ReactComponent as Warning } from '@Icons/ic-warning.svg'
 
 import { handleUTCTime } from '../../common'
 import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import { SidebarChildButtonPropsType } from '../Types'
 
 export const KindSearchValueContainer = (props: ValueContainerProps) => {
     const { selectProps, children } = props
@@ -96,38 +95,3 @@ export const renderRefreshBar =
     (show: boolean, lastSyncTime: string, callback: () => void): (() => JSX.Element) =>
     () =>
         !show ? null : <WarningStrip lastSyncTime={lastSyncTime} callback={callback} />
-
-export const SidebarChildButton: React.FC<SidebarChildButtonPropsType> = ({
-    parentRef,
-    group,
-    version,
-    text,
-    kind,
-    namespaced,
-    isSelected,
-    onClick,
-}) => (
-    <button
-        type="button"
-        className="dc__unset-button-styles"
-        key={text}
-        ref={parentRef}
-        data-group={group}
-        data-version={version}
-        data-kind={kind}
-        data-namespaced={namespaced}
-        data-selected={isSelected}
-        onClick={onClick}
-        aria-label={`Select ${text}`}
-    >
-        <Tooltip content={text} placement="right">
-            <div
-                className={`fs-13 pointer dc__ellipsis-right dc__align-left dc__border-radius-4-imp fw-4 pt-6 lh-20 pr-8 pb-6 pl-8 ${
-                    isSelected ? 'bcb-1 cb-5' : 'cn-9 dc__hover-n50'
-                }`}
-            >
-                {text}
-            </div>
-        </Tooltip>
-    </button>
-)

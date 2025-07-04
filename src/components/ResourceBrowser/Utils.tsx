@@ -70,10 +70,7 @@ const getResourceRecommenderTabConfig = importComponentFromFELibrary(
 )
 
 // Converts k8SObjects list to grouped map
-export const getGroupedK8sObjectMap = (
-    _k8SObjectList: K8SObjectType[],
-    nodeType: string,
-): Map<string, K8SObjectMapType> =>
+export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[]): Map<string, K8SObjectMapType> =>
     _k8SObjectList.reduce((map, _k8sObject) => {
         const childObj = map.get(_k8sObject.name) ?? {
             ..._k8sObject,
@@ -83,12 +80,10 @@ export const getGroupedK8sObjectMap = (
             if (childObj.child.has(_child.gvk.Kind)) {
                 childObj.child.set(_child.gvk.Kind, {
                     isGrouped: true,
-                    isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
                     data: [...childObj.child.get(_child.gvk.Kind).data, _child],
                 })
             } else {
                 childObj.child.set(_child.gvk.Kind, {
-                    isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
                     data: [_child],
                 })
             }
@@ -96,38 +91,6 @@ export const getGroupedK8sObjectMap = (
         map.set(_k8sObject.name, childObj)
         return map
     }, new Map<string, K8SObjectMapType>())
-
-export const getK8SObjectMapAfterGroupHeadingClick = (
-    e: React.MouseEvent<HTMLButtonElement> | { currentTarget: { dataset: { groupName: string } } },
-    k8SObjectMap: Map<string, K8SObjectMapType>,
-    preventCollapse: boolean,
-) => {
-    const splittedKey = e.currentTarget.dataset.groupName.split('/')
-    const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
-
-    if (splittedKey.length > 1) {
-        const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
-        if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-            return _k8SObjectMap
-        }
-
-        _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
-        const _childObj = _k8SObjectMap.get(splittedKey[0])
-        _childObj.isExpanded = true
-        _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
-        _k8SObjectMap.set(splittedKey[0], _childObj)
-    } else {
-        const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
-        if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-            return _k8SObjectMap
-        }
-
-        _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
-        _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
-    }
-
-    return _k8SObjectMap
-}
 
 export const sortEventListData = (eventList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] => {
     if (!eventList?.length) {
@@ -359,7 +322,7 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     const _k8SObjectList = ORDERED_AGGREGATORS.map((element) => processedData.k8SObjectMap.get(element) || null).filter(
         (element) => !!element,
     )
-    return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
+    return getGroupedK8sObjectMap(_k8SObjectList)
 }
 
 export const getRenderNodeButton =
