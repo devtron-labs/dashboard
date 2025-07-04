@@ -22,27 +22,24 @@ import DOMPurify from 'dompurify'
 
 import {
     capitalizeFirstLetter,
-    GVKType,
     highlightSearchText,
     K8S_EMPTY_GROUP,
     Nodes,
     NodeType,
     ReactSelectInputAction,
     RESOURCE_BROWSER_ROUTES,
-    TreeHeading,
-    TreeItem,
     TreeNode,
     TreeView,
     URL_FILTER_KEYS,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { AggregationKeys } from '../../app/types'
-import { KIND_SEARCH_COMMON_STYLES, ResourceBrowserTabsId, SIDEBAR_KEYS } from '../Constants'
+import { KIND_SEARCH_COMMON_STYLES, ResourceBrowserTabsId } from '../Constants'
 import { K8sObjectOptionType, RBResourceSidebarDataAttributeType, SidebarType } from '../Types'
 import { convertK8sObjectMapToOptionsList, convertResourceGroupListToK8sObjectList } from '../Utils'
 import { KindSearchClearIndicator, KindSearchValueContainer } from './ResourceList.component'
 import { K8sResourceListURLParams } from './types'
+import { getRBSidebarTreeViewNodeId, getRBSidebarTreeViewNodes } from './utils'
 
 const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateTabLastSyncMoment }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
@@ -199,102 +196,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
 
     const noOptionsMessage = () => 'No matching kind'
 
-    const getTreeViewNodeId = ({ Group, Version, Kind }: GVKType) =>
-        `${Group.toLowerCase()}-${Version.toLowerCase()}-${Kind.toLowerCase()}`
-    const getTreeViewNodeDataAttributes = ({ Group, Version, Kind }: GVKType): RBResourceSidebarDataAttributeType => ({
-        'data-group': Group.toLowerCase(),
-        'data-version': Version.toLowerCase(),
-        'data-kind': Kind.toLowerCase(),
-    })
-
-    const getTreeViewNodes = () => {
-        const fixedNodes: TreeNode<RBResourceSidebarDataAttributeType>[] = (
-            [
-                !!list?.size &&
-                    !!list.get(AggregationKeys.Nodes) && {
-                        type: 'item',
-                        title: SIDEBAR_KEYS.nodes,
-                        id: getTreeViewNodeId(SIDEBAR_KEYS.nodeGVK),
-                        dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.nodeGVK),
-                    },
-
-                !!list?.size &&
-                    !!list.get(AggregationKeys.Events) && {
-                        type: 'item',
-                        title: SIDEBAR_KEYS.events,
-                        id: getTreeViewNodeId(SIDEBAR_KEYS.eventGVK),
-                        dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.eventGVK),
-                    },
-
-                !!list?.size &&
-                    !!list.get(AggregationKeys.Namespaces) && {
-                        type: 'item',
-                        title: SIDEBAR_KEYS.namespaces,
-                        id: getTreeViewNodeId(SIDEBAR_KEYS.namespaceGVK),
-                        dataAttributes: getTreeViewNodeDataAttributes(SIDEBAR_KEYS.namespaceGVK),
-                    },
-            ] satisfies TreeNode<RBResourceSidebarDataAttributeType>[]
-        ).filter(Boolean)
-
-        const dynamicNodesList = list?.size
-            ? [...list.values()].filter(
-                  (k8sObject) =>
-                      !(
-                          k8sObject.name === AggregationKeys.Events ||
-                          k8sObject.name === AggregationKeys.Namespaces ||
-                          k8sObject.name === AggregationKeys.Nodes
-                      ),
-              )
-            : []
-
-        const dynamicNodes = dynamicNodesList.map<TreeHeading<RBResourceSidebarDataAttributeType>>((k8sObject) => ({
-            id: `${k8sObject.name}-parent`,
-            type: 'heading',
-            title: k8sObject.name,
-            items: [...k8sObject.child.entries()]
-                .filter(([key]) => {
-                    const keyLowerCased = key.toLowerCase()
-                    return !(
-                        keyLowerCased === 'node' ||
-                        keyLowerCased === SIDEBAR_KEYS.namespaceGVK.Kind.toLowerCase() ||
-                        keyLowerCased === SIDEBAR_KEYS.eventGVK.Kind.toLowerCase()
-                    )
-                })
-                .map<TreeNode<RBResourceSidebarDataAttributeType>>(([key, value]) => {
-                    if (value.data.length === 1) {
-                        const childData = value.data[0]
-                        const nodeName = childData.gvk.Kind
-                        return {
-                            type: 'item',
-                            title: nodeName,
-                            id: getTreeViewNodeId(childData.gvk),
-                            dataAttributes: getTreeViewNodeDataAttributes(childData.gvk),
-                        } satisfies TreeItem<RBResourceSidebarDataAttributeType>
-                    }
-
-                    return {
-                        type: 'heading',
-                        id: `${k8sObject.name}/${key}-child`,
-                        title: key,
-                        dataAttributes: null,
-                        items: value.data.map<TreeItem<RBResourceSidebarDataAttributeType>>((childData) => {
-                            const nodeName = childData.gvk.Group ? childData.gvk.Group : childData.gvk.Kind
-
-                            return {
-                                type: 'item',
-                                title: nodeName,
-                                id: getTreeViewNodeId(childData.gvk),
-                                dataAttributes: getTreeViewNodeDataAttributes(childData.gvk),
-                            }
-                        }),
-                    } satisfies TreeHeading<RBResourceSidebarDataAttributeType>
-                }),
-        }))
-
-        return fixedNodes.concat(dynamicNodes)
-    }
-
-    const treeViewNodes = getTreeViewNodes()
+    const treeViewNodes = getRBSidebarTreeViewNodes(list)
 
     return (
         <div className="w-250 dc__no-shrink dc__overflow-hidden flexbox-col">
@@ -331,7 +233,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             <div className="dc__overflow-auto flexbox-col flex-grow-1 dc__border-top-n1 p-8 dc__user-select-none">
                 <TreeView<RBResourceSidebarDataAttributeType>
                     nodes={treeViewNodes}
-                    selectedId={getTreeViewNodeId(
+                    selectedId={getRBSidebarTreeViewNodeId(
                         selectedResource?.gvk || { Group: '', Version: '', Kind: '' as NodeType },
                     )}
                     onSelect={handleTreeViewNodeSelect}
