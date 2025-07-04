@@ -804,7 +804,8 @@ const DockerForm = ({
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
             (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                 selectedDockerRegistryType.value === RegistryType.ACR ||
-                selectedDockerRegistryType.value === RegistryType.QUAY)
+                selectedDockerRegistryType.value === RegistryType.QUAY ||
+                selectedDockerRegistryType.value === RegistryType.GITLAB)
                 ? {
                       username: trimmedUsername,
                       password: parsePassword(customState.password.value),
@@ -1014,6 +1015,7 @@ const DockerForm = ({
                 break
             case RegistryType.ACR:
             case RegistryType.QUAY:
+            case RegistryType.GITLAB:
             case RegistryType.OTHER:
                 let error = false
                 if (
@@ -1656,6 +1658,7 @@ const DockerForm = ({
                                 {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                                     selectedDockerRegistryType.value === RegistryType.ACR ||
                                     selectedDockerRegistryType.value === RegistryType.QUAY ||
+                                    selectedDockerRegistryType.value === RegistryType.GITLAB ||
                                     selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                     <PasswordField
                                         shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
@@ -1722,6 +1725,7 @@ const DockerForm = ({
                             {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                                 selectedDockerRegistryType.value === RegistryType.ACR ||
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
+                                selectedDockerRegistryType.value === RegistryType.GITLAB ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                 <PasswordField
                                     shouldShowDefaultPlaceholderOnBlur={!!id}

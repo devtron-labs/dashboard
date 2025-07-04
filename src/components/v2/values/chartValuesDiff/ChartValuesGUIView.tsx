@@ -21,9 +21,7 @@ import {
     EMPTY_STATE_STATUS,
     GenericEmptyState,
     HIDE_SUBMIT_BUTTON_UI_SCHEMA,
-    InfoBlock,
     Progressing,
-    RAISE_ISSUE,
     RJSFForm,
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -32,19 +30,6 @@ import { ReactComponent as ICError } from '@Icons/ic-error-exclamation.svg'
 
 import { ChartValuesGUIFormProps } from './ChartValuesView.type'
 import { updateYamlDocument } from './ChartValuesView.utils'
-
-const ChartBetaFeatureInfo = () => (
-    <InfoBlock
-        description={
-            <span className="fs-12 cn-9">
-                This feature is in BETA. If you find an issue please
-                <a href={RAISE_ISSUE} target="_blank" rel="noopener noreferrer">
-                    &nbsp;report it here.
-                </a>
-            </span>
-        }
-    />
-)
 
 const ChartValuesGUIForm = ({
     schemaJson,
@@ -96,7 +81,6 @@ const ChartValuesGUIForm = ({
 
     return (
         <div className="chart-values-view__gui-form-container dc__overflow-auto">
-            <ChartBetaFeatureInfo />
             <RJSFForm
                 key={state.json}
                 schema={state.json}
