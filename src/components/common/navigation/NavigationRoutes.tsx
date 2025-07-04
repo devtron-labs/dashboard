@@ -149,6 +149,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    const [isGrafanaModuleInstalled, setIsGrafanaModuleInstalled] = useState(false)
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
 
@@ -387,17 +388,21 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         }
     }
 
+    const getGrafanaModuleStatus = () => getModuleInfo(ModuleNameMap.GRAFANA)
+
     const handleFetchInitialData = async () => {
         try {
-            const [serverModeResponse, environmentDataResponse] = await Promise.all([
+            const [serverModeResponse, environmentDataResponse, grafanaModuleStatus] = await Promise.all([
                 getServerMode(),
                 getEnvironmentDataValues(),
+                getGrafanaModuleStatus(),
                 getCurrentServerInfo(),
                 handleFetchUserPreferences(),
             ])
 
             await getInit(serverModeResponse)
 
+            setIsGrafanaModuleInstalled(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED)
             setEnvironmentDataState({
                 isAirgapped: environmentDataResponse.isAirGapEnvironment,
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
@@ -663,7 +668,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
-                isResourceRecommendationEnabled: environmentDataState.isResourceRecommendationEnabled,
+                isResourceRecommendationEnabled:
+                    isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
             }}
         >
             <ConfirmationModalProvider>
