@@ -113,7 +113,7 @@ export const CreateCICDPipeline = ({
             }
         }
 
-        if (deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
+        if (deploymentAppType === DeploymentAppTypes.ARGO && isGitOpsInstalledButNotConfigured) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 title: 'GitOps credentials not configured',

@@ -96,7 +96,7 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
-        const { name, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
+        const { name, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName, isAlpha } = tab
         const shouldRenderTitle = (!showNameOnSelect || isAlive || isSelected) && !hideName
 
         const _title = dynamicTitle || title
@@ -119,6 +119,10 @@ const DynamicTabs = ({
                         <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                             {_title}
                         </span>
+                    )}
+
+                    {shouldRenderTitle && isAlpha && (
+                        <span className="dc__no-shrink py-1 px-4 br-4 bcy-1 cy-7 fs-11 fw-5 lh-16">Alpha</span>
                     )}
                 </div>
             </button>

@@ -33,7 +33,7 @@ import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configuration
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =
-        this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured
+        this.props.deploymentAppType === DeploymentAppTypes.ARGO && this.props.isGitOpsRepoNotConfigured
 
     constructor(props) {
         super(props)

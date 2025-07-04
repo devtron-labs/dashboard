@@ -71,14 +71,12 @@ const AppDetailsComponent = ({
     const isVirtualEnv = useRef(appDetails?.isVirtualEnvironment)
     const location = useLocation()
     const history = useHistory()
-    const isGitOps = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
-    const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
 
     const [deploymentStatusDetailsBreakdownData, setDeploymentStatusDetailsBreakdownData] =
         useState<DeploymentStatusDetailsBreakdownDataType>({
             ...(isVirtualEnv.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData()
-                : processDeploymentStatusDetailsData()),
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType)),
             deploymentStatus: DEFAULT_STATUS,
         })
 
@@ -108,6 +106,12 @@ const AppDetailsComponent = ({
     useEffect(() => {
         // Get deployment status timeline on ArgoCD apps in devtron helm apps
         // i.e. Devtron Helm app deployed through GitOps /Manifest Download
+        const isGitOps =
+            appDetails?.deploymentAppType === DeploymentAppTypes.ARGO ||
+            appDetails?.deploymentAppType === DeploymentAppTypes.FLUX
+
+        const isManifestDownload = appDetails?.deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD
+
         if ((isGitOps || isManifestDownload) && !isExternalApp) {
             getDeploymentDetailStepsData()
         }
@@ -121,7 +125,8 @@ const AppDetailsComponent = ({
         const processedDeploymentStatusDetailsData =
             isVirtualEnv.current && processVirtualEnvironmentDeploymentData
                 ? processVirtualEnvironmentDeploymentData(deploymentStatusDetailRes)
-                : processDeploymentStatusDetailsData(deploymentStatusDetailRes)
+                : processDeploymentStatusDetailsData(appDetails?.deploymentAppType, deploymentStatusDetailRes)
+
         clearDeploymentStatusTimer()
         // If deployment status is in progress then fetch data in every 10 seconds
         if (processedDeploymentStatusDetailsData.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS) {
