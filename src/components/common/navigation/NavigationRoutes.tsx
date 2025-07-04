@@ -149,6 +149,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    // We use this to determine if we can show resource recommender, since we do not allow users to feed prometheus url if grafana module is not installed
     const [isGrafanaModuleInstalled, setIsGrafanaModuleInstalled] = useState(false)
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
