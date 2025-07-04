@@ -17,7 +17,7 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenuProps, OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartGroupCardProps {
     chartGroup: ChartGroup
@@ -390,7 +390,7 @@ export interface ChartListPopUpType {
     filteredChartList: ChartListType[]
     isLoading: boolean
     setFilteredChartList: React.Dispatch<React.SetStateAction<ChartListType[]>>
-    setShowSourcePopoUp: React.Dispatch<React.SetStateAction<boolean>>
+    setShowSourcePopUp: React.Dispatch<React.SetStateAction<boolean>>
     chartActiveMap: Record<string, boolean>
     setChartActiveMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }
@@ -449,4 +449,19 @@ export interface ChartGroupDeploymentsProps {
 export interface ChartDescriptionTypes {
     isDeprecated?: boolean
     isListView?: boolean
+}
+
+export enum CHART_SOURCE_TYPE {
+    CHART_REPO = 'chart-repo',
+    OCI = 'oci',
+}
+
+export type AddSourceMenuOptions = ActionMenuProps<CHART_SOURCE_TYPE>
+
+export interface ChartSourceAccordionProps {
+    header: string
+    options: SelectedChartRepositoryType[]
+    value: SelectedChartRepositoryType[]
+    onChange: (option: SelectedChartRepositoryType) => void
+    dataTestId: string
 }
