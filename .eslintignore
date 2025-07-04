@@ -152,7 +152,6 @@ src/components/charts/discoverChartDetail/About.tsx
 src/components/charts/discoverChartDetail/ChartDeploymentList.tsx
 src/components/charts/discoverChartDetail/DiscoverChartDetails.tsx
 src/components/charts/list/ChartGroup.tsx
-src/components/charts/list/ChartListPopUp.tsx
 src/components/charts/list/ChartListPopUpRow.tsx
 src/components/charts/list/DeployedChartFilters.tsx
 src/components/charts/list/DiscoverCharts.tsx
