@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Redirect, Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
     DevtronProgressing,
@@ -23,6 +23,7 @@ import {
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
+    K8S_EMPTY_GROUP,
     RESOURCE_BROWSER_ROUTES,
     useAsync,
     useBreadcrumb,
@@ -429,6 +430,14 @@ const ResourceList = () => {
                         />
                     </DynamicTabComponentWrapper>
                 </Route>
+
+                <Redirect
+                    to={generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+                        clusterId,
+                        group: K8S_EMPTY_GROUP,
+                        kind: 'node',
+                    })}
+                />
 
                 {renderTerminal()}
             </>

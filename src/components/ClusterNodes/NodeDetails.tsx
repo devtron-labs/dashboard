@@ -780,7 +780,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                             {sortedPodList.map((pod) => (
                                 <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
-                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center dc__content-space">
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
                                         <Tooltip content={pod.name} interactive>
                                             <span
                                                 className="dc__inline-block dc__ellipsis-right cb-5 cursor"
@@ -795,6 +795,8 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                                         <div className="ml-8 dc__visible-hover--child">
                                             <ClipboardButton content={pod.name} />
                                         </div>
+
+                                        <div className='flex-grow-1' />
 
                                         <ResourceBrowserActionMenu
                                             clusterId={clusterId}
