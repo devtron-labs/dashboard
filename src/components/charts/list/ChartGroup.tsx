@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
-import ChartGroupCard from '../util/ChartGroupCard'
+import{ ChartGroupCard} from '../ChartGroupCard'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import ChartGroupUpdate from '../ChartGroupUpdate'
 import ChartGroupDetails from '../ChartGroupDetails'

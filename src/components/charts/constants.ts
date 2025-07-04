@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import { URLS } from '@Config/routes'
+
+import { AddSourceMenuOptions, CHART_SOURCE_TYPE } from './charts.types'
+
 export const REGEX_ERROR_MESSAGES = {
     MIN_5_CHAR: 'Minimum 5 characters required',
     LOWER_CASE: 'Use only lowercase alphanumeric characters "-" or "."',
@@ -47,3 +51,24 @@ export const QueryParams = {
     SearchKey: 'searchKey',
     ChartCategoryId: 'chartCategoryId',
 }
+
+export const CHART_CARD_MAX_LENGTH = 4
+
+export const getAddSourceActionMenuOptions = (): AddSourceMenuOptions['options'] => [
+    {
+        items: [
+            {
+                id: CHART_SOURCE_TYPE.CHART_REPO,
+                label: 'Add Chart Repository',
+                componentType: 'link',
+                to: URLS.GLOBAL_CONFIG_CHART,
+            },
+            {
+                id: CHART_SOURCE_TYPE.OCI,
+                label: 'Add OCI Registry',
+                componentType: 'link',
+                to: `${URLS.GLOBAL_CONFIG_DOCKER}/0`,
+            },
+        ],
+    },
+]

@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-import { NavLink } from 'react-router-dom'
+import { ActionMenu, ButtonVariantType, ComponentSizeType, Icon, noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '../../../config'
+import { getAddSourceActionMenuOptions } from '../constants'
 
-const AddChartSource = ({ baseClass }: { baseClass?: string }) => (
-    <div
-        className={`chart-list__add w-200 en-2 bw-1 br-4 bg__primary fw-4 fs-13 cn-9 mt-8 pt-4 pb-4 ${baseClass || ''}`}
-    >
-        <NavLink className="add-repo-row dc__no-decor pl-8 pr-8 flex left cn-9" to={URLS.GLOBAL_CONFIG_CHART}>
-            Add Chart Repository
-        </NavLink>
-
-        <NavLink className="add-repo-row dc__no-decor pl-8 pr-8 flex left cn-9" to={`${URLS.GLOBAL_CONFIG_DOCKER}/0`}>
-            Add OCI Registry
-        </NavLink>
-    </div>
+const AddChartSource = ({ text }: { text?: string }) => (
+    <ActionMenu
+        id="chart-store-add-source-action-menu"
+        onClick={noop}
+        options={getAddSourceActionMenuOptions()}
+        buttonProps={{
+            text,
+            dataTestId: 'add-chart-source-button',
+            startIcon: <Icon name="ic-add" color="B500" />,
+            size: ComponentSizeType.xxs,
+            variant: ButtonVariantType.borderLess,
+        }}
+    />
 )
 
 export default AddChartSource

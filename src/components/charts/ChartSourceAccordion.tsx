@@ -14,21 +14,23 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
-import { CHECKBOX_VALUE, Checkbox } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Dropdown } from '../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as AddIcon } from '../../../assets/icons/ic-add.svg'
-import AddChartSource from '../../charts/list/AddChartSource'
+import { useState } from 'react'
 
-export const Accordian = ({ header, options, value, onChange, onClickViewChartButton, dataTestId }) => {
+import { Checkbox, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
+import AddChartSource from '@Components/charts/list/AddChartSource'
+
+import { ChartSourceAccordionProps, SelectedChartRepositoryType } from './charts.types'
+
+export const ChartSourceAccordion = ({ header, options, value, onChange, dataTestId }: ChartSourceAccordionProps) => {
     const [collapsed, setCollapse] = useState<boolean>(true)
-    const [showAddSource, toggleAddSource] = useState<boolean>(false)
     const toggleDropdown = (): void => {
         setCollapse(!collapsed)
     }
 
-    const handleTogleAddSource = () => {
-        toggleAddSource(!showAddSource)
+    const onChangeToggleSource = (option: SelectedChartRepositoryType) => () => {
+        onChange(option)
     }
 
     return (
@@ -47,20 +49,7 @@ export const Accordian = ({ header, options, value, onChange, onClickViewChartBu
 
             {collapsed && (
                 <div>
-                    <button
-                        type="button"
-                        className="dc__position-rel dc__transparent dc__hover-n50 cursor flex left cb-5 fs-13 fw-6 lh-20 h-32 pl-10 w-100"
-                        onClick={handleTogleAddSource}
-                    >
-                        <AddIcon className="icon-dim-16 fcb-5 mr-8" />
-                        Add chart source
-                    </button>
-
-                    {showAddSource && (
-                        <div className="dc__transparent-div" onClick={handleTogleAddSource}>
-                            <AddChartSource baseClass="accordian-add-position" />
-                        </div>
-                    )}
+                    <AddChartSource text="Add chart source" />
                     {options.map((option) => (
                         <div
                             className="dc__position-rel flex left cursor dc__hover-n50"
@@ -68,9 +57,9 @@ export const Accordian = ({ header, options, value, onChange, onClickViewChartBu
                         >
                             <Checkbox
                                 rootClassName="ml-7 h-32 fs-13 mb-0 mr-10 w-100"
-                                isChecked={value?.filter((selectedVal) => selectedVal.value === option.value).length}
+                                isChecked={!!value?.filter((selectedVal) => selectedVal.value === option.value).length}
                                 value={CHECKBOX_VALUE.CHECKED}
-                                onChange={() => onChange(option)}
+                                onChange={onChangeToggleSource(option)}
                             >
                                 <div className="dc__ellipsis-right ml-5 dc__mxw-180">{option.label}</div>
                             </Checkbox>
