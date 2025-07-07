@@ -53,13 +53,13 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    Icon,
+    SourceTypeMap,
     handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { CDDeploymentTabText, RegistryPayloadType, SourceTypeMap, ViewType } from '../../config'
+import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
 import {
@@ -92,6 +92,7 @@ import {
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
+    getIsExternalAppLinkable,
     getMigrateToDevtronRequiredPayload,
     handleDeleteCDNodePipeline,
     validateTask,
@@ -103,14 +104,10 @@ import { customTagStageTypeOptions, getCDStageTypeSelectorValue, StageTypeEnums 
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import {
-    gitOpsRepoNotConfigured,
-    gitOpsRepoNotConfiguredWithEnforcedEnv,
-    gitOpsRepoNotConfiguredWithOptionsHidden,
-} from '../gitOps/constants'
 import { BuildCDProps, CDPipelineProps, DeleteDialogType, ForceDeleteMessageType } from './types'
 import { MIGRATE_TO_DEVTRON_FORM_STATE } from './constants'
 import { getConfigureGitOpsCredentialsButtonProps } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
+import { checkForGitOpsRepoNotConfigured } from '@Pages/App/Configurations'
 
 const DeploymentWindowConfirmationDialog = importComponentFromFELibrary('DeploymentWindowConfirmationDialog')
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -179,6 +176,7 @@ export default function CDPipeline({
         deploymentAppType: window._env_.HIDE_GITOPS_OR_HELM_OPTION ? '' : DeploymentAppTypes.HELM,
         deploymentAppName: '',
         releaseMode: ReleaseMode.NEW_DEPLOYMENT,
+        isCustomChart: false,
         triggerType: TriggerType.Auto,
         strategies: [],
         savedStrategies: [],
@@ -275,7 +273,7 @@ export default function CDPipeline({
 
     const isExternalArgoPipeline =
         formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
-        formData.deploymentAppType === DeploymentAppTypes.GITOPS
+        formData.deploymentAppType === DeploymentAppTypes.ARGO
 
     const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
@@ -601,6 +599,7 @@ export default function CDPipeline({
         form.name = pipelineConfigFromRes.name
         form.deploymentAppName = pipelineConfigFromRes.deploymentAppName
         form.releaseMode = pipelineConfigFromRes.releaseMode
+        form.isCustomChart = pipelineConfigFromRes.isCustomChart
         form.environmentName = pipelineConfigFromRes.environmentName || ''
         form.namespace = env.namespace
         form.repoName = pipelineConfigFromRes.repoName
@@ -731,7 +730,7 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS ? [] : formData.savedStrategies,
+            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && formData.isCustomChart ? [] : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -927,53 +926,9 @@ export default function CDPipeline({
         setFormDataErrorObj(_formDataErrorObj)
     }
 
-    const checkForGitOpsRepoNotConfigured = () => {
-        const isHelmEnforced =
-            formData.allowedDeploymentTypes.length === 1 &&
-            formData.allowedDeploymentTypes[0] === DeploymentAppTypes.HELM
-
-        const gitOpsRepoNotConfiguredAndOptionsHidden =
-            window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-            !noGitOpsModuleInstalledAndConfigured &&
-            !isHelmEnforced &&
-            isGitOpsRepoNotConfigured
-
-        if (gitOpsRepoNotConfiguredAndOptionsHidden) {
-            setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfiguredWithOptionsHidden })
-        }
-        const isGitOpsRepoNotConfiguredAndOptionsVisible =
-            formData.deploymentAppType === DeploymentAppTypes.GITOPS &&
-            isGitOpsRepoNotConfigured &&
-            !window._env_.HIDE_GITOPS_OR_HELM_OPTION
-
-        const isGitOpsRepoNotConfiguredAndGitopsEnforced =
-            isGitOpsRepoNotConfiguredAndOptionsVisible && formData.allowedDeploymentTypes.length == 1
-
-        if (!isTemplateView) {
-            if (isGitOpsRepoNotConfiguredAndOptionsVisible) {
-                setGitOpsRepoConfiguredWarning({ show: true, text: gitOpsRepoNotConfigured })
-            }
-            if (isGitOpsRepoNotConfiguredAndGitopsEnforced) {
-                setGitOpsRepoConfiguredWarning({
-                    show: true,
-                    text: gitOpsRepoNotConfiguredWithEnforcedEnv(formData.environmentName),
-                })
-            }
-
-            if (
-                gitOpsRepoNotConfiguredAndOptionsHidden ||
-                isGitOpsRepoNotConfiguredAndGitopsEnforced ||
-                isGitOpsRepoNotConfiguredAndOptionsVisible
-            ) {
-                return true
-            }
-        }
-        return false
-    }
-
     const savePipeline = async () => {
         if (!isMigratingFromExternalApp) {
-            if (formData.deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
+            if (formData.deploymentAppType === DeploymentAppTypes.ARGO && isGitOpsInstalledButNotConfigured) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     title: 'GitOps credentials not configured',
@@ -987,7 +942,17 @@ export default function CDPipeline({
                 return
             }
 
-            if (checkForGitOpsRepoNotConfigured()) {
+            if (
+                checkForGitOpsRepoNotConfigured({
+                    allowedDeploymentTypes: formData.allowedDeploymentTypes,
+                    deploymentAppType: formData.deploymentAppType as DeploymentAppTypes,
+                    environmentName: formData.environmentName,
+                    isGitOpsRepoNotConfigured,
+                    isTemplateView,
+                    noGitOpsModuleInstalledAndConfigured,
+                    setGitOpsRepoConfiguredWarning,
+                })
+            ) {
                 return
             }
             const isUnique = checkUniqueness(formData, true)
@@ -1092,7 +1057,7 @@ export default function CDPipeline({
 
     const deleteCD = (force: boolean, cascadeDelete: boolean) => {
         const isPartialDelete =
-            formData.deploymentAppType === DeploymentAppTypes.GITOPS && formData.deploymentAppCreated && !force
+            formData.deploymentAppType === DeploymentAppTypes.ARGO && formData.deploymentAppCreated && !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(appId),
@@ -1221,7 +1186,7 @@ export default function CDPipeline({
                 >
                     Advanced options
                     {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                        <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
+                        <Icon name="ic-warning" color="Y700" />
                     )}
                 </button>
             )
@@ -1369,6 +1334,7 @@ export default function CDPipeline({
                                     isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                                     noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
                                     releaseMode={formData.releaseMode}
+                                    isCustomChart={formData.isCustomChart}
                                     getMandatoryPluginData={getMandatoryPluginData}
                                     migrateToDevtronFormState={migrateToDevtronFormState}
                                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
@@ -1399,10 +1365,7 @@ export default function CDPipeline({
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
             if (isMigratingFromExternalApp) {
-                const isLinkable =
-                    migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM
-                        ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable
-                        : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
+                const isLinkable = getIsExternalAppLinkable(migrateToDevtronFormState)
                 if (!isLinkable) {
                     return 'Please resolve errors before proceeding'
                 }
@@ -1428,12 +1391,19 @@ export default function CDPipeline({
                 }`}
             >
                 <div className="flex flex-align-center flex-justify bg__primary px-20 py-12">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                    <h2 className="fs-16 fw-6 lh-24 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePipelineModal}>
-                        <Close className="icon-dim-24" />
-                    </button>
+                    <Button
+                        dataTestId="close-cd-modal"
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        size={ComponentSizeType.small}
+                        onClick={closePipelineModal}
+                        ariaLabel="close modal"
+                        showAriaLabelInTippy={false}
+                        style={ButtonStyleType.negativeGrey}
+                        variant={ButtonVariantType.borderLess}
+                    />
                 </div>
 
                 {!isAdvanced && !isTemplateView && (

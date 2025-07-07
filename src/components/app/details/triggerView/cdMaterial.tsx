@@ -96,14 +96,10 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
-
-import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import close from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as BackIcon } from '@Icons/ic-arrow-backward.svg'
+import { ReactComponent as RefreshIcon } from '@Icons/ic-arrows_clockwise.svg'
+import close from '@Icons/ic-close.svg'
+import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
 import noArtifact from '../../../../assets/img/no-artifact.webp'
 import { URLS } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
@@ -1693,16 +1689,20 @@ const CDMaterial = ({
             return null
         }
         if (stageType !== STAGE_TYPE.CD) {
-            return <PlayIC />
+            return <Icon name="ic-play-outline" color={null} />
         }
-        return <DeployIcon />
+        return <Icon name="ic-rocket-launch" color={null} />
     }
 
-    const getDeployButtonStyle = (userActionState: string): ButtonStyleType => {
+    const getDeployButtonStyle = (
+        userActionState: string,
+        canDeployWithoutApproval: boolean,
+        canImageApproverDeploy: boolean,
+    ): ButtonStyleType => {
         if (userActionState === ACTION_STATE.BLOCKED) {
             return ButtonStyleType.negative
         }
-        if (userActionState === ACTION_STATE.PARTIAL) {
+        if (userActionState === ACTION_STATE.PARTIAL || canDeployWithoutApproval || canImageApproverDeploy) {
             return ButtonStyleType.warning
         }
         return ButtonStyleType.default
@@ -1733,35 +1733,32 @@ const CDMaterial = ({
         const canDeployWithoutApproval = getCanDeployWithoutApproval(state, isExceptionUser)
         const canImageApproverDeploy = getCanImageApproverDeploy(state, canApproverDeploy, isExceptionUser)
 
-        const showAnimatedDeployButton =
-            isCDNode && !disableDeployButton && (!userActionState || userActionState === ACTION_STATE.ALLOWED)
-
-        if (showAnimatedDeployButton) {
-            return (
-                <AnimatedDeployButton
-                    isLoading={deploymentLoading || isSaveLoading}
-                    onButtonClick={onClickDeploy}
-                    isVirtualEnvironment={isVirtualEnvironment}
-                    exceptionUserConfig={{
-                        canDeploy: canDeployWithoutApproval,
-                        isImageApprover: canImageApproverDeploy,
-                    }}
-                />
-            )
-        }
         return (
-            <Button
+            <AnimatedDeployButton
                 dataTestId="cd-trigger-deploy-button"
-                startIcon={getDeployButtonIcon()}
                 isLoading={deploymentLoading || isSaveLoading}
-                text={`${
-                    userActionState === ACTION_STATE.BLOCKED ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
-                }${isVirtualEnvironment ? ' to isolated env' : ''}`}
-                endIcon={userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
-                onClick={(e) => onClickDeploy(e, disableDeployButton)}
-                size={ComponentSizeType.large}
-                style={getDeployButtonStyle(userActionState)}
+                onButtonClick={(e) => onClickDeploy(e, disableDeployButton)}
+                startIcon={getDeployButtonIcon()}
+                text={
+                    canDeployWithoutApproval
+                        ? 'Deploy without approval'
+                        : `${
+                              userActionState === ACTION_STATE.BLOCKED
+                                  ? 'Deployment is blocked'
+                                  : CDButtonLabelMap[stageType]
+                          }${isVirtualEnvironment ? ' to isolated env' : ''}`
+                }
+                endIcon={userActionState === ACTION_STATE.BLOCKED ? <Icon name="ic-info-outline" color={null} /> : null}
+                style={getDeployButtonStyle(userActionState, canDeployWithoutApproval, canImageApproverDeploy)}
                 disabled={disableDeployButton}
+                tooltipContent={
+                    canDeployWithoutApproval || canImageApproverDeploy
+                        ? 'You are authorized to deploy as an exception user'
+                        : ''
+                }
+                animateStartIcon={
+                    isCDNode && !disableDeployButton && (!userActionState || userActionState === ACTION_STATE.ALLOWED)
+                }
             />
         )
     }

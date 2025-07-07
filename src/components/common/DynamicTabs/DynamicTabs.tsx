@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { cloneElement, RefCallback, useMemo, useRef } from 'react'
+import React, { cloneElement, MouseEventHandler, RefCallback, useMemo, useRef } from 'react'
 import { useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { Dayjs } from 'dayjs'
@@ -26,13 +26,13 @@ import {
     ComponentSizeType,
     ConditionalWrap,
     DynamicTabType,
+    Icon,
     logExceptionToSentry,
     noop,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICArrowClockwise } from '@Icons/ic-arrow-clockwise.svg'
-import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 
 import Timer from './DynamicTabs.timer'
 import DynamicTabsSelect from './DynamicTabsSelect'
@@ -96,7 +96,7 @@ const DynamicTabs = ({
     }
 
     const getTabNavLink = (tab: DynamicTabType) => {
-        const { name, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName } = tab
+        const { name, isSelected, dynamicTitle, title, showNameOnSelect, isAlive, hideName, isAlpha } = tab
         const shouldRenderTitle = (!showNameOnSelect || isAlive || isSelected) && !hideName
 
         const _title = dynamicTitle || title
@@ -119,6 +119,10 @@ const DynamicTabs = ({
                         <span className="fs-12 fw-6 lh-20 dc__ellipsis-right" data-testid={name}>
                             {_title}
                         </span>
+                    )}
+
+                    {shouldRenderTitle && isAlpha && (
+                        <span className="dc__no-shrink py-1 px-4 br-4 bcy-1 cy-7 fs-11 fw-5 lh-16">Alpha</span>
                     )}
                 </div>
             </button>
@@ -200,6 +204,22 @@ const DynamicTabs = ({
             </Tippy>
         )
 
+        const renderCloseButton = (onClick: MouseEventHandler<HTMLButtonElement>) => (
+            <div className="pr-12 dc__zi-2 dc__no-shrink">
+                <Button
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xxs}
+                    style={ButtonStyleType.negativeGrey}
+                    icon={<Icon name="ic-close-small" color={null} />}
+                    dataTestId="close-icon"
+                    onClick={onClick}
+                    ariaLabel={`Close tab ${tab.name}`}
+                    showAriaLabelInTippy={false}
+                    data-id={tab.id}
+                />
+            </div>
+        )
+
         return (
             <ConditionalWrap key={tab.id} condition={!isFixed} wrap={renderWithTippy}>
                 <div
@@ -209,36 +229,8 @@ const DynamicTabs = ({
                     className={`${isFixed ? 'fixed-tab' : 'dynamic-tab'} flex dc__gap-5 cn-9 ${tab.isSelected ? 'dynamic-tab-selected bg__primary' : ''}`}
                 >
                     {getTabNavLink(tab)}
-                    {_showNameOnSelect && (
-                        <button
-                            type="button"
-                            // NOTE: need dc__zi-2 because the before pseudo class renders
-                            // the rounded corners and it has a z-index of 1
-                            className="dc__unset-button-styles pr-12 dc__zi-2"
-                            aria-label={`Stop tab ${tab.name}`}
-                            onClick={handleTabStopAction}
-                            data-id={tab.id}
-                        >
-                            <div className="dynamic-tab__close flex br-4">
-                                <ICCross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                            </div>
-                        </button>
-                    )}
-                    {!isFixed && (
-                        <button
-                            type="button"
-                            // NOTE: need dc__zi-2 because the before pseudo class renders
-                            // the rounded corners and it has a z-index of 1
-                            className="dc__unset-button-styles pr-12 dc__zi-2"
-                            aria-label={`Close tab ${tab.name}`}
-                            onClick={handleTabCloseAction}
-                            data-id={tab.id}
-                        >
-                            <div className="dynamic-tab__close flex br-4">
-                                <ICCross className="icon-dim-16 cursor p-2 fcn-6 scn-6" />
-                            </div>
-                        </button>
-                    )}
+                    {_showNameOnSelect && renderCloseButton(handleTabStopAction)}
+                    {!isFixed && renderCloseButton(handleTabCloseAction)}
                 </div>
             </ConditionalWrap>
         )

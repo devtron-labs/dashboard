@@ -36,6 +36,7 @@ import {
     getEnvironmentListMinPublic,
     CIPipelineNodeType,
     DocLink,
+    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'
@@ -59,14 +60,7 @@ import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { CIMaterialProps, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
-import {
-    URLS,
-    ViewType,
-    SourceTypeMap,
-    BUILD_STATUS,
-    DEFAULT_GIT_BRANCH_VALUE,
-    NO_COMMIT_SELECTED,
-} from '../../../../config'
+import { URLS, ViewType, BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
@@ -1430,7 +1424,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return (
             <>
                 {APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.subTitle}&nbsp;
-                <DocLink docLinkKey="APP_CREATE" dataTestId='job-not-configured-learn-more' fontWeight='normal' text={APP_DETAILS.NEED_HELP} />
+                <DocLink
+                    docLinkKey="APP_CREATE"
+                    dataTestId="job-not-configured-learn-more"
+                    fontWeight="normal"
+                    text={APP_DETAILS.NEED_HELP}
+                />
             </>
         )
     }

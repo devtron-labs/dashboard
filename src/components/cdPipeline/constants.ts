@@ -27,7 +27,7 @@ export const MIGRATE_TO_DEVTRON_FORM_STATE: MigrateToDevtronFormState = {
         namespace: '',
         clusterId: null,
         clusterName: '',
-        validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.GITOPS),
+        validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.ARGO),
         appIcon: null,
     },
     migrateFromHelmFormState: {
@@ -36,6 +36,14 @@ export const MIGRATE_TO_DEVTRON_FORM_STATE: MigrateToDevtronFormState = {
         clusterId: null,
         clusterName: '',
         validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.HELM),
+        appIcon: null,
+    },
+    migrateFromFluxFormState: {
+        appName: '',
+        namespace: '',
+        clusterId: null,
+        clusterName: '',
+        validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.FLUX),
         appIcon: null,
     },
     triggerType: TriggerType.Auto,
