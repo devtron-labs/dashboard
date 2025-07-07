@@ -20,9 +20,11 @@ import {
     ServerErrors,
     showError,
     ConditionalWrap,
+    VisibleModal,
     Drawer,
     VariableType,
     MandatoryPluginDataType,
+    ButtonWithLoader,
     PluginDataStoreType,
     ProcessPluginDataReturnType,
     PluginDetailPayloadType,
@@ -32,9 +34,11 @@ import {
     getUpdatedPluginStore,
     TabProps,
     TabGroup,
+    ModuleNameMap,
     SourceTypeMap,
     DEFAULT_ENV,
     getEnvironmentListMinPublic,
+    ModuleStatus,
     PipelineFormType,
     ToastVariantType,
     ToastManager,
@@ -45,8 +49,6 @@ import {
     FloatingVariablesSuggestions,
     TriggerType,
     DeleteCINodeButton,
-    GenericModal,
-    Button,
     handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -65,6 +67,7 @@ import { PreBuild } from './PreBuild'
 import { Sidebar } from './Sidebar'
 import { Build } from './Build'
 import { ReactComponent as WarningTriangle } from '../../assets/icons/ic-warning.svg'
+import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
@@ -105,6 +108,7 @@ export default function CIPipeline({
     const [isAdvanced, setIsAdvanced] = useState<boolean>(
         isJobCard || (activeStageName !== BuildStageVariable.PreBuild && !!ciPipelineId),
     )
+    const [showFormError, setShowFormError] = useState<boolean>(false)
     const [loadingState, setLoadingState] = useState<LoadingState>({
         loading: false,
         failed: false,
@@ -225,6 +229,17 @@ export default function CIPipeline({
 
     const handleUpdateAvailableTags: PipelineContext['handleUpdateAvailableTags'] = (tags) => {
         setAvailableTags(tags)
+    }
+
+    const getSecurityModuleStatus = async (): Promise<void> => {
+        try {
+            const { result } = await getModuleInfo(ModuleNameMap.SECURITY)
+            if (result?.status === ModuleStatus.INSTALLED) {
+                setSecurityModuleInstalled(true)
+            }
+        } catch (error) {
+            showError(error)
+        }
     }
 
     // mandatory plugins are applicable for job ci but not jobs
@@ -416,6 +431,10 @@ export default function CIPipeline({
 
             _formDataErrorObj[BuildStageVariable.Build].isValid =
                 _formDataErrorObj.name.isValid && valid && _formDataErrorObj.dockerArgsError.isValid
+
+            if (!_formDataErrorObj[BuildStageVariable.Build].isValid) {
+                setShowFormError(true)
+            }
         } else {
             const stepsLength = _formData[stageName].steps.length
             let isStageValid = true
@@ -438,6 +457,7 @@ export default function CIPipeline({
     const handleOnMountAPICalls = async () => {
         try {
             setPageState(ViewType.LOADING)
+            await getSecurityModuleStatus()
             if (ciPipelineId) {
                 const ciPipelineResponse = await getInitDataWithCIPipeline(appId, ciPipelineId, true, isTemplateView)
                 if (ciPipelineResponse) {
@@ -460,7 +480,6 @@ export default function CIPipeline({
                     validateStage(BuildStageVariable.PostBuild, ciPipelineResponse.form)
                     setFormData(ciPipelineResponse.form)
                     setIsBlobStorageConfigured(ciPipelineResponse.isBlobStorageConfigured)
-                    setSecurityModuleInstalled(ciPipelineResponse.isSecurityModuleInstalled)
                     setCIPipeline(ciPipelineResponse.ciPipeline)
                     await getInitialPlugins(ciPipelineResponse.form)
                     await getEnvironments(ciPipelineResponse.ciPipeline.environmentId)
@@ -470,7 +489,6 @@ export default function CIPipeline({
                 const ciPipelineResponse = await getInitData(appId, true, isJobCard, isTemplateView)
                 if (ciPipelineResponse) {
                     setFormData(ciPipelineResponse.result.form)
-                    setSecurityModuleInstalled(ciPipelineResponse.result.isSecurityModuleInstalled)
                     await getInitialPlugins(ciPipelineResponse.result.form)
                     await getEnvironments(0)
                 }
@@ -526,7 +544,7 @@ export default function CIPipeline({
 
     const handleAdvancedOptions = () => {
         setIsAdvanced(true)
-        handleAnalyticsEvent({ category: 'CI Pipeline', action: 'DA_BUILD_ADVANCED' })
+        handleAnalyticsEvent({category: 'CI Pipeline', action: 'DA_BUILD_ADVANCED'})
     }
 
     const renderSecondaryButton = () => {
@@ -580,26 +598,6 @@ export default function CIPipeline({
             )
         }
     }
-
-    const renderPrimaryButton = () =>
-        formData.ciPipelineEditable && (
-            <Button
-                dataTestId="build-pipeline-button"
-                isLoading={apiInProgress}
-                disabled={
-                    apiInProgress ||
-                    (formData.isDockerConfigOverridden &&
-                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
-                        formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
-                            CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
-                        (loadingState.loading || loadingState.failed)) ||
-                    formDataErrorObj.customTag.message.length > 0 ||
-                    formDataErrorObj.counterX?.message.length > 0
-                }
-                text={saveOrUpdateButtonTitle}
-                onClick={savePipeline}
-            />
-        )
 
     const savePipeline = () => {
         const isUnique = checkUniqueness(formData)
@@ -811,37 +809,31 @@ export default function CIPipeline({
 
     const renderCIPipelineModalContent = () => {
         if (pageState === ViewType.ERROR) {
-            return (
-                <div className="flex-grow-1 p-20">
-                    <ErrorScreenManager code={errorCode} reload={handleOnMountAPICalls} />
-                </div>
-            )
+            return <ErrorScreenManager code={errorCode} reload={handleOnMountAPICalls} />
         }
 
         return (
             <>
                 {isAdvanced && (
-                    <>
-                        <div className="ml-20 w-90">
-                            <TabGroup
-                                tabs={
-                                    isJobCard
-                                        ? [
-                                              getNavLink(`build`, BuildStageVariable.Build),
-                                              getNavLink(`pre-build`, BuildStageVariable.PreBuild),
-                                          ]
-                                        : [
-                                              getNavLink(`pre-build`, BuildStageVariable.PreBuild),
-                                              getNavLink(`build`, BuildStageVariable.Build),
-                                              getNavLink(`post-build`, BuildStageVariable.PostBuild),
-                                          ]
-                                }
-                                hideTopPadding
-                            />
-                        </div>
-                        <hr className="divider m-0" />
-                    </>
+                    <div className="ml-20 w-90">
+                        <TabGroup
+                            tabs={
+                                isJobCard
+                                    ? [
+                                          getNavLink(`build`, BuildStageVariable.Build),
+                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                      ]
+                                    : [
+                                          getNavLink(`pre-build`, BuildStageVariable.PreBuild),
+                                          getNavLink(`build`, BuildStageVariable.Build),
+                                          getNavLink(`post-build`, BuildStageVariable.PostBuild),
+                                      ]
+                            }
+                            hideTopPadding
+                        />
+                    </div>
                 )}
+                <hr className="divider m-0" />
                 <pipelineContext.Provider value={contextValue}>
                     <div className={`${isAdvanced ? 'pipeline-container' : ''}`}>
                         {isAdvanced && (
@@ -870,6 +862,7 @@ export default function CIPipeline({
                             <Route path={`${path}/build`}>
                                 <Build
                                     pageState={pageState}
+                                    showFormError={showFormError}
                                     isAdvanced={isAdvanced}
                                     ciPipeline={ciPipeline}
                                     isSecurityModuleInstalled={isSecurityModuleInstalled}
@@ -883,7 +876,58 @@ export default function CIPipeline({
                         </Switch>
                     </div>
                 </pipelineContext.Provider>
+                {pageState !== ViewType.LOADING && (
+                    <div
+                        className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
+                            ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
+                        } `}
+                    >
+                        {renderSecondaryButton()}
+                        {formData.ciPipelineEditable && (
+                            <ButtonWithLoader
+                                rootClassName="cta cta--workflow"
+                                dataTestId="build-pipeline-button"
+                                onClick={savePipeline}
+                                disabled={
+                                    apiInProgress ||
+                                    (formData.isDockerConfigOverridden &&
+                                        formData.dockerConfigOverride?.ciBuildConfig?.ciBuildType &&
+                                        formData.dockerConfigOverride.ciBuildConfig.ciBuildType !==
+                                            CIBuildType.SELF_DOCKERFILE_BUILD_TYPE &&
+                                        (loadingState.loading || loadingState.failed)) ||
+                                    formDataErrorObj.customTag.message.length > 0 ||
+                                    formDataErrorObj.counterX?.message.length > 0
+                                }
+                                isLoading={apiInProgress}
+                            >
+                                {saveOrUpdateButtonTitle}
+                            </ButtonWithLoader>
+                        )}
+                    </div>
+                )}
             </>
+        )
+    }
+
+    const renderCIPipelineModal = () => {
+        return (
+            <div
+                className={`modal__body modal__body__ci_new_ui br-0 modal__body--p-0 ${
+                    isAdvanced ? 'advanced-option-container' : 'bottom-border-radius'
+                }`}
+            >
+                <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
+                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                        {title}
+                    </h2>
+
+                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={handleClose}>
+                        <Close className="icon-dim-24" />
+                    </button>
+                </div>
+
+                {renderCIPipelineModalContent()}
+            </div>
         )
     }
 
@@ -911,53 +955,15 @@ export default function CIPipeline({
         )
     }
 
-    return (
+    return ciPipelineId || isAdvanced ? (
         <>
             {renderFloatingVariablesWidget()}
-            {(ciPipelineId || isAdvanced) && (
-                <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
-                    <div className="modal__body modal__body__ci_new_ui br-0 modal__body--p-0 advanced-option-container">
-                        <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
-                            <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
-                                {title}
-                            </h2>
 
-                            <button type="button" className="dc__transparent flex icon-dim-24" onClick={handleClose}>
-                                <Close className="icon-dim-24" />
-                            </button>
-                        </div>
-
-                        {renderCIPipelineModalContent()}
-                        {pageState !== ViewType.LOADING && (
-                            <div
-                                className={`ci-button-container bg__primary pt-12 pb-12 pl-20 pr-20 flex bottom-border-radius ${
-                                    ciPipelineId || !isAdvanced ? 'flex-justify' : 'justify-right'
-                                } `}
-                            >
-                                {renderSecondaryButton()}
-                                {renderPrimaryButton()}
-                            </div>
-                        )}
-                    </div>
-                </Drawer>
-            )}
-            <GenericModal
-                name="build-pipeline-modal"
-                open={!ciPipelineId && !isAdvanced}
-                width={800}
-                onClose={handleClose}
-            >
-                <GenericModal.Header title={title} />
-                <GenericModal.Body>{renderCIPipelineModalContent()}</GenericModal.Body>
-                {pageState === ViewType.FORM && (
-                    <GenericModal.Footer>
-                        <div className="flex dc__content-space">
-                            {renderSecondaryButton()}
-                            {renderPrimaryButton()}
-                        </div>
-                    </GenericModal.Footer>
-                )}
-            </GenericModal>
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
+                {renderCIPipelineModal()}
+            </Drawer>
         </>
+    ) : (
+        <VisibleModal className="">{renderCIPipelineModal()}</VisibleModal>
     )
 }

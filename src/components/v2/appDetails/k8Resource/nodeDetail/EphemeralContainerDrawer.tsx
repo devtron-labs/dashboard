@@ -180,7 +180,7 @@ const EphemeralContainerDrawer = ({
             <div className="flex flex-align-center flex-justify bg__primary py-12 px-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0 title-padding flex left w-90">
                     <span style={{ minWidth: '290px' }}>Launch ephemeral container on pod:</span>
-                    <span className="dc__ellipsis-left">{isResourceBrowserView ? params.name : params.podName}</span>
+                    <span className="dc__ellipsis-left">{isResourceBrowserView ? params.node : params.podName}</span>
                     <InfoIconTippy
                         heading={EPHEMERAL_CONTAINER.TITLE}
                         infoText={EPHEMERAL_CONTAINER.SUBTITLE}
@@ -403,7 +403,7 @@ const EphemeralContainerDrawer = ({
                 : appDetails.resourceTree?.nodes?.find((nd) => nd.name === params.podName || nd.name === params.podName)
                       ?.namespace,
             clusterId: isResourceBrowserView ? Number(params.clusterId) : appDetails.clusterId,
-            podName: isResourceBrowserView ? params.name : params.podName,
+            podName: isResourceBrowserView ? params.node : params.podName,
         }
 
         if (ephemeralContainerType === EDITOR_VIEW.BASIC) {

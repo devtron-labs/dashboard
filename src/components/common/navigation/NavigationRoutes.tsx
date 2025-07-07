@@ -14,58 +14,52 @@
  * limitations under the License.
  */
 
-import { FunctionComponent, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
-import TagManager from 'react-gtm-module'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
-import * as Sentry from '@sentry/browser'
-
+import { lazy, Suspense, useEffect, useState, useRef, useMemo, FunctionComponent } from 'react'
 import {
-    AboutDevtronDialog,
-    animate,
-    AppThemeType,
-    BaseConfirmationModal,
-    ConfirmationModalProvider,
-    DEVTRON_BASE_MAIN_ID,
-    DevtronLicenseInfo,
-    DevtronProgressing,
-    EnvironmentDataValuesDTO,
-    ErrorScreenManager,
-    getEnvironmentData,
-    getHashedValue,
-    Host,
-    ImageSelectionUtilityProvider,
-    InstallationType,
-    IntelligenceConfig,
-    LicenseInfoDialogType,
-    logExceptionToSentry,
-    MainContext,
-    MainContextProvider,
-    ModuleNameMap,
-    ModuleStatus,
-    motion,
-    noop,
-    ServerErrors,
+    useUserEmail,
     showError,
-    SidePanelConfig,
-    SwitchThemeDialog,
-    SwitchThemeDialogProps,
-    ToastManager,
-    ToastVariantType,
+    Host,
+    Reload,
+    useAsync,
+    DevtronProgressing,
+    useMainContext,
+    MainContextProvider,
+    ImageSelectionUtilityProvider,
     URLS as CommonURLS,
-    useMotionTemplate,
-    useMotionValue,
+    AppListConstants,
+    getEnvironmentData,
+    DEVTRON_BASE_MAIN_ID,
+    MainContext,
+    getHashedValue,
+    ServerErrors,
+    ViewIsPipelineRBACConfiguredRadioTabs,
+    EnvironmentDataValuesDTO,
     UserPreferencesType,
     useTheme,
-    useUserEmail,
+    AppThemeType,
+    LicenseInfoDialogType,
+    DevtronLicenseInfo,
     useUserPreferences,
-    ViewIsPipelineRBACConfiguredRadioTabs,
+    AboutDevtronDialog,
+    IntelligenceConfig,
+    motion,
+    SidePanelConfig,
+    InstallationType,
+    useMotionValue,
+    useMotionTemplate,
+    SwitchThemeDialogProps,
+    SwitchThemeDialog,
+    ConfirmationModalProvider,
+    BaseConfirmationModal,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
-import { Configurations } from '@Pages/Releases/Detail'
-
-import { SERVER_MODE, URLS, ViewType } from '../../../config'
+import { Route, Switch, useRouteMatch, useHistory, useLocation } from 'react-router-dom'
+import * as Sentry from '@sentry/browser'
+import ReactGA from 'react-ga4'
+import TagManager from 'react-gtm-module'
+import Navigation from './Navigation'
+import { ErrorBoundary, AppContext } from '..'
+import { URLS, ViewType, SERVER_MODE, ModuleNameMap } from '../../../config'
+import { Security } from '../../security/Security'
 import {
     dashboardLoggedIn,
     getAppListMin,
@@ -73,28 +67,33 @@ import {
     getLoginData,
     updateLoginCount,
 } from '../../../services/service'
-import { LoginCountType } from '../../../services/service.types'
-import { HelmAppListResponse } from '../../app/list-new/AppListType'
-import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
-import { Security } from '../../security/Security'
+import { Configurations } from '@Pages/Releases/Detail'
+import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import {
     getAllModulesInfo,
     getModuleInfo,
     getServerInfo,
 } from '../../v2/devtronStackManager/DevtronStackManager.service'
-import { Banner } from '../Banner/Banner'
-import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
-import { ParsedTabsData } from '../DynamicTabs/types'
 import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/Helpers'
-import { SidePanel } from '../SidePanel'
-import { AppContext, ErrorBoundary } from '..'
-import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import Navigation from './Navigation'
-import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
+import { AppRouterType } from '../../../services/service.types'
+import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import { LOGIN_COUNT, MAX_LOGIN_COUNT } from '../../onboardingGuide/onboarding.utils'
+import { HelmAppListResponse } from '../../app/list-new/AppListType'
+import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
+
+import { TAB_DATA_LOCAL_STORAGE_KEY } from '../DynamicTabs/constants'
+import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE } from './constants'
+import { ParsedTabsData } from '../DynamicTabs/types'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+import { Banner } from '../Banner/Banner'
+import { SidePanel } from '../SidePanel'
 
 const Charts = lazy(() => import('../../charts/Charts'))
-
+const ExternalApps = lazy(() => import('../../external-apps/ExternalApps'))
+const ExternalArgoApps = lazy(() => import('../../externalArgoApps/ExternalArgoApp'))
+const AppDetailsPage = lazy(() => import('../../app/details/main'))
+const NewAppList = lazy(() => import('../../app/list-new/AppList'))
+const DevtronChartRouter = lazy(() => import('../../v2/index'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -113,6 +112,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
 )
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
+const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 const ViewIsPipelineRBACConfigured: FunctionComponent<{
@@ -123,7 +123,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 
-const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
+export default function NavigationRoutes({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) {
     const history = useHistory()
     const location = useLocation()
     const match = useRouteMatch()
@@ -149,8 +149,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
-    // We use this to determine if we can show resource recommender, since we do not allow users to feed prometheus url if grafana module is not installed
-    const [isGrafanaModuleInstalled, setIsGrafanaModuleInstalled] = useState(false)
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
 
@@ -166,19 +164,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         reinitialize: false,
     })
     const asideWidth = useMotionValue(0)
-    const navBarWidth = useMotionValue(0)
-
-    useEffect(() => {
-        if (pageState === ViewType.FORM) {
-            const controls = animate(navBarWidth, NAVBAR_WIDTH, {
-                duration: 0.3,
-                ease: 'easeOut',
-                delay: 0.6,
-            })
-            return controls.stop
-        }
-        return noop
-    }, [pageState])
 
     const {
         userPreferences,
@@ -195,51 +180,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         setLicenseInfoDialogType(null)
     }
 
-    const processLoginData = async (response: LoginCountType, superAdmin: boolean, appCount: number) => {
-        // eslint-disable-next-line radix
-        const count = response.result?.value ? parseInt(response.result.value) : 0
-        setLoginCount(count)
-        if (
-            typeof Storage !== 'undefined' &&
-            (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
-        ) {
-            localStorage.removeItem('isSSOLogin')
-            localStorage.removeItem('isAdminLogin')
-            if (count < MAX_LOGIN_COUNT) {
-                const updatedPayload = {
-                    key: LOGIN_COUNT,
-                    value: `${count + 1}`,
-                }
-                await updateLoginCount(updatedPayload)
-            }
-        }
-
-        // Check for external app count also before redirecting user on GETTING STARTED page
-        if (!count && superAdmin && appCount === 0) {
-            try {
-                const { result } = await getClusterListMinWithoutAuth()
-                if (Array.isArray(result) && result.length === 1) {
-                    const _sseConnection = new EventSource(`${Host}/application?clusterIds=${result[0].id}`, {
-                        withCredentials: true,
-                    })
-                    _sseConnection.onmessage = (message) => {
-                        const externalAppData: HelmAppListResponse = JSON.parse(message.data)
-                        if (externalAppData.result?.helmApps?.length <= 1) {
-                            history.push(`/${URLS.GETTING_STARTED}`)
-                        }
-                        _sseConnection.close()
-                    }
-                    _sseConnection.onerror = () => {
-                        _sseConnection.close()
-                        history.push(`/${URLS.GETTING_STARTED}`)
-                    }
-                }
-            } catch {
-                history.push(`/${URLS.GETTING_STARTED}`)
-            }
-        }
-    }
-
     const getInit = async (_serverMode: string) => {
         const [userRole, appList, loginData] = await Promise.all([
             getUserRole(),
@@ -253,6 +193,50 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         await processLoginData(loginData, superAdmin, appCount)
     }
 
+    const processLoginData = async (response, superAdmin, appListCount) => {
+        const count = response.result?.value ? parseInt(response.result.value) : 0
+        setLoginCount(count)
+        if (
+            typeof Storage !== 'undefined' &&
+            (localStorage.getItem('isSSOLogin') || localStorage.getItem('isAdminLogin'))
+        ) {
+            localStorage.removeItem('isSSOLogin')
+            localStorage.removeItem('isAdminLogin')
+            if (count < MAX_LOGIN_COUNT) {
+                const updatedPayload = {
+                    key: LOGIN_COUNT,
+                    value: `${count + 1}`,
+                }
+                updateLoginCount(updatedPayload)
+            }
+        }
+
+        // Check for external app count also before redirecting user on GETTING STARTED page
+        if (!count && superAdmin && appListCount === 0) {
+            try {
+                const { result } = await getClusterListMinWithoutAuth()
+                if (Array.isArray(result) && result.length === 1) {
+                    const _sseConnection = new EventSource(`${Host}/application?clusterIds=${result[0].id}`, {
+                        withCredentials: true,
+                    })
+                    _sseConnection.onmessage = (message) => {
+                        const externalAppData: HelmAppListResponse = JSON.parse(message.data)
+                        if (externalAppData.result?.helmApps?.length <= 1) {
+                            history.push(`/${URLS.GETTING_STARTED}`)
+                        }
+                        _sseConnection.close()
+                    }
+                    _sseConnection.onerror = (err) => {
+                        _sseConnection.close()
+                        history.push(`/${URLS.GETTING_STARTED}`)
+                    }
+                }
+            } catch (e) {
+                history.push(`/${URLS.GETTING_STARTED}`)
+            }
+        }
+    }
+
     const handleCloseSwitchThemeDialog: SwitchThemeDialogProps['handleClose'] = () => {
         handleThemeSwitcherDialogVisibilityChange(false)
     }
@@ -264,14 +248,13 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
 
         if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_) {
             if (window._env_.SENTRY_ERROR_ENABLED) {
-                Sentry.configureScope((scope) => {
+                Sentry.configureScope(function (scope) {
                     scope.setUser({ email })
                 })
             }
             if (window._env_.GA_ENABLED) {
                 const path = location.pathname
                 // Using .then to use in useEffect
-                // eslint-disable-next-line @typescript-eslint/no-floating-promises
                 getHashedValue(email).then((hashedEmail) => {
                     ReactGA.initialize(window._env_.GA_TRACKING_ID, {
                         gaOptions: {
@@ -283,13 +266,13 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                         category: `Page ${path}`,
                         action: 'First Land',
                     })
-                    history.listen((locationObj) => {
-                        let { pathname } = locationObj
-                        pathname = pathname.replace(/\d/g, '')
-                        pathname = pathname.replace(/\/\//g, '/')
-                        ReactGA.send({ hitType: 'pageview', page: pathname })
+                    history.listen((location) => {
+                        let path = location.pathname
+                        path = path.replace(new RegExp('[0-9]', 'g'), '')
+                        path = path.replace(new RegExp('//', 'g'), '/')
+                        ReactGA.send({ hitType: 'pageview', page: path })
                         ReactGA.event({
-                            category: `Page ${pathname}`,
+                            category: `Page ${path}`,
                             action: 'First Land',
                         })
                     })
@@ -315,7 +298,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                         localStorage.isDashboardLoggedIn = true
                     }
                 })
-                .catch(() => {})
+                .catch((errors) => {})
         }
     }, [email])
 
@@ -350,11 +333,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 serverInfo: currentServerInfo.serverInfo,
                 fetchingServerInfo: false,
             })
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Error in fetching server info',
-            })
-            logExceptionToSentry(err, { data: 'Error in fetching server info' })
+            console.error('Error in fetching server info')
         }
     }
 
@@ -372,38 +351,35 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     result.featureGitOpsFlags?.isFeatureUserDefinedGitOpsEnabled || false,
             }
             return {
-                isAirGapEnvironment: result.isAirGapEnvironment ?? ENVIRONMENT_DATA_FALLBACK.isAirGapEnvironment,
+                isAirGapEnvironment: result.isAirGapEnvironment ?? ENVIRONMENT_DATA_FALLBACK['isAirGapEnvironment'],
                 isManifestScanningEnabled:
-                    result.isManifestScanningEnabled ?? ENVIRONMENT_DATA_FALLBACK.isManifestScanningEnabled,
+                    result.isManifestScanningEnabled ?? ENVIRONMENT_DATA_FALLBACK['isManifestScanningEnabled'],
                 canOnlyViewPermittedEnvOrgLevel:
-                    result.canOnlyViewPermittedEnvOrgLevel ?? ENVIRONMENT_DATA_FALLBACK.canOnlyViewPermittedEnvOrgLevel,
+                    result.canOnlyViewPermittedEnvOrgLevel ??
+                    ENVIRONMENT_DATA_FALLBACK['canOnlyViewPermittedEnvOrgLevel'],
                 featureGitOpsFlags: parsedFeatureGitOpsFlags,
-                canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK.canFetchHelmAppStatus,
+                canFetchHelmAppStatus:
+                    result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK['canFetchHelmAppStatus'],
                 devtronManagedLicensingEnabled:
-                    result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
-                isResourceRecommendationEnabled:
-                    result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
+                    result.devtronManagedLicensingEnabled ??
+                    ENVIRONMENT_DATA_FALLBACK['devtronManagedLicensingEnabled'],
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
         }
     }
 
-    const getGrafanaModuleStatus = () => getModuleInfo(ModuleNameMap.GRAFANA)
-
     const handleFetchInitialData = async () => {
         try {
-            const [serverModeResponse, environmentDataResponse, grafanaModuleStatus] = await Promise.all([
+            const [serverModeResponse, environmentDataResponse] = await Promise.all([
                 getServerMode(),
                 getEnvironmentDataValues(),
-                getGrafanaModuleStatus(),
                 getCurrentServerInfo(),
                 handleFetchUserPreferences(),
             ])
 
             await getInit(serverModeResponse)
 
-            setIsGrafanaModuleInstalled(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED)
             setEnvironmentDataState({
                 isAirgapped: environmentDataResponse.isAirGapEnvironment,
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
@@ -411,7 +387,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
-                isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -427,7 +402,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             setPageState(ViewType.FORM)
             setServerMode(SERVER_MODE.EA_ONLY)
         } else {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
             handleFetchInitialData()
         }
     }, [])
@@ -455,8 +429,21 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const isOnboardingPage = getIsOnboardingPage()
 
     const gridTemplateColumns = !isOnboardingPage
-        ? useMotionTemplate`${navBarWidth}px 1fr ${asideWidth}px`
+        ? useMotionTemplate`56px 1fr ${asideWidth}px`
         : useMotionTemplate`1fr ${asideWidth}px`
+
+    if (pageState === ViewType.LOADING) {
+        return (
+            <div className="full-height-width">
+                <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+            </div>
+        )
+    }
+
+    if (pageState === ViewType.ERROR) {
+        // 100vh is required for covering the full height of the page as this is the top level component
+        return <Reload className="h-100vh bg__tertiary" />
+    }
 
     const handleOpenLicenseInfoDialog = (
         initialDialogTab?: LicenseInfoDialogType.ABOUT | LicenseInfoDialogType.LICENSE,
@@ -476,150 +463,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 initialDialogType={licenseInfoDialogType}
             />
         ) : (
-            <AboutDevtronDialog handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog} />
-        )
-    }
-
-    const renderMainContent = () => {
-        if (pageState === ViewType.LOADING) {
-            return <DevtronProgressing parentClasses="flex flex-grow-1 bg__primary" classes="icon-dim-80" />
-        }
-
-        if (pageState === ViewType.ERROR) {
-            return <ErrorScreenManager />
-        }
-
-        return (
-            serverMode && (
-                <>
-                    <Banner />
-                    <div className="flexbox-col flex-grow-1 dc__overflow-auto">
-                        <Suspense
-                            fallback={
-                                <DevtronProgressing
-                                    parentClasses="flex flex-grow-1 bg__primary"
-                                    classes="icon-dim-80"
-                                />
-                            }
-                        >
-                            <ErrorBoundary>
-                                <Switch>
-                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
-                                        <ResourceBrowser />
-                                    </Route>
-                                    <Route
-                                        path={CommonURLS.GLOBAL_CONFIG}
-                                        render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
-                                    />
-                                    {!window._env_.K8S_CLIENT && [
-                                        <Route
-                                            key={URLS.APP}
-                                            path={URLS.APP}
-                                            render={() => (
-                                                <AppRouter
-                                                    isSuperAdmin={isSuperAdmin}
-                                                    appListCount={appListCount}
-                                                    loginCount={loginCount}
-                                                />
-                                            )}
-                                        />,
-                                        <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
-                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
-                                        </Route>,
-                                        <Route
-                                            key={URLS.CHARTS}
-                                            path={URLS.CHARTS}
-                                            render={() => <Charts isSuperAdmin={isSuperAdmin} />}
-                                        />,
-                                        <Route
-                                            key={URLS.BULK_EDITS}
-                                            path={URLS.BULK_EDITS}
-                                            render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
-                                        />,
-                                        <Route
-                                            key={URLS.SECURITY}
-                                            path={URLS.SECURITY}
-                                            render={(props) => <Security {...props} serverMode={serverMode} />}
-                                        />,
-                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
-                                            ? [
-                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
-                                                      <ResourceWatcherRouter />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
-                                            ? [
-                                                  <Route
-                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                  >
-                                                      <ImageSelectionUtilityProvider
-                                                          value={{
-                                                              getModuleInfo,
-                                                          }}
-                                                      >
-                                                          <SoftwareDistributionHubRenderProvider
-                                                              renderers={{
-                                                                  ReleaseConfigurations: Configurations,
-                                                              }}
-                                                          >
-                                                              <SoftwareDistributionHub />
-                                                          </SoftwareDistributionHubRenderProvider>
-                                                      </ImageSelectionUtilityProvider>
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
-                                            ? [
-                                                  <Route
-                                                      key={CommonURLS.NETWORK_STATUS_INTERFACE}
-                                                      path={CommonURLS.NETWORK_STATUS_INTERFACE}
-                                                  >
-                                                      <NetworkStatusInterface />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(showStackManager
-                                            ? [
-                                                  <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
-                                                      <DevtronStackManager
-                                                          serverInfo={currentServerInfo.serverInfo}
-                                                          getCurrentServerInfo={getCurrentServerInfo}
-                                                          isSuperAdmin={isSuperAdmin}
-                                                      />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        <Route key={URLS.GETTING_STARTED} exact path={`/${URLS.GETTING_STARTED}`}>
-                                            <OnboardingGuide
-                                                loginCount={loginCount}
-                                                isSuperAdmin={isSuperAdmin}
-                                                serverMode={serverMode}
-                                                isGettingStartedClicked={isGettingStartedClicked}
-                                            />
-                                        </Route>,
-                                    ]}
-                                    {/* TODO: Check why its coming as empty in case route is in other library */}
-                                    {!window._env_.K8S_CLIENT && (
-                                        <Route path={URLS.JOB} key={URLS.JOB}>
-                                            <AppContext.Provider value={contextValue}>
-                                                <Jobs />
-                                            </AppContext.Provider>
-                                        </Route>
-                                    )}
-                                    <Route>
-                                        <RedirectUserWithSentry
-                                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
-                                        />
-                                    </Route>
-                                </Switch>
-                                {AIResponseWidget && intelligenceConfig && <AIResponseWidget parentRef={navRouteRef} />}
-                            </ErrorBoundary>
-                        </Suspense>
-                    </div>
-                </>
-            )
+            <AboutDevtronDialog
+                handleCloseLicenseInfoDialog={handleCloseLicenseInfoDialog}
+                isFELibAvailable={!!LicenseInfoDialog}
+            />
         )
     }
 
@@ -669,13 +516,19 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
-                isResourceRecommendationEnabled:
-                    isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
             }}
         >
             <ConfirmationModalProvider>
                 <BaseConfirmationModal />
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+                    {showThemeSwitcherDialog && (
+                        <SwitchThemeDialog
+                            initialThemePreference={userPreferences?.themePreference}
+                            handleClose={handleCloseSwitchThemeDialog}
+                            handleUpdateUserThemePreference={handleUpdateUserThemePreference}
+                        />
+                    )}
+                    {renderAboutDevtronDialog()}
                     {!isOnboardingPage && (
                         <Navigation
                             currentServerInfo={currentServerInfo}
@@ -690,27 +543,275 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                             showStackManager={showStackManager}
                         />
                     )}
-                    <>
-                        <div
-                            className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
-                            ref={navRouteRef}
-                        >
-                            {renderMainContent()}
-                        </div>
-                        <SidePanel asideWidth={asideWidth} />
-                    </>
-                    {showThemeSwitcherDialog && (
-                        <SwitchThemeDialog
-                            initialThemePreference={userPreferences?.themePreference}
-                            handleClose={handleCloseSwitchThemeDialog}
-                            handleUpdateUserThemePreference={handleUpdateUserThemePreference}
-                        />
+                    {serverMode && (
+                        <>
+                            <div
+                                className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                                ref={navRouteRef}
+                            >
+                                <Banner />
+                                <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+                                    <Suspense
+                                        fallback={
+                                            <DevtronProgressing
+                                                parentClasses="h-100 flex bg__primary"
+                                                classes="icon-dim-80"
+                                            />
+                                        }
+                                    >
+                                        <ErrorBoundary>
+                                            <Switch>
+                                                <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
+                                                    <ResourceBrowser />
+                                                </Route>
+                                                <Route
+                                                    path={CommonURLS.GLOBAL_CONFIG}
+                                                    render={(props) => (
+                                                        <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />
+                                                    )}
+                                                />
+                                                {!window._env_.K8S_CLIENT && [
+                                                    <Route
+                                                        key={URLS.APP}
+                                                        path={URLS.APP}
+                                                        render={() => (
+                                                            <AppRouter
+                                                                isSuperAdmin={isSuperAdmin}
+                                                                appListCount={appListCount}
+                                                                loginCount={loginCount}
+                                                            />
+                                                        )}
+                                                    />,
+                                                    <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
+                                                        <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                                    </Route>,
+                                                    <Route
+                                                        key={URLS.CHARTS}
+                                                        path={URLS.CHARTS}
+                                                        render={() => <Charts isSuperAdmin={isSuperAdmin} />}
+                                                    />,
+                                                    <Route
+                                                        key={URLS.BULK_EDITS}
+                                                        path={URLS.BULK_EDITS}
+                                                        render={(props) => (
+                                                            <BulkEdit {...props} serverMode={serverMode} />
+                                                        )}
+                                                    />,
+                                                    <Route
+                                                        key={URLS.SECURITY}
+                                                        path={URLS.SECURITY}
+                                                        render={(props) => (
+                                                            <Security {...props} serverMode={serverMode} />
+                                                        )}
+                                                    />,
+                                                    ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
+                                                        ? [
+                                                              <Route
+                                                                  key={URLS.RESOURCE_WATCHER}
+                                                                  path={URLS.RESOURCE_WATCHER}
+                                                              >
+                                                                  <ResourceWatcherRouter />
+                                                              </Route>,
+                                                          ]
+                                                        : []),
+                                                    ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
+                                                        ? [
+                                                              <Route
+                                                                  key={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                                  path={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                              >
+                                                                  <ImageSelectionUtilityProvider
+                                                                      value={{
+                                                                          getModuleInfo,
+                                                                      }}
+                                                                  >
+                                                                      <SoftwareDistributionHubRenderProvider
+                                                                          renderers={{
+                                                                              ReleaseConfigurations: Configurations,
+                                                                          }}
+                                                                      >
+                                                                          <SoftwareDistributionHub />
+                                                                      </SoftwareDistributionHubRenderProvider>
+                                                                  </ImageSelectionUtilityProvider>
+                                                              </Route>,
+                                                          ]
+                                                        : []),
+                                                    ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE &&
+                                                    NetworkStatusInterface
+                                                        ? [
+                                                              <Route
+                                                                  key={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                                  path={CommonURLS.NETWORK_STATUS_INTERFACE}
+                                                              >
+                                                                  <NetworkStatusInterface />
+                                                              </Route>,
+                                                          ]
+                                                        : []),
+                                                    ...(showStackManager
+                                                        ? [
+                                                              <Route key={URLS.STACK_MANAGER} path={URLS.STACK_MANAGER}>
+                                                                  <DevtronStackManager
+                                                                      serverInfo={currentServerInfo.serverInfo}
+                                                                      getCurrentServerInfo={getCurrentServerInfo}
+                                                                      isSuperAdmin={isSuperAdmin}
+                                                                  />
+                                                              </Route>,
+                                                          ]
+                                                        : []),
+                                                    <Route
+                                                        key={URLS.GETTING_STARTED}
+                                                        exact
+                                                        path={`/${URLS.GETTING_STARTED}`}
+                                                    >
+                                                        <OnboardingGuide
+                                                            loginCount={loginCount}
+                                                            isSuperAdmin={isSuperAdmin}
+                                                            serverMode={serverMode}
+                                                            isGettingStartedClicked={isGettingStartedClicked}
+                                                        />
+                                                    </Route>,
+                                                ]}
+                                                {/* TODO: Check why its coming as empty in case route is in other library */}
+                                                {!window._env_.K8S_CLIENT && (
+                                                    <Route path={URLS.JOB} key={URLS.JOB}>
+                                                        <AppContext.Provider value={contextValue}>
+                                                            <Jobs />
+                                                        </AppContext.Provider>
+                                                    </Route>
+                                                )}
+                                                <Route>
+                                                    <RedirectUserWithSentry
+                                                        isFirstLoginUser={
+                                                            isSuperAdmin && loginCount === 0 && appListCount === 0
+                                                        }
+                                                    />
+                                                </Route>
+                                            </Switch>
+                                            {AIResponseWidget && intelligenceConfig && (
+                                                <AIResponseWidget parentRef={navRouteRef} />
+                                            )}
+                                        </ErrorBoundary>
+                                    </Suspense>
+                                </div>
+                            </div>
+                            <SidePanel asideWidth={asideWidth} />
+                        </>
                     )}
-                    {renderAboutDevtronDialog()}
                 </motion.main>
             </ConfirmationModalProvider>
         </MainContextProvider>
     )
 }
 
-export default NavigationRoutes
+export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
+    const { path } = useRouteMatch()
+    const [environmentId, setEnvironmentId] = useState(null)
+    const [currentAppName, setCurrentAppName] = useState<string>('')
+
+    return (
+        <ErrorBoundary>
+            <AppContext.Provider value={{ environmentId, setEnvironmentId, currentAppName, setCurrentAppName }}>
+                <Switch>
+                    <Route
+                        path={`${path}/${URLS.APP_LIST}`}
+                        render={() => (
+                            <AppListRouter
+                                isSuperAdmin={isSuperAdmin}
+                                appListCount={appListCount}
+                                loginCount={loginCount}
+                            />
+                        )}
+                    />
+                    <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
+                    <Route
+                        path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
+                        render={() => <ExternalArgoApps />}
+                    />
+                    {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
+                        <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
+                            <ExternalFluxAppDetailsRoute />
+                        </Route>
+                    )}
+                    <Route
+                        path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
+                        render={(props) => <DevtronChartRouter />}
+                    />
+                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
+
+                    <Route exact path="">
+                        <RedirectToAppList />
+                    </Route>
+                    <Route>
+                        <RedirectUserWithSentry
+                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+                        />
+                    </Route>
+                </Switch>
+            </AppContext.Provider>
+        </ErrorBoundary>
+    )
+}
+
+export const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
+    const { path } = useRouteMatch()
+    const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
+    const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
+
+    return (
+        <ErrorBoundary>
+            <Switch>
+                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
+                <Route exact path="">
+                    <RedirectToAppList />
+                </Route>
+                <Route>
+                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
+                </Route>
+            </Switch>
+        </ErrorBoundary>
+    )
+}
+
+export const RedirectUserWithSentry = ({ isFirstLoginUser }) => {
+    const { push } = useHistory()
+    const { pathname } = useLocation()
+    const { serverMode } = useMainContext()
+    useEffect(() => {
+        if (pathname && pathname !== '/') {
+            Sentry.captureMessage(
+                `redirecting to ${window._env_.HIDE_NETWORK_STATUS_INTERFACE ? 'app-list' : 'network status interface'} from ${pathname}`,
+                'warning',
+            )
+        }
+
+        if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
+            push(CommonURLS.NETWORK_STATUS_INTERFACE)
+            return
+        }
+
+        if (window._env_.K8S_CLIENT) {
+            push(URLS.RESOURCE_BROWSER)
+        } else if (isFirstLoginUser) {
+            push(URLS.GETTING_STARTED)
+        } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
+            push(URLS.RESOURCE_BROWSER)
+        } else {
+            push(`${URLS.APP}/${URLS.APP_LIST}`)
+        }
+    }, [])
+    return null
+}
+
+export const RedirectToAppList = () => {
+    const { replace } = useHistory()
+    const { serverMode } = useMainContext()
+    useEffect(() => {
+        const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
+        if (serverMode == SERVER_MODE.FULL) {
+            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
+        } else {
+            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
+        }
+    }, [])
+    return null
+}

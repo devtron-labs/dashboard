@@ -42,7 +42,6 @@ import { ReactComponent as ICCheck } from '@Icons/ic-check.svg'
 import { ReactComponent as ICPencil } from '@Icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { K8S_EMPTY_GROUP } from '@Components/ResourceBrowser/Constants'
-import { K8sResourceDetailURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 import { EDITOR_VIEW } from '@Config/constants'
 
 import { ReactComponent as DeleteIcon } from '../../../../../assets/icons/ic-delete-interactive.svg'
@@ -95,16 +94,15 @@ const NodeDetailComponent = ({
 }: NodeDetailPropsType) => {
     const location = useLocation()
     const appDetails = IndexStore.getAppDetails()
-    const params = useParams<ParamsType & K8sResourceDetailURLParams>()
+    const params = useParams<ParamsType>()
     const [tabs, setTabs] = useState([])
     const [selectedTabName, setSelectedTabName] = useState('')
     const [resourceContainers, setResourceContainers] = useState<OptionsBase[]>([])
     const [isResourceDeleted, setResourceDeleted] = useState(false)
     const [isManagedFields, setManagedFields] = useState(false)
     const [hideManagedFields, setHideManagedFields] = useState(true)
-    const nodeType = params.kind ?? params.nodeType
     const [fetchingResource, setFetchingResource] = useState(
-        isResourceBrowserView && nodeType === Nodes.Pod.toLowerCase(),
+        isResourceBrowserView && params.nodeType === Nodes.Pod.toLowerCase(),
     )
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const [showEphemeralContainerDrawer, setShowEphemeralContainerDrawer] = useState<boolean>(false)
@@ -128,12 +126,12 @@ const NodeDetailComponent = ({
     const _selectedResource = useMemo(
         () =>
             lowercaseKindToResourceGroupMap[
-                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${nodeType.toLowerCase()}`
+                `${params.group === K8S_EMPTY_GROUP ? '' : params.group?.toLowerCase()}-${params.nodeType.toLowerCase()}`
             ],
-        [lowercaseKindToResourceGroupMap, nodeType, params.group],
+        [lowercaseKindToResourceGroupMap, params.nodeType, params.group],
     )
 
-    const resourceName = isResourceBrowserView ? params.name : params.podName
+    const resourceName = isResourceBrowserView ? params.node : params.podName
 
     const selectedResource = {
         clusterId: +params.clusterId,
@@ -149,7 +147,7 @@ const NodeDetailComponent = ({
     const currentResource = isResourceBrowserView
         ? selectedResource
         : appDetails.resourceTree.nodes.filter(
-              (data) => data.name === params.podName && data.kind.toLowerCase() === nodeType,
+              (data) => data.name === params.podName && data.kind.toLowerCase() === params.nodeType,
           )[0]
 
     const showDesiredAndCompareManifest =
@@ -203,26 +201,32 @@ const NodeDetailComponent = ({
     useEffect(() => setManagedFields((prev) => prev && selectedTabName === NodeDetailTab.MANIFEST), [selectedTabName])
 
     useEffect(() => {
-        if (location.pathname.endsWith('/terminal') && nodeType === Nodes.Pod.toLowerCase()) {
+        if (location.pathname.endsWith('/terminal') && params.nodeType === Nodes.Pod.toLowerCase()) {
             setStartTerminal(true)
         }
     }, [location])
 
     useEffect(() => {
-        if (nodeType) {
-            const _tabs = getNodeDetailTabs(nodeType as NodeType, true)
+        if (params.nodeType) {
+            const _tabs = getNodeDetailTabs(params.nodeType as NodeType, true)
             setTabs(_tabs)
         }
-    }, [nodeType])
+    }, [params.nodeType])
 
     const getContainersFromManifest = async () => {
         try {
-            const nullCaseName = isResourceBrowserView && nodeType === 'pod' ? resourceName : ''
-            const { result } = (await getManifestResource(appDetails, resourceName, nodeType, isResourceBrowserView, {
-                ...selectedResource,
-                name: selectedResource.name ? selectedResource.name : nullCaseName,
-                namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
-            })) as any
+            const nullCaseName = isResourceBrowserView && params.nodeType === 'pod' ? resourceName : ''
+            const { result } = (await getManifestResource(
+                appDetails,
+                resourceName,
+                params.nodeType,
+                isResourceBrowserView,
+                {
+                    ...selectedResource,
+                    name: selectedResource.name ? selectedResource.name : nullCaseName,
+                    namespace: selectedResource.namespace ? selectedResource.namespace : params.namespace,
+                },
+            )) as any
             const _resourceContainers = []
             if (result?.manifestResponse?.manifest?.spec) {
                 if (Array.isArray(result.manifestResponse.manifest.spec.containers)) {
@@ -293,7 +297,7 @@ const NodeDetailComponent = ({
             !loadingResources &&
             selectedResource &&
             resourceName &&
-            nodeType === Nodes.Pod.toLowerCase()
+            params.nodeType === Nodes.Pod.toLowerCase()
         ) {
             getContainersFromManifest().catch(noop)
         }
@@ -315,7 +319,7 @@ const NodeDetailComponent = ({
         (!isResourceBrowserView &&
             !(
                 appDetails.resourceTree.nodes?.findIndex(
-                    (node) => node.name === params.podName && node.kind.toLowerCase() === nodeType,
+                    (node) => node.name === params.podName && node.kind.toLowerCase() === params.nodeType,
                 ) >= 0
             ))
 
@@ -418,7 +422,7 @@ const NodeDetailComponent = ({
     const isManifestEditable =
         isExternalApp ||
         isResourceBrowserView ||
-        (appDetails.deploymentAppType === DeploymentAppTypes.ARGO && appDetails.deploymentAppDeleteRequest)
+        (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
 
     const renderManifestTabHeader = () => (
         <>

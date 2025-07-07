@@ -94,9 +94,7 @@ export interface PopulateTabDataPropsType
             | 'hideName'
             | 'id'
         >,
-        Required<
-            Pick<DynamicTabType, 'shouldRemainMounted' | 'title' | 'showNameOnSelect' | 'isAlpha' | 'defaultUrl'>
-        > {}
+        Required<Pick<DynamicTabType, 'shouldRemainMounted' | 'title' | 'showNameOnSelect'>> {}
 
 export interface AddTabParamsType
     extends Pick<PopulateTabDataPropsType, 'name' | 'url' | 'tippyConfig'>,

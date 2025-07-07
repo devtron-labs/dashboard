@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, SetStateAction, SyntheticEvent } from 'react'
 
 import {
     APIOptions,
@@ -64,13 +64,13 @@ export interface ValidationResponseContentRowProps {
 export interface MigrateToDevtronProps {
     migrateToDevtronFormState: MigrateToDevtronFormState
     setMigrateToDevtronFormState: Dispatch<SetStateAction<MigrateToDevtronFormState>>
+    handleMigrateFromAppTypeChange: (event: SyntheticEvent) => void
 }
 
-export interface ClusterSelectProps {
+export interface ClusterSelectProps extends Pick<MigrateToDevtronFormState, 'deploymentAppType'> {
     handleClusterChange: (cluster: SelectClusterOptionType) => void
     clusterId: number
     clusterName: string
-    label: string
 }
 
 export interface GetMigrateAppOptionsParamsType

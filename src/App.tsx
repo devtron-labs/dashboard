@@ -170,6 +170,7 @@ const App = () => {
                     </Switch>
                     <div id="visible-modal" />
                     <div id="visible-modal-2" />
+                    <div id="animated-dialog-backdrop" />
                 </BreadcrumbStore>
             </ErrorBoundary>
         )
@@ -178,7 +179,9 @@ const App = () => {
         <div className={customThemeClassName}>
             <Suspense fallback={null}>
                 {validating ? (
-                    <DevtronProgressing parentClasses="full-height-width flex bg__primary" classes="icon-dim-80" />
+                    <div className="full-height-width">
+                        <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
+                    </div>
                 ) : (
                     renderRoutesWithErrorBoundary()
                 )}

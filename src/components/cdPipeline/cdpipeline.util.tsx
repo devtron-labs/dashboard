@@ -41,7 +41,6 @@ import {
     MigrateArgoAppToCDPipelineRequiredPayloadType,
     MigrateToDevtronFormState,
 } from './cdPipeline.types'
-import { SELECTED_FORM_STATE_KEY } from './MigrateToDevtron'
 
 export const DropdownIndicator = (props) => {
     return (
@@ -218,13 +217,6 @@ export const validateTask = (
                         }
                     }
 
-                    const variableType =
-                        taskData[currentStepTypeVariable][
-                            element.conditionType === ConditionType.FAIL || element.conditionType === ConditionType.PASS
-                                ? 'outputVariables'
-                                : 'inputVariables'
-                        ].find(({ name }) => name === element.conditionOnVariable)?.format ?? null
-
                     acc[element.id] = Object.values(ConditionDataTableHeaderKeys).reduce((keyAcc, key) => {
                         const validationState = validationRules.validateConditionDataCell({
                             key,
@@ -233,7 +225,6 @@ export const validateTask = (
                                 conditionOnVariable: element.conditionOnVariable,
                                 conditionOperator: element.conditionOperator,
                             },
-                            variableType,
                         })
 
                         taskErrorObj[currentStepTypeVariable].isConditionDetailsValid =
@@ -422,7 +413,7 @@ export const handleDeletePipeline = (
         case DELETE_ACTION.DELETE:
             return deleteCD(false, true)
         case DELETE_ACTION.NONCASCADE_DELETE:
-            return deploymentAppType === DeploymentAppTypes.ARGO ? deleteCD(false, false) : deleteCD(false, true)
+            return deploymentAppType === DeploymentAppTypes.GITOPS ? deleteCD(false, false) : deleteCD(false, true)
         case DELETE_ACTION.FORCE_DELETE:
             return deleteCD(true, false)
     }
@@ -476,9 +467,10 @@ export const getNamespacePlaceholder = (isVirtualEnvironment: boolean, namespace
 export const getMigrateToDevtronRequiredPayload = (
     migrateToDevtronFormState: MigrateToDevtronFormState,
 ): MigrateArgoAppToCDPipelineRequiredPayloadType => {
-    const { deploymentAppType, triggerType } = migrateToDevtronFormState
-    const requiredFormState = migrateToDevtronFormState[SELECTED_FORM_STATE_KEY[deploymentAppType]]
-
+    const { migrateFromHelmFormState, migrateFromArgoFormState, deploymentAppType, triggerType } =
+        migrateToDevtronFormState
+    const requiredFormState =
+        deploymentAppType === DeploymentAppTypes.GITOPS ? migrateFromArgoFormState : migrateFromHelmFormState
     const {
         environmentId,
         environmentName,
@@ -493,7 +485,7 @@ export const getMigrateToDevtronRequiredPayload = (
         deploymentAppName: requiredFormState.appName,
     }
 
-    if (deploymentAppType === DeploymentAppTypes.ARGO) {
+    if (deploymentAppType === DeploymentAppTypes.GITOPS) {
         return {
             ...basePayload,
             deploymentAppType,
@@ -502,23 +494,8 @@ export const getMigrateToDevtronRequiredPayload = (
         }
     }
 
-    if (deploymentAppType === DeploymentAppTypes.FLUX) {
-        return {
-            ...basePayload,
-            deploymentAppType,
-            releaseClusterId: requiredFormState.clusterId,
-            releaseNamespace: requiredFormState.namespace,
-        }
-    }
-
     return {
         ...basePayload,
         deploymentAppType,
     }
-}
-
-export const getIsExternalAppLinkable = (migrateToDevtronFormState: MigrateToDevtronFormState) => {
-    const { deploymentAppType } = migrateToDevtronFormState
-    const { validationResponse } = migrateToDevtronFormState[SELECTED_FORM_STATE_KEY[deploymentAppType]]
-    return validationResponse.isLinkable
 }

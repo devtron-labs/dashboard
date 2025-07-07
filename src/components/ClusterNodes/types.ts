@@ -135,6 +135,7 @@ export interface ColumnMetadataType {
 }
 
 export interface ClusterListType extends Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
+    addTab?: UseTabsReturnType['addTab']
     updateTabUrl: (params: Omit<UpdateTabUrlParamsType, 'id'>) => void
 }
 

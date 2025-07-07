@@ -793,7 +793,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 <InfoBlock variant="help" description={renderInfoText()} />
                 <div className="flex-grow-1 w-100">
                     <CustomInput
-                        value={this.state.ssoConfig.url}
+                        value={this.state.ssoConfig.url || window.__ORCHESTRATOR_ROOT__}
                         onChange={this.handleURLChange}
                         name="sso-url"
                         label="URL"

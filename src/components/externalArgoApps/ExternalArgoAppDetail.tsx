@@ -102,7 +102,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
             .then((appDetailResponse) => {
                 const genericAppDetail: AppDetails = {
                     ...appDetailResponse.result,
-                    deploymentAppType: DeploymentAppTypes.ARGO,
+                    deploymentAppType: DeploymentAppTypes.GITOPS,
                 }
 
                 isAPICallInProgress = false

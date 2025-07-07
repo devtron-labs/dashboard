@@ -146,13 +146,43 @@
     @include border("secondary", "--border-secondary");
     @include border("secondary-translucent", "--border-secondary-translucent");
     @include border("white", "--white");
-    @include border("white-10", "--white-10");
     @include border("primary-warning", "--Y200");
 }
 
 .divider {
-    @include divider("primary", "--divider-primary");
-    @include divider("primary-translucent", "--divider-primary-translucent");
-    @include divider("secondary", "--divider-secondary");
-    @include divider("secondary-translucent", "--divider-secondary-translucent");
+    &__primary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-primary);
+        }
+    }
+
+    &__primary-translucent {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-primary-translucent);
+    }
+
+    &__secondary {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary);
+
+        &--horizontal {
+            width: 100%;
+            min-height: 1px;
+            background-color: var(--divider-secondary);
+        }
+    }
+
+    &__secondary-translucent {
+        width: 1px;
+        min-height: 16px;
+        background-color: var(--divider-secondary-translucent);
+    }
 }

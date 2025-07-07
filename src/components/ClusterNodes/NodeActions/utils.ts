@@ -53,7 +53,7 @@ export const getTaintsTableRow = (taint?: TaintType, id?: number): TaintsTableTy
 })
 
 export const getTaintsTableRows = (taints: TaintType[]): TaintsTableType['rows'] =>
-    taints?.length ? taints.map(getTaintsTableRow) : [getTaintsTableRow()]
+    taints?.length ? taints.map(getTaintsTableRow) : []
 
 export const getTaintsRowCellError = () =>
     TAINTS_TABLE_HEADERS.reduce(
@@ -72,25 +72,22 @@ export const getTaintsTableCellError = (taintList: TaintsTableType['rows']): Tai
 
 export const getTaintsTableCellValidateState = (
     headerKey: TaintsTableHeaderKeys,
-    row: TaintsTableType['rows'][number],
+    value: string,
 ): DynamicDataTableCellValidationState => {
-    const keyColumnValue = row.data[TaintsTableHeaderKeys.KEY].value
-    const valueColumnValue = row.data[TaintsTableHeaderKeys.VALUE].value
-
-    if (headerKey === TaintsTableHeaderKeys.KEY && valueColumnValue) {
+    if (headerKey === TaintsTableHeaderKeys.KEY) {
         const keyPrefixRegex = new RegExp(PATTERNS.KUBERNETES_KEY_PREFIX)
         const keyNameRegex = new RegExp(PATTERNS.KUBERNETES_KEY_NAME)
 
-        if (!keyColumnValue) {
+        if (!value) {
             return { errorMessages: ['Key is required'], isValid: false }
         }
 
-        if (keyColumnValue.length > 253) {
+        if (value.length > 253) {
             return { errorMessages: ['Maximum 253 chars are allowed'], isValid: false }
         }
 
-        if (keyColumnValue.indexOf('/') !== -1) {
-            const keyArr = keyColumnValue.split('/')
+        if (value.indexOf('/') !== -1) {
+            const keyArr = value.split('/')
 
             if (keyArr.length > 2 || !keyPrefixRegex.test(keyArr[0])) {
                 return {
@@ -107,7 +104,7 @@ export const getTaintsTableCellValidateState = (
                     isValid: false,
                 }
             }
-        } else if (!keyNameRegex.test(keyColumnValue)) {
+        } else if (!keyNameRegex.test(value)) {
             return {
                 errorMessages: [
                     'The key must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores',
@@ -117,13 +114,13 @@ export const getTaintsTableCellValidateState = (
         }
     }
 
-    if (headerKey === TaintsTableHeaderKeys.VALUE && valueColumnValue) {
+    if (headerKey === TaintsTableHeaderKeys.VALUE && value) {
         const valueRegex = new RegExp(PATTERNS.KUBERNETES_VALUE)
 
-        if (valueColumnValue.length > 63) {
+        if (value.length > 63) {
             return { errorMessages: ['Maximum 63 chars are allowed'], isValid: false }
         }
-        if (!valueRegex.test(valueColumnValue)) {
+        if (!valueRegex.test(value)) {
             return {
                 errorMessages: [
                     'The value must begin with a letter or number, and may contain letters, numbers, hyphens, dots, and underscores',
@@ -198,7 +195,7 @@ export const getTaintTableValidateState = ({ taintList }: { taintList: TaintsTab
         acc[curr.id] = TAINTS_TABLE_HEADERS.reduce(
             (headerAcc, { key }) => ({
                 ...headerAcc,
-                [key]: getTaintsTableCellValidateState(key, curr),
+                [key]: getTaintsTableCellValidateState(key, curr.data[key].value),
             }),
             {},
         )
@@ -215,14 +212,8 @@ export const getTaintTableValidateState = ({ taintList }: { taintList: TaintsTab
 }
 
 export const getTaintsPayload = (taintList: TaintsTableType['rows']) =>
-    taintList
-        .map(({ data }) =>
-            data.key.value
-                ? {
-                      key: data.key.value,
-                      value: data.value.value,
-                      effect: data.effect.value as EFFECT_TYPE,
-                  }
-                : null,
-        )
-        .filter(Boolean)
+    taintList.map(({ data }) => ({
+        key: data.key.value,
+        value: data.value.value,
+        effect: data.effect.value as EFFECT_TYPE,
+    }))

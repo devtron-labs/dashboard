@@ -26,9 +26,6 @@ import {
     DetailsProgressing,
     GenericSectionErrorState,
     logExceptionToSentry,
-    ToastManager,
-    ToastVariantType,
-    Tooltip,
     VisibleModal,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -48,9 +45,6 @@ const ExportToCsv = <ConfigValueType extends string = string>({
     disabled = false,
     showOnlyIcon = false,
     configuration,
-    hideExportResultModal = false,
-    triggerElementClassname,
-    children,
 }: ExportToCsvProps<ConfigValueType>) => {
     const [selectedConfig, setSelectedConfig] = useState<Record<ConfigValueType, boolean>>(
         getDefaultValueFromConfiguration(configuration),
@@ -105,12 +99,6 @@ const ExportToCsv = <ConfigValueType extends string = string>({
             } catch (err) {
                 setErrorExportingData(true)
 
-                if (hideExportResultModal) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: `Failed to export ${fileNameKey || ''}. Please try again.`,
-                    })
-                }
                 // eslint-disable-next-line no-console
                 console.error(
                     `Data export failed at ${moment().format('HH:mm:ss')}. Reason - ${err.message || err.name}`,
@@ -231,48 +219,34 @@ const ExportToCsv = <ConfigValueType extends string = string>({
 
     return (
         <div>
-            {children ? (
-                <Tooltip alwaysShowTippyOnHover={disabled} content="Nothing to export">
-                    <button
-                        data-testid="export-csv-button"
-                        type="button"
-                        onClick={handleExportToCsvClick}
-                        disabled={disabled}
-                        className={triggerElementClassname}
-                    >
-                        {children}
-                    </button>
-                </Tooltip>
-            ) : (
-                <Button
-                    {...(showOnlyIcon
-                        ? {
-                              icon: <ExportIcon />,
-                              ariaLabel: 'Export CSV',
-                              showAriaLabelInTippy: false,
-                          }
-                        : {
-                              text: 'Export CSV',
-                              startIcon: <ExportIcon />,
-                          })}
-                    onClick={handleExportToCsvClick}
-                    size={ComponentSizeType.medium}
-                    variant={ButtonVariantType.secondary}
-                    dataTestId="export-csv-button"
-                    disabled={disabled}
-                    showTooltip={disabled}
-                    tooltipProps={{
-                        content: 'Nothing to export',
-                    }}
-                />
-            )}
+            <Button
+                {...(showOnlyIcon
+                    ? {
+                          icon: <ExportIcon />,
+                          ariaLabel: 'Export CSV',
+                          showAriaLabelInTippy: false,
+                      }
+                    : {
+                          text: 'Export CSV',
+                          startIcon: <ExportIcon />,
+                      })}
+                onClick={handleExportToCsvClick}
+                size={ComponentSizeType.medium}
+                variant={ButtonVariantType.secondary}
+                dataTestId="export-csv-button"
+                disabled={disabled}
+                showTooltip={disabled}
+                tooltipProps={{
+                    content: 'Nothing to export',
+                }}
+            />
             <CSVLink
                 ref={csvRef}
                 filename={`${fileName}_${moment().format(Moment12HourExportFormat)}.csv`}
                 headers={CSV_HEADERS[fileName] || []}
                 data={dataToExport || []}
             />
-            {!hideExportResultModal && (showExportingModal || isConfigurationAvailable) && (
+            {(showExportingModal || isConfigurationAvailable) && (
                 <VisibleModal className="export-to-csv-modal" data-testid="export-to-csv-modal">
                     <div className="modal__body mt-40 p-0">
                         <h2 className="cn-9 fw-6 fs-16 m-0 dc__border-bottom px-20 py-12">Export to CSV</h2>

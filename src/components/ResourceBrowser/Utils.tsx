@@ -15,27 +15,23 @@
  */
 
 import React from 'react'
-import { generatePath, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import moment from 'moment'
 import queryString from 'query-string'
 
 import {
+    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
     FeatureTitleWithInfo,
-    getUrlWithSearchParams,
-    GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
-    GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
-    Nodes,
-    RESOURCE_BROWSER_ROUTES,
+    K8sResourceDetailType,
     ResponseType,
-    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { LAST_SEEN } from '../../config'
+import { LAST_SEEN, URLS } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
@@ -44,7 +40,6 @@ import {
     MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
-    RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -59,12 +54,6 @@ import {
 
 const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     'getMonitoringDashboardTabConfig',
-    null,
-    'function',
-)
-
-const getResourceRecommenderTabConfig = importComponentFromFELibrary(
-    'getResourceRecommenderTabConfig',
     null,
     'function',
 )
@@ -282,9 +271,16 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
+export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
+    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+
 export const getTabsBasedOnRole = ({
     selectedCluster,
-    canRenderResourceRecommender,
+    namespace,
+    dynamicTabData,
+    isTerminalSelected = false,
+    isOverviewSelected = false,
+    isMonitoringDashBoardSelected = false,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
@@ -292,20 +288,16 @@ export const getTabsBasedOnRole = ({
         {
             id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: generatePath(RESOURCE_BROWSER_ROUTES.OVERVIEW, { clusterId }),
-            isSelected: false,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
+            isSelected: isOverviewSelected,
             showNameOnSelect: false,
             type: 'fixed',
         },
         {
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
-                clusterId,
-                kind: 'node',
-                group: K8S_EMPTY_GROUP,
-            }),
-            isSelected: true,
+            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
+            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
             type: 'fixed',
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -314,38 +306,23 @@ export const getTabsBasedOnRole = ({
         ...(getMonitoringDashboardTabConfig
             ? [
                   getMonitoringDashboardTabConfig(
-                      generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
-                          clusterId,
-                      }),
+                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
+                      isMonitoringDashBoardSelected,
                       MONITORING_DASHBOARD_TAB_ID,
-                  ),
-              ]
-            : []),
-        ...(canRenderResourceRecommender && getResourceRecommenderTabConfig
-            ? [
-                  getResourceRecommenderTabConfig(
-                      `${generatePath(RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER, {
-                          clusterId,
-                      })}${getUrlWithSearchParams('', {
-                          [GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]: 'apps/v1',
-                          [GVK_FILTER_KIND_QUERY_PARAM_KEY]: Nodes.Deployment,
-                      })}`,
-                      RESOURCE_RECOMMENDER_TAB_ID,
                   ),
               ]
             : []),
         {
             id: ResourceBrowserTabsId.terminal,
             name: AppDetailsTabs.terminal,
-            url: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
-                clusterId,
-            }),
-            isSelected: false,
+            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
+            isSelected: isTerminalSelected,
             type: 'fixed',
             showNameOnSelect: true,
-            isAlive: false,
+            isAlive: isTerminalSelected,
             dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
         },
+        ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 
     return tabs
@@ -366,34 +343,20 @@ export const getRenderNodeButton =
     (
         resourceData: K8sResourceDetailDataType,
         columnName: string,
-        onClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
+        handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
         <button
             type="button"
             className="dc__unset-button-styles dc__no-decor flex"
             data-name={resourceData[columnName]}
-            onClick={onClick}
+            onClick={handleNodeClick}
             aria-label={`Select ${resourceData[columnName]}`}
         >
             <span className="dc__link">{children}</span>
         </button>
     )
 
-export const getRenderInvolvedObjectButton =
-    (value: string, onClick: (e: React.MouseEvent<HTMLButtonElement>) => void) => () => {
-        const [kind, name] = value.split('/')
-        return (
-            <button
-                type="button"
-                className="dc__unset-button-styles dc__no-decor flex"
-                onClick={onClick}
-                aria-label={`Goto ${kind} ${name}`}
-            >
-                <span className="dc__link dc__truncate">{value}</span>
-            </button>
-        )
-    }
 export const renderResourceValue = (value: string) => {
     const isDateValue = moment(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
 
@@ -428,31 +391,32 @@ const flattenObject = (ob: object): Record<string, any> => {
 }
 
 // NOTE: Please understand the big comment on @flattenObject to understand this
-export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix: string) => ({
-    headers: [...NODE_LIST_HEADERS] as string[],
-    data: response.result.map((data, index) => {
-        const _flattenNodeData = flattenObject(data)
-        const meta: Record<string, any> = {}
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
+    ...response,
+    result: {
+        headers: [...NODE_LIST_HEADERS] as string[],
+        data: response.result.map((data) => {
+            const _flattenNodeData = flattenObject(data)
+            const meta: Record<string, any> = {}
 
-        if (data.errors) {
-            meta.errorCount = String(Object.keys(data.errors).length || '')
-        }
+            if (data.errors) {
+                meta.errorCount = String(Object.keys(data.errors).length || '')
+            }
 
-        meta.taintCount =
-            Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+            meta.taintCount =
+                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
 
-        return { ..._flattenNodeData, ...meta, id: `${idPrefix}${index}` }
-    }),
+            return { ..._flattenNodeData, ...meta }
+        }),
+    },
 })
 
 export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
     shouldRedirectToInstallationStatus
-        ? `${CommonURLS.RESOURCE_BROWSER}/installation-cluster/${id}`
-        : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
-              clusterId: id,
-              group: K8S_EMPTY_GROUP,
-              kind: 'node',
-          })
+        ? `${URLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        : `${URLS.RESOURCE_BROWSER}/${id}/${
+              ALL_NAMESPACE_OPTION.value
+          }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
 
 const renderAppGroupDescriptionContent = () =>
     'Job allows execution of repetitive tasks in a manual or automated manner. Execute custom tasks or choose from a library of preset plugins in your job pipeline.'

@@ -24,71 +24,62 @@ import { URLS } from '@Config/routes'
 import {
     ValidateMigrateToDevtronPayloadType,
     ValidateMigrationSourceDTO,
+    ValidateMigrationSourceInfoBaseType,
     ValidateMigrationSourceInfoType,
     ValidateMigrationSourceServiceParamsType,
 } from '../cdPipeline.types'
-import { DEPLOYMENT_APP_TYPE_LABEL } from './constants'
 import { SelectClusterOptionType, SelectMigrateAppOptionType } from './types'
-
-const sanitizeDestinationData = (
-    destination: ValidateMigrationSourceInfoType['destination'],
-): ValidateMigrationSourceInfoType['destination'] => ({
-    clusterName: destination?.clusterName || '',
-    clusterServerUrl: destination?.clusterServerUrl || '',
-    namespace: destination?.namespace || '',
-    environmentName: destination?.environmentName || '',
-    environmentId: destination?.environmentId || null,
-})
 
 export const sanitizeValidateMigrationSourceResponse = (
     response: ValidateMigrationSourceDTO,
     deploymentAppType: ValidateMigrateToDevtronPayloadType['deploymentAppType'],
 ): ValidateMigrationSourceInfoType => {
-    const { isLinkable, errorDetail, applicationMetadata, helmReleaseMetadata, fluxReleaseMetadata } = response || {}
+    const { isLinkable, errorDetail, applicationMetadata, helmReleaseMetadata } = response || {}
+    const {
+        source: argoAppSourceDetails,
+        destination: argoChartDestination,
+        status: argoAppStatus,
+    } = applicationMetadata || {}
 
-    const baseData = {
+    const destination =
+        deploymentAppType === DeploymentAppTypes.GITOPS ? argoChartDestination : helmReleaseMetadata?.destination
+
+    const chartInfoSource =
+        deploymentAppType === DeploymentAppTypes.GITOPS
+            ? argoAppSourceDetails?.chartMetadata
+            : helmReleaseMetadata?.chart?.metadata
+
+    const baseData: ValidateMigrationSourceInfoBaseType = {
         isLinkable: isLinkable || false,
         errorDetail: {
             validationFailedReason: errorDetail?.validationFailedReason,
             validationFailedMessage: errorDetail?.validationFailedMessage || '',
         },
+        destination: {
+            clusterName: destination?.clusterName || '',
+            clusterServerUrl: destination?.clusterServerUrl || '',
+            namespace: destination?.namespace || '',
+            environmentName: destination?.environmentName || '',
+            environmentId: destination?.environmentId || null,
+        },
+
+        requiredChartName: chartInfoSource?.requiredChartName || '',
+        savedChartName: chartInfoSource?.savedChartName || '',
+        requiredChartVersion: chartInfoSource?.requiredChartVersion || '',
     }
 
-    if (deploymentAppType === DeploymentAppTypes.ARGO) {
-        const { destination, source, status } = applicationMetadata || {}
-        return {
-            ...baseData,
-            destination: sanitizeDestinationData(destination),
-            requiredChartName: source?.chartMetadata?.requiredChartName || '',
-            savedChartName: source?.chartMetadata?.savedChartName || '',
-            requiredChartVersion: source?.chartMetadata?.requiredChartVersion || '',
-            deploymentAppType,
-            status,
-        }
-    }
-    if (deploymentAppType === DeploymentAppTypes.FLUX) {
-        const { destination, savedChartName, requiredChartName, requiredChartVersion, status } =
-            fluxReleaseMetadata || {}
-        return {
-            ...baseData,
-            status,
-            deploymentAppType,
-            destination: sanitizeDestinationData(destination),
-            requiredChartName: requiredChartName || '',
-            savedChartName: savedChartName || '',
-            requiredChartVersion: requiredChartVersion || '',
-        }
-    }
-    const { destination, chart, info } = helmReleaseMetadata || {}
     return {
         ...baseData,
-        destination: sanitizeDestinationData(destination),
-        requiredChartName: chart?.metadata?.requiredChartName || '',
-        savedChartName: chart?.metadata?.savedChartName || '',
-        requiredChartVersion: chart?.metadata?.requiredChartVersion || '',
-        deploymentAppType,
-        status: info?.status,
-        chartIcon: chart?.metadata?.icon,
+        ...(deploymentAppType === DeploymentAppTypes.GITOPS
+            ? {
+                  deploymentAppType: DeploymentAppTypes.GITOPS,
+                  status: argoAppStatus,
+              }
+            : {
+                  deploymentAppType: DeploymentAppTypes.HELM,
+                  status: helmReleaseMetadata?.info?.status,
+                  chartIcon: helmReleaseMetadata?.chart?.metadata?.icon || null,
+              }),
     }
 }
 
@@ -126,7 +117,7 @@ export const getValidateMigrationSourcePayload = ({
     migrateToDevtronFormState,
     appId,
 }: ValidateMigrationSourceServiceParamsType): ValidateMigrateToDevtronPayloadType => {
-    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.ARGO) {
+    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.GITOPS) {
         return {
             appId,
             deploymentAppType: migrateToDevtronFormState.deploymentAppType,
@@ -134,18 +125,6 @@ export const getValidateMigrationSourcePayload = ({
             applicationMetadata: {
                 applicationObjectClusterId: migrateToDevtronFormState.migrateFromArgoFormState.clusterId,
                 applicationObjectNamespace: migrateToDevtronFormState.migrateFromArgoFormState.namespace,
-            },
-        }
-    }
-
-    if (migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.FLUX) {
-        return {
-            appId,
-            deploymentAppType: migrateToDevtronFormState.deploymentAppType,
-            deploymentAppName: migrateToDevtronFormState.migrateFromFluxFormState.appName,
-            fluxReleaseMetadata: {
-                releaseClusterId: migrateToDevtronFormState.migrateFromFluxFormState.clusterId,
-                releaseNamespace: migrateToDevtronFormState.migrateFromFluxFormState.namespace,
             },
         }
     }
@@ -161,12 +140,17 @@ export const getValidateMigrationSourcePayload = ({
     }
 }
 
-export const getTargetClusterTooltipInfo = (deploymentAppType: DeploymentAppTypes) => ({
+export const getDeploymentAppTypeLabel = (isMigratingFromHelm: boolean) =>
+    isMigratingFromHelm ? 'Helm Release' : 'Argo CD Application'
+
+export const getTargetClusterTooltipInfo = (isMigratingFromHelm: boolean) => ({
     heading: 'Target cluster',
-    infoList: [`Cluster in which the ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} is deploying your microservice`],
+    infoList: [`Cluster in which the ${getDeploymentAppTypeLabel(isMigratingFromHelm)} is deploying your microservice`],
 })
 
-export const getTargetNamespaceTooltipInfo = (deploymentAppType: DeploymentAppTypes) => ({
+export const getTargetNamespaceTooltipInfo = (isMigratingFromHelm: boolean) => ({
     heading: 'Target Namespace',
-    infoList: [`Namespace in which the ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} is deploying your microservice`],
+    infoList: [
+        `Namespace in which the ${getDeploymentAppTypeLabel(isMigratingFromHelm)} is deploying your microservice`,
+    ],
 })

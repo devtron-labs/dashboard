@@ -304,6 +304,7 @@ export interface CIPipelineDataType {
 export interface CIPipelineState {
     code: number
     view: string
+    showError: boolean
     loadingData: boolean
     form: PipelineFormType
     ciPipeline: CIPipelineDataType
@@ -366,6 +367,7 @@ export interface ValidationRulesType {
 }
 export interface SourceMaterialsProps {
     materials: MaterialType[]
+    showError: boolean
     validationRules?: ValidationRulesType
     selectSourceType?: (event, gitMaterialId) => void
     handleSourceChange?: (event, gitMaterialId: number, type: string) => void
@@ -373,6 +375,8 @@ export interface SourceMaterialsProps {
     ciPipelineSourceTypeOptions: CiPipelineSourceTypeOption[]
     canEditPipeline: boolean
     webhookData?: WebhookCIProps
+    isBranchRegex?: (material) => boolean
+    isAdvanced?: boolean
     handleOnBlur?: () => Promise<void>
 }
 
@@ -384,11 +388,13 @@ export interface WebhookCIProps {
     deleteWebhookCondition: (index: number) => void
     onWebhookConditionSelectorChange: (index: number, selectorId: number) => void
     onWebhookConditionSelectorValueChange: (index: number, value: string) => void
+    copyToClipboard: (text: string, callback) => void
 }
 
 export interface BuildType
     extends Pick<AdvancedConfigOptionsProps, 'appId'>,
         Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    showFormError: boolean
     isAdvanced: boolean
     ciPipeline: CIPipelineDataType
     pageState: string
@@ -422,14 +428,4 @@ export interface WebhookConditionType {
     onSelectorValueChange: (index: number, value: string) => void
     deleteWebhookCondition: (index: number) => void
     canEditSelectorCondition: boolean
-}
-
-export interface CIPipelineInitData {
-    result: {
-        form: PipelineFormType
-        loadingData: boolean
-        isAdvanced: boolean
-        isBlobStorageConfigured: boolean
-        isSecurityModuleInstalled: boolean
-    }
 }

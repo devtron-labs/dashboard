@@ -1,4 +1,4 @@
-import { generatePath, useHistory } from 'react-router-dom'
+import { useRef, useState } from 'react'
 
 import {
     Button,
@@ -6,9 +6,11 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    Drawer,
     getClassNameForStickyHeaderWithShadow,
     Icon,
-    URLS as COMMON_URLS,
+    noop,
+    showError,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -16,23 +18,39 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import { List } from '../../../components/globalConfigurations/GlobalConfiguration'
-import { ClusterListProps } from './cluster.type'
+import { getCluster } from './cluster.service'
+import { ClusterListProps, EditClusterFormProps } from './cluster.type'
 import { renderNoEnvironmentTab } from './cluster.util'
 import { ClusterEnvironmentList } from './ClusterEnvironmentList'
+import ClusterForm from './ClusterForm'
 
-const EditClusterPopup = importComponentFromFELibrary('EditClusterPopup', null, 'function')
+const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
+
+const getSSHConfig: (
+    ...props
+) => Pick<EditClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
+    importComponentFromFELibrary('getSSHConfig', noop, 'function')
 
 export const ClusterList = ({
     isVirtualCluster,
     environments,
     reload,
     clusterName,
+    sshTunnelConfig,
     isProd,
     serverURL,
+    prometheusURL,
+    proxyUrl,
+    insecureSkipTlsVerify,
+    installationId,
+    toConnectWithSSHTunnel,
     clusterId,
     category,
 }: ClusterListProps) => {
-    const history = useHistory()
+    const [editMode, setEditMode] = useState(false)
+    const [prometheusAuth, setPrometheusAuth] = useState(null)
+
+    const drawerRef = useRef(null)
 
     const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
         containerSelector: '.global-configuration__component-wrapper',
@@ -40,44 +58,17 @@ export const ClusterList = ({
     })
 
     const handleEdit = async () => {
-        history.push(generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId }))
-    }
-
-    const handleOpenPodSpreadModal = () => {
-        history.push(`${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}/${URLS.POD_SPREAD}`)
-    }
-
-    const handleOpenHibernationRulesModal = () => {
-        history.push(`${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}/${URLS.HIBERNATION_RULES}`)
-    }
-
-    const renderEditButton = () => {
-        if (!clusterName) {
-            return null
+        try {
+            const { result } = await getCluster(+clusterId)
+            setPrometheusAuth(result.prometheusAuth)
+            setEditMode(true)
+        } catch (err) {
+            showError(err)
         }
+    }
 
-        if (EditClusterPopup && !isVirtualCluster) {
-            return (
-                <EditClusterPopup
-                    handleOpenEditClusterModal={handleEdit}
-                    handleOpenPodSpreadModal={handleOpenPodSpreadModal}
-                    handleOpenHibernationRulesModal={handleOpenHibernationRulesModal}
-                    clusterId={clusterId}
-                />
-            )
-        }
-
-        return (
-            <Button
-                dataTestId={`edit_cluster_pencil-${clusterName}`}
-                ariaLabel="Edit Cluster"
-                icon={<Icon name="ic-pencil" color={null} />}
-                size={ComponentSizeType.small}
-                variant={ButtonVariantType.borderLess}
-                style={ButtonStyleType.neutral}
-                onClick={handleEdit}
-            />
-        )
+    const handleModalClose = () => {
+        setEditMode(false)
     }
 
     const subTitle: string = isVirtualCluster ? 'Isolated cluster' : serverURL
@@ -119,9 +110,16 @@ export const ClusterList = ({
                         <div className="dc__divider" />
                     </div>
                 </div>
-                {renderEditButton()}
+                <Button
+                    dataTestId={`edit_cluster_pencil-${clusterName}`}
+                    ariaLabel="Edit Cluster"
+                    icon={<Icon name="ic-pencil" color={null} />}
+                    size={ComponentSizeType.small}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    onClick={handleEdit}
+                />
             </List>
-
             {!window._env_.K8S_CLIENT && Array.isArray(environments) && environments.length > 0 ? (
                 <ClusterEnvironmentList
                     clusterId={String(clusterId)}
@@ -133,6 +131,37 @@ export const ClusterList = ({
             ) : (
                 renderNoEnvironmentTab()
             )}
+            {editMode &&
+                (!isVirtualCluster ? (
+                    <Drawer position="right" width="1000px" onEscape={handleModalClose}>
+                        <div className="h-100 bg__primary" ref={drawerRef}>
+                            <ClusterForm
+                                {...getSSHConfig(sshTunnelConfig)}
+                                id={+clusterId}
+                                clusterName={clusterName}
+                                serverUrl={serverURL}
+                                reload={reload}
+                                prometheusUrl={prometheusURL}
+                                prometheusAuth={prometheusAuth}
+                                proxyUrl={proxyUrl}
+                                isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
+                                hideEditModal={handleModalClose}
+                                isProd={isProd}
+                                isTlsConnection={!insecureSkipTlsVerify}
+                                installationId={installationId}
+                                category={category}
+                            />
+                        </div>
+                    </Drawer>
+                ) : (
+                    <VirtualClusterForm
+                        id={+clusterId}
+                        clusterName={clusterName}
+                        handleModalClose={handleModalClose}
+                        reload={reload}
+                        category={category}
+                    />
+                ))}
         </article>
     )
 }

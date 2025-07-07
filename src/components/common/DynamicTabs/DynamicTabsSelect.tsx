@@ -17,71 +17,115 @@
 import { useMemo, useState } from 'react'
 
 import {
-    ActionMenu,
-    ActionMenuItemType,
+    Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     DynamicTabType,
-    Icon,
+    PopupMenu,
+    SelectPicker,
+    SelectPickerOptionType,
+    SelectPickerProps,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ReactComponent as ICArrowLeft } from '@Icons/ic-arrow-left.svg'
+import { ReactComponent as ICCross } from '@Icons/ic-cross.svg'
 
 import { DynamicTabsSelectProps } from './types'
 
-const DynamicTabsSelect = ({ tabs, getMarkTabActiveHandler, handleTabCloseAction }: DynamicTabsSelectProps) => {
+const DynamicTabsSelect = ({
+    tabs,
+    getMarkTabActiveHandler,
+    selectedTab,
+    handleTabCloseAction,
+}: DynamicTabsSelectProps) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-    const options = useMemo(
+    const handleToggleOpenMenuState = (isOpen: boolean) => {
+        setIsMenuOpen(isOpen)
+    }
+
+    const options: SelectPickerOptionType<DynamicTabType>[] = useMemo(
         () =>
             tabs.map((tab) => {
                 const [kind, name] = tab.title.split('/')
 
                 return {
                     label: kind,
-                    id: tab.id,
                     value: tab,
                     description: name,
-                    trailingItem: {
-                        type: 'button',
-                        config: {
-                            dataTestId: 'close-dynamic-tab-option',
-                            icon: <Icon name="ic-close-small" color={null} />,
-                            variant: ButtonVariantType.borderLess,
-                            style: ButtonStyleType.negativeGrey,
-                            'data-id': tab.id,
-                            onClick: handleTabCloseAction,
-                            size: ComponentSizeType.xs,
-                            ariaLabel: `Close dynamic tab ${kind}`,
-                            showAriaLabelInTippy: false,
-                        },
-                    },
-                } as ActionMenuItemType & Record<'value', DynamicTabType>
+                    endIcon: (
+                        <div className="flex top">
+                            <Button
+                                dataTestId="close-dynamic-tab-option"
+                                icon={<ICCross />}
+                                variant={ButtonVariantType.borderLess}
+                                style={ButtonStyleType.negativeGrey}
+                                data-id={tab.id}
+                                onClick={handleTabCloseAction}
+                                size={ComponentSizeType.xs}
+                                ariaLabel={`Close dynamic tab ${kind}`}
+                                showAriaLabelInTippy={false}
+                            />
+                        </div>
+                    ),
+                }
             }),
         [tabs],
     )
 
-    const onClick = (item: (typeof options)[number]) => {
-        getMarkTabActiveHandler(item.value)()
+    const onChangeTab = (option: SelectPickerOptionType<DynamicTabType>): void => {
+        setIsMenuOpen(false)
+        getMarkTabActiveHandler(option.value)()
     }
 
+    const handleCloseMenu = () => {
+        setIsMenuOpen(false)
+    }
+
+    // NOTE: by default react select compares option references
+    // therefore if we don't wrap value and options in useMemo we need to provide isOptionSelected
+    const isOptionSelected = (option: SelectPickerOptionType<DynamicTabType>) => option.value.id === selectedTab.id
+
+    const handleOnEscPress = (e: React.KeyboardEvent) => {
+        if (e.key !== 'Escape') {
+            return
+        }
+
+        handleCloseMenu()
+    }
+
+    const selectFilter: SelectPickerProps<DynamicTabType>['filterOption'] = (option, searchText) =>
+        option.data.value.id.toLowerCase().includes(searchText.toLowerCase())
+
     return (
-        <ActionMenu
-            id="dynamic-tabs-select"
-            onClick={onClick}
-            position="bottom"
-            isSearchable
-            onOpen={setIsMenuOpen}
-            options={[{ items: options }]}
-            buttonProps={{
-                dataTestId: 'close-dynamic-tab-option',
-                icon: <Icon name="ic-caret-down-small" color={null} rotateBy={isMenuOpen ? 180 : 0} />,
-                variant: ButtonVariantType.secondary,
-                style: ButtonStyleType.neutral,
-                size: ComponentSizeType.xxs,
-                ariaLabel: 'Open dynamic tabs select menu',
-                showAriaLabelInTippy: false,
-            }}
-        />
+        <PopupMenu autoClose autoPosition onToggleCallback={handleToggleOpenMenuState}>
+            <PopupMenu.Button rootClassName="flex">
+                <ICArrowLeft
+                    className={`rotate icon-dim-18 ${isMenuOpen ? 'fcn-9' : 'fcn-7'}`}
+                    style={{ ['--rotateBy' as string]: isMenuOpen ? '90deg' : '-90deg' }}
+                />
+            </PopupMenu.Button>
+            {/* NOTE: Since we can't control open state of popup menu through prop we can control it by simply
+            hooking a state using onToggleCallback and rendering the PopupMenu.Body conditionally through that state */}
+            {isMenuOpen && (
+                <PopupMenu.Body rootClassName="w-300 mt-8 dynamic-tabs-select-popup-body" style={{ right: '12px' }}>
+                    <SelectPicker<DynamicTabType, false>
+                        inputId="dynamic-tabs-select"
+                        placeholder="Search tabs"
+                        options={options}
+                        onChange={onChangeTab}
+                        isOptionSelected={isOptionSelected}
+                        filterOption={selectFilter}
+                        onKeyDown={handleOnEscPress}
+                        shouldMenuAlignRight
+                        menuPosition="absolute"
+                        menuIsOpen
+                        autoFocus
+                    />
+                </PopupMenu.Body>
+            )}
+        </PopupMenu>
     )
 }
 

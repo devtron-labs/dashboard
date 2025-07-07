@@ -277,7 +277,7 @@ const ManifestComponent = ({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppTypes.ARGO && appDetails.deploymentAppDeleteRequest)
+            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
         ) {
             setShowManifestCompareView(false)
             toggleManagedFields(!isEditMode)

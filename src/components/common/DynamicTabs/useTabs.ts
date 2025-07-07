@@ -19,8 +19,6 @@ import dayjs from 'dayjs'
 
 import { DynamicTabType, InitTabType, noop } from '@devtron-labs/devtron-fe-common-lib'
 
-import { MONITORING_DASHBOARD_TAB_ID, RESOURCE_RECOMMENDER_TAB_ID } from '@Components/ResourceBrowser/Constants'
-
 import { FALLBACK_TAB, TAB_DATA_LOCAL_STORAGE_KEY, TAB_DATA_VERSION } from './constants'
 import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsReturnType } from './types'
 
@@ -72,8 +70,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         tippyConfig,
         lastActiveTabId,
         shouldRemainMounted,
-        isAlpha,
-        defaultUrl,
     }: PopulateTabDataPropsType): DynamicTabType => ({
         id,
         name,
@@ -90,8 +86,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         tippyConfig,
         lastActiveTabId,
         shouldRemainMounted,
-        isAlpha: isAlpha || false,
-        defaultUrl: defaultUrl || null,
     })
 
     const getTabDataFromLocalStorage = () => localStorage.getItem(TAB_DATA_LOCAL_STORAGE_KEY)
@@ -135,12 +129,10 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
      * @returns {DynamicTabType} - Tab data for initialization
      */
     const populateInitTab = (_initTab: InitTabType): DynamicTabType => {
-        const title =
-            _initTab.title ||
-            getTitleFromKindAndName({
-                kind: _initTab.kind,
-                name: _initTab.name,
-            })
+        const title = getTitleFromKindAndName({
+            kind: _initTab.kind,
+            name: _initTab.name,
+        })
 
         const _id =
             _initTab.id ??
@@ -163,8 +155,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
             tippyConfig: _initTab.tippyConfig,
             lastActiveTabId: null,
             shouldRemainMounted: _initTab.shouldRemainMounted,
-            isAlpha: _initTab.isAlpha,
-            defaultUrl: _initTab.defaultUrl,
         })
     }
 
@@ -185,37 +175,8 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         setTabs((prevTabs) => {
             if (!reInit) {
                 const persistedTabsData = getTabDataFromLocalStorage()
-
                 try {
                     parsedTabsData = JSON.parse(persistedTabsData)
-                    const storedResourceRecommenderTab = (parsedTabsData.data[persistenceKey] ?? []).find(
-                        (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
-                    )
-
-                    parsedTabsData.data[persistenceKey] = (parsedTabsData.data[persistenceKey] ?? []).filter(
-                        (tab) => tab.id !== RESOURCE_RECOMMENDER_TAB_ID,
-                    )
-                    const resourceRecommenderInitTab = initTabsData.find(
-                        (tab) => tab.id === RESOURCE_RECOMMENDER_TAB_ID,
-                    ) as DynamicTabType
-
-                    // Simple migration to remove resource recommender tab from localStorage and add it next to monitoring tab
-                    // This is to ensure the order of tabs is maintained
-                    if (resourceRecommenderInitTab) {
-                        // Adding resource recommender next to monitoring tab
-                        const monitoringTabIndex = parsedTabsData.data[persistenceKey].findIndex(
-                            (tab) => tab.id === MONITORING_DASHBOARD_TAB_ID,
-                        )
-
-                        if (monitoringTabIndex > -1) {
-                            parsedTabsData.data[persistenceKey].splice(
-                                monitoringTabIndex + 1,
-                                0,
-                                storedResourceRecommenderTab || resourceRecommenderInitTab,
-                            )
-                        }
-                    }
-
                     _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
                 } catch {
                     _tabs = prevTabs
@@ -337,8 +298,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             tippyConfig,
                             lastActiveTabId: getLastActiveTabIdFromTabs(prevTabs, _id),
                             shouldRemainMounted: false,
-                            isAlpha: false,
-                            defaultUrl: null,
                         }),
                     )
                 }
@@ -377,7 +336,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                                       ...tab,
                                       isSelected: false,
                                       isAlive: false,
-                                      url: tab.defaultUrl || tab.url,
                                   }
                               }
 

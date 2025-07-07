@@ -52,6 +52,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         this.state = {
             code: 0,
             view: ViewType.LOADING,
+            showError: false,
             form: {
                 name: '',
                 args: [{ key: '', value: '', id: 0 }],
@@ -206,6 +207,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         return (
             <SourceMaterials
                 materials={this.state.form.materials}
+                showError={this.state.showError}
                 includeWebhookEvents={false}
                 ciPipelineSourceTypeOptions={this.state.form.ciPipelineSourceTypeOptions}
                 canEditPipeline

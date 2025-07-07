@@ -36,7 +36,6 @@ import {
     getConditionDataTableInitialCellError,
     getConditionDataTableRowEmptyValidationState,
     getConditionDataTableRows,
-    getConditionVariableTypeFormat,
 } from './utils'
 
 export const ConditionDataTable = ({ type, conditionType, handleConditionTypeChange }: ConditionDataTableProps) => {
@@ -142,10 +141,6 @@ export const ConditionDataTable = ({ type, conditionType, handleConditionTypeCha
 
                     if (rowAction.headerKey === ConditionDataTableHeaderKeys.VARIABLE) {
                         selectedRow.data.operator.value = EQUAL_NOT_EQUAL_TO_OPERATOR_OPTIONS[0].value
-                        selectedRow.customState.variableType = getConditionVariableTypeFormat({
-                            ioVariables,
-                            conditionOnVariable: rowAction.actionValue,
-                        })
                     }
 
                     Object.values(ConditionDataTableHeaderKeys).forEach((key: ConditionDataTableHeaderKeys) => {

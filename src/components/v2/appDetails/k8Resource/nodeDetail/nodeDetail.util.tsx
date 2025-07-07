@@ -112,7 +112,7 @@ export function getSelectedPodList(selectedOption: string): PodMetaData[] {
 
 export function getPodContainerOptions(
     isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string; name: string },
+    params: { actionName: string; podName: string; nodeType: string; node: string },
     location: any,
     logState: LogState,
     isResourceBrowserView?: boolean,
@@ -145,7 +145,7 @@ export function getPodContainerOptions(
 
         return {
             containerOptions,
-            podOptions: [{ name: isResourceBrowserView ? params.name : params.podName, selected: true }],
+            podOptions: [{ name: isResourceBrowserView ? params.node : params.podName, selected: true }],
         }
     }
     // build pod options
@@ -191,7 +191,7 @@ export function getPodContainerOptions(
 
 export function getInitialPodContainerSelection(
     isLogAnalyzer: boolean,
-    params: { actionName: string; podName: string; nodeType: string; name: string },
+    params: { actionName: string; podName: string; nodeType: string; node: string },
     location: any,
     isResourceBrowserView?: boolean,
     selectedResource?: SelectedResourceType,
@@ -216,7 +216,7 @@ export function getInitialPodContainerSelection(
             containers[0].name
         return {
             selectedContainerOption: _selectedContainerName,
-            selectedPodOption: isResourceBrowserView ? params.name : params.podName,
+            selectedPodOption: isResourceBrowserView ? params.node : params.podName,
         }
     }
     const rootNamesOfPods = IndexStore.getPodsRootParentNameAndStatus()
@@ -416,7 +416,7 @@ export const getDeploymentType = (deploymentAppType: DeploymentAppTypes): K8sRes
     if (deploymentAppType === DeploymentAppTypes.HELM) {
         return K8sResourcePayloadDeploymentType.HELM_INSTALLED
     }
-    if (deploymentAppType === DeploymentAppTypes.ARGO) {
+    if (deploymentAppType === DeploymentAppTypes.GITOPS) {
         return K8sResourcePayloadDeploymentType.ARGOCD_INSTALLED
     }
     return K8sResourcePayloadDeploymentType.FLUXCD_INSTALLED

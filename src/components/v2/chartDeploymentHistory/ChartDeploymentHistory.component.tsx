@@ -117,10 +117,7 @@ const ChartDeploymentHistory = ({
             DEPLOYMENT_HISTORY_TAB.HELM_GENERATED_MANIFEST,
             ChartSecurityTab && !isExternal && DEPLOYMENT_HISTORY_TAB.SECURITY,
         ]
-        if (
-            installedAppInfo?.deploymentType === DeploymentAppTypes.ARGO ||
-            installedAppInfo?.deploymentType === DeploymentAppTypes.FLUX
-        ) {
+        if (installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
         } else if (installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
             tabs.unshift(DEPLOYMENT_HISTORY_TAB.STEPS)
@@ -154,7 +151,7 @@ const ChartDeploymentHistory = ({
                 setSelectedDeploymentTabName((prevValue) => {
                     if (!prevValue) {
                         return deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
-                            DeploymentAppTypes.ARGO ||
+                            DeploymentAppTypes.GITOPS ||
                             deploymentHistoryResponse.result?.installedAppInfo?.deploymentType ===
                                 DeploymentAppTypes.MANIFEST_DOWNLOAD
                             ? DEPLOYMENT_HISTORY_TAB.STEPS
@@ -308,7 +305,7 @@ const ChartDeploymentHistory = ({
 
     const getDeploymentStatus = (deployment: ChartDeploymentDetail) => {
         if (
-            (deployment?.status && installedAppInfo?.deploymentType === DeploymentAppTypes.ARGO) ||
+            (deployment?.status && installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS) ||
             installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
         ) {
             return deployment.status
@@ -513,9 +510,8 @@ const ChartDeploymentHistory = ({
                     <DeploymentDetailSteps
                         isHelmApps
                         isGitops={
-                            installedAppInfo?.deploymentType === DeploymentAppTypes.ARGO ||
-                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD ||
-                            installedAppInfo?.deploymentType === DeploymentAppTypes.FLUX
+                            installedAppInfo?.deploymentType === DeploymentAppTypes.GITOPS ||
+                            installedAppInfo?.deploymentType === DeploymentAppTypes.MANIFEST_DOWNLOAD
                         }
                         installedAppVersionHistoryId={deployment.version}
                         isVirtualEnvironment={isVirtualEnvironment}

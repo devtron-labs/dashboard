@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { generatePath, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 
 import {
     AppThemeType,
     getComponentSpecificThemeClass,
-    K8S_EMPTY_GROUP,
-    RESOURCE_BROWSER_ROUTES,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -30,6 +28,8 @@ import { ReactComponent as AllResourcesIcon } from '../../../assets/icons/ic-res
 import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
 import { URLS } from '../../../config'
 import { NodeDetailTabs } from '../../app/types'
+import { K8S_EMPTY_GROUP } from '../../ResourceBrowser/Constants'
+import { AppDetailsTabs } from '../../v2/appDetails/appDetails.store'
 import { ClusterMetaDataBarProps } from './types'
 
 import './ClusterMetaData.scss'
@@ -55,7 +55,7 @@ export const ClusterMetaDataBar = ({
         <a
             className={`${darkTheme ? 'icon-stroke__white resource-link__dark-theme text__white' : 'scn-9 cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
-            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, { clusterId, group: K8S_EMPTY_GROUP, kind: 'pod' })}?namespace=${namespace}`}
+            href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${K8S_EMPTY_GROUP}`}
             rel="noreferrer"
         >
             <AllResourcesIcon />
@@ -67,7 +67,7 @@ export const ClusterMetaDataBar = ({
         <a
             className={`${darkTheme ? 'resource-link__dark-theme text__white' : 'cn-9 resource-link__white-theme'} fw-6 flex left dc__gap-6 cursor`}
             target="_blank"
-            href={`${window.__BASE_URL__}${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?namespace=${namespace}`}
+            href={`${window.__BASE_URL__}${URLS.RESOURCE_BROWSER}/${clusterId}/all/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?namespace=${namespace}`}
             rel="noreferrer"
         >
             <TerminalIcon className={`${darkTheme ? 'icon-fill__white' : ''} icon-dim-16`} />

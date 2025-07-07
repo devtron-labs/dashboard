@@ -35,7 +35,6 @@ import {
     ComponentSizeType,
     ConfirmationModal,
     ConfirmationModalVariantType,
-    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
@@ -54,7 +53,7 @@ import { ReactComponent as Check } from '@Icons/ic-check.svg'
 import { ReactComponent as Play } from '@Icons/ic-play.svg'
 import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
-import { ViewType, URLS } from '../../config'
+import { ViewType, URLS, SourceTypeMap } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
 import { renderPipelineTypeIcon } from './notifications.util'

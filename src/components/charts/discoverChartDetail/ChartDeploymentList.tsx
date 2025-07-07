@@ -164,7 +164,7 @@ export const DeploymentRow = ({
         try {
             const response: ResponseType = await deleteInstalledChart(
                 Number(installedAppId),
-                deploymentAppType === DeploymentAppTypes.ARGO,
+                deploymentAppType === DeploymentAppTypes.GITOPS,
                 deleteAction,
             )
             if (response.result.deleteResponse?.deleteInitiated) {
@@ -180,7 +180,7 @@ export const DeploymentRow = ({
             } else if (
                 deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
                 !response.result.deleteResponse?.clusterReachable &&
-                deploymentAppType === DeploymentAppTypes.ARGO
+                deploymentAppType === DeploymentAppTypes.GITOPS
             ) {
                 setClusterName(response.result.deleteResponse?.clusterName)
                 setConfirmation(false)

@@ -31,16 +31,16 @@ import {
     NODE_SEARCH_KEY_OPTIONS,
     NODE_SEARCH_KEY_PLACEHOLDER,
 } from '../Constants'
-import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
+import { NODE_SEARCH_KEYS, NodeListSearchFilterType, URLParams } from '../Types'
 import ColumnSelector from './ColumnSelector'
 
 const NodeListSearchFilter = ({
     visibleColumns,
     setVisibleColumns,
+    isOpen,
     searchParams,
-    allColumns,
 }: NodeListSearchFilterType) => {
-    const { clusterId } = useParams<ClusterDetailBaseParams>()
+    const { clusterId } = useParams<URLParams>()
 
     const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
         if (searchParams[key]) {
@@ -106,16 +106,16 @@ const NodeListSearchFilter = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     useEffect(() => {
-        if (registerShortcut) {
-            registerShortcut({ keys: ['/'], callback: handleFocusInput })
+        if (registerShortcut && isOpen) {
+            registerShortcut({ keys: ['R'], callback: handleFocusInput })
             registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
         }
 
         return (): void => {
-            unregisterShortcut(['/'])
+            unregisterShortcut(['R'])
             unregisterShortcut(['Escape'])
         }
-    }, [])
+    }, [isOpen])
 
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {
@@ -249,7 +249,7 @@ const NodeListSearchFilter = ({
                     )}
 
                     {!searchTextType && (
-                        <ShortcutKeyBadge shortcutKey="/" rootClassName="node-listing-search-container__shortcut-key" />
+                        <ShortcutKeyBadge shortcutKey="r" rootClassName="node-listing-search-container__shortcut-key" />
                     )}
                 </button>
 
@@ -312,17 +312,12 @@ const NodeListSearchFilter = ({
 
             <div className="dc__border-left h-20 mt-6" />
 
-            {allColumns.length ? (
-                <ColumnSelector
-                    {...{
-                        setVisibleColumns,
-                        visibleColumns,
-                        allColumns,
-                    }}
-                />
-            ) : (
-                <div className="shimmer h-32" />
-            )}
+            <ColumnSelector
+                {...{
+                    setVisibleColumns,
+                    visibleColumns,
+                }}
+            />
         </div>
     )
 }

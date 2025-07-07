@@ -34,8 +34,8 @@ import { envDescriptionTippy, getNodeSideHeadingAndClass } from './workflow.util
 import NoGitOpsRepoConfiguredWarning, {
     ReloadNoGitOpsRepoConfiguredModal,
 } from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
+import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
 import { getAppGroupDeploymentHistoryLink } from '@Components/ApplicationGroup/AppGroup.utils'
-import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configurations'
 
 export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeState> {
     constructor(props) {
@@ -45,7 +45,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
             gitopsConflictLoading: false,
             reloadNoGitOpsRepoConfiguredModal: false,
             gitOpsRepoWarningCondition:
-                this.props.deploymentAppType === DeploymentAppTypes.ARGO && this.props.isGitOpsRepoNotConfigured,
+                this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured,
         }
     }
 
@@ -68,7 +68,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         if (prevProps.isGitOpsRepoNotConfigured !== this.props.isGitOpsRepoNotConfigured) {
             this.setState({
                 gitOpsRepoWarningCondition:
-                    this.props.deploymentAppType === DeploymentAppTypes.ARGO && this.props.isGitOpsRepoNotConfigured,
+                    this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured,
             })
         }
     }

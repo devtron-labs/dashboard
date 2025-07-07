@@ -16,6 +16,7 @@
 
 import {
     ComponentSizeType,
+    DeploymentAppTypes,
     ResourceKindType,
     SelectPicker,
     useGetResourceKindsOptions,
@@ -26,7 +27,7 @@ import { generateClusterOption } from './utils'
 
 const RESOURCES_TO_FETCH: [ResourceKindType.cluster] = [ResourceKindType.cluster]
 
-const ClusterSelect = ({ clusterId, clusterName, handleClusterChange, label }: ClusterSelectProps) => {
+const ClusterSelect = ({ clusterId, clusterName, handleClusterChange, deploymentAppType }: ClusterSelectProps) => {
     const { isResourcesOptionsLoading, refetchResourcesOptions, resourcesOptionsError, resourcesOptionsMap } =
         useGetResourceKindsOptions({
             resourcesToFetch: RESOURCES_TO_FETCH,
@@ -41,7 +42,11 @@ const ClusterSelect = ({ clusterId, clusterName, handleClusterChange, label }: C
             <SelectPicker<SelectClusterOptionType['value'], false>
                 inputId="migrate-from-source-cluster-select"
                 classNamePrefix="migrate-from-source-cluster-select"
-                label={label}
+                label={
+                    deploymentAppType === DeploymentAppTypes.HELM
+                        ? 'Cluster containing Helm Release'
+                        : 'Cluster containing Argo CD application'
+                }
                 isLoading={isResourcesOptionsLoading}
                 optionListError={resourcesOptionsError}
                 reloadOptionList={refetchResourcesOptions}

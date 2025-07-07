@@ -61,6 +61,17 @@ export const COMPARISON_OPTION_TIPPY_CONTENT = {
     EnabledManifest: 'Compare manifest output with previous deployments of this application',
 }
 
+export const UPDATE_APP_BUTTON_TEXTS = {
+    Deploy: 'Deploy chart',
+    Update: 'Update and deploy',
+    Deploying: 'Deploying chart',
+    Updating: 'Updating and deploying',
+    Save: 'Save',
+    Saving: 'Saving',
+    Changes: 'changes',
+    Value: 'value',
+}
+
 export const CONNECT_TO_HELM_CHART_TEXTS = {
     InfoTextHeading: 'Connect app to helm chart and deploy',
     InfoText: 'Manifest output is available only for applications deployed using a connected helm chart.',

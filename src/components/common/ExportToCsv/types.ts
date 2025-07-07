@@ -16,11 +16,12 @@
 
 import { FILE_NAMES } from './constants'
 
-export type ExportToCsvProps<ConfigValueType extends string = string> = {
+export interface ExportToCsvProps<ConfigValueType extends string = string> {
     apiPromise: (selectedConfig: Record<ConfigValueType, boolean>) => Promise<unknown[]>
     fileName: FILE_NAMES
     className?: string
     disabled?: boolean
+    showOnlyIcon?: boolean
     /**
      * Configuration for the export csv
      */
@@ -32,29 +33,7 @@ export type ExportToCsvProps<ConfigValueType extends string = string> = {
             description?: string
         }[]
     }
-    /**
-     * @default false
-     * If true, the export result modal will not be shown after the export is completed.
-     */
-    hideExportResultModal?: boolean
-} & (
-    | {
-          /**
-           * If given would replace the Button component with the button tag and the children will be rendered inside it.
-           */
-          triggerElementClassname: string
-          /**
-           * Content inside the button
-           */
-          children: React.ReactNode
-          showOnlyIcon?: never
-      }
-    | {
-          children?: never
-          triggerElementClassname?: never
-          showOnlyIcon?: boolean
-      }
-)
+}
 
 export interface ExportConfigurationProps<ConfigValueType extends string>
     extends Pick<ExportToCsvProps<ConfigValueType>, 'configuration'> {

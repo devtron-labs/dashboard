@@ -124,7 +124,6 @@ export interface DeploymentAppRadioGroupType {
     areGitopsCredentialsConfigured?: boolean
     isGitOpsRepoNotConfigured?: boolean
     gitOpsRepoConfigInfoBar?: (content: string) => JSX.Element
-    showGitOpsOption?: boolean
 }
 
 export interface gitOpsDrawerType extends DeploymentAppRadioGroupType {
@@ -458,6 +457,14 @@ export interface DeleteApplicationButtonProps {
     isDeleteInProgress: boolean
     dispatch: (action: ChartValuesViewAction) => void
     clickHandler?: () => void
+}
+
+export interface UpdateApplicationButtonProps {
+    isUpdateInProgress: boolean
+    isDeleteInProgress: boolean
+    isDeployChartView: boolean
+    isCreateValueView: boolean
+    deployOrUpdateApplication: () => Promise<void>
 }
 
 export interface ErrorScreenWithInfoProps {

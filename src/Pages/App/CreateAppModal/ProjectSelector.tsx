@@ -60,7 +60,6 @@ const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: Pr
                 value={selectedProject}
                 onChange={handleChange}
                 error={error}
-                autoFocus
             />
         </div>
     )

@@ -1515,7 +1515,6 @@ const ClusterForm = ({
                                 clusterId={String(id)}
                                 clusterName={clusterName}
                                 handleClose={hideConfirmationModal}
-                                handleSuccess={hideEditModal}
                                 reload={reload}
                                 installationId={String(installationId)}
                             />

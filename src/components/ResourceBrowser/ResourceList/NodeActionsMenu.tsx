@@ -14,195 +14,223 @@
  * limitations under the License.
  */
 
-import { forwardRef, useState } from 'react'
-import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
+import { useState } from 'react'
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
-import {
-    ActionMenu,
-    ActionMenuProps,
-    ButtonStyleType,
-    ButtonVariantType,
-    ComponentSizeType,
-    NodeActionMenuOptionIdEnum,
-    noop,
-    RESOURCE_BROWSER_ROUTES,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { noop, PopupMenu } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
+import { ReactComponent as UncordonIcon } from '@Icons/ic-play-outline.svg'
 import { TaintType } from '@Components/ClusterNodes/types'
+import { AppDetailsTabs } from '@Components/v2/appDetails/appDetails.store'
 
+import { ReactComponent as DrainIcon } from '../../../assets/icons/ic-clean-brush.svg'
+import { ReactComponent as CordonIcon } from '../../../assets/icons/ic-cordon.svg'
+import { ReactComponent as DeleteIcon } from '../../../assets/icons/ic-delete-interactive.svg'
+import { ReactComponent as EditFileIcon } from '../../../assets/icons/ic-edit-lines.svg'
+import { ReactComponent as EditTaintsIcon } from '../../../assets/icons/ic-spraycan.svg'
+import { ReactComponent as TerminalIcon } from '../../../assets/icons/ic-terminal-fill.svg'
+import { CLUSTER_NODE_ACTIONS_LABELS } from '../../ClusterNodes/constants'
 import CordonNodeModal from '../../ClusterNodes/NodeActions/CordonNodeModal'
 import DeleteNodeModal from '../../ClusterNodes/NodeActions/DeleteNodeModal'
 import DrainNodeModal from '../../ClusterNodes/NodeActions/DrainNodeModal'
 import EditTaintsModal from '../../ClusterNodes/NodeActions/EditTaintsModal'
 import { K8S_EMPTY_GROUP } from '../Constants'
 import { NodeActionsMenuProps } from '../Types'
-import { getNodeActions } from './constants'
-import { K8sResourceListURLParams } from './types'
 
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
-const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
-    ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps, forwardedRef) => {
-        const history = useHistory()
-        const { clusterId } = useParams<K8sResourceListURLParams>()
-        const location = useLocation()
+const NodeActionsMenu = ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps) => {
+    const history = useHistory()
+    const { url } = useRouteMatch()
+    const location = useLocation()
 
-        const [showCordonNodeDialog, setShowCordonNodeDialog] = useState(false)
-        const [showDrainNodeDialog, setShowDrainNodeDialog] = useState(false)
-        const [showDeleteNodeDialog, setShowDeleteNodeDialog] = useState(false)
-        const [showEditTaintNodeDialog, setShowEditTaintNodeDialog] = useState(false)
+    const [showCordonNodeDialog, setShowCordonNodeDialog] = useState(false)
+    const [showDrainNodeDialog, setShowDrainNodeDialog] = useState(false)
+    const [showDeleteNodeDialog, setShowDeleteNodeDialog] = useState(false)
+    const [showEditTaintNodeDialog, setShowEditTaintNodeDialog] = useState(false)
 
-        const { name, version, kind } = nodeData as Record<string, string>
+    const { name, version, kind } = nodeData as Record<string, string>
 
-        const handleOpenTerminalAction = () => {
-            const queryParams = new URLSearchParams(location.search)
-            queryParams.set('node', name)
-            history.push(`${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`)
+    const handleOpenTerminalAction = () => {
+        const queryParams = new URLSearchParams(location.search)
+        queryParams.set('node', name)
+        history.push(
+            `${location.pathname.split('/').slice(0, -2).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+        )
+    }
+
+    const handleEditYamlAction = () => {
+        const _url = `${url.split('/').slice(0, -2).join('/')}/node/${K8S_EMPTY_GROUP}/${nodeData.name}?tab=yaml`
+        addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
+            .then(() => history.push(_url))
+            .catch(noop)
+    }
+
+    const showCordonNodeModal = (): void => {
+        setShowCordonNodeDialog(true)
+    }
+
+    const hideCordonNodeModal = (refreshData?: boolean): void => {
+        setShowCordonNodeDialog(false)
+        if (refreshData) {
+            getNodeListData()
         }
+    }
 
-        const handleEditYamlAction = () => {
-            const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })}?tab=yaml`
-            addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
-                .then(() => history.push(_url))
-                .catch(noop)
+    const showDrainNodeModal = (): void => {
+        setShowDrainNodeDialog(true)
+    }
+
+    const hideDrainNodeModal = (refreshData?: boolean): void => {
+        setShowDrainNodeDialog(false)
+        if (refreshData) {
+            getNodeListData()
         }
+    }
 
-        const showCordonNodeModal = (): void => {
-            setShowCordonNodeDialog(true)
+    const showDeleteNodeModal = (): void => {
+        setShowDeleteNodeDialog(true)
+    }
+
+    const hideDeleteNodeModal = (refreshData?: boolean): void => {
+        setShowDeleteNodeDialog(false)
+        if (refreshData) {
+            getNodeListData()
         }
+    }
 
-        const hideCordonNodeModal = (refreshData?: boolean): void => {
-            setShowCordonNodeDialog(false)
-            if (refreshData) {
-                getNodeListData()
-            }
+    const showEditTaintsModal = (): void => {
+        setShowEditTaintNodeDialog(true)
+    }
+
+    const hideEditTaintsModal = (refreshData?: boolean): void => {
+        setShowEditTaintNodeDialog(false)
+        if (refreshData) {
+            getNodeListData()
         }
+    }
 
-        const showDrainNodeModal = (): void => {
-            setShowDrainNodeDialog(true)
-        }
-
-        const hideDrainNodeModal = (refreshData?: boolean): void => {
-            setShowDrainNodeDialog(false)
-            if (refreshData) {
-                getNodeListData()
-            }
-        }
-
-        const showDeleteNodeModal = (): void => {
-            setShowDeleteNodeDialog(true)
-        }
-
-        const hideDeleteNodeModal = (refreshData?: boolean): void => {
-            setShowDeleteNodeDialog(false)
-            if (refreshData) {
-                getNodeListData()
-            }
-        }
-
-        const showEditTaintsModal = (): void => {
-            setShowEditTaintNodeDialog(true)
-        }
-
-        const hideEditTaintsModal = (refreshData?: boolean): void => {
-            setShowEditTaintNodeDialog(false)
-            if (refreshData) {
-                getNodeListData()
-            }
-        }
-
-        const renderModal = () => {
-            if (showCordonNodeDialog) {
-                return (
-                    <CordonNodeModal
-                        name={name}
-                        version={version}
-                        kind={kind}
-                        unschedulable={!!nodeData.unschedulable}
-                        closePopup={hideCordonNodeModal}
-                    />
-                )
-            }
-
-            if (showDrainNodeDialog) {
-                return <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
-            }
-
-            if (showEditTaintNodeDialog) {
-                return (
-                    <EditTaintsModal
-                        name={name}
-                        version={version}
-                        kind={kind}
-                        taints={nodeData.taints as TaintType[]}
-                        closePopup={hideEditTaintsModal}
-                    />
-                )
-            }
-
+    const renderModal = () => {
+        if (showCordonNodeDialog) {
             return (
-                showDeleteNodeDialog && (
-                    <DeleteNodeModal
-                        name={name}
-                        version={version}
-                        kind={kind}
-                        closePopup={hideDeleteNodeModal}
-                        handleClearBulkSelection={handleClearBulkSelection}
-                    />
-                )
+                <CordonNodeModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    unschedulable={!!nodeData.unschedulable}
+                    closePopup={hideCordonNodeModal}
+                />
             )
         }
 
-        const onActionMenuClick: ActionMenuProps['onClick'] = (item) => {
-            switch (item.id) {
-                case NodeActionMenuOptionIdEnum.terminal:
-                    handleOpenTerminalAction()
-                    break
-                case NodeActionMenuOptionIdEnum.cordon:
-                    showCordonNodeModal()
-                    break
-                case NodeActionMenuOptionIdEnum.uncordon:
-                    showCordonNodeModal()
-                    break
-                case NodeActionMenuOptionIdEnum.drain:
-                    showDrainNodeModal()
-                    break
-                case NodeActionMenuOptionIdEnum['edit-taints']:
-                    showEditTaintsModal()
-                    break
-                case NodeActionMenuOptionIdEnum['edit-yaml']:
-                    handleEditYamlAction()
-                    break
-                case NodeActionMenuOptionIdEnum.delete:
-                    showDeleteNodeModal()
-                    break
-                default:
-                    break
-            }
+        if (showDrainNodeDialog) {
+            return <DrainNodeModal name={name} version={version} kind={kind} closePopup={hideDrainNodeModal} />
+        }
+
+        if (showEditTaintNodeDialog) {
+            return (
+                <EditTaintsModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    taints={nodeData.taints as TaintType[]}
+                    closePopup={hideEditTaintsModal}
+                />
+            )
         }
 
         return (
-            <>
-                <ActionMenu<NodeActionMenuOptionIdEnum>
-                    id={nodeData.name as string}
-                    onClick={onActionMenuClick}
-                    options={[{ items: getNodeActions(!!nodeData.unschedulable) }]}
-                    position="bottom"
-                    buttonProps={{
-                        ref: forwardedRef,
-                        dataTestId: `node-actions-button-${nodeData.name}`,
-                        icon: <MenuDots className="fcn-7" />,
-                        variant: ButtonVariantType.borderLess,
-                        ariaLabel: 'Open action menu',
-                        style: ButtonStyleType.neutral,
-                        size: ComponentSizeType.xxs,
-                        showAriaLabelInTippy: false,
-                    }}
+            showDeleteNodeDialog && (
+                <DeleteNodeModal
+                    name={name}
+                    version={version}
+                    kind={kind}
+                    closePopup={hideDeleteNodeModal}
+                    handleClearBulkSelection={handleClearBulkSelection}
                 />
-                {renderModal()}
-            </>
+            )
         )
-    },
-)
+    }
+
+    const menuListItemButtonClassName = 'flex left h-36 cursor pl-12 pr-12 dc__hover-n50 dc__transparent w-100'
+
+    return (
+        <>
+            <PopupMenu autoClose>
+                <PopupMenu.Button rootClassName="flex ml-auto p-4 dc__no-background" isKebab>
+                    <MenuDots className="fcn-7 icon-dim-16" />
+                </PopupMenu.Button>
+                <PopupMenu.Body rootClassName="dc__border">
+                    <div className="fs-13 fw-4 lh-20 pt-8 pb-8 w-160">
+                        <button
+                            type="button"
+                            aria-label="Open the node in terminal"
+                            className={menuListItemButtonClassName}
+                            onClick={handleOpenTerminalAction}
+                        >
+                            <TerminalIcon className="icon-dim-16 mr-8" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.terminal}
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Cordon the node"
+                            className={menuListItemButtonClassName}
+                            onClick={showCordonNodeModal}
+                        >
+                            {nodeData.unschedulable ? (
+                                <>
+                                    <UncordonIcon className="icon-dim-16 mr-8 scn-7" />
+                                    {CLUSTER_NODE_ACTIONS_LABELS.uncordon}
+                                </>
+                            ) : (
+                                <>
+                                    <CordonIcon className="icon-dim-16 mr-8" />
+                                    {CLUSTER_NODE_ACTIONS_LABELS.cordon}
+                                </>
+                            )}
+                        </button>
+                        <button
+                            type="button"
+                            className={menuListItemButtonClassName}
+                            onClick={showDrainNodeModal}
+                            aria-label="Drain the node"
+                        >
+                            <DrainIcon className="icon-dim-16 mr-8" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.drain}
+                        </button>
+                        <button
+                            type="button"
+                            className={menuListItemButtonClassName}
+                            aria-label="Edit taints for the node"
+                            onClick={showEditTaintsModal}
+                        >
+                            <EditTaintsIcon className="icon-dim-16 mr-8" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.taints}
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Edit the node's yaml"
+                            className={menuListItemButtonClassName}
+                            onClick={handleEditYamlAction}
+                        >
+                            <EditFileIcon className="icon-dim-16 mr-8" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.yaml}
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Delete the node"
+                            className={menuListItemButtonClassName}
+                            onClick={showDeleteNodeModal}
+                        >
+                            <DeleteIcon className="icon-dim-16 mr-8 scr-5" />
+                            {CLUSTER_NODE_ACTIONS_LABELS.delete}
+                        </button>
+                    </div>
+                </PopupMenu.Body>
+            </PopupMenu>
+            {renderModal()}
+        </>
+    )
+}
 
 export default NodeActionsMenu

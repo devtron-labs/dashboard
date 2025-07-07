@@ -28,7 +28,7 @@ import { NodeGlobalsPolyfillPlugin } from '@esbuild-plugins/node-globals-polyfil
 import { VitePWA } from 'vite-plugin-pwa'
 // import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { compression, defineAlgorithm } from 'vite-plugin-compression2'
+import { compression } from 'vite-plugin-compression2'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
 const TARGET_URL = 'https://preview.devtron.ai/'
@@ -184,7 +184,7 @@ export default defineConfig(({ mode }) => {
                 svgrOptions: {},
             }),
             compression({
-                algorithms: [defineAlgorithm('brotliCompress')],
+                algorithm: 'gzip',
             }),
             reactVirtualized(),
             requireTransform(),

@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.17.0",
+        "@devtron-labs/devtron-fe-common-lib": "1.16.1",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -14,6 +14,7 @@
         "@sentry/tracing": "7.50.0",
         "@tippyjs/react": "4.2.6",
         "@typeform/embed-react": "2.20.0",
+        "@vitejs/plugin-react": "4.3.1",
         "command-line-parser": "^0.2.10",
         "compute-histogram": "^0.9.11",
         "dayjs": "^1.11.8",
@@ -38,6 +39,9 @@
         "rxjs": "^7.5.4",
         "sockjs-client": "1.6.1",
         "tippy.js": "^6.3.7",
+        "vite": "5.4.19",
+        "vite-plugin-require-transform": "1.0.21",
+        "vite-plugin-svgr": "^2.4.0",
         "xterm": "^4.19.0",
         "xterm-addon-fit": "^0.5.0",
         "xterm-addon-search": "^0.9.0",
@@ -83,7 +87,6 @@
         "@types/recompose": "^0.30.10",
         "@typescript-eslint/eslint-plugin": "8.3.0",
         "@typescript-eslint/parser": "8.3.0",
-        "@vitejs/plugin-react": "4.5.2",
         "env-cmd": "10.1.0",
         "eslint": "^8.57.1",
         "eslint-config-airbnb": "^19.0.4",
@@ -112,11 +115,9 @@
         "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
-        "vite": "6.3.5",
-        "vite-plugin-compression2": "2.0.1",
+        "vite-plugin-compression2": "^1.3.3",
+        "vite-plugin-image-optimizer": "^1.1.8",
         "vite-plugin-pwa": "^0.21.1",
-        "vite-plugin-require-transform": "1.0.21",
-        "vite-plugin-svgr": "^2.4.0",
         "vite-tsconfig-paths": "5.0.1"
     },
     "jest": {
@@ -138,6 +139,5 @@
         "rollup": "^4.22.4",
         "path-to-regexp": "^1.9.0",
         "cross-spawn": "^7.0.5"
-    },
-    "packageManager": "yarn@4.9.2"
+    }
 }

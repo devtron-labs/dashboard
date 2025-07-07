@@ -110,7 +110,7 @@ export const getEvent = (
 
 export const getAppDetailsForManifest = (appDetails: AppDetails) => {
     const applicationObject =
-        appDetails.deploymentAppType === DeploymentAppTypes.ARGO ? `${appDetails.appName}` : appDetails.appName
+        appDetails.deploymentAppType === DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
 
     const appId = generateAppIdentifier(appDetails, applicationObject)
 
@@ -243,7 +243,7 @@ export const downloadLogs = (
     }
     const selectedNamespace = ad.resourceTree?.nodes?.find((node) => node.name === nodeName)?.namespace
     const isExternalArgoApp = ad.appType === AppType.EXTERNAL_ARGO_APP
-    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.ARGO ? `${ad.appName}` : ad.appName
+    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const appId = generateAppIdentifier(ad, applicationObject)
     let logsURL = `${Routes.LOGS}/download/${nodeName}?containerName=${container}&previous=${prevContainerLogs}`
     if (isResourceBrowserView) {
@@ -280,7 +280,7 @@ export const getLogsURL = (
     } else {
         filter = getFilterWithValue(logsOption.type, logsOption.value)
     }
-    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.ARGO ? `${ad.appName}` : ad.appName
+    const applicationObject = ad.deploymentAppType == DeploymentAppTypes.GITOPS ? `${ad.appName}` : ad.appName
     const selectedNamespace = ad.resourceTree?.nodes?.find(
         (nd) => nd.name === podName || nd.name === nodeName,
     )?.namespace
@@ -307,7 +307,7 @@ export const getPodRestartRBACPayload = (appDetails?: AppDetails) => {
     }
 
     const applicationObject =
-        appDetails.deploymentAppType == DeploymentAppTypes.ARGO ? `${appDetails.appName}` : appDetails.appName
+        appDetails.deploymentAppType == DeploymentAppTypes.GITOPS ? `${appDetails.appName}` : appDetails.appName
 
     const appId = generateAppIdentifier(appDetails, applicationObject)
     const appType = getK8sResourcePayloadAppType(appDetails.appType)

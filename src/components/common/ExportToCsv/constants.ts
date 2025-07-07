@@ -17,18 +17,12 @@
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
-const RESOURCE_RECOMMENDATION_CSV_HEADERS = importComponentFromFELibrary(
-    'RESOURCE_RECOMMENDATION_CSV_HEADERS',
-    [],
-    'function',
-)
 
 export enum FILE_NAMES {
     Apps = 'Devtron Apps',
     Users = 'Devtron Apps Users Data',
     Groups = 'Devtron Apps Permission Groups',
     Jobs = 'Devtron Jobs Data',
-    ResourceRecommendations = 'Devtron Resource Recommendations',
 }
 
 export const APPLIST_EXPORT_HEADERS = [
@@ -136,5 +130,4 @@ export const CSV_HEADERS = {
     [FILE_NAMES.Users]: USER_EXPORT_HEADERS,
     [FILE_NAMES.Groups]: GROUP_EXPORT_HEADERS,
     [FILE_NAMES.Jobs]: JOBLIST_EXPORT_HEADERS,
-    [FILE_NAMES.ResourceRecommendations]: RESOURCE_RECOMMENDATION_CSV_HEADERS,
 }

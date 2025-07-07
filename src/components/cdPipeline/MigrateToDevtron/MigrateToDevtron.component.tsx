@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SyntheticEvent, useEffect, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -34,6 +34,9 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ReactComponent as ICArgoCDApp } from '@Icons/ic-argocd-app.svg'
+import { ReactComponent as ICDefaultChart } from '@Icons/ic-default-chart.svg'
+
 import {
     MigrateToDevtronBaseFormStateType,
     MigrateToDevtronFormState,
@@ -41,56 +44,29 @@ import {
 } from '../cdPipeline.types'
 import TriggerTypeRadio from '../TriggerTypeRadio'
 import ClusterSelect from './ClusterSelect'
-import {
-    DEPLOYMENT_APP_TYPE_LABEL,
-    GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
-    MIGRATE_FROM_CLUSTER_APP_SELECT_CONFIG,
-    MIGRATE_FROM_RADIO_GROUP_CONFIG,
-    SELECTED_FORM_STATE_KEY,
-} from './constants'
+import { GENERIC_SECTION_ERROR_STATE_COMMON_PROPS } from './constants'
 import MigrateToDevtronValidationFactory from './MigrateToDevtronValidationFactory'
 import { getMigrateAppOptions, validateMigrationSource } from './service'
 import { ClusterSelectProps, MigrateToDevtronProps, SelectMigrateAppOptionType } from './types'
-import { generateMigrateAppOption, sanitizeValidateMigrationSourceResponse } from './utils'
+import { generateMigrateAppOption, getDeploymentAppTypeLabel, sanitizeValidateMigrationSourceResponse } from './utils'
 
-const SelectMigrateFromRadio = ({ deploymentAppType }: Pick<MigrateToDevtronFormState, 'deploymentAppType'>) => {
-    const { title, tooltipContent } = MIGRATE_FROM_RADIO_GROUP_CONFIG[deploymentAppType]
-
-    return (
-        <RadioGroupItem dataTestId={`${deploymentAppType}-radio-item`} value={deploymentAppType}>
-            <Tooltip
-                alwaysShowTippyOnHover
-                content={
-                    <div className="flexbox-col dc__gap-2">
-                        <h6 className="m-0 fs-12 fw-6 lh-18">{tooltipContent.title}</h6>
-
-                        <p className="m-0 fs-12 fw-4 lh-18">{tooltipContent.subtitle}</p>
-                    </div>
-                }
-            >
-                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">{title}</span>
-            </Tooltip>
-        </RadioGroupItem>
-    )
-}
-
-const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormState }: MigrateToDevtronProps) => {
+const MigrateToDevtron = ({
+    migrateToDevtronFormState,
+    setMigrateToDevtronFormState,
+    handleMigrateFromAppTypeChange,
+}: MigrateToDevtronProps) => {
     const { appId } = useParams<Pick<BaseURLParams, 'appId'>>()
     const {
         isSuperAdmin,
         featureGitOpsFlags: { isFeatureArgoCdMigrationEnabled },
     } = useMainContext()
-    const isFeatureFluxCdMigrationEnabled = window._env_.FEATURE_LINK_EXTERNAL_FLUX_ENABLE
     const migrateAppOptionsControllerRef = useRef<AbortController>(new AbortController())
     const validateMigrationSourceControllerRef = useRef<AbortController>(new AbortController())
 
-    const { deploymentAppType } = migrateToDevtronFormState
-
-    const isMigratingFromHelm = deploymentAppType === DeploymentAppTypes.HELM
-    const isMigratingFromArgo = deploymentAppType === DeploymentAppTypes.ARGO
-    const isMigratingFromFlux = deploymentAppType === DeploymentAppTypes.FLUX
-
-    const selectedFormState = migrateToDevtronFormState[SELECTED_FORM_STATE_KEY[deploymentAppType]]
+    const isMigratingFromHelm = migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM
+    const selectedFormState = isMigratingFromHelm
+        ? migrateToDevtronFormState.migrateFromHelmFormState
+        : migrateToDevtronFormState.migrateFromArgoFormState
 
     const { clusterId, clusterName, appName, namespace, validationResponse, appIcon } = selectedFormState
     const { isLinkable } = validationResponse || {}
@@ -106,12 +82,12 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                 () =>
                     getMigrateAppOptions({
                         clusterId,
-                        deploymentAppType,
+                        deploymentAppType: migrateToDevtronFormState.deploymentAppType,
                         abortControllerRef: migrateAppOptionsControllerRef,
                     }),
                 migrateAppOptionsControllerRef,
             ),
-        [clusterId, deploymentAppType],
+        [clusterId, migrateToDevtronFormState.deploymentAppType],
         !!clusterId,
     )
 
@@ -120,20 +96,14 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
             ...prevState,
             migrateFromArgoFormState: {
                 ...prevState.migrateFromArgoFormState,
-                ...(isMigratingFromArgo
-                    ? { validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.ARGO) }
-                    : {}),
+                ...(isMigratingFromHelm
+                    ? {}
+                    : { validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.GITOPS) }),
             },
             migrateFromHelmFormState: {
                 ...prevState.migrateFromHelmFormState,
                 ...(isMigratingFromHelm
                     ? { validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.HELM) }
-                    : {}),
-            },
-            migrateFromFluxFormState: {
-                ...prevState.migrateFromFluxFormState,
-                ...(isMigratingFromFlux
-                    ? { validationResponse: sanitizeValidateMigrationSourceResponse(null, DeploymentAppTypes.FLUX) }
                     : {}),
             },
         }))
@@ -150,15 +120,11 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
             ...prevState,
             migrateFromArgoFormState: {
                 ...prevState.migrateFromArgoFormState,
-                ...(isMigratingFromArgo ? { validationResponse: validationResponseData } : {}),
+                ...(isMigratingFromHelm ? {} : { validationResponse: validationResponseData }),
             },
             migrateFromHelmFormState: {
                 ...prevState.migrateFromHelmFormState,
                 ...(isMigratingFromHelm ? { validationResponse: validationResponseData } : {}),
-            },
-            migrateFromFluxFormState: {
-                ...prevState.migrateFromFluxFormState,
-                ...(isMigratingFromFlux ? { validationResponse: validationResponseData } : {}),
             },
         }))
     }
@@ -168,7 +134,11 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
         ,
         validationResponseErrorWithAbortedError,
         reloadValidationResponse,
-    ] = useAsync(handleValidateMigrationSource, [appName, namespace, deploymentAppType], !!appName && !!namespace)
+    ] = useAsync(
+        handleValidateMigrationSource,
+        [appName, namespace, migrateToDevtronFormState.deploymentAppType],
+        !!appName && !!namespace,
+    )
 
     const isLoadingValidationResponse =
         isLoadingValidationResponseWithAbortedError || getIsRequestAborted(validationResponseErrorWithAbortedError)
@@ -196,7 +166,10 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
             namespace: '',
             clusterName: clusterOption.label as string,
             clusterId: clusterOption.value,
-            validationResponse: sanitizeValidateMigrationSourceResponse(null, deploymentAppType),
+            validationResponse: sanitizeValidateMigrationSourceResponse(
+                null,
+                migrateToDevtronFormState.deploymentAppType,
+            ),
             appIcon: null,
         }
 
@@ -208,21 +181,11 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                           ...baseFormState,
                       },
                   }
-                : {}),
-            ...(isMigratingFromArgo
-                ? {
+                : {
                       migrateFromArgoFormState: {
                           ...baseFormState,
                       },
-                  }
-                : {}),
-            ...(isMigratingFromFlux
-                ? {
-                      migrateFromFluxFormState: {
-                          ...baseFormState,
-                      },
-                  }
-                : {}),
+                  }),
         }))
     }
 
@@ -231,25 +194,27 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
             return
         }
 
-        const appInfo = {
-            appName: appOption.value.appName,
-            namespace: appOption.value.namespace,
-            appIcon: appOption.startIcon,
-        }
-
         setMigrateToDevtronFormState((prevState) => ({
             ...prevState,
             migrateFromArgoFormState: {
                 ...prevState.migrateFromArgoFormState,
-                ...(isMigratingFromArgo ? appInfo : {}),
+                ...(isMigratingFromHelm
+                    ? {}
+                    : {
+                          appName: appOption.value.appName,
+                          namespace: appOption.value.namespace,
+                          appIcon: appOption.startIcon,
+                      }),
             },
             migrateFromHelmFormState: {
                 ...prevState.migrateFromHelmFormState,
-                ...(isMigratingFromHelm ? appInfo : {}),
-            },
-            migrateFromFluxFormState: {
-                ...prevState.migrateFromFluxFormState,
-                ...(isMigratingFromFlux ? appInfo : {}),
+                ...(isMigratingFromHelm
+                    ? {
+                          appName: appOption.value.appName,
+                          namespace: appOption.value.namespace,
+                          appIcon: appOption.startIcon,
+                      }
+                    : {}),
             },
         }))
     }
@@ -267,40 +232,51 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
         }))
     }
 
-    const handleMigrateFromAppTypeChange = (event: SyntheticEvent) => {
-        const { value } = event.target as HTMLInputElement
-        setMigrateToDevtronFormState((prevState) => ({
-            ...prevState,
-            deploymentAppType: value as MigrateToDevtronFormState['deploymentAppType'],
-        }))
-    }
+    const renderSelectMigrateFromRadioGroup = (deploymentAppType: MigrateToDevtronFormState['deploymentAppType']) => (
+        <RadioGroupItem dataTestId={`${deploymentAppType}-radio-item`} value={deploymentAppType}>
+            <Tooltip
+                alwaysShowTippyOnHover
+                content={
+                    <div className="flexbox-col dc__gap-2">
+                        <h6 className="m-0 fs-12 fw-6 lh-18">
+                            {deploymentAppType === DeploymentAppTypes.HELM
+                                ? 'Migrate helm release'
+                                : 'Migrate Argo CD Application'}
+                        </h6>
+
+                        <p className="m-0 fs-12 fw-4 lh-18">
+                            {deploymentAppType === DeploymentAppTypes.HELM
+                                ? 'Migrate an existing Helm Release to manage deployments via CD pipeline'
+                                : 'Migrate an existing Argo CD Application to manage deployments via CD pipeline'}
+                        </p>
+                    </div>
+                }
+            >
+                <span className="cn-9 fs-13 fw-4 lh-20 dc__underline-dotted">
+                    {deploymentAppType === DeploymentAppTypes.HELM ? 'Helm Release' : 'Argo CD Application'}
+                </span>
+            </Tooltip>
+        </RadioGroupItem>
+    )
 
     if (!isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
     }
 
-    const { clusterSelectLabel, appSelectLabel, appSelectPlaceholder, icon } =
-        MIGRATE_FROM_CLUSTER_APP_SELECT_CONFIG[deploymentAppType]
-
     return (
         <div className="flexbox-col dc__gap-20">
-            {(isFeatureArgoCdMigrationEnabled || isFeatureFluxCdMigrationEnabled) && (
+            {isFeatureArgoCdMigrationEnabled && (
                 <div className="flexbox-col dc__gap-8">
                     <span className="cn-7 fs-13 fw-4 lh-20">Select type of application to migrate</span>
 
                     <RadioGroup
                         className="radio-group-no-border migrate-to-devtron__deployment-app-type-radio-group"
-                        value={deploymentAppType}
+                        value={migrateToDevtronFormState.deploymentAppType}
                         name="migrate-from-app-type"
                         onChange={handleMigrateFromAppTypeChange}
                     >
-                        <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.HELM} />
-                        {isFeatureArgoCdMigrationEnabled && (
-                            <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.ARGO} />
-                        )}
-                        {isFeatureFluxCdMigrationEnabled && (
-                            <SelectMigrateFromRadio deploymentAppType={DeploymentAppTypes.FLUX} />
-                        )}
+                        {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.HELM)}
+                        {renderSelectMigrateFromRadioGroup(DeploymentAppTypes.GITOPS)}
                     </RadioGroup>
                 </div>
             )}
@@ -310,7 +286,7 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                     clusterId={clusterId}
                     clusterName={clusterName}
                     handleClusterChange={handleClusterChange}
-                    label={clusterSelectLabel}
+                    deploymentAppType={migrateToDevtronFormState.deploymentAppType}
                 />
 
                 <span className="cn-7 fs-20 fw-4 lh-36">/</span>
@@ -319,10 +295,10 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                     <SelectPicker<(typeof appListOptions)[number]['value'], false>
                         inputId="migrate-from-source-app-select"
                         classNamePrefix="migrate-from-source-app-select"
-                        label={appSelectLabel}
-                        placeholder={appSelectPlaceholder}
-                        disabledTippyContent={`Select a cluster to view and select ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} in that cluster`}
-                        icon={icon}
+                        label={isMigratingFromHelm ? 'Release name' : 'Argo CD application'}
+                        placeholder={isMigratingFromHelm ? 'Select a helm release' : 'Select an Argo CD application'}
+                        disabledTippyContent={`Select a cluster to view and select ${getDeploymentAppTypeLabel(isMigratingFromHelm)} in that cluster`}
+                        icon={isMigratingFromHelm ? <ICDefaultChart /> : <ICArgoCDApp />}
                         isDisabled={!clusterId}
                         isLoading={isLoadingAppListOptions}
                         optionListError={appListOptionsError}
@@ -358,13 +334,13 @@ const MigrateToDevtron = ({ migrateToDevtronFormState, setMigrateToDevtronFormSt
                                         color: 'N700',
                                     }}
                                     title="Checking compatibility"
-                                    subTitle={`Checking if ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} and its configurations are compatible for migration to deployment pipeline`}
+                                    subTitle={`Checking if ${getDeploymentAppTypeLabel(isMigratingFromHelm)} and its configurations are compatible for migration to deployment pipeline`}
                                     {...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS}
                                 />
                             }
                             genericSectionErrorProps={{
                                 title: 'Error checking compatibility',
-                                subTitle: `An error occurred while checking if ${DEPLOYMENT_APP_TYPE_LABEL[deploymentAppType]} and its configurations are compatible for migration to deployment pipeline`,
+                                subTitle: `An error occurred while checking if ${getDeploymentAppTypeLabel(isMigratingFromHelm)} and its configurations are compatible for migration to deployment pipeline`,
                                 reload: reloadValidationResponse,
                                 ...GENERIC_SECTION_ERROR_STATE_COMMON_PROPS,
                             }}

@@ -497,6 +497,17 @@ $color-suffix: 00;
     }
 }
 
+.sqr-44 {
+    width: 44px;
+    height: 44px;
+    background-color: var(--N100);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 16px;
+    border-radius: 4px;
+}
+
 .lh-1-54 {
     line-height: 1.54;
 }
