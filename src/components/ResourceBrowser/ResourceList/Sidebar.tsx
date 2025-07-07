@@ -22,8 +22,8 @@ import DOMPurify from 'dompurify'
 
 import {
     ApiResourceGroupType,
-    DUMMY_RESOURCE_GVK_VERSION,
     highlightSearchText,
+    K8S_EMPTY_GROUP,
     Nodes,
     ReactSelectInputAction,
     RESOURCE_BROWSER_ROUTES,
@@ -33,7 +33,7 @@ import {
 
 import { ReactComponent as ICExpand } from '../../../assets/icons/ic-expand.svg'
 import { AggregationKeys } from '../../app/types'
-import { K8S_EMPTY_GROUP, KIND_SEARCH_COMMON_STYLES, ResourceBrowserTabsId, SIDEBAR_KEYS } from '../Constants'
+import { KIND_SEARCH_COMMON_STYLES, ResourceBrowserTabsId, SIDEBAR_KEYS } from '../Constants'
 import { K8SObjectChildMapType, K8SObjectMapType, K8sObjectOptionType, SidebarType } from '../Types'
 import {
     convertK8sObjectMapToOptionsList,
@@ -47,7 +47,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
     const { push } = useHistory()
-    const { clusterId, kind } = useParams<K8sResourceListURLParams>()
+    const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
     const [list, setList] = useState(convertResourceGroupListToK8sObjectList(apiResources || null, kind))
@@ -121,7 +121,6 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             clusterId,
             kind: _selectedKind,
             group: _selectedGroup || K8S_EMPTY_GROUP,
-            version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
         if (path === location.pathname) {
@@ -161,8 +160,14 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             return
         }
         /* NOTE: match will never be null; due to node fallback */
+        const lowercasedKind = kind.toLowerCase()
+        const lowercasedGroup = group.toLowerCase()
         const match =
-            k8sObjectOptionsList.find((option) => option.dataset.kind.toLowerCase() === kind) ?? k8sObjectOptionsList[0]
+            k8sObjectOptionsList.find(
+                (option) =>
+                    option.dataset.kind.toLowerCase() === lowercasedKind &&
+                    (option.dataset.group || K8S_EMPTY_GROUP).toLowerCase() === lowercasedGroup,
+            ) ?? k8sObjectOptionsList[0]
         /* NOTE: if nodeType doesn't match the selectedResource kind, set it accordingly */
         selectNode(
             {
@@ -172,7 +177,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
             },
             match.groupName,
         )
-    }, [kind, k8sObjectOptionsList])
+    }, [kind, group, k8sObjectOptionsList])
 
     const selectedChildRef: React.Ref<HTMLButtonElement> = (node) => {
         /**

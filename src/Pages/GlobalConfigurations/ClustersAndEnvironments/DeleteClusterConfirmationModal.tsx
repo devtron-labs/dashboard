@@ -23,6 +23,7 @@ const DeleteClusterConfirmationModal = ({
     handleClose,
     installationId,
     reload,
+    handleSuccess,
 }: DeleteClusterConfirmationModalProps) => {
     const isClusterInCreationPhase = Number(clusterId) === 0
 
@@ -40,6 +41,7 @@ const DeleteClusterConfirmationModal = ({
             await deleteCluster({ id: numberedClusterId })
         }
         reload?.()
+        handleSuccess?.()
     }
 
     const handleToggleShouldDeleteInstalledCluster = () => {
