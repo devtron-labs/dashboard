@@ -231,6 +231,7 @@ export interface DeleteClusterConfirmationModalProps
         Pick<ClusterEnvironmentListProps, 'clusterId'> {
     handleClose: () => void
     installationId: string
+    handleSuccess?: () => void
 }
 
 export interface DeleteClusterPayload {

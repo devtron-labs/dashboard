@@ -8,7 +8,6 @@ import {
     ButtonVariantType,
     ClipboardButton,
     ConditionalWrap,
-    DUMMY_RESOURCE_GVK_VERSION,
     getAIAnalyticsEvents,
     highlightSearchText,
     Icon,
@@ -90,7 +89,6 @@ const K8sResourceListTableCellComponent = ({
             name,
             kind: kind.toLowerCase(),
             group: _group || K8S_EMPTY_GROUP,
-            version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
         push(`${url}/${tab}`)
@@ -154,7 +152,6 @@ const K8sResourceListTableCellComponent = ({
                 name,
                 group,
                 kind,
-                version: DUMMY_RESOURCE_GVK_VERSION,
             }),
         )
     }

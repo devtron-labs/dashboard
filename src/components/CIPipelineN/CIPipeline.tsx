@@ -812,7 +812,7 @@ export default function CIPipeline({
     const renderCIPipelineModalContent = () => {
         if (pageState === ViewType.ERROR) {
             return (
-                <div className="p-20">
+                <div className="flex-grow-1 p-20">
                     <ErrorScreenManager code={errorCode} reload={handleOnMountAPICalls} />
                 </div>
             )
