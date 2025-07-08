@@ -39,7 +39,7 @@ export const ChartDetailsReadme = ({
     const selectedChartVersionValue = getSelectPickerOptionByValue(chartsOptions, selectedChartVersion, null)
 
     return (
-        <div className="mh-500 flexbox-col bg__primary border__primary br-4 w-100 dc__overflow-hidden">
+        <div className="mh-500 flexbox-col bg__primary border__primary br-4 dc__overflow-auto">
             <div className="flex left dc__gap-8 bg__secondary border__primary--bottom px-16 pt-10 pb-9">
                 <div className="flex left dc__gap-6">
                     <Icon name="ic-list-bullets" color="N900" />
@@ -67,7 +67,7 @@ export const ChartDetailsReadme = ({
                     <GenericEmptyState
                         title={`Readme not available for ${chartName} ${selectedChartVersionValue?.label}`}
                         subTitle="A readme file was not found for this chart’s version."
-                        illustrationName="illustration-no-result"
+                        illustrationName="img-no-result"
                         isButtonAvailable
                         renderButton={renderEmptyStateButton}
                     />

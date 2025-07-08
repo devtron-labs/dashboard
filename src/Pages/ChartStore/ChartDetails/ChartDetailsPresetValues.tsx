@@ -1,36 +1,32 @@
 import { useMemo, useState } from 'react'
-import { generatePath, Link, useRouteMatch } from 'react-router-dom'
-import moment from 'moment'
+import { generatePath, useRouteMatch } from 'react-router-dom'
 
 import {
     APIResponseHandler,
     Button,
     ButtonComponentType,
-    ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     DeleteConfirmationModal,
-    GenericEmptyState,
-    getAlphabetIcon,
-    handleAnalyticsEvent,
+    FiltersTypeEnum,
     Icon,
-    PortalContainer,
-    SortableTableHeaderCell,
-    stringComparatorBySortOrder,
-    Tooltip,
+    PaginationEnum,
+    Table,
     useAsync,
-    useStateFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { deleteChartValues } from '@Components/charts/charts.service'
 import { SavedValueType } from '@Components/charts/SavedValues/types'
-import { Moment12HourFormat } from '@Config/constants'
 import { URLS } from '@Config/routes'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
-import { CHART_DETAILS_PORTAL_CONTAINER_ID } from './constants'
+import {
+    PresetValuesTableRowActionsOnHoverComponent,
+    PresetValuesTableViewWrapper,
+} from './ChartDetailsTableComponents'
+import { PRESET_VALUES_TABLE_COLUMNS } from './constants'
 import { fetchChartValuesTemplateList } from './services'
-import { ChartDetailsPresetValuesProps, ChartDetailsRouteParams } from './types'
+import { ChartDetailsRouteParams, PresetValuesTable } from './types'
 
 const renderEmptyStateButton = (path: string) => () => (
     <Button
@@ -44,17 +40,7 @@ const renderEmptyStateButton = (path: string) => () => (
     />
 )
 
-const renderFilterEmptyStateButton = (onClick: () => void) => () => (
-    <Button
-        dataTestId="chart-preset-values-clear-filters"
-        variant={ButtonVariantType.secondary}
-        text="Clear Filters"
-        size={ComponentSizeType.medium}
-        onClick={onClick}
-    />
-)
-
-export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDetailsPresetValuesProps) => {
+export const ChartDetailsPresetValues = () => {
     // STATES
     const [deletePresetValue, setDeletePresetValue] = useState<SavedValueType | null>(null)
 
@@ -72,27 +58,18 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
         reloadChartValuesTemplateList,
     ] = useAsync(() => fetchChartValuesTemplateList(chartId), [chartId], true, { resetOnChange: false })
 
-    const { sortBy, sortOrder, handleSorting } = useStateFilters<'name'>({ initialSortKey: 'name' })
-
-    const filteredChartValuesTemplateList = useMemo(() => {
-        if (!isFetchingChartValuesTemplateList && chartValuesTemplateList) {
-            return chartValuesTemplateList
-                .filter((cluster) => cluster.name.includes(searchKey.toLowerCase()))
-                .sort((a, b) => stringComparatorBySortOrder(a.name, b.name, sortOrder))
-        }
-
-        return []
-    }, [chartValuesTemplateList, isFetchingChartValuesTemplateList, searchKey, sortOrder])
+    const rows = useMemo<PresetValuesTable['rows']>(
+        () =>
+            (chartValuesTemplateList || []).map<PresetValuesTable['rows'][0]>(
+                ({ id, chartVersion, name, updatedBy, updatedOn }) => ({
+                    id: id.toString(),
+                    data: { chartVersion, name, updatedBy, updatedOn, id },
+                }),
+            ),
+        [chartValuesTemplateList],
+    )
 
     // HANDLERS
-    const triggerSorting = () => {
-        handleSorting('name')
-    }
-
-    const handleChartPresetDeployAndEdit = () => {
-        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES_NEW' })
-    }
-
     const handleChartPresetDelete = async () => {
         await deleteChartValues(deletePresetValue.id)
         reloadChartValuesTemplateList()
@@ -106,24 +83,13 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
         setDeletePresetValue(null)
     }
 
+    const filter: PresetValuesTable['filter'] = (rowData, filterData) =>
+        rowData.data.name.includes(filterData.searchKey.toLowerCase())
+
     return (
-        <div className="mh-500 flexbox-col bg__primary border__primary br-4 w-100 dc__overflow-hidden">
-            <PortalContainer
-                portalParentId={CHART_DETAILS_PORTAL_CONTAINER_ID}
-                condition={Array.isArray(chartValuesTemplateList) && !!chartValuesTemplateList.length}
-            >
-                <Button
-                    dataTestId="chart-preset-values-clear-filters"
-                    variant={ButtonVariantType.secondary}
-                    startIcon={<Icon name="ic-add" color={null} />}
-                    text="Create Preset"
-                    size={ComponentSizeType.medium}
-                    component={ButtonComponentType.link}
-                    linkProps={{ to: `${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/0` }}
-                />
-            </PortalContainer>
+        <div className="mh-500 flexbox-col bg__primary border__primary br-4 w-100 dc__overflow-auto">
             <APIResponseHandler
-                isLoading={isFetchingChartValuesTemplateList}
+                isLoading={false}
                 progressingProps={{ size: 24 }}
                 error={chartValuesTemplateListErr}
                 errorScreenManagerProps={{
@@ -131,114 +97,36 @@ export const ChartDetailsPresetValues = ({ searchKey, onClearFilters }: ChartDet
                     reload: reloadChartValuesTemplateList,
                 }}
             >
-                {!chartValuesTemplateList?.length && (
-                    <GenericEmptyState
-                        title="Create your first Preset Template"
-                        subTitle="Create reusable Helm config templates for different scenarios. Set them up once and let your team deploy with confidence."
-                        illustrationName="illustration-code"
-                        isButtonAvailable
-                        renderButton={renderEmptyStateButton(generatePath(path, { chartId }))}
-                    />
-                )}
-                {!!chartValuesTemplateList?.length &&
-                    (filteredChartValuesTemplateList.length ? (
-                        <>
-                            <div className="chart-details-preset-value__row px-16 pt-6 pb-5 border__primary--bottom">
-                                <span className="icon-dim-24" />
-                                <SortableTableHeaderCell
-                                    title="Name"
-                                    isSortable
-                                    isSorted={sortBy === 'name'}
-                                    sortOrder={sortOrder}
-                                    triggerSorting={triggerSorting}
-                                    disabled={false}
-                                />
-                                <SortableTableHeaderCell title="Version" isSortable={false} />
-                                <SortableTableHeaderCell title="Last updated by" isSortable={false} />
-                                <SortableTableHeaderCell title="Updated at" isSortable={false} />
-                            </div>
-                            {filteredChartValuesTemplateList.map(({ chartVersion, id, name, updatedBy, updatedOn }) => (
-                                <div
-                                    key={id}
-                                    className="chart-details-preset-value__row px-16 py-12 bg__hover dc__visible-hover dc__visible-hover--parent"
-                                >
-                                    <Icon name="ic-file" color="N700" size={24} />
-                                    <Link
-                                        className="fs-13 lh-20 dc__truncate"
-                                        to={`${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${id}`}
-                                    >
-                                        {name}
-                                    </Link>
-                                    <span className="fs-13 lh-20 cn-9">{chartVersion}</span>
-                                    <span className="flex left">
-                                        {updatedBy && getAlphabetIcon(updatedBy)}
-                                        <Tooltip content={updatedBy}>
-                                            <span className="fs-13 lh-20 cn-9 dc__truncate">{updatedBy || '-'}</span>
-                                        </Tooltip>
-                                    </span>
-                                    <div className="flex dc__content-space">
-                                        <span className="fs-13 lh-20 cn-9">
-                                            {updatedOn && !updatedOn.startsWith('0001-01-01')
-                                                ? moment(updatedOn).format(Moment12HourFormat)
-                                                : '-'}
-                                        </span>
-                                        <div className="flex dc__gap-4 dc__visible-hover--child">
-                                            <Button
-                                                dataTestId="chart-deploy-with-preset-value"
-                                                ariaLabel="Use value to deploy"
-                                                icon={<Icon name="ic-rocket-launch" color={null} />}
-                                                variant={ButtonVariantType.borderLess}
-                                                style={ButtonStyleType.neutral}
-                                                size={ComponentSizeType.xs}
-                                                component={ButtonComponentType.link}
-                                                linkProps={{
-                                                    to: `${generatePath(path, { chartId })}${URLS.DEPLOY_CHART}/${id}`,
-                                                }}
-                                                onClick={handleChartPresetDeployAndEdit}
-                                            />
-                                            <Button
-                                                dataTestId="chart-preset-value-edit"
-                                                ariaLabel="Edit value"
-                                                icon={<Icon name="ic-edit" color={null} />}
-                                                variant={ButtonVariantType.borderLess}
-                                                style={ButtonStyleType.neutral}
-                                                size={ComponentSizeType.xs}
-                                                component={ButtonComponentType.link}
-                                                linkProps={{
-                                                    to: `${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${id}`,
-                                                }}
-                                                onClick={handleChartPresetDeployAndEdit}
-                                            />
-                                            <Button
-                                                dataTestId="chart-preset-value-delete"
-                                                ariaLabel="Delete value"
-                                                icon={<Icon name="ic-delete" color={null} />}
-                                                variant={ButtonVariantType.borderLess}
-                                                style={ButtonStyleType.negativeGrey}
-                                                size={ComponentSizeType.xs}
-                                                onClick={showDeleteModal({
-                                                    chartVersion,
-                                                    id,
-                                                    name,
-                                                    updatedBy,
-                                                    updatedOn,
-                                                    isLoading: false,
-                                                })}
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                        </>
-                    ) : (
-                        <GenericEmptyState
-                            title="No results"
-                            subTitle="We couldn’t find any matching results"
-                            illustrationName="illustration-no-result"
-                            isButtonAvailable
-                            renderButton={renderFilterEmptyStateButton(onClearFilters)}
-                        />
-                    ))}
+                <Table
+                    id="table__chart-details-preset-values"
+                    loading={isFetchingChartValuesTemplateList}
+                    columns={PRESET_VALUES_TABLE_COLUMNS}
+                    rows={rows}
+                    stylesConfig={{ showSeparatorBetweenRows: false }}
+                    emptyStateConfig={{
+                        noRowsConfig: {
+                            title: 'Create your first Preset Template',
+                            subTitle:
+                                'Create reusable Helm config templates for different scenarios. Set them up once and let your team deploy with confidence.',
+                            imgName: 'img-code',
+                            isButtonAvailable: true,
+                            renderButton: renderEmptyStateButton(generatePath(path, { chartId })),
+                        },
+                        noRowsForFilterConfig: {
+                            title: 'No results',
+                            subTitle: 'We couldn’t find any matching results',
+                        },
+                    }}
+                    paginationVariant={PaginationEnum.NOT_PAGINATED}
+                    filtersVariant={FiltersTypeEnum.STATE}
+                    filter={filter}
+                    ViewWrapper={PresetValuesTableViewWrapper}
+                    RowActionsOnHoverComponent={PresetValuesTableRowActionsOnHoverComponent}
+                    additionalProps={{ showDeleteModal, chartValuesTemplateList }}
+                    additionalFilterProps={{
+                        initialSortKey: 'name',
+                    }}
+                />
             </APIResponseHandler>
             {deletePresetValue && (
                 <DeleteConfirmationModal

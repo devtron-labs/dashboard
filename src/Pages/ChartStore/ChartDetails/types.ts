@@ -1,6 +1,16 @@
-import { SelectPickerOptionType, SelectPickerProps, ServerErrors } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FiltersTypeEnum,
+    SelectPickerOptionType,
+    SelectPickerProps,
+    ServerErrors,
+    TableCellComponentProps,
+    TableProps,
+    TableRowActionsOnHoverComponentProps,
+    TableViewWrapperProps,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Chart, ChartDetailsDTO } from '@Components/charts/charts.types'
+import { SavedValueType } from '@Components/charts/SavedValues/types'
 
 export type ChartSelectorOptionType = SelectPickerOptionType & Chart
 
@@ -22,15 +32,13 @@ interface CommonChartDetailsProps {
     isLoading?: boolean
     chartDetails: ChartDetailsDTO
     selectedChartVersion: number
-    searchKey?: string
-    onClearFilters?: () => void
 }
 
-export interface ChartDetailsReadmeProps extends Pick<CommonChartDetailsProps, 'isLoading' | 'selectedChartVersion'> {
+export interface ChartDetailsReadmeProps
+    extends Pick<CommonChartDetailsProps, 'isLoading' | 'selectedChartVersion'>,
+        Pick<ChartDetailsDTO, 'chartName' | 'readme'> {
     error?: ServerErrors
     reload?: () => void
-    chartName: string
-    readme: string
     onChartChange: SelectPickerProps<number>['onChange']
     chartsOptions: SelectPickerProps<number>['options']
 }
@@ -45,4 +53,55 @@ export interface ChartDetailsDeployProps
     }[]
 }
 
-export interface ChartDetailsPresetValuesProps extends Pick<CommonChartDetailsProps, 'searchKey' | 'onClearFilters'> {}
+type PresetValuesTableAdditionalProps = {
+    chartValuesTemplateList: SavedValueType[]
+    showDeleteModal: (deletePresetValue: Omit<SavedValueType, 'isLoading'>) => () => void
+}
+
+export type PresetValuesTable = TableProps<
+    Omit<SavedValueType, 'isLoading'>,
+    FiltersTypeEnum.STATE,
+    PresetValuesTableAdditionalProps
+>
+
+export type PresetValuesTableCellComponentProps = TableCellComponentProps<
+    Omit<SavedValueType, 'isLoading'>,
+    FiltersTypeEnum.STATE,
+    PresetValuesTableAdditionalProps
+>
+
+export type PresetValuesTableRowActionsOnHoverComponentProps = TableRowActionsOnHoverComponentProps<
+    Omit<SavedValueType, 'isLoading'>,
+    PresetValuesTableAdditionalProps
+>
+
+export type PresetValuesTableViewWrapperProps = TableViewWrapperProps<
+    Omit<SavedValueType, 'isLoading'>,
+    FiltersTypeEnum.STATE,
+    PresetValuesTableAdditionalProps
+>
+
+export interface ChartDetailsDeploymentsProps {
+    chartIcon: ChartDetailsDTO['icon']
+}
+
+export interface ChartDeploymentsDTO {
+    appStoreApplicationName: string
+    chartName: string
+    icon: string
+    status: string
+    appName: string
+    installedAppVersionId: number
+    appStoreApplicationVersionId: number
+    environmentName: string
+    deployedAt: string
+    deployedBy: string
+    deploymentAppType: string
+    installedAppId: number
+    readme: string
+    environmentId: number
+    deprecated: boolean
+    appOfferingMode: string
+    clusterId: number
+    namespace: string
+}

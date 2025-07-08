@@ -5,13 +5,11 @@ import {
     APIResponseHandler,
     BreadCrumb,
     PageHeader,
-    SearchBar,
     SegmentedControl,
     SegmentedControlProps,
     SelectPickerProps,
     useAsync,
     useBreadcrumb,
-    useStateFilters,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -21,6 +19,7 @@ import { getAvailableCharts } from '@Services/service'
 
 import { ChartDetailsAbout } from './ChartDetailsAbout'
 import { ChartDetailsDeploy } from './ChartDetailsDeploy'
+import { ChartDetailsDeployments } from './ChartDetailsDeployments'
 import { ChartDetailsPresetValues } from './ChartDetailsPresetValues'
 import { ChartDetailsReadme } from './ChartDetailsReadme'
 import { CHART_DETAILS_PORTAL_CONTAINER_ID, CHART_DETAILS_SEGMENTS } from './constants'
@@ -44,8 +43,6 @@ export const ChartDetails = () => {
         parseSearchParams: parseChartDetailsSearchParams,
     })
 
-    const { searchKey, handleSearch, clearFilters } = useStateFilters()
-
     // ASYNC CALLS
     const [isFetchingChartVersions, chartVersions, chartVersionsErr, reloadChartVersions] = useAsync(
         () => fetchChartVersions(chartId),
@@ -64,10 +61,6 @@ export const ChartDetails = () => {
             setSelectedChartVersion(chartVersions[0].id)
         }
     }, [isFetchingChartVersions, chartVersions])
-
-    useEffect(() => {
-        clearFilters()
-    }, [tab])
 
     // CONFIGS
     const { breadcrumbs } = useBreadcrumb(
@@ -135,9 +128,9 @@ export const ChartDetails = () => {
                     />
                 )
             case ChartDetailsSegment.PRESET_VALUES:
-                return <ChartDetailsPresetValues searchKey={searchKey} onClearFilters={clearFilters} />
+                return <ChartDetailsPresetValues />
             case ChartDetailsSegment.DEPLOYMENTS:
-                return <div>DEPLOYMENTS</div>
+                return <ChartDetailsDeployments chartIcon={chartDetails?.icon} />
             default:
                 return null
         }
@@ -164,24 +157,13 @@ export const ChartDetails = () => {
                     <Route>
                         <div className="chart-details flex-grow-1 p-20 dc__overflow-auto">
                             <div className="flexbox-col dc__gap-16 mw-none">
-                                <div className="flex dc__content-space">
+                                <div id={CHART_DETAILS_PORTAL_CONTAINER_ID} className="flex dc__content-space">
                                     <SegmentedControl
                                         name="chart-details-segmented-control"
                                         segments={CHART_DETAILS_SEGMENTS}
                                         value={tab}
                                         onChange={handleSegmentChange}
                                     />
-                                    {(tab === ChartDetailsSegment.PRESET_VALUES ||
-                                        tab === ChartDetailsSegment.DEPLOYMENTS) && (
-                                        <div id={CHART_DETAILS_PORTAL_CONTAINER_ID} className="flex dc__gap-8">
-                                            <SearchBar
-                                                containerClassName="w-250"
-                                                dataTestId="chart-details-search-bar"
-                                                initialSearchText={searchKey}
-                                                handleEnter={handleSearch}
-                                            />
-                                        </div>
-                                    )}
                                 </div>
                                 {renderSegments()}
                             </div>
