@@ -28,21 +28,6 @@ export interface DeploymentTableModalProps {
 export class DeploymentTableModal extends Component<DeploymentTableModalProps, {}> {
     constructor(props) {
         super(props)
-        this.escFunction = this.escFunction.bind(this)
-    }
-
-    componentDidMount() {
-        document.addEventListener('keydown', this.escFunction)
-    }
-
-    componentWillUnmount() {
-        document.removeEventListener('keydown', this.escFunction)
-    }
-
-    escFunction(event) {
-        if (event.keyCode === 27) {
-            this.props.close(event)
-        }
     }
 
     render() {

@@ -59,7 +59,7 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
     }
 
     return (
-        <VariableDataTablePopupMenu showHeaderIcon heading="Variable configuration" placement="right">
+        <VariableDataTablePopupMenu showHeaderIcon heading="Variable configuration">
             <>
                 <div className="p-12 flexbox-col dc__gap-12">
                     <CustomInput
