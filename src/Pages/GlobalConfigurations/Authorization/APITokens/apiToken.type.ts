@@ -44,7 +44,6 @@ export interface TokenListType {
     expireAtInMs: number
     id: number
     name: string
-    token: string
     userId: number
     userIdentifier: string
     description: string
@@ -54,10 +53,7 @@ export interface TokenListType {
 }
 
 export interface EditDataType
-    extends Pick<
-        TokenListType,
-        'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier'
-    > {}
+    extends Pick<TokenListType, 'name' | 'description' | 'expireAtInMs' | 'id' | 'userId' | 'userIdentifier'> {}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean
