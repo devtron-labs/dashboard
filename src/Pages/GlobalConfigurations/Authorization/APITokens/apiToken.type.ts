@@ -79,6 +79,7 @@ export interface GenerateTokenModalType {
     reload: () => void
     redirectToTokenList: () => void
     isRegenerationModal?: boolean
+    open: boolean
 }
 
 export interface APITokenListType {
