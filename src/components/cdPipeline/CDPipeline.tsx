@@ -53,13 +53,12 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    Icon,
     SourceTypeMap,
     handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
-import { ReactComponent as ICWarning } from '@Icons/ic-warning.svg'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
@@ -93,6 +92,7 @@ import {
 import {
     calculateLastStepDetailsLogic,
     checkUniqueness,
+    getIsExternalAppLinkable,
     getMigrateToDevtronRequiredPayload,
     handleDeleteCDNodePipeline,
     validateTask,
@@ -273,7 +273,7 @@ export default function CDPipeline({
 
     const isExternalArgoPipeline =
         formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS &&
-        formData.deploymentAppType === DeploymentAppTypes.GITOPS
+        formData.deploymentAppType === DeploymentAppTypes.ARGO
 
     const isGitOpsRepoNotConfigured = isExternalArgoPipeline ? false : isGitOpsRepoNotConfiguredProp
 
@@ -928,7 +928,7 @@ export default function CDPipeline({
 
     const savePipeline = async () => {
         if (!isMigratingFromExternalApp) {
-            if (formData.deploymentAppType === DeploymentAppTypes.GITOPS && isGitOpsInstalledButNotConfigured) {
+            if (formData.deploymentAppType === DeploymentAppTypes.ARGO && isGitOpsInstalledButNotConfigured) {
                 ToastManager.showToast({
                     variant: ToastVariantType.error,
                     title: 'GitOps credentials not configured',
@@ -1057,7 +1057,7 @@ export default function CDPipeline({
 
     const deleteCD = (force: boolean, cascadeDelete: boolean) => {
         const isPartialDelete =
-            formData.deploymentAppType === DeploymentAppTypes.GITOPS && formData.deploymentAppCreated && !force
+            formData.deploymentAppType === DeploymentAppTypes.ARGO && formData.deploymentAppCreated && !force
         const payload = {
             action: isPartialDelete ? CD_PATCH_ACTION.DEPLOYMENT_PARTIAL_DELETE : CD_PATCH_ACTION.DELETE,
             appId: parseInt(appId),
@@ -1186,7 +1186,7 @@ export default function CDPipeline({
                 >
                     Advanced options
                     {mandatoryPluginData && (!mandatoryPluginData.isValidPre || !mandatoryPluginData.isValidPost) && (
-                        <ICWarning className="icon-dim-16 warning-icon-y7-imp dc__no-shrink" />
+                        <Icon name="ic-warning" color="Y700" />
                     )}
                 </button>
             )
@@ -1365,10 +1365,7 @@ export default function CDPipeline({
         // Disable button if environment or release name is not selected
         const getButtonDisabledMessage = (): string => {
             if (isMigratingFromExternalApp) {
-                const isLinkable =
-                    migrateToDevtronFormState.deploymentAppType === DeploymentAppTypes.HELM
-                        ? migrateToDevtronFormState.migrateFromHelmFormState.validationResponse.isLinkable
-                        : migrateToDevtronFormState.migrateFromArgoFormState.validationResponse.isLinkable
+                const isLinkable = getIsExternalAppLinkable(migrateToDevtronFormState)
                 if (!isLinkable) {
                     return 'Please resolve errors before proceeding'
                 }
@@ -1394,12 +1391,19 @@ export default function CDPipeline({
                 }`}
             >
                 <div className="flex flex-align-center flex-justify bg__primary px-20 py-12">
-                    <h2 className="fs-16 fw-6 lh-1-43 m-0" data-testid="build-pipeline-heading">
+                    <h2 className="fs-16 fw-6 lh-24 m-0" data-testid="build-pipeline-heading">
                         {title}
                     </h2>
-                    <button type="button" className="dc__transparent flex icon-dim-24" onClick={closePipelineModal}>
-                        <Close className="icon-dim-24" />
-                    </button>
+                    <Button
+                        dataTestId="close-cd-modal"
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        size={ComponentSizeType.small}
+                        onClick={closePipelineModal}
+                        ariaLabel="close modal"
+                        showAriaLabelInTippy={false}
+                        style={ButtonStyleType.negativeGrey}
+                        variant={ButtonVariantType.borderLess}
+                    />
                 </div>
 
                 {!isAdvanced && !isTemplateView && (

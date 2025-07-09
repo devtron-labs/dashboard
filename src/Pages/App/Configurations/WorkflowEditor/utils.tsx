@@ -49,7 +49,7 @@ export const checkForGitOpsRepoNotConfigured = ({
     }
 
     const isGitOpsRepoNotConfiguredAndOptionsVisible =
-        deploymentAppType === DeploymentAppTypes.GITOPS &&
+        deploymentAppType === DeploymentAppTypes.ARGO &&
         isGitOpsRepoNotConfigured &&
         !window._env_.HIDE_GITOPS_OR_HELM_OPTION
 

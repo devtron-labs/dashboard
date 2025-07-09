@@ -149,6 +149,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const showCloseButtonAfterGettingStartedClicked = () => {
         setHelpGettingStartedClicked(true)
     }
+    // We use this to determine if we can show resource recommender, since we do not allow users to feed prometheus url if grafana module is not installed
+    const [isGrafanaModuleInstalled, setIsGrafanaModuleInstalled] = useState(false)
     const [environmentId, setEnvironmentId] = useState(null)
     const contextValue = useMemo(() => ({ environmentId, setEnvironmentId }), [environmentId])
 
@@ -171,7 +173,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             const controls = animate(navBarWidth, NAVBAR_WIDTH, {
                 duration: 0.3,
                 ease: 'easeOut',
-                delay: 1,
+                delay: 0.6,
             })
             return controls.stop
         }
@@ -379,23 +381,29 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 canFetchHelmAppStatus: result.canFetchHelmAppStatus ?? ENVIRONMENT_DATA_FALLBACK.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled:
                     result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
+                isResourceRecommendationEnabled:
+                    result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
         }
     }
 
+    const getGrafanaModuleStatus = () => getModuleInfo(ModuleNameMap.GRAFANA)
+
     const handleFetchInitialData = async () => {
         try {
-            const [serverModeResponse, environmentDataResponse] = await Promise.all([
+            const [serverModeResponse, environmentDataResponse, grafanaModuleStatus] = await Promise.all([
                 getServerMode(),
                 getEnvironmentDataValues(),
+                getGrafanaModuleStatus(),
                 getCurrentServerInfo(),
                 handleFetchUserPreferences(),
             ])
 
             await getInit(serverModeResponse)
 
+            setIsGrafanaModuleInstalled(grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED)
             setEnvironmentDataState({
                 isAirgapped: environmentDataResponse.isAirGapEnvironment,
                 isManifestScanningEnabled: environmentDataResponse.isManifestScanningEnabled,
@@ -403,6 +411,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 featureGitOpsFlags: environmentDataResponse.featureGitOpsFlags,
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
+                isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
             })
 
             setServerMode(serverModeResponse)
@@ -660,6 +669,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 setSidePanelConfig,
                 isEnterprise: currentServerInfo?.serverInfo?.installationType === InstallationType.ENTERPRISE,
                 isFELibAvailable: !!isFELibAvailable,
+                isResourceRecommendationEnabled:
+                    isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
             }}
         >
             <ConfirmationModalProvider>

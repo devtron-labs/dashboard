@@ -14,76 +14,85 @@
  * limitations under the License.
  */
 
-import { Dispatch, ReactNode, SetStateAction } from 'react'
-
 import {
-    ALL_NAMESPACE_OPTION,
     BaseRecentlyVisitedEntitiesTypes,
-    K8sResourceDetailType,
-    RBBulkOperationType,
+    FiltersTypeEnum,
     ServerErrors,
+    TableCellComponentProps,
+    TableViewWrapperProps,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListType } from '@Components/ClusterNodes/types'
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
+import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
+import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import {
+    ClusterDetailBaseParams,
     ClusterOptionType,
     K8SResourceListType,
-    ResourceBrowserActionMenuType,
+    NODE_SEARCH_KEYS,
     ResourceFilterOptionsProps,
-    SidebarType,
-    URLParams,
 } from '../Types'
 
-export interface BaseResourceListProps
-    extends Partial<Pick<ResourceFilterOptionsProps, 'areFiltersHidden' | 'searchPlaceholder'>>,
-        Pick<ResourceBrowserActionMenuType, 'hideDeleteResource'>,
-        Pick<
-            K8SResourceListType,
-            | 'addTab'
-            | 'isOpen'
-            | 'renderRefreshBar'
-            | 'selectedCluster'
-            | 'selectedResource'
-            | 'clusterName'
-            | 'handleResourceClick'
-            | 'lowercaseKindToResourceGroupMap'
-        >,
-        Pick<SidebarType, 'updateK8sResourceTab'>,
-        Pick<URLParams, 'nodeType' | 'group'> {
-    isLoading: boolean
-    resourceListError: ServerErrors
-    resourceList: K8sResourceDetailType
-    clusterId: string
-    reloadResourceListData: () => void
-    selectedNamespace: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace: Dispatch<SetStateAction<typeof ALL_NAMESPACE_OPTION>>
-    children?: ReactNode
-    showGenericNullState?: boolean
-    hideBulkSelection?: boolean
-    /**
-     * If true, the kind from the API is used instead of the selected resource
-     *
-     * @default false
-     */
-    shouldOverrideSelectedResourceKind?: boolean
-}
-
 export interface ClusterUpgradeCompatibilityInfoProps
-    extends Pick<UseTabsReturnType, 'addTab'>,
-        Pick<ClusterListType, 'updateTabUrl'>,
-        Pick<
-            BaseResourceListProps,
-            'lowercaseKindToResourceGroupMap' | 'clusterId' | 'clusterName' | 'selectedCluster' | 'handleResourceClick'
-        > {}
+    extends Pick<ClusterListType, 'updateTabUrl'>,
+        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {
+    clusterName: string
+}
 
 export interface ResourceListUrlFiltersType {
     targetK8sVersion: string
 }
 
-export type BulkOperationsModalState = RBBulkOperationType | 'closed'
+export interface K8sResourceListURLParams extends ClusterDetailBaseParams {
+    version: string
+    kind: string
+    group: string
+}
+
+export interface K8sResourceDetailURLParams extends K8sResourceListURLParams {
+    name: string
+    namespace: string
+}
+
+export interface NodeDetailComponentWrapperProps
+    extends Pick<UseTabsReturnType, 'removeTabByIdentifier' | 'updateTabUrl' | 'getTabId'>,
+        Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
+    clusterName: string
+}
+export interface NodeDetailURLParams {
+    name: string
+}
+
+export interface K8sResourceListFilterType
+    extends Record<(typeof NODE_SEARCH_KEYS)[keyof typeof NODE_SEARCH_KEYS], string> {
+    selectedNamespace?: string
+    [NODE_K8S_VERSION_FILTER_KEY]?: string
+    eventType: 'warning' | 'normal'
+}
+
+export interface K8SResourceListViewWrapperProps
+    extends TableViewWrapperProps<FiltersTypeEnum.URL>,
+        Pick<K8SResourceListType, 'selectedCluster' | 'selectedResource' | 'updateK8sResourceTab' | 'renderRefreshBar'>,
+        Pick<K8sResourceListFilterType, 'eventType'> {
+    selectedNamespace: string
+}
+
+export interface K8sResourceListTableCellComponentProps
+    extends TableCellComponentProps<FiltersTypeEnum.URL>,
+        Pick<
+            K8SResourceListType,
+            'selectedCluster' | 'selectedResource' | 'addTab' | 'lowercaseKindToResourceGroupMap' | 'clusterName'
+        > {
+    reloadResourceListData: () => void
+}
+
+export interface AdminTerminalDummyProps
+    extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
+    clusterName: string
+}
 
 export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
@@ -95,4 +104,22 @@ export interface ClusterListOptionsTypes {
     inputValue: string
     recentlyVisitedResources: BaseRecentlyVisitedEntitiesTypes[]
     isInstallationStatusView?: boolean
+}
+export interface ClusterUpgradeCompatibilityInfoTableCellComponentProps
+    extends TableCellComponentProps<FiltersTypeEnum.URL>,
+        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {}
+
+export interface ClusterUpgradeCompatibilityInfoTableWrapperProps extends TableViewWrapperProps<FiltersTypeEnum.URL> {}
+
+export type DynamicTabComponentWrapperProps = Pick<
+    UseTabsReturnType,
+    'updateTabUrl' | 'markTabActiveById' | 'getTabId' | 'getTabById'
+> &
+    ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
+        children: React.ReactElement
+    }
+
+export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
+    resourceListError: ServerErrors
+    reloadResourceListData: () => void
 }

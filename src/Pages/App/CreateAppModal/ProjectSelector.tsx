@@ -61,7 +61,6 @@ const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: Pr
                 onChange={handleChange}
                 error={error}
                 autoFocus
-                defaultMenuIsOpen
             />
         </div>
     )

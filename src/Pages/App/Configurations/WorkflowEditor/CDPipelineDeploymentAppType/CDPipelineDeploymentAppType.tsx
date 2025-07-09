@@ -34,6 +34,8 @@ export const CDPipelineDeploymentAppType = ({
                 isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
                 gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
                 areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+                // Want to show this when gitops module is installed, does not matter if it is configured or not
+                showGitOpsOption={!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured}
             />
         </div>
     )
