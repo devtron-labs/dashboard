@@ -3,18 +3,9 @@
     grid-template-columns: minmax(auto, 1000px) 300px;
     gap: 32px;
     justify-content: center;
-}
 
-.loading-icon {
-    width: 56px;
-    height: 56px;
-}
-
-.chart-details-preset-value {
-    &__row {
-        display: grid;
-        align-items: center;
-        grid-template-columns: 24px 200px 100px 200px 1fr;
-        gap: 16px;
+    &__loading-icon {
+        width: 56px;
+        height: 56px;
     }
 }

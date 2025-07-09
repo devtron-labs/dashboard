@@ -1,4 +1,5 @@
 import {
+    get,
     showError,
     ToastManager,
     ToastVariantType,
@@ -6,11 +7,15 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
+    deleteInstalledChart,
     getChartValuesCategorizedListParsed,
     getChartValuesTemplateList,
     getChartVersionDetails,
     getChartVersionsMin,
 } from '@Components/charts/charts.service'
+import { DELETE_ACTION, Routes } from '@Config/constants'
+
+import { ChartDeploymentsDTO } from './types'
 
 export const fetchChartVersions = async (chartId: string) => {
     try {
@@ -60,4 +65,28 @@ export const fetchChartValuesTemplateList = async (chartId: string) => {
         showError(err)
         throw err
     }
+}
+
+export const fetchChartDeployments = async (chartId: string) => {
+    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_DEPLOYMENT}/installed-app/${chartId}`
+    try {
+        const { result } = await get<ChartDeploymentsDTO[]>(URL)
+        return result || []
+    } catch (err) {
+        showError(err)
+        throw err
+    }
+}
+
+export const deleteChartDeployment = async ({
+    installedAppId,
+    isGitops,
+    deleteAction,
+}: {
+    installedAppId: number
+    isGitops?: boolean
+    deleteAction?: DELETE_ACTION
+}) => {
+    const { result } = await deleteInstalledChart(installedAppId, isGitops, deleteAction)
+    return result
 }

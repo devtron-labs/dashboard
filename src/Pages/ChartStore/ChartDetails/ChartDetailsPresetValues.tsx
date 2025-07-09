@@ -21,12 +21,17 @@ import { URLS } from '@Config/routes'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
 import {
+    PRESET_VALUES_TABLE_COLUMNS,
     PresetValuesTableRowActionsOnHoverComponent,
     PresetValuesTableViewWrapper,
 } from './ChartDetailsTableComponents'
-import { PRESET_VALUES_TABLE_COLUMNS } from './constants'
 import { fetchChartValuesTemplateList } from './services'
-import { ChartDetailsRouteParams, PresetValuesTable } from './types'
+import {
+    ChartDetailsRouteParams,
+    PresetValuesTableAdditionalProps,
+    PresetValuesTableProps,
+    PresetValuesTableRowData,
+} from './types'
 
 const renderEmptyStateButton = (path: string) => () => (
     <Button
@@ -58,9 +63,9 @@ export const ChartDetailsPresetValues = () => {
         reloadChartValuesTemplateList,
     ] = useAsync(() => fetchChartValuesTemplateList(chartId), [chartId], true, { resetOnChange: false })
 
-    const rows = useMemo<PresetValuesTable['rows']>(
+    const rows = useMemo<PresetValuesTableProps['rows']>(
         () =>
-            (chartValuesTemplateList || []).map<PresetValuesTable['rows'][0]>(
+            (chartValuesTemplateList || []).map<PresetValuesTableProps['rows'][0]>(
                 ({ id, chartVersion, name, updatedBy, updatedOn }) => ({
                     id: id.toString(),
                     data: { chartVersion, name, updatedBy, updatedOn, id },
@@ -83,7 +88,7 @@ export const ChartDetailsPresetValues = () => {
         setDeletePresetValue(null)
     }
 
-    const filter: PresetValuesTable['filter'] = (rowData, filterData) =>
+    const filter: PresetValuesTableProps['filter'] = (rowData, filterData) =>
         rowData.data.name.includes(filterData.searchKey.toLowerCase())
 
     return (
@@ -97,7 +102,7 @@ export const ChartDetailsPresetValues = () => {
                     reload: reloadChartValuesTemplateList,
                 }}
             >
-                <Table
+                <Table<PresetValuesTableRowData, FiltersTypeEnum.STATE, PresetValuesTableAdditionalProps>
                     id="table__chart-details-preset-values"
                     loading={isFetchingChartValuesTemplateList}
                     columns={PRESET_VALUES_TABLE_COLUMNS}

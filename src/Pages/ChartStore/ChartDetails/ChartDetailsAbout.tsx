@@ -8,6 +8,7 @@ import {
     ComponentSizeType,
     handleAnalyticsEvent,
     Icon,
+    ImageWithFallback,
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -16,7 +17,7 @@ import { getParsedChartYAML } from './utils'
 
 const AboutHeaderLoadingSkeleton = () => (
     <div className="flexbox-col dc__gap-16">
-        <div className="shimmer-loading loading-icon" />
+        <div className="shimmer-loading chart-details__loading-icon" />
         <div className="shimmer-loading w-150 h-20" />
         <div className="flexbox-col dc__gap-8">
             <div className="shimmer-loading w-250 h-16" />
@@ -110,13 +111,15 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
     return (
         <div className="flexbox-col dc__gap-20 mw-none">
             <div className="flexbox-col dc__gap-12">
-                {icon ? (
-                    <div className="icon-dim-48">
-                        <img src={icon} className="w-100" alt="chart-icon" data-testid="chart-type-image" />
-                    </div>
-                ) : (
-                    <Icon name="ic-helm" color="N700" size={48} />
-                )}
+                <ImageWithFallback
+                    imageProps={{
+                        src: icon,
+                        alt: 'chart-icon',
+                        height: 48,
+                        width: 48,
+                    }}
+                    fallbackImage={<Icon name="ic-helm" color="N700" size={48} />}
+                />
                 <h2 className="m-0 fs-16 lh-24 fw-6 cn-9">{name}</h2>
                 <p className="m-0 fs-13 lh-20 cn-9">{description}</p>
             </div>

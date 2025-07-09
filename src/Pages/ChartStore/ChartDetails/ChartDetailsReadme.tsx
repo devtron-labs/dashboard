@@ -67,7 +67,7 @@ export const ChartDetailsReadme = ({
                     <GenericEmptyState
                         title={`Readme not available for ${chartName} ${selectedChartVersionValue?.label}`}
                         subTitle="A readme file was not found for this chart’s version."
-                        illustrationName="img-no-result"
+                        imgName="img-no-result"
                         isButtonAvailable
                         renderButton={renderEmptyStateButton}
                     />

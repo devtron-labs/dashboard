@@ -53,30 +53,32 @@ export interface ChartDetailsDeployProps
     }[]
 }
 
-type PresetValuesTableAdditionalProps = {
+export type PresetValuesTableRowData = Omit<SavedValueType, 'isLoading'>
+
+export type PresetValuesTableAdditionalProps = {
     chartValuesTemplateList: SavedValueType[]
-    showDeleteModal: (deletePresetValue: Omit<SavedValueType, 'isLoading'>) => () => void
+    showDeleteModal: (deletePresetValue: PresetValuesTableRowData) => () => void
 }
 
-export type PresetValuesTable = TableProps<
-    Omit<SavedValueType, 'isLoading'>,
+export type PresetValuesTableProps = TableProps<
+    PresetValuesTableRowData,
     FiltersTypeEnum.STATE,
     PresetValuesTableAdditionalProps
 >
 
 export type PresetValuesTableCellComponentProps = TableCellComponentProps<
-    Omit<SavedValueType, 'isLoading'>,
+    PresetValuesTableRowData,
     FiltersTypeEnum.STATE,
     PresetValuesTableAdditionalProps
 >
 
 export type PresetValuesTableRowActionsOnHoverComponentProps = TableRowActionsOnHoverComponentProps<
-    Omit<SavedValueType, 'isLoading'>,
+    PresetValuesTableRowData,
     PresetValuesTableAdditionalProps
 >
 
 export type PresetValuesTableViewWrapperProps = TableViewWrapperProps<
-    Omit<SavedValueType, 'isLoading'>,
+    PresetValuesTableRowData,
     FiltersTypeEnum.STATE,
     PresetValuesTableAdditionalProps
 >
@@ -105,3 +107,26 @@ export interface ChartDeploymentsDTO {
     clusterId: number
     namespace: string
 }
+
+export type DeploymentsTableAdditionalProps = {
+    chartIcon: ChartDetailsDTO['icon']
+    onDelete: (rowData: ChartDeploymentsDTO) => void
+}
+
+export type DeploymentsTableProps = TableProps<
+    ChartDeploymentsDTO,
+    FiltersTypeEnum.STATE,
+    DeploymentsTableAdditionalProps
+>
+
+export type DeploymentsTableCellComponentProps = TableCellComponentProps<
+    ChartDeploymentsDTO,
+    FiltersTypeEnum.STATE,
+    DeploymentsTableAdditionalProps
+>
+
+export type DeploymentsTableViewWrapperProps = TableViewWrapperProps<
+    ChartDeploymentsDTO,
+    FiltersTypeEnum.STATE,
+    DeploymentsTableAdditionalProps
+>

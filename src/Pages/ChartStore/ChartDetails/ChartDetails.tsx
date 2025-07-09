@@ -4,6 +4,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import {
     APIResponseHandler,
     BreadCrumb,
+    handleAnalyticsEvent,
     PageHeader,
     SegmentedControl,
     SegmentedControlProps,
@@ -102,7 +103,13 @@ export const ChartDetails = () => {
 
     // HANDLERS
     const handleSegmentChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
-        updateSearchParams({ tab: selectedSegment.value as ChartDetailsSegment })
+        const updatedTab = selectedSegment.value as ChartDetailsSegment
+
+        if (updatedTab === ChartDetailsSegment.PRESET_VALUES) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_PRESET_VALUES' })
+        }
+
+        updateSearchParams({ tab: updatedTab })
     }
 
     const handleChartChange: SelectPickerProps<number>['onChange'] = ({ value }) => {
