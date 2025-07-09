@@ -695,21 +695,6 @@ export const setActionWithExpiry = (key: string, days: number): void => {
     localStorage.setItem(key, `${getDateInMilliseconds(days)}`)
 }
 
-/**
- * @deprecated
- */
-export const preventBodyScroll = (lock: boolean): void => {
-    if (lock) {
-        document.body.style.overflowY = 'hidden'
-        document.body.style.height = '100vh'
-        document.documentElement.style.overflow = 'initial'
-    } else {
-        document.body.style.overflowY = null
-        document.body.style.height = null
-        document.documentElement.style.overflow = null
-    }
-}
-
 // Creates object of arrays containing items grouped by item value of provided key
 export const createGroupedItemsByKey = (arr: any[], key: string) => {
     return arr.reduce((prevObj, currentObj) => {
@@ -1098,33 +1083,6 @@ export const getPluginIdsFromBuildStage = (
     })
 
     return pluginIds
-}
-
-const SEVERITY_ORDER = [
-    { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
-    { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
-    { key: SeveritiesDTO.MEDIUM, label: 'Medium', variant: 'custom', fontColor: 'O600', bgColor: 'O100' },
-    { key: SeveritiesDTO.LOW, label: 'Low', variant: 'warning' },
-    { key: SeveritiesDTO.UNKNOWN, label: 'Unknown', variant: 'neutral' },
-] as const
-
-export const getSeverityWithCount = (severityCount: SeverityCount) => {
-    for (const item of SEVERITY_ORDER) {
-        if (severityCount[item.key]) {
-            if (item.variant === 'custom') {
-                return (
-                    <Badge
-                        label={`${severityCount[item.key]} ${item.label}`}
-                        variant="custom"
-                        fontColor={item.fontColor}
-                        bgColor={item.bgColor}
-                    />
-                )
-            }
-            return <Badge label={`${severityCount[item.key]} ${item.label}`} variant={item.variant} />
-        }
-    }
-    return <Badge label="Passed" variant="positive" />
 }
 
 // FIXME: Ideally whole branch calculations should be in fe-lib

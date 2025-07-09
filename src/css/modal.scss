@@ -43,6 +43,14 @@
     width: 600px;
 }
 
+.modal__title {
+    font-size: 20px;
+    font-weight: 600;
+    line-height: 1.33;
+    color: var(--N900);
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
 
 .visible-modal__body {
     width: 100%;
