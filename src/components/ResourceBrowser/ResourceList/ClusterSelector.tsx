@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
 import {
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
     Badge,
     ComponentSizeType,
-    DocLink,
-    DocLinkProps,
+    ContextSwitcher,
+    handleAnalyticsEvent,
     Icon,
     PopupMenu,
+    RecentlyVisitedOptions,
+    ResourceKindType,
+    SelectPickerProps,
     ToastManager,
     ToastVariantType,
-    useRegisterShortcut,
-    ValueContainerWithLoadingShimmer,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
@@ -39,14 +38,9 @@ import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvir
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
-import {
-    clusterOverviewNodeText,
-    ERROR_SCREEN_LEARN_MORE,
-    ERROR_SCREEN_SUBTITLE,
-    LEARN_MORE,
-    SIDEBAR_KEYS,
-} from '../Constants'
-import { ClusterOptionType, ClusterSelectorType } from '../Types'
+import { ResourceBrowserGAEvent } from '../Constants'
+import { ClusterSelectorType } from '../Types'
+import { getClusterSelectOptions } from './utils'
 
 const RBPageHeaderPopup = importComponentFromFELibrary('RBPageHeaderPopup', null, 'function')
 const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
@@ -65,36 +59,46 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const [showEditPodSpreadModal, setShowEditPodSpreadModal] = useState(false)
     const [showHibernationRulesModal, setShowHibernationRulesModal] = useState(false)
 
-    const selectRef = useRef<SelectInstance>(null)
-
-    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
-
-    useEffect(() => {
-        registerShortcut({
-            keys: ['S'],
-            callback: () => {
-                selectRef.current?.focus()
-                selectRef.current?.openMenu('first')
-            },
-        })
-
-        return () => {
-            unregisterShortcut(['S'])
-        }
-    }, [])
-
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
         filteredClusterList = clusterList.filter((item) => Number(item.value) !== DEFAULT_CLUSTER_ID)
     }
+
     const defaultOption = filteredClusterList.find((item) =>
         isInstallationStatusView ? String(item.installationId) === clusterId : String(item.value) === clusterId,
     )
+    const clusterName = defaultOption?.label
 
-    const handleOnKeyDown: SelectProps['onKeyDown'] = (event) => {
-        if (event.key === 'Escape') {
-            selectRef.current?.inputRef.blur()
+    const handleOnChange = (selected: RecentlyVisitedOptions) => {
+        if (selected.value === Number(defaultOption?.value)) {
+            return
         }
+
+        handleAnalyticsEvent({
+            category: 'Resource Browser',
+            action: selected.isRecentlyVisited
+                ? ResourceBrowserGAEvent.RB_SWITCH_CLUSTER_RECENTLY_VISITED_CLICKED
+                : ResourceBrowserGAEvent.RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED,
+        })
+
+        onChange(selected)
+    }
+
+    const isAppDataAvailable = !!clusterId
+
+    const { recentlyVisitedResources } = useUserPreferences({
+        recentlyVisitedFetchConfig: {
+            id: +clusterId,
+            name: clusterName,
+            resourceKind: ResourceKindType.cluster,
+            isDataAvailable: isAppDataAvailable,
+        },
+    })
+
+    const [inputValue, setInputValue] = useState('')
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
     }
 
     const handleOpenDeleteModal = () => {
@@ -133,38 +137,21 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
         replace(URLS.RESOURCE_BROWSER)
     }
 
-    const getOptionsValue = (option: ClusterOptionType) =>
-        // NOTE: all the options with value equal to that of the selected option will be highlighted
-        // therefore, since installed clusters that are in creation phase have value = '0', we need to instead
-        // get its value as installationId. Prefixing it with installation- to avoid collision with normal clusters have same value of
-        // clusterId as this installationId
-        isInstallationStatusView ? `installation-${String(option.installationId)}` : option.value
-
     return (
         <div className="flexbox dc__align-items-center dc__gap-12">
-            <ReactSelect
+            <ContextSwitcher
                 classNamePrefix="cluster-select-header"
-                options={filteredClusterList}
+                inputId={`cluster-switcher-${clusterId}`}
                 isLoading={isClusterListLoading}
-                ref={selectRef}
-                onChange={onChange}
-                getOptionValue={getOptionsValue}
-                blurInputOnSelect
-                onKeyDown={handleOnKeyDown}
-                components={{
-                    IndicatorSeparator: null,
-                    DropdownIndicator: AppSelectorDropdownIndicator,
-                    LoadingIndicator: null,
-                    ValueContainer: ValueContainerWithLoadingShimmer,
-                }}
+                onChange={handleOnChange}
                 value={defaultOption}
-                styles={{
-                    ...APP_SELECTOR_STYLES,
-                    valueContainer: (base, state) => ({
-                        ...APP_SELECTOR_STYLES.valueContainer(base, state),
-                        flexWrap: 'nowrap',
-                    }),
-                }}
+                options={getClusterSelectOptions(
+                    filteredClusterList,
+                    recentlyVisitedResources,
+                    isInstallationStatusView,
+                )}
+                inputValue={inputValue}
+                onInputChange={onInputChange}
             />
 
             {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
@@ -222,33 +209,3 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 }
 
 export default ClusterSelector
-
-export const unauthorizedInfoText = (nodeType?: string) => {
-    const emptyStateData = {
-        text: ERROR_SCREEN_SUBTITLE,
-        link: 'K8S_RESOURCES_PERMISSIONS' as DocLinkProps['docLinkKey'],
-        linkText: ERROR_SCREEN_LEARN_MORE,
-    }
-
-    if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
-        emptyStateData.text = clusterOverviewNodeText(true)
-        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
-        emptyStateData.linkText = LEARN_MORE
-    } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
-        emptyStateData.text = clusterOverviewNodeText(false)
-        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
-        emptyStateData.linkText = LEARN_MORE
-    }
-
-    return (
-        <>
-            {emptyStateData.text}&nbsp;
-            <DocLink
-                dataTestId="rb-permission-error-documentation"
-                docLinkKey={emptyStateData.link}
-                text={emptyStateData.linkText}
-                fontWeight="normal"
-            />
-        </>
-    )
-}

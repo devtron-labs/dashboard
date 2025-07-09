@@ -14,38 +14,71 @@
  * limitations under the License.
  */
 
-import { useRef } from 'react'
-import AsyncSelect from 'react-select/async'
+import { useRef, useState } from 'react'
 
 import {
-    abortPreviousRequests,
-    APP_SELECTOR_STYLES,
-    AppSelectorDropdownIndicator,
-    AppSelectorNoOptionsMessage,
+    ContextSwitcher,
+    handleAnalyticsEvent,
+    RecentlyVisitedOptions,
+    SelectPickerProps,
+    useAsync,
+    useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EnvSelectorType } from './AppGroup.types'
 import { envListOptions } from './AppGroup.utils'
+import { ENV_APP_GROUP_GA_EVENTS } from './Constants'
 
 export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
     const abortControllerRef = useRef<AbortController>(new AbortController())
     const defaultOptions = { value: envId, label: envName }
+    const isEnvDataAvailable = !!envId && !!envName
 
-    const handleFetchOptions = (inputValue: string) =>
-        abortPreviousRequests(() => envListOptions(inputValue, abortControllerRef.current.signal), abortControllerRef)
+    const [inputValue, setInputValue] = useState('')
+    const { recentlyVisitedResources } = useUserPreferences({
+        recentlyVisitedFetchConfig: {
+            id: envId,
+            name: envName,
+            resourceKind: 'app-group',
+            isDataAvailable: isEnvDataAvailable,
+        },
+    })
+
+    const [loading, selectOptions, error, reload] = useAsync(
+        () => envListOptions(inputValue, abortControllerRef.current.signal, recentlyVisitedResources),
+        [inputValue, recentlyVisitedResources],
+        isEnvDataAvailable && !!recentlyVisitedResources.length,
+    )
+
+    const onInputChange: SelectPickerProps['onInputChange'] = async (val) => {
+        setInputValue(val)
+    }
+
+    const handleChange = (selectedOption: RecentlyVisitedOptions) => {
+        if (selectedOption.label === envName) return
+
+        onChange(selectedOption)
+
+        handleAnalyticsEvent({
+            category: 'Environment',
+            action: selectedOption.isRecentlyVisited
+                ? ENV_APP_GROUP_GA_EVENTS.EnvironmentHeaderRecentlyVisitedClicked.action
+                : ENV_APP_GROUP_GA_EVENTS.EnvironmentHeaderSearchedItemClicked.action,
+        })
+    }
 
     return (
-        <AsyncSelect
-            loadOptions={handleFetchOptions}
-            noOptionsMessage={AppSelectorNoOptionsMessage}
-            onChange={onChange}
+        <ContextSwitcher
+            isLoading={loading}
+            onChange={handleChange}
             value={defaultOptions}
-            components={{
-                IndicatorSeparator: null,
-                DropdownIndicator: AppSelectorDropdownIndicator,
-                LoadingIndicator: null,
-            }}
-            styles={APP_SELECTOR_STYLES}
+            options={selectOptions}
+            inputId={`app-group-switcher-${envId}`}
+            placeholder={envName}
+            inputValue={inputValue}
+            onInputChange={onInputChange}
+            optionListError={error}
+            reloadOptionList={reload}
         />
     )
 }

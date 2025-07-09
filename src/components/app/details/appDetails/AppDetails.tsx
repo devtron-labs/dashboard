@@ -613,7 +613,7 @@ const Details: React.FC<DetailsType> = ({
     ) {
         return (
             <>
-                {primaryResourceList.length && (
+                {!!primaryResourceList.length && (
                     <div className="flex left ml-20 mt-16">
                         <AppEnvSelector
                             {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })}
