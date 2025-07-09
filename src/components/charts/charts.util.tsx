@@ -50,8 +50,7 @@ export const renderDeprecatedWarning = () => {
 }
 
 export const getChartGroupSubgroup = (chartGroupEntries): ChartGroupEntry[] => {
-    let len = chartGroupEntries.length
-    len = len < CHART_CARD_MAX_LENGTH ? len : CHART_CARD_MAX_LENGTH
+    const len = Math.min(chartGroupEntries.length, CHART_CARD_MAX_LENGTH)
     return chartGroupEntries.slice(0, len)
 }
 

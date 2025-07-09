@@ -88,30 +88,6 @@ const ChartCard = ({
         />
     )
 
-    const renderCardInfo = () => (
-        <div className="flexbox-col flex-grow-1 dc__gap-8">
-            <div className="flexbox-col dc__gap-2">
-                <div className="flex left">
-                    <InteractiveCellText
-                        text={chart.name}
-                        rootClassName="fw-6 chart-grid-item__title cn-9"
-                        fontSize={14}
-                    />
-                    <div className="chart-name__arrow dc__no-shrink flex">
-                        <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
-                    </div>
-                </div>
-                {chart.deprecated && renderDeprecatedWarning()}
-            </div>
-
-            <span
-                className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate({ isListView, isDeprecated: chart.deprecated })}`}
-            >
-                {chart.description || 'No description'}
-            </span>
-        </div>
-    )
-
     const renderFooter = () => (
         <div className="flex left dc__content-space dc__border-top-n1 px-20 py-16 dc__gap-6">
             <div className="flex dc__gap-6">
@@ -155,7 +131,27 @@ const ChartCard = ({
                         {renderAddIcon()}
                     </div>
                 )}
-                {renderCardInfo()}
+                <div className="flexbox-col flex-grow-1 dc__gap-8">
+                    <div className="flexbox-col dc__gap-2">
+                        <div className="flex left">
+                            <InteractiveCellText
+                                text={chart.name}
+                                rootClassName="fw-6 chart-grid-item__title cn-9"
+                                fontSize={14}
+                            />
+                            <div className="chart-name__arrow dc__no-shrink flex">
+                                <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
+                            </div>
+                        </div>
+                        {chart.deprecated && renderDeprecatedWarning()}
+                    </div>
+
+                    <span
+                        className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate({ isListView, isDeprecated: chart.deprecated })}`}
+                    >
+                        {chart.description || 'No description'}
+                    </span>
+                </div>
             </div>
             {renderFooter()}
         </div>
