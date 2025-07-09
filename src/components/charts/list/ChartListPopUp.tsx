@@ -22,6 +22,7 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    EMPTY_STATE_STATUS,
     GenericEmptyState,
     Icon,
     ImageType,
@@ -38,7 +39,7 @@ import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_cloc
 import EmptyFolder from '../../../assets/img/empty-folder.webp'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
 import { URLS } from '../../../config'
-import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
+import { TOAST_INFO } from '../../../config/constantMessaging'
 import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
 import { ChartListPopUpType } from '../charts.types'
 import AddChartSource from './AddChartSource'

@@ -113,7 +113,6 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
     const [chartActiveMap, setChartActiveMap] = useState({})
 
-    // const [showSourcePopoUp, setShowSourcePopoUp] = useState<boolean>(false)
     const [chartLists, setChartLists] = useState<ChartListType[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
