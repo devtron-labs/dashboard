@@ -413,7 +413,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         isSearchable={false}
                     />
                 </div>
-                {selectedToken?.value && renderSelectedToken('Selected', selectedToken.token)}
             </>
         )
     }

@@ -23,7 +23,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ButtonWithLoader,
-    ClipboardButton,
     CustomInput,
     InfoBlock,
     noop,
@@ -251,17 +250,6 @@ const EditAPIToken = ({
                         placeholder="Enter a description to remember where you have used this token"
                         error={invalidDescription ? 'Max 350 characters allowed.' : null}
                     />
-                    <label className="form__row">
-                        <span className="form__label">Token</span>
-                        <div className="flex dc__content-space top cn-9">
-                            <span data-testid="api-token-string" className="mono fs-14 dc__word-break">
-                                {editData.token}
-                            </span>
-                            <div className="icon-dim-16 ml-8">
-                                <ClipboardButton content={editData.token} />
-                            </div>
-                        </div>
-                    </label>
                     <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector isAddMode={false} />
                 </div>
