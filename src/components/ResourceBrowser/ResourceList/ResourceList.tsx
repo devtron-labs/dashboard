@@ -392,7 +392,6 @@ const ResourceList = () => {
                 <Route path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL} exact>
                     <DynamicTabComponentWrapper type="dynamic" {...DynamicTabComponentWrapperBaseProps} addTab={addTab}>
                         <NodeDetailWrapper
-                            addTab={addTab}
                             getTabId={getTabId}
                             lowercaseKindToResourceGroupMap={lowercaseKindToResourceGroupMap}
                             updateTabUrl={updateTabUrl}

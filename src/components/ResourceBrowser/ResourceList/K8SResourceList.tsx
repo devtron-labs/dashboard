@@ -161,7 +161,8 @@ export const K8SResourceList = ({
         [selectedResource, clusterId, selectedNamespace, JSON.stringify(resourceFilters)],
     )
 
-    const isResourceListLoading = resourceListLoader || getIsRequestAborted(resourceListError)
+    const isResourceListLoadingWithoutNullState = resourceListLoader || getIsRequestAborted(resourceListError)
+    const isResourceListLoading = !resourceList || isResourceListLoadingWithoutNullState
 
     useEffect(
         () => () => {
@@ -237,7 +238,7 @@ export const K8SResourceList = ({
         return columns.some(({ field }) => field === 'namespace') ? 'namespace' : 'name'
     }
 
-    if (resourceListError && !isResourceListLoading) {
+    if (resourceListError && !isResourceListLoadingWithoutNullState) {
         return (
             <div className="flexbox-col flex-grow-1 border__primary--left">
                 <ErrorScreenManager
