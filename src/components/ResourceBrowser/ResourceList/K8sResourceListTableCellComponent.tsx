@@ -13,7 +13,6 @@ import {
     highlightSearchText,
     Icon,
     IconName,
-    K8sResourceDetailDataType,
     Nodes,
     noop,
     RESOURCE_BROWSER_ROUTES,
@@ -172,7 +171,7 @@ const K8sResourceListTableCellComponent = ({
             <ResourceBrowserActionMenu
                 ref={contextMenuRef}
                 clusterId={clusterId}
-                resourceData={resourceData as K8sResourceDetailDataType}
+                resourceData={resourceData}
                 getResourceListData={reloadResourceListData as () => Promise<void>}
                 selectedResource={selectedResource}
                 handleResourceClick={handleResourceClick}
@@ -183,14 +182,14 @@ const K8sResourceListTableCellComponent = ({
                 ref={contextMenuRef}
                 getNodeListData={reloadResourceListData as () => Promise<void>}
                 addTab={addTab}
-                nodeData={resourceData as K8sResourceDetailDataType}
+                nodeData={resourceData}
                 handleClearBulkSelection={noop}
             />
         )
 
     const getConditionalWrap = () =>
         columnName === 'node'
-            ? getRenderNodeButton(resourceData as K8sResourceDetailDataType, columnName, handleNodeClick)
+            ? getRenderNodeButton(resourceData, columnName, handleNodeClick)
             : getRenderInvolvedObjectButton(resourceData[columnName] as string, handleEventInvolvedObjectClick)
 
     if (columnName === 'type' && isEventListing) {

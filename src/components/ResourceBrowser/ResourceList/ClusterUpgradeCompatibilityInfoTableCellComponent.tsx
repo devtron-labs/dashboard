@@ -8,7 +8,6 @@ import {
     DUMMY_RESOURCE_GVK_VERSION,
     GVKType,
     highlightSearchText,
-    K8sResourceDetailDataType,
     Nodes,
     noop,
     RESOURCE_BROWSER_ROUTES,
@@ -142,7 +141,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
                 <ResourceBrowserActionMenu
                     ref={contextMenuRef}
                     clusterId={clusterId}
-                    resourceData={resourceData as K8sResourceDetailDataType}
+                    resourceData={resourceData}
                     getResourceListData={reloadResourceListData as () => Promise<void>}
                     selectedResource={selectedResource}
                     hideDeleteResource
