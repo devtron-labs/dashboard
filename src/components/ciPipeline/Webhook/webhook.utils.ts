@@ -35,3 +35,5 @@ export const CURL_PREFIX = `curl --location --request POST \\
 --header 'Content-Type: application/json' \\
 --header 'api-token: {token}' \\
 --data-raw '{data}'`
+
+export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with required permissions'

@@ -60,7 +60,7 @@ const GenerateModal = ({
             <GenericModal.Body>
                 <div className="flexbox-col dc__gap-20 p-20">
                     <div className="flexbox-col dc__gap-4">
-                        <h5 className="m-0 cn-9 lh-1-5">
+                        <h5 className="m-0 cn-9 lh-1-5 fw-6">
                             Copy and store this token safely, you won’t be able to view it again.
                         </h5>
                         <p className="cn-7 fs-12 lh-1-5 m-0">

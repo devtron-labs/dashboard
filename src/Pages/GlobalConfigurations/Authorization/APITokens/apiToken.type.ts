@@ -16,6 +16,8 @@
 
 import React from 'react'
 
+import { GenericModalProps } from '@devtron-labs/devtron-fe-common-lib'
+
 export interface FormType {
     name: string
     description: string
@@ -79,7 +81,7 @@ export interface GenerateTokenModalType {
     reload: () => void
     redirectToTokenList: () => void
     isRegenerationModal?: boolean
-    open: boolean
+    open: GenericModalProps['open']
 }
 
 export interface APITokenListType {

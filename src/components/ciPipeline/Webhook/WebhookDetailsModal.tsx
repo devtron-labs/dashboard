@@ -50,7 +50,7 @@ import './webhookDetails.scss'
 import { getUserRole, createOrUpdateUser } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
-import { CURL_PREFIX, PLAYGROUND_TAB_LIST, REQUEST_BODY_TAB_LIST, RESPONSE_TAB_LIST } from './webhook.utils'
+import { CURL_PREFIX, GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS, PLAYGROUND_TAB_LIST, REQUEST_BODY_TAB_LIST, RESPONSE_TAB_LIST } from './webhook.utils'
 import { SchemaType, TabDetailsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig, getWebhookAPITokenList } from './webhook.service'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
@@ -178,19 +178,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             setSampleCURL(
                 CURL_PREFIX.replace('{webhookURL}', _webhookDetails.webhookUrl).replace('{data}', modifiedJSONString),
             )
-            if (_isSuperAdmin) {
-                const { result } = await getWebhookAPITokenList(
-                    _webhookDetails.projectName,
-                    _webhookDetails.environmentIdentifier,
-                    _webhookDetails.appName,
-                )
-                const sortedResult =
-                    result
-                        ?.sort((a, b) => a['name'].localeCompare(b['name']))
-                        .map((tokenData) => {
-                            return { label: tokenData.name, value: tokenData.id, ...tokenData }
-                        }) || []
-            }
             setLoader(false)
         } catch (error) {
             setIsSuperAdmin(false)
@@ -412,7 +399,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
                         error={showTokenNameError && GENERATE_TOKEN_NAME_VALIDATION}
-                        helperText="An API token with the required permissions will be auto-generated."
+                        helperText="An API token with the required permissions will be generated."
                         required
                     />
                     {generatedAPIToken && renderSelectedToken(generatedAPIToken)}
@@ -447,11 +434,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 dataTestId="select-or-generate-token"
                 variant={ButtonVariantType.text}
                 onClick={toggleTokenSection}
-                text="Auto-generate token with required permissions"
+                text={GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS}
             />
         ) : (
             <div className="cn-9 fs-13 mb-8">
-                <span className="fs-13 lh-1-5 fw-6">Generate token with required permissions</span>
+                <span className="fs-13 lh-1-5 fw-6">{GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS}</span>
                 {renderGenerateTokenSection()}
             </div>
         )
