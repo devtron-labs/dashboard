@@ -20,10 +20,11 @@ import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 
 import {
+    Button,
     ButtonStyleType,
     ButtonVariantType,
-    ButtonWithLoader,
     CustomInput,
+    Icon,
     InfoBlock,
     noop,
     Progressing,
@@ -34,7 +35,6 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Delete } from '../../../../assets/icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '../../../../components/common'
 import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
@@ -167,21 +167,13 @@ const EditAPIToken = ({
     }
 
     const getExpirationText = () => {
-        if (isTokenExpired(editData.expireAtInMs)) {
-            return (
-                <span className="cr-5 fw-6">
-                    This token expired on&nbsp;
-                    {moment(editData.expireAtInMs).format(MomentDateFormat)}.
-                </span>
-            )
-        }
         if (editData.expireAtInMs === 0) {
-            return <span className="fw-6">This token has no expiration date.</span>
+            return <span className="fw-6 cn-9">This token has no expiration date.</span>
         }
 
         return (
-            <span className="fw-6">
-                This token expires on&nbsp;
+            <span className="fw-6 cn-9">
+                This token {isTokenExpired(editData.expireAtInMs) ? 'expired' : 'expires'} on&nbsp;
                 {moment(editData.expireAtInMs).format(MomentDateFormat)}.
             </span>
         )
@@ -198,6 +190,7 @@ const EditAPIToken = ({
                 variant: ButtonVariantType.text,
                 style: ButtonStyleType.negative,
             }}
+            variant={isTokenExpired(editData.expireAtInMs) ? 'error' : 'information'}
         />
     )
 
@@ -219,16 +212,16 @@ const EditAPIToken = ({
                         {renderQuestionwithTippy()}
                     </div>
                     <div className="flex dc__align-end dc__content-end">
-                        <ButtonWithLoader
-                            rootClassName="flex cta override-button delete scr-5 h-32"
+                        <Button
                             onClick={handleDeleteButton}
                             disabled={loader}
                             isLoading={false}
                             dataTestId="delete-token"
-                        >
-                            <Delete className="icon-dim-16 mr-8" />
-                            <span>Delete</span>
-                        </ButtonWithLoader>
+                            text="Delete"
+                            variant={ButtonVariantType.secondary}
+                            style={ButtonStyleType.negative}
+                            startIcon={<Icon name="ic-delete" color={null} />}
+                        />
                     </div>
                 </div>
                 <div className="flexbox-col dc__gap-16">

@@ -20,6 +20,7 @@ import {
     ClipboardButton,
     copyToClipboard,
     GenericModal,
+    Icon,
     InfoBlock,
     stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -35,7 +36,7 @@ const GenerateModal = ({
     open,
 }: GenerateTokenModalType) => {
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
-    const modelType = isRegenerationModal ? 'regenerated' : 'generated'
+    const modelType = isRegenerationModal ? 'Regenerated' : 'Generated'
     const handleCloseButton = () => {
         close()
         reload()
@@ -59,14 +60,21 @@ const GenerateModal = ({
             <GenericModal.Body>
                 <div className="flexbox-col dc__gap-20 p-20">
                     <div className="flexbox-col dc__gap-4">
-                        <h4 className="m-0">Copy and store this token safely, you won’t be able to view it again.</h4>
+                        <h5 className="m-0 cn-9 lh-1-5">
+                            Copy and store this token safely, you won’t be able to view it again.
+                        </h5>
                         <p className="cn-7 fs-12 lh-1-5 m-0">
                             You can regenerate a token anytime. If you do, remember to update any scripts or
                             applications using the old token.
                         </p>
                     </div>
 
-                    <InfoBlock description={token} variant="success" />
+                    <InfoBlock
+                        heading="API Token"
+                        description={token}
+                        variant="success"
+                        customIcon={<Icon name="ic-key" color="G500" />}
+                    />
                 </div>
             </GenericModal.Body>
             <GenericModal.Footer
