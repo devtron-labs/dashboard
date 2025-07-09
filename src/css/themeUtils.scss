@@ -125,6 +125,10 @@
         box-shadow: var(--shadow-drawer);
     }
 
+    &__key {
+        box-shadow: var(--shadow-key);
+    }
+
     &__card {
         &--10 {
             box-shadow: var(--shadow-10);

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { GroupBase } from 'react-select'
+
 import { OptionType, SelectPickerOptionType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
@@ -73,13 +75,18 @@ export const TEMPLATE_TYPE_FILTER_OPTIONS: SelectPickerOptionType[] = [
     { label: FluxCDTemplateType.KUSTOMIZATION, value: FluxCDTemplateType.KUSTOMIZATION },
 ]
 
-export const APP_STATUS_FILTER_OPTIONS: SelectPickerOptionType[] = [
-    { label: AppStatuses.DEGRADED, value: AppStatusesDTO.DEGRADED },
-    { label: AppStatuses.HEALTHY, value: AppStatusesDTO.HEALTHY },
-    { label: AppStatuses.HIBERNATING, value: AppStatusesDTO.HIBERNATING },
-    { label: AppStatuses.MISSING, value: AppStatusesDTO.MISSING },
-    { label: AppStatuses.NOT_DEPLOYED, value: AppStatusesDTO.NOT_DEPLOYED },
-    { label: AppStatuses.PROGRESSING, value: AppStatusesDTO.PROGRESSING },
+export const APP_STATUS_FILTER_OPTIONS: GroupBase<SelectPickerOptionType>[] = [
+    {
+        label: 'App Status',
+        options: [
+            { label: AppStatuses.DEGRADED, value: AppStatusesDTO.DEGRADED },
+            { label: AppStatuses.HEALTHY, value: AppStatusesDTO.HEALTHY },
+            { label: AppStatuses.HIBERNATING, value: AppStatusesDTO.HIBERNATING },
+            { label: AppStatuses.MISSING, value: AppStatusesDTO.MISSING },
+            { label: AppStatuses.NOT_DEPLOYED, value: AppStatusesDTO.NOT_DEPLOYED },
+            { label: AppStatuses.PROGRESSING, value: AppStatusesDTO.PROGRESSING },
+        ],
+    },
 ]
 
 export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
