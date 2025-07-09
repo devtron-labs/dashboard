@@ -1,6 +1,4 @@
-import { ImageWithFallback } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ReactComponent as Helm } from '../../assets/icons/ic-default-chart.svg'
+import { Icon, ImageWithFallback } from '@devtron-labs/devtron-fe-common-lib'
 
 const ChartIcon = ({ icon, isChartGroupCard }: { icon: string; isChartGroupCard?: boolean }) => {
     const chartIconClass = `dc__chart-grid-item__icon icon-dim-32 ${isChartGroupCard ? 'chart-group-card__icon' : 'chart-icon-dim'} br-4 dc__no-shrink`
@@ -17,7 +15,11 @@ const ChartIcon = ({ icon, isChartGroupCard }: { icon: string; isChartGroupCard?
                     alt: 'chart',
                     className: chartIconClass,
                 }}
-                fallbackImage={<Helm className={chartIconClass} />}
+                fallbackImage={
+                    <div className={chartIconClass}>
+                        <Icon name="ic-helm-app" size={32} color={null} />
+                    </div>
+                }
             />
         </div>
     )
