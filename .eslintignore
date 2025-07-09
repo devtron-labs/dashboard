@@ -143,14 +143,10 @@ src/components/charts/ChartGroupUpdate.tsx
 src/components/charts/ChartHeaderFilters.tsx
 src/components/charts/Charts.tsx
 src/components/charts/MultiChartSummary.tsx
-src/components/charts/SavedValues/SavedValuesList.tsx
 src/components/charts/chartValues/ChartValues.tsx
 src/components/charts/charts.service.ts
 src/components/charts/charts.util.tsx
 src/components/charts/dialogs/ValuesYamlConfirmDialog.tsx
-src/components/charts/discoverChartDetail/About.tsx
-src/components/charts/discoverChartDetail/ChartDeploymentList.tsx
-src/components/charts/discoverChartDetail/DiscoverChartDetails.tsx
 src/components/charts/list/ChartGroup.tsx
 src/components/charts/list/ChartListPopUp.tsx
 src/components/charts/list/ChartListPopUpRow.tsx

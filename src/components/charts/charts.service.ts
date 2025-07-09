@@ -34,7 +34,6 @@ import {
     DeleteInstalledChartParamsType,
     ChartDetailsDTO,
 } from './charts.types'
-import { SavedValueListResponse } from './SavedValues/types'
 
 interface RootObject {
     code: number
@@ -83,11 +82,6 @@ export function deleteInstalledChart(
     }
     const url = getUrlWithSearchParams(baseUrl, params)
     return trash(url)
-}
-
-export function getChartValuesTemplateList(chartId: number | string): Promise<SavedValueListResponse> {
-    const URL = `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_TEMPLATE}/${chartId}`
-    return get(URL)
 }
 
 export function getChartValuesCategorizedList(chartId: number | string, installedAppVersionId = null): Promise<any> {

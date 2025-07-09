@@ -9,13 +9,12 @@ import {
 import {
     deleteInstalledChart,
     getChartValuesCategorizedListParsed,
-    getChartValuesTemplateList,
     getChartVersionDetails,
     getChartVersionsMin,
 } from '@Components/charts/charts.service'
 import { DELETE_ACTION, Routes } from '@Config/constants'
 
-import { ChartDeploymentsDTO } from './types'
+import { ChartDeploymentsDTO, ChartValuesTemplateDTO } from './types'
 
 export const fetchChartVersions = async (chartId: string) => {
     try {
@@ -59,7 +58,9 @@ export const fetchChartValuesList = async (chartId: string) => {
 
 export const fetchChartValuesTemplateList = async (chartId: string) => {
     try {
-        const { result } = await getChartValuesTemplateList(chartId)
+        const { result } = await get<ChartValuesTemplateDTO[]>(
+            `${Routes.CHART_STORE}/${Routes.CHART_STORE_VALUES}/${Routes.CHART_VALUES_LIST_TEMPLATE}/${chartId}`,
+        )
         return result || []
     } catch (err) {
         showError(err)

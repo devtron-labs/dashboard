@@ -16,7 +16,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { deleteChartValues } from '@Components/charts/charts.service'
-import { SavedValueType } from '@Components/charts/SavedValues/types'
 import { URLS } from '@Config/routes'
 import { ApplicationDeletionInfo } from '@Pages/Shared/ApplicationDeletionInfo/ApplicationDeletionInfo'
 
@@ -28,9 +27,9 @@ import {
 import { fetchChartValuesTemplateList } from './services'
 import {
     ChartDetailsRouteParams,
+    ChartValuesTemplateDTO,
     PresetValuesTableAdditionalProps,
     PresetValuesTableProps,
-    PresetValuesTableRowData,
 } from './types'
 
 const renderEmptyStateButton = (path: string) => () => (
@@ -47,7 +46,7 @@ const renderEmptyStateButton = (path: string) => () => (
 
 export const ChartDetailsPresetValues = () => {
     // STATES
-    const [deletePresetValue, setDeletePresetValue] = useState<SavedValueType | null>(null)
+    const [deletePresetValue, setDeletePresetValue] = useState<ChartValuesTemplateDTO | null>(null)
 
     // HOOKS
     const {
@@ -102,7 +101,7 @@ export const ChartDetailsPresetValues = () => {
                     reload: reloadChartValuesTemplateList,
                 }}
             >
-                <Table<PresetValuesTableRowData, FiltersTypeEnum.STATE, PresetValuesTableAdditionalProps>
+                <Table<ChartValuesTemplateDTO, FiltersTypeEnum.STATE, PresetValuesTableAdditionalProps>
                     id="table__chart-details-preset-values"
                     loading={isFetchingChartValuesTemplateList}
                     columns={PRESET_VALUES_TABLE_COLUMNS}

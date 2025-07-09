@@ -10,7 +10,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Chart, ChartDetailsDTO } from '@Components/charts/charts.types'
-import { SavedValueType } from '@Components/charts/SavedValues/types'
 
 export type ChartSelectorOptionType = SelectPickerOptionType & Chart
 
@@ -53,32 +52,38 @@ export interface ChartDetailsDeployProps
     }[]
 }
 
-export type PresetValuesTableRowData = Omit<SavedValueType, 'isLoading'>
+export interface ChartValuesTemplateDTO {
+    id: number
+    name: string
+    chartVersion: string
+    updatedBy: string
+    updatedOn: string
+}
 
 export type PresetValuesTableAdditionalProps = {
-    chartValuesTemplateList: SavedValueType[]
-    showDeleteModal: (deletePresetValue: PresetValuesTableRowData) => () => void
+    chartValuesTemplateList: ChartValuesTemplateDTO[]
+    showDeleteModal: (deletePresetValue: ChartValuesTemplateDTO) => () => void
 }
 
 export type PresetValuesTableProps = TableProps<
-    PresetValuesTableRowData,
+    ChartValuesTemplateDTO,
     FiltersTypeEnum.STATE,
     PresetValuesTableAdditionalProps
 >
 
 export type PresetValuesTableCellComponentProps = TableCellComponentProps<
-    PresetValuesTableRowData,
+    ChartValuesTemplateDTO,
     FiltersTypeEnum.STATE,
     PresetValuesTableAdditionalProps
 >
 
 export type PresetValuesTableRowActionsOnHoverComponentProps = TableRowActionsOnHoverComponentProps<
-    PresetValuesTableRowData,
+    ChartValuesTemplateDTO,
     PresetValuesTableAdditionalProps
 >
 
 export type PresetValuesTableViewWrapperProps = TableViewWrapperProps<
-    PresetValuesTableRowData,
+    ChartValuesTemplateDTO,
     FiltersTypeEnum.STATE,
     PresetValuesTableAdditionalProps
 >

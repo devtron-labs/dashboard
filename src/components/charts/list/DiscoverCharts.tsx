@@ -59,7 +59,6 @@ import { QueryParams } from '../constants'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import MultiChartSummary from '../MultiChartSummary'
-import SavedValuesList from '../SavedValues/SavedValuesList'
 import useChartGroup from '../useChartGroup'
 import ChartGroupCard from '../util/ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
@@ -715,12 +714,11 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
             <Route path={`${path}/group`}>
                 <ChartGroupRouter />
             </Route>
-            {/* TODO: remove this */}
-            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}`} component={SavedValuesList} exact />
-            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
-                <ChartValues />
-            </Route>
-            {/* <Route path={`${path}${URLS.CHART}/:chartId`} component={DiscoverChartDetails} /> */}
+            <Route
+                path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`}
+                render={() => <ChartValues />}
+                exact
+            />
             <Route
                 path={`${path}${URLS.CHART}/:chartId`}
                 render={({ match: { params } }) => <ChartDetails key={params.chartId} />}
