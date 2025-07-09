@@ -31,42 +31,9 @@ export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
 
     const GROUP_EDIT_LINK = getChartGroupURL(chartGroup.id)
 
-    const renderCardInfo = () => (
-        <div className="flexbox-col flex-grow-1 dc__gap-8">
-            <div className="flexbox-col dc__gap-2">
-                <div className="flex left">
-                    <InteractiveCellText
-                        text={chartGroup.name}
-                        rootClassName="fw-6 chart-grid-item__title cn-9"
-                        fontSize={14}
-                    />
-                    <div className="chart-name__arrow dc__no-shrink flex">
-                        <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
-                    </div>
-                </div>
-            </div>
-
-            <span className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate({})}`}>
-                {chartGroup.description || 'No description'}
-            </span>
-        </div>
-    )
-
     const handleClick = () => {
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_GROUP_CARD_CLICKED' })
     }
-
-    const renderFooter = () => (
-        <div className="flex left dc__content-space dc__border-top-n1 px-20 py-16 dc__gap-6">
-            <div className="flex">
-                {getAlphabetIcon(chartGroup.createdBy)}
-                <InteractiveCellText text={chartGroup.createdBy} rootClassName="cn-7 lh-1-5" fontSize={12} />
-            </div>
-            <span className="lh-20 dc__truncate m-0 dc__align-item-left cn-7 lh-1-5 dc__mxw-120 fs-12">
-                {chartGroup.chartGroupEntries?.length || 0} charts
-            </span>
-        </div>
-    )
 
     return (
         <Link
@@ -94,10 +61,35 @@ export const ChartGroupCard = ({ chartGroup }: ChartGroupCardProps) => {
                         </div>
                     )}
                 </div>
-                {renderCardInfo()}
+                <div className="flexbox-col flex-grow-1 dc__gap-8">
+                    <div className="flexbox-col dc__gap-2">
+                        <div className="flex left">
+                            <InteractiveCellText
+                                text={chartGroup.name}
+                                rootClassName="fw-6 chart-grid-item__title cn-9"
+                                fontSize={14}
+                            />
+                            <div className="chart-name__arrow dc__no-shrink flex">
+                                <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <span className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate({})}`}>
+                        {chartGroup.description || 'No description'}
+                    </span>
+                </div>
             </div>
 
-            {renderFooter()}
+            <div className="flex left dc__content-space dc__border-top-n1 px-20 py-16 dc__gap-6">
+                <div className="flex">
+                    {getAlphabetIcon(chartGroup.createdBy)}
+                    <InteractiveCellText text={chartGroup.createdBy} rootClassName="cn-7 lh-1-5" fontSize={12} />
+                </div>
+                <span className="lh-20 dc__truncate m-0 dc__align-item-left cn-7 lh-1-5 dc__mxw-120 fs-12">
+                    {chartGroup.chartGroupEntries?.length || 0} charts
+                </span>
+            </div>
         </Link>
     )
 }

@@ -119,7 +119,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const chartStoreRef = useRef<HTMLDivElement>(null)
 
-    const { open, overlayProps, popoverProps, triggerProps, scrollableRef, closePopover } = usePopover({
+    const { open, overlayProps, popoverProps, triggerProps, closePopover } = usePopover({
         id: 'profile-menu',
         alignment: 'end',
         width: 250,
