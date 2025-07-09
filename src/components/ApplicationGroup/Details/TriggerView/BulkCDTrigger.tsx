@@ -57,8 +57,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as UnAuthorized } from '@Icons/ic-locked.svg'
-import { ReactComponent as DeployIcon } from '@Icons/ic-nav-rocket.svg'
-import { ReactComponent as PlayIcon } from '@Icons/ic-play-outline.svg'
 import { ReactComponent as Tag } from '@Icons/ic-tag.svg'
 import { ReactComponent as Error } from '@Icons/ic-warning.svg'
 import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
@@ -968,27 +966,25 @@ const BulkCDTrigger = ({
                         />
                     )}
                     <div className="dc__position-rel tippy-over">
-                        {!isDeployButtonDisabled && isCDStage && !isLoading ? (
-                            <AnimatedDeployButton
-                                onButtonClick={onClickStartDeploy}
-                                isVirtualEnvironment={false}
-                                exceptionUserConfig={{
-                                    canDeploy: canDeployWithoutApproval,
-                                    isImageApprover: canImageApproverDeploy,
-                                }}
-                                isBulkCDTrigger
-                            />
-                        ) : (
-                            <Button
-                                dataTestId="deploy-button"
-                                text={BUTTON_TITLE[stage]}
-                                startIcon={isCDStage ? <DeployIcon /> : <PlayIcon />}
-                                isLoading={isLoading}
-                                size={ComponentSizeType.large}
-                                onClick={onClickStartDeploy}
-                                disabled={isDeployButtonDisabled}
-                            />
-                        )}
+                        <AnimatedDeployButton
+                            dataTestId="cd-trigger-deploy-button"
+                            text={BUTTON_TITLE[stage]}
+                            startIcon={<Icon name={isCDStage ? 'ic-rocket-launch' : 'ic-play-outline'} color={null} />}
+                            onButtonClick={onClickStartDeploy}
+                            disabled={isDeployButtonDisabled}
+                            isLoading={isLoading}
+                            animateStartIcon={isCDStage}
+                            style={
+                                canDeployWithoutApproval || canImageApproverDeploy
+                                    ? ButtonStyleType.warning
+                                    : ButtonStyleType.default
+                            }
+                            tooltipContent={
+                                canDeployWithoutApproval || canImageApproverDeploy
+                                    ? 'You are authorized to deploy as an exception user for some applications'
+                                    : ''
+                            }
+                        />
                     </div>
                 </div>
             </div>

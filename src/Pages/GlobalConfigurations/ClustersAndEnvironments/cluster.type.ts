@@ -112,15 +112,8 @@ export interface ClusterListProps {
     isVirtualCluster: boolean
     environments: any[]
     reload: () => void
-    sshTunnelConfig: any
     isProd: boolean
     serverURL: string
-    prometheusURL: string
-    prometheusAuth: any
-    proxyUrl: string
-    insecureSkipTlsVerify: boolean
-    installationId: number
-    toConnectWithSSHTunnel: boolean
     clusterId: number
     category: SelectPickerOptionType
 }
@@ -238,6 +231,7 @@ export interface DeleteClusterConfirmationModalProps
         Pick<ClusterEnvironmentListProps, 'clusterId'> {
     handleClose: () => void
     installationId: string
+    handleSuccess?: () => void
 }
 
 export interface DeleteClusterPayload {
@@ -248,4 +242,23 @@ export interface UserNameDropDownListProps {
     clusterDetail: DataListType
     selectedUserNameOptions: Record<string, any>
     onChangeUserName: (selectedOption: any, clusterDetail: DataListType) => void
+}
+
+export interface EditClusterDrawerContentProps
+    extends Pick<
+        ClusterMetadataTypes,
+        | 'sshTunnelConfig'
+        | 'insecureSkipTlsVerify'
+        | 'category'
+        | 'isProd'
+        | 'installationId'
+        | 'toConnectWithSSHTunnel'
+        | 'proxyUrl'
+    > {
+    clusterId: ClusterMetadataTypes['id']
+    clusterName: ClusterMetadataTypes['cluster_name']
+    serverURL: ClusterMetadataTypes['server_url']
+    prometheusURL: ClusterMetadataTypes['prometheus_url']
+    reload: () => void
+    handleModalClose: () => void
 }
