@@ -58,7 +58,7 @@ const GenerateModal = ({
             <GenericModal.Header title={`API Token ${modelType}`} />
             <GenericModal.Body>
                 <div className="flexbox-col dc__gap-20 p-20">
-                    <div>
+                    <div className="flexbox-col dc__gap-4">
                         <h4 className="m-0">Copy and store this token safely, you won’t be able to view it again.</h4>
                         <p className="cn-7 fs-12 lh-1-5 m-0">
                             You can regenerate a token anytime. If you do, remember to update any scripts or
