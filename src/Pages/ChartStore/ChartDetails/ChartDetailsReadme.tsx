@@ -14,17 +14,19 @@ import {
 
 import { ChartDetailsReadmeProps } from './types'
 
-const renderEmptyStateButton = () => (
-    <Button
-        dataTestId="search-readme-on-web"
-        component={ButtonComponentType.anchor}
-        variant={ButtonVariantType.text}
-        size={ComponentSizeType.medium}
-        anchorProps={{ href: '' }}
-        text="Search the web"
-        endIcon={<Icon name="ic-arrow-square-out" color={null} />}
-    />
-)
+const renderEmptyStateButton =
+    ({ chartName }: { chartName: string }) =>
+    () => (
+        <Button
+            dataTestId="search-readme-on-web"
+            component={ButtonComponentType.anchor}
+            variant={ButtonVariantType.text}
+            size={ComponentSizeType.medium}
+            anchorProps={{ href: `https://www.google.com/search?q=${chartName}%20helm%20chart%20readme` }}
+            text="Search the web"
+            endIcon={<Icon name="ic-arrow-square-out" color={null} />}
+        />
+    )
 
 export const ChartDetailsReadme = ({
     isLoading = false,
@@ -69,7 +71,7 @@ export const ChartDetailsReadme = ({
                         subTitle="A readme file was not found for this chart’s version."
                         imgName="img-no-result"
                         isButtonAvailable
-                        renderButton={renderEmptyStateButton}
+                        renderButton={renderEmptyStateButton({ chartName })}
                     />
                 ) : (
                     <MarkDown markdown={readme} className="" />

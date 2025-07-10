@@ -58,12 +58,12 @@ const ChartMetaData = ({
             )
         }
 
-        return isLink ? (
+        return isLink && subtitle ? (
             <a className="m-0 fs-13 lh-20 fw-4 dc__break-word" href={subtitle} target="_blank" rel="noreferrer">
                 {subtitle}
             </a>
         ) : (
-            <p className="m-0 fs-13 lh-20 fw-4 cn-9 dc__break-word">{subtitle}</p>
+            <p className="m-0 fs-13 lh-20 fw-4 cn-9 dc__break-word">{subtitle || '-'}</p>
         )
     }
 
@@ -90,6 +90,7 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
         home,
         isOCICompliantChart,
         chartYaml,
+        source,
     } = chartDetails ?? {}
 
     const parsedChartYaml = useMemo(() => getParsedChartYAML(chartYaml), [chartYaml])
@@ -115,6 +116,7 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
                     imageProps={{
                         src: icon,
                         alt: 'chart-icon',
+                        className: 'br-6',
                         height: 48,
                         width: 48,
                     }}
@@ -161,7 +163,7 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
                         />
                         <ChartMetaData title="Digest" subtitle={digest} />
                         {!!parsedChartYaml && (
-                            <ChartMetaData title="Source" subtitle={parsedChartYaml.sources} isLink />
+                            <ChartMetaData title="Source" subtitle={parsedChartYaml.sources || source} isLink />
                         )}
                     </div>
                 </>

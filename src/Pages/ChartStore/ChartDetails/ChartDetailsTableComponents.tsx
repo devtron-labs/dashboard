@@ -62,7 +62,7 @@ const PresetValuesTableIconCellComponent = () => (
 const PresetValuesTableLastUpdatedByCellComponent = ({ row }: PresetValuesTableCellComponentProps) => {
     const { updatedBy } = row.data
 
-    return <UserIdentifier identifier={updatedBy} />
+    return <UserIdentifier identifier={updatedBy} displayYouLabelForCurrentUser={updatedBy !== 'admin'} />
 }
 
 const PresetValuesTableUpdatedAtCellComponent = ({ row }: PresetValuesTableCellComponentProps) => {
@@ -256,7 +256,7 @@ const DeploymentsTableStatusCellComponent = ({ row }: DeploymentsTableCellCompon
 const DeploymentsTableDeployedByCellComponent = ({ row }: DeploymentsTableCellComponentProps) => {
     const { deployedBy } = row.data
 
-    return <UserIdentifier identifier={deployedBy} />
+    return <UserIdentifier identifier={deployedBy} displayYouLabelForCurrentUser={deployedBy !== 'admin'} />
 }
 
 const DeploymentsTableDeployedAtCellComponent = ({ row }: DeploymentsTableCellComponentProps) => {
