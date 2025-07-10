@@ -10,7 +10,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    getAlphabetIcon,
     handleAnalyticsEvent,
     Icon,
     ImageWithFallback,
@@ -18,7 +17,7 @@ import {
     SearchBar,
     SERVER_MODE,
     stringComparatorBySortOrder,
-    Tooltip,
+    UserIdentifier,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getAppId } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
@@ -63,14 +62,7 @@ const PresetValuesTableIconCellComponent = () => (
 const PresetValuesTableLastUpdatedByCellComponent = ({ row }: PresetValuesTableCellComponentProps) => {
     const { updatedBy } = row.data
 
-    return (
-        <span className="flex left">
-            {updatedBy && getAlphabetIcon(updatedBy)}
-            <Tooltip content={updatedBy}>
-                <span className="fs-13 lh-20 cn-9 dc__truncate">{updatedBy || '-'}</span>
-            </Tooltip>
-        </span>
-    )
+    return <UserIdentifier identifier={updatedBy} />
 }
 
 const PresetValuesTableUpdatedAtCellComponent = ({ row }: PresetValuesTableCellComponentProps) => {
@@ -264,14 +256,7 @@ const DeploymentsTableStatusCellComponent = ({ row }: DeploymentsTableCellCompon
 const DeploymentsTableDeployedByCellComponent = ({ row }: DeploymentsTableCellComponentProps) => {
     const { deployedBy } = row.data
 
-    return (
-        <span className="flex left">
-            {deployedBy && getAlphabetIcon(deployedBy)}
-            <Tooltip content={deployedBy}>
-                <span className="fs-13 lh-20 cn-9 dc__truncate">{deployedBy || '-'}</span>
-            </Tooltip>
-        </span>
-    )
+    return <UserIdentifier identifier={deployedBy} />
 }
 
 const DeploymentsTableDeployedAtCellComponent = ({ row }: DeploymentsTableCellComponentProps) => {
