@@ -263,6 +263,7 @@ $black: 0, 0, 0;
     --shadow-10: 0px 0px 4px 0px var(--black-20);
     --shadow-20: 0px 0px 7px 0px var(--black-20);
     --shadow-30: 0px 0px 10px 0px var(--black-20);
+    --shadow-key: 0px 2px 0px 0px rgba(7, 17, 26, 0.15);
 
     &.theme {
         &__light {
