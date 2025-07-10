@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
+import { useState } from 'react'
+
 import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    CIMaterialType,
     ComponentSizeType,
     CustomInput,
     InfoBlock,
+    savePipeline,
+    showError,
     SourceTypeMap,
     stopPropagation,
     VisibleModal2,
@@ -32,7 +37,7 @@ import { getGitProviderIcon } from '@Components/common'
 
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
-import { BranchRegexModalProps } from './types'
+import { BranchRegexModalProps, RegexValueType } from './types'
 
 const renderRegexInfo = () => (
     <InfoBlock
@@ -56,12 +61,87 @@ const BranchRegexModal = ({
     selectedCIPipeline,
     title,
     isChangeBranchClicked,
-    onClickNextButton,
-    handleRegexInputValue,
-    regexValue,
     onCloseBranchRegexModal,
-    savingRegexValue,
+    appId,
+    workflowId,
+    handleReload,
 }: BranchRegexModalProps) => {
+    const getInitialRegexValue = () => {
+        const initialValue: Record<number, RegexValueType> = {}
+        material.forEach((mat) => {
+            initialValue[mat.gitMaterialId] = {
+                value: mat.value,
+                isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
+            }
+        })
+        return initialValue
+    }
+
+    const [isSavingRegexValue, setIsSavingRegexValue] = useState(false)
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getInitialRegexValue)
+
+    const isRegexValueInvalid = (_cm): void => {
+        const regExp = new RegExp(_cm.source.regex)
+        const regVal = structuredClone(regexValue[_cm.gitMaterialId])
+        if (!regExp.test(regVal.value)) {
+            const _regexVal = {
+                ...regexValue,
+                [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
+            }
+            setRegexValue(_regexVal)
+        }
+    }
+
+    const handleSave = async () => {
+        setIsSavingRegexValue(true)
+        const payload: Parameters<typeof savePipeline>[0] = {
+            appId: +appId,
+            id: +workflowId,
+            ciPipelineMaterial: [],
+        }
+
+        if (selectedCIPipeline?.ciMaterial?.length) {
+            payload.ciPipelineMaterial = selectedCIPipeline.ciMaterial.map((_cm) => {
+                const regVal = regexValue[_cm.gitMaterialId]
+                let _updatedCM
+
+                if (regVal?.value && _cm.source.regex) {
+                    isRegexValueInvalid(_cm)
+
+                    _updatedCM = {
+                        ..._cm,
+                        type: SourceTypeMap.BranchFixed,
+                        value: regVal.value,
+                        regex: _cm.source.regex,
+                    }
+                } else {
+                    // Maintain the flattened object structure for unchanged values
+                    _updatedCM = {
+                        ..._cm,
+                        ..._cm.source,
+                    }
+                }
+
+                // Deleting as it's not required in the request payload
+                delete _updatedCM.source
+
+                return _updatedCM
+            })
+        }
+
+        try {
+            await savePipeline(payload, {
+                isRegexMaterial: true,
+                isTemplateView: false,
+            })
+            handleReload()
+        } catch (error) {
+            showError(error)
+        } finally {
+            setIsSavingRegexValue(false)
+        }
+    }
+
     const getBranchRegexName = (gitMaterialId: number) => {
         const ciMaterial = selectedCIPipeline?.ciMaterial?.find(
             (_ciMaterial) =>
@@ -112,11 +192,19 @@ const BranchRegexModal = ({
         return ''
     }
 
+    const handleRegexInputValue = (id: number, value: string, mat: CIMaterialType) => {
+        setRegexValue((prevState) => ({
+            ...prevState,
+            [id]: { value, isInvalid: mat.regex && !new RegExp(mat.regex).test(value) },
+        }))
+    }
+
     const renderBranchRegexContent = () => (
         <div className="ci-trigger__branch-regex-wrapper px-20 fs-13 dc__overflow-auto mxh-500 mh-200">
             <div className="bcn-2 flexbox-col dc__gap-1">
                 {material.map((mat, index) => {
-                    const _regexValue = regexValue[mat.gitMaterialId] || {}
+                    const _regexValue = regexValue[mat.gitMaterialId]
+
                     return (
                         mat.regex && (
                             <div className="flex left column dc__gap-6 pt-16 pb-16 bg__primary" key={`regex_${mat.id}`}>
@@ -152,7 +240,7 @@ const BranchRegexModal = ({
     )
     const renderMaterialRegexFooterNextButton = () => {
         const isDisabled = material.some((selectedMaterial) => {
-            const _regexValue = regexValue[selectedMaterial.gitMaterialId] || {}
+            const _regexValue = regexValue[selectedMaterial.gitMaterialId]
             return _regexValue.isInvalid
         })
 
@@ -170,9 +258,9 @@ const BranchRegexModal = ({
                     variant={ButtonVariantType.primary}
                     text="Fetch commits"
                     dataTestId="branch-regex-save-next-button"
-                    onClick={onClickNextButton}
-                    disabled={isDisabled || savingRegexValue}
-                    isLoading={savingRegexValue}
+                    onClick={handleSave}
+                    disabled={isDisabled || isSavingRegexValue}
+                    isLoading={isSavingRegexValue}
                     size={ComponentSizeType.medium}
                 />
             </div>
