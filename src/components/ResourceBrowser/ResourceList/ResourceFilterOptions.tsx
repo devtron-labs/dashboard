@@ -130,13 +130,13 @@ const ResourceFilterOptions = ({
 
     useEffect(() => {
         if (registerShortcut) {
-            registerShortcut({ keys: ['R'], callback: handleInputShortcut })
+            registerShortcut({ keys: ['/'], callback: handleInputShortcut })
             registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
             registerShortcut({ keys: ['N'], callback: handleFocusNamespaceFilter })
         }
         return (): void => {
             unregisterShortcut(['F'])
-            unregisterShortcut(['R'])
+            unregisterShortcut(['/'])
             unregisterShortcut(['N'])
         }
     }, [])
@@ -243,7 +243,7 @@ const ResourceFilterOptions = ({
                         />
                         {showShortcutKey && (
                             <ShortcutKeyBadge
-                                shortcutKey="r"
+                                shortcutKey="/"
                                 rootClassName="resource-search-shortcut-key"
                                 onClick={handleInputShortcut}
                             />

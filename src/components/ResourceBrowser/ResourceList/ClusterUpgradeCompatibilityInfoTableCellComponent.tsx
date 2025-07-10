@@ -5,7 +5,6 @@ import DOMPurify from 'dompurify'
 import {
     ALL_NAMESPACE_OPTION,
     ClipboardButton,
-    DUMMY_RESOURCE_GVK_VERSION,
     GVKType,
     highlightSearchText,
     Nodes,
@@ -48,7 +47,6 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
             name,
             kind: kind.toLowerCase(),
             group,
-            version: DUMMY_RESOURCE_GVK_VERSION,
         })
 
         push(`${url}/${tab}`)

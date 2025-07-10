@@ -22,7 +22,6 @@ import queryString from 'query-string'
 import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
-    DUMMY_RESOURCE_GVK_VERSION,
     FeatureTitleWithInfo,
     getUrlWithSearchParams,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
@@ -305,7 +304,6 @@ export const getTabsBasedOnRole = ({
                 clusterId,
                 kind: 'node',
                 group: K8S_EMPTY_GROUP,
-                version: DUMMY_RESOURCE_GVK_VERSION,
             }),
             isSelected: true,
             type: 'fixed',
@@ -454,7 +452,6 @@ export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatu
               clusterId: id,
               group: K8S_EMPTY_GROUP,
               kind: 'node',
-              version: DUMMY_RESOURCE_GVK_VERSION,
           })
 
 const renderAppGroupDescriptionContent = () =>

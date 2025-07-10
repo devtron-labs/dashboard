@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
@@ -29,6 +29,7 @@ import {
     PopupMenu,
     ToastManager,
     ToastVariantType,
+    useRegisterShortcut,
     ValueContainerWithLoadingShimmer,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -65,6 +66,22 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const [showHibernationRulesModal, setShowHibernationRulesModal] = useState(false)
 
     const selectRef = useRef<SelectInstance>(null)
+
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
+
+    useEffect(() => {
+        registerShortcut({
+            keys: ['S'],
+            callback: () => {
+                selectRef.current?.focus()
+                selectRef.current?.openMenu('first')
+            },
+        })
+
+        return () => {
+            unregisterShortcut(['S'])
+        }
+    }, [])
 
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
