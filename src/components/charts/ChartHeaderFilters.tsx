@@ -19,7 +19,7 @@ import { useRouteMatch, useHistory, useLocation } from 'react-router-dom'
 import { ReactComponent as Grid } from '../../assets/icons/ic-grid-view.svg'
 import { ReactComponent as List } from '../../assets/icons/ic-list-view.svg'
 import { QueryParams } from './constants'
-import { Accordian } from '../common/Accordian/Accordian'
+import { ChartSourceAccordion } from './ChartSourceAccordion'
 import { URLS } from '../../config'
 import { CHART_KEYS } from './constants'
 import { ChartHeaderFilterProps } from './charts.types'
@@ -256,12 +256,11 @@ const ChartHeaderFilter = ({
                     />
                 )}
                 <hr className="mt-8 mb-8" />
-                <Accordian
+                <ChartSourceAccordion
                     header="CHART SOURCE"
                     options={chartRepoList}
                     value={selectedChartRepo}
                     onChange={handleSelection}
-                    onClickViewChartButton={handleViewAllCharts}
                     dataTestId="chart-store-repository"
                 />
             </div>

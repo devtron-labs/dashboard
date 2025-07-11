@@ -14,31 +14,36 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
+import { NavLink } from 'react-router-dom'
+
 import {
-    showError,
-    Progressing,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    EMPTY_STATE_STATUS,
     GenericEmptyState,
+    Icon,
     ImageType,
-    stopPropagation,
+    InfoBlock,
+    Progressing,
     SearchBar,
+    showError,
+    stopPropagation,
     ToastManager,
     ToastVariantType,
-    InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
-import Tippy from '@tippyjs/react'
-import { NavLink } from 'react-router-dom'
-import { ChartListPopUpType } from '../charts.types'
-import { ReactComponent as Close } from '../../../assets/icons/ic-cross.svg'
-import { EMPTY_STATE_STATUS, TOAST_INFO } from '../../../config/constantMessaging'
-import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
-import { URLS } from '../../../config'
-import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+
+import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import EmptyFolder from '../../../assets/img/empty-folder.webp'
 import NoResults from '../../../assets/img/empty-noresult@2x.png'
+import { URLS } from '../../../config'
+import { TOAST_INFO } from '../../../config/constantMessaging'
+import { reSyncChartRepo } from '../../chartRepo/chartRepo.service'
+import { ChartListPopUpType } from '../charts.types'
 import AddChartSource from './AddChartSource'
 import ChartListPopUpRow from './ChartListPopUpRow'
-import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 
 const ChartListPopUp = ({
     onClose,
@@ -46,7 +51,7 @@ const ChartListPopUp = ({
     filteredChartList,
     isLoading,
     setFilteredChartList,
-    setShowSourcePopoUp,
+    setShowSourcePopUp,
     chartActiveMap,
     setChartActiveMap,
 }: ChartListPopUpType) => {
@@ -60,7 +65,7 @@ const ChartListPopUp = ({
         if (showAddPopUp) {
             setShowAddPopUp(false)
         } else {
-            setShowSourcePopoUp(false)
+            setShowSourcePopUp(false)
         }
     }
 
@@ -69,41 +74,16 @@ const ChartListPopUp = ({
         setShowAddPopUp(false)
     }
 
-    const toggleAddPopUp = (event: React.MouseEvent): void => {
-        stopPropagation(event)
-        setShowAddPopUp(!showAddPopUp)
-    }
-
     const toggleEnabled = (key: string) => (enabled: boolean) =>
         setChartActiveMap({ ...chartActiveMap, [key]: enabled })
 
-    const renderChartListHeaders = () => {
-        return (
-            <div className="px-16 py-12 flex dc__content-space dc__border-bottom fw-6">
-                <span>Helm chart sources</span>
-                <div className="flex dc__gap-12">
-                    <div className="flex cb-5 fw-6 cursor dc__gap-4" onClick={toggleAddPopUp}>
-                        <Add className="icon-dim-20 fcb-5" />
-                        Add
-                    </div>
-                    {renderGlobalRefetch()}
-                    <div className="dc__divider" />
-                    <button className="dc__transparent flex" onClick={onClose}>
-                        <Close className="dc__page-header__close-icon icon-dim-20 cursor" />
-                    </button>
-                </div>
-                {showAddPopUp && <AddChartSource />}
-            </div>
-        )
-    }
-
-    async function refetchCharts(e) {
+    const refetchCharts = async () => {
         if (fetching) {
             return
         }
         setFetching(true)
         await reSyncChartRepo()
-            .then((response) => {
+            .then(() => {
                 setFetching(false)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
@@ -116,20 +96,49 @@ const ChartListPopUp = ({
             })
     }
 
+    const renderChartListHeaders = () => (
+        <div className="px-16 py-12 flex dc__content-space dc__border-bottom fw-6">
+            <span>Helm chart sources</span>
+            <div className="flex dc__gap-12">
+                <AddChartSource text="Add" />
+
+                <Button
+                    icon={<SyncIcon />}
+                    onClick={refetchCharts}
+                    disabled={fetching}
+                    isLoading={fetching}
+                    size={ComponentSizeType.xxs}
+                    variant={ButtonVariantType.borderLess}
+                    dataTestId="chart-store-refetch-button"
+                    ariaLabel="Refetch charts"
+                />
+                <div className="dc__divider" />
+                <Button
+                    icon={<Icon name="ic-close-large" size={16} color={null} />}
+                    onClick={onClose}
+                    size={ComponentSizeType.xxs}
+                    variant={ButtonVariantType.borderLess}
+                    dataTestId="chart-store-close-button"
+                    showAriaLabelInTippy={false}
+                    ariaLabel="Close"
+                    style={ButtonStyleType.negativeGrey}
+                />
+            </div>
+        </div>
+    )
+
     const renderInfoText = (isEmptyState?: boolean): JSX.Element => {
-        const renderNavigationeToOCIRepository = () => {
-            return (
-                <>
-                    <NavLink className="ml-4 mr-4" to={URLS.GLOBAL_CONFIG_CHART}>
-                        Chart repositories
-                    </NavLink>
-                    or
-                    <NavLink className="ml-4 mr-4" to={URLS.GLOBAL_CONFIG_DOCKER}>
-                        OCI Registries
-                    </NavLink>
-                </>
-            )
-        }
+        const renderNavigationeToOCIRepository = () => (
+            <>
+                <NavLink className="ml-4 mr-4" to={URLS.GLOBAL_CONFIG_CHART}>
+                    Chart repositories
+                </NavLink>
+                or
+                <NavLink className="ml-4 mr-4" to={URLS.GLOBAL_CONFIG_DOCKER}>
+                    OCI Registries
+                </NavLink>
+            </>
+        )
         return (
             <div>
                 {isEmptyState ? (
@@ -144,30 +153,24 @@ const ChartListPopUp = ({
         )
     }
 
-    const renderGlobalRefetch = () => {
-        return (
-            <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts from all resources">
-                <a
-                    rel="noreferrer noopener"
-                    target="_blank"
-                    className={`chartRepo_form__subtitle dc__float-right dc__link flex ${!fetching ? 'cursor' : ''}`}
-                    onClick={refetchCharts}
-                >
-                    <div className="flex">{fetching ? <Progressing size={16} /> : <SyncIcon />}</div>
-                </a>
-            </Tippy>
-        )
-    }
+    const renderEmptyState = (noChartFound?: boolean) => (
+        <GenericEmptyState
+            image={noChartFound ? NoResults : EmptyFolder}
+            title={noChartFound ? `No result for "${searchText}"` : EMPTY_STATE_STATUS.CHART.NO_SOURCE_TITLE}
+            subTitle={noChartFound ? EMPTY_STATE_STATUS.CHART.NO_CHART_FOUND : renderInfoText(true)}
+            imageType={ImageType.Medium}
+        />
+    )
 
     const renderChartList = () => {
-        if (isEmpty) {
+        if (isEmpty && !!searchText && !filteredChartList.length) {
             return renderEmptyState(true)
         }
         return (
             <div className="dc__overflow-auto h-100 mxh-390-imp">
-                {filteredChartList.map((list, index) => {
-                    return (
-                        list.id != 1 && (
+                {filteredChartList.map(
+                    (list, index) =>
+                        list.id !== 1 && (
                             <ChartListPopUpRow
                                 key={list.name}
                                 index={index}
@@ -175,9 +178,8 @@ const ChartListPopUp = ({
                                 enabled={chartActiveMap[list.name]}
                                 toggleEnabled={toggleEnabled(list.name)}
                             />
-                        )
-                    )
-                })}
+                        ),
+                )}
                 <div className="m-16">
                     <InfoBlock variant="help" description={renderInfoText()} />
                 </div>
@@ -195,33 +197,20 @@ const ChartListPopUp = ({
         setSearchText(searchKey)
     }
 
-    const renderChartListSearch = () => {
-        return (
-            <div className="p-12">
-                <SearchBar
-                    initialSearchText={searchText}
-                    containerClassName="dc__mxw-250 flex-grow-1 max-w-100"
-                    handleEnter={handleFilterKeyPress}
-                    inputProps={{
-                        placeholder: 'Search by repository or registry',
-                        autoFocus: true,
-                    }}
-                    dataTestId="chart-store-search-box"
-                />
-            </div>
-        )
-    }
-
-    const renderEmptyState = (noChartFound?: boolean) => {
-        return (
-            <GenericEmptyState
-                image={noChartFound ? NoResults : EmptyFolder}
-                title={noChartFound ? <>No result for "{searchText}"</> : EMPTY_STATE_STATUS.CHART.NO_SOURCE_TITLE}
-                subTitle={noChartFound ? EMPTY_STATE_STATUS.CHART.NO_CHART_FOUND : renderInfoText(true)}
-                imageType={ImageType.Medium}
+    const renderChartListSearch = () => (
+        <div className="p-12">
+            <SearchBar
+                initialSearchText={searchText}
+                containerClassName="dc__mxw-250 flex-grow-1 max-w-100"
+                handleEnter={handleFilterKeyPress}
+                inputProps={{
+                    placeholder: 'Search by repository or registry',
+                    autoFocus: true,
+                }}
+                dataTestId="chart-store-search-box"
             />
-        )
-    }
+        </div>
+    )
 
     const renderChartListBody = () => {
         if (isLoading) {

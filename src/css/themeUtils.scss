@@ -71,6 +71,12 @@
         &--opaque:hover {
             background: var(--bg-hover-opaque);
         }
+
+        &-secondary {
+            &--opaque:hover {
+                background: var(--bg-hover-secondary-opaque);
+            }
+        }
     }
 
     &__white {
@@ -123,6 +129,10 @@
 
     &__drawer {
         box-shadow: var(--shadow-drawer);
+    }
+
+    &__key {
+        box-shadow: var(--shadow-key);
     }
 
     &__card {
