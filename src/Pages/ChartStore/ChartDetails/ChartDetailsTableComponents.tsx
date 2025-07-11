@@ -10,7 +10,9 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
+    dateComparatorBySortOrder,
     handleAnalyticsEvent,
+    handleUTCTime,
     Icon,
     ImageWithFallback,
     PortalContainer,
@@ -264,7 +266,7 @@ const DeploymentsTableDeployedByCellComponent = ({ row }: DeploymentsTableCellCo
 const DeploymentsTableDeployedAtCellComponent = ({ row }: DeploymentsTableCellComponentProps) => {
     const { deployedAt } = row.data
 
-    return <span className="flex left fs-13 lh-20 cn-9">{deployedAt ? moment(deployedAt).fromNow() : '-'}</span>
+    return <span className="flex left fs-13 lh-20 cn-9">{handleUTCTime(deployedAt, true) || '-'}</span>
 }
 
 const DeploymentsTableActionMenuCellComponent = ({ row, onDelete }: DeploymentsTableCellComponentProps) => {
@@ -373,7 +375,7 @@ export const DEPLOYMENTS_TABLE_COLUMNS: DeploymentsTableProps['columns'] = [
         },
         CellComponent: DeploymentsTableDeployedAtCellComponent,
         isSortable: true,
-        comparator: stringComparatorBySortOrder,
+        comparator: dateComparatorBySortOrder,
     } as DeploymentsTableProps['columns'][0],
     {
         field: 'actionMenu',
