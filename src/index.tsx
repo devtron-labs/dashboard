@@ -16,21 +16,21 @@
 
 import React from 'react'
 import ReactDOM from 'react-dom'
+import { BrowserRouter } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
-import { BrowserRouter } from 'react-router-dom'
 import { BrowserTracing } from '@sentry/tracing'
+
 import {
+    customEnv,
     OverrideMergeStrategyType,
+    QueryClientProvider,
+    ThemeProvider,
     ToastManagerContainer,
     UseRegisterShortcutProvider,
     UserEmailProvider,
-    customEnv,
-    ThemeProvider,
-    ConfirmationModalProvider,
-    BaseConfirmationModal,
-    QueryClientProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import App from './App'
 
 declare global {
@@ -60,7 +60,7 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
     }
 
     Sentry.init({
-        beforeBreadcrumb(breadcrumb, hint) {
+        beforeBreadcrumb(breadcrumb) {
             if (breadcrumb.category === 'console') {
                 if (breadcrumb.level === 'warning') {
                     return null
@@ -83,19 +83,19 @@ if (import.meta.env.VITE_NODE_ENV === 'production' && window._env_ && window._en
                 const error = errorList[index]
                 if (
                     error &&
-                    ((error['type'] &&
-                        (error['type'] === '[401]' ||
-                            error['type'] === '[403]' ||
-                            error['type'] === '[504]' ||
-                            error['type'] === '[503]' ||
-                            error['type'] === 'ChunkLoadError')) ||
-                        (error['value'] &&
-                            (error['value'].includes('write data discarded, use flow control to avoid losing data') ||
-                                error['value'].includes('Failed to update a ServiceWorker') ||
-                                (error['value'].includes('ServiceWorker script at ') &&
-                                    error['value'].includes('encountered an error during installation.')) ||
-                                error['value'].includes('Loading CSS chunk') ||
-                                error['value'].includes(`Unexpected token '<'`))))
+                    ((error.type &&
+                        (error.type === '[401]' ||
+                            error.type === '[403]' ||
+                            error.type === '[504]' ||
+                            error.type === '[503]' ||
+                            error.type === 'ChunkLoadError')) ||
+                        (error.value &&
+                            (error.value.includes('write data discarded, use flow control to avoid losing data') ||
+                                error.value.includes('Failed to update a ServiceWorker') ||
+                                (error.value.includes('ServiceWorker script at ') &&
+                                    error.value.includes('encountered an error during installation.')) ||
+                                error.value.includes('Loading CSS chunk') ||
+                                error.value.includes(`Unexpected token '<'`))))
                 ) {
                     return null
                 }
