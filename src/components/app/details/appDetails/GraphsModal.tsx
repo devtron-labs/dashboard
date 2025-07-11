@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { Moment } from 'moment'
-import { VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { DatePickerType2 as DateRangePicker } from '../../../common'
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
-import {
-    getIframeSrc,
-    isK8sVersionValid,
-    ThroughputSelect,
-    getCalendarValue,
-    LatencySelect,
-    AppInfo,
-} from './utils'
+import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect, AppInfo } from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
@@ -53,7 +44,6 @@ export interface GraphModalProps extends Pick<AppInfo, 'dataSourceName'> {
     tab: AppMetricsTabType
     k8sVersion: string
     selectedLatency: number
-    close: () => void
     getIframeSrcWrapper: (
         params: Omit<Parameters<typeof getIframeSrc>[0], 'grafanaTheme'>,
     ) => ReturnType<typeof getIframeSrc>
@@ -144,10 +134,18 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         }
 
         const cpu = this.props.getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Cpu, calendarInputs: this.state.calendarInputs, tab, isLegendRequired: false
+            appInfo,
+            chartName: ChartType.Cpu,
+            calendarInputs: this.state.calendarInputs,
+            tab,
+            isLegendRequired: false,
         })
         const ram = this.props.getIframeSrcWrapper({
-            appInfo, chartName: ChartType.Ram, calendarInputs: this.state.calendarInputs, tab, isLegendRequired: false
+            appInfo,
+            chartName: ChartType.Ram,
+            calendarInputs: this.state.calendarInputs,
+            tab,
+            isLegendRequired: false,
         })
         const latency = this.props.getIframeSrcWrapper({
             appInfo,
@@ -338,180 +336,156 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         const iframeClasses = 'app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12'
 
         return (
-            <VisibleModal className="" close={this.props.close}>
-                <div className="dc__position-abs dc__top-20 dc__left-20 dc__right-20 dc__bottom-20 dc__overflow-auto bg__primary br-8" onClick={(e) => e.stopPropagation()}>
-                    <div className="modal__header p-24 m-0">
-                        <h1 className="modal__title mb-0">{this.props.appName}/application metrics</h1>
-                        <Close className="icon-dim-20 cursor" onClick={this.props.close} />
-                    </div>
-                    <hr className="m-0" />
-                    <section className="graph-modal flexbox w-100">
-                        <div className="graph-modal__left">
-                            {this.props.infraMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor ${this.state.mainChartName === 'cpu' ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Cpu)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">CPU Usage</h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe src={this.state.cpu} title="cpu" className={iframeClasses} />
-                                    </div>
-                                </div>
-                            )}
-                            {this.props.infraMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor  ${this.state.mainChartName === 'ram' ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Ram)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">Memory Usage</h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe src={this.state.ram} title="ram" className={iframeClasses} />
-                                    </div>
-                                </div>
-                            )}
-                            {this.props.appMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor  ${this.state.mainChartName?.toLowerCase() === ChartType.Status && this.state.statusCode === 'Throughput' ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.Throughput)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">Throughput</h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe
-                                            src={this.state.throughput}
-                                            title="throughput"
-                                            className={iframeClasses}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                            {this.props.appMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('2') ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status2xx)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">Status 2xx</h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe src={this.state.status2xx} title="2xx" className={iframeClasses} />
-                                    </div>
-                                </div>
-                            )}
-                            {this.props.appMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('4') ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status4xx)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">Status 4xx</h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe
-                                            src={this.state.status4xx}
-                                            title="4xx"
-                                            className={`${iframeClasses} `}
-                                        />
-                                    </div>
-                                </div>
-                            )}
-                            {this.props.appMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('5') ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status5xx)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">Status 5xx</h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe src={this.state.status5xx} title="5xx" className={iframeClasses} />
-                                    </div>
-                                </div>
-                            )}
-                            {this.props.appMetrics && (
-                                <div
-                                    className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Latency ? 'app-details-graph__iframe--selected' : ''}`}
-                                    onClick={(e) => this.handleChartChange(ChartType.Latency)}
-                                >
-                                    <h3 className="app-details-graph__title pl-16">
-                                        Latency {this.state.selectedLatency}
-                                    </h3>
-                                    <div className="app-details-graph__iframe-container">
-                                        <div className="app-details-graph__transparent-div" />
-                                        <iframe src={this.state.latency} title="Latency" className={iframeClasses} />
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        <div className="graph-modal__right w-100 mr-5 pl-24 pr-24 pt-16 pb-12">
-                            <div className="flexbox flex-justify mb-16 w-100">
-                                <div className="flex">
-                                    <h3 className="graph-modal__title mt-0  mb-0 mr-16">
-                                        <GraphIcon className="mr-8 fcn-7 dc__vertical-align-middle icon-dim-20" />
-                                        {ChartNames[this.state.mainChartName]}
-                                    </h3>
-                                    {this.state.mainChartName === 'status' && (
-                                        <ThroughputSelect
-                                            status={this.state.statusCode}
-                                            handleStatusChange={this.handleStatusChange}
-                                        />
-                                    )}
-                                    {this.state.mainChartName === 'latency' && (
-                                        <LatencySelect
-                                            latency={this.state.selectedLatency}
-                                            handleLatencyChange={this.handleLatencyChange}
-                                        />
-                                    )}
-                                </div>
-                                <div className="flex">
-                                    <div className="mr-16">
-                                        <label className="dc__tertiary-tab__radio">
-                                            <input
-                                                type="radio"
-                                                value="aggregate"
-                                                checked={this.state.tab === AppMetricsTab.Aggregate}
-                                                onChange={this.handleTabChange}
-                                            />
-                                            <span className="dc__tertiary-tab">Aggregate</span>
-                                        </label>
-                                        <label className="dc__tertiary-tab__radio">
-                                            <input
-                                                type="radio"
-                                                value="pod"
-                                                checked={this.state.tab === AppMetricsTab.Pod}
-                                                onChange={this.handleTabChange}
-                                            />
-                                            <span className="dc__tertiary-tab">Per Pod</span>
-                                        </label>
-                                    </div>
-                                    <DateRangePicker
-                                        calendar={this.state.calendar}
-                                        calendarInputs={this.state.calendarInputs}
-                                        focusedInput={this.state.focusedInput}
-                                        calendarValue={this.state.calendarValue}
-                                        handlePredefinedRange={this.handlePredefinedRange}
-                                        handleDatesChange={this.handleDatesChange}
-                                        handleFocusChange={this.handleFocusChange}
-                                        handleDateInput={this.handleDateInput}
-                                        handleApply={this.handleApply}
-                                    />
-                                </div>
+            <section className="graph-modal flexbox w-100 h-100">
+                <div className="graph-modal__left">
+                    {this.props.infraMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor ${this.state.mainChartName === 'cpu' ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Cpu)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">CPU Usage</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.cpu} title="cpu" className={iframeClasses} />
                             </div>
-                            <div className="w-100 flex-1">
-                                <iframe
-                                    src={this.state.mainChartUrl}
-                                    title={this.state.mainChartName}
-                                    className="graph-modal__main-chart"
+                        </div>
+                    )}
+                    {this.props.infraMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor  ${this.state.mainChartName === 'ram' ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Ram)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">Memory Usage</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.ram} title="ram" className={iframeClasses} />
+                            </div>
+                        </div>
+                    )}
+                    {this.props.appMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor  ${this.state.mainChartName?.toLowerCase() === ChartType.Status && this.state.statusCode === 'Throughput' ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.Throughput)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">Throughput</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.throughput} title="throughput" className={iframeClasses} />
+                            </div>
+                        </div>
+                    )}
+                    {this.props.appMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('2') ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status2xx)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">Status 2xx</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.status2xx} title="2xx" className={iframeClasses} />
+                            </div>
+                        </div>
+                    )}
+                    {this.props.appMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('4') ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status4xx)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">Status 4xx</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.status4xx} title="4xx" className={`${iframeClasses} `} />
+                            </div>
+                        </div>
+                    )}
+                    {this.props.appMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Status && this.state.statusCode?.toLowerCase().startsWith('5') ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Status, StatusType.status5xx)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">Status 5xx</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.status5xx} title="5xx" className={iframeClasses} />
+                            </div>
+                        </div>
+                    )}
+                    {this.props.appMetrics && (
+                        <div
+                            className={`app-details-graph pt-4 cursor ${this.state.mainChartName === ChartType.Latency ? 'app-details-graph__iframe--selected' : ''}`}
+                            onClick={(e) => this.handleChartChange(ChartType.Latency)}
+                        >
+                            <h3 className="app-details-graph__title pl-16">Latency {this.state.selectedLatency}</h3>
+                            <div className="app-details-graph__iframe-container">
+                                <div className="app-details-graph__transparent-div" />
+                                <iframe src={this.state.latency} title="Latency" className={iframeClasses} />
+                            </div>
+                        </div>
+                    )}
+                </div>
+                <div className="graph-modal__right w-100 mr-5 pl-24 pr-24 pt-16 pb-12">
+                    <div className="flexbox flex-justify mb-16 w-100">
+                        <div className="flex">
+                            <h3 className="graph-modal__title mt-0  mb-0 mr-16">
+                                <GraphIcon className="mr-8 fcn-7 dc__vertical-align-middle icon-dim-20" />
+                                {ChartNames[this.state.mainChartName]}
+                            </h3>
+                            {this.state.mainChartName === 'status' && (
+                                <ThroughputSelect
+                                    status={this.state.statusCode}
+                                    handleStatusChange={this.handleStatusChange}
                                 />
-                            </div>
+                            )}
+                            {this.state.mainChartName === 'latency' && (
+                                <LatencySelect
+                                    latency={this.state.selectedLatency}
+                                    handleLatencyChange={this.handleLatencyChange}
+                                />
+                            )}
                         </div>
-                    </section>
-                    <div className="modal__body-bottom pt-12 pb-12 pl-12 pr-12">
-                        <button className="cta cancel dc__align-right cursor" onClick={this.props.close}>
-                            Done
-                        </button>
+                        <div className="flex">
+                            <div className="mr-16">
+                                <label className="dc__tertiary-tab__radio">
+                                    <input
+                                        type="radio"
+                                        value="aggregate"
+                                        checked={this.state.tab === AppMetricsTab.Aggregate}
+                                        onChange={this.handleTabChange}
+                                    />
+                                    <span className="dc__tertiary-tab">Aggregate</span>
+                                </label>
+                                <label className="dc__tertiary-tab__radio">
+                                    <input
+                                        type="radio"
+                                        value="pod"
+                                        checked={this.state.tab === AppMetricsTab.Pod}
+                                        onChange={this.handleTabChange}
+                                    />
+                                    <span className="dc__tertiary-tab">Per Pod</span>
+                                </label>
+                            </div>
+                            <DateRangePicker
+                                calendar={this.state.calendar}
+                                calendarInputs={this.state.calendarInputs}
+                                focusedInput={this.state.focusedInput}
+                                calendarValue={this.state.calendarValue}
+                                handlePredefinedRange={this.handlePredefinedRange}
+                                handleDatesChange={this.handleDatesChange}
+                                handleFocusChange={this.handleFocusChange}
+                                handleDateInput={this.handleDateInput}
+                                handleApply={this.handleApply}
+                            />
+                        </div>
+                    </div>
+                    <div className="w-100 flex-1">
+                        <iframe
+                            src={this.state.mainChartUrl}
+                            title={this.state.mainChartName}
+                            className="graph-modal__main-chart"
+                        />
                     </div>
                 </div>
-            </VisibleModal>
+            </section>
         )
     }
 }

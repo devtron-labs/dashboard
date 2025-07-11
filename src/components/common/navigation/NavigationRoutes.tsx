@@ -50,6 +50,8 @@ import {
     SidePanelConfig,
     SwitchThemeDialog,
     SwitchThemeDialogProps,
+    TempAppWindow,
+    TempAppWindowConfig,
     ToastManager,
     ToastVariantType,
     URLS as CommonURLS,
@@ -179,6 +181,12 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         }
         return noop
     }, [pageState])
+
+    const [tempAppWindowConfig, setTempAppWindowConfig] = useState<TempAppWindowConfig>({
+        open: false,
+        title: null,
+        url: null,
+    })
 
     const {
         userPreferences,
@@ -618,6 +626,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                             </ErrorBoundary>
                         </Suspense>
                     </div>
+                    <TempAppWindow />
                 </>
             )
         )
@@ -671,6 +680,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 isFELibAvailable: !!isFELibAvailable,
                 isResourceRecommendationEnabled:
                     isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
+                tempAppWindowConfig,
+                setTempAppWindowConfig,
             }}
         >
             <ConfirmationModalProvider>
@@ -692,7 +703,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     )}
                     <>
                         <div
-                            className={`main flexbox-col bg__primary ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                             ref={navRouteRef}
                         >
                             {renderMainContent()}
