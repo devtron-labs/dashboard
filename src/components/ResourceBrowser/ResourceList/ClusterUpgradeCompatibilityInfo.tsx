@@ -23,12 +23,11 @@ import {
     FiltersTypeEnum,
     GenericEmptyState,
     ImageType,
+    K8sResourceDetailDataType,
     LARGE_PAGE_SIZE_OPTIONS,
     PaginationEnum,
     Progressing,
     Table,
-    TableColumnType,
-    TableProps,
     URL_FILTER_KEYS,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -42,7 +41,11 @@ import { TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import ClusterUpgradeCompatibilityInfoTableCellComponent from './ClusterUpgradeCompatibilityInfoTableCellComponent'
 import ClusterUpgradeCompatibilityInfoTableWrapper from './ClusterUpgradeCompatibilityInfoTableWrapper'
-import { ClusterUpgradeCompatibilityInfoProps } from './types'
+import {
+    ClusterUpgradeCompatibilityInfoProps,
+    ClusterUpgradeCompatibilityInfoTableAdditionalProps,
+    ClusterUpgradeCompatibilityInfoTableProps,
+} from './types'
 import { dynamicSort } from './utils'
 
 const useClusterUpgradeCompatibilityInfo = importComponentFromFELibrary(
@@ -75,25 +78,25 @@ const ClusterUpgradeCompatibilityInfo = ({
         updateTabUrl,
     })
 
-    const { columns, rows } = useMemo(
+    const { columns, rows } = useMemo<{
+        columns: ClusterUpgradeCompatibilityInfoTableProps['columns']
+        rows: ClusterUpgradeCompatibilityInfoTableProps['rows']
+    }>(
         () => ({
-            columns: resourceListForCurrentData.headers.map(
-                (header: string) =>
-                    ({
-                        field: header,
-                        label: header,
-                        size: {
-                            range: {
-                                maxWidth: 600,
-                                minWidth: header === 'name' ? 200 : 180,
-                                startWidth: header === 'name' ? 300 : 200,
-                            },
-                        },
-                        comparator: dynamicSort(header),
-                        isSortable: true,
-                        CellComponent: ClusterUpgradeCompatibilityInfoTableCellComponent,
-                    }) as TableColumnType,
-            ),
+            columns: resourceListForCurrentData.headers.map((header: string) => ({
+                field: header,
+                label: header,
+                size: {
+                    range: {
+                        maxWidth: 600,
+                        minWidth: header === 'name' ? 200 : 180,
+                        startWidth: header === 'name' ? 300 : 200,
+                    },
+                },
+                comparator: dynamicSort(header),
+                isSortable: true,
+                CellComponent: ClusterUpgradeCompatibilityInfoTableCellComponent,
+            })),
             rows: resourceListForCurrentData.data.map((row: Record<string, string | number | object>) => ({
                 data: row,
                 id: JSON.stringify(row),
@@ -141,7 +144,7 @@ const ClusterUpgradeCompatibilityInfo = ({
         )
     }
 
-    const tableFilter: TableProps['filter'] = (row, filterData) =>
+    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = (row, filterData) =>
         !filterData.searchKey ||
         Object.entries(row.data).some(
             ([key, value]) =>
@@ -163,7 +166,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 <CollapsibleList tabType="navLink" config={sidebarConfig} onCollapseBtnClick={onCollapseBtnClick} />
             </div>
 
-            <Table
+            <Table<K8sResourceDetailDataType, FiltersTypeEnum.URL, ClusterUpgradeCompatibilityInfoTableAdditionalProps>
                 columns={columns}
                 rows={rows}
                 emptyStateConfig={{
@@ -184,6 +187,7 @@ const ClusterUpgradeCompatibilityInfo = ({
                 filter={tableFilter}
                 additionalProps={{
                     lowercaseKindToResourceGroupMap,
+                    reloadResourceListData: refetchCompatibilityList,
                 }}
                 pageSizeOptions={LARGE_PAGE_SIZE_OPTIONS}
                 clearFilters={clearFilters}

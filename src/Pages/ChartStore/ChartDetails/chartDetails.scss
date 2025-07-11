@@ -1,0 +1,11 @@
+.chart-details {
+    display: grid;
+    grid-template-columns: minmax(auto, 1000px) 300px;
+    gap: 32px;
+    justify-content: center;
+
+    &__loading-icon {
+        width: 56px;
+        height: 56px;
+    }
+}
