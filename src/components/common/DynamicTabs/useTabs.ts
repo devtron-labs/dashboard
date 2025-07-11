@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import dayjs from 'dayjs'
 
 import { DynamicTabType, InitTabType, noop } from '@devtron-labs/devtron-fe-common-lib'
@@ -26,6 +26,8 @@ import { AddTabParamsType, ParsedTabsData, PopulateTabDataPropsType, UseTabsRetu
 
 export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB): UseTabsReturnType {
     const [tabs, setTabs] = useState<DynamicTabType[]>([])
+
+    const previousActiveTabIdRef = useRef<string>(null)
 
     const tabIdToTabMap = useMemo(
         () =>
@@ -49,15 +51,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
     const getTitleFromKindAndName = ({ kind, name }: Pick<InitTabType, 'kind' | 'name'>): string =>
         kind ? `${kind}/${name}` : name
 
-    const getLastActiveTabIdFromTabs = (
-        _tabs: DynamicTabType[],
-        id: DynamicTabType['id'],
-    ): DynamicTabType['lastActiveTabId'] | null => {
-        const selectedTabId = _tabs.find((tab) => tab.isSelected)?.id ?? null
-
-        return selectedTabId !== id ? selectedTabId : null
-    }
-
     const populateTabData = ({
         id,
         name,
@@ -70,7 +63,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         isAlive = false,
         hideName = false,
         tippyConfig,
-        lastActiveTabId,
         shouldRemainMounted,
         isAlpha,
         defaultUrl,
@@ -88,7 +80,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
         lastSyncMoment: dayjs(),
         componentKey: getNewTabComponentKey(id),
         tippyConfig,
-        lastActiveTabId,
         shouldRemainMounted,
         isAlpha: isAlpha || false,
         defaultUrl: defaultUrl || null,
@@ -161,7 +152,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
             isAlive: !!_initTab.isAlive,
             hideName: _initTab.hideName,
             tippyConfig: _initTab.tippyConfig,
-            lastActiveTabId: null,
             shouldRemainMounted: _initTab.shouldRemainMounted,
             isAlpha: _initTab.isAlpha,
             defaultUrl: _initTab.defaultUrl,
@@ -309,6 +299,11 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                 const _tabs = prevTabs.map((tab) => {
                     const matched = tab.id === _id
                     found = found || matched
+
+                    if (tab.isSelected && !matched) {
+                        previousActiveTabIdRef.current = tab.id
+                    }
+
                     return matched
                         ? {
                               ...tab,
@@ -335,7 +330,6 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                             showNameOnSelect,
                             dynamicTitle,
                             tippyConfig,
-                            lastActiveTabId: getLastActiveTabIdFromTabs(prevTabs, _id),
                             shouldRemainMounted: false,
                             isAlpha: false,
                             defaultUrl: null,
@@ -355,12 +349,12 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                 const tabToBeRemoved = prevTabs.find((tab) => tab.id === id) ?? ({} as DynamicTabType)
 
                 if (tabToBeRemoved.isSelected) {
-                    const switchFromTabIndex = tabs.findIndex((tab) => tab.id === tabToBeRemoved.lastActiveTabId)
+                    const previousSelectedTabIndex = prevTabs.findIndex(
+                        (tab) => tab.id === previousActiveTabIdRef.current,
+                    )
+                    previousActiveTabIdRef.current = null
                     const newSelectedTabIndex =
-                        // The id and lastActiveTabId can be same when the same tab is clicked again
-                        switchFromTabIndex > -1 && tabToBeRemoved.id !== tabToBeRemoved.lastActiveTabId
-                            ? switchFromTabIndex
-                            : fallbackTabIndex
+                        previousSelectedTabIndex > -1 ? previousSelectedTabIndex : fallbackTabIndex
                     // Cannot use structured clone since using it reloads the whole data
                     // eslint-disable-next-line no-param-reassign
                     prevTabs[newSelectedTabIndex].isSelected = true
@@ -415,22 +409,31 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
 
             setTabs((prevTabs) => {
                 let isTabFound = false
+                let previousActiveTab = null
+
                 const _tabs = prevTabs.map((tab) => {
                     const isMatch = tab.id === id
                     isTabFound = isMatch || isTabFound
+
+                    if (tab.isSelected && !isMatch) {
+                        previousActiveTab = tab
+                    }
 
                     return {
                         ...tab,
                         isSelected: isMatch,
                         url: (isMatch && url) || tab.url,
-                        ...(isMatch && {
-                            lastActiveTabId: getLastActiveTabIdFromTabs(prevTabs, tab.id),
-                            ...(tab.showNameOnSelect && {
+                        ...(isMatch &&
+                            tab.showNameOnSelect && {
                                 isAlive: true,
                             }),
-                        }),
                     }
                 })
+
+                if (isTabFound && previousActiveTab) {
+                    previousActiveTabIdRef.current = previousActiveTab.id
+                }
+
                 resolve(isTabFound)
                 updateTabsInLocalStorage(_tabs)
                 return _tabs
