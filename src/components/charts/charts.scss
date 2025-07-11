@@ -22,18 +22,8 @@
         background-color: var(--B50);
     }
 
-    .icon-wrapper {
-        border: 1px solid var(--border-secondary-translucent);
-        background-color: var(--bg-secondary);
-        border-radius: 8px;
-        padding: 8px;
-        width: fit-content;
-        height: 50px;
-    }
 
     .chart-icon-dim {
-        width: 32px;
-        height: 32px;
         transition: transform 0.17s ease-out;
     }
 }
@@ -54,7 +44,7 @@
         color: var(--B500);
     }
 
-    .icon-wrapper {
+    .chart-card__icon-wrapper {
         border: 1px solid transparent;
         background-color: transparent;
     }
@@ -66,6 +56,10 @@
     .chart-name__arrow {
         transform: translateX(30%);
         visibility: visible;
+    }
+
+    .chart-group-card__icon-wrapper {
+        margin-right: -12px;
     }
 }
 
@@ -142,43 +136,19 @@
     margin-right: 16px;
 }
 
-.chart-group-item__title {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.43;
-    letter-spacing: normal;
-    color: var(--N900);
-    margin-bottom: 4px;
-}
-
-.chart-group-item__desc {
-    font-size: 12px;
-    height: 20px;
-    font-weight: normal;
-    line-height: 1.67;
-    letter-spacing: normal;
-    color: var(--N700);
-}
-
-.chart-grid-item__chart-icons {
-    height: 108px;
-    margin-bottom: 16px;
-}
-
 .chart-group-deployments {
     padding: 16px 24px;
     flex: 1;
 }
 
-.chart-group__chart-icon {
-    margin: 6px;
-    height: 40px;
-    width: 40px;
+.chart-grid--chart-group-snapshot {
+    height: 238px;
+    overflow: hidden;
 }
 
-.chart-grid--chart-group-snapshot {
-    height: 228px;
-    overflow: hidden;
+.chart-group-card__icon-wrapper {
+    margin-right: -24px;
+    transition: transform 0.17s ease-out, margin-right 0.3s ease-out;
 }
 
 .deploy-selected-charts__applications-edit {
