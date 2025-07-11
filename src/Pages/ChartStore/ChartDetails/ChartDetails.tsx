@@ -58,7 +58,7 @@ export const ChartDetails = () => {
     )
 
     useEffect(() => {
-        if (!isFetchingChartVersions && chartVersions) {
+        if (!isFetchingChartVersions && chartVersions?.length) {
             setSelectedChartVersion(chartVersions[0].id)
         }
     }, [isFetchingChartVersions, chartVersions])
