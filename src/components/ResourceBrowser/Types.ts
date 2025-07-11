@@ -46,7 +46,6 @@ export interface K8SObjectType extends K8SObjectBaseType {
 
 export interface K8SObjectChildMapType {
     isGrouped?: boolean
-    isExpanded: boolean
     data: ApiResourceGroupType[]
 }
 
@@ -213,17 +212,6 @@ export interface AdminTerminalProps {
     updateTerminalTabUrl: (queryParams: string) => void
 }
 
-export interface SidebarChildButtonPropsType {
-    parentRef: React.Ref<HTMLButtonElement>
-    group: string
-    version: string
-    kind: string
-    text: string
-    namespaced: boolean
-    isSelected: boolean
-    onClick: React.MouseEventHandler<HTMLButtonElement>
-}
-
 export interface ClusterSelectorType {
     onChange: ({ label, value }) => void
     clusterList: ClusterOptionType[]
@@ -307,3 +295,9 @@ export type ShowAIButtonConfig = { column: string } & (
       }
     | { excludeValues: Set<string>; includeValues?: never }
 )
+
+export type RBResourceSidebarDataAttributeType = {
+    'data-group': string
+    'data-version': string
+    'data-kind': string
+}

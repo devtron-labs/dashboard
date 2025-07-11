@@ -148,17 +148,12 @@ src/components/charts/charts.service.ts
 src/components/charts/charts.util.tsx
 src/components/charts/dialogs/ValuesYamlConfirmDialog.tsx
 src/components/charts/list/ChartGroup.tsx
-src/components/charts/list/ChartListPopUp.tsx
 src/components/charts/list/ChartListPopUpRow.tsx
-src/components/charts/list/Deployed.tsx
 src/components/charts/list/DeployedChartFilters.tsx
 src/components/charts/list/DiscoverCharts.tsx
 src/components/charts/modal/ChartGroupBasicDeploy.tsx
 src/components/charts/modal/CreateChartGroup.tsx
 src/components/charts/useChartGroup.ts
-src/components/charts/util/ChartGroupCard.tsx
-src/components/charts/util/ChartSelect.tsx
-src/components/charts/util/ChartValueSelect.tsx
 src/components/checkList/AllChartsCheck.tsx
 src/components/checkList/AllCheckModal.tsx
 src/components/checkList/AppCheckList.tsx

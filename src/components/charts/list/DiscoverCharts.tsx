@@ -29,11 +29,13 @@ import {
     FeatureTitleWithInfo,
     handleAnalyticsEvent,
     PageHeader,
+    Popover,
     Progressing,
     showError,
     ToastManager,
     ToastVariantType,
     useMainContext,
+    usePopover,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ChartDetails } from '@Pages/ChartStore'
@@ -60,7 +62,7 @@ import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import MultiChartSummary from '../MultiChartSummary'
 import useChartGroup from '../useChartGroup'
-import ChartGroupCard from '../util/ChartGroupCard'
+import { ChartGroupCard } from '../ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
 import ChartGroupRouter from './ChartGroup'
 import ChartListPopUp from './ChartListPopUp'
@@ -113,12 +115,17 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
     const [chartActiveMap, setChartActiveMap] = useState({})
 
-    const [showSourcePopoUp, setShowSourcePopoUp] = useState<boolean>(false)
     const [chartLists, setChartLists] = useState<ChartListType[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(false)
     const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
     const chartStoreRef = useRef<HTMLDivElement>(null)
+
+    const { open, overlayProps, popoverProps, triggerProps, closePopover } = usePopover({
+        id: 'profile-menu',
+        alignment: 'end',
+        width: 250,
+    })
 
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
@@ -343,14 +350,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         )
     }
 
-    const onChangeShowSourcePopup = () => {
-        setShowSourcePopoUp(true)
+    const onClickSourceButton = (e) => {
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_SOURCE' })
-    }
-
-    const toggleChartListPopUp = (e: React.MouseEvent): void => {
-        e.stopPropagation()
-        setShowSourcePopoUp(!setShowSourcePopoUp)
     }
 
     const renderBreadcrumbs = () => {
@@ -379,34 +380,38 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                             <>
                                 {renderAdditionalChartHeaderInfo()}
                                 {isSuperAdmin && (
-                                    <Button
-                                        dataTestId="chart-store-source-button"
-                                        text="Source"
-                                        startIcon={<SourceIcon />}
-                                        onClick={onChangeShowSourcePopup}
-                                        size={ComponentSizeType.xs}
-                                        variant={ButtonVariantType.secondary}
-                                    />
+                                    <Popover
+                                        open={open}
+                                        overlayProps={overlayProps}
+                                        popoverProps={popoverProps}
+                                        triggerProps={triggerProps}
+                                        triggerElement={null}
+                                        buttonProps={{
+                                            onClick: onClickSourceButton,
+                                            text: 'source',
+                                            variant: ButtonVariantType.secondary,
+                                            size: ComponentSizeType.xxs,
+                                            dataTestId: 'chart-store-source-button',
+                                            startIcon: <SourceIcon />
+                                        }}
+                                    >
+                                        <ChartListPopUp
+                                            onClose={closePopover}
+                                            chartList={chartLists}
+                                            filteredChartList={filteredChartList}
+                                            setFilteredChartList={setFilteredChartList}
+                                            isLoading={isLoading}
+                                            setShowSourcePopUp={closePopover}
+                                            chartActiveMap={chartActiveMap}
+                                            setChartActiveMap={setChartActiveMap}
+                                        />
+                                    </Popover>
                                 )}
                             </>
                         ) : (
                             'Deploy multiple charts'
                         )}
                     </div>
-                </div>
-                <div>
-                    {showSourcePopoUp && (
-                        <ChartListPopUp
-                            onClose={toggleChartListPopUp}
-                            chartList={chartLists}
-                            filteredChartList={filteredChartList}
-                            setFilteredChartList={setFilteredChartList}
-                            isLoading={isLoading}
-                            setShowSourcePopoUp={setShowSourcePopoUp}
-                            chartActiveMap={chartActiveMap}
-                            setChartActiveMap={setChartActiveMap}
-                        />
-                    )}
                 </div>
             </div>
         )
