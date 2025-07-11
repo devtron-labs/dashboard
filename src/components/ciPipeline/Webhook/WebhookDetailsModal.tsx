@@ -50,7 +50,13 @@ import './webhookDetails.scss'
 import { getUserRole, createOrUpdateUser } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
-import { CURL_PREFIX, GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS, PLAYGROUND_TAB_LIST, REQUEST_BODY_TAB_LIST, RESPONSE_TAB_LIST } from './webhook.utils'
+import {
+    CURL_PREFIX,
+    GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
+    PLAYGROUND_TAB_LIST,
+    REQUEST_BODY_TAB_LIST,
+    RESPONSE_TAB_LIST,
+} from './webhook.utils'
 import { SchemaType, TabDetailsType, WebhookDetailsType, WebhookDetailType } from './types'
 import { executeWebhookAPI, getExternalCIConfig } from './webhook.service'
 import { GENERATE_TOKEN_NAME_VALIDATION } from '../../../config/constantMessaging'
@@ -353,7 +359,9 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     }
 
     const handleCopyToClipboard = async ({ e, token }: { e: React.MouseEvent; token: string }) => {
-        stopPropagation(e)
+        if (e) {
+            stopPropagation(e)
+        }
         setCopyToClipboardPromise(copyToClipboard(token))
     }
 
