@@ -359,9 +359,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     }
 
     const handleCopyToClipboard = async ({ e, token }: { e: React.MouseEvent; token: string }) => {
-        if (e) {
-            stopPropagation(e)
-        }
+        stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
 

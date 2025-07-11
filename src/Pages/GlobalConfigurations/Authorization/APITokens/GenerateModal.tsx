@@ -43,7 +43,7 @@ const GenerateModal = ({
         redirectToTokenList()
     }
 
-    const handleCopyToClipboard = async (e?: React.MouseEvent) => {
+    const handleCopyToClipboard = async (e: React.MouseEvent) => {
         stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
