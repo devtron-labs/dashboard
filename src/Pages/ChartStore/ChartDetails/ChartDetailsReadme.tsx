@@ -12,6 +12,8 @@ import {
     SelectPickerVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { URLS } from '@Config/routes'
+
 import { ChartDetailsReadmeProps } from './types'
 
 const renderEmptyStateButton =
@@ -63,7 +65,7 @@ export const ChartDetailsReadme = ({
                 isLoading={isLoading}
                 error={error}
                 progressingProps={{ size: 24 }}
-                errorScreenManagerProps={{ code: error?.code, reload }}
+                errorScreenManagerProps={{ code: error?.code, reload, redirectURL: URLS.CHARTS_DISCOVER }}
             >
                 {!readme ? (
                     <GenericEmptyState

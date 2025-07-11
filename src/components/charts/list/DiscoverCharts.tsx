@@ -129,9 +129,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
-    isLeavingPageNotAllowed.current = !state.charts.reduce(
-        (acc: boolean, chart: ChartGroupEntry) => (acc = acc && chart.originalValuesYaml === chart.valuesYaml),
-        true,
+    isLeavingPageNotAllowed.current = !state.charts.every(
+        (chart: ChartGroupEntry) => chart.originalValuesYaml === chart.valuesYaml,
     )
 
     useEffect(() => {
@@ -719,15 +718,12 @@ export default function DiscoverCharts({ isSuperAdmin }: { isSuperAdmin: boolean
             <Route path={`${path}/group`}>
                 <ChartGroupRouter />
             </Route>
-            <Route
-                path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`}
-                render={() => <ChartValues />}
-                exact
-            />
-            <Route
-                path={`${path}${URLS.CHART}/:chartId`}
-                render={({ match: { params } }) => <ChartDetails key={params.chartId} />}
-            />
+            <Route path={`${path}${URLS.CHART}/:chartId${URLS.PRESET_VALUES}/:chartValueId`} exact>
+                <ChartValues />
+            </Route>
+            <Route path={`${path}${URLS.CHART}/:chartId`}>
+                {({ match: { params } }) => <ChartDetails key={params.chartId} />}
+            </Route>
             <Route>
                 <DiscoverChartList isSuperAdmin={isSuperAdmin} />
             </Route>

@@ -24,6 +24,7 @@ import {
     PresetValuesTableRowActionsOnHoverComponent,
     PresetValuesTableViewWrapper,
 } from './ChartDetailsTableComponents'
+import { CHART_DETAILS_NEW_PRESET_VALUE_ID } from './constants'
 import { fetchChartValuesTemplateList } from './services'
 import {
     ChartDetailsRouteParams,
@@ -40,7 +41,7 @@ const renderEmptyStateButton = (path: string) => () => (
         startIcon={<Icon name="ic-add" color={null} />}
         size={ComponentSizeType.medium}
         component={ButtonComponentType.link}
-        linkProps={{ to: `${path}${URLS.PRESET_VALUES}/0` }}
+        linkProps={{ to: `${path}${URLS.PRESET_VALUES}/${CHART_DETAILS_NEW_PRESET_VALUE_ID}` }}
     />
 )
 

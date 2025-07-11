@@ -27,6 +27,8 @@ import {
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
+import { URLS } from '@Config/routes'
+import { ChartDetailsSegment } from '@Pages/ChartStore/ChartDetails/types'
 
 export default function ChartValues() {
     const { chartId, chartValueId } = useParams<{ chartId: string; chartValueId: string }>()
@@ -147,7 +149,7 @@ const Header = ({ appStoreApplicationName, name }) => {
         () =>
             breadcrumbs.map((item) =>
                 item.name === 'Preset values'
-                    ? { ...item, to: `${item.to.replace('/preset-values', '')}?tab=preset-values` }
+                    ? { ...item, to: `${item.to.replace(URLS.PRESET_VALUES, '')}?tab=${ChartDetailsSegment.PRESET_VALUES}` }
                     : item,
             ),
         [breadcrumbs],

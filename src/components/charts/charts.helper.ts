@@ -16,6 +16,8 @@
 
 import { ToastManager, ToastVariantType, versionComparatorBySortOrder } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ChartDetailsSegment } from '@Pages/ChartStore/ChartDetails/types'
+
 import { URLS } from '../../config'
 import { ChartGroupDeployResponse, ChartValuesType } from './charts.types'
 
@@ -30,7 +32,7 @@ export function getDiscoverChartDetailsURL(chartId: string | number) {
 }
 
 export function getSavedValuesListURL(chartId): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}?tab=preset-values`
+    return `${URLS.CHARTS}/discover/chart/${chartId}?tab=${ChartDetailsSegment.PRESET_VALUES}`
 }
 
 export function getChartValuesURL(chartId: number | string, chartValueId?: number | string): string {

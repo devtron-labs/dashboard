@@ -18,3 +18,5 @@ export const CHART_DETAILS_SEGMENTS: SegmentedControlProps['segments'] = [
 ]
 
 export const CHART_DETAILS_PORTAL_CONTAINER_ID = 'chart-details-portal-container'
+
+export const CHART_DETAILS_NEW_PRESET_VALUE_ID = '0'

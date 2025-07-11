@@ -24,7 +24,7 @@ import { getAppId } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDe
 import { Moment12HourFormat } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
-import { CHART_DETAILS_PORTAL_CONTAINER_ID } from './constants'
+import { CHART_DETAILS_NEW_PRESET_VALUE_ID, CHART_DETAILS_PORTAL_CONTAINER_ID } from './constants'
 import {
     ChartDetailsRouteParams,
     DeploymentsTableCellComponentProps,
@@ -161,7 +161,9 @@ export const PresetValuesTableViewWrapper = ({
                             text="Create Preset"
                             size={ComponentSizeType.medium}
                             component={ButtonComponentType.link}
-                            linkProps={{ to: `${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/0` }}
+                            linkProps={{
+                                to: `${generatePath(path, { chartId })}${URLS.PRESET_VALUES}/${CHART_DETAILS_NEW_PRESET_VALUE_ID}`,
+                            }}
                         />
                     )}
                 </div>
@@ -277,7 +279,7 @@ const DeploymentsTableActionMenuCellComponent = ({ row, onDelete }: DeploymentsT
 
     return (
         <ActionMenu
-            id="chart-details-deployments-table-action-menu"
+            id={`chart-details-deployments-table-action-menu-${row.id}`}
             onClick={handleClick}
             options={[
                 {
@@ -292,8 +294,8 @@ const DeploymentsTableActionMenuCellComponent = ({ row, onDelete }: DeploymentsT
                 },
             ]}
             buttonProps={{
-                dataTestId: 'chart-details-deployments-table-action-menu-delete',
-                ariaLabel: 'chart-details-deployments-table-action-menu-delete',
+                dataTestId: `chart-details-deployments-table-action-menu-delete-${row.id}`,
+                ariaLabel: `chart-details-deployments-table-action-menu-delete-${row.id}`,
                 showAriaLabelInTippy: false,
                 icon: <Icon name="ic-more-vertical" color={null} />,
                 variant: ButtonVariantType.borderLess,

@@ -47,7 +47,13 @@ const ChartMetaData = ({
         if (Array.isArray(subtitle)) {
             return subtitle.map((item) =>
                 isLink && item ? (
-                    <a className="m-0 fs-13 lh-20 fw-4 dc__break-word" href={item} target="_blank" rel="noreferrer">
+                    <a
+                        key={item}
+                        className="m-0 fs-13 lh-20 fw-4 dc__break-word"
+                        href={item}
+                        target="_blank"
+                        rel="noreferrer"
+                    >
                         {item}
                     </a>
                 ) : (
