@@ -41,7 +41,6 @@ import {
     ApiQueuingWithBatch,
     usePrompt,
     SourceTypeMap,
-    preventBodyScroll,
     ToastManager,
     ToastVariantType,
     BlockedStateData,
@@ -713,7 +712,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setShowMaterialRegexModal(showRegexModal)
             }
             getWorkflowStatusData(_workflows)
-            preventBodyScroll(true)
         })
     }
 
@@ -819,7 +817,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             }
             setWorkflowID(_workflowId)
             getWorkflowStatusData(_workflows)
-            preventBodyScroll(true)
         })
     }
 
@@ -953,7 +950,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
-        preventBodyScroll(true)
 
         const newParams = new URLSearchParams(location.search)
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
@@ -1007,7 +1003,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
-        preventBodyScroll(true)
         getWorkflowStatusData(_workflows)
 
         const newParams = new URLSearchParams(location.search)
@@ -1099,7 +1094,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                     closeCIModal()
                     setErrorCode(response.code)
                     setInvalidateCache(false)
-                    preventBodyScroll(false)
                     getWorkflowStatusData(workflows)
                 }
             })
@@ -1192,7 +1186,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             setIsBranchChangeLoading(false)
             setCDLoading(false)
             setCILoading(false)
-            preventBodyScroll(true)
             return
         }
 
@@ -1212,7 +1205,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 updateResponseListData([..._responseList, ...skippedResources])
                 setCDLoading(false)
                 setCILoading(false)
-                preventBodyScroll(true)
             })
             .catch((error) => {
                 showError(error)
@@ -1271,7 +1263,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
 
     const closeCIModal = (): void => {
         abortControllerRef.current.abort()
-        preventBodyScroll(false)
         setShowMaterialRegexModal(false)
         setRuntimeParams({})
         setRuntimeParamsErrorState({})
@@ -1279,14 +1270,13 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
-        e.stopPropagation()
+        e?.stopPropagation()
         abortControllerRef.current.abort()
         setCDLoading(false)
         history.push({
             search: '',
         })
         getWorkflowStatusData(workflows)
-        preventBodyScroll(false)
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
@@ -1295,7 +1285,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             search: '',
         })
         getWorkflowStatusData(workflows)
-        preventBodyScroll(false)
     }
 
     const onClickWebhookTimeStamp = () => {
@@ -1371,7 +1360,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
         setIsBranchChangeLoading(false)
         setShowBulkSourceChangeModal(false)
         setResponseList([])
-        preventBodyScroll(false)
     }
 
     const handleCloseChangeImageSource = () => {
@@ -1639,7 +1627,6 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
                 setCDLoading(false)
                 setCILoading(false)
                 setIsBulkTriggerLoading(false)
-                preventBodyScroll(false)
                 getWorkflowStatusData(workflows)
             })
         } else {
@@ -2242,7 +2229,7 @@ export default function EnvTriggerView({ filteredAppIds, isVirtualEnv }: AppGrou
             const material = node?.[materialType] || []
 
             return (
-                <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
+                <VisibleModal parentClassName="dc__overflow-hidden" close={closeCDModal}>
                     <div
                         className={`modal-body--cd-material h-100 contains-diff-view flexbox-col ${
                             material.length > 0 ? '' : 'no-material'

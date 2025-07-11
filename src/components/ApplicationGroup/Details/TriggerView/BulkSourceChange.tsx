@@ -20,12 +20,13 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
     CustomInput,
     Drawer,
+    Icon,
     InfoBlock,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import SourceUpdateResponseModal from './SourceUpdateResponseModal'
 import { BulkSourceChangeProps } from './types'
 
@@ -41,40 +42,6 @@ const BulkSourceChange = ({
     const [showResponseModal, setShowResponseModal] = useState(false)
     const [inputError, setInputError] = useState('')
     const [branchName, setBranchName] = useState('')
-
-    const closeBulkCIModal = (evt) => {
-        closePopup(evt)
-    }
-
-    const escKeyPressHandler = (evt): void => {
-        if (evt && evt.key === 'Escape' && typeof closePopup === 'function') {
-            evt.preventDefault()
-            closeBulkCIModal(evt)
-        }
-    }
-    const outsideClickHandler = (evt): void => {
-        if (
-            sourceChangeDetailRef.current &&
-            !sourceChangeDetailRef.current.contains(evt.target) &&
-            typeof closePopup === 'function'
-        ) {
-            closeBulkCIModal(evt)
-        }
-    }
-
-    useEffect(() => {
-        document.addEventListener('keydown', escKeyPressHandler)
-        return (): void => {
-            document.removeEventListener('keydown', escKeyPressHandler)
-        }
-    }, [escKeyPressHandler])
-
-    useEffect(() => {
-        document.addEventListener('click', outsideClickHandler)
-        return (): void => {
-            document.removeEventListener('click', outsideClickHandler)
-        }
-    }, [outsideClickHandler])
 
     useEffect(() => {
         setShowResponseModal(responseList.length > 0)
@@ -92,15 +59,16 @@ const BulkSourceChange = ({
     const renderHeaderSection = (): JSX.Element | null => (
         <div className="flex flex-justify dc__border-bottom px-20 py-16">
             <h2 className="fs-16 fw-6 lh-1-43 m-0">Change branch for {selectedAppCount} applications</h2>
-            <button
-                type="button"
-                className="dc__transparent flex icon-dim-24"
-                disabled={loading}
-                onClick={closeBulkCIModal}
-                aria-label="close"
-            >
-                <Close className="icon-dim-24" />
-            </button>
+            <Button
+                dataTestId="close"
+                ariaLabel="close"
+                icon={<Icon name="ic-close-large" color={null} />}
+                showAriaLabelInTippy={false}
+                onClick={closePopup}
+                size={ComponentSizeType.medium}
+                style={ButtonStyleType.negativeGrey}
+                variant={ButtonVariantType.borderLess}
+            />
         </div>
     )
 
@@ -140,7 +108,7 @@ const BulkSourceChange = ({
                 <div className="flexbox dc__gap-12">
                     <Button
                         dataTestId="cancel_button"
-                        onClick={closeBulkCIModal}
+                        onClick={closePopup}
                         text="Cancel"
                         style={ButtonStyleType.neutral}
                         variant={ButtonVariantType.secondary}
@@ -178,6 +146,7 @@ const BulkSourceChange = ({
             width="75%"
             minWidth={showResponseModal ? '1024px' : '600px'}
             maxWidth={showResponseModal ? '1200px' : '600px'}
+            onEscape={closePopup}
         >
             <div className="bg__primary bulk-ci-trigger-container" ref={sourceChangeDetailRef}>
                 <div className="flexbox-col flex-grow-1 dc__overflow-hidden">

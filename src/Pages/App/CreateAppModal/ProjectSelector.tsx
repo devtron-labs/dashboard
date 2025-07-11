@@ -24,6 +24,7 @@ import {
 
 import { ReactComponent as ICFolderColor } from '@Icons/ic-folder-color.svg'
 
+import { PROJECT_SELECT_INPUT_ID } from './constants'
 import { CreateAppFormStateType, ProjectSelectorProps } from './types'
 
 const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: ProjectSelectorProps) => {
@@ -47,7 +48,7 @@ const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: Pr
         <div className="w-300">
             <SelectPicker
                 icon={<ICFolderColor />}
-                inputId="project"
+                inputId={PROJECT_SELECT_INPUT_ID}
                 options={projectOptions}
                 label="Project"
                 required
@@ -60,7 +61,6 @@ const ProjectSelector = ({ selectedProjectId, handleProjectIdChange, error }: Pr
                 value={selectedProject}
                 onChange={handleChange}
                 error={error}
-                autoFocus
             />
         </div>
     )

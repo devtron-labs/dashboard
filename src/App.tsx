@@ -168,8 +168,6 @@ const App = () => {
                         <Route path="/" render={() => <NavigationRoutes reloadVersionConfig={reloadVersionConfig} />} />
                         <Redirect to={window._env_.K8S_CLIENT ? '/' : `${URLS.LOGIN_SSO}${location.search}`} />
                     </Switch>
-                    <div id="visible-modal" />
-                    <div id="visible-modal-2" />
                 </BreadcrumbStore>
             </ErrorBoundary>
         )

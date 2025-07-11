@@ -36,7 +36,7 @@ import { getHostURLConfiguration } from '@Services/service'
 
 import ApplicationInfoForm from './ApplicationInfoForm'
 import { CloneApplicationSelectionList } from './CloneApplicationSelectionList'
-import { createAppInitialFormErrorState, createAppInitialFormState } from './constants'
+import { createAppInitialFormErrorState, createAppInitialFormState, PROJECT_SELECT_INPUT_ID } from './constants'
 import HeaderSection from './HeaderSection'
 import { createApp } from './service'
 import Sidebar from './Sidebar'
@@ -374,7 +374,7 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
     }
 
     return (
-        <Drawer position="right" width="1024px" onEscape={handleClose}>
+        <Drawer position="right" width="1024px" onEscape={handleClose} initialFocus={`#${PROJECT_SELECT_INPUT_ID}`}>
             <div className="h-100 bg__modal--primary flexbox-col dc__overflow-hidden">
                 <HeaderSection isJobView={isJobView} handleClose={handleClose} isCloseDisabled={isSubmitting} />
                 <div className="flexbox flex-grow-1 dc__overflow-hidden">

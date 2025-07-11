@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
-
 import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    stopPropagation,
+    Popover,
     Tooltip,
+    usePopover,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
@@ -38,93 +37,62 @@ export const VariableDataTablePopupMenu = ({
     children,
     onClose,
     disableClose = false,
-    placement,
 }: VariableDataTablePopupMenuProps) => {
-    // STATES
-    const [visible, setVisible] = useState(false)
-    const [popupPositionStyle, setPopupPositionStyle] = useState({ top: 0, left: 0, transform: null })
+    const { open, overlayProps, popoverProps, triggerProps, scrollableRef, closePopover } = usePopover({
+        id: 'variable-data-table',
+        width: 300,
+        onOpen: (isOpen) => {
+            if (!isOpen) {
+                onClose()
+            }
+        },
+        disableClose,
+    })
 
-    // REFS
-    const popupButtonRef = useRef<HTMLButtonElement>()
-
-    // METHODS
-    const handleClose = () => {
-        if (!disableClose) {
-            setVisible(false)
-            onClose?.()
-        }
-    }
-
-    const handleOpen = () => {
-        setVisible(true)
-    }
-
-    useEffect(() => {
-        if (popupButtonRef.current && visible) {
-            const rect = popupButtonRef.current.getBoundingClientRect()
-            const scrollTop = window.scrollY || document.documentElement.scrollTop
-            const scrollLeft = window.scrollX || document.documentElement.scrollLeft
-            const offset = placement === 'left' ? -10 : rect.width + 10
-
-            setPopupPositionStyle({
-                top: rect.top + scrollTop,
-                left: rect.left + scrollLeft + offset,
-                transform: `translate(${placement === 'left' ? '-100%' : '0%'}, -50%)`,
-            })
-        } else if (!visible) {
-            setPopupPositionStyle({ top: 0, left: 0, transform: null })
-        }
-    }, [visible])
+    const triggerElement = (
+        <button
+            type="button"
+            aria-label="Close Popup"
+            className="dc__transparent h-100 flex top py-10 px-8 dc__hover-n50 dc__position-rel"
+        >
+            <span className={`icon-dot-16 ${showIconDot ? 'visible' : ''}`}>
+                <ICSlidersVertical />
+                <ICDot />
+            </span>
+        </button>
+    )
 
     return (
-        <>
-            <button
-                type="button"
-                ref={popupButtonRef}
-                aria-label="Close Popup"
-                className="dc__transparent h-100 flex top py-10 px-8 dc__hover-n50 dc__position-rel"
-                onClick={handleOpen}
-            >
-                <span className={`icon-dot-16 ${showIconDot ? 'visible' : ''}`}>
-                    <ICSlidersVertical />
-                    <ICDot />
-                </span>
-            </button>
-            {visible && (
-                <div
-                    className="dc__position-fixed dc__top-0 dc__right-0 dc__left-0 dc__bottom-0 dc__zi-20 "
-                    onClick={handleClose}
-                >
-                    <div
-                        className="tippy-box default-white tippy-shadow w-300 dc__position-abs"
-                        onClick={stopPropagation}
-                        style={popupPositionStyle}
-                    >
-                        <div className="flexbox-col w-100 mxh-350">
-                            <div className="px-12 py-8 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__border-bottom-n1">
-                                <div className="flexbox dc__align-items-center dc__gap-8">
-                                    {showHeaderIcon && <ICSlidersVertical className="icon-dim-16" />}
-                                    <Tooltip content={heading}>
-                                        <p className="m-0 fw-6 fs-13 lh-20 dc__truncate">{heading}</p>
-                                    </Tooltip>
-                                </div>
-                                <Button
-                                    size={ComponentSizeType.small}
-                                    style={ButtonStyleType.negativeGrey}
-                                    variant={ButtonVariantType.borderLess}
-                                    icon={<ICClose />}
-                                    dataTestId="popup-close-button"
-                                    ariaLabel="Close Popup"
-                                    showAriaLabelInTippy={false}
-                                    onClick={handleClose}
-                                    disabled={disableClose}
-                                />
-                            </div>
-                            {children}
-                        </div>
+        <Popover
+            open={open}
+            overlayProps={overlayProps}
+            popoverProps={popoverProps}
+            triggerProps={triggerProps}
+            triggerElement={triggerElement}
+            buttonProps={null}
+        >
+            <div className="flexbox-col w-100 mxh-350 dc__overflow-auto" ref={scrollableRef}>
+                <div className="px-12 py-8 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__border-bottom-n1">
+                    <div className="flexbox dc__align-items-center dc__gap-8">
+                        {showHeaderIcon && <ICSlidersVertical className="icon-dim-16" />}
+                        <Tooltip content={heading}>
+                            <p className="m-0 fw-6 fs-13 lh-20 dc__truncate">{heading}</p>
+                        </Tooltip>
                     </div>
+                    <Button
+                        size={ComponentSizeType.small}
+                        style={ButtonStyleType.negativeGrey}
+                        variant={ButtonVariantType.borderLess}
+                        icon={<ICClose />}
+                        dataTestId="popup-close-button"
+                        ariaLabel="Close Popup"
+                        showAriaLabelInTippy={false}
+                        onClick={closePopover}
+                        disabled={disableClose}
+                    />
                 </div>
-            )}
-        </>
+                {children}
+            </div>
+        </Popover>
     )
 }
