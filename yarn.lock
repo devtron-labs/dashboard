@@ -3537,6 +3537,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tanstack/eslint-plugin-query@npm:<5":
+  version: 4.39.1
+  resolution: "@tanstack/eslint-plugin-query@npm:4.39.1"
+  peerDependencies:
+    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
+  checksum: 10c0/0bcc828fdbdc0c128bb3363353ebea51a243ce1cdd7650d8cd38e845f747488d3168539042cd14221fe183abaebcba4d09924fddcf0952b306697c2380c36dca
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:4.40.0":
   version: 4.40.0
   resolution: "@tanstack/query-core@npm:4.40.0"
@@ -5721,6 +5730,7 @@ __metadata:
     "@sentry/cli": "npm:^2.2.0"
     "@sentry/integrations": "npm:7.50.0"
     "@sentry/tracing": "npm:7.50.0"
+    "@tanstack/eslint-plugin-query": "npm:<5"
     "@testing-library/jest-dom": "npm:^5.16.2"
     "@testing-library/react": "npm:^12.1.4"
     "@tippyjs/react": "npm:4.2.6"

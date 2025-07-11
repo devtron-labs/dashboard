@@ -70,6 +70,7 @@
     "devDependencies": {
         "@playwright/test": "^1.32.1",
         "@sentry/cli": "^2.2.0",
+        "@tanstack/eslint-plugin-query": "<5",
         "@testing-library/jest-dom": "^5.16.2",
         "@testing-library/react": "^12.1.4",
         "@types/jest": "^27.4.1",
