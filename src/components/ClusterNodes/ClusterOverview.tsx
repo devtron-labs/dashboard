@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react'
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useHistory, useParams } from 'react-router-dom'
 
 import {
     EditableTextArea,
@@ -26,6 +26,7 @@ import {
     InfoIconTippy,
     InstallationClusterConfigType,
     noop,
+    RESOURCE_BROWSER_ROUTES,
     ResourceKindType,
     showError,
     StatusComponent,
@@ -35,7 +36,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
-import { getURLBasedOnSidebarGVK } from '@Components/ResourceBrowser/Utils'
+import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
 import { getAvailableCharts } from '@Services/service'
 
 import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation.svg'
@@ -115,15 +116,11 @@ const LoadingMetricCard = () => (
 )
 
 function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
-    const { clusterId, namespace } = useParams<{
-        clusterId: string
-        namespace: string
-    }>()
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const { isSuperAdmin } = useMainContext()
 
     const history = useHistory()
-    const { path } = useRouteMatch()
     const [clusterConfig, setClusterConfig] = useState<InstallationClusterConfigType | null>(null)
 
     const requestAbortControllerRef = useRef(new AbortController())
@@ -214,10 +211,9 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
 
     const setCustomFilter = (errorType: ERROR_TYPE, filterText: string): void => {
         const queryParam = errorType === ERROR_TYPE.VERSION_ERROR ? 'k8sversion' : 'name'
-        const newUrl = `${generatePath(path, {
+        const newUrl = `${generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
             clusterId,
-            namespace,
-            nodeType: SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase(),
+            kind: 'node',
             group: K8S_EMPTY_GROUP,
         })}?${queryParam}=${encodeURIComponent(filterText)}`
         history.push(newUrl)
@@ -345,10 +341,9 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     const handleOpenScanClusterTab = (selectedVersion: string) => {
         const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
 
-        const URL = getUrlWithSearchParams(
-            getURLBasedOnSidebarGVK(SIDEBAR_KEYS.upgradeClusterGVK.Kind, clusterId, namespace),
-            { [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion },
-        )
+        const URL = getUrlWithSearchParams(generatePath(RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE, { clusterId }), {
+            [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion,
+        })
 
         addTab({
             idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,

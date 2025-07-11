@@ -13,9 +13,9 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import ClusterForm from '@Components/cluster/ClusterForm'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
+import ClusterForm from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterForm'
 import EnterpriseTrialDialog from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/EnterpriseTrialDialog'
 
 import FooterComponent from './FooterComponent'
@@ -28,8 +28,9 @@ const CreateClusterForm = importComponentFromFELibrary(
     'CreateClusterForm',
     () => (
         <EnterpriseTrialDialog
-            featureTitle="EKS Cluster"
-            featureDescription="With Devtron, you can effortlessly create an Amazon EKS cluster."
+            featureTitle="Create Kubernetes Cluster"
+            featureDescription="Use Devtron to easily create Kubernetes clusters on popular cloud providers. Simplify cluster
+                provisioning and management with a guided, user-friendly interface."
         />
     ),
     'function',
@@ -72,9 +73,10 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         reload={handleReloadClusterList}
                         handleModalClose={handleModalClose}
                         FooterComponent={FooterComponent}
+                        category={null}
                     />
                 )
-            case CreateClusterTypeEnum.CREATE_EKS_CLUSTER:
+            case CreateClusterTypeEnum.CREATE_CLUSTER:
                 return (
                     <CreateClusterForm
                         apiCallInProgress={apiCallInProgress}
@@ -90,6 +92,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                         newClusterFormProps={{ apiCallInProgress, setApiCallInProgress, FooterComponent }}
                         handleModalClose={handleModalClose}
                         reload={handleReloadClusterList}
+                        category={null}
                     />
                 )
             default:

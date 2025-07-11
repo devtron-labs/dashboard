@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -23,12 +23,13 @@ import {
     abortPreviousRequests,
     ACTION_STATE,
     AnimatedDeployButton,
+    API_STATUS_CODES,
     ApprovalRuntimeStateType,
     ArtifactInfo,
     ArtifactInfoProps,
     Button,
     ButtonStyleType,
-    ButtonWithLoader,
+    ButtonVariantType,
     CD_MATERIAL_SIDEBAR_TABS,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
@@ -70,6 +71,7 @@ import {
     ModuleNameMap,
     ModuleStatus,
     noop,
+    PipelineDeploymentStrategy,
     PipelineStageBlockInfo,
     PolicyConsequencesDTO,
     Progressing,
@@ -94,14 +96,10 @@ import {
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as PlayIC } from '@Icons/ic-play-outline.svg'
-
-import { ReactComponent as BackIcon } from '../../../../assets/icons/ic-arrow-backward.svg'
-import { ReactComponent as RefreshIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import close from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as InfoOutline } from '../../../../assets/icons/ic-info-outline.svg'
-import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
-import { ReactComponent as SearchIcon } from '../../../../assets/icons/ic-search.svg'
+import { ReactComponent as BackIcon } from '@Icons/ic-arrow-backward.svg'
+import { ReactComponent as RefreshIcon } from '@Icons/ic-arrows_clockwise.svg'
+import close from '@Icons/ic-close.svg'
+import { ReactComponent as SearchIcon } from '@Icons/ic-search.svg'
 import noArtifact from '../../../../assets/img/no-artifact.webp'
 import { URLS } from '../../../../config'
 import { EMPTY_STATE_STATUS, TOAST_BUTTON_TEXT_VIEW_DETAILS } from '../../../../config/constantMessaging'
@@ -134,6 +132,7 @@ import {
     RuntimeParamsErrorState,
     TriggerViewContextType,
 } from './types'
+import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ExpireApproval = importComponentFromFELibrary('ExpireApproval')
@@ -170,6 +169,8 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     'function',
 )
 const SelectDeploymentStrategy = importComponentFromFELibrary('SelectDeploymentStrategy', null, 'function')
+const getDeploymentStrategies: (pipelineIds: number[]) => Promise<PipelineDeploymentStrategy[]> =
+    importComponentFromFELibrary('getDeploymentStrategies', null, 'function')
 
 const CDMaterial = ({
     materialType,
@@ -300,6 +301,12 @@ const CDMaterial = ({
         !!pipelineId && !isTriggerBlockedDueToPlugin,
     )
 
+    const [pipelineStrategiesLoading, pipelineStrategies, pipelineStrategiesError, reloadStrategies] = useAsync(
+        () => getDeploymentStrategies([pipelineId]),
+        [pipelineId],
+        !!getDeploymentStrategies && !!pipelineId,
+    )
+
     const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
 
@@ -327,13 +334,24 @@ const CDMaterial = ({
         materialsResult?.deploymentApprovalInfo?.approvalConfigData,
     )
     const canApproverDeploy = materialsResult?.canApproverDeploy ?? false
-    const showConfigDiffView = searchParams.mode === 'review-config' && searchParams.deploy
+    const showConfigDiffView = searchParams.mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG && searchParams.deploy
     const isExceptionUser = materialsResult?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
+
+    const pipelineStrategyOptions = useMemo(
+        () =>
+            (pipelineStrategies ?? []).flatMap(({ error, strategies }) => {
+                if (error) {
+                    return []
+                }
+                return strategies
+            }),
+        [pipelineStrategies],
+    )
 
     const {
         pipelineDeploymentConfigLoading,
         pipelineDeploymentConfig,
-        deploymentConfigSelectorProps,
+        radioSelectConfig,
         diffFound,
         noLastDeploymentConfig,
         noSpecificDeploymentConfig,
@@ -348,6 +366,9 @@ const CDMaterial = ({
         envId,
         appName,
         envName,
+        deploymentStrategy,
+        setDeploymentStrategy,
+        pipelineStrategyOptions,
         isRollbackTriggerSelected: state.isRollbackTrigger,
         pipelineId,
         wfrId: getWfrId(state.selectedMaterial, material),
@@ -800,7 +821,7 @@ const CDMaterial = ({
         return DeploymentWithConfigType.LAST_SAVED_CONFIG
     }
 
-    const onClickSetInitialParams = (modeParamValue: 'list' | 'review-config') => {
+    const onClickSetInitialParams = (modeParamValue: URL_PARAM_MODE_TYPE) => {
         const newParams = new URLSearchParams({
             ...searchParams,
             sortBy: DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
@@ -809,14 +830,14 @@ const CDMaterial = ({
             deploy: getConfigToDeployValue(),
         })
 
-        if (modeParamValue === 'list') {
+        if (modeParamValue === URL_PARAM_MODE_TYPE.LIST) {
             newParams.delete('sortOrder')
             newParams.delete('sortBy')
         }
 
         history.push({
             pathname:
-                modeParamValue === 'review-config'
+                modeParamValue === URL_PARAM_MODE_TYPE.REVIEW_CONFIG
                     ? // Replace consecutive trailing single slashes
                       `${pathname.replace(/\/+$/g, '')}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
                     : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
@@ -1078,14 +1099,15 @@ const CDMaterial = ({
     )
 
     const renderLoadMoreButton = () => (
-        <ButtonWithLoader
-            rootClassName="cn-7 flex fs-12 fw-6 lh-18 br-4 dc__border mw-56 fetch-more-loading-button cta cancel"
+        <Button
+            dataTestId="fetch-more-images"
+            text="Fetch more images"
             onClick={loadOlderImages}
             disabled={state.loadingMore}
             isLoading={state.loadingMore}
-        >
-            Fetch More Images
-        </ButtonWithLoader>
+            fullWidth
+            variant={ButtonVariantType.secondary}
+        />
     )
 
     const renderFilterEmptyStateSubtitle = (): JSX.Element => (
@@ -1667,16 +1689,20 @@ const CDMaterial = ({
             return null
         }
         if (stageType !== STAGE_TYPE.CD) {
-            return <PlayIC />
+            return <Icon name="ic-play-outline" color={null} />
         }
-        return <DeployIcon />
+        return <Icon name="ic-rocket-launch" color={null} />
     }
 
-    const getDeployButtonStyle = (userActionState: string): ButtonStyleType => {
+    const getDeployButtonStyle = (
+        userActionState: string,
+        canDeployWithoutApproval: boolean,
+        canImageApproverDeploy: boolean,
+    ): ButtonStyleType => {
         if (userActionState === ACTION_STATE.BLOCKED) {
             return ButtonStyleType.negative
         }
-        if (userActionState === ACTION_STATE.PARTIAL) {
+        if (userActionState === ACTION_STATE.PARTIAL || canDeployWithoutApproval || canImageApproverDeploy) {
             return ButtonStyleType.warning
         }
         return ButtonStyleType.default
@@ -1707,35 +1733,32 @@ const CDMaterial = ({
         const canDeployWithoutApproval = getCanDeployWithoutApproval(state, isExceptionUser)
         const canImageApproverDeploy = getCanImageApproverDeploy(state, canApproverDeploy, isExceptionUser)
 
-        const showAnimatedDeployButton =
-            isCDNode && !disableDeployButton && (!userActionState || userActionState === ACTION_STATE.ALLOWED)
-
-        if (showAnimatedDeployButton) {
-            return (
-                <AnimatedDeployButton
-                    isLoading={deploymentLoading || isSaveLoading}
-                    onButtonClick={onClickDeploy}
-                    isVirtualEnvironment={isVirtualEnvironment}
-                    exceptionUserConfig={{
-                        canDeploy: canDeployWithoutApproval,
-                        isImageApprover: canImageApproverDeploy,
-                    }}
-                />
-            )
-        }
         return (
-            <Button
+            <AnimatedDeployButton
                 dataTestId="cd-trigger-deploy-button"
-                startIcon={getDeployButtonIcon()}
                 isLoading={deploymentLoading || isSaveLoading}
-                text={`${
-                    userActionState === ACTION_STATE.BLOCKED ? 'Deployment is blocked' : CDButtonLabelMap[stageType]
-                }${isVirtualEnvironment ? ' to isolated env' : ''}`}
-                endIcon={userActionState === ACTION_STATE.BLOCKED ? <InfoOutline /> : null}
-                onClick={(e) => onClickDeploy(e, disableDeployButton)}
-                size={ComponentSizeType.large}
-                style={getDeployButtonStyle(userActionState)}
+                onButtonClick={(e) => onClickDeploy(e, disableDeployButton)}
+                startIcon={getDeployButtonIcon()}
+                text={
+                    canDeployWithoutApproval
+                        ? 'Deploy without approval'
+                        : `${
+                              userActionState === ACTION_STATE.BLOCKED
+                                  ? 'Deployment is blocked'
+                                  : CDButtonLabelMap[stageType]
+                          }${isVirtualEnvironment ? ' to isolated env' : ''}`
+                }
+                endIcon={userActionState === ACTION_STATE.BLOCKED ? <Icon name="ic-info-outline" color={null} /> : null}
+                style={getDeployButtonStyle(userActionState, canDeployWithoutApproval, canImageApproverDeploy)}
                 disabled={disableDeployButton}
+                tooltipContent={
+                    canDeployWithoutApproval || canImageApproverDeploy
+                        ? 'You are authorized to deploy as an exception user'
+                        : ''
+                }
+                animateStartIcon={
+                    isCDNode && !disableDeployButton && (!userActionState || userActionState === ACTION_STATE.ALLOWED)
+                }
             />
         )
     }
@@ -1766,12 +1789,11 @@ const CDMaterial = ({
                 isCDNode ? (
                     <PipelineConfigDiffStatusTile
                         isLoading={pipelineDeploymentConfigLoading}
-                        deploymentConfigSelectorProps={deploymentConfigSelectorProps}
+                        radioSelectConfig={radioSelectConfig}
                         hasDiff={diffFound}
-                        onClick={() => onClickSetInitialParams('review-config')}
+                        onClick={() => onClickSetInitialParams(URL_PARAM_MODE_TYPE.REVIEW_CONFIG)}
                         noLastDeploymentConfig={noLastDeploymentConfig}
                         canReviewConfig={canReviewConfig()}
-                        urlFilters={urlFilters}
                         renderConfigNotAvailableTooltip={renderTippyContent}
                     />
                 ) : (
@@ -1779,13 +1801,21 @@ const CDMaterial = ({
                     <div />
                 )}
                 <div className="flex dc__gap-8">
-                    {SelectDeploymentStrategy && isCDNode && (
-                        <SelectDeploymentStrategy
-                            pipelineIds={[pipelineId]}
-                            deploymentStrategy={deploymentStrategy}
-                            setDeploymentStrategy={setDeploymentStrategy}
-                        />
-                    )}
+                    {/* == as we are expecting number but receiving string, 404 means custom charts */}
+                    {SelectDeploymentStrategy &&
+                        isCDNode &&
+                        pipelineStrategies?.[0]?.error?.code != API_STATUS_CODES.NOT_FOUND && (
+                            <SelectDeploymentStrategy
+                                pipelineIds={[pipelineId]}
+                                deploymentStrategy={deploymentStrategy}
+                                setDeploymentStrategy={setDeploymentStrategy}
+                                isBulkStrategyChange={false}
+                                possibleStrategyOptions={pipelineStrategyOptions}
+                                pipelineStrategiesLoading={pipelineStrategiesLoading}
+                                pipelineStrategiesError={pipelineStrategiesError ?? pipelineStrategies?.[0]?.error}
+                                reloadPipelineStrategies={reloadStrategies}
+                            />
+                        )}
                     <ConditionalWrap
                         condition={!pipelineDeploymentConfigLoading && isDeployButtonDisabled()}
                         wrap={(children) => (
@@ -1825,7 +1855,7 @@ const CDMaterial = ({
             {...pipelineDeploymentConfig}
             isLoading={pipelineDeploymentConfigLoading}
             errorConfig={errorConfig}
-            deploymentConfigSelectorProps={deploymentConfigSelectorProps}
+            radioSelectConfig={radioSelectConfig}
             scopeVariablesConfig={scopeVariablesConfig}
             urlFilters={urlFilters}
         />
@@ -1857,7 +1887,7 @@ const CDMaterial = ({
                         <button
                             type="button"
                             className="dc__transparent icon-dim-24 flex"
-                            onClick={() => onClickSetInitialParams('list')}
+                            onClick={() => onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)}
                         >
                             <BackIcon />
                         </button>
@@ -1874,9 +1904,16 @@ const CDMaterial = ({
                 ) : (
                     <h1 className="modal__title">{renderCDModalHeader()}</h1>
                 )}
-                <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                    <img alt="close" src={close} />
-                </button>
+                <Button
+                    dataTestId="close-cd-modal"
+                    icon={<Icon name="ic-close-large" color={null} />}
+                    ariaLabel="close cd modal"
+                    showAriaLabelInTippy={false}
+                    onClick={closeCDModal}
+                    style={ButtonStyleType.negativeGrey}
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                />
             </div>
 
             {/* FIXME: This material.length>1 needs to be optimised */}
@@ -1993,13 +2030,7 @@ const CDMaterial = ({
     }
 
     if (material.length > 0) {
-        return isFromBulkCD ? (
-            <>
-                {renderTriggerBody(isApprovalConfigured)}
-            </>
-        ) : (
-            renderCDModal(isApprovalConfigured)
-        )
+        return isFromBulkCD ? renderTriggerBody(isApprovalConfigured) : renderCDModal(isApprovalConfigured)
     }
 
     if (isFromBulkCD) {

@@ -17,7 +17,7 @@
 import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-eks-cluster|add-isolated-cluster)'
+const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-cluster|add-isolated-cluster)'
 
 export const URLS = {
     CHARTS: '/chart-store',
@@ -60,6 +60,7 @@ export const URLS = {
     APP_EXTERNAL_LINKS: 'external-links',
     APP_CI_CONFIG: 'ci-pipeline',
     APP_CD_CONFIG: 'cd-pipeline',
+    APP_CI_CD_CONFIG: 'ci-cd-pipeline',
     APP_EXTERNAL_CI_CONFIG: 'external-ci',
     APP_LINKED_CI_CONFIG: 'linked-ci',
     APP_JOB_CI_CONFIG: 'ci-job',
@@ -126,6 +127,8 @@ export const URLS = {
     SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
     CREATE_ENVIRONMENT: '/create/environment',
+    POD_SPREAD: 'pod-spread',
+    HIBERNATION_RULES: 'hibernation-rules',
 } as const
 
 export enum APP_COMPOSE_STAGE {

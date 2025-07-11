@@ -15,22 +15,27 @@
  */
 
 import React from 'react'
-import { useLocation } from 'react-router-dom'
+import { generatePath, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import queryString from 'query-string'
 
 import {
-    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
+    FeatureTitleWithInfo,
+    getUrlWithSearchParams,
+    GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
+    GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
     InitTabType,
     K8sResourceDetailDataType,
-    K8sResourceDetailType,
+    Nodes,
+    RESOURCE_BROWSER_ROUTES,
     ResponseType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { LAST_SEEN, URLS } from '../../config'
+import { LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
@@ -39,6 +44,7 @@ import {
     MONITORING_DASHBOARD_TAB_ID,
     NODE_LIST_HEADERS,
     ORDERED_AGGREGATORS,
+    RESOURCE_RECOMMENDER_TAB_ID,
     ResourceBrowserTabsId,
     SIDEBAR_KEYS,
 } from './Constants'
@@ -57,11 +63,14 @@ const getMonitoringDashboardTabConfig = importComponentFromFELibrary(
     'function',
 )
 
+const getResourceRecommenderTabConfig = importComponentFromFELibrary(
+    'getResourceRecommenderTabConfig',
+    null,
+    'function',
+)
+
 // Converts k8SObjects list to grouped map
-export const getGroupedK8sObjectMap = (
-    _k8SObjectList: K8SObjectType[],
-    nodeType: string,
-): Map<string, K8SObjectMapType> =>
+export const getGroupedK8sObjectMap = (_k8SObjectList: K8SObjectType[]): Map<string, K8SObjectMapType> =>
     _k8SObjectList.reduce((map, _k8sObject) => {
         const childObj = map.get(_k8sObject.name) ?? {
             ..._k8sObject,
@@ -71,12 +80,10 @@ export const getGroupedK8sObjectMap = (
             if (childObj.child.has(_child.gvk.Kind)) {
                 childObj.child.set(_child.gvk.Kind, {
                     isGrouped: true,
-                    isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
                     data: [...childObj.child.get(_child.gvk.Kind).data, _child],
                 })
             } else {
                 childObj.child.set(_child.gvk.Kind, {
-                    isExpanded: _child.gvk.Kind.toLowerCase() === nodeType,
                     data: [_child],
                 })
             }
@@ -84,38 +91,6 @@ export const getGroupedK8sObjectMap = (
         map.set(_k8sObject.name, childObj)
         return map
     }, new Map<string, K8SObjectMapType>())
-
-export const getK8SObjectMapAfterGroupHeadingClick = (
-    e: React.MouseEvent<HTMLButtonElement> | { currentTarget: { dataset: { groupName: string } } },
-    k8SObjectMap: Map<string, K8SObjectMapType>,
-    preventCollapse: boolean,
-) => {
-    const splittedKey = e.currentTarget.dataset.groupName.split('/')
-    const _k8SObjectMap = new Map<string, K8SObjectMapType>(k8SObjectMap)
-
-    if (splittedKey.length > 1) {
-        const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0]).child.get(splittedKey[1])
-        if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-            return _k8SObjectMap
-        }
-
-        _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
-        const _childObj = _k8SObjectMap.get(splittedKey[0])
-        _childObj.isExpanded = true
-        _childObj.child.set(splittedKey[1], _selectedK8SObjectObj)
-        _k8SObjectMap.set(splittedKey[0], _childObj)
-    } else {
-        const _selectedK8SObjectObj = _k8SObjectMap.get(splittedKey[0])
-        if (preventCollapse && _selectedK8SObjectObj.isExpanded) {
-            return _k8SObjectMap
-        }
-
-        _selectedK8SObjectObj.isExpanded = preventCollapse || !_selectedK8SObjectObj.isExpanded
-        _k8SObjectMap.set(splittedKey[0], _selectedK8SObjectObj)
-    }
-
-    return _k8SObjectMap
-}
 
 export const sortEventListData = (eventList: K8sResourceDetailDataType[]): K8sResourceDetailDataType[] => {
     if (!eventList?.length) {
@@ -270,16 +245,9 @@ export const updateQueryString = (
     return queryString.stringify(query)
 }
 
-export const getURLBasedOnSidebarGVK = (kind: GVKType['Kind'], clusterId: string, namespace: string): string =>
-    `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
-
 export const getTabsBasedOnRole = ({
     selectedCluster,
-    namespace,
-    dynamicTabData,
-    isTerminalSelected = false,
-    isOverviewSelected = false,
-    isMonitoringDashBoardSelected = false,
+    canRenderResourceRecommender,
 }: GetTabsBasedOnRoleParamsType): InitTabType[] => {
     const clusterId = selectedCluster.value
 
@@ -287,16 +255,20 @@ export const getTabsBasedOnRole = ({
         {
             id: ResourceBrowserTabsId.cluster_overview,
             name: AppDetailsTabs.cluster_overview,
-            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.overviewGVK.Kind, clusterId, namespace),
-            isSelected: isOverviewSelected,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.OVERVIEW, { clusterId }),
+            isSelected: false,
             showNameOnSelect: false,
             type: 'fixed',
         },
         {
             id: ResourceBrowserTabsId.k8s_Resources,
             name: AppDetailsTabs.k8s_Resources,
-            url: getURLBasedOnSidebarGVK(SIDEBAR_KEYS.nodeGVK.Kind, clusterId, namespace),
-            isSelected: !isTerminalSelected && !dynamicTabData && !isOverviewSelected && !isMonitoringDashBoardSelected,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+                clusterId,
+                kind: 'node',
+                group: K8S_EMPTY_GROUP,
+            }),
+            isSelected: true,
             type: 'fixed',
             showNameOnSelect: false,
             dynamicTitle: SIDEBAR_KEYS.nodeGVK.Kind,
@@ -305,23 +277,38 @@ export const getTabsBasedOnRole = ({
         ...(getMonitoringDashboardTabConfig
             ? [
                   getMonitoringDashboardTabConfig(
-                      getURLBasedOnSidebarGVK(SIDEBAR_KEYS.monitoringGVK.Kind, clusterId, namespace),
-                      isMonitoringDashBoardSelected,
+                      generatePath(RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD, {
+                          clusterId,
+                      }),
                       MONITORING_DASHBOARD_TAB_ID,
+                  ),
+              ]
+            : []),
+        ...(canRenderResourceRecommender && getResourceRecommenderTabConfig
+            ? [
+                  getResourceRecommenderTabConfig(
+                      `${generatePath(RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER, {
+                          clusterId,
+                      })}${getUrlWithSearchParams('', {
+                          [GVK_FILTER_API_VERSION_QUERY_PARAM_KEY]: 'apps/v1',
+                          [GVK_FILTER_KIND_QUERY_PARAM_KEY]: Nodes.Deployment,
+                      })}`,
+                      RESOURCE_RECOMMENDER_TAB_ID,
                   ),
               ]
             : []),
         {
             id: ResourceBrowserTabsId.terminal,
             name: AppDetailsTabs.terminal,
-            url: `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}`,
-            isSelected: isTerminalSelected,
+            url: generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
+                clusterId,
+            }),
+            isSelected: false,
             type: 'fixed',
             showNameOnSelect: true,
-            isAlive: isTerminalSelected,
+            isAlive: false,
             dynamicTitle: `${AppDetailsTabs.terminal} '${selectedCluster.label}'`,
         },
-        ...(dynamicTabData ? [dynamicTabData] : []),
     ]
 
     return tabs
@@ -335,27 +322,41 @@ export const convertResourceGroupListToK8sObjectList = (resource, nodeType): Map
     const _k8SObjectList = ORDERED_AGGREGATORS.map((element) => processedData.k8SObjectMap.get(element) || null).filter(
         (element) => !!element,
     )
-    return getGroupedK8sObjectMap(_k8SObjectList, nodeType)
+    return getGroupedK8sObjectMap(_k8SObjectList)
 }
 
 export const getRenderNodeButton =
     (
         resourceData: K8sResourceDetailDataType,
         columnName: string,
-        handleNodeClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
+        onClick: (e: React.MouseEvent<HTMLButtonElement>) => void,
     ) =>
     (children: React.ReactNode) => (
         <button
             type="button"
             className="dc__unset-button-styles dc__no-decor flex"
             data-name={resourceData[columnName]}
-            onClick={handleNodeClick}
+            onClick={onClick}
             aria-label={`Select ${resourceData[columnName]}`}
         >
             <span className="dc__link">{children}</span>
         </button>
     )
 
+export const getRenderInvolvedObjectButton =
+    (value: string, onClick: (e: React.MouseEvent<HTMLButtonElement>) => void) => () => {
+        const [kind, name] = value.split('/')
+        return (
+            <button
+                type="button"
+                className="dc__unset-button-styles dc__no-decor flex"
+                onClick={onClick}
+                aria-label={`Goto ${kind} ${name}`}
+            >
+                <span className="dc__link dc__truncate">{value}</span>
+            </button>
+        )
+    }
 export const renderResourceValue = (value: string) => {
     const isDateValue = moment(value, 'YYYY-MM-DDTHH:mm:ssZ', true).isValid()
 
@@ -390,29 +391,40 @@ const flattenObject = (ob: object): Record<string, any> => {
 }
 
 // NOTE: Please understand the big comment on @flattenObject to understand this
-export const parseNodeList = (response: ResponseType<NodeRowDetail[]>): ResponseType<K8sResourceDetailType> => ({
-    ...response,
-    result: {
-        headers: [...NODE_LIST_HEADERS] as string[],
-        data: response.result.map((data) => {
-            const _flattenNodeData = flattenObject(data)
-            const meta: Record<string, any> = {}
+export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix: string) => ({
+    headers: [...NODE_LIST_HEADERS] as string[],
+    data: response.result.map((data, index) => {
+        const _flattenNodeData = flattenObject(data)
+        const meta: Record<string, any> = {}
 
-            if (data.errors) {
-                meta.errorCount = String(Object.keys(data.errors).length || '')
-            }
+        if (data.errors) {
+            meta.errorCount = String(Object.keys(data.errors).length || '')
+        }
 
-            meta.taintCount =
-                Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
+        meta.taintCount =
+            Object.hasOwn(data, 'taints') && 'taints' in data ? String(Object.keys(data.taints).length || '') : ''
 
-            return { ..._flattenNodeData, ...meta }
-        }),
-    },
+        return { ..._flattenNodeData, ...meta, id: `${idPrefix}${index}` }
+    }),
 })
 
 export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
     shouldRedirectToInstallationStatus
-        ? `${URLS.RESOURCE_BROWSER}/installation-cluster/${id}`
-        : `${URLS.RESOURCE_BROWSER}/${id}/${
-              ALL_NAMESPACE_OPTION.value
-          }/${SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()}/${K8S_EMPTY_GROUP}`
+        ? `${CommonURLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+              clusterId: id,
+              group: K8S_EMPTY_GROUP,
+              kind: 'node',
+          })
+
+const renderAppGroupDescriptionContent = () =>
+    'Job allows execution of repetitive tasks in a manual or automated manner. Execute custom tasks or choose from a library of preset plugins in your job pipeline.'
+
+export const renderAdditionalBrowserHeaderInfo = () => (
+    <FeatureTitleWithInfo
+        title="Kubernetes Resource Browser"
+        docLink="RESOURCE_BROWSER"
+        renderDescriptionContent={renderAppGroupDescriptionContent}
+        showInfoIconTippy
+    />
+)

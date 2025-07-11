@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 import ReactSelect, { Props as SelectProps, SelectInstance } from 'react-select'
 
 import {
     APP_SELECTOR_STYLES,
     AppSelectorDropdownIndicator,
+    Badge,
+    ComponentSizeType,
     DocLink,
     DocLinkProps,
     Icon,
     PopupMenu,
+    ToastManager,
+    ToastVariantType,
+    useRegisterShortcut,
     ValueContainerWithLoadingShimmer,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
-import DeleteClusterConfirmationModal from '@Components/cluster/DeleteClusterConfirmationModal'
+import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
+import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
 import { URLS } from '../../../config'
-import { DEFAULT_CLUSTER_ID } from '../../cluster/cluster.type'
 import {
     clusterOverviewNodeText,
     ERROR_SCREEN_LEARN_MORE,
@@ -41,6 +47,10 @@ import {
     SIDEBAR_KEYS,
 } from '../Constants'
 import { ClusterOptionType, ClusterSelectorType } from '../Types'
+
+const RBPageHeaderPopup = importComponentFromFELibrary('RBPageHeaderPopup', null, 'function')
+const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
+const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 
 const ClusterSelector: React.FC<ClusterSelectorType> = ({
     onChange,
@@ -52,7 +62,26 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const { replace } = useHistory()
 
     const [openDeleteClusterModal, setOpenDeleteClusterModal] = useState(false)
+    const [showEditPodSpreadModal, setShowEditPodSpreadModal] = useState(false)
+    const [showHibernationRulesModal, setShowHibernationRulesModal] = useState(false)
+
     const selectRef = useRef<SelectInstance>(null)
+
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
+
+    useEffect(() => {
+        registerShortcut({
+            keys: ['S'],
+            callback: () => {
+                selectRef.current?.focus()
+                selectRef.current?.openMenu('first')
+            },
+        })
+
+        return () => {
+            unregisterShortcut(['S'])
+        }
+    }, [])
 
     let filteredClusterList = clusterList
     if (window._env_.HIDE_DEFAULT_CLUSTER) {
@@ -69,11 +98,35 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     }
 
     const handleOpenDeleteModal = () => {
+        if (+clusterId === DEFAULT_CLUSTER_ID) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Default cluster cannot be deleted.',
+            })
+            return
+        }
+
         setOpenDeleteClusterModal(true)
     }
 
     const handleCloseDeleteModal = () => {
         setOpenDeleteClusterModal(false)
+    }
+
+    const handleOpenPodSpreadModal = () => {
+        setShowEditPodSpreadModal(true)
+    }
+
+    const handleClosePodSpreadModal = () => {
+        setShowEditPodSpreadModal(false)
+    }
+
+    const handleOpenHibernationRulesModal = () => {
+        setShowHibernationRulesModal(true)
+    }
+
+    const handleCloseHibernationRulesModal = () => {
+        setShowHibernationRulesModal(false)
     }
 
     const handleRedirectToClusterList = () => {
@@ -114,27 +167,43 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                 }}
             />
 
-            {defaultOption?.isProd && <span className="px-6 py-2 br-4 bcb-1 cb-7 fs-12 lh-16 fw-5">Production</span>}
+            {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
 
-            <PopupMenu autoClose>
-                <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
-                    <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
-                </PopupMenu.Button>
+            {RBPageHeaderPopup && !isInstallationStatusView ? (
+                <RBPageHeaderPopup
+                    handleDelete={handleOpenDeleteModal}
+                    handleHibernationRules={handleOpenHibernationRulesModal}
+                    handlePodSpread={handleOpenPodSpreadModal}
+                />
+            ) : (
+                <PopupMenu autoClose>
+                    <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
+                        <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
+                    </PopupMenu.Button>
 
-                <PopupMenu.Body rootClassName="dc__border p-4">
-                    <div className="w-150 flexbox-col">
-                        <button
-                            type="button"
-                            className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
-                            onClick={handleOpenDeleteModal}
-                            data-testid="delete_cluster_button"
-                        >
-                            <Icon name="ic-delete" color="R500" />
-                            <span className="fs-14 lh-1-5 cr-5">Delete</span>
-                        </button>
-                    </div>
-                </PopupMenu.Body>
-            </PopupMenu>
+                    <PopupMenu.Body rootClassName="dc__border p-4">
+                        <div className="w-150 flexbox-col">
+                            <button
+                                type="button"
+                                className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
+                                onClick={handleOpenDeleteModal}
+                                data-testid="delete_cluster_button"
+                            >
+                                <Icon name="ic-delete" color="R500" />
+                                <span className="fs-14 lh-1-5 cr-5">Delete</span>
+                            </button>
+                        </div>
+                    </PopupMenu.Body>
+                </PopupMenu>
+            )}
+
+            {PodSpreadModal && showEditPodSpreadModal && (
+                <PodSpreadModal clusterId={clusterId} handleClose={handleClosePodSpreadModal} />
+            )}
+
+            {HibernationRulesModal && showHibernationRulesModal && (
+                <HibernationRulesModal clusterId={clusterId} handleClose={handleCloseHibernationRulesModal} />
+            )}
 
             {openDeleteClusterModal && (
                 <DeleteClusterConfirmationModal

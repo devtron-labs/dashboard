@@ -22,7 +22,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ConditionalWrap,
-    InfoColourBar,
     ServerErrors,
     GenericEmptyState,
     ResponseType,
@@ -41,6 +40,11 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     ForceDeleteConfirmationModal,
     doesJSONConformToSchema07,
+    InfoBlock,
+    ButtonVariantType,
+    handleAnalyticsEvent,
+    Icon,
+    AnimatedDeployButton,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -73,7 +77,6 @@ import {
     ChartProjectSelector,
     ChartVersionValuesSelector,
     DeleteApplicationButton,
-    UpdateApplicationButton,
     AppNameInput,
     ValueNameInput,
     DeploymentAppSelector,
@@ -92,7 +95,6 @@ import { ReactComponent as Edit } from '../../../../assets/icons/ic-pencil.svg'
 import { ReactComponent as Arrows } from '../../../../assets/icons/ic-arrows-left-right.svg'
 import { ReactComponent as File } from '../../../../assets/icons/ic-file-text.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as InfoIcon } from '../../../../assets/icons/info-filled.svg'
 import { ReactComponent as LinkIcon } from '../../../../assets/icons/ic-link.svg'
 import {
     ChartDeploymentHistoryResponse,
@@ -170,7 +172,7 @@ const ChartValuesView = ({
     const [isProjectLoading, setProjectLoading] = useState(false)
     const [isUnlinkedCLIApp, setIsUnlinkedCLIApp] = useState(false)
     const [deploymentVersion, setDeploymentVersion] = useState(1)
-    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.GITOPS
+    const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const [isVirtualEnvironmentOnSelector, setIsVirtualEnvironmentOnSelector] = useState<boolean>()
     const [allowedDeploymentTypes, setAllowedDeploymentTypes] = useState<DeploymentAppTypes[]>([])
     const [allowedCustomBool, setAllowedCustomBool] = useState<boolean>()
@@ -707,7 +709,7 @@ const ChartValuesView = ({
                 if (
                     deleteAction !== DELETE_ACTION.NONCASCADE_DELETE &&
                     !response.result.deleteResponse?.clusterReachable &&
-                    commonState.deploymentAppType === DeploymentAppTypes.GITOPS
+                    commonState.deploymentAppType === DeploymentAppTypes.ARGO
                 ) {
                     dispatch({
                         type: ChartValuesViewActionTypes.multipleOptions,
@@ -987,6 +989,7 @@ const ChartValuesView = ({
                     res = await updateAppReleaseWithoutLinking(payload)
                 }
             } else if (isDeployChartView) {
+                handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_DEPLOY' })
                 const payload = {
                     teamId: commonState.selectedProject.value,
                     referenceValueId: commonState.chartValues.id,
@@ -1120,11 +1123,13 @@ const ChartValuesView = ({
         if (_chartId) {
             history.push(getChartValuesURL(_chartId))
         }
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_NEW_PRESET_VALUE' })
     }
 
     const handleTabSwitch = (e) => {
         if (e?.target && e.target.value !== commonState.activeTab) {
             if (e.target.value === 'manifest') {
+                handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_MANIFEST' })
                 const validatedName = validateAppName(isCreateValueView ? valueName : appName)
                 if (isCreateValueView && !validatedName.isValid) {
                     dispatch({
@@ -1198,7 +1203,9 @@ const ChartValuesView = ({
         if (commonState.fetchingReadMe || disabled) {
             return
         }
-
+        if (!commonState.openReadMe) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_README' })
+        }
         dispatch({ type: ChartValuesViewActionTypes.openReadMe, payload: !commonState.openReadMe })
         if (commonState.openComparison) {
             dispatch({ type: ChartValuesViewActionTypes.openComparison, payload: false })
@@ -1233,7 +1240,9 @@ const ChartValuesView = ({
         if (disabled) {
             return
         }
-
+        if (!commonState.openComparison) {
+            handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_COMPARE' })
+        }
         dispatch({ type: ChartValuesViewActionTypes.openComparison, payload: !commonState.openComparison })
         if (commonState.openReadMe) {
             dispatch({ type: ChartValuesViewActionTypes.openReadMe, payload: false })
@@ -1281,7 +1290,7 @@ const ChartValuesView = ({
             >
                 {(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson) && (
                     <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
-                        {ConfigurationType.GUI} (Beta)
+                        {ConfigurationType.GUI}
                     </RadioGroup.Radio>
                 )}
                 <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()} dataTestId="yaml-radio-button">
@@ -1364,6 +1373,7 @@ const ChartValuesView = ({
     }
 
     const handleToggleSecurityScan = () => {
+        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_SCAN_TOGGLE' })
         dispatch({
             type: ChartValuesViewActionTypes.setIsManifestScanEnabled,
             payload: !commonState.isManifestScanEnabled,
@@ -1529,6 +1539,17 @@ const ChartValuesView = ({
                         selectedChartValues={commonState.chartValues}
                     />
                 )}
+                <footer className="flexbox dc__content-end dc__border-top px-16 py-12">
+                    <AnimatedDeployButton
+                        dataTestId="preset-save-values-button"
+                        disabled={commonState.isUpdateInProgress || commonState.isDeleteInProgress}
+                        onButtonClick={deployOrUpdateApplication}
+                        isLoading={commonState.isUpdateInProgress}
+                        text={isCreateValueView ? `Save ${chartValueId !== '0' ? 'Changes' : 'Value'}` : 'Deploy'}
+                        {...(isCreateValueView ? {} : { startIcon: <Icon name="ic-rocket-launch" color={null} /> })}
+                        animateStartIcon={!isCreateValueView}
+                    />
+                </footer>
             </div>
         )
     }
@@ -1561,21 +1582,19 @@ const ChartValuesView = ({
         })
     }
 
-    const hideConnectToChartTippy = () => {
-        dispatch({
-            type: ChartValuesViewActionTypes.showConnectToChartTippy,
-            payload: false,
-        })
-    }
-
-    const renderConnectToHelmChart = (): JSX.Element => {
-        return (
-            <div className="flex left mt-8">
-                <LinkIcon className="connect-to-chart-icon icon-dim-16 mr-8" />
-                <span className="fs-13 fw-6 lh-20">Connect to helm chart</span>
-            </div>
-        )
-    }
+    const renderConnectToHelmChartInfoBlock = () => (
+        <InfoBlock
+            description={CONNECT_TO_HELM_CHART_TEXTS.Message}
+            layout="column"
+            buttonProps={{
+                text: 'Connect to helm chart',
+                onClick: handleConnectToChartClick,
+                variant: ButtonVariantType.text,
+                dataTestId: 'connect-to-helm-chart-button',
+                startIcon: <LinkIcon className="connect-to-chart-icon icon-dim-16" />,
+            }}
+        />
+    )
 
     const getHelmAppMetaInfoRes = async (): Promise<void> => {
         try {
@@ -1648,176 +1667,173 @@ const ChartValuesView = ({
             >
                 {renderValuesTabsContainer()}
                 <div className="chart-values-view__wrapper flexbox flex-grow-1 dc__overflow-hidden">
-                    <div className="flexbox-col dc__gap-16 chart-values-view__details dc__border-right dc__overflow-auto p-16">
-                        <div className="flexbox-col dc__gap-12">
-                            {isCreateValueView && (
-                                <ValueNameInput
-                                    valueName={valueName}
-                                    handleValueNameChange={handleValueNameChange}
-                                    handleValueNameOnBlur={handleNameOnBlur}
-                                    invalidValueName={commonState.invalidValueName}
-                                    invalidValueNameMessage={commonState.invalidValueNameMessage}
-                                    valueNameDisabled={chartValueId !== '0'}
-                                />
-                            )}
-                            {isDeployChartView && (
-                                <AppNameInput
-                                    appName={appName}
-                                    handleAppNameChange={handleAppNameChange}
-                                    handleAppNameOnBlur={handleNameOnBlur}
-                                    invalidAppName={commonState.invalidAppName}
-                                    invalidAppNameMessage={commonState.invalidAppNameMessage}
-                                />
-                            )}
-                            {!isDeployChartView && !isCreateValueView && (
-                                <div className="w-100">
-                                    <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
-                                        Project
+                    <div className="flexbox-col dc__content-space chart-values-view__details dc__border-right dc__overflow-auto p-16">
+                        <div className="flexbox-col dc__gap-16">
+                            <div className="flexbox-col dc__gap-12">
+                                {isCreateValueView && (
+                                    <ValueNameInput
+                                        valueName={valueName}
+                                        handleValueNameChange={handleValueNameChange}
+                                        handleValueNameOnBlur={handleNameOnBlur}
+                                        invalidValueName={commonState.invalidValueName}
+                                        invalidValueNameMessage={commonState.invalidValueNameMessage}
+                                        valueNameDisabled={chartValueId !== '0'}
+                                    />
+                                )}
+                                {isDeployChartView && (
+                                    <AppNameInput
+                                        appName={appName}
+                                        handleAppNameChange={handleAppNameChange}
+                                        handleAppNameOnBlur={handleNameOnBlur}
+                                        invalidAppName={commonState.invalidAppName}
+                                        invalidAppNameMessage={commonState.invalidAppNameMessage}
+                                    />
+                                )}
+                                {!isDeployChartView && !isCreateValueView && (
+                                    <div className="w-100">
+                                        <div className="fs-12 fw-4 lh-20 cn-7" data-testid="project-heading">
+                                            Project
+                                        </div>
+                                        <div
+                                            className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9"
+                                            data-testid="project-value"
+                                        >
+                                            {appMetaInfo?.projectName ? appMetaInfo.projectName : 'unassigned'}
+                                            <Edit
+                                                className="icon-dim-20 cursor"
+                                                onClick={toggleChangeProjectModal}
+                                                data-testid="edit-project-icon"
+                                            />
+                                        </div>
                                     </div>
-                                    <div
-                                        className="flex left dc__content-space fs-13 fw-6 lh-20 cn-9"
-                                        data-testid="project-value"
-                                    >
-                                        {appMetaInfo?.projectName ? appMetaInfo.projectName : 'unassigned'}
-                                        <Edit
-                                            className="icon-dim-20 cursor"
-                                            onClick={toggleChangeProjectModal}
-                                            data-testid="edit-project-icon"
+                                )}
+                                {!isDeployChartView && showUpdateAppModal && !isCreateValueView && (
+                                    <div className="app-overview-container display-grid bg__primary dc__overflow-hidden">
+                                        <ProjectUpdateModal
+                                            appId={appId}
+                                            appMetaInfo={appMetaInfo}
+                                            installedAppId={commonState.installedConfig?.installedAppId}
+                                            onClose={toggleChangeProjectModal}
+                                            projectList={commonState.projects}
+                                            getAppMetaInfoRes={getHelmAppMetaInfoRes}
                                         />
                                     </div>
-                                </div>
-                            )}
-                            {!isDeployChartView && showUpdateAppModal && !isCreateValueView && (
-                                <div className="app-overview-container display-grid bg__primary dc__overflow-hidden">
-                                    <ProjectUpdateModal
-                                        appId={appId}
-                                        appMetaInfo={appMetaInfo}
-                                        installedAppId={commonState.installedConfig?.installedAppId}
-                                        onClose={toggleChangeProjectModal}
-                                        projectList={commonState.projects}
-                                        getAppMetaInfoRes={getHelmAppMetaInfoRes}
+                                )}
+                                {isDeployChartView && (
+                                    <ChartProjectSelector
+                                        selectedProject={commonState.selectedProject}
+                                        handleProjectSelection={handleProjectSelection}
+                                        projects={commonState.projects}
+                                        invalidProject={commonState.invalidProject}
                                     />
-                                </div>
-                            )}
-                            {isDeployChartView && (
-                                <ChartProjectSelector
-                                    selectedProject={commonState.selectedProject}
-                                    handleProjectSelection={handleProjectSelection}
-                                    projects={commonState.projects}
-                                    invalidProject={commonState.invalidProject}
-                                />
-                            )}
-                            {(isDeployChartView ||
-                                (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
-                                <ChartEnvironmentSelector
-                                    isExternal={isExternalApp}
-                                    isDeployChartView={isDeployChartView}
-                                    installedAppInfo={commonState.installedAppInfo}
-                                    releaseInfo={commonState.releaseInfo}
-                                    isUpdate={!!isUpdate}
-                                    selectedEnvironment={commonState.selectedEnvironment}
-                                    handleEnvironmentSelection={handleEnvironmentSelection}
-                                    environments={commonState.environments}
-                                    invalidEnvironment={commonState.invalidaEnvironment}
-                                    isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
-                                    isVirtualEnvironment={appDetails?.isVirtualEnvironment}
-                                />
-                            )}
-                            {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
-                                <DeploymentAppSelector
-                                    commonState={commonState}
-                                    isUpdate={isUpdate}
-                                    handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
-                                    isDeployChartView={isDeployChartView}
-                                    allowedDeploymentTypes={allowedDeploymentTypes}
-                                    gitRepoURL={installedConfigFromParent['gitRepoURL']}
-                                    allowedCustomBool={allowedCustomBool}
-                                />
-                            )}
-
-                            {allowedCustomBool && showDeploymentTools && (
-                                <GitOpsDrawer
-                                    commonState={commonState}
-                                    deploymentAppType={commonState.deploymentAppType}
-                                    allowedDeploymentTypes={allowedDeploymentTypes}
-                                    staleData={staleData}
-                                    setStaleData={setStaleData}
-                                    dispatch={dispatch}
-                                    isDrawerOpen={isDrawerOpen}
-                                    handleDrawerState={handleDrawerState}
-                                    showRepoSelector={showRepoSelector}
-                                    allowedCustomBool={allowedCustomBool}
-                                />
-                            )}
-                        </div>
-                        <div className="dc__border-bottom-n1" />
-                        <div className="flexbox-col dc__gap-12">
-                            {/**
-                             * ChartRepoSelector will be displayed only when,
-                             * - It's not a deploy chart view
-                             * - It's not an external app values view
-                             * - It's an external app which is,
-                             *   i. Already linked to a chart repo
-                             *  ii. Not already linked but connect to repo action is performed (showRepoSelector is set to true)
-                             */}
-                            {!isDeployChartView &&
-                                (!isExternalApp || commonState.installedAppInfo || commonState.showRepoSelector) && (
-                                    <ChartRepoSelector
+                                )}
+                                {(isDeployChartView ||
+                                    (!isDeployChartView && (isExternalApp || commonState.selectedEnvironment))) && (
+                                    <ChartEnvironmentSelector
                                         isExternal={isExternalApp}
-                                        isUpdate={!!isUpdate}
+                                        isDeployChartView={isDeployChartView}
                                         installedAppInfo={commonState.installedAppInfo}
-                                        handleRepoChartValueChange={handleRepoChartValueChange}
-                                        repoChartValue={commonState.repoChartValue}
-                                        chartDetails={commonState.repoChartValue}
+                                        releaseInfo={commonState.releaseInfo}
+                                        isUpdate={!!isUpdate}
+                                        selectedEnvironment={commonState.selectedEnvironment}
+                                        handleEnvironmentSelection={handleEnvironmentSelection}
+                                        environments={commonState.environments}
+                                        invalidEnvironment={commonState.invalidaEnvironment}
+                                        isVirtualEnvironmentOnSelector={isVirtualEnvironmentOnSelector}
+                                        isVirtualEnvironment={appDetails?.isVirtualEnvironment}
                                     />
                                 )}
-                            {!isDeployChartView &&
-                                isExternalApp &&
-                                !commonState.installedAppInfo &&
-                                !commonState.showRepoSelector && (
-                                    <InfoColourBar
-                                        message={CONNECT_TO_HELM_CHART_TEXTS.Message}
-                                        classname="connect-to-chart-wrapper info_bar"
-                                        Icon={InfoIcon}
-                                        linkOnClick={handleConnectToChartClick}
-                                        linkText={renderConnectToHelmChart()}
+                                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION && showDeploymentTools && (
+                                    <DeploymentAppSelector
+                                        commonState={commonState}
+                                        isUpdate={isUpdate}
+                                        handleDeploymentAppTypeSelection={handleDeploymentAppTypeSelection}
+                                        isDeployChartView={isDeployChartView}
+                                        allowedDeploymentTypes={allowedDeploymentTypes}
+                                        gitRepoURL={installedConfigFromParent['gitRepoURL']}
+                                        allowedCustomBool={allowedCustomBool}
                                     />
                                 )}
-                            {renderGeneratedDownloadManifest()}
-                            {(!isExternalApp ||
-                                commonState.installedAppInfo ||
-                                commonState.repoChartValue?.chartRepoName) && (
-                                <ChartVersionValuesSelector
-                                    isUpdate={isUpdate}
-                                    selectedVersion={commonState.selectedVersion}
-                                    selectedVersionUpdatePage={commonState.selectedVersionUpdatePage}
-                                    handleVersionSelection={handleVersionSelection}
-                                    chartVersionsData={commonState.chartVersionsData}
-                                    chartVersionObj={commonState.chartVersionsData.find(
-                                        (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
+
+                                {allowedCustomBool && showDeploymentTools && (
+                                    <GitOpsDrawer
+                                        commonState={commonState}
+                                        deploymentAppType={commonState.deploymentAppType}
+                                        allowedDeploymentTypes={allowedDeploymentTypes}
+                                        staleData={staleData}
+                                        setStaleData={setStaleData}
+                                        dispatch={dispatch}
+                                        isDrawerOpen={isDrawerOpen}
+                                        handleDrawerState={handleDrawerState}
+                                        showRepoSelector={showRepoSelector}
+                                        allowedCustomBool={allowedCustomBool}
+                                    />
+                                )}
+                            </div>
+                            <div className="dc__border-bottom-n1" />
+                            <div className="flexbox-col dc__gap-12">
+                                {/**
+                                 * ChartRepoSelector will be displayed only when,
+                                 * - It's not a deploy chart view
+                                 * - It's not an external app values view
+                                 * - It's an external app which is,
+                                 *   i. Already linked to a chart repo
+                                 *  ii. Not already linked but connect to repo action is performed (showRepoSelector is set to true)
+                                 */}
+                                {!isDeployChartView &&
+                                    (!isExternalApp ||
+                                        commonState.installedAppInfo ||
+                                        commonState.showRepoSelector) && (
+                                        <ChartRepoSelector
+                                            isExternal={isExternalApp}
+                                            isUpdate={!!isUpdate}
+                                            installedAppInfo={commonState.installedAppInfo}
+                                            handleRepoChartValueChange={handleRepoChartValueChange}
+                                            repoChartValue={commonState.repoChartValue}
+                                            chartDetails={commonState.repoChartValue}
+                                        />
                                     )}
-                                    chartValuesList={chartValuesList}
-                                    chartValues={commonState.chartValues}
-                                    redirectToChartValues={redirectToChartValues}
-                                    handleChartValuesSelection={handleChartValuesSelection}
-                                    hideVersionFromLabel={
-                                        isExternalApp &&
-                                        !commonState.installedAppInfo &&
-                                        commonState.chartValues.kind === ChartKind.EXISTING
-                                    }
-                                    hideCreateNewOption={isCreateValueView}
-                                />
-                            )}
+                                {!isDeployChartView &&
+                                    isExternalApp &&
+                                    !commonState.installedAppInfo &&
+                                    !commonState.showRepoSelector &&
+                                    renderConnectToHelmChartInfoBlock()}
+                                {renderGeneratedDownloadManifest()}
+                                {(!isExternalApp ||
+                                    commonState.installedAppInfo ||
+                                    commonState.repoChartValue?.chartRepoName) && (
+                                    <ChartVersionValuesSelector
+                                        isUpdate={isUpdate}
+                                        selectedVersion={commonState.selectedVersion}
+                                        selectedVersionUpdatePage={commonState.selectedVersionUpdatePage}
+                                        handleVersionSelection={handleVersionSelection}
+                                        chartVersionsData={commonState.chartVersionsData}
+                                        chartVersionObj={commonState.chartVersionsData.find(
+                                            (_chartVersion) => _chartVersion.id === commonState.selectedVersion,
+                                        )}
+                                        chartValuesList={chartValuesList}
+                                        chartValues={commonState.chartValues}
+                                        redirectToChartValues={redirectToChartValues}
+                                        handleChartValuesSelection={handleChartValuesSelection}
+                                        hideVersionFromLabel={
+                                            isExternalApp &&
+                                            !commonState.installedAppInfo &&
+                                            commonState.chartValues.kind === ChartKind.EXISTING
+                                        }
+                                        hideCreateNewOption={isCreateValueView}
+                                    />
+                                )}
+                            </div>
+                            {!isExternalApp &&
+                                serverMode === SERVER_MODE.FULL &&
+                                (isDeployChartView || isUpdateAppView) &&
+                                ToggleSecurityScan && (
+                                    <ToggleSecurityScan
+                                        isManifestScanEnabled={commonState.isManifestScanEnabled}
+                                        handleToggleSecurityScan={handleToggleSecurityScan}
+                                    />
+                                )}
                         </div>
-                        {!isExternalApp &&
-                            serverMode === SERVER_MODE.FULL &&
-                            (isDeployChartView || isUpdateAppView) &&
-                            ToggleSecurityScan && (
-                                <ToggleSecurityScan
-                                    isManifestScanEnabled={commonState.isManifestScanEnabled}
-                                    handleToggleSecurityScan={handleToggleSecurityScan}
-                                />
-                            )}
                         {!isDeployChartView &&
                             chartValueId !== '0' &&
                             !(
@@ -1857,15 +1873,6 @@ const ChartValuesView = ({
                         renderChartValuesEditor()
                     )}
                 </div>
-                <footer className="flexbox dc__content-end dc__border-top px-16 py-10">
-                    <UpdateApplicationButton
-                        isUpdateInProgress={commonState.isUpdateInProgress}
-                        isDeleteInProgress={commonState.isDeleteInProgress}
-                        isDeployChartView={isDeployChartView}
-                        isCreateValueView={isCreateValueView}
-                        deployOrUpdateApplication={deployOrUpdateApplication}
-                    />
-                </footer>
 
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog

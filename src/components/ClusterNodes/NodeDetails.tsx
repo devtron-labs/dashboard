@@ -41,8 +41,11 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    RESOURCE_BROWSER_ROUTES,
+    getUrlWithSearchParams,
+    ResourceBrowserActionMenuEnum,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory } from 'react-router-dom'
+import { useParams, useLocation, useHistory, generatePath } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
@@ -78,8 +81,8 @@ import { importComponentFromFELibrary } from '@Components/common'
 
 const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
 
-const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
-    const { clusterId, node } = useParams<{ clusterId: string; nodeType: string; node: string }>()
+const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
+    const { clusterId, name } = useParams<{ clusterId: string; nodeType: string; name: string }>()
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
@@ -111,7 +114,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
         setErrorResponseCode(null)
-        getNodeCapacity(clusterId, node)
+        getNodeCapacity(clusterId, name)
             .then((response: NodeDetailResponse) => {
                 if (response.result) {
                     setSortedPodList(response.result.pods?.sort((a, b) => a['name'].localeCompare(b['name'])))
@@ -149,7 +152,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     useEffect(() => {
         getData(patchData)
-    }, [node])
+    }, [name])
 
     const getSanitizedNodeTabId = (id: string) => id.toLowerCase().replace(' ', '-')
 
@@ -289,7 +292,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
 
     const changeNodeTab = (e): void => {
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
-        if (node !== AUTO_SELECT.value) {
+        if (name !== AUTO_SELECT.value) {
             const selectedTab = NODE_TABS_INFO[_tabIndex]?.id || ''
             const _searchParam = `?tab=${selectedTab}`
 
@@ -673,9 +676,13 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     const openDebugTerminal = () => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeDetail.name)
-        const url = location.pathname
         push(
-            `${url.split('/').slice(0, -3).join('/')}/${AppDetailsTabs.terminal}/${K8S_EMPTY_GROUP}?${queryParams.toString()}`,
+            getUrlWithSearchParams(
+                generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
+                    clusterId,
+                }),
+                { node: nodeDetail.name },
+            ),
         )
     }
 
@@ -711,17 +718,19 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
     }
 
     const handleResourceClick = (e) => {
-        const { name, tab, namespace } = e.currentTarget.dataset
-        let _nodeSelectionData
-        let _group
-        _group = selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP
-        _nodeSelectionData = { name: `pod` + `_${name}`, namespace, isFromNodeDetails: true }
-        const _url = `${URLS.RESOURCE_BROWSER}/${clusterId}/${namespace}/pod/${_group}/${name}${
-            tab ? `/${tab.toLowerCase()}` : ''
-        }`
-        addTab({ idPrefix: `${_group}_${namespace}`, kind: 'pod', name, url: _url }).then(() => {
-            push(_url)
-        })
+        const { name, tab = ResourceBrowserActionMenuEnum.manifest, namespace } = e.currentTarget.dataset
+        push(
+            getUrlWithSearchParams(
+                generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
+                    clusterId,
+                    group: selectedResource?.gvk.Group.toLowerCase() || K8S_EMPTY_GROUP,
+                    kind: 'pod',
+                    name,
+                    namespace,
+                }),
+                { tab },
+            ),
+        )
     }
 
     const getTriggerSortingHandler =
@@ -771,7 +780,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                             {sortedPodList.map((pod) => (
                                 <div className="row-wrapper" key={`${pod.name}-${pod.namespace}`}>
                                     <span className="dc__ellipsis-right">{pod.namespace}</span>
-                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center">
+                                    <div className="dc__visible-hover dc__visible-hover--parent hover-trigger dc__position-rel flexbox dc__align-items-center dc__content-space">
                                         <Tooltip content={pod.name} interactive>
                                             <span
                                                 className="dc__inline-block dc__ellipsis-right cb-5 cursor"
@@ -942,13 +951,13 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
             const parsedManifest = YAML.parse(modifiedManifest)
             const requestData: UpdateNodeRequestBody = {
                 clusterId: +clusterId,
-                name: node,
+                name,
                 manifestPatch: JSON.stringify(parsedManifest),
                 version: nodeDetail.version,
                 kind: nodeDetail.kind,
             }
             setApiInProgress(true)
-            updateNodeManifest(clusterId, node, requestData)
+            updateNodeManifest(clusterId, name, requestData)
                 .then((response: NodeDetailResponse) => {
                     setApiInProgress(false)
                     if (response.result) {
@@ -1068,7 +1077,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     {renderTabContent()}
                     {showCordonNodeDialog && (
                         <CordonNodeModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             unschedulable={nodeDetail.unschedulable}
@@ -1077,7 +1086,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {showDrainNodeDialog && (
                         <DrainNodeModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             closePopup={hideDrainNodeModal}
@@ -1085,7 +1094,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {showDeleteNodeDialog && (
                         <DeleteNodeModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             closePopup={hideDeleteNodeModal}
@@ -1094,7 +1103,7 @@ const NodeDetails = ({ addTab, lowercaseKindToResourceGroupMap, updateTabUrl }: 
                     )}
                     {showEditTaints && (
                         <EditTaintsModal
-                            name={node}
+                            name={name}
                             version={nodeDetail.version}
                             kind={nodeDetail.kind}
                             taints={nodeDetail.taints}

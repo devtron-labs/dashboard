@@ -104,6 +104,7 @@ $black: 0, 0, 0;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N200) 0%, var(--N50) 50%, var(--N200) 80%);
     --bg-hover: rgba(64, 96, 128, 0.05);
     --bg-hover-opaque: rgb(245, 247, 249);
+    --bg-hover-secondary-opaque: rgb(238, 242, 246);
     --bg-body: linear-gradient(90deg, var(--B500) 0%, var(--B500) 10%, rgb(0, 82, 165) 25%, rgb(0, 47, 94) 50%, rgb(0, 33, 65) 100%);
     --bg-segmented-control: rgba(#{$black}, 0.03);
 
@@ -208,6 +209,7 @@ $black: 0, 0, 0;
     --bg-shimmer-loader: linear-gradient(90deg, var(--N50) 0%, var(--N200) 50%, var(--N50) 80%);
     --bg-hover: rgba(229, 242, 255, 0.05);
     --bg-hover-opaque: rgb(41, 42, 51);
+    --bg-hover-secondary-opaque: rgb(36, 38, 46);
     --bg-body: var(--bg-tertiary);
     --bg-segmented-control: rgba(#{$black}, 0.30);
 
@@ -225,6 +227,7 @@ $black: 0, 0, 0;
 }
 
 :root {
+    --white-10: rgba(#{$white}, 0.1);
     --white-20: rgba(#{$white}, 0.2);
     --white-40: rgba(#{$white}, 0.4);
     --white-60: rgba(#{$white}, 0.6);
@@ -260,6 +263,7 @@ $black: 0, 0, 0;
     --shadow-10: 0px 0px 4px 0px var(--black-20);
     --shadow-20: 0px 0px 7px 0px var(--black-20);
     --shadow-30: 0px 0px 10px 0px var(--black-20);
+    --shadow-key: 0px 2px 0px 0px rgba(7, 17, 26, 0.15);
 
     &.theme {
         &__light {

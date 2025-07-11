@@ -17,7 +17,30 @@
 import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { ActionMenuProps, OptionType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+
+export interface ChartGroupCardProps {
+    chartGroup: ChartGroup
+}
+
+export type ChartSelectProps = {
+    chart: Chart
+    isListView: boolean
+    dataTestId: string
+    selectedCount: number
+    onClick?: (chartId: number) => void
+} & (
+    | {
+          addChart: (chartId: number) => void
+          subtractChart: (chartId: number) => void
+          selectChart?: never
+      }
+    | {
+          addChart?: never
+          subtractChart?: never
+          selectChart: (chartId: number) => void
+      }
+)
 
 export interface ChartValuesType {
     kind: 'DEFAULT' | 'TEMPLATE' | 'DEPLOYED' | 'EXISTING' | null
@@ -137,6 +160,7 @@ export interface ChartGroup {
     name: string
     description: string
     chartGroupEntries: ChartGroupEntry[]
+    createdBy: string
 }
 
 export interface ChartEntryIdType {
@@ -366,7 +390,7 @@ export interface ChartListPopUpType {
     filteredChartList: ChartListType[]
     isLoading: boolean
     setFilteredChartList: React.Dispatch<React.SetStateAction<ChartListType[]>>
-    setShowSourcePopoUp: React.Dispatch<React.SetStateAction<boolean>>
+    setShowSourcePopUp: React.Dispatch<React.SetStateAction<boolean>>
     chartActiveMap: Record<string, boolean>
     setChartActiveMap: React.Dispatch<React.SetStateAction<Record<string, boolean>>>
 }
@@ -406,6 +430,7 @@ export interface ChartHeaderFilterProps {
     setIsGrid: (isGrid: boolean) => void
     chartCategoryIds: string[]
     setChartCategoryIds: Dispatch<SetStateAction<string[]>>
+    chartStoreRef?: React.MutableRefObject<HTMLDivElement>
 }
 
 export interface DeleteInstalledChartParamsType {
@@ -419,4 +444,24 @@ export interface ChartGroupDeploymentsProps {
     description: string
     installedChartData: InstalledChartGroup[]
     deleteInstalledChart: (e) => void
+}
+
+export interface ChartDescriptionTypes {
+    isDeprecated?: boolean
+    isListView?: boolean
+}
+
+export enum CHART_SOURCE_TYPE {
+    CHART_REPO = 'chart-repo',
+    OCI = 'oci',
+}
+
+export type AddSourceMenuOptions = ActionMenuProps<CHART_SOURCE_TYPE>
+
+export interface ChartSourceAccordionProps {
+    header: string
+    options: SelectedChartRepositoryType[]
+    value: SelectedChartRepositoryType[]
+    onChange: (option: SelectedChartRepositoryType) => void
+    dataTestId: string
 }

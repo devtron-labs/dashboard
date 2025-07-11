@@ -27,13 +27,13 @@ import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, URLS, DEFAULT_STATUS } from '../../../../../../config'
 import { TriggerViewContext } from '../../config'
 import NoGitOpsRepoConfiguredWarning from '../../../../../workflowEditor/NoGitOpsRepoConfiguredWarning'
-import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '../../../../../gitOps/constants'
 import { getNodeSideHeadingAndClass } from './workflow.utils'
 import { getAppGroupDeploymentHistoryLink } from '../../../../../ApplicationGroup/AppGroup.utils'
+import { gitOpsRepoNotConfiguredWithEnforcedEnv } from '@Pages/App/Configurations'
 
 export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState> {
     gitOpsRepoWarningCondition =
-        this.props.deploymentAppType === DeploymentAppTypes.GITOPS && this.props.isGitOpsRepoNotConfigured
+        this.props.deploymentAppType === DeploymentAppTypes.ARGO && this.props.isGitOpsRepoNotConfigured
 
     constructor(props) {
         super(props)

@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-import React, { RefObject } from 'react'
+import React, { Dispatch, RefObject, SetStateAction } from 'react'
+import { GroupBase } from 'react-select'
 
 import {
-    ALL_NAMESPACE_OPTION,
     ApiResourceGroupType,
+    FiltersTypeEnum,
+    GVKOptionValueType,
     GVKType,
-    InitTabType,
     K8SObjectBaseType,
     K8sResourceDetailDataType,
     K8sResourceDetailType,
     OptionType,
     ResourceDetail,
+    ResourceRecommenderActionMenuProps,
     SelectedResourceType,
+    SelectPickerOptionType,
+    ServerErrors,
+    TableViewWrapperProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import { ClusterListType } from '../ClusterNodes/types'
 import { LogSearchTermType } from '../v2/appDetails/appDetails.type'
-import { BaseResourceListProps } from './ResourceList/types'
+import { K8sResourceListFilterType } from './ResourceList/types'
 
 export interface K8SObjectType extends K8SObjectBaseType {
     child: ApiResourceGroupType[]
@@ -41,7 +46,6 @@ export interface K8SObjectType extends K8SObjectBaseType {
 
 export interface K8SObjectChildMapType {
     isGrouped?: boolean
-    isExpanded: boolean
     data: ApiResourceGroupType[]
 }
 
@@ -49,12 +53,8 @@ export interface K8SObjectMapType extends K8SObjectBaseType {
     child: Map<string, K8SObjectChildMapType>
 }
 
-export interface URLParams {
+export interface ClusterDetailBaseParams {
     clusterId: string
-    namespace: string
-    nodeType: string
-    group?: string
-    node?: string
 }
 
 export interface CreateResourcePayload {
@@ -79,12 +79,10 @@ export interface CreateResourceType {
 
 export interface SidebarType {
     apiResources: ApiResourceGroupType[]
-    updateK8sResourceTabLastSyncMoment: () => void
-    isOpen: boolean
     isClusterError?: boolean
     updateK8sResourceTab: ClusterListType['updateTabUrl']
+    updateTabLastSyncMoment: UseTabsReturnType['updateTabLastSyncMoment']
     selectedResource: ApiResourceGroupType
-    setSelectedResource: React.Dispatch<React.SetStateAction<ApiResourceGroupType>>
 }
 
 export interface ClusterOptionType extends OptionType {
@@ -93,32 +91,42 @@ export interface ClusterOptionType extends OptionType {
     isClusterInCreationPhase: boolean
 }
 
-export interface ResourceFilterOptionsProps extends Pick<SidebarType, 'updateK8sResourceTab'> {
+export interface ResourceFilterOptionsProps
+    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
+        Partial<Pick<K8sResourceListFilterType, 'eventType'>> {
     selectedResource: ApiResourceGroupType
-    resourceList?: K8sResourceDetailType
     selectedCluster?: ClusterOptionType
-    selectedNamespace?: typeof ALL_NAMESPACE_OPTION
-    setSelectedNamespace?: React.Dispatch<React.SetStateAction<OptionType>>
+    selectedNamespace?: string
     searchText?: string
-    isOpen: boolean
     setSearchText?: (text: string) => void
     isSearchInputDisabled?: boolean
     renderRefreshBar?: () => JSX.Element
-    /**
-     * If true, the filters are hidden except search
-     */
-    areFiltersHidden: boolean
     /**
      * Placeholder override for the search bar
      *
      * @default undefined
      */
     searchPlaceholder?: string
+    isResourceListLoading?: boolean
+    gvkFilterConfig?: {
+        gvkOptions: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
+        areGVKOptionsLoading: boolean
+        reloadGVKOptions: () => void
+        gvkOptionsError: ServerErrors
+    }
+    selectedAPIVersionGVKFilter?: string
+    selectedKindGVKFilter?: string
+    resourceRecommenderConfig?: {
+        showAbsoluteValuesInResourceRecommender: boolean
+        setShowAbsoluteValuesInResourceRecommender: Dispatch<SetStateAction<boolean>>
+        resourceLastScannedOnDetails: Omit<ResourceRecommenderActionMenuProps, 'children'>
+    }
 }
 
-export interface K8SResourceListType extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden'> {
+export interface K8SResourceListType
+    extends Omit<ResourceFilterOptionsProps, 'areFiltersHidden' | 'updateSearchParams' | 'eventType' | 'filteredRows'>,
+        Pick<SidebarType, 'updateK8sResourceTab'> {
     addTab: UseTabsReturnType['addTab']
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>, shouldOverrideSelectedResourceKind?: boolean) => void
     lowercaseKindToResourceGroupMap: Record<string, ApiResourceGroupType>
     clusterName: string
 }
@@ -127,7 +135,9 @@ export interface ResourceBrowserActionMenuType {
     clusterId: string
     resourceData: K8sResourceDetailDataType
     selectedResource: ApiResourceGroupType
-    handleResourceClick: (e: React.MouseEvent<HTMLButtonElement>) => void
+    handleResourceClick: (e: {
+        currentTarget: Pick<React.MouseEvent<HTMLButtonElement>['currentTarget'], 'dataset'>
+    }) => void
     handleClearBulkSelection: () => void
     removeTabByIdentifier?: UseTabsReturnType['removeTabByIdentifier']
     getResourceListData?: () => Promise<void>
@@ -191,28 +201,15 @@ export interface K8sObjectOptionType extends OptionType {
 }
 
 export interface K8SResourceTabComponentProps
-    extends Pick<SidebarType, 'selectedResource' | 'setSelectedResource' | 'updateK8sResourceTab'>,
-        Pick<K8SResourceListType, 'handleResourceClick' | 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
+    extends Pick<SidebarType, 'updateK8sResourceTab' | 'updateTabLastSyncMoment'>,
+        Pick<K8SResourceListType, 'clusterName' | 'lowercaseKindToResourceGroupMap'> {
     selectedCluster: ClusterOptionType
     renderRefreshBar: () => JSX.Element
     addTab: UseTabsReturnType['addTab']
-    updateK8sResourceTabLastSyncMoment: () => void
-    isOpen: boolean
 }
 
 export interface AdminTerminalProps {
     updateTerminalTabUrl: (queryParams: string) => void
-}
-
-export interface SidebarChildButtonPropsType {
-    parentRef: React.Ref<HTMLButtonElement>
-    group: string
-    version: string
-    kind: string
-    text: string
-    namespaced: boolean
-    isSelected: boolean
-    onClick: React.MouseEventHandler<HTMLButtonElement>
 }
 
 export interface ClusterSelectorType {
@@ -238,24 +235,12 @@ export interface RBSidebarKeysType {
     overviewGVK: GVKType
     monitoringGVK: GVKType
     upgradeClusterGVK: GVKType
+    resourceRecommenderGVK: GVKType
 }
 
 export interface GetTabsBasedOnRoleParamsType {
     selectedCluster: ClusterOptionType
-    namespace: string
-    dynamicTabData: InitTabType
-    /**
-     * @default false
-     */
-    isTerminalSelected?: boolean
-    /**
-     * @default false
-     */
-    isOverviewSelected?: boolean
-    /**
-     * @default false
-     */
-    isMonitoringDashBoardSelected?: boolean
+    canRenderResourceRecommender: boolean
 }
 
 export interface NodeRowDetail {
@@ -271,9 +256,8 @@ export interface NodeRowDetail {
     age: string
 }
 
-export interface NodeListSearchFilterType extends Pick<ResourceFilterOptionsProps, 'isOpen'> {
-    visibleColumns: string[]
-    setVisibleColumns: React.Dispatch<React.SetStateAction<string[]>>
+export interface NodeListSearchFilterType
+    extends Pick<TableViewWrapperProps, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {
     searchParams: Record<string, string>
 }
 
@@ -283,7 +267,8 @@ export enum NODE_SEARCH_KEYS {
     NODE_GROUP = 'nodeGroup',
 }
 
-export interface ColumnSelectorType extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns'> {}
+export interface ColumnSelectorType
+    extends Pick<NodeListSearchFilterType, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {}
 
 export interface NodeActionsMenuProps {
     addTab: UseTabsReturnType['addTab']
@@ -294,7 +279,7 @@ export interface NodeActionsMenuProps {
 
 export interface GetResourceDataType {
     selectedResource: ApiResourceGroupType
-    selectedNamespace: BaseResourceListProps['selectedNamespace']
+    selectedNamespace: string
     clusterId: string
     filters: Record<string, unknown>
     abortControllerRef: RefObject<AbortController>
@@ -307,3 +292,9 @@ export type ShowAIButtonConfig = { column: string } & (
       }
     | { excludeValues: Set<string>; includeValues?: never }
 )
+
+export type RBResourceSidebarDataAttributeType = {
+    'data-group': string
+    'data-version': string
+    'data-kind': string
+}

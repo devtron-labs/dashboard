@@ -26,7 +26,6 @@ import {
     not,
     CHECKBOX_VALUE,
     Checkbox,
-    DOCUMENTATION,
     REGISTRY_TYPE_MAP,
     ConditionalWrap,
     RepositoryAction,
@@ -83,7 +82,7 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { AuthenticationType } from '../cluster/cluster.type'
+import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
@@ -805,7 +804,8 @@ const DockerForm = ({
             ...(registryStorageType !== RegistryStorageType.OCI_PUBLIC &&
             (selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                 selectedDockerRegistryType.value === RegistryType.ACR ||
-                selectedDockerRegistryType.value === RegistryType.QUAY)
+                selectedDockerRegistryType.value === RegistryType.QUAY ||
+                selectedDockerRegistryType.value === RegistryType.GITLAB)
                 ? {
                       username: trimmedUsername,
                       password: parsePassword(customState.password.value),
@@ -1015,6 +1015,7 @@ const DockerForm = ({
                 break
             case RegistryType.ACR:
             case RegistryType.QUAY:
+            case RegistryType.GITLAB:
             case RegistryType.OTHER:
                 let error = false
                 if (
@@ -1657,6 +1658,7 @@ const DockerForm = ({
                                 {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                                     selectedDockerRegistryType.value === RegistryType.ACR ||
                                     selectedDockerRegistryType.value === RegistryType.QUAY ||
+                                    selectedDockerRegistryType.value === RegistryType.GITLAB ||
                                     selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                     <PasswordField
                                         shouldShowDefaultPlaceholderOnBlur={!!id && !!username}
@@ -1723,6 +1725,7 @@ const DockerForm = ({
                             {(selectedDockerRegistryType.value === RegistryType.DOCKER_HUB ||
                                 selectedDockerRegistryType.value === RegistryType.ACR ||
                                 selectedDockerRegistryType.value === RegistryType.QUAY ||
+                                selectedDockerRegistryType.value === RegistryType.GITLAB ||
                                 selectedDockerRegistryType.value === RegistryType.OTHER) && (
                                 <PasswordField
                                     shouldShowDefaultPlaceholderOnBlur={!!id}

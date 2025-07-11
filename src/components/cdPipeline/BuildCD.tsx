@@ -18,7 +18,6 @@ import { useContext, useState } from 'react'
 import {
     CustomInput,
     DeploymentAppTypes,
-    InfoColourBar,
     Progressing,
     TippyCustomized,
     TippyTheme,
@@ -29,7 +28,6 @@ import {
     SelectPicker,
     ToastVariantType,
     ToastManager,
-    ComponentSizeType,
     showError,
     TriggerType,
     InfoBlock,
@@ -40,21 +38,17 @@ import { useParams, useHistory } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 import { ReactComponent as ICArrowRight } from '@Icons/ic-arrow-right.svg'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
-import { ReactComponent as AlertTriangle } from '@Icons/ic-alert-triangle.svg'
 import { ReactComponent as Help } from '@Icons/ic-help.svg'
 import { ReactComponent as ICInfo } from '@Icons/ic-info-filled.svg'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import settings from '@Icons/ic-settings.svg'
 import trash from '@Icons/misc/delete.svg'
-import error from '@Icons/misc/errorInfo.svg'
-import { Info } from '../common/icons/Icons'
 import { ENV_ALREADY_EXIST_ERROR, RegistryPayloadWithSelectType, URLS, ViewType } from '../../config'
 import { GeneratedHelmPush, MigrateToDevtronFormState, TriggerTypeRadioProps } from './cdPipeline.types'
 import { createClusterEnvGroup, getDeploymentAppType, importComponentFromFELibrary, Select } from '../common'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { getNamespacePlaceholder } from './cdpipeline.util'
 import { ValidationRules } from '../ciPipeline/validationRules'
-import { DeploymentAppRadioGroup } from '../v2/values/chartValuesDiff/ChartValuesView.component'
 import CustomImageTags from '../CIPipelineN/CustomImageTags'
 import { GITOPS_REPO_REQUIRED } from '../v2/values/chartValuesDiff/constant'
 import { getGitOpsRepoConfig } from '../../services/service'
@@ -64,9 +58,10 @@ import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { BuildCDProps } from './types'
 import { MigrateToDevtron } from './MigrateToDevtron'
 import TriggerTypeRadio from './TriggerTypeRadio'
+import { DEPLOYMENT_APP_TYPE_LABEL } from './MigrateToDevtron/constants'
 import { MigrateToDevtronProps } from './MigrateToDevtron/types'
+import { CDPipelineDeploymentAppType, SourceMaterialsSelector } from '@Pages/App/Configurations'
 
-const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const HelmManifestPush = importComponentFromFELibrary('HelmManifestPush')
 
 export default function BuildCD({
@@ -81,6 +76,7 @@ export default function BuildCD({
     isGitOpsRepoNotConfigured,
     noGitOpsModuleInstalledAndConfigured,
     releaseMode,
+    isCustomChart,
     getMandatoryPluginData,
     migrateToDevtronFormState,
     setMigrateToDevtronFormState,
@@ -139,14 +135,6 @@ export default function BuildCD({
         const _form = { ...formData }
         _form.triggerType = event.target.value as MigrateToDevtronFormState['triggerType']
         setFormData(_form)
-    }
-
-    const handleMigrateFromAppTypeChange: MigrateToDevtronProps['handleMigrateFromAppTypeChange'] = (event) => {
-        const { value } = event.target as HTMLInputElement
-        setMigrateToDevtronFormState((prevState) => ({
-            ...prevState,
-            deploymentAppType: value as MigrateToDevtronFormState['deploymentAppType'],
-        }))
     }
 
     const handleNamespaceChange = (event): void => {
@@ -267,24 +255,6 @@ export default function BuildCD({
         )
     }
 
-    const renderNamespaceInfo = (namespaceEditable: boolean) => {
-        if (namespaceEditable) {
-            return (
-                <div className="dc__info-container info__container--cd-pipeline">
-                    <Info />
-                    <div className="flex column left">
-                        <div className="dc__info-title">Set Namespace</div>
-                        <div className="dc__info-subtitle">
-                            The entered namespace will be applicable to selected environment across all the pipelines
-                            for this application.
-                        </div>
-                    </div>
-                </div>
-            )
-        }
-        return null
-    }
-
     const checkGitOpsRepoConflict = () => {
         setGitopsConflictLoading(true)
         getGitOpsRepoConfig(+appId)
@@ -381,7 +351,7 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const renderEnvSelector = () => {
+    const renderEnvNamespaceAndTriggerType = () => {
         const envId = formData.environmentId
         const _environment = formData.environments.find((env) => env.id == envId)
         const selectedEnv: EnvironmentWithSelectPickerType = _environment && {
@@ -389,68 +359,6 @@ export default function BuildCD({
             label: _environment.name,
             value: _environment.id.toString(),
         }
-        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
-
-        const renderVirtualEnvironmentInfo = () => {
-            if (isVirtualEnvironment && VirtualEnvSelectionInfoText) {
-                return <VirtualEnvSelectionInfoText />
-            }
-        }
-
-        const getEnvListOptions = () =>
-            envList.map((_elm) => ({
-                label: `Cluster: ${_elm.label}`,
-                options: _elm.options.map((_option) => ({
-                    ..._option,
-                    label: _option?.name,
-                    value: _option?.id.toString(),
-                })),
-            }))
-
-        return (
-            <>
-                <SelectPicker
-                    label="Environment"
-                    required
-                    inputId="environment"
-                    menuPosition={isAdvanced ? null : 'fixed'}
-                    isDisabled={!!cdPipelineId}
-                    classNamePrefix="cd-pipeline-environment-dropdown"
-                    placeholder="Select Environment"
-                    autoFocus
-                    options={
-                        releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
-                            ? getEnvListOptions().filter((env) =>
-                                  env.options.filter((_env) => !_env.isVirtualEnvironment),
-                              )
-                            : getEnvListOptions()
-                    }
-                    value={selectedEnv}
-                    getOptionValue={(option) => option.value as unknown as string}
-                    onChange={selectEnvironment}
-                    size={ComponentSizeType.large}
-                />
-                {isEnvUsedState && (
-                    <span className="form__error">
-                        <img src={error} className="form__icon" />
-                        {ENV_ALREADY_EXIST_ERROR}
-                    </span>
-                )}
-                {!formDataErrorObj.envNameError.isValid ? (
-                    <span className="form__error">
-                        <AlertTriangle className="icon-dim-14 mr-5 ml-5 mt-2" />
-                        {formDataErrorObj.envNameError.message}
-                    </span>
-                ) : null}
-                {renderVirtualEnvironmentInfo()}
-            </>
-        )
-    }
-
-    const renderEnvNamespaceAndTriggerType = () => {
-        const envId = formData.environmentId
-        const selectedEnv: Environment = formData.environments.find((env) => env.id == envId)
-        const namespaceEditable = false
 
         const isHelmEnforced =
             formData.allowedDeploymentTypes.length === 1 &&
@@ -463,30 +371,65 @@ export default function BuildCD({
             !isHelmEnforced &&
             isGitOpsRepoNotConfigured
 
+        const envList = createClusterEnvGroup(formData.environments as Environment[], 'clusterName')
+
+        const getEnvListOptions = () =>
+            envList.map((_elm) => ({
+                label: `Cluster: ${_elm.label}`,
+                options: _elm.options.map((_option) => ({
+                    ..._option,
+                    label: _option?.name,
+                    value: _option?.id.toString(),
+                })),
+            }))
+
+        const getEnvError = () => {
+            if (isEnvUsedState) {
+                return ENV_ALREADY_EXIST_ERROR
+            }
+
+            return !formDataErrorObj.envNameError.isValid ? formDataErrorObj.envNameError.message : null
+        }
+
         return (
             <>
-                <div className="form__row form__row--flex mt-12">
-                    <div className="w-50 mr-8">{renderEnvSelector()}</div>
-                    <div className="flex-1 ml-8">
-                        <CustomInput
-                            name="namespace"
-                            label="Namespace"
-                            placeholder={getNamespacePlaceholder(isVirtualEnvironment, formData.namespace)}
-                            disabled={!namespaceEditable}
-                            value={selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace}
-                            onChange={handleNamespaceChange}
-                            error={
-                                !formDataErrorObj.nameSpaceError.isValid &&
-                                !isVirtualEnvironment &&
-                                formDataErrorObj.nameSpaceError.message
-                            }
-                        />
-                    </div>
-                </div>
+                <SourceMaterialsSelector
+                    branchInputProps={{
+                        name: 'cd-pipeline-namespace',
+                        onChange: handleNamespaceChange,
+                        placeholder: getNamespacePlaceholder(isVirtualEnvironment, formData.namespace),
+                        label: 'Namespace',
+                        value: selectedEnv?.namespace ? selectedEnv.namespace : formData.namespace,
+                        disabled: true,
+                        error:
+                            !formDataErrorObj.nameSpaceError.isValid &&
+                            !isVirtualEnvironment &&
+                            formDataErrorObj.nameSpaceError.message,
+                    }}
+                    sourceTypePickerProps={{
+                        inputId: 'cd-pipeline-environment',
+                        classNamePrefix: 'cd-pipeline-environment',
+                        label: 'Environment',
+                        placeholder: 'Select environment',
+                        isDisabled: !!cdPipelineId,
+                        menuPosition: isAdvanced ? null : 'fixed',
+                        options:
+                            releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
+                                ? getEnvListOptions().filter((env) =>
+                                      env.options.filter((_env) => !_env.isVirtualEnvironment),
+                                  )
+                                : getEnvListOptions(),
+                        value: selectedEnv,
+                        getOptionValue: (option) => option.value as string,
+                        helperText: isVirtualEnvironment ? 'Isolated environment' : null,
+                        error: getEnvError(),
+                        onChange: selectEnvironment,
+                        autoFocus: true,
+                    }}
+                />
                 <div className="mb-16">
                     {gitOpsRepoNotConfiguredAndOptionsHidden && gitOpsRepoConfigInfoBar(GITOPS_REPO_REQUIRED)}
                 </div>
-                {renderNamespaceInfo(namespaceEditable)}
                 {isVirtualEnvironment
                     ? HelmManifestPush && (
                           <HelmManifestPush
@@ -599,23 +542,6 @@ export default function BuildCD({
         setFormData(_form)
     }
 
-    const renderDeploymentAppType = () => (
-        <div className="cd-pipeline__deployment-type mt-16">
-            <label className="form__label form__label--sentence dc__bold">How do you want to deploy?</label>
-            <DeploymentAppRadioGroup
-                isDisabled={!!cdPipelineId}
-                deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
-                handleOnChange={handleDeploymentAppTypeChange}
-                allowedDeploymentTypes={formData.allowedDeploymentTypes}
-                rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
-                isFromCDPipeline
-                isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
-                areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
-            />
-        </div>
-    )
-
     const renderStrategyOptions = () => {
         return (
             <Select rootClassName="deployment-strategy-dropdown br-0 bw-0 w-150" onChange={selectStrategy}>
@@ -672,7 +598,7 @@ export default function BuildCD({
     }
 
     const renderAdvancedDeploymentStrategy = () => {
-        if (noStrategyAvailable.current || releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS) {
+        if (noStrategyAvailable.current || (releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && isCustomChart)) {
             return null
         }
 
@@ -770,7 +696,6 @@ export default function BuildCD({
                 <MigrateToDevtron
                     migrateToDevtronFormState={migrateToDevtronFormState}
                     setMigrateToDevtronFormState={setMigrateToDevtronFormState}
-                    handleMigrateFromAppTypeChange={handleMigrateFromAppTypeChange}
                 />
             )
         }
@@ -784,9 +709,7 @@ export default function BuildCD({
                                 <ICInfo className="dc__no-shrink icon-dim-20 dc__no-shrink" />
                                 <span className="fs-13 fw-4 lh-20 cn-9 dc__word-break">
                                     This deployment pipeline was linked to&nbsp;
-                                    {formData.deploymentAppType === DeploymentAppTypes.GITOPS
-                                        ? 'Argo CD application'
-                                        : 'helm release'}
+                                    {DEPLOYMENT_APP_TYPE_LABEL[formData.deploymentAppType as DeploymentAppTypes]}
                                     &nbsp;: {formData.deploymentAppName}
                                 </span>
                             </div>
@@ -798,14 +721,19 @@ export default function BuildCD({
 
                 <p className="fs-14 fw-6 cn-9">Deploy to environment</p>
                 {renderEnvNamespaceAndTriggerType()}
-
-                {!window._env_.HIDE_GITOPS_OR_HELM_OPTION &&
-                    !isVirtualEnvironment &&
-                    formData.allowedDeploymentTypes.length > 0 &&
-                    // Want to show this when gitops module is installed, does not matter if it is configured or not
-                    (!noGitOpsModuleInstalledAndConfigured || isGitOpsInstalledButNotConfigured) &&
-                    renderDeploymentAppType()}
-
+                <CDPipelineDeploymentAppType
+                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
+                    isVirtualEnvironment={isVirtualEnvironment}
+                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                    isDisabled={!!cdPipelineId}
+                    deploymentAppType={formData.deploymentAppType ?? DeploymentAppTypes.HELM}
+                    handleChange={handleDeploymentAppTypeChange}
+                    allowedDeploymentTypes={formData.allowedDeploymentTypes}
+                    rootClassName={`chartrepo-type__radio-group ${!cdPipelineId ? 'bcb-5' : ''}`}
+                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                    gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+                    areGitopsCredentialsConfigured={!isGitOpsInstalledButNotConfigured}
+                />
                 {isAdvanced ? renderAdvancedDeploymentStrategy() : renderBasicDeploymentStrategy()}
                 {isAdvanced && (
                     <>

@@ -16,7 +16,6 @@
 
 import { useEffect, useState } from 'react'
 import { GroupBase } from 'react-select'
-import { useParams } from 'react-router-dom'
 import {
     Progressing,
     RadioGroup,
@@ -33,6 +32,10 @@ import {
     MarkDown,
     ComponentSizeType,
     ButtonVariantType,
+    handleAnalyticsEvent,
+    Button,
+    ButtonStyleType,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
@@ -55,19 +58,16 @@ import {
     DeleteApplicationButtonProps,
     DeploymentAppRadioGroupType,
     DeploymentAppSelectorType,
-    UpdateApplicationButtonProps,
     ValueNameInputType,
     gitOpsDrawerType,
 } from './ChartValuesView.type'
-import { UPDATE_APP_BUTTON_TEXTS } from './ChartValuesView.constants'
-import { DeploymentAppTypeNameMapping, REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
-import { ReactComponent as ArgoCD } from '../../../../assets/icons/argo-cd-app.svg'
-import { ReactComponent as Helm } from '../../../../assets/icons/helm-app.svg'
+import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { repoType } from '../../../../config'
 import UserGitRepo from '../../../gitOps/UserGitRepo'
 import { getChartValuesFiltered } from '@Components/charts/charts.helper'
 import { ChartValuesType } from '@Components/charts/charts.types'
 import { ConfigureGitopsInfoBlock } from '@Components/workflowEditor/ConfigureGitopsInfoBlock'
+import { DeploymentTypeIcon, DEPLOYMENT_TYPE_TO_TEXT_MAP } from '@Components/common/DeploymentTypeIcon'
 
 const VirtualEnvSelectionInfoText = importComponentFromFELibrary('VirtualEnvSelectionInfoText')
 const VirtualEnvHelpTippy = importComponentFromFELibrary('VirtualEnvHelpTippy')
@@ -154,18 +154,13 @@ export const DeploymentAppSelector = ({
                 Deploy app using
             </h2>
             <div className="flex left">
-                <span className="fs-13 fw-6  cn-9 md-6 " data-testid="deployment-type">
-                    {commonState.installedConfig.deploymentAppType === DeploymentAppTypes.HELM
-                        ? DeploymentAppTypeNameMapping.Helm
-                        : DeploymentAppTypeNameMapping.GitOps}
+                <span className="fs-13 fw-6 cn-9 md-6" data-testid="deployment-type">
+                    {DEPLOYMENT_TYPE_TO_TEXT_MAP[commonState.installedConfig.deploymentAppType as DeploymentAppTypes]}
                 </span>
-                <span>
-                    {commonState.installedConfig.deploymentAppType === DeploymentAppTypes.GITOPS ? (
-                        <ArgoCD className="icon-dim-24 ml-6" />
-                    ) : (
-                        <Helm className="icon-dim-24 ml-6" />
-                    )}
-                </span>
+                <DeploymentTypeIcon
+                    deploymentAppType={commonState.installedConfig.deploymentAppType as DeploymentAppTypes}
+                    iconSize={24}
+                />
             </div>
             {gitRepoURL && allowedCustomBool && (
                 <div className="pt-12">
@@ -228,16 +223,16 @@ const GitOpsActionBlock = ({
     | 'allowedDeploymentTypes'
     | 'isGitOpsRepoNotConfigured'
 >) => {
-    const gitOpsNotConfiguredText =
-        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
-
-    if (deploymentAppType !== DeploymentAppTypes.GITOPS) {
+    if (deploymentAppType !== DeploymentAppTypes.ARGO) {
         return null
     }
 
     if (!areGitopsCredentialsConfigured) {
         return <ConfigureGitopsInfoBlock />
     }
+
+    const gitOpsNotConfiguredText =
+        allowedDeploymentTypes.length == 1 ? GITOPS_REPO_REQUIRED_FOR_ENV : GITOPS_REPO_REQUIRED
 
     if (isGitOpsRepoNotConfigured) {
         return gitOpsRepoConfigInfoBar(gitOpsNotConfiguredText)
@@ -256,58 +251,91 @@ export const DeploymentAppRadioGroup = ({
     isGitOpsRepoNotConfigured,
     gitOpsRepoConfigInfoBar,
     areGitopsCredentialsConfigured = true,
-}: DeploymentAppRadioGroupType): JSX.Element => (
-    <div className="flexbox-col dc__gap-16">
-        <RadioGroup
-            value={deploymentAppType}
-            name="DeploymentAppTypeGroup"
-            onChange={handleOnChange}
-            disabled={isDisabled}
-            className={rootClassName ?? ''}
-        >
-            <ConditionalWrap
-                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                wrap={(children) =>
-                    RadioWithTippy(children, isFromCDPipeline, 'Deployment to this environment is not allowed via Helm')
-                }
-            >
-                <RadioGroupItem
-                    dataTestId="helm-deployment"
-                    value={DeploymentAppTypes.HELM}
-                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1}
-                >
-                    Helm
-                </RadioGroupItem>
-            </ConditionalWrap>
-            <ConditionalWrap
-                condition={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                wrap={(children) =>
-                    RadioWithTippy(
-                        children,
-                        isFromCDPipeline,
-                        'Deployment to this environment is not allowed via GitOps',
-                    )
-                }
-            >
-                <RadioGroupItem
-                    dataTestId="gitops-deployment"
-                    value={DeploymentAppTypes.GITOPS}
-                    disabled={allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) === -1}
-                >
-                    GitOps
-                </RadioGroupItem>
-            </ConditionalWrap>
-        </RadioGroup>
+    showGitOpsOption = true,
+}: DeploymentAppRadioGroupType): JSX.Element => {
+    const isHelmDeploymentDisabled = allowedDeploymentTypes.indexOf(DeploymentAppTypes.HELM) === -1
+    const isArgoDeploymentDisabled = allowedDeploymentTypes.indexOf(DeploymentAppTypes.ARGO) === -1
+    const isFluxDeploymentDisabled = allowedDeploymentTypes.indexOf(DeploymentAppTypes.FLUX) === -1
 
-        <GitOpsActionBlock
-            deploymentAppType={deploymentAppType}
-            areGitopsCredentialsConfigured={areGitopsCredentialsConfigured}
-            gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
-            isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-            allowedDeploymentTypes={allowedDeploymentTypes}
-        />
-    </div>
-)
+    return (
+        <div className="flexbox-col dc__gap-16">
+            <RadioGroup
+                value={deploymentAppType}
+                name="DeploymentAppTypeGroup"
+                onChange={handleOnChange}
+                disabled={isDisabled}
+                className={rootClassName ?? ''}
+            >
+                <ConditionalWrap
+                    condition={isHelmDeploymentDisabled && !isDisabled}
+                    wrap={(children) =>
+                        RadioWithTippy(
+                            children,
+                            isFromCDPipeline,
+                            'Deployment to this environment is not allowed via Helm',
+                        )
+                    }
+                >
+                    <RadioGroupItem
+                        dataTestId="helm-deployment"
+                        value={DeploymentAppTypes.HELM}
+                        disabled={isHelmDeploymentDisabled}
+                    >
+                        Helm
+                    </RadioGroupItem>
+                </ConditionalWrap>
+                {showGitOpsOption && (
+                    <ConditionalWrap
+                        condition={isArgoDeploymentDisabled && !isDisabled}
+                        wrap={(children) =>
+                            RadioWithTippy(
+                                children,
+                                isFromCDPipeline,
+                                'Deployment to this environment is not allowed via ArgoCD',
+                            )
+                        }
+                    >
+                        <RadioGroupItem
+                            dataTestId="gitops-deployment"
+                            value={DeploymentAppTypes.ARGO}
+                            disabled={isArgoDeploymentDisabled}
+                        >
+                            GitOps (Via Argo CD)
+                        </RadioGroupItem>
+                    </ConditionalWrap>
+                )}
+                {window._env_.FEATURE_FLUX_DEPLOYMENTS_ENABLE && (
+                    <ConditionalWrap
+                        condition={isFluxDeploymentDisabled && !isDisabled}
+                        wrap={(children) =>
+                            RadioWithTippy(
+                                children,
+                                isFromCDPipeline,
+                                'Deployment to this environment is not allowed via FluxCD',
+                            )
+                        }
+                    >
+                        <RadioGroupItem
+                            dataTestId="flux-deployment"
+                            value={DeploymentAppTypes.FLUX}
+                            disabled={isFluxDeploymentDisabled}
+                        >
+                            GitOps (Via Flux CD)
+                        </RadioGroupItem>
+                    </ConditionalWrap>
+                )}
+            </RadioGroup>
+
+            <GitOpsActionBlock
+                deploymentAppType={deploymentAppType}
+                areGitopsCredentialsConfigured={areGitopsCredentialsConfigured}
+                gitOpsRepoConfigInfoBar={gitOpsRepoConfigInfoBar}
+                isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                allowedDeploymentTypes={allowedDeploymentTypes}
+            />
+        </div>
+    )
+}
 
 export const GitOpsDrawer = ({
     commonState,
@@ -330,8 +358,8 @@ export const GitOpsDrawer = ({
     )
 
     useEffect(() => {
-        if (deploymentAppType === DeploymentAppTypes.GITOPS) {
-            setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.GITOPS) !== -1)
+        if (deploymentAppType === DeploymentAppTypes.ARGO) {
+            setIsDeploymentAllowed(allowedDeploymentTypes.indexOf(DeploymentAppTypes.ARGO) !== -1)
         } else {
             setGitOpsState(false)
         }
@@ -455,7 +483,7 @@ export const GitOpsDrawer = ({
                             {commonState.gitRepoURL.length > 0 ? deploymentManifestGitRepo : 'Set GitOps repository'}
                         </a>
                     </div>
-                    {commonState.deploymentAppType === DeploymentAppTypes.GITOPS &&
+                    {commonState.deploymentAppType === DeploymentAppTypes.ARGO &&
                         allowedCustomBool &&
                         commonState.gitRepoURL.length === 0 &&
                         renderValidationErrorLabel()}
@@ -565,8 +593,14 @@ export const ChartValuesSelector = ({
     const getOptionValue: SelectPickerProps<ChartValuesType>['getOptionValue'] = (option) =>
         `${option.value.id} ${option.value.kind}`
 
-    const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) =>
+    const handleChange: SelectPickerProps<ChartValuesType>['onChange'] = (selectedOption) => {
+        const kind = selectedOption.value.kind
+        handleAnalyticsEvent({
+            category: 'Chart Store',
+            action: `CS_CHART_CONFIGURE_&_DEPLOY_${kind === 'TEMPLATE' ? 'PRESET' : kind}_VALUE_SELECTED`,
+        })
         handleChartValuesSelection(selectedOption.value)
+    }
 
     const chartValuesOptionValue = getOptionValue({
         // Setting label null since the getOptionValue is not consuming it
@@ -710,74 +744,23 @@ export const DeleteApplicationButton = ({
     isDeleteInProgress,
     dispatch,
 }: DeleteApplicationButtonProps) => {
-    return (
-        <button
-            className="chart-values-view__delete-cta cta delete"
-            disabled={isUpdateInProgress || isDeleteInProgress}
-            onClick={(e) =>
-                dispatch({
-                    type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
-                    payload: true,
-                })
-            }
-            data-testid="delete-preset-value"
-        >
-            {isDeleteInProgress ? (
-                <div className="flex">
-                    <span>Deleting</span>
-                    <span className="ml-10">
-                        <Progressing />
-                    </span>
-                </div>
-            ) : (
-                `Delete ${type}`
-            )}
-        </button>
-    )
-}
-
-export const UpdateApplicationButton = ({
-    isUpdateInProgress,
-    isDeleteInProgress,
-    isDeployChartView,
-    isCreateValueView,
-    deployOrUpdateApplication,
-}: UpdateApplicationButtonProps) => {
-    const { chartValueId } = useParams<{ chartValueId: string }>()
+    const handleClick = () =>
+        dispatch({
+            type: ChartValuesViewActionTypes.showDeleteAppConfirmationDialog,
+            payload: true,
+        })
 
     return (
-        <button
-            type="button"
-            tabIndex={6}
-            disabled={isUpdateInProgress || isDeleteInProgress}
-            className={`cta ${isUpdateInProgress || isDeleteInProgress ? 'disabled' : ''}`}
-            onClick={deployOrUpdateApplication}
-            data-testid="preset-save-values-button"
-        >
-            {isUpdateInProgress ? (
-                <div className="flex">
-                    <span>
-                        {isCreateValueView
-                            ? `${UPDATE_APP_BUTTON_TEXTS.Saving} ${
-                                  chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
-                              }`
-                            : isDeployChartView
-                              ? UPDATE_APP_BUTTON_TEXTS.Deploying
-                              : UPDATE_APP_BUTTON_TEXTS.Updating}
-                    </span>
-                    <span className="ml-10">
-                        <Progressing />
-                    </span>
-                </div>
-            ) : isCreateValueView ? (
-                `${UPDATE_APP_BUTTON_TEXTS.Save} ${
-                    chartValueId !== '0' ? UPDATE_APP_BUTTON_TEXTS.Changes : UPDATE_APP_BUTTON_TEXTS.Value
-                }`
-            ) : isDeployChartView ? (
-                UPDATE_APP_BUTTON_TEXTS.Deploy
-            ) : (
-                UPDATE_APP_BUTTON_TEXTS.Update
-            )}
-        </button>
+        <Button
+            onClick={handleClick}
+            dataTestId="delete-preset-value"
+            startIcon={<Icon name="ic-delete" color={null} />}
+            isLoading={isDeleteInProgress}
+            disabled={isUpdateInProgress}
+            text={`Delete ${type}`}
+            variant={ButtonVariantType.secondary}
+            style={ButtonStyleType.negative}
+            fullWidth
+        />
     )
 }

@@ -107,7 +107,7 @@ export default function ChartRepo({ isSuperAdmin }: ChartRepoType) {
                 isEditable
                 allowInsecureConnection={false}
             />
-            <div className="chartRepo_form__subtitle dc__float-left dc__bold">
+            <div className="chartRepo_form__subtitle dc__float-left dc__bold pb-16">
                 Repositories({(result && Array.isArray(result.result) ? result.result : []).length})
             </div>
             {[]

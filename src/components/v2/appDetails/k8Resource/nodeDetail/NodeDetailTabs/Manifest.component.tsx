@@ -42,8 +42,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
-import { DEFAULT_CLUSTER_ID } from '@Components/cluster/cluster.type'
 import { importComponentFromFELibrary } from '@Components/common'
+import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
 import { MODES } from '../../../../../../config'
 import {
@@ -277,7 +277,7 @@ const ManifestComponent = ({
         if (
             isResourceBrowserView ||
             appDetails.appType === AppType.EXTERNAL_HELM_CHART ||
-            (appDetails.deploymentAppType === DeploymentAppTypes.GITOPS && appDetails.deploymentAppDeleteRequest)
+            (appDetails.deploymentAppType === DeploymentAppTypes.ARGO && appDetails.deploymentAppDeleteRequest)
         ) {
             setShowManifestCompareView(false)
             toggleManagedFields(!isEditMode)

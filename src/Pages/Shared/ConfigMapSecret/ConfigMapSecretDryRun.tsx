@@ -194,12 +194,13 @@ export const ConfigMapSecretDryRun = ({
                     areScopeVariablesResolving={areScopeVariablesResolving}
                     fallbackMergeStrategy={DEFAULT_MERGE_STRATEGY}
                 />
-                {renderExternalInfo(
-                    dryRunConfigMapSecretData.externalType,
-                    dryRunConfigMapSecretData.external,
-                    componentType,
-                    'mr-16 ml-16',
-                )}
+                <div className="ml-16 mr-16">
+                    {renderExternalInfo(
+                        dryRunConfigMapSecretData.externalType,
+                        dryRunConfigMapSecretData.external,
+                        componentType,
+                    )}
+                </div>
             </>
         )
     }
@@ -224,6 +225,7 @@ export const ConfigMapSecretDryRun = ({
                     )}
                     <div className="dc__border-right-n1 dc__align-self-stretch mt-2 mb-2" />
                     <ToggleResolveScopedVariables
+                        name="resolve-scoped-variables-dry-run-view"
                         resolveScopedVariables={resolveScopedVariables}
                         handleToggleScopedVariablesView={handleToggleScopedVariablesView}
                         isDisabled={areScopeVariablesResolving}
