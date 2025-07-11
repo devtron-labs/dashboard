@@ -374,7 +374,6 @@ src/components/workflowEditor/workflowEditor.tsx
 src/config/constants.ts
 src/config/routes.ts
 src/config/utils.ts
-src/index.tsx
 src/services/fetchWithFullRoute.ts
 src/services/service.ts
 src/services/service.types.ts

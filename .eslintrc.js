@@ -18,7 +18,7 @@ const tsconfigPath = require('./tsconfig.json')
 
 module.exports = {
     parser: '@typescript-eslint/parser',
-    plugins: ['@typescript-eslint', 'react', 'prettier', 'import', 'simple-import-sort'],
+    plugins: ['@typescript-eslint', 'react', 'prettier', 'import', 'simple-import-sort', '@tanstack/query'],
     env: {
         browser: true,
         es2021: true,
@@ -42,6 +42,7 @@ module.exports = {
         'airbnb',
         'airbnb/hooks',
         'prettier',
+        'plugin:@tanstack/query/recommended',
     ],
     rules: {
         'prettier/prettier': ['error'],
@@ -126,9 +127,9 @@ module.exports = {
                     // Side effect imports.
                     ['^\\u0000'],
                     // Put same-folder imports, `..` and `.` last. Other relative imports.
-                    ['^\\.\\.(?!/?$)', '^\\.\\./?$', '^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$',],
+                    ['^\\.\\.(?!/?$)', '^\\.\\./?$', '^\\./(?=.*/)(?!/?$)', '^\\.(?!/?$)', '^\\./?$'],
                     // Style imports.
-                    [ '^.+\\.?(css|scss)$'],
+                    ['^.+\\.?(css|scss)$'],
                 ],
             },
         ],
