@@ -71,7 +71,11 @@ const GenerateModal = ({
 
                     <InfoBlock
                         heading="API Token"
-                        description={token}
+                        description={
+                            <div className="fs-13 font-roboto flexbox dc__word-break" data-testid="generated-token">
+                                {token}
+                            </div>
+                        }
                         variant="success"
                         customIcon={<Icon name="ic-key" color="G500" />}
                     />
