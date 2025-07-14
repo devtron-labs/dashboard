@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import { BaseAppMetaData, getIsRequestAborted, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BaseRecentlyVisitedEntitiesTypes,
+    getIsRequestAborted,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
+    ServerErrors,
+    showError,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { getAppListMin } from '../../services/service'
-import { AppListOptionsTypes, RecentlyVisitedGroupedOptionsType, RecentlyVisitedOptions } from './AppSelector.types'
-import { AllApplicationsMetaData } from './constants'
+import { AppListOptionsTypes } from './AppSelector.types'
+import { appSelectorGAEvents, getMinCharSearchPlaceholderGroup } from './constants'
 
 let timeoutId
 
@@ -26,7 +33,7 @@ export const appListOptions = ({
     inputValue,
     isJobView = false,
     signal,
-    recentlyVisitedDevtronApps,
+    recentlyVisitedResources,
 }: AppListOptionsTypes): Promise<RecentlyVisitedGroupedOptionsType[]> => {
     const options = signal ? { signal } : null
 
@@ -37,22 +44,22 @@ export const appListOptions = ({
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
                 resolve(
-                    recentlyVisitedDevtronApps?.length && !isJobView
+                    recentlyVisitedResources?.length
                         ? [
                               {
                                   label: 'Recently Visited',
-                                  options: recentlyVisitedDevtronApps.map((app: BaseAppMetaData) => ({
-                                      label: app.appName,
-                                      value: app.appId,
+                                  options: recentlyVisitedResources.map((app: BaseRecentlyVisitedEntitiesTypes) => ({
+                                      label: app.name,
+                                      value: app.id,
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },
-                              AllApplicationsMetaData,
+                              getMinCharSearchPlaceholderGroup(isJobView ? 'Jobs' : 'Apps'),
                           ]
                         : [],
                 )
             } else {
-                getAppListMin(null, options, inputValue, isJobView ?? false)
+                getAppListMin(null, options, inputValue, isJobView)
                     .then((response) => {
                         const appList = response.result
                             ? ([
@@ -79,4 +86,17 @@ export const appListOptions = ({
             }
         }, 300)
     })
+}
+
+export const getAppSelectGAEvent = (selectedOption: RecentlyVisitedOptions, isJobView) => {
+    if (isJobView) {
+        if (selectedOption.isRecentlyVisited) {
+            return appSelectorGAEvents.JOB_SWITCH_RECENTLY_VISITED_CLICKED
+        }
+        return appSelectorGAEvents.JOB_SWITCH_SEARCHED_ITEM_CLICKED
+    }
+    if (selectedOption.isRecentlyVisited) {
+        return appSelectorGAEvents.DA_SWITCH_RECENTLY_VISITED_CLICKED
+    }
+    return appSelectorGAEvents.DA_SWITCH_SEARCHED_APP_CLICKED
 }
