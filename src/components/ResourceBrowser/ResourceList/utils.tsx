@@ -270,6 +270,8 @@ export const getColumnSize = (field: string, isEventListing: boolean) => {
                     startWidth: 140,
                 },
             }
+        case 'explainButton':
+            return { fixed: 80 }
         default:
             return {
                 range: {

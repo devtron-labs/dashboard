@@ -186,11 +186,13 @@ export const K8SResourceList = ({
                 (header) =>
                     ({
                         field: isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[header] : header,
-                        label: header === 'type' && isEventListing ? '' : header,
+                        label: (header === 'type' || header === 'explainButton') && isEventListing ? '' : header,
                         size: getColumnSize(header, isEventListing),
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
-                        isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
+                        isSortable:
+                            !isEventListing ||
+                            (header !== 'message' && header !== 'type' && header !== 'explainButton'),
                         horizontallySticky:
                             header === 'name' || (isEventListing && (header === 'message' || header === 'type')),
                     }) as TableColumnType,
