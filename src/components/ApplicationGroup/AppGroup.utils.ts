@@ -183,7 +183,7 @@ export const envListOptions = (
                                       isRecentlyVisited: true,
                                   })) as RecentlyVisitedOptions[],
                               },
-                              getMinCharSearchPlaceholderGroup('App Group'),
+                              getMinCharSearchPlaceholderGroup('Environments'),
                           ]
                         : [],
                 )
