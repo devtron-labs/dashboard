@@ -31,7 +31,6 @@ import {
     VisibleModal2,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as LeftIcon } from '@Icons/ic-arrow-backward.svg'
 import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { getGitProviderIcon } from '@Components/common'
 
@@ -60,7 +59,6 @@ const BranchRegexModal = ({
     material,
     selectedCIPipeline,
     title,
-    isChangeBranchClicked,
     onCloseBranchRegexModal,
     appId,
     workflowId,
@@ -134,6 +132,7 @@ const BranchRegexModal = ({
                 isRegexMaterial: true,
                 isTemplateView: false,
             })
+            onCloseBranchRegexModal()
             handleReload()
         } catch (error) {
             showError(error)
@@ -155,18 +154,6 @@ const BranchRegexModal = ({
     const renderBranchRegexMaterialHeader = () => (
         <div className="flex dc__content-space py-12 px-20 dc__border-bottom">
             <div className="modal__title flex left fs-16 fw-6">
-                {isChangeBranchClicked && (
-                    <Button
-                        dataTestId="regex-modal-header-back-button"
-                        onClick={onCloseBranchRegexModal}
-                        ariaLabel="regex-back"
-                        icon={<LeftIcon />}
-                        variant={ButtonVariantType.borderLess}
-                        size={ComponentSizeType.small}
-                        showAriaLabelInTippy={false}
-                        style={ButtonStyleType.neutral}
-                    />
-                )}
                 <span className="dc__mxw-250 dc__truncate">{title}</span>&nbsp;/ Set branch
             </div>
             <Button

@@ -7,7 +7,7 @@
  */
 
 import { SyntheticEvent, useEffect, useRef, useState } from 'react'
-import { useHistory, useParams } from 'react-router-dom'
+import { Prompt, useHistory, useParams } from 'react-router-dom'
 
 import {
     APIResponseHandler,
@@ -19,6 +19,7 @@ import {
     CIPipelineNodeType,
     CommonNodeAttr,
     ComponentSizeType,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DocLink,
     Drawer,
     ErrorScreenManagerProps,
@@ -47,7 +48,9 @@ import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SOURCE_NOT_CONFIGURED } from '@
 import { getModuleConfigured } from '../../appDetails/appDetails.service'
 import BranchRegexModal from '../BranchRegexModal'
 import { IGNORE_CACHE_INFO, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
-import { BuildImageModalProps, CIMaterialRouterProps, CIPipelineMaterialDTO, RuntimeParamsErrorState } from '../types'
+import { BuildImageModalProps, CIMaterialRouterProps, CIPipelineMaterialDTO } from '../types'
+import GitInfoMaterial from './GitInfoMaterial'
+import { GitInfoMaterialProps } from './types'
 
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
@@ -68,7 +71,7 @@ const BuildImageModal = ({
     filteredCIPipelines,
     workflows,
     reloadWorkflows,
-    updateWorkflows,
+    // updateWorkflows,
     appId,
     environmentLists,
 }: BuildImageModalProps) => {
@@ -79,11 +82,14 @@ const BuildImageModal = ({
     const [showRegexBranchChangeModal, setShowRegexBranchChangeModal] = useState<boolean>(false)
     const [selectedEnv, setSelectedEnv] = useState<BuildImageModalProps['environmentLists'][number] | null>(null)
     const [invalidateCache, setInvalidateCache] = useState<boolean>(false)
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<RuntimeParamsErrorState>({
+    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<
+        GitInfoMaterialProps['runtimeParamsErrorState']
+    >({
         isValid: true,
         cellError: {},
     })
     const [isBuildTriggerLoading, setIsBuildTriggerLoading] = useState<boolean>(false)
+    const [showWebhookModal, setShowWebhookModal] = useState<boolean>(false)
 
     // TODO: Add as much type as possible to selectedCIPipeline
     const selectedCIPipeline = (filteredCIPipelines || []).find((_ci) => _ci.id === +ciNodeId)
@@ -94,6 +100,16 @@ const BuildImageModal = ({
     // Workflows will be present since this modal is only opened when workflows are loaded
     const ciNode = selectedWorkflow?.nodes.find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
 
+    const onMaterialUpdate = (newMaterialList: CIMaterialType[]) => {
+        setShowRegexBranchChangeModal(
+            !!selectedCIPipeline?.ciMaterial?.some(
+                (material) =>
+                    material.isRegex &&
+                    newMaterialList.some((_mat) => _mat.gitMaterialId === material.gitMaterialId && !_mat.value),
+            ),
+        )
+    }
+
     const getMaterialList = async (): Promise<CIMaterialType[]> => {
         const { result: materialList } = await getCIMaterialList(
             {
@@ -102,14 +118,7 @@ const BuildImageModal = ({
             materialListAbortControllerRef.current.signal,
         )
 
-        setShowRegexBranchChangeModal(
-            !!selectedCIPipeline?.ciMaterial?.some(
-                (material) =>
-                    material.isRegex &&
-                    materialList.some((_mat) => _mat.gitMaterialId === material.gitMaterialId && !_mat.value),
-            ),
-        )
-
+        onMaterialUpdate(materialList)
         return materialList
     }
 
@@ -192,6 +201,10 @@ const BuildImageModal = ({
         push(getCIPipelineURLWrapper())
     }
 
+    const handleWebhookModalBack = () => {
+        setShowWebhookModal(false)
+    }
+
     const onClickTriggerCINode = () => {
         handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.CITriggered)
         setIsBuildTriggerLoading(true)
@@ -253,6 +266,7 @@ const BuildImageModal = ({
             ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
         }
 
+        // TODO: Lets move this service later
         triggerCINode(payload)
             .then((response) => {
                 if (response.result) {
@@ -456,59 +470,90 @@ const BuildImageModal = ({
             errorScreenManagerProps={getErrorScreenManagerProps()}
         >
             {/* TODO: Add prompt for unsaved changes */}
-            <>
-                <div />
-
-                {showRegexBranchChangeModal && (
-                    <BranchRegexModal
-                        material={materialList}
-                        selectedCIPipeline={selectedCIPipeline}
-                        title={ciNode?.title}
-                        onCloseBranchRegexModal={handleCloseBranchRegexModal}
-                        appId={appId}
-                        workflowId={workflowId}
-                        handleReload={handleReloadWithWorkflows}
-                    />
-                )}
-            </>
+            <GitInfoMaterial
+                isCITriggerBlocked={ciNode?.isTriggerBlocked}
+                appId={appId}
+                workflow={selectedWorkflow}
+                isJobView={isJobView}
+                ciNodeId={+ciNodeId}
+                setMaterialList={setMaterialList}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                materialList={materialList}
+                showWebhookModal={showWebhookModal}
+            />
         </APIResponseHandler>
     )
 
     return (
-        <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
-            <div
-                className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
-                onClick={stopPropagation}
-            >
-                <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                    <div className="px-20 py-12 flexbox dc__content-space dc__align-items-center border__primary--bottom">
-                        <h2 className="m-0 fs-16 fw-6 lh-24 cn-9">
-                            {isJobView ? 'Pipeline:' : 'Build Pipeline:'} {ciNode?.title}
-                        </h2>
+        <>
+            <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
+                <div
+                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
+                    onClick={stopPropagation}
+                >
+                    <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                        <div className="px-20 py-12 flexbox dc__content-space dc__align-items-center border__primary--bottom">
+                            {showWebhookModal ? (
+                                <div className="flexbox dc__gap-12" data-testid="build-deploy-pipeline-name-heading">
+                                    <Button
+                                        dataTestId="webhook-back-button"
+                                        ariaLabel="Back"
+                                        icon={<Icon name="ic-arrow-right" color="N700" rotateBy={180} />}
+                                        variant={ButtonVariantType.borderLess}
+                                        size={ComponentSizeType.xs}
+                                        showAriaLabelInTippy={false}
+                                        style={ButtonStyleType.neutral}
+                                        onClick={handleWebhookModalBack}
+                                    />
 
-                        <Button
-                            dataTestId="header-close-button"
-                            ariaLabel="Close"
-                            showAriaLabelInTippy={false}
-                            onClick={handleClose}
-                            variant={ButtonVariantType.borderLess}
-                            style={ButtonStyleType.negativeGrey}
-                            icon={<Icon name="ic-close-large" color={null} />}
-                            size={ComponentSizeType.xs}
-                        />
+                                    <h2 className="m-0 fs-16 fw-6 lh-24 cn-9">
+                                        <span className="dc__truncate">{ciNode?.title}</span>
+                                        <span className="fs-16">&nbsp;/ All received webhooks </span>
+                                    </h2>
+                                </div>
+                            ) : (
+                                <h2 className="m-0 fs-16 fw-6 lh-24 cn-9">
+                                    {isJobView ? 'Pipeline:' : 'Build Pipeline:'} {ciNode?.title}
+                                </h2>
+                            )}
+
+                            <Button
+                                dataTestId="header-close-button"
+                                ariaLabel="Close"
+                                showAriaLabelInTippy={false}
+                                onClick={handleClose}
+                                variant={ButtonVariantType.borderLess}
+                                style={ButtonStyleType.negativeGrey}
+                                icon={<Icon name="ic-close-large" color={null} />}
+                                size={ComponentSizeType.xs}
+                            />
+                        </div>
+
+                        <div className="flexbox flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
 
-                    <div className="flexbox flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
+                    {ciNode?.isTriggerBlocked || showWebhookModal ? null : (
+                        <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
+                            {isJobView ? renderEnvironments() : renderCacheInfo()}
+                            {renderCTAButton()}
+                        </div>
+                    )}
                 </div>
+            </Drawer>
+            <Prompt when={isBuildTriggerLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
 
-                {ciNode?.isTriggerBlocked ? null : (
-                    <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
-                        {isJobView ? renderEnvironments() : renderCacheInfo()}
-                        {renderCTAButton()}
-                    </div>
-                )}
-            </div>
-        </Drawer>
+            {showRegexBranchChangeModal && (
+                <BranchRegexModal
+                    material={materialList}
+                    selectedCIPipeline={selectedCIPipeline}
+                    title={ciNode?.title}
+                    onCloseBranchRegexModal={handleCloseBranchRegexModal}
+                    appId={appId}
+                    workflowId={workflowId}
+                    handleReload={handleReloadWithWorkflows}
+                />
+            )}
+        </>
     )
 }
 
