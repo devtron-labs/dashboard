@@ -15,6 +15,7 @@
  */
 
 import {
+    BaseRecentlyVisitedEntitiesTypes,
     FiltersTypeEnum,
     K8sResourceDetailDataType,
     ServerErrors,
@@ -29,7 +30,13 @@ import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
-import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS, ResourceFilterOptionsProps } from '../Types'
+import {
+    ClusterDetailBaseParams,
+    ClusterOptionType,
+    K8SResourceListType,
+    NODE_SEARCH_KEYS,
+    ResourceFilterOptionsProps,
+} from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ClusterListType, 'updateTabUrl'>,
@@ -76,6 +83,13 @@ export interface AdminTerminalDummyProps
 export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
     renderPageHeaderActionButtons?: () => JSX.Element
+}
+
+export interface ClusterListOptionsTypes {
+    clusterList: ClusterOptionType[]
+    inputValue: string
+    recentlyVisitedResources: BaseRecentlyVisitedEntitiesTypes[]
+    isInstallationStatusView?: boolean
 }
 
 // CLUSTER UPGRADE COMPATIBILITY INFO TABLE PROPS --------->

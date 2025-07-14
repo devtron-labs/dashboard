@@ -15,8 +15,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ChartSelector } from '@Components/AppSelector'
+import { getChartSelectAPI } from '@Components/charts/charts.util'
 import { URLS } from '@Config/routes'
-import { getAvailableCharts } from '@Services/service'
 
 import { ChartDetailsAbout } from './ChartDetailsAbout'
 import { ChartDetailsDeploy } from './ChartDetailsDeploy'
@@ -73,7 +73,7 @@ export const ChartDetails = () => {
                         <ChartSelector
                             primaryKey="chartId"
                             primaryValue="name"
-                            api={getAvailableCharts}
+                            api={getChartSelectAPI}
                             matchedKeys={[]}
                             apiPrimaryKey="id"
                             formatOptionLabel={chartSelectorFormatOptionLabel}

@@ -16,6 +16,8 @@
 
 import React from 'react'
 
+import { GenericModalProps } from '@devtron-labs/devtron-fe-common-lib'
+
 export interface FormType {
     name: string
     description: string
@@ -44,7 +46,6 @@ export interface TokenListType {
     expireAtInMs: number
     id: number
     name: string
-    token: string
     userId: number
     userIdentifier: string
     description: string
@@ -54,10 +55,7 @@ export interface TokenListType {
 }
 
 export interface EditDataType
-    extends Pick<
-        TokenListType,
-        'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier'
-    > {}
+    extends Pick<TokenListType, 'name' | 'description' | 'expireAtInMs' | 'id' | 'userId' | 'userIdentifier'> {}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean
@@ -83,6 +81,7 @@ export interface GenerateTokenModalType {
     reload: () => void
     redirectToTokenList: () => void
     isRegenerationModal?: boolean
+    open: GenericModalProps['open']
 }
 
 export interface APITokenListType {

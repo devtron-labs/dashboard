@@ -15,10 +15,15 @@
  */
 
 import {
+    BaseRecentlyVisitedEntitiesTypes,
     ClusterDetail,
+    DocLink,
+    DocLinkProps,
     GVKType,
     logExceptionToSentry,
     numberComparatorBySortOrder,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
     RESOURCE_BROWSER_ROUTES,
     stringComparatorBySortOrder,
     TreeHeading,
@@ -32,7 +37,11 @@ import { importComponentFromFELibrary, k8sStyledAgeToSeconds, sortObjectArrayAlp
 import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 
 import {
+    clusterOverviewNodeText,
+    ERROR_SCREEN_LEARN_MORE,
+    ERROR_SCREEN_SUBTITLE,
     K8S_EMPTY_GROUP,
+    LEARN_MORE,
     NODE_K8S_VERSION_FILTER_KEY,
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     ResourceBrowserRouteToTabIdMap,
@@ -112,6 +121,69 @@ export const getShowAIButton = (aiButtonConfig: ShowAIButtonConfig, columnName: 
     return !aiButtonConfig.excludeValues.has(value)
 }
 
+export const unauthorizedInfoText = (nodeType?: string) => {
+    const emptyStateData = {
+        text: ERROR_SCREEN_SUBTITLE,
+        link: 'K8S_RESOURCES_PERMISSIONS' as DocLinkProps['docLinkKey'],
+        linkText: ERROR_SCREEN_LEARN_MORE,
+    }
+
+    if (nodeType === SIDEBAR_KEYS.overviewGVK.Kind.toLowerCase()) {
+        emptyStateData.text = clusterOverviewNodeText(true)
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
+        emptyStateData.linkText = LEARN_MORE
+    } else if (nodeType === SIDEBAR_KEYS.nodeGVK.Kind.toLowerCase()) {
+        emptyStateData.text = clusterOverviewNodeText(false)
+        emptyStateData.link = 'GLOBAL_CONFIG_PERMISSION'
+        emptyStateData.linkText = LEARN_MORE
+    }
+
+    return (
+        <>
+            {emptyStateData.text}&nbsp;
+            <DocLink
+                dataTestId="rb-permission-error-documentation"
+                docLinkKey={emptyStateData.link}
+                text={emptyStateData.linkText}
+                fontWeight="normal"
+            />
+        </>
+    )
+}
+
+export const getOptionsValue = (option: ClusterOptionType, isInstallationStatusView: boolean) =>
+    // NOTE: all the options with value equal to that of the selected option will be highlighted
+    // therefore, since installed clusters that are in creation phase have value = '0', we need to instead
+    // get its value as installationId. Prefixing it with installation- to avoid collision with normal clusters have same value of
+    // clusterId as this installationId
+    isInstallationStatusView ? `installation-${String(option.installationId)}` : option.value
+
+const getAllCluster = ({ clusterList, isInstallationStatusView }) => ({
+    label: 'All Clusters',
+    options: clusterList?.map((option) => ({
+        ...option,
+        value: +getOptionsValue(option, isInstallationStatusView),
+    })) as RecentlyVisitedOptions[],
+})
+
+export const getClusterSelectOptions = (
+    clusterList,
+    recentlyVisitedResources,
+    isInstallationStatusView,
+): RecentlyVisitedGroupedOptionsType[] =>
+    recentlyVisitedResources?.length
+        ? [
+              {
+                  label: 'Recently Visited',
+                  options: recentlyVisitedResources.map((cluster: BaseRecentlyVisitedEntitiesTypes) => ({
+                      label: cluster.name,
+                      value: cluster.id,
+                      isRecentlyVisited: true,
+                  })) as RecentlyVisitedOptions[],
+              },
+              getAllCluster({ clusterList, isInstallationStatusView }),
+          ]
+        : [getAllCluster({ clusterList, isInstallationStatusView })]
 export const parseK8sResourceListSearchParams = (searchParams: URLSearchParams): K8sResourceListFilterType => {
     const namespace = searchParams.get('namespace')
     const eventType = searchParams.get('eventType')
