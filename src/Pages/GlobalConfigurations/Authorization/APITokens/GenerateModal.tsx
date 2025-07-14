@@ -17,68 +17,77 @@
 import { useState } from 'react'
 
 import {
-    Button,
-    ButtonVariantType,
     ClipboardButton,
-    ComponentSizeType,
     copyToClipboard,
-    VisibleModal,
+    GenericModal,
+    Icon,
+    InfoBlock,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
-import { ReactComponent as Key } from '../../../../assets/icons/ic-key-bulb.svg'
-import { ReactComponent as Success } from '../../../../assets/icons/ic-success-outline.svg'
 import { GenerateTokenModalType } from './apiToken.type'
 
-const GenerateModal = ({ close, token, reload, redirectToTokenList, isRegenerationModal }: GenerateTokenModalType) => {
+const GenerateModal = ({
+    close,
+    token,
+    reload,
+    redirectToTokenList,
+    isRegenerationModal,
+    open,
+}: GenerateTokenModalType) => {
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
-    const modelType = isRegenerationModal ? 'regenerated' : 'generated'
+    const modelType = isRegenerationModal ? 'Regenerated' : 'Generated'
     const handleCloseButton = () => {
         close()
         reload()
         redirectToTokenList()
     }
 
-    const handleCopyToClipboard = async (e?: React.MouseEvent) => {
-        e?.stopPropagation()
-
+    const handleCopyToClipboard = async (e: React.MouseEvent) => {
+        stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
 
     return (
-        <VisibleModal className="generate-token-modal">
-            <div className="modal__body w-600 pl-20 pr-20 pt-20 pb-20 flex column dc__gap-16">
-                <button
-                    type="button"
-                    data-testid={`${modelType}-token-modal-close`}
-                    className="w-100 flex right dc__transparent"
-                    onClick={handleCloseButton}
-                    aria-label="Close modal"
-                >
-                    <Close className="icon-dim-24" />
-                </button>
-                <Success className="dc__vertical-align-middle" />
+        <GenericModal
+            name="create-ci-cd-pipeline-modal"
+            open={open}
+            width={600}
+            onClose={handleCloseButton}
+            onEscape={handleCloseButton}
+        >
+            <GenericModal.Header title={`API Token ${modelType}`} />
+            <GenericModal.Body>
+                <div className="flexbox-col dc__gap-20 p-20">
+                    <div className="flexbox-col dc__gap-4">
+                        <h5 className="m-0 cn-9 lh-1-5 fw-6">
+                            Copy and store this token safely, you won’t be able to view it again.
+                        </h5>
+                        <p className="cn-7 fs-12 lh-1-5 m-0">
+                            You can regenerate a token anytime. If you do, remember to update any scripts or
+                            applications using the old token.
+                        </p>
+                    </div>
 
-                <h2 className="modal__title fs-16">API token {modelType}</h2>
-                <div
-                    className="flex top left bcg-1 br-4 eg-2 bw-1 pl-16 pr-16 pt-10 pb-10 dc__break-word"
-                    style={{ width: '560px' }}
-                >
-                    <Key className="api-token-icon icon-dim-20 mr-10" />
-                    <span data-testid={`${modelType}-token`} className="api-token-text cn-9 fs-14">
-                        {token}
-                    </span>
+                    <InfoBlock
+                        heading="API Token"
+                        description={token}
+                        variant="success"
+                        customIcon={<Icon name="ic-key" color="G500" />}
+                    />
                 </div>
-                <Button
-                    dataTestId="copy-token"
-                    variant={ButtonVariantType.primary}
-                    size={ComponentSizeType.large}
-                    onClick={handleCopyToClipboard}
-                    startIcon={<ClipboardButton content={token} copyToClipboardPromise={copyToClipboardPromise} />}
-                    text="Copy token"
-                />
-            </div>
-        </VisibleModal>
+            </GenericModal.Body>
+            <GenericModal.Footer
+                buttonConfig={{
+                    primaryButton: {
+                        dataTestId: 'copy-token',
+                        startIcon: <ClipboardButton content={token} copyToClipboardPromise={copyToClipboardPromise} />,
+                        text: 'Copy token',
+                        onClick: handleCopyToClipboard,
+                    },
+                }}
+            />
+        </GenericModal>
     )
 }
 

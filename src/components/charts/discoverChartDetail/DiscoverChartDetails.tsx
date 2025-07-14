@@ -45,6 +45,7 @@ import './DiscoverChartDetails.scss'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
 import { ChartInstalledConfig, ChartKind } from '../../v2/values/chartValuesDiff/ChartValuesView.type'
 import { ChartValuesType } from '../charts.types'
+import { getChartSelectAPI } from '../charts.util'
 
 const DiscoverDetailsContext = React.createContext(null)
 export function useDiscoverDetailsContext() {
@@ -110,7 +111,7 @@ const DiscoverChartDetails: React.FC<DiscoverChartDetailsProps> = ({ match, hist
                         <ChartSelector
                             primaryKey="chartId"
                             primaryValue="name"
-                            api={getAvailableCharts}
+                            api={getChartSelectAPI}
                             matchedKeys={[]}
                             apiPrimaryKey="id"
                             formatOptionLabel={formatOptionLabel}
