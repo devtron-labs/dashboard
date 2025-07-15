@@ -26,6 +26,9 @@ import {
     SourceTypeMap,
     DEPLOYMENT_STATUS,
     WorkflowStatusEnum,
+    RecentlyVisitedGroupedOptionsType,
+    RecentlyVisitedOptions,
+    BaseRecentlyVisitedEntitiesTypes
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
 import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
@@ -37,6 +40,7 @@ import {
     ProcessWorkFlowStatusType,
     AppGroupListType,
 } from './AppGroup.types'
+import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
 
 let timeoutId
 
@@ -157,37 +161,58 @@ export const handleSourceNotConfigured = (
     }
 }
 
-export const envListOptions = (inputValue: string, signal?: AbortSignal): Promise<[]> =>
+export const envListOptions = (
+    inputValue: string,
+    signal: AbortSignal,
+    recentlyVisitedResources: BaseRecentlyVisitedEntitiesTypes[],
+): Promise<RecentlyVisitedGroupedOptionsType[]> =>
     new Promise((resolve) => {
         if (timeoutId) {
             clearTimeout(timeoutId)
         }
         timeoutId = setTimeout(() => {
             if (inputValue.length < 3) {
-                resolve([])
-                return
-            }
-            getEnvAppList({ searchKey: inputValue }, signal)
-                .then((response) => {
-                    let appList = []
-                    if (response.result) {
-                        appList = response.result.envList?.map((res) => ({
-                            value: res.id,
-                            label: res.environment_name,
-                            appCount: res.appCount,
-                            ...res,
-                        }))
-                    }
-                    resolve(appList as [])
-                })
-                .catch((errors: ServerErrors) => {
-                    if (!getIsRequestAborted(errors)) {
-                        resolve([])
-                        if (errors.code) {
-                            showError(errors)
+                resolve(
+                    recentlyVisitedResources?.length
+                        ? [
+                              {
+                                  label: 'Recently Visited',
+                                  options: recentlyVisitedResources.map((env: BaseRecentlyVisitedEntitiesTypes) => ({
+                                      label: env.name,
+                                      value: env.id,
+                                      isRecentlyVisited: true,
+                                  })) as RecentlyVisitedOptions[],
+                              },
+                              getMinCharSearchPlaceholderGroup('Environments'),
+                          ]
+                        : [],
+                )
+            } else {
+                getEnvAppList({ searchKey: inputValue }, signal)
+                    .then((response) => {
+                        const appList = response.result
+                            ? ([
+                                  {
+                                      label: 'All Environments',
+                                      options: response.result.envList.map((res) => ({
+                                          value: res.id,
+                                          label: res.environment_name,
+                                      })) as RecentlyVisitedOptions[],
+                                  },
+                              ] as RecentlyVisitedGroupedOptionsType[])
+                            : []
+
+                        resolve(appList)
+                    })
+                    .catch((errors: ServerErrors) => {
+                        if (!getIsRequestAborted(errors)) {
+                            resolve([])
+                            if (errors.code) {
+                                showError(errors)
+                            }
                         }
-                    }
-                })
+                    })
+            }
         }, 300)
     })
 

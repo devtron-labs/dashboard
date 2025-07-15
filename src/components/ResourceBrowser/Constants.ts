@@ -394,6 +394,11 @@ export const AI_BUTTON_CONFIG_MAP: Record<string, ShowAIButtonConfig> = Object.f
     },
 })
 
+export const ResourceBrowserGAEvent = {
+    RB_SWITCH_CLUSTER_RECENTLY_VISITED_CLICKED: 'RB_SWITCH_CLUSTER_RECENTLY_VISITED_CLICKED',
+    RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED: 'RB_SWITCH_CLUSTER_SEARCHED_ITEM_CLICKED',
+}
+
 export const ResourceBrowserRouteToTabIdMap: Partial<
     Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
 > = {

@@ -1539,17 +1539,6 @@ const ChartValuesView = ({
                         selectedChartValues={commonState.chartValues}
                     />
                 )}
-                <footer className="flexbox dc__content-end dc__border-top px-16 py-12">
-                    <AnimatedDeployButton
-                        dataTestId="preset-save-values-button"
-                        disabled={commonState.isUpdateInProgress || commonState.isDeleteInProgress}
-                        onButtonClick={deployOrUpdateApplication}
-                        isLoading={commonState.isUpdateInProgress}
-                        text={isCreateValueView ? `Save ${chartValueId !== '0' ? 'Changes' : 'Value'}` : 'Deploy'}
-                        {...(isCreateValueView ? {} : { startIcon: <Icon name="ic-rocket-launch" color={null} /> })}
-                        animateStartIcon={!isCreateValueView}
-                    />
-                </footer>
             </div>
         )
     }
@@ -1873,6 +1862,17 @@ const ChartValuesView = ({
                         renderChartValuesEditor()
                     )}
                 </div>
+                <footer className="flexbox dc__content-end dc__border-top px-16 py-12">
+                    <AnimatedDeployButton
+                        dataTestId="preset-save-values-button"
+                        disabled={commonState.isUpdateInProgress || commonState.isDeleteInProgress}
+                        onButtonClick={deployOrUpdateApplication}
+                        isLoading={commonState.isUpdateInProgress}
+                        text={isCreateValueView ? `Save ${chartValueId !== '0' ? 'Changes' : 'Value'}` : 'Deploy'}
+                        {...(isCreateValueView ? {} : { startIcon: <Icon name="ic-rocket-launch" color={null} /> })}
+                        animateStartIcon={!isCreateValueView}
+                    />
+                </footer>
 
                 {commonState.showDeleteAppConfirmationDialog && (
                     <DeleteChartDialog
