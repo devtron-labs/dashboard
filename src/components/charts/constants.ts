@@ -52,6 +52,7 @@ export const QueryParams = {
     ChartCategoryId: 'chartCategoryId',
 }
 
+export const CHART_LIST_SELECT_QUERY = '?includeDeprecated=1'
 export const CHART_CARD_MAX_LENGTH = 4
 
 export const getAddSourceActionMenuOptions = (): AddSourceMenuOptions['options'] => [
