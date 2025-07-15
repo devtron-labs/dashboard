@@ -309,14 +309,13 @@ const CreateAPIToken = ({
                 buttonText="Generate token"
                 disabled={isSaveDisabled}
             />
-
             <GenerateModal
                 close={handleGenerateTokenActionButton}
                 token={tokenResponse.token}
                 reload={reload}
                 redirectToTokenList={redirectToTokenList}
                 open={showGenerateModal}
-                hideApiToken={tokenResponse?.hideApiToken}
+                hideApiToken={tokenResponse.hideApiToken}
             />
         </div>
     )

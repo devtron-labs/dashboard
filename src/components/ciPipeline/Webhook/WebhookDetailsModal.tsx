@@ -218,7 +218,6 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     }
 
     const hideApiToken = !tokenList?.[0]?.token
-    console.log(hideApiToken)
 
     const generateToken = async (): Promise<void> => {
         if (!tokenName) {
