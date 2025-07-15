@@ -27,7 +27,7 @@ import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
-import { AI_BUTTON_CONFIG_MAP, K8S_EMPTY_GROUP } from '../Constants'
+import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
 import NodeActionsMenu from './NodeActionsMenu'
@@ -201,6 +201,16 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
+    const eventDetails = {
+        message: resourceData.message as string,
+        namespace: resourceData.namespace as string,
+        object: resourceData[EVENT_LIST.dataKeys.involvedObject] as string,
+        source: resourceData.source as string,
+        count: resourceData.count as number,
+        age: resourceData.age as string,
+        lastSeen: resourceData[EVENT_LIST.dataKeys.lastSeen] as string,
+    }
+
     return (
         <>
             {columnName === 'name' ? (
@@ -296,6 +306,19 @@ const K8sResourceListTableCellComponent = ({
                                 </Tooltip>
                             </>
                         )}
+                        {ExplainWithAIButton &&
+                            columnName === 'explainButton' &&
+                            isEventListing &&
+                            resourceData.type === 'Warning' && (
+                                <ExplainWithAIButton
+                                    intelligenceConfig={{
+                                        clusterId,
+                                        metadata: eventDetails,
+                                        prompt: JSON.stringify(eventDetails),
+                                        analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
+                                    }}
+                                />
+                            )}
                         <span>
                             {columnName === 'restarts' && Number(resourceData.restarts) !== 0 && PodRestartIcon && (
                                 <PodRestartIcon
