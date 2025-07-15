@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, get, GetTemplateAPIRouteType, getTemplateAPIRoute } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppConfigProps,
+    get,
+    GetTemplateAPIRouteType,
+    getTemplateAPIRoute,
+    getUrlWithSearchParams,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
 import { WebhookApiTokenResponse, WebhookDetailsResponse, WebhookListResponse } from './types'
 
@@ -58,7 +64,11 @@ export function getWebhookAPITokenList(
     appName: string,
 ): Promise<WebhookApiTokenResponse> {
     return get(
-        `${Routes.API_TOKEN_WEBHOOK}?projectName=${projectName}&environmentName=${environmentName}&appName=${appName}`,
+        getUrlWithSearchParams(Routes.API_TOKEN_WEBHOOK, {
+            projectName: projectName,
+            environmentName: environmentName,
+            appName: appName,
+        }),
     )
 }
 

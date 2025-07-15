@@ -312,7 +312,7 @@ const CreateAPIToken = ({
 
             <GenerateModal
                 close={handleGenerateTokenActionButton}
-                token={tokenResponse?.token}
+                token={tokenResponse.token}
                 reload={reload}
                 redirectToTokenList={redirectToTokenList}
                 open={showGenerateModal}

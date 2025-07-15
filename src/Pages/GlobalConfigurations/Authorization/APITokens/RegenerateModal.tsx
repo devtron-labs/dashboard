@@ -112,7 +112,7 @@ const RegeneratedModal = ({
     return showGenerateModal ? (
         <GenerateModal
             close={handleGenerateTokenActionButton}
-            token={tokenResponse?.token}
+            token={tokenResponse.token}
             reload={reload}
             redirectToTokenList={redirectToTokenList}
             isRegenerationModal

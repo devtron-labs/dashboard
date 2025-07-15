@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { SelectPickerOptionType } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
 import { TabDetailsType, TokenListOptionsType } from './types'
 import { TokenListType } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
 
@@ -47,8 +46,8 @@ export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with req
 export const SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS =
     'Select or auto-generate token with required permissions'
 
-export const getWebhookTokenListOptions = (tokenList: TokenListType[]): TokenListOptionsType[] => {
-    return tokenList.map((token) => {
+export const getWebhookTokenListOptions = (tokenList: TokenListType[]): TokenListOptionsType[] =>
+    tokenList.map((token) => {
         return {
             ...token,
             label: token.name,
@@ -56,4 +55,3 @@ export const getWebhookTokenListOptions = (tokenList: TokenListType[]): TokenLis
             description: 'Has access',
         }
     })
-}

@@ -92,6 +92,4 @@ export interface WebhookListResponse extends ResponseType {
     result?: WebhookDetailsType[]
 }
 
-export interface WebhookApiTokenResponse extends ResponseType {
-    result?: TokenListType[]
-}
+export type WebhookApiTokenResponse = ResponseType<TokenListType[]>

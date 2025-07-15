@@ -102,12 +102,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
     const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
-    const [tokenList, setTokenList] = useState<TokenListType[]>(undefined)
+    const [tokenList, setTokenList] = useState<TokenListType[]>(null)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
     const schemaRef = useRef<Array<HTMLDivElement | null>>([])
-
 
     const clipboardContent = window.location.href
 
@@ -203,9 +202,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 const sortedResult =
                     result
                         ?.sort((a, b) => a['name'].localeCompare(b['name']))
-                        .map((tokenData) => {
-                            return { label: tokenData.name, value: tokenData.id, ...tokenData }
-                        }) || []
+                        .map((tokenData) => ({
+                            ...tokenData,
+                            label: tokenData.name,
+                            value: tokenData.id,
+                        })) || []
                 setTokenList(sortedResult)
             }
             setLoader(false)
@@ -217,6 +218,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     }
 
     const hideApiToken = !tokenList?.[0]?.token
+    console.log(hideApiToken)
 
     const generateToken = async (): Promise<void> => {
         if (!tokenName) {
@@ -452,30 +454,28 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-    const renderSelectTokenSection = (): JSX.Element => {
-        const handleSelectedTokenChange = (selectedToken): void => {
-            setSelectedToken(selectedToken)
-        }
-
-        return (
-            <>
-                <div className="w-400 h-32 mt-16">
-                    <SelectPicker
-                        inputId="select-token"
-                        name="select-token"
-                        classNamePrefix="select-token"
-                        placeholder="Select API token"
-                        isClearable={false}
-                        options={getWebhookTokenListOptions(tokenList)}
-                        value={selectedToken}
-                        onChange={handleSelectedTokenChange}
-                        isSearchable={false}
-                    />
-                </div>
-                {selectedToken?.name && renderSelectedToken(selectedToken.token)}
-            </>
-        )
+    const handleSelectedTokenChange = (selectedToken): void => {
+        setSelectedToken(selectedToken)
     }
+
+    const renderSelectTokenSection = (): JSX.Element => (
+        <>
+            <div className="w-400 h-32 mt-16">
+                <SelectPicker
+                    inputId="select-token"
+                    name="select-token"
+                    classNamePrefix="select-token"
+                    placeholder="Select API token"
+                    isClearable={false}
+                    options={getWebhookTokenListOptions(tokenList)}
+                    value={selectedToken}
+                    onChange={handleSelectedTokenChange}
+                    isSearchable={false}
+                />
+            </div>
+            {selectedToken?.name && renderSelectedToken(selectedToken.token)}
+        </>
+    )
 
     const renderGeneratedTokenDetails = () => {
         if (hideApiToken) {
@@ -511,7 +511,11 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 dataTestId="select-or-generate-token"
                 variant={ButtonVariantType.text}
                 onClick={toggleTokenSection}
-                text={hideApiToken ? GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS : SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS }
+                text={
+                    hideApiToken
+                        ? GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS
+                        : SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS
+                }
             />
         ) : (
             renderGeneratedTokenDetails()
