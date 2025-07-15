@@ -32,6 +32,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     MODES,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE, ViewType } from '../../config'
 import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
@@ -49,7 +50,7 @@ import {
 import { OutputDivider, OutputObjectTabs, STATUS } from './constants'
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
-    constructor(props) {
+    constructor(props: BulkEditsProps) {
         super(props)
 
         this.state = {
@@ -58,13 +59,11 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             outputResult: undefined,
             impactedObjects: undefined,
             isReadmeLoading: true,
-            outputName: 'output',
             bulkConfig: [],
             updatedTemplate: [],
             readmeResult: [],
             showExamples: true,
-            showOutputData: true,
-            showImpactedData: false,
+            activeOutputTab: 'output',
             codeEditorPayload: undefined,
         }
     }
@@ -109,13 +108,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             })
     }
 
-    handleRunButton = (e) => {
-        const outputDiv = document.querySelector('.code-editor-body')
-        outputDiv.scrollTop = outputDiv.scrollHeight
-
+    handleRunButton = () => {
         this.setState({
             view: ViewType.LOADING,
-            outputName: 'output',
         })
 
         let configJson: any = {}
@@ -141,26 +136,20 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 this.setState({
                     statusCode: 0,
                     view: ViewType.FORM,
-                    showOutputData: true,
-                    outputName: 'output',
+                    activeOutputTab: 'output',
                     outputResult,
-                    showImpactedData: false,
                     impactedObjects: undefined,
                 })
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'output' })
+                this.setState({ view: ViewType.FORM, statusCode: error.code })
             })
     }
 
     handleShowImpactedObjectButton = () => {
-        const outputDiv = document.querySelector('.code-editor-body')
-        outputDiv.scrollTop = outputDiv.scrollHeight
-
         this.setState({
             view: ViewType.LOADING,
-            outputName: 'impacted',
         })
 
         let configJson: any = {}
@@ -186,33 +175,34 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                     view: ViewType.FORM,
                     impactedObjects,
                     outputResult: undefined,
-                    outputName: 'impacted',
-                    showImpactedData: true,
+                    activeOutputTab: 'impacted',
                 })
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'impacted' })
+                this.setState({ view: ViewType.FORM, statusCode: error.code })
             })
     }
 
     renderCodeEditorHeader = () => {
         return (
             <div className="flex bg__primary px-20 py-8 dc__border-bottom dc__content-space">
+                <h1 className='m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans'>Script</h1>
+
                 <div className="flexbox dc__gap-12">
-                    <Button
-                        text="Run"
-                        onClick={this.handleRunButton}
-                        dataTestId="run-button"
-                        startIcon={<PlayButton />}
-                        size={ComponentSizeType.medium}
-                    ></Button>
                     <Button
                         text="Show Impacted Objects"
                         onClick={this.handleShowImpactedObjectButton}
                         dataTestId="show-impacted-objects-button"
-                        size={ComponentSizeType.medium}
+                        size={ComponentSizeType.small}
                         variant={ButtonVariantType.secondary}
+                    ></Button>
+                    <Button
+                        text="Run"
+                        onClick={this.handleRunButton}
+                        dataTestId="run-button"
+                        startIcon={<Icon name='ic-play-outline' color={null} />}
+                        size={ComponentSizeType.small}
                     ></Button>
                 </div>
 
@@ -231,59 +221,53 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
     }
 
-    handleOutputTab = (e, key: string) => {
-        if (key == 'output') {
-            this.setState({
-                outputName: 'output',
-                showOutputData: true,
-                showImpactedData: false,
-            })
-        }
-        if (key == 'impacted') {
-            this.setState({
-                outputName: 'impacted',
-                showImpactedData: true,
-                showOutputData: false,
-            })
-        }
+    handleOutputTab = (key: BulkEditsState['activeOutputTab']) => {
+        this.setState({
+            activeOutputTab: key,
+        })
     }
 
     renderCodeEditorBody = () => {
+        // TODO: need to hide this if no response yet
+        // TODO: also need to make it resizable
+
         return (
-            <div className="code-editor-body dc__grid-half flexbox-col flex-grow-1 mh-0">
-                <CodeEditor
-                    mode={MODES.YAML}
-                    height="fitToParent"
-                    value={this.state.codeEditorPayload}
-                    onChange={this.handleConfigChange}
-                />
-                <div className="bulk-output-drawer bg__primary flexbox-col flex-grow-1 mh-0">
+            <div className="dc__grid-rows-2 flex-grow-1 dc__overflow-hidden">
+                <div className='dc__overflow-auto'>
+                    <CodeEditor
+                        mode={MODES.YAML}
+                        height="auto"
+                        value={this.state.codeEditorPayload}
+                        onChange={this.handleConfigChange}
+                    />
+                </div>
+                <div className="bulk-output-drawer bg__primary flexbox-col dc__overflow-auto">
                     <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
                         <OutputTabs
-                            handleOutputTabs={(e) => this.handleOutputTab(e, 'output')}
-                            outputName={this.state.outputName}
+                            handleOutputTabs={() => this.handleOutputTab('output')}
+                            outputName={this.state.activeOutputTab}
                             value="output"
                             name={OutputObjectTabs.OUTPUT}
                         />
                         <OutputTabs
-                            handleOutputTabs={(e) => this.handleOutputTab(e, 'impacted')}
-                            outputName={this.state.outputName}
+                            handleOutputTabs={() => this.handleOutputTab('impacted')}
+                            outputName={this.state.activeOutputTab}
                             value="impacted"
                             name={OutputObjectTabs.IMPACTED_OBJECTS}
                         />
                     </div>
                     <div
-                        className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1 mh-0"
+                        className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1"
                         data-testid="output-message"
                     >
-                        {this.state.showOutputData ? (
+                        {this.state.activeOutputTab === 'output' ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
                             ) : (
                                 this.renderOutputs()
                             )
                         ) : null}
-                        {this.state.showImpactedData ? (
+                        {this.state.activeOutputTab === 'impacted' ? (
                             this.state.statusCode === 404 ? (
                                 <>{STATUS.ERROR}</>
                             ) : (
@@ -459,15 +443,15 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         return this.state.isReadmeLoading ? (
             <Progressing pageLoader />
         ) : (
-            <div className="deploy-chart__readme-column flexbox-col flex-grow-1 mh-0 dc__overflow-auto">
-                <MarkDown markdown={readmeJson} className="flexbox-col flex-grow-1 mh-0" />
+            <div className="deploy-chart__readme-column flexbox-col flex-grow-1 dc__overflow-auto">
+                <MarkDown markdown={readmeJson} className="flexbox-col flex-grow-1" />
             </div>
         )
     }
 
     renderBulkCodeEditor = () => {
         return (
-            <div className="dc__border-right flexbox-col flex-grow-1 mh-0">
+            <div className="bulk-container flexbox-col flex-grow-1 dc__overflow-hidden">
                 {this.renderCodeEditorHeader()}
                 {this.renderCodeEditorBody()}
             </div>
@@ -476,7 +460,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderReadmeSection = () => {
         return (
-            <div className="flexbox-col flex-grow-1 mh-0 dc__overflow-hidden">
+            <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                 {this.renderSampleTemplateHeader()}
                 {this.renderSampleTemplateBody()}
             </div>
@@ -485,22 +469,9 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderCodeEditorAndReadme = () => {
         return (
-            <div className="bulk-container vertical-divider flex-grow-1 mh-0 dc__grid-half">
+            <div className="bulk-container vertical-divider flex-grow-1 dc__grid-half dc__overflow-hidden">
                 {this.renderBulkCodeEditor()}
                 {this.renderReadmeSection()}
-            </div>
-        )
-    }
-
-    renderReadmeAndCodeEditor = () => {
-        return (
-            <div className={`${this.state.showExamples ? 'code-editor-readme' : null}`}>
-                <div>{this.renderBulkCodeEditor()}</div>
-                {this.state.showExamples ? (
-                    <div className="flex end" style={{ transition: 'all .2s ease-out' }}>
-                        {this.renderReadmeSection()}
-                    </div>
-                ) : null}
             </div>
         )
     }

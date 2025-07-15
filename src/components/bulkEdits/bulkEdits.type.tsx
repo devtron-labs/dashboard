@@ -113,15 +113,13 @@ export interface BulkOutput {
 export interface BulkEditsState {
     view: string
     statusCode: number
-    outputName: string
     isReadmeLoading: boolean
     impactedObjects: ImpactedObjects
     updatedTemplate: OptionType[]
     readmeResult: string[]
     outputResult: BulkOutput
     showExamples: boolean
-    showImpactedData: boolean
-    showOutputData: boolean
+    activeOutputTab: 'output' | 'impacted'
     bulkConfig: BulkConfiguration[]
     codeEditorPayload: string
 }
