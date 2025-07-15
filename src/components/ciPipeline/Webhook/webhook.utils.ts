@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { TabDetailsType } from './types'
+import { SelectPickerOptionType } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { TabDetailsType, TokenListOptionsType } from './types'
+import { TokenListType } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
+
+export const TOKEN_TAB_LIST: TabDetailsType[] = [
+    { key: 'selectToken', value: 'Select API token' },
+    { key: 'autoToken', value: 'Auto-generate token' },
+]
 
 export const PLAYGROUND_TAB_LIST: TabDetailsType[] = [
     { key: 'webhookURL', value: 'Webhook URL' },
@@ -37,3 +44,16 @@ export const CURL_PREFIX = `curl --location --request POST \\
 --data-raw '{data}'`
 
 export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with required permissions'
+export const SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS =
+    'Select or auto-generate token with required permissions'
+
+export const getWebhookTokenListOptions = (tokenList: TokenListType[]): TokenListOptionsType[] => {
+    return tokenList.map((token) => {
+        return {
+            ...token,
+            label: token.name,
+            value: token.id.toString(),
+            description: 'Has access',
+        }
+    })
+}

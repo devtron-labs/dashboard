@@ -112,11 +112,12 @@ const RegeneratedModal = ({
     return showGenerateModal ? (
         <GenerateModal
             close={handleGenerateTokenActionButton}
-            token={tokenResponse.token}
+            token={tokenResponse?.token}
             reload={reload}
             redirectToTokenList={redirectToTokenList}
             isRegenerationModal
             open={showGenerateModal}
+            hideApiToken={tokenResponse.hideApiToken}
         />
     ) : (
         <VisibleModal className="regenerate-token-modal">

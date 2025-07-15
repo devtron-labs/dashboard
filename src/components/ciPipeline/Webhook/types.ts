@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, ResponseType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { TokenListType } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
 
 export interface WebhookDetailType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     close: () => void
+}
+
+export interface TokenListOptionsType extends TokenListType, SelectPickerOptionType<string> {
+    description: string
 }
 
 export interface TabDetailsType {
@@ -84,4 +90,8 @@ export interface WebhookDetailsResponse extends ResponseType {
 
 export interface WebhookListResponse extends ResponseType {
     result?: WebhookDetailsType[]
+}
+
+export interface WebhookApiTokenResponse extends ResponseType {
+    result?: TokenListType[]
 }

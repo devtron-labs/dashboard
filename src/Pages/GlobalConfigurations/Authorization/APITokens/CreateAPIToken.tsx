@@ -210,6 +210,7 @@ const CreateAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.userId,
                     userIdentifier: result.userIdentifier,
+                    hideApiToken: result.hideApiToken,
                     userRoleGroups,
                     serverMode,
                     directPermission,
@@ -311,10 +312,11 @@ const CreateAPIToken = ({
 
             <GenerateModal
                 close={handleGenerateTokenActionButton}
-                token={tokenResponse.token}
+                token={tokenResponse?.token}
                 reload={reload}
                 redirectToTokenList={redirectToTokenList}
                 open={showGenerateModal}
+                hideApiToken={tokenResponse?.hideApiToken}
             />
         </div>
     )

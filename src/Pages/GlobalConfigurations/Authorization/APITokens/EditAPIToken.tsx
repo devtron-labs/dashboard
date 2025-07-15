@@ -23,6 +23,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ClipboardButton,
     CustomInput,
     Icon,
     InfoBlock,
@@ -124,6 +125,7 @@ const EditAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: editData.userId,
                     userIdentifier: editData.userIdentifier,
+                    hideApiToken: result.hideApiToken,
                     userRoleGroups,
                     serverMode,
                     directPermission,
@@ -243,6 +245,19 @@ const EditAPIToken = ({
                         placeholder="Enter a description to remember where you have used this token"
                         error={invalidDescription ? 'Max 350 characters allowed.' : null}
                     />
+                    {!!editData?.token?.length && (
+                        <label className="form__row">
+                            <span className="form__label">Token</span>
+                            <div className="flex dc__content-space top cn-9">
+                                <span data-testid="api-token-string" className="mono fs-14 dc__word-break">
+                                    {editData.token}
+                                </span>
+                                <div className="icon-dim-16 ml-8">
+                                    <ClipboardButton content={editData.token} />
+                                </div>
+                            </div>
+                        </label>
+                    )}
                     <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector isAddMode={false} />
                 </div>
