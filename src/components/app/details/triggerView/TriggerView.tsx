@@ -24,32 +24,18 @@ import {
     VisibleModal,
     DeploymentNodeType,
     CommonNodeAttr,
-    WorkflowType,
-    getIsRequestAborted,
-    handleUTCTime,
-    createGitCommitUrl,
-    CIMaterialType,
     ToastManager,
     ToastVariantType,
-    TOAST_ACCESS_DENIED,
-    BlockedStateData,
     getEnvironmentListMinPublic,
-    CIPipelineNodeType,
     DocLink,
-    SourceTypeMap,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'
 import {
-    getCIMaterialList,
-    triggerCINode,
     getWorkflowStatus,
-    refreshGitMaterial,
-    getGitMaterialByCommitHash,
 } from '../../service'
 import {
     getCDPipelineURL,
-    getCIPipelineURL,
     importComponentFromFELibrary,
     InValidHostUrlWarningBlock,
     preventBodyScroll,
@@ -58,44 +44,29 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { CIMaterialProps, TriggerViewProps, TriggerViewState } from './types'
+import { TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
-import { URLS, ViewType, BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, NO_COMMIT_SELECTED } from '../../../../config'
+import { URLS, ViewType } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
-import { getCIWebhookRes } from './ciWebhook.service'
 import { TriggerViewContext } from './config'
-import { DEFAULT_ENV, TIME_STAMP_ORDER, TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
+import { DEFAULT_ENV, TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import {
     APP_DETAILS,
-    CI_CONFIGURED_GIT_MATERIAL_ERROR,
-    NO_TASKS_CONFIGURED_ERROR,
 } from '../../../../config/constantMessaging'
 import {
-    getBranchValues,
-    handleSourceNotConfigured,
-    processConsequenceData,
     processWorkflowStatuses,
 } from '../../../ApplicationGroup/AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
-import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
-import { CIMaterialModal } from './CIMaterialModal'
-import { WebhookReceivedPayloadModal } from './WebhookReceivedPayloadModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
+import BuildImageModal from './BuildImageModal/BuildImageModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
-const getCIBlockState: (...props) => Promise<BlockedStateData> = importComponentFromFELibrary(
-    'getCIBlockState',
-    null,
-    'function',
-)
 const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')
 const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
-const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
-const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     timerRef
@@ -113,21 +84,12 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             view: ViewType.LOADING,
             workflows: [],
             cdNodeId: 0,
-            ciNodeId: 0,
             workflowId: 0,
             nodeType: null,
-            ciPipelineName: '',
             materialType: '',
             isLoading: false,
-            invalidateCache: false,
             hostURLConfig: undefined,
-            webhookPayloads: undefined,
-            isWebhookPayloadLoading: false,
-            webhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING,
-            showMaterialRegexModal: false,
             filteredCIPipelines: [],
-            isChangeBranchClicked: false,
-            loader: false,
             isSaveLoading: false,
             environmentLists: [],
             appReleaseTags: [],
@@ -136,15 +98,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             isDefaultConfigPresent: false,
             searchImageTag: '',
             resourceFilters: [],
-            runtimeParams: [],
             selectedWebhookNodeId: null,
         }
-        this.refreshMaterial = this.refreshMaterial.bind(this)
-        this.onClickCIMaterial = this.onClickCIMaterial.bind(this)
         this.onClickCDMaterial = this.onClickCDMaterial.bind(this)
-        this.toggleInvalidateCache = this.toggleInvalidateCache.bind(this)
-        this.getMaterialByCommit = this.getMaterialByCommit.bind(this)
-        this.getFilteredMaterial = this.getFilteredMaterial.bind(this)
         this.abortController = new AbortController()
         this.abortCIBuild = new AbortController()
     }
@@ -171,6 +127,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     getEnvironments = () => {
         getEnvironmentListMinPublic()
             .then((response) => {
+                // TODO: There is no loader for this :/
                 const list = []
                 list.push({
                     id: 0,
@@ -209,23 +166,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         )
             .then((result) => {
                 const _filteredCIPipelines = result.filteredCIPipelines || []
-                const wf = result.workflows || []
-                if (this.state.ciNodeId) {
-                    wf.forEach((w) =>
-                        w.nodes.forEach((n) => {
-                            if (+n.id === this.state.ciNodeId) {
-                                this.state.workflows.forEach((sw) =>
-                                    sw.nodes.forEach((sn) => {
-                                        if (+sn.id === this.state.ciNodeId) {
-                                            n.inputMaterialList = sn.inputMaterialList
-                                        }
-                                    }),
-                                )
-                            }
-                        }),
-                    )
-                }
-                this.setState({ workflows: wf, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
+                const workflows = result.workflows || []
+                this.setState({ workflows, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                     this.getWorkflowStatus()
                     if (isFromOnMount) {
                         if (ApprovalMaterialModal) {
@@ -280,23 +222,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             }
                         }
                     }
-                    if (this.props.location.pathname.includes('build')) {
-                        // extracting ciNodeId from URL
-                        const ciNodeId = this.props.location.pathname.match(/build\/(\d+)/)?.[1] ?? null
-                        const ciNode = wf
-                            .flatMap((workflow) => workflow.nodes)
-                            .find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
-                        const pipelineName = ciNode?.title
-
-                        if (!isNaN(+ciNodeId) && !!pipelineName) {
-                            this.onClickCIMaterial(ciNodeId, pipelineName, false)
-                        } else {
-                            ToastManager.showToast({
-                                variant: ToastVariantType.error,
-                                description: 'Invalid Node',
-                            })
-                        }
-                    }
                     this.timerRef && clearInterval(this.timerRef)
                     this.timerRef = setInterval(() => {
                         this.getWorkflowStatus()
@@ -323,270 +248,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             prevProps.filteredEnvIds !== this.props.filteredEnvIds
         ) {
             this.setState({
-                showMaterialRegexModal: false,
                 view: ViewType.LOADING,
             })
             this.getWorkflows()
         }
-    }
-
-    getCommitHistory(
-        ciPipelineMaterialId: number,
-        commitHash: string,
-        workflows: WorkflowType[],
-        _selectedMaterial: CIMaterialType,
-    ) {
-        this.abortController.abort()
-        this.abortController = new AbortController()
-
-        getGitMaterialByCommitHash(ciPipelineMaterialId.toString(), commitHash, this.abortController.signal)
-            .then((response) => {
-                const _result = response.result
-                if (_result) {
-                    _selectedMaterial.history = [
-                        {
-                            commitURL: _selectedMaterial.gitURL
-                                ? createGitCommitUrl(_selectedMaterial.gitURL, _result.Commit)
-                                : '',
-                            commit: _result.Commit || '',
-                            author: _result.Author || '',
-                            date: _result.Date ? handleUTCTime(_result.Date, false) : '',
-                            message: _result.Message || '',
-                            changes: _result.Changes || [],
-                            showChanges: true,
-                            webhookData: _result.WebhookData,
-                            isSelected: !_result.Excluded,
-                            excluded: _result.Excluded,
-                        },
-                    ]
-                    _selectedMaterial.isMaterialLoading = false
-                    _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = _selectedMaterial.history[0].excluded
-                    _selectedMaterial.materialSelectionErrorMsg = _selectedMaterial.history[0].excluded
-                        ? NO_COMMIT_SELECTED
-                        : ''
-                } else {
-                    _selectedMaterial.history = []
-                    _selectedMaterial.noSearchResultsMsg = `Commit not found for ‘${commitHash}’ in branch ‘${_selectedMaterial.value}’`
-                    _selectedMaterial.noSearchResult = true
-                    _selectedMaterial.isMaterialLoading = false
-                    _selectedMaterial.showAllCommits = false
-                    _selectedMaterial.isMaterialSelectionError = true
-                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
-                }
-                this.setState({
-                    workflows,
-                })
-            })
-            .catch((error: ServerErrors) => {
-                if (!getIsRequestAborted(error)) {
-                    showError(error)
-                    _selectedMaterial.isMaterialLoading = false
-                    this.setState({
-                        workflows,
-                    })
-                }
-            })
-    }
-
-    async getMaterialByCommit(
-        ciNodeId: number,
-        ciPipelineMaterialId: number,
-        gitMaterialId: number,
-        commitHash = null,
-    ) {
-        let _selectedMaterial
-        const workflows = [...this.state.workflows].map((workflow) => {
-            workflow.nodes.map((node) => {
-                if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
-                    node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.isSelected) {
-                            material.isMaterialLoading = true
-                            material.searchText = commitHash
-                            material.showAllCommits = false
-                            _selectedMaterial = material
-                        }
-                        return material
-                    })
-                    return node
-                }
-                return node
-            })
-            return workflow
-        })
-        if (commitHash && _selectedMaterial) {
-            const commitInLocalHistory = _selectedMaterial.history.find((material) => material.commit === commitHash)
-            if (commitInLocalHistory) {
-                _selectedMaterial.history = [{ ...commitInLocalHistory, isSelected: !commitInLocalHistory.excluded }]
-                _selectedMaterial.isMaterialLoading = false
-                _selectedMaterial.showAllCommits = false
-                if (commitInLocalHistory.excluded) {
-                    _selectedMaterial.isMaterialSelectionError = true
-                    _selectedMaterial.materialSelectionErrorMsg = NO_COMMIT_SELECTED
-                }
-                this.setState({
-                    workflows,
-                })
-            } else {
-                this.setState(
-                    {
-                        workflows,
-                    },
-                    () => {
-                        this.getCommitHistory(ciPipelineMaterialId, commitHash, workflows, _selectedMaterial)
-                    },
-                )
-            }
-        } else {
-            this.setState(
-                {
-                    workflows,
-                },
-                () => {
-                    this.getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, false)
-                },
-            )
-        }
-    }
-
-    async getFilteredMaterial(ciNodeId: number, gitMaterialId: number, showExcluded: boolean) {
-        const workflows = [...this.state.workflows].map((wf) => {
-            wf.nodes = wf.nodes.map((node) => {
-                if (node.id === ciNodeId.toString() && node.type === 'CI') {
-                    node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.gitMaterialId === gitMaterialId) {
-                            material.isMaterialLoading = true
-                            material.showAllCommits = showExcluded
-                        }
-                        return material
-                    })
-                    return node
-                }
-                return node
-            })
-            return wf
-        })
-        this.setState(
-            {
-                workflows,
-            },
-            () => {
-                this.getMaterialHistoryWrapper(ciNodeId.toString(), gitMaterialId, showExcluded)
-            },
-        )
-    }
-
-    getMaterialHistory(ciNodeId: string, abortSignal: AbortSignal, gitMaterialId?: number, showExcluded?: boolean) {
-        const params = {
-            pipelineId: ciNodeId,
-            materialId: gitMaterialId,
-            showExcluded,
-        }
-        return getCIMaterialList(params, abortSignal).then((response) => {
-            let showRegexModal = false
-            const workflows = [...this.state.workflows].map((workflow) => {
-                workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && node.id == ciNodeId) {
-                        const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
-                        if (selectedCIPipeline?.ciMaterial) {
-                            for (const mat of selectedCIPipeline.ciMaterial) {
-                                if (mat.isRegex && mat.gitMaterialId === response.result[0].gitMaterialId) {
-                                    node.isRegex = !!response.result[0].regex
-                                    if (response.result[0].value) {
-                                        node.branch = response.result[0].value
-                                    } else {
-                                        showRegexModal = !response.result[0].value
-                                    }
-                                    break
-                                }
-                            }
-                        }
-                        node.inputMaterialList = node.inputMaterialList.map((mat) => {
-                            if (mat.id === response.result[0].id) {
-                                return {
-                                    ...response.result[0],
-                                    isSelected: mat.isSelected,
-                                    isMaterialLoading: false,
-                                    searchText: mat.searchText,
-                                    showAllCommits: showExcluded,
-                                }
-                            }
-                            return mat
-                        })
-                    }
-                    return node
-                })
-                return workflow
-            })
-            this.setState(
-                {
-                    workflows,
-                    showMaterialRegexModal: showRegexModal,
-                },
-                () => {
-                    this.getWorkflowStatus()
-                    preventBodyScroll(true)
-                },
-            )
-        })
-    }
-
-    getMaterialHistoryWrapper = (nodeId: string, gitMaterialId: number, showExcluded: boolean) => {
-        this.abortController.abort()
-        this.abortController = new AbortController()
-
-        this.getMaterialHistory(nodeId, this.abortController.signal, gitMaterialId, showExcluded).catch(
-            (errors: ServerErrors) => {
-                if (!getIsRequestAborted(errors)) {
-                    showError(errors)
-                    this.setState({ code: errors.code })
-                }
-            },
-        )
-    }
-
-    // NOTE: GIT MATERIAL ID
-    refreshMaterial(ciNodeId: number, gitMaterialId: number) {
-        let showExcluded = false
-        const workflows = [...this.state.workflows].map((wf) => {
-            wf.nodes = wf.nodes.map((node) => {
-                if (node.id === ciNodeId.toString() && node.type === 'CI') {
-                    node.inputMaterialList = node.inputMaterialList.map((material) => {
-                        if (material.gitMaterialId === gitMaterialId) {
-                            material.isMaterialLoading = true
-                            showExcluded = material.showAllCommits
-                        }
-                        return material
-                    })
-                    return node
-                }
-                return node
-            })
-            return wf
-        })
-        this.setState({ workflows })
-        this.abortController.abort()
-        this.abortController = new AbortController()
-
-        refreshGitMaterial(gitMaterialId.toString(), this.abortController.signal)
-            .then((response) => {
-                this.getMaterialHistory(
-                    ciNodeId.toString(),
-                    this.abortController.signal,
-                    gitMaterialId,
-                    showExcluded,
-                ).catch((errors: ServerErrors) => {
-                    if (!getIsRequestAborted(errors)) {
-                        showError(errors)
-                        this.setState({ code: errors.code })
-                    }
-                })
-            })
-            .catch((error: ServerErrors) => {
-                if (!getIsRequestAborted(error)) {
-                    showError(error)
-                }
-            })
     }
 
     getWorkflowStatus = () => {
@@ -610,141 +275,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    async updateCIMaterialList(
-        ciNodeId: string,
-        ciPipelineName: string,
-        preserveMaterialSelection: boolean,
-        abortSignal: AbortSignal,
-    ) {
-        const params = {
-            appId: this.props.match.params.appId,
-            pipelineId: ciNodeId,
-        }
-        return getCIMaterialList(params, abortSignal).then((response) => {
-            let workflowId
-            const workflows = [...this.state.workflows].map((workflow) => {
-                workflow.nodes.map((node) => {
-                    if (node.type === 'CI' && node.id == ciNodeId) {
-                        const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
-                        if (selectedCIPipeline?.ciMaterial) {
-                            for (const mat of selectedCIPipeline.ciMaterial) {
-                                const gitMaterial = response.result.find(
-                                    (_mat) => _mat.gitMaterialId === mat.gitMaterialId,
-                                )
-                                if (mat.isRegex && gitMaterial) {
-                                    node.branch = gitMaterial.value
-                                    node.isRegex = !!gitMaterial.regex
-                                }
-                            }
-                        }
-                        workflowId = workflow.id
-                        if (preserveMaterialSelection) {
-                            const selectMaterial = node.inputMaterialList.find((mat) => mat.isSelected)
-                            node.inputMaterialList = response.result.map((material) => {
-                                return {
-                                    ...material,
-                                    isSelected: selectMaterial.id === material.id,
-                                }
-                            })
-                        } else {
-                            node.inputMaterialList = response.result
-                        }
-                        return node
-                    }
-                    return node
-                })
-                return workflow
-            })
-
-            let showRegexModal = false
-            const selectedCIPipeline = this.state.filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
-            if (selectedCIPipeline?.ciMaterial) {
-                for (const mat of selectedCIPipeline.ciMaterial) {
-                    showRegexModal = response.result.some((_mat) => {
-                        return _mat.gitMaterialId === mat.gitMaterialId && mat.isRegex && !_mat.value
-                    })
-                    if (showRegexModal) {
-                        break
-                    }
-                }
-            }
-
-            this.setState(
-                {
-                    workflows,
-                    ciNodeId: +ciNodeId,
-                    code: response.code,
-                    ciPipelineName,
-                    materialType: 'inputMaterialList',
-                    showMaterialRegexModal: showRegexModal,
-                    workflowId,
-                },
-                () => {
-                    this.getWorkflowStatus()
-                    preventBodyScroll(true)
-                },
-            )
-        })
-    }
-
-    onClickCIMaterial(ciNodeId: string, ciPipelineName: string, preserveMaterialSelection: boolean) {
-        this.setState({ loader: true, materialType: 'inputMaterialList', webhookPayloads: null })
-        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.MaterialClicked)
-        this.abortController.abort()
-        this.abortController = new AbortController()
-        if (!this.props.location.pathname.includes(URLS.WEBHOOK_MODAL)) {
-            this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
-        }
-
-        Promise.all([
-            this.updateCIMaterialList(ciNodeId, ciPipelineName, preserveMaterialSelection, this.abortController.signal),
-            getCIBlockState && !this.props.isJobView
-                ? getCIBlockState(
-                      ciNodeId,
-                      this.props.match.params.appId,
-                      getBranchValues(ciNodeId, this.state.workflows, this.state.filteredCIPipelines),
-                      this.props.appContext.currentAppName,
-                  )
-                : null,
-            getRuntimeParams?.(ciNodeId) ?? null,
-        ])
-            .then((resp) => {
-                // For updateCIMaterialList, it's already being set inside the same function so not setting that
-                if (resp[1]) {
-                    const workflows = [...this.state.workflows].map((workflow) => {
-                        workflow.nodes.map((node) => {
-                            if (node.type === 'CI' && node.id == ciNodeId) {
-                                node.pluginBlockState = processConsequenceData(resp[1])
-                                node.isTriggerBlocked = resp[1].isCITriggerBlocked
-                                return node
-                            }
-                            return node
-                        })
-
-                        return workflow
-                    })
-
-                    this.setState({
-                        workflows,
-                    })
-                }
-
-                if (resp[2]) {
-                    // Not saving as null since page ViewType is set as Error in case of error
-                    this.setState({
-                        runtimeParams: resp[2] || [],
-                    })
-                }
-            })
-            .catch((errors: ServerErrors) => {
-                if (!getIsRequestAborted(errors)) {
-                    showError(errors)
-                    this.closeCIModal()
-                }
-            })
-            .finally(() => {
-                this.setState({ loader: false })
-            })
+    openCIMaterialModal = (ciNodeId: string) => {
+        // TODO: Check if match.url support fw/bw navigation
+        this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
     }
 
     // TODO: Can also combine rollback and onClickCDMaterial
@@ -833,242 +366,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    onClickTriggerCINode = () => {
-        ReactGA.event(TRIGGER_VIEW_GA_EVENTS.CITriggered)
-        this.setState({ isLoading: true })
-        let node
-        let dockerfileConfiguredGitMaterialId
-        for (let i = 0; i < this.state.workflows.length; i++) {
-            node = this.state.workflows[i].nodes.find((node) => {
-                return node.type === 'CI' && +node.id == this.state.ciNodeId
-            })
-
-            if (node) {
-                dockerfileConfiguredGitMaterialId = this.state.workflows[i].ciConfiguredGitMaterialId
-                break
-            }
-        }
-        const gitMaterials = new Map<number, string[]>()
-        const ciPipelineMaterials = []
-        for (let i = 0; i < node.inputMaterialList.length; i++) {
-            gitMaterials[node.inputMaterialList[i].gitMaterialId] = [
-                node.inputMaterialList[i].gitMaterialName.toLowerCase(),
-                node.inputMaterialList[i].value,
-            ]
-            if (node.inputMaterialList[i]) {
-                if (node.inputMaterialList[i].value === DEFAULT_GIT_BRANCH_VALUE) {
-                    continue
-                }
-
-                const history = node.inputMaterialList[i].history.filter((hstry) => hstry.isSelected)
-                if (!history.length) {
-                    history.push(node.inputMaterialList[i].history[0])
-                }
-
-                history.forEach((element) => {
-                    const historyItem = {
-                        Id: node.inputMaterialList[i].id,
-                        GitCommit: {
-                            Commit: element.commit,
-                        },
-                    }
-                    if (!element.commit) {
-                        historyItem.GitCommit['WebhookData'] = {
-                            id: element.webhookData.id,
-                        }
-                    }
-                    ciPipelineMaterials.push(historyItem)
-                })
-            }
-        }
-        if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
-                    '$GIT_MATERIAL_ID',
-                    `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
-                ),
-            })
-            this.setState({ isLoading: false })
-            return
-        }
-        let envId
-        if (this.state.selectedEnv && this.state.selectedEnv.id !== 0) {
-            envId = this.state.selectedEnv.id
-        }
-
-        // No need to validate here since ciMaterial handles it for trigger view
-        const runtimeParamsPayload = getRuntimeParamsPayload?.(this.state.runtimeParams ?? [])
-
-        const payload = {
-            pipelineId: +this.state.ciNodeId,
-            ciPipelineMaterials,
-            invalidateCache: this.state.invalidateCache,
-            environmentId: envId,
-            pipelineType: node.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
-        }
-
-        this.abortCIBuild = new AbortController()
-        triggerCINode(payload, this.abortCIBuild.signal)
-            .then((response: any) => {
-                if (response.result) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: 'Pipeline Triggered',
-                    })
-                    this.setState(
-                        {
-                            code: response.code,
-                            isLoading: false,
-                            invalidateCache: false,
-                        },
-                        () => {
-                            preventBodyScroll(false)
-                            this.getWorkflowStatus()
-                            if (this.props.isJobView) {
-                                this.getWorkflows()
-                            }
-                        },
-                    )
-                    this.props.history.push(this.props.match.url)
-                }
-            })
-            .catch((errors: ServerErrors) => {
-                if (errors.code === 403) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.notAuthorized,
-                        description: TOAST_ACCESS_DENIED.SUBTITLE,
-                    })
-                } else if (errors instanceof ServerErrors && Array.isArray(errors.errors) && errors.code === 409) {
-                    errors.errors.map((err) =>
-                        ToastManager.showToast({
-                            variant: ToastVariantType.error,
-                            description: err.internalMessage,
-                        }),
-                    )
-                } else {
-                    errors.errors.map((error) => {
-                        if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                            ToastManager.showToast({
-                                variant: ToastVariantType.error,
-                                title: 'Nothing to execute',
-                                description: error.userMessage,
-                                buttonProps: {
-                                    text: 'Edit Pipeline',
-                                    dataTestId: 'edit-pipeline-btn',
-                                    onClick: this.redirectToCIPipeline,
-                                },
-                            })
-                        } else {
-                            showError(errors)
-                        }
-                    })
-                }
-                this.setState({ code: errors.code, isLoading: false })
-            })
-    }
-
-    redirectToCIPipeline = () => {
-        this.props.history.push(
-            getCIPipelineURL(
-                this.props.match.params.appId,
-                this.state.workflowId.toString(),
-                true,
-                this.state.ciNodeId,
-                true,
-                false,
-                false,
-            ),
-        )
-    }
-
-    selectCommit = (materialId: string, hash: string): void => {
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
-                    node.inputMaterialList.map((material) => {
-                        if (material.id == materialId && material.isSelected) {
-                            material.history.map((hist) => {
-                                if (!hist.excluded) {
-                                    if (material.type == SourceTypeMap.WEBHOOK) {
-                                        if (hist?.webhookData && hist.webhookData?.id && hash == hist.webhookData.id) {
-                                            hist.isSelected = true
-                                        } else {
-                                            hist.isSelected = false
-                                        }
-                                    } else {
-                                        hist.isSelected = hash == hist.commit
-                                    }
-                                } else {
-                                    hist.isSelected = false
-                                }
-                            })
-                        }
-                    })
-                    return node
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState({ workflows })
-    }
-
-    selectMaterial = (materialId): void => {
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
-                    node.inputMaterialList = node.inputMaterialList?.map((material) => {
-                        return {
-                            ...material,
-                            searchText: material.searchText || '',
-                            isSelected: material.id == materialId,
-                        }
-                    })
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState({ workflows })
-    }
-
-    toggleChanges = (materialId: string, hash: string): void => {
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (node.type === 'CI' && +node.id == this.state.ciNodeId) {
-                    node.inputMaterialList.map((material) => {
-                        if (material.id == materialId) {
-                            material.history.map((hist) => {
-                                if (hist.commit == hash) {
-                                    hist.showChanges = !hist.showChanges
-                                }
-                            })
-                        }
-                    })
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState({ workflows })
-    }
-
-    toggleInvalidateCache() {
-        this.setState({ invalidateCache: !this.state.invalidateCache })
-    }
-
-    closeCIModal = (): void => {
-        preventBodyScroll(false)
-        this.abortController.abort()
-        this.setState({ showMaterialRegexModal: false })
-        this.props.history.push(this.props.match.url)
-    }
-
     closeCDModal = (e?: React.MouseEvent): void => {
         e?.stopPropagation()
         this.setState({ searchImageTag: '' })
@@ -1089,50 +386,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.getWorkflowStatus()
     }
 
-    onClickWebhookTimeStamp = () => {
-        if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.DESCENDING) {
-            this.setState({ webhookTimeStampOrder: TIME_STAMP_ORDER.ASCENDING })
-        } else if (this.state.webhookTimeStampOrder === TIME_STAMP_ORDER.ASCENDING) {
-            this.setState({ webhookTimeStampOrder: TIME_STAMP_ORDER.DESCENDING })
-        }
-    }
-
-    getWebhookPayload = (id) => {
-        this.setState({ isWebhookPayloadLoading: true })
-        getCIWebhookRes(id, this.state.webhookTimeStampOrder).then((result) => {
-            this.setState({
-                webhookPayloads: result?.result,
-                isWebhookPayloadLoading: false,
-            })
-        })
-    }
-
-    onCloseBranchRegexModal = () => {
-        this.setState({
-            showMaterialRegexModal: false,
-        })
-    }
-
-    onClickShowBranchRegexModal = (isChangedBranch = false) => {
-        this.setState({ showMaterialRegexModal: true, isChangeBranchClicked: isChangedBranch })
-    }
-
-    handleRuntimeParamChange: CIMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
-        this.setState({
-            runtimeParams: updatedRuntimeParams,
-        })
-    }
-
-    setLoader = (isLoader) => {
-        this.setState({
-            loader: isLoader,
-        })
-    }
-
-    setSelectedEnv = (_selectedEnv) => {
-        this.setState({ selectedEnv: _selectedEnv })
-    }
-
     getWebhookDetails = () =>
         getExternalCIConfig(this.props.match.params.appId, this.state.selectedWebhookNodeId, false)
 
@@ -1142,101 +395,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     handleWebhookAddImageModalClose = () => {
         this.setState({ selectedWebhookNodeId: null })
-    }
-
-    getCINode = (): CommonNodeAttr => {
-        let nd: CommonNodeAttr
-        if (this.state.ciNodeId) {
-            const configuredMaterialList = new Map<number, Set<number>>()
-            for (let i = 0; i < this.state.workflows.length; i++) {
-                nd = this.state.workflows[i].nodes.find((node) => +node.id == this.state.ciNodeId && node.type === 'CI')
-                if (nd) {
-                    const gitMaterials = new Map<number, string[]>()
-                    for (const _inputMaterial of nd.inputMaterialList) {
-                        gitMaterials[_inputMaterial.gitMaterialId] = [
-                            _inputMaterial.gitMaterialName.toLowerCase(),
-                            _inputMaterial.value,
-                        ]
-                    }
-                    configuredMaterialList[this.state.workflows[i].name] = new Set<number>()
-                    handleSourceNotConfigured(
-                        configuredMaterialList,
-                        this.state.workflows[i],
-                        nd[this.state.materialType],
-                        !gitMaterials[this.state.workflows[i].ciConfiguredGitMaterialId],
-                    )
-                    break
-                }
-            }
-        }
-        return nd
-    }
-
-    resetAbortController = () => {
-        this.abortCIBuild = new AbortController()
-    }
-
-    renderCIMaterial = () => {
-        if (this.state.ciNodeId) {
-            const nd: CommonNodeAttr = this.getCINode()
-            const material = nd?.[this.state.materialType] || []
-            return (
-                <Switch>
-                    <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId/${URLS.WEBHOOK_MODAL}`}>
-                        <WebhookReceivedPayloadModal
-                            workflowId={this.state.workflowId}
-                            webhookPayloads={this.state.webhookPayloads}
-                            isWebhookPayloadLoading={this.state.isWebhookPayloadLoading}
-                            material={material}
-                            pipelineId={this.state.ciNodeId.toString()}
-                            title={this.state.ciPipelineName}
-                            isJobView={this.props.isJobView}
-                            getWebhookPayload={this.getWebhookPayload}
-                            appId={this.props.match.params.appId}
-                        />
-                    </Route>
-                    <Route exact path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`}>
-                        <CIMaterialModal
-                            workflowId={this.state.workflowId}
-                            history={this.props.history}
-                            location={this.props.location}
-                            match={this.props.match}
-                            material={material}
-                            pipelineName={this.state.ciPipelineName}
-                            isLoading={this.state.isLoading}
-                            title={this.state.ciPipelineName}
-                            pipelineId={this.state.ciNodeId.toString()}
-                            getWebhookPayload={this.getWebhookPayload}
-                            onClickWebhookTimeStamp={this.onClickWebhookTimeStamp}
-                            showMaterialRegexModal={this.state.showMaterialRegexModal}
-                            onCloseBranchRegexModal={this.onCloseBranchRegexModal}
-                            filteredCIPipelines={this.state.filteredCIPipelines}
-                            onClickShowBranchRegexModal={this.onClickShowBranchRegexModal}
-                            isChangeBranchClicked={this.state.isChangeBranchClicked}
-                            getWorkflows={this.getWorkflows}
-                            loader={this.state.loader}
-                            setLoader={this.setLoader}
-                            isFirstTrigger={nd?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED}
-                            isCacheAvailable={nd?.storageConfigured}
-                            appId={this.props.match.params.appId}
-                            isJobView={this.props.isJobView}
-                            isCITriggerBlocked={nd?.isTriggerBlocked}
-                            ciBlockState={nd?.pluginBlockState}
-                            selectedEnv={this.state.selectedEnv}
-                            setSelectedEnv={this.setSelectedEnv}
-                            environmentLists={this.state.environmentLists}
-                            isJobCI={!!nd?.isJobCI}
-                            runtimeParams={this.state.runtimeParams}
-                            handleRuntimeParamChange={this.handleRuntimeParamChange}
-                            closeCIModal={this.closeCIModal}
-                            abortController={this.abortCIBuild}
-                            resetAbortController={this.resetAbortController}
-                        />
-                    </Route>
-                </Switch>
-            )
-        }
-        return null
     }
 
     getCDNode = (): CommonNodeAttr => {
@@ -1371,7 +529,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         return null
     }
 
-    handleModalClose = () => {
+    revertToPreviousURL = () => {
         this.props.history.push(this.props.match.url)
     }
 
@@ -1399,10 +557,11 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                             environmentLists={this.state.environmentLists}
                             appId={+this.props.match.params.appId}
                             handleWebhookAddImageClick={this.handleWebhookAddImageClick}
+                            openCIMaterialModal={this.openCIMaterialModal}
                         />
                     )
                 })}
-                <LinkedCIDetail workflows={this.state.workflows} handleClose={this.handleModalClose} />
+                <LinkedCIDetail workflows={this.state.workflows} handleClose={this.revertToPreviousURL} />
                 {this.renderWebhookAddImageModal()}
             </>
         )
@@ -1463,25 +622,28 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 <div className="bg__primary py-16 px-20 dc__overflow-auto">
                     <TriggerViewContext.Provider
                         value={{
-                            invalidateCache: this.state.invalidateCache,
-                            refreshMaterial: this.refreshMaterial,
-                            onClickTriggerCINode: this.onClickTriggerCINode,
-                            onClickCIMaterial: this.onClickCIMaterial,
                             onClickCDMaterial: this.onClickCDMaterial,
                             onClickRollbackMaterial: this.onClickRollbackMaterial,
-                            closeCIModal: this.closeCIModal,
-                            selectCommit: this.selectCommit,
-                            selectMaterial: this.selectMaterial,
-                            toggleChanges: this.toggleChanges,
-                            toggleInvalidateCache: this.toggleInvalidateCache,
-                            getMaterialByCommit: this.getMaterialByCommit,
-                            getFilteredMaterial: this.getFilteredMaterial,
                             reloadTriggerView: this.reloadTriggerView,
                         }}
                     >
                         {this.renderHostErrorMessage()}
                         {this.renderWorkflow()}
-                        {this.renderCIMaterial()}
+
+                        <Switch>
+                            <Route path={`${this.props.match.url}${URLS.BUILD}/:ciNodeId`} exact>
+                                <BuildImageModal
+                                    handleClose={this.revertToPreviousURL}
+                                    isJobView={this.props.isJobView}
+                                    filteredCIPipelines={this.state.filteredCIPipelines}
+                                    workflows={this.state.workflows}
+                                    reloadWorkflows={this.getWorkflows}
+                                    appId={+this.props.match.params.appId}
+                                    environmentLists={this.state.environmentLists}
+                                />
+                            </Route>
+                        </Switch>
+
                         {this.renderCDMaterial()}
                         {this.renderApprovalMaterial()}
                     </TriggerViewContext.Provider>
