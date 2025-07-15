@@ -71,7 +71,6 @@ const BuildImageModal = ({
     filteredCIPipelines,
     workflows,
     reloadWorkflows,
-    // updateWorkflows,
     appId,
     environmentLists,
 }: BuildImageModalProps) => {
@@ -80,7 +79,7 @@ const BuildImageModal = ({
     const materialListAbortControllerRef = useRef<AbortController>(new AbortController())
 
     const [showRegexBranchChangeModal, setShowRegexBranchChangeModal] = useState<boolean>(false)
-    const [selectedEnv, setSelectedEnv] = useState<BuildImageModalProps['environmentLists'][number] | null>(null)
+    const [selectedEnv, setSelectedEnv] = useState<GitInfoMaterialProps['selectedEnv'] | null>(null)
     const [invalidateCache, setInvalidateCache] = useState<boolean>(false)
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<
         GitInfoMaterialProps['runtimeParamsErrorState']
@@ -122,17 +121,20 @@ const BuildImageModal = ({
         return materialList
     }
 
-    const [areRuntimeParamsLoading, runtimeParams, runtimeParamsError, reloadRuntimeParams] = useAsync(
-        () => getRuntimeParams(ciNodeId, true),
-        [ciNodeId],
-        !!ciNodeId && !!getRuntimeParams,
-    )
+    const [areRuntimeParamsLoading, runtimeParams, runtimeParamsError, reloadRuntimeParams, setRuntimeParams] =
+        useAsync<GitInfoMaterialProps['runtimeParams']>(
+            () => getRuntimeParams(ciNodeId, true),
+            [ciNodeId],
+            !!ciNodeId && !!getRuntimeParams,
+        )
 
-    const [isMaterialListLoading, materialList, materialListError, reloadMaterialList, setMaterialList] = useAsync(
+    const [isMaterialListLoading, _materialList, materialListError, reloadMaterialList, setMaterialList] = useAsync(
         getMaterialList,
         [ciNodeId, appId],
         !!ciNodeId && !!appId,
     )
+
+    const materialList = _materialList || []
 
     const [isLoadingBlobStorageModule, blobStorageModuleRes, , reloadBlobStorageModule] = useAsync(() =>
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
@@ -166,6 +168,10 @@ const BuildImageModal = ({
         setShowRegexBranchChangeModal(false)
     }
 
+    const handleShowRegexBranchChangeModal = () => {
+        setShowRegexBranchChangeModal(true)
+    }
+
     const toggleInvalidateCache = () => {
         setInvalidateCache((prev) => !prev)
     }
@@ -190,7 +196,9 @@ const BuildImageModal = ({
         return {}
     }
 
-    const handleRuntimeParamError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
+    const handleRuntimeParamError: GitInfoMaterialProps['handleRuntimeParamError'] = (
+        updatedRuntimeParamsErrorState,
+    ) => {
         setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
     }
 
@@ -203,6 +211,10 @@ const BuildImageModal = ({
 
     const handleWebhookModalBack = () => {
         setShowWebhookModal(false)
+    }
+
+    const handleDisplayWebhookModal = () => {
+        setShowWebhookModal(true)
     }
 
     const onClickTriggerCINode = () => {
@@ -314,6 +326,10 @@ const BuildImageModal = ({
             })
     }
 
+    const handleRuntimeParamChange: GitInfoMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
+        setRuntimeParams(updatedRuntimeParams)
+    }
+
     const handleStartBuildAction = (e: SyntheticEvent) => {
         const runtimeParamsUpdatedErrorState = validateRuntimeParameters(runtimeParams)
         handleRuntimeParamError(runtimeParamsUpdatedErrorState)
@@ -406,7 +422,8 @@ const BuildImageModal = ({
         if (!isBlobStorageConfigured) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-8">
-                    <Icon name="ic-storage" color={null} size={24} />
+                    {/* FIXME: Why is this not picking up :/ */}
+                    {/* <Icon name="ic-storage" color={null} size={24} /> */}
                     <div>
                         <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
                         <div className="fw-4 fs-12 flexbox">
@@ -470,16 +487,22 @@ const BuildImageModal = ({
             errorScreenManagerProps={getErrorScreenManagerProps()}
         >
             {/* TODO: Add prompt for unsaved changes */}
+            {/* TODO: Check by changing ciNodeId to `abc` */}
             <GitInfoMaterial
-                isCITriggerBlocked={ciNode?.isTriggerBlocked}
                 appId={appId}
                 workflow={selectedWorkflow}
                 isJobView={isJobView}
-                ciNodeId={+ciNodeId}
                 setMaterialList={setMaterialList}
-                runtimeParamsErrorState={runtimeParamsErrorState}
                 materialList={materialList}
                 showWebhookModal={showWebhookModal}
+                reloadCompleteMaterialList={reloadMaterialList}
+                onClickShowBranchRegexModal={handleShowRegexBranchChangeModal}
+                runtimeParams={runtimeParams}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                handleRuntimeParamChange={handleRuntimeParamChange}
+                handleRuntimeParamError={handleRuntimeParamError}
+                selectedEnv={selectedEnv}
+                handleDisplayWebhookModal={handleDisplayWebhookModal}
             />
         </APIResponseHandler>
     )
@@ -506,13 +529,13 @@ const BuildImageModal = ({
                                         onClick={handleWebhookModalBack}
                                     />
 
-                                    <h2 className="m-0 fs-16 fw-6 lh-24 cn-9">
-                                        <span className="dc__truncate">{ciNode?.title}</span>
+                                    <h2 className="m-0 fs-16 fw-6 lh-24 cn-9 flexbox">
+                                        <span className="dc__truncate dc__mxw-250">{ciNode?.title}</span>
                                         <span className="fs-16">&nbsp;/ All received webhooks </span>
                                     </h2>
                                 </div>
                             ) : (
-                                <h2 className="m-0 fs-16 fw-6 lh-24 cn-9">
+                                <h2 className="m-0 fs-16 fw-6 lh-24 cn-9 dc__truncate">
                                     {isJobView ? 'Pipeline:' : 'Build Pipeline:'} {ciNode?.title}
                                 </h2>
                             )}
@@ -529,7 +552,7 @@ const BuildImageModal = ({
                             />
                         </div>
 
-                        <div className="flexbox flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
+                        <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
 
                     {ciNode?.isTriggerBlocked || showWebhookModal ? null : (
@@ -550,6 +573,7 @@ const BuildImageModal = ({
                     onCloseBranchRegexModal={handleCloseBranchRegexModal}
                     appId={appId}
                     workflowId={workflowId}
+                    // This will ensure ciTriggerDetails are also updated
                     handleReload={handleReloadWithWorkflows}
                 />
             )}

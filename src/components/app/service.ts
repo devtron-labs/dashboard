@@ -30,6 +30,7 @@ import {
     PromiseAllStatusType,
     ApiQueuingWithBatch,
     APIOptions,
+    CIMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
@@ -196,7 +197,7 @@ const processMaterialHistoryAndSelectionError = (material) => {
     return data
 }
 
-const processCIMaterialResponse = (response) => {
+const processCIMaterialResponse = (response): CIMaterialType[] => {
     if (Array.isArray(response?.result)) {
         const sortedCIMaterials = response.result.sort((a, b) => sortCallback('id', a, b))
         return sortedCIMaterials.map((material, index) => {
@@ -208,14 +209,19 @@ const processCIMaterialResponse = (response) => {
                 isMaterialLoading: false,
                 showAllCommits: false,
                 ...processMaterialHistoryAndSelectionError(material),
-            }
+            } satisfies CIMaterialType
         })
     }
 
     return []
 }
 
-export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
+// TODO: Make it ref for abortSignal
+export const getCIMaterialList = (params: {
+    pipelineId: string,
+    materialId?: number,
+    showExcluded?: boolean,
+}, abortSignal: AbortSignal) => {
     let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
     if (params.materialId) {
         url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
