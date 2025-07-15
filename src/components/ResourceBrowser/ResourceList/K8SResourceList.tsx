@@ -21,6 +21,7 @@ import {
     abortPreviousRequests,
     ErrorScreenManager,
     FiltersTypeEnum,
+    GenericFilterEmptyState,
     getAIAnalyticsEvents,
     getIsRequestAborted,
     LARGE_PAGE_SIZE_OPTIONS,
@@ -124,7 +125,11 @@ export const K8SResourceList = ({
     const { clusterId } = useParams<K8sResourceListURLParams>()
 
     // STATES
-    const { selectedNamespace = 'all', ...filters } = useUrlFilters<string, K8sResourceListFilterType>({
+    const {
+        selectedNamespace = 'all',
+        clearFilters,
+        ...filters
+    } = useUrlFilters<string, K8sResourceListFilterType>({
         parseSearchParams: parseK8sResourceListSearchParams,
     })
 
@@ -181,11 +186,13 @@ export const K8SResourceList = ({
                 (header) =>
                     ({
                         field: isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[header] : header,
-                        label: header === 'type' && isEventListing ? '' : header,
+                        label: (header === 'type' || header === 'explainButton') && isEventListing ? '' : header,
                         size: getColumnSize(header, isEventListing),
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
-                        isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
+                        isSortable:
+                            !isEventListing ||
+                            (header !== 'message' && header !== 'type' && header !== 'explainButton'),
                         horizontallySticky:
                             header === 'name' || (isEventListing && (header === 'message' || header === 'type')),
                     }) as TableColumnType,
@@ -241,11 +248,18 @@ export const K8SResourceList = ({
     if (resourceListError && !isResourceListLoadingWithoutNullState) {
         return (
             <div className="flexbox-col flex-grow-1 border__primary--left">
-                <ErrorScreenManager
-                    code={(resourceListError as ServerErrors).code}
-                    reload={reloadResourceList}
-                    redirectURL={URLS.RESOURCE_BROWSER}
-                />
+                {filters.areFiltersApplied ? (
+                    <GenericFilterEmptyState
+                        title={`No ${selectedResource?.gvk.Kind ?? 'Resource'} found`}
+                        handleClearFilters={clearFilters}
+                    />
+                ) : (
+                    <ErrorScreenManager
+                        code={(resourceListError as ServerErrors).code}
+                        reload={reloadResourceList}
+                        redirectURL={URLS.RESOURCE_BROWSER}
+                    />
+                )}
             </div>
         )
     }

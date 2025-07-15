@@ -7,15 +7,33 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     DOCUMENTATION,
+    GenericEmptyState,
     getUniqueId,
     Icon,
     ProgressBar,
     SidePanelTab,
+    useIsSecureConnection,
     useMainContext,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import ImgPageBlocked from '@Images/img-page-blocked.webp'
+
 import { SidePanelContentBaseProps } from './types'
+
+const renderButton = (docLink: string) => () => (
+    <Button
+        dataTestId="open-in-new-tab-button"
+        endIcon={<Icon name="ic-arrow-square-out" color={null} />}
+        variant={ButtonVariantType.text}
+        size={ComponentSizeType.medium}
+        component={ButtonComponentType.anchor}
+        text="Open in new tab"
+        anchorProps={{
+            href: docLink,
+        }}
+    />
+)
 
 export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelContentBaseProps) => {
     // HOOKS
@@ -24,8 +42,9 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
         sidePanelConfig: { state, docLink: sidePanelDocLink, reinitialize },
         setSidePanelConfig,
     } = useMainContext()
+    const isSecureConnection = useIsSecureConnection()
 
-    const [isLoading, setIsLoading] = useState(true)
+    const [isLoading, setIsLoading] = useState(isSecureConnection)
 
     const docLink = sidePanelDocLink ?? DOCUMENTATION.DOC_HOME_PAGE
 
@@ -74,19 +93,29 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
             <div className="flex-grow-1 dc__position-rel">
                 <ProgressBar isLoading={isLoading} />
 
-                {iframeSrc && (
-                    <iframe
-                        key={iframeKeyRef.current}
-                        ref={iframeRef}
-                        title="side-panel-documentation"
-                        loading="lazy"
-                        className="dc__no-border"
-                        src={iframeSrc}
-                        width="100%"
-                        height="100%"
-                        allow="clipboard-read; clipboard-write"
-                        referrerPolicy="strict-origin-when-cross-origin"
-                        onLoad={onLoad}
+                {isSecureConnection ? (
+                    iframeSrc && (
+                        <iframe
+                            key={iframeKeyRef.current}
+                            ref={iframeRef}
+                            title="side-panel-documentation"
+                            loading="lazy"
+                            className="dc__no-border"
+                            src={iframeSrc}
+                            width="100%"
+                            height="100%"
+                            allow="clipboard-read; clipboard-write"
+                            referrerPolicy="strict-origin-when-cross-origin"
+                            onLoad={onLoad}
+                        />
+                    )
+                ) : (
+                    <GenericEmptyState
+                        title="Unable to load docs"
+                        subTitle="Your Devtron setup isn’t secure, so the documentation can’t be displayed here."
+                        image={ImgPageBlocked}
+                        isButtonAvailable
+                        renderButton={renderButton(docLink)}
                     />
                 )}
             </div>
