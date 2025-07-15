@@ -92,7 +92,7 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
+    extends Pick<TableViewWrapperProps<unknown, FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
         Partial<Pick<K8sResourceListFilterType, 'eventType'>> {
     selectedResource: ApiResourceGroupType
     selectedCluster?: ClusterOptionType
@@ -257,8 +257,11 @@ export interface NodeRowDetail {
 }
 
 export interface NodeListSearchFilterType
-    extends Pick<TableViewWrapperProps, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {
-    searchParams: Record<string, string>
+    extends Pick<
+        TableViewWrapperProps<unknown, FiltersTypeEnum.URL>,
+        'visibleColumns' | 'setVisibleColumns' | 'allColumns'
+    > {
+    searchParams: Record<string, any>
 }
 
 export enum NODE_SEARCH_KEYS {

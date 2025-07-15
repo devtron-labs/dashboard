@@ -36,11 +36,14 @@ import {
     getClusterListMinWithInstalledClusters,
     getClusterListWithInstalledClusters,
 } from '@Components/ClusterNodes/clusterNodes.service'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { Routes } from '../../config'
 import { SIDEBAR_KEYS } from './Constants'
 import { ClusterDetailBaseParams, GetResourceDataType, NodeRowDetail } from './Types'
 import { parseNodeList, removeDefaultForStorageClass } from './Utils'
+
+const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 export const namespaceListByClusterId = async (clusterId: string) => {
     const response = await get<string[]>(`${Routes.CLUSTER_NAMESPACE}/${clusterId}`)
@@ -136,8 +139,11 @@ export const getResourceData = async ({
                 ? removeDefaultForStorageClass(response.result.data)
                 : response.result.data
 
+        const isEventList = selectedResource.gvk.Kind === Nodes.Event
+
         return {
             ...response.result,
+            headers: [...response.result.headers, ...(isEventList && ExplainWithAIButton ? ['explainButton'] : [])],
             data: data.map((entry, index) => ({
                 ...entry,
                 id: `${idPrefix}${index}`,

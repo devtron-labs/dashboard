@@ -16,8 +16,6 @@
 
 import { AppConfigProps, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { TokenListType } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
-
 export interface WebhookDetailType extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     close: () => void
 }
@@ -25,12 +23,6 @@ export interface WebhookDetailType extends Required<Pick<AppConfigProps, 'isTemp
 export interface TabDetailsType {
     key: string
     value: string
-}
-
-export interface TokenListOptionsType extends TokenListType {
-    label: string
-    value: string
-    description: string
 }
 
 export interface TokenPermissionType {

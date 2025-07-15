@@ -21,16 +21,16 @@ import {
     abortPreviousRequests,
     ErrorScreenManager,
     FiltersTypeEnum,
+    GenericFilterEmptyState,
     getAIAnalyticsEvents,
     getIsRequestAborted,
+    K8sResourceDetailDataType,
     LARGE_PAGE_SIZE_OPTIONS,
     Nodes,
     PaginationEnum,
     SelectAllDialogStatus,
     ServerErrors,
     Table,
-    TableColumnType,
-    TableProps,
     URLS,
     useAsync,
     useUrlFilters,
@@ -50,7 +50,13 @@ import { K8SResourceListType } from '../Types'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
 import NodeListSearchFilter from './NodeListSearchFilter'
 import ResourceFilterOptions from './ResourceFilterOptions'
-import { K8sResourceListFilterType, K8sResourceListURLParams, K8SResourceListViewWrapperProps } from './types'
+import {
+    K8sResourceListFilterType,
+    K8sResourceListTableAdditionalProps,
+    K8sResourceListTableProps,
+    K8sResourceListURLParams,
+    K8SResourceListViewWrapperProps,
+} from './types'
 import {
     getColumnComparator,
     getColumnSize,
@@ -90,7 +96,7 @@ const K8SResourceListViewWrapper = ({
                 visibleColumns={visibleColumns}
                 setVisibleColumns={setVisibleColumns}
                 allColumns={allColumns}
-                searchParams={restProps as Record<string, string>}
+                searchParams={restProps}
             />
         ) : (
             <ResourceFilterOptions
@@ -124,7 +130,11 @@ export const K8SResourceList = ({
     const { clusterId } = useParams<K8sResourceListURLParams>()
 
     // STATES
-    const { selectedNamespace = 'all', ...filters } = useUrlFilters<string, K8sResourceListFilterType>({
+    const {
+        selectedNamespace = 'all',
+        clearFilters,
+        ...filters
+    } = useUrlFilters<string, K8sResourceListFilterType>({
         parseSearchParams: parseK8sResourceListSearchParams,
     })
 
@@ -175,37 +185,39 @@ export const K8SResourceList = ({
         updateK8sResourceTab({ url: `${location.pathname}${location.search}` })
     }, [location.pathname, location.search])
 
-    const columns: TableColumnType[] = useMemo(
+    const columns: K8sResourceListTableProps['columns'] = useMemo(
         () =>
             resourceList?.headers.map(
                 (header) =>
                     ({
                         field: isNodeListing ? NODE_LIST_HEADERS_TO_KEY_MAP[header] : header,
-                        label: header === 'type' && isEventListing ? '' : header,
+                        label: (header === 'type' || header === 'explainButton') && isEventListing ? '' : header,
                         size: getColumnSize(header, isEventListing),
                         CellComponent: K8sResourceListTableCellComponent,
                         comparator: getColumnComparator(header, isEventListing),
-                        isSortable: !isEventListing || (header !== 'message' && header !== 'type'),
+                        isSortable:
+                            !isEventListing ||
+                            (header !== 'message' && header !== 'type' && header !== 'explainButton'),
                         horizontallySticky:
                             header === 'name' || (isEventListing && (header === 'message' || header === 'type')),
-                    }) as TableColumnType,
+                    }) as K8sResourceListTableProps['columns'][0],
             ) ?? [],
         [resourceList?.headers],
     )
 
-    const rows: TableProps['rows'] = useMemo(
+    const rows: K8sResourceListTableProps['rows'] = useMemo(
         () =>
             resourceList?.data.map((row) => {
                 const { id, ...rest } = row
                 return {
                     data: rest,
                     id,
-                } as TableProps['rows'][number]
+                } as K8sResourceListTableProps['rows'][number]
             }) ?? null,
         [resourceList?.data],
     )
 
-    const tableFilter: TableProps['filter'] = (row, filterData) => {
+    const tableFilter: K8sResourceListTableProps['filter'] = (row, filterData) => {
         if (isNodeListing) {
             return isItemASearchMatchForNodeListing(row.data, filterData)
         }
@@ -241,18 +253,25 @@ export const K8SResourceList = ({
     if (resourceListError && !isResourceListLoadingWithoutNullState) {
         return (
             <div className="flexbox-col flex-grow-1 border__primary--left">
-                <ErrorScreenManager
-                    code={(resourceListError as ServerErrors).code}
-                    reload={reloadResourceList}
-                    redirectURL={URLS.RESOURCE_BROWSER}
-                />
+                {filters.areFiltersApplied ? (
+                    <GenericFilterEmptyState
+                        title={`No ${selectedResource?.gvk.Kind ?? 'Resource'} found`}
+                        handleClearFilters={clearFilters}
+                    />
+                ) : (
+                    <ErrorScreenManager
+                        code={(resourceListError as ServerErrors).code}
+                        reload={reloadResourceList}
+                        redirectURL={URLS.RESOURCE_BROWSER}
+                    />
+                )}
             </div>
         )
     }
 
     return (
         <>
-            <Table
+            <Table<K8sResourceDetailDataType, FiltersTypeEnum.URL, K8sResourceListTableAdditionalProps>
                 loading={isResourceListLoading}
                 columns={columns}
                 rows={rows}

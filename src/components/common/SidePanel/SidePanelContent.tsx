@@ -21,37 +21,36 @@ import { SidePanelHeaderActions } from './SidePanelHeaderActions'
 import { SidePanelContentProps } from './types'
 import { getContentWrapperClassNameForTab, renderOpenTicketButton } from './utils'
 
-const AIChat = importComponentFromFELibrary(
-    'AIChat',
-    () => (
-        <EnterpriseTrialDialog
-            featureTitle="Ask Devtron Intelligence"
-            featureDescription="Supercharge your troubleshooting! Instantly ask AI about your application or Kubernetes issues and get expert guidance at your fingertips."
-            showBorder={false}
-        />
-    ),
-    'function',
-)
+const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 
 export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig }: SidePanelContentProps) => {
     const tab = sidePanelConfig.state as SidePanelTab
 
     const renderAIChat = () => {
-        // NOTE: even if flag is off, for oss clients need to show EnterpriseTrialDialog
-        if (!AIChat || window._env_?.FEATURE_ASK_DEVTRON_EXPERT) {
-            return <AIChat SidePanelHeaderActions={SidePanelHeaderActions} />
+        if (!AIChat) {
+            return (
+                <EnterpriseTrialDialog
+                    featureTitle="Ask Devtron Intelligence"
+                    featureDescription="Supercharge your troubleshooting! Instantly ask AI about your application or Kubernetes issues and get expert guidance at your fingertips."
+                    showBorder={false}
+                />
+            )
         }
 
-        return (
-            <GenericEmptyState
-                title="AI Integration not configured"
-                subTitle="For AI-powered insights, please follow documentation or contact the Devtron team."
-                SvgImage={ICMaintenance}
-                imageType={ImageType.Medium}
-                isButtonAvailable
-                renderButton={renderOpenTicketButton}
-            />
-        )
+        if (!window._env_?.FEATURE_ASK_DEVTRON_EXPERT) {
+            return (
+                <GenericEmptyState
+                    title="AI Integration not configured"
+                    subTitle="For AI-powered insights, please follow documentation or contact the Devtron team."
+                    SvgImage={ICMaintenance}
+                    imageType={ImageType.Medium}
+                    isButtonAvailable
+                    renderButton={renderOpenTicketButton}
+                />
+            )
+        }
+
+        return <AIChat SidePanelHeaderActions={SidePanelHeaderActions} />
     }
 
     return (
