@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
     Checkbox,
@@ -27,6 +27,7 @@ import {
     NodeTaintType,
     noop,
     OptionType,
+    RESOURCE_BROWSER_ROUTES,
     ResponseType,
     SelectPickerOptionType,
     ServerErrors,
@@ -35,6 +36,7 @@ import {
     TabProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ResourceBrowserTabsId } from '@Components/ResourceBrowser/Constants'
 import { K8sResourceListURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 import { getClusterTerminalParamsData } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 
@@ -84,7 +86,7 @@ const ClusterTerminal = ({
     clusterImageList,
     namespaceList = [],
     taints,
-    updateTerminalTabUrl,
+    updateTabUrl,
 }: ClusterTerminalType) => {
     const { kind } = useParams<K8sResourceListURLParams>()
     const { replace } = useHistory()
@@ -182,7 +184,10 @@ const ClusterTerminal = ({
         queryParams.set('namespace', selectedNamespace.value)
         queryParams.set('shell', selectedTerminalType.value)
         queryParams.set('node', selectedNodeName.value)
-        updateTerminalTabUrl(queryParams.toString())
+        updateTabUrl({
+            id: ResourceBrowserTabsId.terminal,
+            url: `${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`,
+        })
         if (kind === AppDetailsTabs.terminal) {
             replace({ search: queryParams.toString() })
         }

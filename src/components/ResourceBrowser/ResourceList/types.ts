@@ -15,9 +15,11 @@
  */
 
 import {
+    ApiResourceType,
     BaseRecentlyVisitedEntitiesTypes,
     FiltersTypeEnum,
     K8sResourceDetailDataType,
+    ResponseType,
     ServerErrors,
     TableCellComponentProps,
     TableProps,
@@ -172,3 +174,8 @@ export interface ResourceRecommenderTableViewWrapperProps
             reloadResourceListData: () => void
         }
     > {}
+
+export interface ResourceListProps {
+    selectedCluster: ClusterOptionType
+    k8SObjectMapRaw: ResponseType<ApiResourceType>
+}
