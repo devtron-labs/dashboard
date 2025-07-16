@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { TabDetailsType, TokenListOptionsType } from './types'
-import { TokenListType } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
+import { TabDetailsType } from './types'
 
 export const TOKEN_TAB_LIST: TabDetailsType[] = [
     { key: 'selectToken', value: 'Select API token' },
