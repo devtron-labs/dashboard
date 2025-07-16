@@ -34,10 +34,6 @@ export interface OptionTypeWithIcon {
     openInNewTab?: boolean
 }
 
-export interface ExpandedExternalLink extends OptionTypeWithIcon {
-    externalLinkURL: string
-}
-
 export interface IdentifierOptionType {
     label: string
     value: string
