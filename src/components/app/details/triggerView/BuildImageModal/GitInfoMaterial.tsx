@@ -9,7 +9,9 @@ import {
     CiPipelineSourceConfig,
     ComponentSizeType,
     ConditionalWrap,
+    createGitCommitUrl,
     getHandleOpenURL,
+    handleUTCTime,
     Icon,
     MaterialHistory,
     SearchBar,
@@ -20,7 +22,7 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCIMaterialList, refreshGitMaterial } from '@Components/app/service'
+import { getCIMaterialList, getGitMaterialByCommitHash, refreshGitMaterial } from '@Components/app/service'
 import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
 import { NO_COMMIT_SELECTED } from '@Config/constants'
 
@@ -106,9 +108,12 @@ const GitInfoMaterial = ({
             null,
         )
 
+        if (!newSelectedMaterialItem.result.length) {
+            throw new Error('Unable to fetch material details')
+        }
+
         setMaterialList((prevMaterialList) =>
             prevMaterialList.map((material) => {
-                // TODO: Check when newSelectedMaterialItem.result[0] is null
                 if (material.id === updatedMaterial.id) {
                     return {
                         ...newSelectedMaterialItem.result[0],
@@ -121,6 +126,67 @@ const GitInfoMaterial = ({
                 return material
             }),
         )
+    }
+
+    const updateGitCommitHistory = async (commitHash: string) => {
+        const updatedMaterial: typeof selectedMaterial = {
+            ...selectedMaterial,
+            isMaterialLoading: true,
+            searchText: commitHash,
+        }
+
+        setMaterialList((prevMaterialList) =>
+            prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
+        )
+
+        try {
+            const { result: commitHistoryResult } = await getGitMaterialByCommitHash(ciNodeId, commitHash)
+
+            updatedMaterial.history = [
+                {
+                    commitURL: updatedMaterial.gitURL
+                        ? createGitCommitUrl(updatedMaterial.gitURL, commitHistoryResult.Commit)
+                        : '',
+                    commit: commitHistoryResult.Commit || '',
+                    author: commitHistoryResult.Author || '',
+                    date: commitHistoryResult.Date ? handleUTCTime(commitHistoryResult.Date, false) : '',
+                    message: commitHistoryResult.Message || '',
+                    changes: commitHistoryResult.Changes || [],
+                    showChanges: true,
+                    webhookData: commitHistoryResult.WebhookData,
+                    isSelected: !commitHistoryResult.Excluded,
+                    excluded: commitHistoryResult.Excluded,
+                },
+            ]
+
+            updatedMaterial.isMaterialLoading = false
+            updatedMaterial.showAllCommits = false
+            updatedMaterial.isMaterialSelectionError = updatedMaterial.history[0].excluded
+            updatedMaterial.materialSelectionErrorMsg = updatedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+
+            setMaterialList((prevMaterialList) =>
+                prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
+            )
+        } catch (error) {
+            showError(error)
+
+            setMaterialList((prevMaterialList) =>
+                prevMaterialList.map((material) =>
+                    material.id === updatedMaterial.id
+                        ? {
+                              ...material,
+                              isMaterialLoading: false,
+                              history: [],
+                              noSearchResultsMsg: `Commit not found for ‘${commitHash}’ in branch ‘${updatedMaterial.value}’`,
+                              noSearchResult: true,
+                              showAllCommits: false,
+                              isMaterialSelectionError: true,
+                              materialSelectionErrorMsg: NO_COMMIT_SELECTED,
+                          }
+                        : material,
+                ),
+            )
+        }
     }
 
     const handleSearchApply = async (commitHash: string) => {
@@ -148,6 +214,8 @@ const GitInfoMaterial = ({
                         material.id === updatedSelectedMaterial.id ? updatedSelectedMaterial : material,
                     ),
                 )
+            } else {
+                await updateGitCommitHistory(commitHash)
             }
         } else {
             // Won't update searchText here, will be set to empty on success
@@ -520,7 +588,7 @@ const GitInfoMaterial = ({
         }
 
         return (
-            <div className="dc__grid git-info-material__container w-100">
+            <div className="dc__grid git-info-material__container w-100 h-100 dc__overflow-auto">
                 <TriggerBuildSidebar
                     ciNodeId={+ciNodeId}
                     currentSidebarTab={currentSidebarTab}

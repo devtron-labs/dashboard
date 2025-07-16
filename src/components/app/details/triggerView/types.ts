@@ -378,15 +378,25 @@ export interface TriggerViewState {
     selectedWebhookNodeId: number
 }
 
-export interface BuildImageModalProps
-    extends Pick<TriggerViewState, 'filteredCIPipelines'>,
-        Pick<WorkflowProps, 'isJobView'> {
+export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
     handleClose: () => void
     reloadWorkflows: () => void
     workflows: WorkflowType[]
-    appId: number
+    /**
+     * If not present would extract from selected workflow
+     */
+    appId?: number
     environmentLists: EnvironmentWithSelectPickerType[]
-}
+} & (
+        | {
+              filteredCIPipelines: TriggerViewState['filteredCIPipelines']
+              filteredCIPipelineMap?: never
+          }
+        | {
+              filteredCIPipelineMap: Map<string, TriggerViewState['filteredCIPipelines']>
+              filteredCIPipelines?: never
+          }
+    )
 
 // -- begining of response type objects for trigger view
 

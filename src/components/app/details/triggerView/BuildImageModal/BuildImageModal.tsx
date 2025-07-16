@@ -19,6 +19,7 @@ import {
     CIPipelineNodeType,
     CommonNodeAttr,
     ComponentSizeType,
+    ConsequenceAction,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DocLink,
     Drawer,
@@ -39,6 +40,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getCIMaterialList, triggerCINode } from '@Components/app/service'
+import { handleSourceNotConfigured } from '@Components/ApplicationGroup/AppGroup.utils'
 import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { EnvironmentList } from '@Components/CIPipelineN/EnvironmentList'
 import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
@@ -68,10 +70,11 @@ const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPa
 const BuildImageModal = ({
     handleClose,
     isJobView,
-    filteredCIPipelines,
+    filteredCIPipelines: filteredCIPipelinesProp,
+    filteredCIPipelineMap,
     workflows,
     reloadWorkflows,
-    appId,
+    appId: appIdProp,
     environmentLists,
 }: BuildImageModalProps) => {
     const { push } = useHistory()
@@ -90,14 +93,17 @@ const BuildImageModal = ({
     const [isBuildTriggerLoading, setIsBuildTriggerLoading] = useState<boolean>(false)
     const [showWebhookModal, setShowWebhookModal] = useState<boolean>(false)
 
-    // TODO: Add as much type as possible to selectedCIPipeline
-    const selectedCIPipeline = (filteredCIPipelines || []).find((_ci) => _ci.id === +ciNodeId)
     const selectedWorkflow = workflows?.find((workflow) =>
         workflow.nodes.some((node) => node.type === WorkflowNodeType.CI && Number(node.id) === +ciNodeId),
     )
     const workflowId = selectedWorkflow?.id
     // Workflows will be present since this modal is only opened when workflows are loaded
     const ciNode = selectedWorkflow?.nodes.find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
+    const appId = appIdProp || selectedWorkflow?.appId
+    const filteredCIPipelines = filteredCIPipelinesProp || filteredCIPipelineMap?.get(String(appId)) || []
+
+    // TODO: Add as much type as possible to selectedCIPipeline
+    const selectedCIPipeline = (filteredCIPipelines || []).find((_ci) => _ci.id === +ciNodeId)
 
     const onMaterialUpdate = (newMaterialList: CIMaterialType[]) => {
         setShowRegexBranchChangeModal(
@@ -110,15 +116,32 @@ const BuildImageModal = ({
     }
 
     const getMaterialList = async (): Promise<CIMaterialType[]> => {
-        const { result: materialList } = await getCIMaterialList(
+        const { result: materialListResponse } = await getCIMaterialList(
             {
                 pipelineId: ciNodeId,
             },
             materialListAbortControllerRef.current.signal,
         )
 
-        onMaterialUpdate(materialList)
-        return materialList
+        const configuredMaterialList = new Map<number, Set<number>>()
+        if (ciNode) {
+            const gitMaterials = new Map<number, string[]>()
+            materialListResponse?.forEach((material) => {
+                gitMaterials[material.gitMaterialId] = [material.gitMaterialName.toLowerCase(), material.value]
+            })
+
+            configuredMaterialList[selectedWorkflow.name] = new Set<number>()
+
+            handleSourceNotConfigured(
+                configuredMaterialList,
+                selectedWorkflow,
+                materialListResponse || [],
+                !gitMaterials[selectedWorkflow.ciConfiguredGitMaterialId],
+            )
+        }
+
+        onMaterialUpdate(materialListResponse)
+        return materialListResponse
     }
 
     const [areRuntimeParamsLoading, runtimeParams, runtimeParamsError, reloadRuntimeParams, setRuntimeParams] =
@@ -130,8 +153,8 @@ const BuildImageModal = ({
 
     const [isMaterialListLoading, _materialList, materialListError, reloadMaterialList, setMaterialList] = useAsync(
         getMaterialList,
-        [ciNodeId, appId],
-        !!ciNodeId && !!appId,
+        [ciNodeId],
+        !!ciNodeId,
     )
 
     const materialList = _materialList || []
@@ -371,7 +394,11 @@ const BuildImageModal = ({
     const renderCTAButton = () => {
         const nodeType: CommonNodeAttr['type'] = 'CI'
 
-        if (AllowedWithWarningTippy && ciNode?.pluginBlockState && !isJobView) {
+        if (
+            AllowedWithWarningTippy &&
+            ciNode?.pluginBlockState?.action === ConsequenceAction.ALLOW_UNTIL_TIME &&
+            !isJobView
+        ) {
             return (
                 <AllowedWithWarningTippy
                     consequence={ciNode.pluginBlockState}
