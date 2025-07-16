@@ -36,6 +36,7 @@ export const VariableDataTablePopupMenu = ({
     heading,
     children,
     onClose,
+    position,
     disableClose = false,
 }: VariableDataTablePopupMenuProps) => {
     const { open, overlayProps, popoverProps, triggerProps, scrollableRef, closePopover } = usePopover({
@@ -47,6 +48,7 @@ export const VariableDataTablePopupMenu = ({
             }
         },
         disableClose,
+        position,
     })
 
     const triggerElement = (

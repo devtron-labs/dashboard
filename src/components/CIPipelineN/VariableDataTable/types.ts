@@ -21,6 +21,7 @@ import {
     RefVariableStageType,
     RefVariableType,
     SelectPickerOptionType,
+    UsePopoverProps,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -144,6 +145,7 @@ export interface VariableDataTablePopupMenuProps {
     disableClose?: boolean
     onClose?: () => void
     children: JSX.Element
+    position: UsePopoverProps['position']
 }
 
 export interface ConfigOverlayProps {
