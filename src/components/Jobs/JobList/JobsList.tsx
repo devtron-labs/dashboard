@@ -23,7 +23,6 @@ import {
     HeaderWithCreateButton,
     ServerErrors,
     showError,
-    stopPropagation,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -134,8 +133,7 @@ const JobsList = () => {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
-    const closeJobCreateModal = (e) => {
-        stopPropagation(e)
+    const closeJobCreateModal = () => {
         history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
     }
 
