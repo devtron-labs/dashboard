@@ -39,3 +39,5 @@ export const createAppInitialFormErrorState: CreateAppFormErrorStateType = {
     gitMaterials: null,
     workflowConfig: null,
 }
+
+export const PROJECT_SELECT_INPUT_ID = 'project'

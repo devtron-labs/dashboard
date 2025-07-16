@@ -26,9 +26,10 @@ export interface FormType {
 }
 export interface TokenResponseType {
     success: boolean
-    token: string
     userId: number
     userIdentifier: string
+    hideApiToken: boolean
+    token?: string
 }
 
 export interface GenerateTokenType {
@@ -37,17 +38,13 @@ export interface GenerateTokenType {
     handleGenerateTokenActionButton: () => void
     setSelectedExpirationDate
     selectedExpirationDate
-    tokenResponse: TokenResponseType
-    setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
     reload: () => void
 }
 
-export interface TokenListType {
+export interface TokenListType extends Pick<TokenResponseType, 'token' | 'userIdentifier' | 'userId' | 'hideApiToken'> {
     expireAtInMs: number
     id: number
     name: string
-    userId: number
-    userIdentifier: string
     description: string
     lastUsedByIp?: string
     lastUsedAt?: string
@@ -55,7 +52,10 @@ export interface TokenListType {
 }
 
 export interface EditDataType
-    extends Pick<TokenListType, 'name' | 'description' | 'expireAtInMs' | 'id' | 'userId' | 'userIdentifier'> {}
+    extends Pick<
+        TokenListType,
+        'name' | 'description' | 'expireAtInMs' | 'token' | 'id' | 'userId' | 'userIdentifier' | 'hideApiToken'
+    > {}
 export interface EditTokenType {
     setShowRegeneratedModal: React.Dispatch<React.SetStateAction<boolean>>
     showRegeneratedModal: boolean
@@ -77,11 +77,12 @@ export interface GenerateActionButtonType {
 
 export interface GenerateTokenModalType {
     close: () => void
-    token: string
+    token: TokenListType['token']
     reload: () => void
     redirectToTokenList: () => void
     isRegenerationModal?: boolean
     open: GenericModalProps['open']
+    hideApiToken: TokenListType['hideApiToken']
 }
 
 export interface APITokenListType {

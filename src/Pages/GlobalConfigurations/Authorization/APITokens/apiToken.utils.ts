@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { TokenListType } from './apiToken.type'
+
 export function getOptions(customDate) {
     return [
         { value: 7, label: '7 days' },
@@ -36,3 +38,6 @@ export const isTokenExpired = (expiredDate: number): boolean => {
 
     return getDateInMilliseconds(new Date().valueOf()) > getDateInMilliseconds(expiredDate)
 }
+
+export const getApiTokenHeader = (hideApiToken: TokenListType['hideApiToken']) =>
+    `Copy and store this token safely ${hideApiToken ? ', you won’t be able to view it again.' : ''}`

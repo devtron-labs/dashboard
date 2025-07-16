@@ -19,17 +19,23 @@ import {
     get,
     GetTemplateAPIRouteType,
     getTemplateAPIRoute,
+    getUrlWithSearchParams,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../../config'
-import { WebhookDetailsResponse, WebhookListResponse } from './types'
+import { WebhookApiTokenResponse, WebhookDetailsResponse, WebhookListResponse } from './types'
 
-export function getExternalCIList(appId: number | string, isTemplateView: AppConfigProps['isTemplateView']): Promise<WebhookListResponse> {
-    const url = isTemplateView ? getTemplateAPIRoute({
-        type: GetTemplateAPIRouteType.EXTERNAL_CI_LIST,
-        queryParams: {
-            id: appId,
-        }
-    }) : `${Routes.EXTERNAL_CI_CONFIG}/${appId}`
+export function getExternalCIList(
+    appId: number | string,
+    isTemplateView: AppConfigProps['isTemplateView'],
+): Promise<WebhookListResponse> {
+    const url = isTemplateView
+        ? getTemplateAPIRoute({
+              type: GetTemplateAPIRouteType.EXTERNAL_CI_LIST,
+              queryParams: {
+                  id: appId,
+              },
+          })
+        : `${Routes.EXTERNAL_CI_CONFIG}/${appId}`
 
     return get(url)
 }
@@ -50,6 +56,20 @@ export function getExternalCIConfig(
         : `${Routes.EXTERNAL_CI_CONFIG}/${appId}/${webhookID}`
 
     return get(url)
+}
+
+export function getWebhookAPITokenList(
+    projectName: string,
+    environmentName: string,
+    appName: string,
+): Promise<WebhookApiTokenResponse> {
+    return get(
+        getUrlWithSearchParams(Routes.API_TOKEN_WEBHOOK, {
+            projectName: projectName,
+            environmentName: environmentName,
+            appName: appName,
+        }),
+    )
 }
 
 export async function executeWebhookAPI(webhookUrl: string, token: string, data?: object): Promise<any> {

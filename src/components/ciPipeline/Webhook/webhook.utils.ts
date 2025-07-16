@@ -16,6 +16,11 @@
 
 import { TabDetailsType } from './types'
 
+export const TOKEN_TAB_LIST: TabDetailsType[] = [
+    { key: 'selectToken', value: 'Select API token' },
+    { key: 'autoToken', value: 'Auto-generate token' },
+]
+
 export const PLAYGROUND_TAB_LIST: TabDetailsType[] = [
     { key: 'webhookURL', value: 'Webhook URL' },
     { key: 'sampleCurl', value: 'Sample cURL request' },
@@ -37,3 +42,6 @@ export const CURL_PREFIX = `curl --location --request POST \\
 --data-raw '{data}'`
 
 export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with required permissions'
+export const SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS =
+    'Select or auto-generate token with required permissions'
+
