@@ -258,8 +258,8 @@ export interface NodeRowDetail {
 
 export interface NodeListSearchFilterType
     extends Pick<
-        TableViewWrapperProps<unknown, FiltersTypeEnum.URL>,
-        'visibleColumns' | 'setVisibleColumns' | 'allColumns'
+        TableViewWrapperProps<K8sResourceDetailDataType, FiltersTypeEnum.URL>,
+        'visibleColumns' | 'setVisibleColumns' | 'allColumns' | 'rows'
     > {
     searchParams: Record<string, any>
 }

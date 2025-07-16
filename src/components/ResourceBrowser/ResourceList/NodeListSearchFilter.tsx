@@ -14,63 +14,72 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, KeyboardEvent, RefCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
+import { MultiValue, SelectInstance } from 'react-select'
 import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
 
-import { OptionType, SelectPicker, useAsync, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    Icon,
+    OptionType,
+    SelectPicker,
+    SelectPickerProps,
+    useAsync,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClear } from '@Icons/ic-error.svg'
-import { ReactComponent as ICSearch } from '@Icons/ic-search.svg'
 import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 
-import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import {
-    DEFAULT_NODE_K8S_VERSION,
-    NODE_K8S_VERSION_FILTER_KEY,
-    NODE_SEARCH_KEY_OPTIONS,
-    NODE_SEARCH_KEY_PLACEHOLDER,
-} from '../Constants'
+import { DEFAULT_NODE_K8S_VERSION, NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
 import ColumnSelector from './ColumnSelector'
+import { NODE_LIST_SEARCH_FILTER_OPTIONS, NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP } from './constants'
+import { NodeSearchListOptionType } from './types'
+import { getNodeListSearchOptions, getNodeSearchKeysOptionsList } from './utils'
 
 const NodeListSearchFilter = ({
     visibleColumns,
     setVisibleColumns,
     searchParams,
     allColumns,
+    rows,
 }: NodeListSearchFilterType) => {
+    // STATES
+    const [nodeSearchKey, setNodeSearchKey] = useState<NODE_SEARCH_KEYS | null>(null)
+
+    // HOOKS
     const { clusterId } = useParams<ClusterDetailBaseParams>()
-
-    const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
-        if (searchParams[key]) {
-            return key
-        }
-
-        return type
-    }, '')
-
-    const selectedK8sNodeVersion = searchParams[NODE_K8S_VERSION_FILTER_KEY] ?? ''
-
-    const [isSearchKeySelectorOpen, setIsSearchKeySelectorOpen] = useState(false)
-    const [searchTextType, setSearchTextType] = useState<NODE_SEARCH_KEYS | ''>(selectedSearchTextType)
-    const [searchInputText, setSearchInputText] = useState(
-        selectedSearchTextType ? searchParams[selectedSearchTextType] : '',
-    )
-
-    const searchInputRef = useRef<HTMLInputElement>(null)
-
-    const handleSearchInputMount: RefCallback<HTMLInputElement> = (node) => {
-        if (node) {
-            searchInputRef.current = node
-
-            node.focus()
-        }
-    }
-
-    const location = useLocation()
+    const { search } = useLocation()
     const { push } = useHistory()
 
+    // REFS
+    const searchFilterRef = useRef<SelectInstance<NodeSearchListOptionType, true>>()
+
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
+
+    useEffect(() => {
+        const handleFocusInput = () => {
+            searchFilterRef.current?.focus()
+            searchFilterRef.current?.openMenu('first')
+        }
+
+        const handleBlurInput = () => {
+            searchFilterRef.current?.blur()
+        }
+
+        if (registerShortcut) {
+            registerShortcut({ keys: ['/'], callback: handleFocusInput })
+            registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
+        }
+
+        return () => {
+            unregisterShortcut(['/'])
+            unregisterShortcut(['Escape'])
+        }
+    }, [])
+
+    // ASYNC CALLS
     const [nodeK8sVersionsLoading, nodeK8sVersionOptions, nodeK8sVersionsError, refetchNodeK8sVersions] =
         useAsync(async () => {
             const {
@@ -86,6 +95,9 @@ const NodeListSearchFilter = ({
             ]
         }, [clusterId])
 
+    // CONFIGS
+    const selectedK8sNodeVersion = searchParams[NODE_K8S_VERSION_FILTER_KEY] ?? ''
+
     const selectedK8sVersionOption = useMemo(
         () =>
             nodeK8sVersionOptions?.find((option) => option.value === selectedK8sNodeVersion) ??
@@ -93,106 +105,37 @@ const NodeListSearchFilter = ({
         [nodeK8sVersionOptions, selectedK8sNodeVersion],
     )
 
-    const handleFocusInput = () => {
-        setIsSearchKeySelectorOpen(true)
-        searchInputRef.current?.focus()
-    }
+    const { nodeGroups, labels, nodeNames } = useMemo(() => getNodeSearchKeysOptionsList(rows), [JSON.stringify(rows)])
 
-    const handleBlurInput = () => {
-        setIsSearchKeySelectorOpen(false)
-        searchInputRef.current?.blur()
-    }
+    const searchOptions = useMemo(
+        () => getNodeListSearchOptions({ labels, nodeGroups, nodeNames, nodeSearchKey }),
+        [nodeGroups, labels, nodeNames, nodeSearchKey],
+    )
 
-    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
+    const searchValue = useMemo(() => {
+        const queryObject = parseQueryString(search)
 
-    useEffect(() => {
-        if (registerShortcut) {
-            registerShortcut({ keys: ['/'], callback: handleFocusInput })
-            registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
-        }
+        const nameMap = new Set(((queryObject[NODE_SEARCH_KEYS.NAME] as string) || '').split(','))
+        const nodeGroupMap = new Set(((queryObject[NODE_SEARCH_KEYS.NODE_GROUP] as string) || '').split(','))
+        const labelMap = new Set(((queryObject[NODE_SEARCH_KEYS.LABEL] as string) || '').split(','))
 
-        return (): void => {
-            unregisterShortcut(['/'])
-            unregisterShortcut(['Escape'])
-        }
-    }, [])
+        return [
+            ...nodeNames.filter(({ value }) => nameMap.has(value)),
+            ...nodeGroups.filter(({ value }) => nodeGroupMap.has(value)),
+            ...labels.filter(({ value }) => labelMap.has(value)),
+        ]
+    }, [search])
 
+    // HANDLERS
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {
             return
         }
 
-        const queryObject = parseQueryString(location.search)
-
+        const queryObject = parseQueryString(search)
         const finalQueryString = stringifyQueryString(callback(queryObject))
 
         push(`?${finalQueryString}`)
-    }
-
-    const handleQueryParamsSearch = (searchString: string) => {
-        handleQueryParamsUpdate((queryObject) => {
-            const finalQueryObject = structuredClone(queryObject)
-
-            Object.values(NODE_SEARCH_KEYS).forEach((key) => {
-                if (key === searchTextType) {
-                    finalQueryObject[key] = searchString
-                } else {
-                    delete finalQueryObject[key]
-                }
-            })
-
-            return finalQueryObject
-        })
-    }
-
-    const handleSearchTextChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        setSearchInputText(event.target.value)
-    }
-
-    const handleClearTextFilters = (): void => {
-        setSearchInputText('')
-
-        setSearchTextType('')
-
-        handleQueryParamsUpdate((queryObject) => {
-            const finalQueryObject = structuredClone(queryObject)
-
-            Object.values(NODE_SEARCH_KEYS).forEach((key) => {
-                delete finalQueryObject[key]
-            })
-
-            return finalQueryObject
-        })
-    }
-
-    const handleKeyDownOnSearchInput = (event: KeyboardEvent<HTMLInputElement>): void => {
-        const { key } = event
-
-        if (key === 'Enter') {
-            handleQueryParamsSearch(searchInputText)
-
-            setIsSearchKeySelectorOpen(false)
-        }
-
-        if (key === 'Backspace' && searchInputText.length === 0 && searchTextType) {
-            setSearchTextType('')
-
-            setIsSearchKeySelectorOpen(false)
-        }
-
-        if (key === 'Escape') {
-            event.currentTarget.blur()
-        }
-    }
-
-    const handleToggleIsSearchKeySelectorOpen = () => {
-        setIsSearchKeySelectorOpen((prev) => !prev)
-    }
-
-    const getSelectSearchKeyTypeHandler = (key: NODE_SEARCH_KEYS) => () => {
-        setSearchTextType(key)
-        setSearchInputText('')
-        setIsSearchKeySelectorOpen(false)
     }
 
     const handleApplyNodeK8sVersion = (option: OptionType) => {
@@ -209,96 +152,98 @@ const NodeListSearchFilter = ({
         })
     }
 
-    const handleOpenSearchKeySelectorMenu = () => {
-        setIsSearchKeySelectorOpen(true)
+    const handleFilterGroupSelection = (value: typeof nodeSearchKey) => () => {
+        setNodeSearchKey(value)
     }
 
-    const renderTextFilter = (): JSX.Element => {
-        const placeholderText = NODE_SEARCH_KEY_PLACEHOLDER[searchTextType]
-
-        return (
-            <div className="dc__position-rel bg__secondary">
-                <button
-                    type="button"
-                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start dc__transparent"
-                    onClick={handleOpenSearchKeySelectorMenu}
-                    aria-label="Open search key selector popup"
-                >
-                    <ICSearch className="mr-5 ml-10 icon-dim-18" />
-
-                    {searchTextType ? (
-                        <>
-                            <span>
-                                {NODE_SEARCH_KEY_OPTIONS.find((option) => option.value === searchTextType).label}
-                                &nbsp;:
-                            </span>
-
-                            <input
-                                autoComplete="off"
-                                type="text"
-                                className="dc__transparent flex-1 dc__outline-none-imp"
-                                placeholder={placeholderText}
-                                onKeyDown={handleKeyDownOnSearchInput}
-                                onChange={handleSearchTextChange}
-                                value={searchInputText}
-                                ref={handleSearchInputMount}
-                            />
-                        </>
-                    ) : (
-                        <span className="cn-5">Search nodes by name, labels or node group</span>
-                    )}
-
-                    {!searchTextType && (
-                        <ShortcutKeyBadge shortcutKey="/" rootClassName="node-listing-search-container__shortcut-key" />
-                    )}
-                </button>
-
-                {isSearchKeySelectorOpen && (
-                    <>
-                        <button
-                            type="button"
-                            className="dc__transparent-div"
-                            onClick={handleToggleIsSearchKeySelectorOpen}
-                            aria-label="Close search popup"
-                        />
-
-                        {!searchTextType && (
-                            <div className="dc__zi-6 w-100 bg__primary dc__position-abs  br-4 en-2 bw-1">
-                                <div className="bg__tertiary pt-4 pb-4 pl-10 pr-10">Search by</div>
-
-                                {NODE_SEARCH_KEY_OPTIONS.map((option) => (
-                                    <button
-                                        type="button"
-                                        className="pt-8 pb-8 pl-10 pr-10 dc__hover-n50 pointer dc__transparent w-100 dc__align-left"
-                                        key={option.label}
-                                        onClick={getSelectSearchKeyTypeHandler(option.value)}
-                                        aria-label={`Set search key type to ${option.label}`}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {(searchTextType || searchInputText) && (
-                    <button
-                        className="search__clear-button flex"
-                        type="button"
-                        onClick={handleClearTextFilters}
-                        aria-label="Clear applied text filters"
-                    >
-                        <ICClear className="icon-dim-18 icon-n4" />
-                    </button>
-                )}
+    const renderCustomOptions = () => (
+        <>
+            <div className="py-4 px-8 bg__menu--secondary fs-12 fw-6 lh-20 cn-9">
+                {nodeSearchKey ? 'Match' : 'Filter by'}
             </div>
-        )
+            <div>
+                {NODE_LIST_SEARCH_FILTER_OPTIONS.map(({ label, value }) => (
+                    <Fragment key={value}>
+                        <button
+                            className="dc__transparent dc__truncate dc__hover-n50 fs-13 fw-4 lh-20 cn-9 px-8 py-6 w-100 dc__align-left"
+                            type="button"
+                            onClick={handleFilterGroupSelection(value)}
+                        >
+                            {label}
+                        </button>
+                    </Fragment>
+                ))}
+            </div>
+        </>
+    )
+
+    const handleSearchFilterChange = (newValue: MultiValue<NodeSearchListOptionType>) => {
+        handleQueryParamsUpdate((queryObject) => {
+            const updatedQueryObject = structuredClone(queryObject)
+
+            const queries = newValue.reduce<Record<string, string[]>>(
+                (acc, curr) => {
+                    acc[curr.identifier].push(curr.value)
+                    return acc
+                },
+                {
+                    [NODE_SEARCH_KEYS.NAME]: [],
+                    [NODE_SEARCH_KEYS.LABEL]: [],
+                    [NODE_SEARCH_KEYS.NODE_GROUP]: [],
+                },
+            )
+
+            Object.keys(NODE_SEARCH_KEYS).forEach((key) => {
+                if (queries[key]?.length) {
+                    updatedQueryObject[key] = queries[key].join(',')
+                } else {
+                    delete updatedQueryObject[key]
+                }
+            })
+
+            return updatedQueryObject
+        })
     }
+
+    const handleMenuClose = () => {
+        setNodeSearchKey(null)
+    }
+
+    const formatOptionLabel: SelectPickerProps<string>['formatOptionLabel'] = (
+        option: NodeSearchListOptionType,
+        metadata,
+    ) =>
+        metadata.context === 'value'
+            ? `${NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP[option.identifier]}: ${option.label}`
+            : null
+
+    const getOptionValue = ({ value, label, identifier }: NodeSearchListOptionType) => `${identifier}/${value}/${label}`
 
     return (
         <div className="node-listing-search-container pt-16 pr-20 pb-12 pl-20 dc__zi-5">
-            {renderTextFilter()}
+            <SelectPicker<string, true>
+                selectRef={searchFilterRef}
+                onMenuClose={handleMenuClose}
+                options={searchOptions}
+                isMulti
+                placeholder={
+                    nodeSearchKey
+                        ? 'Select match criteria using a combination of name, labels, or node groups'
+                        : 'Filter by Node, Labels or Node Groups'
+                }
+                required
+                inputId="node-list-search"
+                isSearchable={!!nodeSearchKey}
+                isClearable
+                value={searchValue}
+                onChange={handleSearchFilterChange}
+                getOptionValue={getOptionValue}
+                renderCustomOptions={renderCustomOptions}
+                shouldRenderCustomOptions={!nodeSearchKey}
+                icon={<Icon name="ic-filter" color={null} />}
+                formatOptionLabel={formatOptionLabel}
+                size={ComponentSizeType.small}
+            />
 
             <SelectPicker
                 inputId="k8s-version-select"

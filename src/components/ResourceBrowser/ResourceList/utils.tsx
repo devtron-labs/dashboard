@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { GroupBase, OptionsOrGroups } from 'react-select'
+
 import {
     BaseRecentlyVisitedEntitiesTypes,
     ClusterDetail,
@@ -53,11 +55,12 @@ import {
     ClusterOptionType,
     K8SResourceListType,
     NODE_SEARCH_KEYS,
+    NodeListSearchFilterType,
     RBResourceSidebarDataAttributeType,
     ShowAIButtonConfig,
 } from '../Types'
 import { convertResourceGroupListToK8sObjectList } from '../Utils'
-import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
+import { K8sResourceListFilterType, NodeSearchListOptionType, ResourceListUrlFiltersType } from './types'
 
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     'getFilterOptionsFromSearchParams',
@@ -508,4 +511,72 @@ export const getRBSidebarTreeViewNodes = (list: ReturnType<typeof convertResourc
     }))
 
     return fixedNodes.concat(dynamicNodes)
+}
+
+export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['rows']) => {
+    const { labels, nodeGroups, nodeNames } = (rows || []).reduce<{
+        labels: Map<string, NodeSearchListOptionType>
+        nodeGroups: Map<string, NodeSearchListOptionType>
+        nodeNames: Map<string, NodeSearchListOptionType>
+    }>(
+        (acc, curr) => {
+            ;(curr.data.labels as { key: string; value: string }[]).forEach(({ key, value }) => {
+                if (!acc.labels.has(value)) {
+                    acc.labels.set(value, {
+                        label: key,
+                        value,
+                        identifier: NODE_SEARCH_KEYS.LABEL,
+                    })
+                }
+            })
+
+            if (!acc.nodeGroups.has(curr.data.nodeGroup as string)) {
+                acc.nodeGroups.set(curr.data.nodeGroup as string, {
+                    label: curr.data.nodeGroup,
+                    value: curr.data.nodeGroup as string,
+                    identifier: NODE_SEARCH_KEYS.NODE_GROUP,
+                })
+            }
+
+            if (!acc.nodeNames.has(curr.data.name as string)) {
+                acc.nodeNames.set(curr.data.name as string, {
+                    label: curr.data.name,
+                    value: curr.data.name as string,
+                    identifier: NODE_SEARCH_KEYS.NAME,
+                })
+            }
+
+            return acc
+        },
+        { labels: new Map(), nodeGroups: new Map(), nodeNames: new Map() },
+    )
+
+    return {
+        labels: Array.from(labels).map(([, value]) => value),
+        nodeGroups: Array.from(nodeGroups).map(([, value]) => value),
+        nodeNames: Array.from(nodeNames).map(([, value]) => value),
+    }
+}
+
+export const getNodeListSearchOptions = ({
+    nodeSearchKey,
+    labels,
+    nodeGroups,
+    nodeNames,
+}: {
+    nodeSearchKey: NODE_SEARCH_KEYS
+    labels: NodeSearchListOptionType[]
+    nodeGroups: NodeSearchListOptionType[]
+    nodeNames: NodeSearchListOptionType[]
+}): OptionsOrGroups<NodeSearchListOptionType, GroupBase<NodeSearchListOptionType>> => {
+    switch (nodeSearchKey) {
+        case NODE_SEARCH_KEYS.NODE_GROUP:
+            return [{ label: 'Node Groups', options: nodeGroups }]
+        case NODE_SEARCH_KEYS.LABEL:
+            return [{ label: 'Labels', options: labels }]
+        case NODE_SEARCH_KEYS.NAME:
+            return [{ label: 'Node Names', options: nodeNames }]
+        default:
+            return []
+    }
 }

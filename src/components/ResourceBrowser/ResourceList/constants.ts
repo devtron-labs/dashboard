@@ -1,6 +1,12 @@
-import { ActionMenuItemType, NodeActionMenuOptionIdEnum } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ActionMenuItemType,
+    NodeActionMenuOptionIdEnum,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { CLUSTER_NODE_ACTIONS_LABELS } from '@Components/ClusterNodes/constants'
+
+import { NODE_SEARCH_KEYS } from '../Types'
 
 export const getNodeActions = (unschedulable: boolean): ActionMenuItemType<NodeActionMenuOptionIdEnum>[] => [
     {
@@ -35,3 +41,15 @@ export const getNodeActions = (unschedulable: boolean): ActionMenuItemType<NodeA
         startIcon: { name: 'ic-delete' },
     },
 ]
+
+export const NODE_LIST_SEARCH_FILTER_OPTIONS: SelectPickerOptionType<NODE_SEARCH_KEYS>[] = [
+    { label: 'Node Groups', value: NODE_SEARCH_KEYS.NODE_GROUP },
+    { label: 'Labels', value: NODE_SEARCH_KEYS.LABEL },
+    { label: 'Names', value: NODE_SEARCH_KEYS.NAME },
+]
+
+export const NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP: Record<NODE_SEARCH_KEYS, string> = {
+    [NODE_SEARCH_KEYS.NAME]: 'Name',
+    [NODE_SEARCH_KEYS.NODE_GROUP]: 'Node group',
+    [NODE_SEARCH_KEYS.LABEL]: 'Label',
+}

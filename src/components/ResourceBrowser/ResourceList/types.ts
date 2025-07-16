@@ -18,6 +18,7 @@ import {
     BaseRecentlyVisitedEntitiesTypes,
     FiltersTypeEnum,
     K8sResourceDetailDataType,
+    SelectPickerOptionType,
     ServerErrors,
     TableCellComponentProps,
     TableProps,
@@ -172,3 +173,7 @@ export interface ResourceRecommenderTableViewWrapperProps
             reloadResourceListData: () => void
         }
     > {}
+
+export interface NodeSearchListOptionType extends SelectPickerOptionType<string> {
+    identifier: NODE_SEARCH_KEYS
+}
