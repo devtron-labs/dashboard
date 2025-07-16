@@ -115,13 +115,16 @@ export interface BulkEditsState {
     statusCode: number
     isReadmeLoading: boolean
     impactedObjects: ImpactedObjects
-    updatedTemplate: OptionType[]
-    readmeResult: string[]
+    readmeVersionOptions: OptionType<BulkEditVersion>[]
+    readmeResult: {
+        [key in BulkEditVersion]: string
+    }
     outputResult: BulkOutput
     showExamples: boolean
     activeOutputTab: 'output' | 'impacted'
     bulkConfig: BulkConfiguration[]
     codeEditorPayload: string
+    selectedReadmeVersionOption: OptionType<BulkEditVersion>
 }
 
 export interface OutputTabType {
@@ -134,4 +137,9 @@ export interface OutputTabType {
 export interface BulkEditsProps extends RouteComponentProps<{}> {
     // close: (event) => void;
     serverMode: SERVER_MODE_TYPE
+}
+
+export enum BulkEditVersion {
+    v1 = 'v1beta1',
+    v2 = 'v1beta2',
 }

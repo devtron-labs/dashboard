@@ -33,11 +33,11 @@ import {
     ButtonStyleType,
     MODES,
     Icon,
+    GenericSectionErrorState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE, ViewType } from '../../config'
-import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
+import { BulkEditsProps, BulkEditsState, BulkEditVersion } from './bulkEdits.type'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
 import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
 import './bulkEdit.scss'
 import {
@@ -48,6 +48,24 @@ import {
     renderSecretOutput,
 } from './bulkedit.utils'
 import { OutputDivider, OutputObjectTabs, STATUS } from './constants'
+import { importComponentFromFELibrary } from '@Components/common'
+
+const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
+
+const ReadmeVersionOptions = [
+    {
+        label: 'v1beta1/application',
+        value: BulkEditVersion.v1,
+    },
+    ...(getBulkEditConfig
+        ? [
+              {
+                  label: 'v1beta2/application',
+                  value: BulkEditVersion.v2,
+              },
+          ]
+        : []),
+]
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     constructor(props: BulkEditsProps) {
@@ -60,8 +78,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             impactedObjects: undefined,
             isReadmeLoading: true,
             bulkConfig: [],
-            updatedTemplate: [],
-            readmeResult: [],
+            readmeVersionOptions: ReadmeVersionOptions,
+            selectedReadmeVersionOption: ReadmeVersionOptions[0],
+            readmeResult: {
+                [BulkEditVersion.v1]: null,
+                [BulkEditVersion.v2]: null,
+            },
             showExamples: true,
             activeOutputTab: 'output',
             codeEditorPayload: undefined,
@@ -78,33 +100,26 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     getInitialized() {
-        getSeeExample()
-            .then((res) => {
-                this.setState({ view: ViewType.LOADING })
-                const bulkConfig = res.result
-                let kind = bulkConfig.map((elm) => elm.script.kind)
-                kind = kind.toString().toLocaleLowerCase()
-                let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion)
-                apiVersion = apiVersion.toString()
-                const readmeResult = bulkConfig.map((elm) => elm.readme)
-                const updatedTemplate = bulkConfig.map((elm) => {
-                    return {
-                        value: elm.operation,
-                        label: elm.operation,
-                    }
-                })
+        Promise.allSettled([
+            getBulkEditConfig?.().then(({ result: { readme } }) => {
+                return readme
+            }),
+            getSeeExample().then(({ result }) => {
+                return result[0].readme
+            }),
+        ])
+            .then(([v2ReadmeResult, v1ReadmeResult]) => {
+                const v2Readme = v2ReadmeResult.status === 'fulfilled' ? v2ReadmeResult.value : null
+                const v1Readme = v1ReadmeResult.status === 'fulfilled' ? v1ReadmeResult.value : null
 
                 this.setState({
-                    view: ViewType.FORM,
                     isReadmeLoading: false,
-                    bulkConfig,
-                    updatedTemplate,
-                    readmeResult,
+                    readmeResult: { [BulkEditVersion.v1]: v1Readme, [BulkEditVersion.v2]: v2Readme },
                 })
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code })
+                this.setState({ isReadmeLoading: false, statusCode: error.code })
             })
     }
 
@@ -187,7 +202,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     renderCodeEditorHeader = () => {
         return (
             <div className="flex bg__primary px-20 py-8 dc__border-bottom dc__content-space">
-                <h1 className='m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans'>Script</h1>
+                <h1 className="m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans">Script</h1>
 
                 <div className="flexbox dc__gap-12">
                     <Button
@@ -201,7 +216,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         text="Run"
                         onClick={this.handleRunButton}
                         dataTestId="run-button"
-                        startIcon={<Icon name='ic-play-outline' color={null} />}
+                        startIcon={<Icon name="ic-play-outline" color={null} />}
                         size={ComponentSizeType.small}
                     ></Button>
                 </div>
@@ -233,7 +248,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (
             <div className="dc__grid-rows-2 flex-grow-1 dc__overflow-hidden">
-                <div className='dc__overflow-auto'>
+                <div className="dc__overflow-auto">
                     <CodeEditor
                         mode={MODES.YAML}
                         height="auto"
@@ -385,20 +400,8 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 
-    handleUpdateTemplate = () => {
-        this.setState({ isReadmeLoading: true })
-        getSeeExample()
-            .then((res) => {
-                const readmeResult = res.result.map((elm) => elm.readme)
-                this.setState({
-                    isReadmeLoading: false,
-                    readmeResult,
-                })
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState({ isReadmeLoading: false, statusCode: error.code })
-            })
+    handleUpdateTemplate = (option: BulkEditsState['selectedReadmeVersionOption']) => {
+        this.setState({ selectedReadmeVersionOption: option })
     }
 
     onClickHideExamples = () => {
@@ -407,7 +410,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     renderSampleTemplateHeader = () => {
         return (
-            <div className="dc__border-bottom bg__primary py-8 px-20 flex  h-48 dc__content-space">
+            <div className="dc__border-bottom bg__primary py-8 px-20 flex dc__content-space">
                 <div className="flex left dc__gap-16">
                     <div className="fw-6 cn-9" data-testid="sample-application">
                         Sample:
@@ -416,10 +419,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         inputId="sample-application"
                         name="sample-application"
                         classNamePrefix="sample-application-select"
-                        value={this.state.updatedTemplate[0]}
+                        value={this.state.selectedReadmeVersionOption}
                         placeholder="Update Deployment Template"
-                        options={this.state.updatedTemplate}
-                        onChange={() => this.handleUpdateTemplate()}
+                        options={this.state.readmeVersionOptions}
+                        onChange={this.handleUpdateTemplate}
                         variant={SelectPickerVariantType.COMPACT}
                         size={ComponentSizeType.medium}
                         menuSize={ComponentSizeType.medium}
@@ -439,10 +442,17 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSampleTemplateBody = () => {
-        const readmeJson = this.state.readmeResult.toString()
-        return this.state.isReadmeLoading ? (
-            <Progressing pageLoader />
-        ) : (
+        const readmeJson = this.state.readmeResult[this.state.selectedReadmeVersionOption.value]
+
+        if (this.state.isReadmeLoading) {
+            return <Progressing pageLoader />
+        }
+
+        if (!readmeJson) {
+            return <GenericSectionErrorState rootClassName='flex-grow-1' />
+        }
+
+        return (
             <div className="deploy-chart__readme-column flexbox-col flex-grow-1 dc__overflow-auto">
                 <MarkDown markdown={readmeJson} className="flexbox-col flex-grow-1" />
             </div>
