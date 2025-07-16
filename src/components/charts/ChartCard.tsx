@@ -21,7 +21,6 @@ import {
     ComponentSizeType,
     handleAnalyticsEvent,
     Icon,
-    ImageWithFallback,
     noop,
     stopPropagation,
     useMainContext,
@@ -29,10 +28,10 @@ import {
 
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
-import { ReactComponent as Helm } from '../../assets/icons/ic-default-chart.svg'
 import { SERVER_MODE } from '../../config'
+import ChartIcon from './ChartIcon'
 import { ChartSelectProps } from './charts.types'
-import { renderDeprecatedWarning } from './charts.util'
+import { getDescriptionTruncate, renderDeprecatedWarning } from './charts.util'
 
 const ChartCard = ({
     chart,
@@ -88,53 +87,6 @@ const ChartCard = ({
             ariaLabel="Remove chart from selection"
         />
     )
-    const chartIconClass = 'dc__chart-grid-item__icon chart-icon-dim br-4 dc__no-shrink'
-
-    const renderIcon = () => (
-        <div className="icon-wrapper">
-            <ImageWithFallback
-                imageProps={{
-                    height: 32,
-                    width: 32,
-                    src: chart.icon,
-                    alt: 'chart',
-                    className: chartIconClass,
-                }}
-                fallbackImage={<Helm className={chartIconClass} />}
-            />
-        </div>
-    )
-
-    const getDescriptionTruncate = () => {
-        if (isListView) {
-            return 'dc__truncate--clamp-4'
-        }
-
-        if (chart.deprecated) return 'dc__truncate'
-        return 'dc__truncate--clamp-2'
-    }
-
-    const renderCardInfo = () => (
-        <div className="flexbox-col flex-grow-1 dc__gap-8">
-            <div className="flexbox-col dc__gap-2">
-                <div className="flex left">
-                    <InteractiveCellText
-                        text={chart.name}
-                        rootClassName="fw-6 chart-grid-item__title cn-9"
-                        fontSize={14}
-                    />
-                    <div className="chart-name__arrow dc__no-shrink flex">
-                        <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
-                    </div>
-                </div>
-                {chart.deprecated && renderDeprecatedWarning()}
-            </div>
-
-            <span className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate()}`}>
-                {chart.description || 'No description'}
-            </span>
-        </div>
-    )
 
     const renderFooter = () => (
         <div className="flex left dc__content-space dc__border-top-n1 px-20 py-16 dc__gap-6">
@@ -163,7 +115,7 @@ const ChartCard = ({
             <div
                 className={`${isListView ? 'dc__grid chart-list-item dc__gap-16' : 'flexbox-col h-166 dc__gap-12'} px-20 pt-20 pb-16`}
             >
-                {renderIcon()}
+                <ChartIcon icon={chart.icon} />
                 {serverMode === SERVER_MODE.FULL && addChart && subtractChart && (
                     <div
                         className={`devtron-stepper ${selectedCount > 0 ? 'dc__grid devtron-stepper-grid dc__border  br-6 fw-6 cursor bg__primary' : ''}`}
@@ -179,7 +131,27 @@ const ChartCard = ({
                         {renderAddIcon()}
                     </div>
                 )}
-                {renderCardInfo()}
+                <div className="flexbox-col flex-grow-1 dc__gap-8">
+                    <div className="flexbox-col dc__gap-2">
+                        <div className="flex left">
+                            <InteractiveCellText
+                                text={chart.name}
+                                rootClassName="fw-6 chart-grid-item__title cn-9"
+                                fontSize={14}
+                            />
+                            <div className="chart-name__arrow dc__no-shrink flex">
+                                <Icon name="ic-caret-down-small" color="B500" rotateBy={270} />
+                            </div>
+                        </div>
+                        {chart.deprecated && renderDeprecatedWarning()}
+                    </div>
+
+                    <span
+                        className={`fw-4 fs-13 lh-1-5 ${getDescriptionTruncate({ isListView, isDeprecated: chart.deprecated })}`}
+                    >
+                        {chart.description || 'No description'}
+                    </span>
+                </div>
             </div>
             {renderFooter()}
         </div>

@@ -834,22 +834,10 @@ export const processK8SObjects = (
         if (!currentData) {
             _k8SObjectMap.set(groupParent, {
                 name: groupParent,
-                isExpanded:
-                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
-                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
-                    element.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind &&
-                    element.gvk.Kind.toLowerCase() === selectedResourceKind,
                 child: [k8sObject],
             })
         } else {
             currentData.child = [...currentData.child, k8sObject]
-            if (element.gvk.Kind.toLowerCase() === selectedResourceKind) {
-                currentData.isExpanded =
-                    element.gvk.Kind !== SIDEBAR_KEYS.namespaceGVK.Kind &&
-                    element.gvk.Kind !== SIDEBAR_KEYS.eventGVK.Kind &&
-                    element.gvk.Kind !== SIDEBAR_KEYS.nodeGVK.Kind &&
-                    element.gvk.Kind.toLowerCase() === selectedResourceKind
-            }
         }
         if (element.gvk.Kind === SIDEBAR_KEYS.eventGVK.Kind) {
             JUMP_TO_KIND_SHORT_NAMES.events = shortNames

@@ -15,6 +15,10 @@
  */
 
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { getAvailableCharts } from '@Services/service'
+import { CHART_LIST_SELECT_QUERY } from './constants'
+import { ChartDescriptionTypes, ChartGroupEntry } from './charts.types'
+import { CHART_CARD_MAX_LENGTH } from './constants'
 
 export const PaginationParams = {
     pageOffset: 0,
@@ -45,4 +49,20 @@ export const renderDeprecatedWarning = () => {
             <Icon name="ic-warning" color={null} size={16} />
         </div>
     )
+}
+
+export const getChartSelectAPI = () => getAvailableCharts(CHART_LIST_SELECT_QUERY)
+
+export const getChartGroupSubgroup = (chartGroupEntries): ChartGroupEntry[] => {
+    const len = Math.min(chartGroupEntries.length, CHART_CARD_MAX_LENGTH)
+    return chartGroupEntries.slice(0, len)
+}
+
+export const getDescriptionTruncate = ({ isListView = false, isDeprecated = false }: ChartDescriptionTypes) => {
+    if (isListView) {
+        return 'dc__truncate--clamp-4'
+    }
+
+    if (isDeprecated) return 'dc__truncate'
+    return 'dc__truncate--clamp-2 cn-7'
 }

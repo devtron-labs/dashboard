@@ -28,7 +28,7 @@ import {
 import emptyGeneratToken from '@Images/ic-empty-generate-token.png'
 import { EMPTY_STATE_STATUS } from '@Config/constantMessaging'
 
-import { TokenListType, TokenResponseType } from './apiToken.type'
+import { TokenListType } from './apiToken.type'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
@@ -80,10 +80,7 @@ const ApiTokens = () => {
 
     const handleFilterChanges = (_searchText: string): void => {
         const _searchTextTrimmed = _searchText.trim()
-        const _filteredData = tokenList.filter(
-            (_tokenData) =>
-                _tokenData.name.indexOf(_searchTextTrimmed) >= 0 || _tokenData.token.indexOf(_searchTextTrimmed) >= 0,
-        )
+        const _filteredData = tokenList.filter((_tokenData) => _tokenData.name.indexOf(_searchTextTrimmed) >= 0)
         setFilteredTokenList(_filteredData)
         setNoResults(_filteredData.length === 0)
     }
@@ -92,13 +89,6 @@ const ApiTokens = () => {
         setSearchText(_searchText)
         handleFilterChanges(_searchText)
     }
-
-    const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
-        success: false,
-        token: '',
-        userId: 0,
-        userIdentifier: 'API-TOKEN:test',
-    })
 
     const renderSearchToken = () => (
         <SearchBar
@@ -134,8 +124,6 @@ const ApiTokens = () => {
                         handleGenerateTokenActionButton={handleActionButton}
                         setSelectedExpirationDate={setSelectedExpirationDate}
                         selectedExpirationDate={selectedExpirationDate}
-                        tokenResponse={tokenResponse}
-                        setTokenResponse={setTokenResponse}
                         reload={getData}
                     />
                 </Route>

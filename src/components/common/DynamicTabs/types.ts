@@ -83,16 +83,7 @@ export type ParsedTabsData = {
 export interface PopulateTabDataPropsType
     extends Pick<
             DynamicTabType,
-            | 'tippyConfig'
-            | 'lastActiveTabId'
-            | 'type'
-            | 'isSelected'
-            | 'url'
-            | 'name'
-            | 'dynamicTitle'
-            | 'isAlive'
-            | 'hideName'
-            | 'id'
+            'tippyConfig' | 'type' | 'isSelected' | 'url' | 'name' | 'dynamicTitle' | 'isAlive' | 'hideName' | 'id'
         >,
         Required<
             Pick<DynamicTabType, 'shouldRemainMounted' | 'title' | 'showNameOnSelect' | 'isAlpha' | 'defaultUrl'>

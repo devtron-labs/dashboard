@@ -116,6 +116,8 @@ const RegeneratedModal = ({
             reload={reload}
             redirectToTokenList={redirectToTokenList}
             isRegenerationModal
+            open={showGenerateModal}
+            hideApiToken={tokenResponse.hideApiToken}
         />
     ) : (
         <VisibleModal className="regenerate-token-modal">
