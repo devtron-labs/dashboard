@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { generatePath, Redirect, Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
     DevtronProgressing,
@@ -23,7 +23,6 @@ import {
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
-    K8S_EMPTY_GROUP,
     RESOURCE_BROWSER_ROUTES,
     useAsync,
     useBreadcrumb,
@@ -311,14 +310,6 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
             </Route>
 
             {renderTerminal()}
-
-            <Redirect
-                to={generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
-                    clusterId,
-                    group: K8S_EMPTY_GROUP,
-                    kind: 'node',
-                })}
-            />
         </>
     )
 }
