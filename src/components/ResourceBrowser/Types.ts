@@ -210,7 +210,7 @@ export interface K8SResourceTabComponentProps
 }
 
 export interface AdminTerminalProps {
-    updateTerminalTabUrl: (queryParams: string) => void
+    updateTabUrl: UseTabsReturnType['updateTabUrl']
 }
 
 export interface SidebarChildButtonPropsType {

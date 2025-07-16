@@ -15,7 +15,9 @@
  */
 
 import {
+    ApiResourceType,
     FiltersTypeEnum,
+    ResponseType,
     ServerErrors,
     TableCellComponentProps,
     TableViewWrapperProps,
@@ -27,7 +29,13 @@ import { UseTabsReturnType } from '@Components/common/DynamicTabs/types'
 import { NodeDetailPropsType } from '@Components/v2/appDetails/appDetails.type'
 
 import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
-import { ClusterDetailBaseParams, K8SResourceListType, NODE_SEARCH_KEYS, ResourceFilterOptionsProps } from '../Types'
+import {
+    ClusterDetailBaseParams,
+    ClusterOptionType,
+    K8SResourceListType,
+    NODE_SEARCH_KEYS,
+    ResourceFilterOptionsProps,
+} from '../Types'
 
 export interface ClusterUpgradeCompatibilityInfoProps
     extends Pick<ClusterListType, 'updateTabUrl'>,
@@ -109,4 +117,9 @@ export type DynamicTabComponentWrapperProps = Pick<
 export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
     resourceListError: ServerErrors
     reloadResourceListData: () => void
+}
+
+export interface ResourceListProps {
+    selectedCluster: ClusterOptionType
+    k8SObjectMapRaw: ResponseType<ApiResourceType>
 }
