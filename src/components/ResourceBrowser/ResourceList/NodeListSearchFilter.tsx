@@ -193,7 +193,7 @@ const NodeListSearchFilter = ({
                 },
             )
 
-            Object.keys(NODE_SEARCH_KEYS).forEach((key) => {
+            Object.values(NODE_SEARCH_KEYS).forEach((key) => {
                 if (queries[key]?.length) {
                     updatedQueryObject[key] = queries[key].join(',')
                 } else {
