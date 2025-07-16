@@ -38,8 +38,6 @@ export interface GenerateTokenType {
     handleGenerateTokenActionButton: () => void
     setSelectedExpirationDate
     selectedExpirationDate
-    tokenResponse: TokenResponseType
-    setTokenResponse: React.Dispatch<React.SetStateAction<TokenResponseType>>
     reload: () => void
 }
 

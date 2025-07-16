@@ -54,7 +54,6 @@ import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorizati
 import {
     CURL_PREFIX,
     GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
-    getWebhookTokenListOptions,
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
     RESPONSE_TAB_LIST,
@@ -72,7 +71,6 @@ import {
     getDefaultUserStatusAndTimeout,
 } from '@Pages/GlobalConfigurations/Authorization/libUtils'
 import { getApiTokenHeader } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
-import { TokenListType } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.type'
 
 export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -102,7 +100,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
     const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
-    const [tokenList, setTokenList] = useState<TokenListType[]>(null)
+    const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(null)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
@@ -205,7 +203,8 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         .map((tokenData) => ({
                             ...tokenData,
                             label: tokenData.name,
-                            value: tokenData.id,
+                            value: tokenData.id.toString(),
+                            description: 'Has access',
                         })) || []
                 setTokenList(sortedResult)
             }
@@ -466,7 +465,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                     classNamePrefix="select-token"
                     placeholder="Select API token"
                     isClearable={false}
-                    options={getWebhookTokenListOptions(tokenList)}
+                    options={tokenList}
                     value={selectedToken}
                     onChange={handleSelectedTokenChange}
                     isSearchable={false}

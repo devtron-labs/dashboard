@@ -46,12 +46,3 @@ export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with req
 export const SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS =
     'Select or auto-generate token with required permissions'
 
-export const getWebhookTokenListOptions = (tokenList: TokenListType[]): TokenListOptionsType[] =>
-    tokenList.map((token) => {
-        return {
-            ...token,
-            label: token.name,
-            value: token.id.toString(),
-            description: 'Has access',
-        }
-    })

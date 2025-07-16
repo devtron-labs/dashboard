@@ -125,7 +125,6 @@ const EditAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: editData.userId,
                     userIdentifier: editData.userIdentifier,
-                    hideApiToken: result.hideApiToken,
                     userRoleGroups,
                     serverMode,
                     directPermission,
