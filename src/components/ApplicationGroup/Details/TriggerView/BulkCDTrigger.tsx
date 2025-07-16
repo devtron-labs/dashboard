@@ -394,7 +394,6 @@ const BulkCDTrigger = ({
             </div>
             <Button
                 dataTestId="bulk-cd-modal-close"
-                disabled={isLoading}
                 onClick={closeBulkCDModal}
                 size={ComponentSizeType.xs}
                 icon={<Icon name="ic-close-large" size={null} color={null} />}
