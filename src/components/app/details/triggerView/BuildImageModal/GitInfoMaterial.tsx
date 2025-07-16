@@ -140,7 +140,11 @@ const GitInfoMaterial = ({
         )
 
         try {
-            const { result: commitHistoryResult } = await getGitMaterialByCommitHash(ciNodeId, commitHash)
+            // Note: Here material id is expected instead of gitMaterialId
+            const { result: commitHistoryResult } = await getGitMaterialByCommitHash(
+                String(selectedMaterial.id),
+                commitHash,
+            )
 
             updatedMaterial.history = [
                 {
@@ -218,7 +222,7 @@ const GitInfoMaterial = ({
                 await updateGitCommitHistory(commitHash)
             }
         } else {
-            // Won't update searchText here, will be set to empty on success
+            // Won't update searchText here, rather will set to empty on success
             const updatedMaterial: typeof selectedMaterial = {
                 ...selectedMaterial,
                 isMaterialLoading: true,
@@ -248,17 +252,17 @@ const GitInfoMaterial = ({
         handleSearchChange('')
     }
 
-    const refreshMaterial = async () => {
-        if (!selectedMaterial) {
+    const refreshMaterial = async (pipelineId: number, gitMaterialId: number) => {
+        const requiredMaterial = materialList.find((material) => material.gitMaterialId === gitMaterialId)
+
+        if (!requiredMaterial) {
             return
         }
 
-        const selectedMaterialId = selectedMaterial.id
-
         try {
             // Will set SearchText to empty on success
-            const updatedMaterial: typeof selectedMaterial = {
-                ...selectedMaterial,
+            const updatedMaterial: typeof requiredMaterial = {
+                ...requiredMaterial,
                 isMaterialLoading: true,
             }
 
@@ -266,14 +270,14 @@ const GitInfoMaterial = ({
                 prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
             )
 
-            // TODO: AbortController
+            // TODO: Disable search
             await refreshGitMaterial(String(updatedMaterial.gitMaterialId), null)
             await fetchMaterialList(updatedMaterial)
         } catch (error) {
             showError(error)
             setMaterialList((prevMaterialList) =>
                 prevMaterialList.map((material) =>
-                    material.id === selectedMaterialId ? { ...material, isMaterialLoading: false } : material,
+                    material.id === requiredMaterial.id ? { ...material, isMaterialLoading: false } : material,
                 ),
             )
         }
@@ -290,6 +294,7 @@ const GitInfoMaterial = ({
 
         const selectedMaterialId = selectedMaterial.id
 
+        // TODO: Need to confirm earlier the key was showChanges in some places but this makes sense
         try {
             const updatedMaterial: typeof selectedMaterial = {
                 ...selectedMaterial,
@@ -325,7 +330,7 @@ const GitInfoMaterial = ({
     const renderExcludedCommitsOption = () => (
         <ActionMenu
             id="toggle-exclude-include-commits"
-            onClick={onClickShowBranchRegexModal}
+            onClick={toggleIncludeExcludeCommits}
             options={[
                 {
                     items: [
@@ -350,6 +355,8 @@ const GitInfoMaterial = ({
                         size={16}
                     />
                 ),
+                variant: ButtonVariantType.borderLess,
+                style: ButtonStyleType.neutral,
             }}
         />
     )
@@ -476,7 +483,7 @@ const GitInfoMaterial = ({
                             return {
                                 ...commitHistory,
                                 isSelected:
-                                    commitHistory?.webhookData?.id &&
+                                    !!commitHistory?.webhookData?.id &&
                                     String(commitHistory.webhookData.id) === String(commitId),
                             }
                         }

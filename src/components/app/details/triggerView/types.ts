@@ -376,6 +376,7 @@ export interface TriggerViewState {
     searchImageTag?: string
     resourceFilters?: FilterConditionsListType[]
     selectedWebhookNodeId: number
+    isEnvListLoading?: boolean
 }
 
 export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {

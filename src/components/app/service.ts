@@ -339,8 +339,8 @@ export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSign
     })
 }
 
-export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string, abortSignal?: AbortSignal) {
-    return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
+export function getGitMaterialByCommitHash(materialId: string, commitHash: string, abortSignal?: AbortSignal) {
+    return get(`${Routes.COMMIT_INFO}/${materialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
 }
 
 export const getCDTriggerStatus = (appId) => {

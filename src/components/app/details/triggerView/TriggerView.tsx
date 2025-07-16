@@ -99,6 +99,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             searchImageTag: '',
             resourceFilters: [],
             selectedWebhookNodeId: null,
+            isEnvListLoading: false,
         }
         this.onClickCDMaterial = this.onClickCDMaterial.bind(this)
         this.abortController = new AbortController()
@@ -125,9 +126,9 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     getEnvironments = () => {
+        this.setState({ isEnvListLoading: true })
         getEnvironmentListMinPublic()
             .then((response) => {
-                // TODO: There is no loader for this :/
                 const list = []
                 list.push({
                     id: 0,
@@ -154,6 +155,8 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((error) => {
                 showError(error)
+            }).finally(() => {
+                this.setState({ isEnvListLoading: false })
             })
     }
 
@@ -594,7 +597,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     render() {
-        if (this.state.view === ViewType.LOADING) {
+        if (this.state.view === ViewType.LOADING || this.state.isEnvListLoading) {
             return <Progressing pageLoader />
         }
         if (this.state.view === ViewType.ERROR) {

@@ -258,6 +258,7 @@ const BuildImageModal = ({
 
             const history = material.history.filter((historyItem) => historyItem.isSelected)
             if (!history.length) {
+                // FIXME: Will include/exclude impact this?
                 history.push(material.history[0])
             }
 
@@ -512,6 +513,9 @@ const BuildImageModal = ({
             isLoading={showContentLoader}
             error={materialListError}
             errorScreenManagerProps={getErrorScreenManagerProps()}
+            progressingProps={{
+                pageLoader: true,
+            }}
         >
             {/* TODO: Add prompt for unsaved changes */}
             {/* TODO: Check by changing ciNodeId to `abc` */}
