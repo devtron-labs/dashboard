@@ -119,7 +119,7 @@ const GitInfoMaterial = ({
                         ...newSelectedMaterialItem.result[0],
                         searchText: '',
                         isMaterialLoading: false,
-                        isSelected: updatedMaterial.isSelected,
+                        isSelected: material.isSelected,
                         showAllCommits: updatedMaterial.showAllCommits,
                     }
                 }
@@ -303,7 +303,15 @@ const GitInfoMaterial = ({
             }
 
             setMaterialList((prevMaterialList) =>
-                prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
+                prevMaterialList.map((material) =>
+                    material.id === selectedMaterialId
+                        ? {
+                              ...material,
+                              //   Not setting showAllCommits here, rather will set it in fetchMaterialList
+                              isMaterialLoading: true,
+                          }
+                        : material,
+                ),
             )
             await fetchMaterialList(updatedMaterial)
         } catch (error) {
