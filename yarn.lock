@@ -1722,9 +1722,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.17.0-pre-13":
-  version: 1.17.0-pre-13
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.17.0-pre-13"
+"@devtron-labs/devtron-fe-common-lib@npm:1.17.0-pre-14":
+  version: 1.17.0-pre-14
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.17.0-pre-14"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1746,6 +1746,7 @@ __metadata:
     codemirror-json-schema: "npm:0.8.0"
     dayjs: "npm:^1.11.13"
     fast-json-patch: "npm:^3.1.1"
+    focus-trap-react: "npm:^10.3.1"
     framer-motion: "npm:^6.5.1"
     jsonpath-plus: "npm:^10.3.0"
     marked: "npm:^13.0.3"
@@ -1773,7 +1774,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/1e30a7ea88dd09be5fbcc140edea8d24495bd90b945ebcd0dc41cdebe69a8e2b41770632e3741f1833c26d5d5b088c18ce2cd2e48fdf0e88ff617d3e9383f52b
+  checksum: 10c0/fa1b071e37da0e0b46c0a1aa473d01d206fcbba58cc315bee9f98c50feffa138219f73f46b625948cc34659a1862d53a3cfcad0db75e46575cc9a46f3dccff7a
   languageName: node
   linkType: hard
 
@@ -5685,7 +5686,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.17.0-pre-13"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.17.0-pre-14"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"
@@ -7038,6 +7039,29 @@ __metadata:
   version: 0.6.32
   resolution: "flexsearch@npm:0.6.32"
   checksum: 10c0/f033fba51568bcd4f8fc0588cd457a0af15b48dfcdf1128341b0af19949ba957ada2ff2b39bb28a5a11df0dda8e73ca6fb7518d06c42f8fd8adc1679b93d0d41
+  languageName: node
+  linkType: hard
+
+"focus-trap-react@npm:^10.3.1":
+  version: 10.3.1
+  resolution: "focus-trap-react@npm:10.3.1"
+  dependencies:
+    focus-trap: "npm:^7.6.1"
+    tabbable: "npm:^6.2.0"
+  peerDependencies:
+    prop-types: ^15.8.1
+    react: ">=16.3.0"
+    react-dom: ">=16.3.0"
+  checksum: 10c0/ac39d46e5bc4eacfc3465915fe8c223283a99ae743afa73412416238b633fc0af19df023dca469945639b9151fc1572c59985f978405f1db9fe8f4c23f3db1a2
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:^7.6.1":
+  version: 7.6.5
+  resolution: "focus-trap@npm:7.6.5"
+  dependencies:
+    tabbable: "npm:^6.2.0"
+  checksum: 10c0/36cac0d9b05fe5824733675bb49792842dae4704286ef7e17c736ee0c9c14701e874e6821449e78b70c17e42ba1b2c98ef10434bfe644b9d7654d8ef7f1c8faf
   languageName: node
   linkType: hard
 
@@ -11293,6 +11317,13 @@ __metadata:
     "@pkgr/core": "npm:^0.1.0"
     tslib: "npm:^2.6.2"
   checksum: 10c0/c3d3aa8e284f3f84f2f868b960c9f49239b364e35f6d20825a448449a3e9c8f49fe36cdd5196b30615682f007830d46f2ea354003954c7336723cb821e4b6519
+  languageName: node
+  linkType: hard
+
+"tabbable@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "tabbable@npm:6.2.0"
+  checksum: 10c0/ced8b38f05f2de62cd46836d77c2646c42b8c9713f5bd265daf0e78ff5ac73d3ba48a7ca45f348bafeef29b23da7187c72250742d37627883ef89cbd7fa76898
   languageName: node
   linkType: hard
 
