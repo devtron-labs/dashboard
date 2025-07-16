@@ -28,7 +28,7 @@ import {
 import emptyGeneratToken from '@Images/ic-empty-generate-token.png'
 import { EMPTY_STATE_STATUS } from '@Config/constantMessaging'
 
-import { TokenListType, TokenResponseType } from './apiToken.type'
+import { TokenListType } from './apiToken.type'
 import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
@@ -90,13 +90,6 @@ const ApiTokens = () => {
         handleFilterChanges(_searchText)
     }
 
-    const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
-        success: false,
-        token: '',
-        userId: 0,
-        userIdentifier: 'API-TOKEN:test',
-    })
-
     const renderSearchToken = () => (
         <SearchBar
             initialSearchText={searchText}
@@ -131,8 +124,6 @@ const ApiTokens = () => {
                         handleGenerateTokenActionButton={handleActionButton}
                         setSelectedExpirationDate={setSelectedExpirationDate}
                         selectedExpirationDate={selectedExpirationDate}
-                        tokenResponse={tokenResponse}
-                        setTokenResponse={setTokenResponse}
                         reload={getData}
                     />
                 </Route>
