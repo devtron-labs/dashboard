@@ -27,7 +27,7 @@ import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
-import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP } from '../Constants'
+import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
 import NodeActionsMenu from './NodeActionsMenu'
@@ -53,8 +53,8 @@ const K8sResourceListTableCellComponent = ({
     const { push } = useHistory()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
-    const isNodeListingAndNodeHasErrors = false
-    const isNodeUnschedulable = false
+    const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
+    const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
     const nameButtonRef = useRef<HTMLButtonElement>(null)
     const contextMenuRef = useRef<HTMLButtonElement>(null)
 
