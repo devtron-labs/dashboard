@@ -64,20 +64,21 @@ const NodeListSearchFilter = ({
             searchFilterRef.current?.openMenu('first')
         }
 
-        const handleBlurInput = () => {
-            searchFilterRef.current?.blur()
-        }
-
         if (registerShortcut) {
             registerShortcut({ keys: ['/'], callback: handleFocusInput })
-            registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
         }
 
         return () => {
             unregisterShortcut(['/'])
-            unregisterShortcut(['Escape'])
         }
     }, [])
+
+    useEffect(() => {
+        // focusing select picker after custom option click
+        if (nodeSearchKey) {
+            searchFilterRef.current?.focus()
+        }
+    }, [nodeSearchKey])
 
     // ASYNC CALLS
     const [nodeK8sVersionsLoading, nodeK8sVersionOptions, nodeK8sVersionsError, refetchNodeK8sVersions] =
