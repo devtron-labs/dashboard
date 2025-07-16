@@ -389,7 +389,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         }
     }
 
-    const getGrafanaModuleStatus = () => getModuleInfo(ModuleNameMap.GRAFANA)
+    const getGrafanaModuleStatus = async () => {
+        try {
+            const response = await getModuleInfo(ModuleNameMap.GRAFANA)
+            return response
+        } catch {
+            return null
+        }
+    }
 
     const handleFetchInitialData = async () => {
         try {
