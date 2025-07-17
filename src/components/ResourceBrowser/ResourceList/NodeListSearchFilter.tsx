@@ -245,7 +245,7 @@ const NodeListSearchFilter = ({
                 icon={<Icon name="ic-filter" color="N600" />}
                 keyboardShortcut="/"
                 formatOptionLabel={formatOptionLabel}
-                size={ComponentSizeType.small}
+                size={ComponentSizeType.medium}
             />
 
             <SelectPicker

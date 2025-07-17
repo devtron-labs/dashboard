@@ -205,7 +205,7 @@ const ResourceFilterOptions = ({
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="flexbox dc__gap-8">
+                <div className="flex dc__gap-8">
                     {isEventListing && (
                         <SegmentedControl
                             name="event-type-control"
