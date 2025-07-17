@@ -20,44 +20,6 @@ import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE_TYPE } from '../../config'
 
-export interface CodeEditorScript {
-    apiVersion: string
-    kind: string
-    spec: {
-        include: {
-            names: string[]
-        }
-        exclude: {
-            names: string[]
-        }
-        envId: number[]
-        global: boolean
-        deploymentTemplate: {
-            spec: {
-                patchJson: any
-            }
-        }
-        configMap: {
-            spec: {
-                names: string[]
-                patchJson: any
-            }
-        }
-        secret: {
-            spec: {
-                names: string[]
-                patchJson: any
-            }
-        }
-    }
-}
-
-export interface BulkConfiguration {
-    operation: string
-    script: CodeEditorScript
-    readme: string
-}
-
 export interface DTImpactedObjects {
     appId: number
     appName: string
@@ -122,9 +84,9 @@ export interface BulkEditsState {
     outputResult: BulkOutput
     showExamples: boolean
     activeOutputTab: 'output' | 'impacted'
-    bulkConfig: BulkConfiguration[]
     codeEditorPayload: string
     selectedReadmeVersionOption: OptionType<BulkEditVersion>
+    schema: Record<string, any> | null
 }
 
 export interface OutputTabType {
@@ -140,6 +102,6 @@ export interface BulkEditsProps extends RouteComponentProps<{}> {
 }
 
 export enum BulkEditVersion {
-    v1 = 'v1beta1',
-    v2 = 'v1beta2',
+    v1 = 'batch/v1beta1',
+    v2 = 'batch/v1beta2',
 }

@@ -16,14 +16,19 @@
 
 import { get, post } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
+
 import { Routes } from '../../config'
 import { BulkEditVersion } from './bulkEdits.type'
+
+const postBulkEditScript = importComponentFromFELibrary('postBulkEditScript', null, 'function')
+const dryRunBulkEditScript = importComponentFromFELibrary('dryRunBulkEditScript', null, 'function')
 
 export function updateBulkList(request): Promise<any> {
     const { apiVersion } = request ?? {}
 
-    if (apiVersion === BulkEditVersion.v2) {
-        // TODO
+    if (apiVersion === BulkEditVersion.v2 && postBulkEditScript) {
+        return postBulkEditScript(request)
     }
 
     return post(Routes.BULK_EDIT_V1_BASEPATH, request)
@@ -32,8 +37,8 @@ export function updateBulkList(request): Promise<any> {
 export function updateImpactedObjectsList(request): Promise<any> {
     const { apiVersion } = request
 
-    if (apiVersion === BulkEditVersion.v2) {
-        // TODO
+    if (apiVersion === BulkEditVersion.v2 && dryRunBulkEditScript) {
+        return dryRunBulkEditScript(request)
     }
 
     return post(`${Routes.BULK_EDIT_V1_BASEPATH}/dryrun`, request)

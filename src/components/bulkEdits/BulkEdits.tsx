@@ -34,6 +34,8 @@ import {
     MODES,
     Icon,
     GenericSectionErrorState,
+    ResponseType,
+    BulkEditConfigV2Type,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { SERVER_MODE, ViewType } from '../../config'
 import { BulkEditsProps, BulkEditsState, BulkEditVersion } from './bulkEdits.type'
@@ -53,10 +55,6 @@ import { importComponentFromFELibrary } from '@Components/common'
 const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
 
 const ReadmeVersionOptions = [
-    {
-        label: 'v1beta1/application',
-        value: BulkEditVersion.v1,
-    },
     ...(getBulkEditConfig
         ? [
               {
@@ -65,6 +63,10 @@ const ReadmeVersionOptions = [
               },
           ]
         : []),
+    {
+        label: 'v1beta1/application',
+        value: BulkEditVersion.v1,
+    },
 ]
 
 export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
@@ -77,7 +79,6 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             outputResult: undefined,
             impactedObjects: undefined,
             isReadmeLoading: true,
-            bulkConfig: [],
             readmeVersionOptions: ReadmeVersionOptions,
             selectedReadmeVersionOption: ReadmeVersionOptions[0],
             readmeResult: {
@@ -87,6 +88,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
             showExamples: true,
             activeOutputTab: 'output',
             codeEditorPayload: undefined,
+            schema: null,
         }
     }
 
@@ -101,26 +103,26 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
     getInitialized() {
         Promise.allSettled([
-            getBulkEditConfig?.().then(({ result: { readme } }) => {
-                return readme
-            }),
+            (getBulkEditConfig?.() as Promise<ResponseType<BulkEditConfigV2Type>>).then(
+                ({ result: { readme, schema } }) => {
+                    this.setState({ schema })
+
+                    return readme
+                },
+            ),
             getSeeExample().then(({ result }) => {
                 return result[0].readme
             }),
-        ])
-            .then(([v2ReadmeResult, v1ReadmeResult]) => {
-                const v2Readme = v2ReadmeResult.status === 'fulfilled' ? v2ReadmeResult.value : null
-                const v1Readme = v1ReadmeResult.status === 'fulfilled' ? v1ReadmeResult.value : null
+        ]).then(([v2ReadmeResult, v1ReadmeResult]) => {
+            const v2Readme = v2ReadmeResult.status === 'fulfilled' ? v2ReadmeResult.value : null
+            const v1Readme = v1ReadmeResult.status === 'fulfilled' ? v1ReadmeResult.value : null
 
-                this.setState({
-                    isReadmeLoading: false,
-                    readmeResult: { [BulkEditVersion.v1]: v1Readme, [BulkEditVersion.v2]: v2Readme },
-                })
+            this.setState({
+                isReadmeLoading: false,
+                view: ViewType.FORM,
+                readmeResult: { [BulkEditVersion.v1]: v1Readme, [BulkEditVersion.v2]: v2Readme },
             })
-            .catch((error) => {
-                showError(error)
-                this.setState({ isReadmeLoading: false, statusCode: error.code })
-            })
+        })
     }
 
     handleRunButton = () => {
@@ -248,12 +250,13 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
 
         return (
             <div className="dc__grid-rows-2 flex-grow-1 dc__overflow-hidden">
-                <div className="dc__overflow-auto">
+                <div className="dc__overflow-hidden">
                     <CodeEditor
                         mode={MODES.YAML}
-                        height="auto"
+                        height="100%"
                         value={this.state.codeEditorPayload}
                         onChange={this.handleConfigChange}
+                        validatorSchema={this.state.schema}
                     />
                 </div>
                 <div className="bulk-output-drawer bg__primary flexbox-col dc__overflow-auto">
@@ -449,7 +452,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         }
 
         if (!readmeJson) {
-            return <GenericSectionErrorState rootClassName='flex-grow-1' />
+            return <GenericSectionErrorState rootClassName="flex-grow-1" />
         }
 
         return (
