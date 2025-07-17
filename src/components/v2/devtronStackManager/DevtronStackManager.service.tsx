@@ -68,7 +68,7 @@ export const getAllModulesInfo = async (): Promise<Record<string, ModuleInfo>> =
     return Promise.resolve(moduleStatusMap)
 }
 
-export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoResponse> => {
+const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInfoResponse> => {
     // getting Security Module Installation status
     const res: ModuleInfo = {
         id: null,
@@ -100,39 +100,44 @@ export const getSecurityModulesInfoInstalledStatus = async (): Promise<ModuleInf
 }
 
 export const getModuleInfo = async (moduleName: string, forceReload?: boolean): Promise<ModuleInfoResponse> => {
-    const _savedModuleStatusMap = getSavedModuleStatus()
-    if (!forceReload && _savedModuleStatusMap && _savedModuleStatusMap[moduleName]) {
-        return Promise.resolve({ status: '', code: 200, result: _savedModuleStatusMap[moduleName] })
-    }
-    if (moduleName === ModuleNameMap.SECURITY) {
-        return getSecurityModulesInfoInstalledStatus()
-    }
-    const { result } = await get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
-    if (result && result.status === ModuleStatus.INSTALLED) {
-        if (moduleName === ModuleNameMap.CICD && !isReloadToastShown) {
-            // To show a reload tost if CICD installation complete
-            ToastManager.showToast({
-                variant: ToastVariantType.info,
-                title: 'Update available',
-                description: 'You are viewing an outdated version of Devtron UI.',
-                buttonProps: {
-                    text: 'Reload',
-                    dataTestId: 'reload-button',
-                    onClick: refresh,
-                    startIcon: <ICArrowClockwise />,
-                },
-                icon: <Icon name="ic-sparkle-color" color={null} />,
-                progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
-            })
-            isReloadToastShown = true
+    try {
+        const _savedModuleStatusMap = getSavedModuleStatus()
+        if (!forceReload && _savedModuleStatusMap && _savedModuleStatusMap[moduleName]) {
+            return Promise.resolve({ status: '', code: 200, result: _savedModuleStatusMap[moduleName] })
         }
-        _savedModuleStatusMap[moduleName] = { ...result, moduleResourcesStatus: null }
-        if (typeof Storage !== 'undefined') {
-            localStorage.moduleStatusMap = JSON.stringify(_savedModuleStatusMap)
+        if (moduleName === ModuleNameMap.SECURITY) {
+            const moduleResponse = await getSecurityModulesInfoInstalledStatus()
+            return moduleResponse
         }
-        moduleStatusMap = _savedModuleStatusMap
+        const { result } = await get(`${Routes.MODULE_INFO_API}?name=${moduleName}`)
+        if (result && result.status === ModuleStatus.INSTALLED) {
+            if (moduleName === ModuleNameMap.CICD && !isReloadToastShown) {
+                // To show a reload tost if CICD installation complete
+                ToastManager.showToast({
+                    variant: ToastVariantType.info,
+                    title: 'Update available',
+                    description: 'You are viewing an outdated version of Devtron UI.',
+                    buttonProps: {
+                        text: 'Reload',
+                        dataTestId: 'reload-button',
+                        onClick: refresh,
+                        startIcon: <ICArrowClockwise />,
+                    },
+                    icon: <Icon name="ic-sparkle-color" color={null} />,
+                    progressBarBg: UPDATE_AVAILABLE_TOAST_PROGRESS_BG,
+                })
+                isReloadToastShown = true
+            }
+            _savedModuleStatusMap[moduleName] = { ...result, moduleResourcesStatus: null }
+            if (typeof Storage !== 'undefined') {
+                localStorage.moduleStatusMap = JSON.stringify(_savedModuleStatusMap)
+            }
+            moduleStatusMap = _savedModuleStatusMap
+        }
+        return Promise.resolve({ status: '', code: 200, result })
+    } catch {
+        return null
     }
-    return Promise.resolve({ status: '', code: 200, result })
 }
 
 export const executeModuleEnableAction = (moduleName: string, toolVersion: string): Promise<ModuleActionResponse> =>
@@ -181,11 +186,13 @@ export const getAllModules = (): Promise<AllModuleInfoResponse> =>
         res.json(),
     )
 
-export const getReleasesNotes = async (installationType: InstallationType, serverVersion: string): Promise<ReleaseNotesResponse> => {
+export const getReleasesNotes = async (
+    installationType: InstallationType,
+    serverVersion: string,
+): Promise<ReleaseNotesResponse> => {
     const url = getUrlWithSearchParams(`${window._env_.CENTRAL_API_ENDPOINT}/${Routes.RELEASE_NOTES_API}`, {
         repo: INSTALLATION_TYPE_TO_REPO_MAP[installationType],
         serverVersion,
-
     })
     const response = await fetch(url)
     return response.json()
