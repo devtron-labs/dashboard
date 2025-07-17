@@ -68,11 +68,6 @@
             display: grid;
             grid-template-columns: auto 160px 1px 180px;
             column-gap: 8px;
-
-            &__shortcut-key {
-                right: 10px;
-                top: 6px;
-            }
         }
 
         .resource-filter-options-container {

@@ -34,7 +34,11 @@ import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.servic
 import { DEFAULT_NODE_K8S_VERSION, NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
 import ColumnSelector from './ColumnSelector'
-import { NODE_LIST_SEARCH_FILTER_OPTIONS, NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP } from './constants'
+import {
+    NODE_LIST_SEARCH_FILTER_OPTIONS,
+    NODE_SEARCH_KEY_PLACEHOLDER,
+    NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP,
+} from './constants'
 import { NodeSearchListOptionType } from './types'
 import { getNodeListSearchOptions, getNodeSearchKeysOptionsList } from './utils'
 
@@ -207,6 +211,7 @@ const NodeListSearchFilter = ({
     }
 
     const handleMenuClose = () => {
+        searchFilterRef.current?.blur()
         setNodeSearchKey(null)
     }
 
@@ -221,17 +226,13 @@ const NodeListSearchFilter = ({
     const getOptionValue = ({ value, label, identifier }: NodeSearchListOptionType) => `${identifier}/${value}/${label}`
 
     return (
-        <div className="node-listing-search-container pt-16 pr-20 pb-12 pl-20 dc__zi-5">
+        <div className="node-listing-search-container pt-16 px-20 pb-12 dc__zi-5">
             <SelectPicker<string, true>
                 selectRef={searchFilterRef}
                 onMenuClose={handleMenuClose}
                 options={searchOptions}
                 isMulti
-                placeholder={
-                    nodeSearchKey
-                        ? 'Select match criteria using a combination of name, labels, or node groups'
-                        : 'Filter by Node, Labels or Node Groups'
-                }
+                placeholder={NODE_SEARCH_KEY_PLACEHOLDER[nodeSearchKey] || 'Filter by Node, Labels or Node groups'}
                 required
                 inputId="node-list-search"
                 isSearchable={!!nodeSearchKey}
@@ -241,7 +242,8 @@ const NodeListSearchFilter = ({
                 getOptionValue={getOptionValue}
                 renderCustomOptions={renderCustomOptions}
                 shouldRenderCustomOptions={!nodeSearchKey}
-                icon={<Icon name="ic-filter" color={null} />}
+                icon={<Icon name="ic-filter" color="N600" />}
+                keyboardShortcut="/"
                 formatOptionLabel={formatOptionLabel}
                 size={ComponentSizeType.small}
             />

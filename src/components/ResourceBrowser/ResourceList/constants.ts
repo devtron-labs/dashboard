@@ -53,3 +53,9 @@ export const NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP: Record<NODE_SEARCH_KEYS, strin
     [NODE_SEARCH_KEYS.NODE_GROUP]: 'Node group',
     [NODE_SEARCH_KEYS.LABEL]: 'Label',
 }
+
+export const NODE_SEARCH_KEY_PLACEHOLDER: Record<NODE_SEARCH_KEYS, string> = {
+    [NODE_SEARCH_KEYS.NAME]: 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal',
+    [NODE_SEARCH_KEYS.LABEL]: 'Search by key=value Eg. environment=production, tier=frontend',
+    [NODE_SEARCH_KEYS.NODE_GROUP]: 'Search by node group name Eg. mainnode',
+}

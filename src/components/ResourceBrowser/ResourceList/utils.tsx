@@ -521,10 +521,10 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
     }>(
         (acc, curr) => {
             ;(curr.data.labels as { key: string; value: string }[]).forEach(({ key, value }) => {
-                if (!acc.labels.has(value)) {
-                    acc.labels.set(value, {
-                        label: key,
-                        value,
+                if (!acc.labels.has(`${key}/${value}`)) {
+                    acc.labels.set(`${key}/${value}`, {
+                        label: `${key}=${value}`,
+                        value: `${key}=${value}`,
                         identifier: NODE_SEARCH_KEYS.LABEL,
                     })
                 }
@@ -552,9 +552,15 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
     )
 
     return {
-        labels: Array.from(labels).map(([, value]) => value),
-        nodeGroups: Array.from(nodeGroups).map(([, value]) => value),
-        nodeNames: Array.from(nodeNames).map(([, value]) => value),
+        labels: Array.from(labels)
+            .map(([, value]) => value)
+            .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
+        nodeGroups: Array.from(nodeGroups)
+            .map(([, value]) => value)
+            .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
+        nodeNames: Array.from(nodeNames)
+            .map(([, value]) => value)
+            .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
     }
 }
 
@@ -575,7 +581,7 @@ export const getNodeListSearchOptions = ({
         case NODE_SEARCH_KEYS.LABEL:
             return [{ label: 'Labels', options: labels }]
         case NODE_SEARCH_KEYS.NAME:
-            return [{ label: 'Node Names', options: nodeNames }]
+            return [{ label: 'Names', options: nodeNames }]
         default:
             return []
     }
