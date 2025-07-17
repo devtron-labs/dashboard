@@ -353,6 +353,7 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                                         App Id: {elm.appId} <br />
                                         App Name: {elm.appName} <br />
                                         Environment Id: {elm.envId} <br />
+                                        {elm.envName && <>Environment Name: {elm.envName} <br /></>}
                                         <br />
                                     </div>
                                 )

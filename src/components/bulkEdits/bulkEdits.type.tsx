@@ -24,12 +24,14 @@ export interface DTImpactedObjects {
     appId: number
     appName: string
     envId: number
+    envName?: string // Only received for v1beta2
 }
 
 export interface CMandSecretImpactedObjects {
     appId: number
     appName: string
     envId: number
+    envName?: string // Only received for v1beta2
     names: string[]
 }
 
@@ -44,6 +46,7 @@ export interface DtOutputKeys {
     appName: string
     envId: number
     message: string
+    envName?: string // Only received for v1beta2
 }
 
 export interface CMandSecretOutputKeys {
@@ -52,6 +55,7 @@ export interface CMandSecretOutputKeys {
     envId: number
     message: string
     names: string[]
+    envName?: string // Only received for v1beta2
 }
 
 export interface DTBulkOutput {

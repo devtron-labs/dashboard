@@ -34,6 +34,7 @@ const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOu
             App Id: {CMandSecretOutputKeys.appId} <br />
             App Name: {CMandSecretOutputKeys.appName} <br />
             Environment Id: {CMandSecretOutputKeys.envId} <br />
+            {CMandSecretOutputKeys.envName && <>Environment Name: {CMandSecretOutputKeys.envName} <br /></>}
             Names : {CMandSecretOutputKeys.names.join(', ')} <br />
             Message: {CMandSecretOutputKeys.message} <br />
             <br />
@@ -102,6 +103,7 @@ export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
             App Id: {DTOutputKeys.appId} <br />
             App Name: {DTOutputKeys.appName} <br />
             Environment Id: {DTOutputKeys.envId} <br />
+            {DTOutputKeys.envName && <>Environment Name: {DTOutputKeys.envName} <br /></>}
             Message: {DTOutputKeys.message} <br />
             <br />
         </div>
@@ -114,6 +116,7 @@ export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretIm
             App Id: {CMandSecretImpactedObject.appId} <br />
             App Name: {CMandSecretImpactedObject.appName} <br />
             Environment Id: {CMandSecretImpactedObject.envId} <br />
+            {CMandSecretImpactedObject.envName && <>Environment Name: {CMandSecretImpactedObject.envName} <br /></>}
             Names : {CMandSecretImpactedObject.names.join(', ')} <br />
             <br />
         </div>
