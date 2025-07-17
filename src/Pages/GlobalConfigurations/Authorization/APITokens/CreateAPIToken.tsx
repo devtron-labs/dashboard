@@ -43,7 +43,7 @@ import {
     usePermissionConfiguration,
 } from '../Shared/components/PermissionConfigurationForm'
 import { createUserPermissionPayload, validateDirectPermissionForm } from '../utils'
-import { FormType, GenerateTokenType } from './apiToken.type'
+import { FormType, GenerateTokenType, TokenResponseType } from './apiToken.type'
 import { getDateInMilliseconds } from './apiToken.utils'
 import ExpirationDate from './ExpirationDate'
 import GenerateActionButton from './GenerateActionButton'
@@ -69,8 +69,6 @@ const CreateAPIToken = ({
     handleGenerateTokenActionButton,
     setSelectedExpirationDate,
     selectedExpirationDate,
-    tokenResponse,
-    setTokenResponse,
     reload,
 }: GenerateTokenType) => {
     const history = useHistory()
@@ -106,6 +104,13 @@ const CreateAPIToken = ({
         allowManageAllAccess,
     } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
+    const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
+        success: false,
+        token: '',
+        userId: 0,
+        userIdentifier: 'API-TOKEN:test',
+        hideApiToken: false,
+    })
     const validationRules = new ValidationRules()
 
     // Reset selected expiration date to 30 days on unmount
@@ -210,6 +215,7 @@ const CreateAPIToken = ({
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.userId,
                     userIdentifier: result.userIdentifier,
+                    hideApiToken: result.hideApiToken,
                     userRoleGroups,
                     serverMode,
                     directPermission,
@@ -308,13 +314,13 @@ const CreateAPIToken = ({
                 buttonText="Generate token"
                 disabled={isSaveDisabled}
             />
-
             <GenerateModal
                 close={handleGenerateTokenActionButton}
                 token={tokenResponse.token}
                 reload={reload}
                 redirectToTokenList={redirectToTokenList}
                 open={showGenerateModal}
+                hideApiToken={tokenResponse.hideApiToken}
             />
         </div>
     )
