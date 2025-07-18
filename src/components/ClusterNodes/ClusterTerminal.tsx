@@ -88,7 +88,11 @@ const ClusterTerminal = ({
 }: ClusterTerminalType) => {
     const { replace } = useHistory()
     const location = useLocation()
-    const isAdminTerminalVisible = location.pathname.includes('terminal')
+    const isAdminTerminalVisible =
+        location.pathname ===
+        generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
+            clusterId,
+        })
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
