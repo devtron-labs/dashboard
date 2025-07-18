@@ -33,7 +33,7 @@ const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOu
         <div>
             App Id: {CMandSecretOutputKeys.appId} <br />
             App Name: {CMandSecretOutputKeys.appName} <br />
-            Environment Id: {CMandSecretOutputKeys.envId} <br />
+            {CMandSecretOutputKeys.envId && <>Environment Id: {CMandSecretOutputKeys.envId} <br /></>}
             {CMandSecretOutputKeys.envName && <>Environment Name: {CMandSecretOutputKeys.envName} <br /></>}
             Names : {CMandSecretOutputKeys.names.join(', ')} <br />
             Message: {CMandSecretOutputKeys.message} <br />
@@ -102,7 +102,7 @@ export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
         <div>
             App Id: {DTOutputKeys.appId} <br />
             App Name: {DTOutputKeys.appName} <br />
-            Environment Id: {DTOutputKeys.envId} <br />
+            {DTOutputKeys.envId && <>Environment Id: {DTOutputKeys.envId} <br /></>}
             {DTOutputKeys.envName && <>Environment Name: {DTOutputKeys.envName} <br /></>}
             Message: {DTOutputKeys.message} <br />
             <br />
@@ -115,7 +115,7 @@ export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretIm
         <div>
             App Id: {CMandSecretImpactedObject.appId} <br />
             App Name: {CMandSecretImpactedObject.appName} <br />
-            Environment Id: {CMandSecretImpactedObject.envId} <br />
+            {CMandSecretImpactedObject.envId && <>Environment Id: {CMandSecretImpactedObject.envId} <br /></>}
             {CMandSecretImpactedObject.envName && <>Environment Name: {CMandSecretImpactedObject.envName} <br /></>}
             Names : {CMandSecretImpactedObject.names.join(', ')} <br />
             <br />
