@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE_TYPE } from '../../config'
 
@@ -87,7 +85,7 @@ export interface BulkEditsState {
     }
     outputResult: BulkOutput
     showExamples: boolean
-    activeOutputTab: 'output' | 'impacted'
+    activeOutputTab: 'output' | 'impacted' | 'none'
     codeEditorPayload: string
     selectedReadmeVersionOption: OptionType<BulkEditVersion>
     schema: Record<string, any> | null
@@ -100,9 +98,10 @@ export interface OutputTabType {
     name: string
 }
 
-export interface BulkEditsProps extends RouteComponentProps<{}> {
-    // close: (event) => void;
+export interface BulkEditsProps {
     serverMode: SERVER_MODE_TYPE
+    outputHeightMV: ReturnType<typeof useMotionValue<number>>
+    gridTemplateRows: ReturnType<typeof useMotionValue<string>>
 }
 
 export enum BulkEditVersion {

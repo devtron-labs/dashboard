@@ -43,7 +43,7 @@ const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOu
 }
 
 export const renderConfigMapOutput = (configMap) => {
-    return (
+    return configMap ? (
         <div>
             <div>
                 *CONFIGMAPS: <br />
@@ -94,7 +94,7 @@ export const renderConfigMapOutput = (configMap) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
 
 export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
@@ -124,7 +124,7 @@ export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretIm
 }
 
 export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
-    return (
+    return deploymentTemplate ? (
         <div>
             <div>
                 *DEPLOYMENT TEMPLATE: <br />
@@ -176,11 +176,11 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
 
 export const renderSecretOutput = (secret) => {
-    return (
+    return secret ? (
         <div>
             <div>
                 *SECRETS: <br />
@@ -232,5 +232,5 @@ export const renderSecretOutput = (secret) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
