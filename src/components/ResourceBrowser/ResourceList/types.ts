@@ -16,10 +16,13 @@
 
 import {
     ApiResourceType,
+    BaseRecentlyVisitedEntitiesTypes,
     FiltersTypeEnum,
+    K8sResourceDetailDataType,
     ResponseType,
     ServerErrors,
     TableCellComponentProps,
+    TableProps,
     TableViewWrapperProps,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -74,20 +77,9 @@ export interface K8sResourceListFilterType
     eventType: 'warning' | 'normal'
 }
 
-export interface K8SResourceListViewWrapperProps
-    extends TableViewWrapperProps<FiltersTypeEnum.URL>,
-        Pick<K8SResourceListType, 'selectedCluster' | 'selectedResource' | 'updateK8sResourceTab' | 'renderRefreshBar'>,
-        Pick<K8sResourceListFilterType, 'eventType'> {
-    selectedNamespace: string
-}
-
-export interface K8sResourceListTableCellComponentProps
-    extends TableCellComponentProps<FiltersTypeEnum.URL>,
-        Pick<
-            K8SResourceListType,
-            'selectedCluster' | 'selectedResource' | 'addTab' | 'lowercaseKindToResourceGroupMap' | 'clusterName'
-        > {
-    reloadResourceListData: () => void
+export interface AdminTerminalDummyProps
+    extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
+    clusterName: string
 }
 
 export interface ResourcePageHeaderProps {
@@ -95,11 +87,75 @@ export interface ResourcePageHeaderProps {
     renderPageHeaderActionButtons?: () => JSX.Element
 }
 
-export interface ClusterUpgradeCompatibilityInfoTableCellComponentProps
-    extends TableCellComponentProps<FiltersTypeEnum.URL>,
-        Pick<K8SResourceListType, 'lowercaseKindToResourceGroupMap'> {}
+export interface ClusterListOptionsTypes {
+    clusterList: ClusterOptionType[]
+    inputValue: string
+    recentlyVisitedResources: BaseRecentlyVisitedEntitiesTypes[]
+    isInstallationStatusView?: boolean
+}
 
-export interface ClusterUpgradeCompatibilityInfoTableWrapperProps extends TableViewWrapperProps<FiltersTypeEnum.URL> {}
+// CLUSTER UPGRADE COMPATIBILITY INFO TABLE PROPS --------->
+export type ClusterUpgradeCompatibilityInfoTableAdditionalProps = Pick<
+    K8SResourceListType,
+    'lowercaseKindToResourceGroupMap'
+> & {
+    reloadResourceListData: () => void
+}
+
+export type ClusterUpgradeCompatibilityInfoTableProps = TableProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    ClusterUpgradeCompatibilityInfoTableAdditionalProps
+>
+
+export type ClusterUpgradeCompatibilityInfoTableWrapperProps = TableViewWrapperProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    ClusterUpgradeCompatibilityInfoTableAdditionalProps
+>
+
+export type ClusterUpgradeCompatibilityInfoTableCellComponentProps = TableCellComponentProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    ClusterUpgradeCompatibilityInfoTableAdditionalProps
+>
+// <--------- CLUSTER UPGRADE COMPATIBILITY INFO TABLE PROPS
+
+// K8s RESOURCE LIST TABLE PROPS --------->
+export interface K8sResourceListTableAdditionalProps
+    extends Pick<
+        K8SResourceListType,
+        | 'selectedCluster'
+        | 'selectedResource'
+        | 'addTab'
+        | 'lowercaseKindToResourceGroupMap'
+        | 'clusterName'
+        | 'renderRefreshBar'
+    > {
+    reloadResourceListData: () => void
+    isNodeListing: boolean
+    isEventListing: boolean
+}
+
+export type K8SResourceListViewWrapperProps = TableViewWrapperProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    K8sResourceListTableAdditionalProps
+> &
+    Pick<K8sResourceListFilterType, 'selectedNamespace' | 'eventType'>
+
+export type K8sResourceListTableCellComponentProps = TableCellComponentProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    K8sResourceListTableAdditionalProps
+>
+
+export type K8sResourceListTableProps = TableProps<
+    K8sResourceDetailDataType,
+    FiltersTypeEnum.URL,
+    K8sResourceListTableAdditionalProps
+>
+// <--------- K8s RESOURCE LIST TABLE PROPS
 
 export type DynamicTabComponentWrapperProps = Pick<
     UseTabsReturnType,
@@ -109,10 +165,15 @@ export type DynamicTabComponentWrapperProps = Pick<
         children?: React.ReactElement
     }
 
-export interface ResourceRecommenderTableViewWrapperProps extends ResourceFilterOptionsProps, TableViewWrapperProps {
-    resourceListError: ServerErrors
-    reloadResourceListData: () => void
-}
+export interface ResourceRecommenderTableViewWrapperProps
+    extends TableViewWrapperProps<
+        unknown,
+        FiltersTypeEnum.URL,
+        ResourceFilterOptionsProps & {
+            resourceListError: ServerErrors
+            reloadResourceListData: () => void
+        }
+    > {}
 
 export interface ResourceListProps {
     selectedCluster: ClusterOptionType

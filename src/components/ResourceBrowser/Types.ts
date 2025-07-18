@@ -46,7 +46,6 @@ export interface K8SObjectType extends K8SObjectBaseType {
 
 export interface K8SObjectChildMapType {
     isGrouped?: boolean
-    isExpanded: boolean
     data: ApiResourceGroupType[]
 }
 
@@ -93,7 +92,7 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends Pick<TableViewWrapperProps<FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
+    extends Pick<TableViewWrapperProps<unknown, FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
         Partial<Pick<K8sResourceListFilterType, 'eventType'>> {
     selectedResource: ApiResourceGroupType
     selectedCluster?: ClusterOptionType
@@ -213,17 +212,6 @@ export interface AdminTerminalProps {
     updateTabUrl: UseTabsReturnType['updateTabUrl']
 }
 
-export interface SidebarChildButtonPropsType {
-    parentRef: React.Ref<HTMLButtonElement>
-    group: string
-    version: string
-    kind: string
-    text: string
-    namespaced: boolean
-    isSelected: boolean
-    onClick: React.MouseEventHandler<HTMLButtonElement>
-}
-
 export interface ClusterSelectorType {
     onChange: ({ label, value }) => void
     clusterList: ClusterOptionType[]
@@ -269,8 +257,11 @@ export interface NodeRowDetail {
 }
 
 export interface NodeListSearchFilterType
-    extends Pick<TableViewWrapperProps, 'visibleColumns' | 'setVisibleColumns' | 'allColumns'> {
-    searchParams: Record<string, string>
+    extends Pick<
+        TableViewWrapperProps<unknown, FiltersTypeEnum.URL>,
+        'visibleColumns' | 'setVisibleColumns' | 'allColumns'
+    > {
+    searchParams: Record<string, any>
 }
 
 export enum NODE_SEARCH_KEYS {
@@ -304,3 +295,9 @@ export type ShowAIButtonConfig = { column: string } & (
       }
     | { excludeValues: Set<string>; includeValues?: never }
 )
+
+export type RBResourceSidebarDataAttributeType = {
+    'data-group': string
+    'data-version': string
+    'data-kind': string
+}

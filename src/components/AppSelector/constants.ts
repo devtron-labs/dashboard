@@ -1,17 +1,14 @@
-import { RecentlyVisitedGroupedOptionsType } from './AppSelector.types'
+import { RecentlyVisitedGroupedOptionsType } from '@devtron-labs/devtron-fe-common-lib'
 
-export const AllApplicationsMetaData: RecentlyVisitedGroupedOptionsType = {
-    label: 'All Applications',
+export const getMinCharSearchPlaceholderGroup = (resourceKind): RecentlyVisitedGroupedOptionsType => ({
+    label: `All ${resourceKind}`,
     options: [{ value: 0, label: 'Type 3 characters to search', isDisabled: true }],
-}
+})
 
-export const APP_DETAILS_GA_EVENTS = {
-    RecentlyVisitedApps: {
-        category: 'App Selector',
-        action: 'DA_SWITCH_RECENTLY_VISITED_CLICKED',
-    },
-    SearchesAppClicked: {
-        category: 'App Selector',
-        action: 'DA_SWITCH_SEARCHED_APP_CLICKED',
-    },
+export const appSelectorGAEvents = {
+    DA_SWITCH_RECENTLY_VISITED_CLICKED: 'DA_SWITCH_RECENTLY_VISITED_CLICKED',
+    DA_SWITCH_SEARCHED_APP_CLICKED: 'DA_SWITCH_SEARCHED_APP_CLICKED',
+    JOB_SWITCH_RECENTLY_VISITED_CLICKED: 'JOB_SWITCH_RECENTLY_VISITED_CLICKED',
+    JOB_SWITCH_SEARCHED_ITEM_CLICKED: 'JOB_SWITCH_SEARCHED_ITEM_CLICKED',
+    CS_CHART_DETAIL_SWITCH_ITEM_CLICKED: 'CS_CHART_DETAIL_SWITCH_ITEM_CLICKED',
 }
