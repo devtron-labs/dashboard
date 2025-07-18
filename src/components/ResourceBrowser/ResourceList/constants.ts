@@ -25,12 +25,12 @@ export const getNodeActions = (unschedulable: boolean): ActionMenuItemType<NodeA
         startIcon: { name: 'ic-clean-brush' },
     },
     {
-        id: NodeActionMenuOptionIdEnum['edit-taints'],
+        id: NodeActionMenuOptionIdEnum.editTaints,
         label: CLUSTER_NODE_ACTIONS_LABELS.taints,
         startIcon: { name: 'ic-spray-can' },
     },
     {
-        id: NodeActionMenuOptionIdEnum['edit-yaml'],
+        id: NodeActionMenuOptionIdEnum.editYaml,
         label: CLUSTER_NODE_ACTIONS_LABELS.yaml,
         startIcon: { name: 'ic-file-edit' },
     },

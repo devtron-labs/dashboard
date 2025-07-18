@@ -15,9 +15,11 @@
  */
 
 import {
+    ApiResourceType,
     BaseRecentlyVisitedEntitiesTypes,
     FiltersTypeEnum,
     K8sResourceDetailDataType,
+    ResponseType,
     SelectPickerOptionType,
     ServerErrors,
     TableCellComponentProps,
@@ -161,7 +163,7 @@ export type DynamicTabComponentWrapperProps = Pick<
     'updateTabUrl' | 'markTabActiveById' | 'getTabId' | 'getTabById'
 > &
     ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
-        children: React.ReactElement
+        children?: React.ReactElement
     }
 
 export interface ResourceRecommenderTableViewWrapperProps
@@ -176,4 +178,9 @@ export interface ResourceRecommenderTableViewWrapperProps
 
 export interface NodeSearchListOptionType extends SelectPickerOptionType<string> {
     identifier: NODE_SEARCH_KEYS
+}
+
+export interface ResourceListProps {
+    selectedCluster: ClusterOptionType
+    k8SObjectMapRaw: ResponseType<ApiResourceType>
 }
