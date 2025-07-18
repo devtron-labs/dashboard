@@ -55,7 +55,6 @@ import { getClusterListing } from '../ResourceBrowser.service'
 import { ClusterDetailBaseParams, ClusterOptionType, K8SResourceListType } from '../Types'
 import { getClusterChangeRedirectionUrl, getTabsBasedOnRole } from '../Utils'
 import AdminTerminal from './AdminTerminal'
-import AdminTerminalDummy from './AdminTerminalDummy'
 import ClusterSelector from './ClusterSelector'
 import ClusterUpgradeCompatibilityInfo from './ClusterUpgradeCompatibilityInfo'
 import { DynamicTabComponentWrapper } from './DynamicTabComponentWrapper'
@@ -231,14 +230,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                 </Route>
             )}
             <Route path={RESOURCE_BROWSER_ROUTES.TERMINAL} exact>
-                <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                    <AdminTerminalDummy
-                        markTabActiveById={markTabActiveById}
-                        clusterName={selectedCluster.label}
-                        getTabById={getTabById}
-                        updateTabUrl={updateTabUrl}
-                    />
-                </DynamicTabComponentWrapper>
+                <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps} />
             </Route>
             {ResourceRecommender && (
                 <Route path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER} exact>
