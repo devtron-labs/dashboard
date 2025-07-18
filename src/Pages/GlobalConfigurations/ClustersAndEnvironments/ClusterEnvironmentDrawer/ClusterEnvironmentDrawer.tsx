@@ -14,44 +14,48 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
-import { generatePath } from 'react-router-dom'
+import { useEffect, useMemo, useState } from 'react'
 
 import {
     API_STATUS_CODES,
     Button,
-    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
     CustomInput,
     Drawer,
-    GenericEmptyState,
+    getSelectPickerOptionByValue,
+    Icon,
+    ModalSidebarPanel,
     noop,
+    SelectPicker,
+    SelectPickerOptionType,
     ServerErrors,
     showError,
     stopPropagation,
     TagType,
     ToastManager,
     ToastVariantType,
-    Tooltip,
+    useAsync,
     useForm,
     UseFormSubmitHandler,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICAdd } from '@Icons/ic-add.svg'
-import { ReactComponent as Close } from '@Icons/ic-close.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
+import { getClusterListing } from '@Components/ResourceBrowser/ResourceBrowser.service'
 import { getNamespaceFromLocalStorage } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
-import { deleteEnvironment, saveEnvironment, updateEnvironment } from '../cluster.service'
-import { CreateClusterTypeEnum } from '../CreateCluster/types'
+import {
+    deleteEnvironment,
+    getClusterList as getClusterDetails,
+    saveEnvironment,
+    updateEnvironment,
+} from '../cluster.service'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
-import { ClusterEnvironmentDrawerFormProps, ClusterEnvironmentDrawerProps, ClusterNamespacesDTO } from './types'
+import { ClusterNamespacesDTO, EnvDrawerProps, EnvironmentFormType } from './types'
 import { getClusterEnvironmentUpdatePayload, getClusterNamespaceByName, getNamespaceLabels } from './utils'
 
 const virtualClusterSaveUpdateApi = importComponentFromFELibrary('virtualClusterSaveUpdateApi', null, 'function')
@@ -61,41 +65,81 @@ const AssignCategorySelect = importComponentFromFELibrary('AssignCategorySelect'
 
 const getVirtualClusterSaveUpdate = (_id) => virtualClusterSaveUpdateApi?.(_id)
 
+const INITIAL_NAMESPACES = {
+    isFetching: false,
+    data: null,
+    error: null,
+}
+
+const INITIAL_NAMESPACE_LABELS = {
+    labels: null,
+    resourceVersion: null,
+}
+
 export const ClusterEnvironmentDrawer = ({
-    environmentName,
+    envId,
+    envName,
     namespace,
-    id,
     clusterId,
+    clusterName,
     isProduction,
     description,
     reload,
     hideClusterDrawer,
-    isVirtual,
-    clusterName,
+    isVirtualCluster,
     category,
-}: ClusterEnvironmentDrawerProps) => {
+}: EnvDrawerProps) => {
     // STATES
     // Manages the loading state for create and update actions
     const [crudLoading, setCrudLoading] = useState(false)
     // Controls the visibility of the delete confirmation dialog
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     // Stores namespace labels and resourceVersion fetched from the cluster
-    const [namespaceLabels, setNamespaceLabels] = useState<{ labels: TagType[]; resourceVersion: string }>({
-        labels: null,
-        resourceVersion: null,
-    })
+    const [namespaceLabels, setNamespaceLabels] = useState<{ labels: TagType[]; resourceVersion: string }>(
+        INITIAL_NAMESPACE_LABELS,
+    )
     // Stores the response from the clusterNamespaces API, including fetching state, data, and any error messages
     const [clusterNamespaces, setClusterNamespaces] = useState<{
         isFetching: boolean
         data: ClusterNamespacesDTO[]
         error: ServerErrors
-    }>({
-        isFetching: false,
-        data: null,
-        error: null,
+    }>(INITIAL_NAMESPACES)
+
+    // Need different state since validations change on basis of this state
+    const [isSelectedClusterVirtual, setIsSelectedClusterVirtual] = useState(isVirtualCluster ?? false)
+
+    const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
+        () => getClusterListing(true),
+        [],
+        !envId, // No need of cluster list in case of edit env
+    )
+
+    // FORM METHODS
+    const { data, errors, register, handleSubmit, trigger } = useForm<EnvironmentFormType>({
+        initialValues: {
+            clusterId: clusterId ?? null,
+            envName: envName ?? '',
+            namespace: envId ? namespace : getNamespaceFromLocalStorage(''),
+            isProduction: !!isProduction,
+            category: category ?? null,
+            description: description ?? '',
+        },
+        validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isSelectedClusterVirtual }),
     })
 
-    const addEnvironmentHeaderText = `Add Environment in '${clusterName}'`
+    const [, clusterDetails] = useAsync(
+        () => getClusterDetails([data.clusterId]),
+        [data.clusterId],
+        !envId && !!data.clusterId,
+    )
+
+    useEffect(() => {
+        if (clusterDetails) {
+            setIsSelectedClusterVirtual(clusterDetails[0].isVirtualCluster)
+            setClusterNamespaces(INITIAL_NAMESPACES)
+            setNamespaceLabels(INITIAL_NAMESPACE_LABELS)
+        }
+    }, [clusterDetails])
 
     /**
      * Fetches the list of namespaces from the cluster and updates the state accordingly. \
@@ -116,7 +160,7 @@ export const ClusterEnvironmentDrawer = ({
 
         try {
             // Fetch namespaces from the cluster
-            const { result } = await getClusterNamespaces(+clusterId)
+            const { result } = await getClusterNamespaces(data.clusterId)
 
             // Update clusterNamespaces state with fetched data
             setClusterNamespaces({
@@ -147,20 +191,6 @@ export const ClusterEnvironmentDrawer = ({
         }
     }
 
-    const parsedNamespace = namespace ?? ''
-
-    // FORM METHODS
-    const { data, errors, register, handleSubmit, trigger } = useForm<ClusterEnvironmentDrawerFormProps>({
-        initialValues: {
-            environmentName: environmentName ?? '',
-            namespace: !id ? getNamespaceFromLocalStorage(parsedNamespace) : parsedNamespace,
-            isProduction: !!isProduction,
-            category,
-            description: description ?? '',
-        },
-        validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isVirtual }),
-    })
-
     useEffect(
         () => () => {
             if (localStorage.getItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY)) {
@@ -171,30 +201,29 @@ export const ClusterEnvironmentDrawer = ({
     )
 
     const onValidation =
-        (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> =>
+        (clusterNamespacesData = clusterNamespaces.data): UseFormSubmitHandler<EnvironmentFormType> =>
         async (formData) => {
             const payload = getClusterEnvironmentUpdatePayload({
                 data: formData,
-                clusterId: +clusterId,
-                id,
+                envId,
                 namespaceLabels: namespaceLabels.labels,
                 resourceVersion: namespaceLabels.resourceVersion,
-                isVirtual,
+                isVirtualCluster: isSelectedClusterVirtual,
             })
 
             let api
-            if (isVirtual) {
-                api = getVirtualClusterSaveUpdate(id)
+            if (isSelectedClusterVirtual) {
+                api = getVirtualClusterSaveUpdate(envId)
             } else {
-                api = id ? updateEnvironment : saveEnvironment
+                api = envId ? updateEnvironment : saveEnvironment
             }
 
             try {
                 setCrudLoading(true)
-                await api(payload, id)
+                await api(payload, envId)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
-                    description: `Successfully ${id ? 'updated' : 'saved'}`,
+                    description: `Successfully ${envId ? 'updated' : 'saved'}`,
                 })
                 reload()
                 hideClusterDrawer()
@@ -217,7 +246,7 @@ export const ClusterEnvironmentDrawer = ({
             }
         }
 
-    const withLabelEditValidation: UseFormSubmitHandler<ClusterEnvironmentDrawerFormProps> = async () => {
+    const withLabelEditValidation: UseFormSubmitHandler<EnvironmentFormType> = async () => {
         setCrudLoading(true)
         try {
             const response = await fetchClusterNamespaces(data.namespace, false)
@@ -254,201 +283,226 @@ export const ClusterEnvironmentDrawer = ({
     const onDelete = async () => {
         const payload = getClusterEnvironmentUpdatePayload({
             data,
-            clusterId,
-            id,
-            isVirtual,
+            isVirtualCluster: isSelectedClusterVirtual,
+            envId,
         })
         await deleteEnvironment(payload)
         redirectToListAfterReload()
     }
 
-    const renderCreateClusterButton = () => (
-        <Button
-            dataTestId="add_cluster_button"
-            linkProps={{
-                to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
-                    type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                }),
-            }}
-            component={ButtonComponentType.link}
-            startIcon={<ICAdd />}
-            size={ComponentSizeType.medium}
-            text="Add cluster"
-        />
+    const clusterOptions = useMemo(
+        () =>
+            envId
+                ? [{ label: clusterName, value: clusterId }]
+                : (clusterListResult ?? []).map((cluster) => ({
+                      label: cluster.name,
+                      value: cluster.id,
+                  })),
+        [clusterListResult],
     )
 
-    const renderContent = () => {
-        if (!clusterId) {
-            return (
-                <GenericEmptyState
-                    title="Cluster not found"
-                    subTitle="Please add cluster before adding an environment."
-                    isButtonAvailable
-                    renderButton={renderCreateClusterButton}
-                />
-            )
-        }
-
-        return (
-            <form
-                className="flex-grow-1 flexbox-col mh-0"
-                onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
-                noValidate
-            >
-                <div className="flexbox-col dc__overflow-auto p-20 flex-grow-1 dc__gap-16">
-                    <CustomInput
-                        disabled={!!environmentName}
-                        placeholder={id ? 'sample-env-name' : 'Eg. production'}
-                        value={data.environmentName}
-                        error={errors.environmentName}
-                        {...register('environmentName')}
-                        label="Environment Name"
-                        autoFocus={!id}
-                        shouldTrim={false}
-                        required
-                    />
-
-                    <CustomInput
-                        disabled={!!namespace}
-                        placeholder={id ? 'sample-namespace' : 'Eg. prod'}
-                        value={data.namespace}
-                        error={errors.namespace}
-                        {...register('namespace')}
-                        label="Namespace"
-                        shouldTrim={false}
-                        required={!isVirtual}
-                    />
-
-                    <CustomInput
-                        placeholder="Add a description for this environment"
-                        value={data.description}
-                        error={errors.description}
-                        {...register('description')}
-                        label="Description (Maximum 40 characters allowed)"
-                        autoFocus={!!id}
-                        shouldTrim={false}
-                    />
-                    {!isVirtual && (
-                        <div className="flex left dc__gap-24 fs-13">
-                            <div className="dc__required-field cn-7">Type of Environment</div>
-                            <div className="flex left dc__gap-16">
-                                <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
-                                    <input
-                                        id="env-production-checkbox"
-                                        data-testid="production"
-                                        type="radio"
-                                        checked={data.isProduction}
-                                        value="true"
-                                        {...register('isProduction', {
-                                            sanitizeFn: (value) => value === 'true',
-                                            noTrim: true,
-                                        })}
-                                    />
-                                    <span className="ml-10 fw-4 mt-4">Production</span>
-                                </label>
-                                <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
-                                    <input
-                                        id="env-non-production-checkbox"
-                                        data-testid="nonProduction"
-                                        type="radio"
-                                        checked={!data.isProduction}
-                                        value="false"
-                                        {...register('isProduction', {
-                                            sanitizeFn: (value) => value === 'true',
-                                            noTrim: true,
-                                        })}
-                                    />
-                                    <span className="ml-10 fw-4 mt-4">Non - Production</span>
-                                </label>
+    const renderContent = () => (
+        <>
+            <div className="flexbox flex-grow-1 mh-0">
+                <ModalSidebarPanel
+                    heading="Environment"
+                    icon={<Icon name="ic-bg-environment" size={40} color={null} />}
+                    documentationLink="GLOBAL_CONFIG_CLUSTER"
+                    rootClassName="dc__no-background-imp p-20"
+                >
+                    <div className="flexbox-col dc__gap-20">
+                        <span>An environment represents a specific namespace within a cluster.</span>
+                        <span>
+                            You can deploy your applications to one or more environments (e.g., development, testing,
+                            production).
+                        </span>
+                    </div>
+                </ModalSidebarPanel>
+                <div className="flexbox p-20 bg__secondary flex-grow-1 dc__overflow-auto">
+                    <div className="flexbox-col dc__gap-16 bg__primary br-12 p-20 flex-grow-1 dc__h-fit-content">
+                        <div className="flexbox dc__gap-8">
+                            <div className="w-200">
+                                <SelectPicker
+                                    inputId="create-env-select-cluster"
+                                    label="Cluster"
+                                    required
+                                    options={clusterOptions}
+                                    value={getSelectPickerOptionByValue(clusterOptions, data.clusterId, null)}
+                                    icon={<Icon name="ic-bg-cluster" color={null} />}
+                                    placeholder="Select cluster"
+                                    isLoading={clusterListLoading}
+                                    optionListError={clusterListError}
+                                    reloadOptionList={reloadClusterList}
+                                    isDisabled={!!envId} // Disable if env id exist
+                                    onChange={
+                                        register('clusterId', {
+                                            isCustomComponent: true,
+                                            sanitizeFn: (option: SelectPickerOptionType) => option.value,
+                                        }).onChange
+                                    }
+                                    error={errors.clusterId}
+                                    size={ComponentSizeType.large}
+                                />
                             </div>
-                        </div>
-                    )}
-                    {AssignCategorySelect && (
-                        <div className="w-250">
-                            <AssignCategorySelect
-                                selectedCategory={data.category}
-                                setSelectedCategory={register('category', { isCustomComponent: true }).onChange}
+                            <span className="lh-36 fs-20 fw-4 cn-7 pt-26">/</span>
+                            <CustomInput
+                                disabled={!!envId}
+                                placeholder={envId ? 'sample-env-name' : 'Eg. production'}
+                                value={data.envName}
+                                error={errors.envName}
+                                {...register('envName')}
+                                label="Environment Name"
+                                autoFocus={!envId}
+                                shouldTrim={false}
+                                required
+                                fullWidth
                             />
                         </div>
-                    )}
 
-                    {EnvironmentLabels && !isVirtual && (
-                        <div className="dc__border-top-n1 pt-16">
-                            <EnvironmentLabels
-                                tags={namespaceLabels.labels}
-                                setTags={setTags}
-                                isLoading={clusterNamespaces.isFetching}
-                                addLabel={addLabel}
-                                error={clusterNamespaces.error}
-                                reload={refetchNamespaceLabels}
-                            />
-                        </div>
-                    )}
-                </div>
-                <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 dc__bottom-0 bg__primary">
-                    {id && (
-                        <Button
-                            text="Delete"
-                            variant={ButtonVariantType.secondary}
-                            style={ButtonStyleType.negative}
-                            startIcon={<Trash />}
-                            dataTestId="environment-delete-btn"
-                            onClick={showConfirmationModal}
+                        <CustomInput
+                            disabled={!!envId}
+                            placeholder={envId ? 'sample-namespace' : 'Eg. prod'}
+                            value={data.namespace}
+                            error={errors.namespace}
+                            {...register('namespace')}
+                            label="Namespace"
+                            shouldTrim={false}
+                            required={!isSelectedClusterVirtual}
                         />
-                    )}
-                    <div className="flex right w-100 dc__gap-12">
-                        <Button
-                            text="Cancel"
-                            variant={ButtonVariantType.secondary}
-                            style={ButtonStyleType.neutral}
-                            dataTestId="environment-cancel-btn"
-                            onClick={hideClusterDrawer}
+
+                        <CustomInput
+                            placeholder="Add a description for this environment"
+                            value={data.description}
+                            error={errors.description}
+                            {...register('description')}
+                            label="Description (Maximum 40 characters allowed)"
+                            autoFocus={!!envId}
+                            shouldTrim={false}
                         />
-                        <Button
-                            text={id ? 'Update' : 'Save'}
-                            dataTestId="save-and-update-environment"
-                            isLoading={crudLoading}
-                            disabled={crudLoading || clusterNamespaces.isFetching}
-                            buttonProps={{
-                                type: 'submit',
-                            }}
-                        />
+                        {!isSelectedClusterVirtual && (
+                            <div className="flex left dc__gap-24 fs-13">
+                                <div className="dc__required-field cn-7">Type of Environment</div>
+                                <div className="flex left dc__gap-16">
+                                    <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
+                                        <input
+                                            id="env-production-checkbox"
+                                            data-testid="production"
+                                            type="radio"
+                                            checked={data.isProduction}
+                                            value="true"
+                                            {...register('isProduction', {
+                                                sanitizeFn: (value) => value === 'true',
+                                                noTrim: true,
+                                            })}
+                                        />
+                                        <span className="ml-10 fw-4 mt-4">Production</span>
+                                    </label>
+                                    <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
+                                        <input
+                                            id="env-non-production-checkbox"
+                                            data-testid="nonProduction"
+                                            type="radio"
+                                            checked={!data.isProduction}
+                                            value="false"
+                                            {...register('isProduction', {
+                                                sanitizeFn: (value) => value === 'true',
+                                                noTrim: true,
+                                            })}
+                                        />
+                                        <span className="ml-10 fw-4 mt-4">Non - Production</span>
+                                    </label>
+                                </div>
+                            </div>
+                        )}
+                        {AssignCategorySelect && (
+                            <div className="w-250">
+                                <AssignCategorySelect
+                                    selectedCategory={data.category}
+                                    setSelectedCategory={register('category', { isCustomComponent: true }).onChange}
+                                />
+                            </div>
+                        )}
+
+                        {EnvironmentLabels && !isSelectedClusterVirtual && (
+                            <div className="dc__border-top-n1 pt-16">
+                                <EnvironmentLabels
+                                    tags={namespaceLabels.labels}
+                                    setTags={setTags}
+                                    isLoading={clusterNamespaces.isFetching}
+                                    addLabel={addLabel}
+                                    error={clusterNamespaces.error}
+                                    reload={refetchNamespaceLabels}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
-            </form>
-        )
-    }
+            </div>
+            <div className="dc__border-top flexbox dc__align-items-center dc__content-space py-16 px-20 bg__primary">
+                {envId && (
+                    <Button
+                        text="Delete"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.negative}
+                        startIcon={<Trash />}
+                        dataTestId="environment-delete-btn"
+                        onClick={showConfirmationModal}
+                    />
+                )}
+                <div className="flex right w-100 dc__gap-12">
+                    <Button
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        dataTestId="environment-cancel-btn"
+                        onClick={hideClusterDrawer}
+                    />
+                    <Button
+                        text={envId ? 'Update' : 'Save'}
+                        dataTestId="save-and-update-environment"
+                        isLoading={crudLoading}
+                        disabled={crudLoading || clusterNamespaces.isFetching}
+                        buttonProps={{
+                            type: 'submit',
+                        }}
+                    />
+                </div>
+            </div>
+        </>
+    )
 
     return (
         <Drawer position="right" width="1024px" onEscape={hideClusterDrawer} onClose={hideClusterDrawer}>
-            <div className="h-100 bg__primary flexbox-col" onClick={stopPropagation}>
+            <form
+                className="h-100 bg__primary flexbox-col"
+                onClick={stopPropagation}
+                onSubmit={handleSubmit(namespaceLabels.labels ? withLabelEditValidation : onValidation())}
+                noValidate
+            >
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
-                    {/* NOTE: only in case of add environment, can we have truncation */}
-                    <Tooltip content={addEnvironmentHeaderText}>
-                        <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">
-                            {id ? 'Edit Environment' : addEnvironmentHeaderText}
-                        </h3>
-                    </Tooltip>
-                    <button
-                        type="button"
-                        aria-label="close-btn"
-                        className="dc__transparent flex icon-dim-24"
+                    <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">{envId ? 'Edit' : 'Create'} Environment</h3>
+                    <Button
+                        dataTestId="close-env-modal"
+                        ariaLabel="close-btn"
+                        icon={<Icon name="ic-close-large" color={null} />}
                         onClick={hideClusterDrawer}
-                    >
-                        <Close className="icon-dim-24 dc__align-right cursor" />
-                    </button>
+                        showAriaLabelInTippy={false}
+                        size={ComponentSizeType.xs}
+                        style={ButtonStyleType.negativeGrey}
+                        variant={ButtonVariantType.borderLess}
+                    />
                 </div>
 
                 {renderContent()}
 
                 {showDeleteConfirmation && (
                     <EnvironmentDeleteComponent
-                        environmentName={data.environmentName}
+                        environmentName={data.envName}
                         onDelete={onDelete}
                         closeConfirmationModal={closeConfirmationModal}
                     />
                 )}
-            </div>
+            </form>
         </Drawer>
     )
 }
