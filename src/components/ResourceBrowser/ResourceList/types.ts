@@ -20,6 +20,7 @@ import {
     FiltersTypeEnum,
     K8sResourceDetailDataType,
     ResponseType,
+    SelectPickerOptionType,
     ServerErrors,
     TableCellComponentProps,
     TableProps,
@@ -174,6 +175,10 @@ export interface ResourceRecommenderTableViewWrapperProps
             reloadResourceListData: () => void
         }
     > {}
+
+export interface NodeSearchListOptionType extends SelectPickerOptionType<string> {
+    identifier: NODE_SEARCH_KEYS
+}
 
 export interface ResourceListProps {
     selectedCluster: ClusterOptionType

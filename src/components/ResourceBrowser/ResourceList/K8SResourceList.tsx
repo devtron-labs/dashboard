@@ -88,6 +88,7 @@ const K8SResourceListViewWrapper = ({
     updateSearchParams,
     eventType = 'warning',
     filteredRows,
+    rows,
     ...restProps
 }: K8SResourceListViewWrapperProps) => (
     <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
@@ -97,6 +98,7 @@ const K8SResourceListViewWrapper = ({
                 setVisibleColumns={setVisibleColumns}
                 allColumns={allColumns}
                 searchParams={restProps}
+                rows={rows}
             />
         ) : (
             <ResourceFilterOptions
