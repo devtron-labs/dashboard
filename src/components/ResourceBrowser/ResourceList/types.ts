@@ -77,11 +77,6 @@ export interface K8sResourceListFilterType
     eventType: 'warning' | 'normal'
 }
 
-export interface AdminTerminalDummyProps
-    extends Pick<UseTabsReturnType, 'markTabActiveById' | 'updateTabUrl' | 'getTabById'> {
-    clusterName: string
-}
-
 export interface ResourcePageHeaderProps {
     breadcrumbs: ReturnType<typeof useBreadcrumb>['breadcrumbs']
     renderPageHeaderActionButtons?: () => JSX.Element
@@ -162,7 +157,7 @@ export type DynamicTabComponentWrapperProps = Pick<
     'updateTabUrl' | 'markTabActiveById' | 'getTabId' | 'getTabById'
 > &
     ({ type: 'fixed'; addTab?: never } | { type: 'dynamic'; addTab: UseTabsReturnType['addTab'] }) & {
-        children: React.ReactElement
+        children?: React.ReactElement
     }
 
 export interface ResourceRecommenderTableViewWrapperProps

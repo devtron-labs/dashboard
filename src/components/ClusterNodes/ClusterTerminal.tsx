@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
-import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, useHistory, useLocation } from 'react-router-dom'
 
 import {
     Checkbox,
@@ -37,12 +37,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourceBrowserTabsId } from '@Components/ResourceBrowser/Constants'
-import { K8sResourceListURLParams } from '@Components/ResourceBrowser/ResourceList/types'
 import { getClusterTerminalParamsData } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 
 import { BUSYBOX_LINK, DEFAULT_CONTAINER_NAME, NETSHOOT_LINK, shellTypes } from '../../config/constants'
 import { clusterImageDescription, convertToOptionsList } from '../common'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
     EditModeType,
     TERMINAL_STATUS,
@@ -88,9 +86,9 @@ const ClusterTerminal = ({
     taints,
     updateTabUrl,
 }: ClusterTerminalType) => {
-    const { kind } = useParams<K8sResourceListURLParams>()
     const { replace } = useHistory()
     const location = useLocation()
+    const isAdminTerminalVisible = location.pathname.includes('terminal')
     const queryParams = new URLSearchParams(location.search)
     const terminalAccessIdRef = useRef()
     const clusterShellTypes = shellTypes.filter((types) => types.label === 'sh' || types.label === 'bash')
@@ -159,7 +157,7 @@ const ClusterTerminal = ({
     }
 
     useEffect(() => {
-        if (kind !== 'terminal' || queryParamsData.selectedNode.value === selectedNodeName.value || !update) {
+        if (!isAdminTerminalVisible || queryParamsData.selectedNode.value === selectedNodeName.value || !update) {
             return
         }
         /* NOTE: update selectedNodeName */
@@ -188,7 +186,7 @@ const ClusterTerminal = ({
             id: ResourceBrowserTabsId.terminal,
             url: `${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`,
         })
-        if (kind === AppDetailsTabs.terminal) {
+        if (isAdminTerminalVisible) {
             replace({ search: queryParams.toString() })
         }
     }, [selectedNodeName.value, selectedNamespace.value, selectedImage.value, selectedTerminalType.value])
@@ -1036,7 +1034,7 @@ const ClusterTerminal = ({
                 renderConnectionStrip: renderStripMessage(),
                 setSocketConnection,
                 socketConnection,
-                isTerminalTab: selectedTabIndex === 0 && kind === 'terminal',
+                isTerminalTab: selectedTabIndex === 0 && isAdminTerminalVisible,
                 sessionId,
                 registerLinkMatcher: renderRegisterLinkMatcher,
             },
