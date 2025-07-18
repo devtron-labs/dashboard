@@ -14,60 +14,22 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE_TYPE } from '../../config'
-
-export interface CodeEditorScript {
-    apiVersion: string
-    kind: string
-    spec: {
-        include: {
-            names: string[]
-        }
-        exclude: {
-            names: string[]
-        }
-        envId: number[]
-        global: boolean
-        deploymentTemplate: {
-            spec: {
-                patchJson: any
-            }
-        }
-        configMap: {
-            spec: {
-                names: string[]
-                patchJson: any
-            }
-        }
-        secret: {
-            spec: {
-                names: string[]
-                patchJson: any
-            }
-        }
-    }
-}
-
-export interface BulkConfiguration {
-    operation: string
-    script: CodeEditorScript
-    readme: string
-}
 
 export interface DTImpactedObjects {
     appId: number
     appName: string
     envId: number
+    envName?: string // Only received for v1beta2
 }
 
 export interface CMandSecretImpactedObjects {
     appId: number
     appName: string
     envId: number
+    envName?: string // Only received for v1beta2
     names: string[]
 }
 
@@ -82,6 +44,7 @@ export interface DtOutputKeys {
     appName: string
     envId: number
     message: string
+    envName?: string // Only received for v1beta2
 }
 
 export interface CMandSecretOutputKeys {
@@ -90,6 +53,7 @@ export interface CMandSecretOutputKeys {
     envId: number
     message: string
     names: string[]
+    envName?: string // Only received for v1beta2
 }
 
 export interface DTBulkOutput {
@@ -113,17 +77,18 @@ export interface BulkOutput {
 export interface BulkEditsState {
     view: string
     statusCode: number
-    outputName: string
     isReadmeLoading: boolean
     impactedObjects: ImpactedObjects
-    updatedTemplate: OptionType[]
-    readmeResult: string[]
+    readmeVersionOptions: OptionType<BulkEditVersion>[]
+    readmeResult: {
+        [key in BulkEditVersion]: string
+    }
     outputResult: BulkOutput
     showExamples: boolean
-    showImpactedData: boolean
-    showOutputData: boolean
-    bulkConfig: BulkConfiguration[]
+    activeOutputTab: 'output' | 'impacted' | 'none'
     codeEditorPayload: string
+    selectedReadmeVersionOption: OptionType<BulkEditVersion>
+    schema: Record<string, any> | null
 }
 
 export interface OutputTabType {
@@ -133,7 +98,13 @@ export interface OutputTabType {
     name: string
 }
 
-export interface BulkEditsProps extends RouteComponentProps<{}> {
-    // close: (event) => void;
+export interface BulkEditsProps {
     serverMode: SERVER_MODE_TYPE
+    outputHeightMV: ReturnType<typeof useMotionValue<number>>
+    gridTemplateRows: ReturnType<typeof useMotionValue<string>>
+}
+
+export enum BulkEditVersion {
+    v1 = 'batch/v1beta1',
+    v2 = 'batch/v1beta2',
 }

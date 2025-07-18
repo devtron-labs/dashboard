@@ -33,7 +33,8 @@ const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOu
         <div>
             App Id: {CMandSecretOutputKeys.appId} <br />
             App Name: {CMandSecretOutputKeys.appName} <br />
-            Environment Id: {CMandSecretOutputKeys.envId} <br />
+            {CMandSecretOutputKeys.envId && <>Environment Id: {CMandSecretOutputKeys.envId} <br /></>}
+            {CMandSecretOutputKeys.envName && <>Environment Name: {CMandSecretOutputKeys.envName} <br /></>}
             Names : {CMandSecretOutputKeys.names.join(', ')} <br />
             Message: {CMandSecretOutputKeys.message} <br />
             <br />
@@ -42,7 +43,7 @@ const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOu
 }
 
 export const renderConfigMapOutput = (configMap) => {
-    return (
+    return configMap ? (
         <div>
             <div>
                 *CONFIGMAPS: <br />
@@ -93,7 +94,7 @@ export const renderConfigMapOutput = (configMap) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
 
 export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
@@ -101,7 +102,8 @@ export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
         <div>
             App Id: {DTOutputKeys.appId} <br />
             App Name: {DTOutputKeys.appName} <br />
-            Environment Id: {DTOutputKeys.envId} <br />
+            {DTOutputKeys.envId && <>Environment Id: {DTOutputKeys.envId} <br /></>}
+            {DTOutputKeys.envName && <>Environment Name: {DTOutputKeys.envName} <br /></>}
             Message: {DTOutputKeys.message} <br />
             <br />
         </div>
@@ -113,7 +115,8 @@ export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretIm
         <div>
             App Id: {CMandSecretImpactedObject.appId} <br />
             App Name: {CMandSecretImpactedObject.appName} <br />
-            Environment Id: {CMandSecretImpactedObject.envId} <br />
+            {CMandSecretImpactedObject.envId && <>Environment Id: {CMandSecretImpactedObject.envId} <br /></>}
+            {CMandSecretImpactedObject.envName && <>Environment Name: {CMandSecretImpactedObject.envName} <br /></>}
             Names : {CMandSecretImpactedObject.names.join(', ')} <br />
             <br />
         </div>
@@ -121,7 +124,7 @@ export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretIm
 }
 
 export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
-    return (
+    return deploymentTemplate ? (
         <div>
             <div>
                 *DEPLOYMENT TEMPLATE: <br />
@@ -173,11 +176,11 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
 
 export const renderSecretOutput = (secret) => {
-    return (
+    return secret ? (
         <div>
             <div>
                 *SECRETS: <br />
@@ -229,5 +232,5 @@ export const renderSecretOutput = (secret) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
