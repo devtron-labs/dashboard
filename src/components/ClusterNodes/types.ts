@@ -155,7 +155,7 @@ export interface ClusterTerminalType {
     namespaceList: string[]
     nodeGroups: SelectGroupType[]
     taints: Map<string, NodeTaintType[]>
-    updateTerminalTabUrl: (queryParams: string) => void
+    updateTabUrl: UseTabsReturnType['updateTabUrl']
 }
 
 export const TEXT_COLOR_CLASS = {

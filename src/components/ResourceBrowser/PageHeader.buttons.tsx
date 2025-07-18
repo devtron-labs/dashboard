@@ -47,9 +47,9 @@ export const CreateResourceButton: React.FC<CreateResourceButtonType> = ({ clust
         })
     }
 
-    const handleModalClose = () => {
+    const handleModalClose = (shouldUpdate: boolean) => {
         setShowModal(false)
-        closeModal(true)
+        closeModal(shouldUpdate)
     }
 
     return (
