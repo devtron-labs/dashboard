@@ -89,3 +89,8 @@
         margin-top: 2px;
     }
 }
+
+.environment-row {
+    grid-template-columns: 24px 200px 200px 100px 100px 1fr 60px;
+    grid-column-gap: 16px;
+}

@@ -54,7 +54,7 @@ const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
 const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
-const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterComponent'))
+const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterList'))
 const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
 const Notifier = lazy(() => import('../notifications/Notifications'))
 const Project = lazy(() => import('../project/ProjectList'))
@@ -222,7 +222,7 @@ const NavItem = ({ serverMode }) => {
         },
         { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
         {
-            name: `Clusters${serverMode === SERVER_MODE.EA_ONLY ? '' : ' & Environments'}`,
+            name: `Clusters${window._env_.K8S_CLIENT ? '' : ' & Environments'}`,
             href: URLS.GLOBAL_CONFIG_CLUSTER,
             component: Clusters,
             isAvailableInEA: true,
@@ -623,8 +623,8 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
         <Switch>
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
-                render={(props) => {
-                    return <Clusters {...props} isSuperAdmin={isSuperAdmin || window._env_.K8S_CLIENT} />
+                render={() => {
+                    return <Clusters />
                 }}
             />
             {!window._env_.K8S_CLIENT && [

@@ -1,138 +1,484 @@
-import { generatePath, useHistory } from 'react-router-dom'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { useMemo, useState } from 'react'
+import { generatePath, Route, useHistory, useLocation } from 'react-router-dom'
 
 import {
+    ActionMenu,
+    ActionMenuItemType,
     Button,
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
     ComponentSizeType,
-    getClassNameForStickyHeaderWithShadow,
+    ErrorScreenManager,
+    ErrorScreenNotAuthorized,
+    FiltersTypeEnum,
+    GenericEmptyState,
+    GenericFilterEmptyState,
+    getSelectPickerOptionByValue,
     Icon,
+    noop,
+    numberComparatorBySortOrder,
+    OptionType,
+    PaginationEnum,
+    SearchBar,
+    SegmentedControl,
+    SelectPicker,
+    SelectPickerOptionType,
+    stringComparatorBySortOrder,
+    Table,
+    TableColumnType,
     URLS as COMMON_URLS,
-    useStickyEvent,
+    useAsync,
+    useMainContext,
+    useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import NoClusterImg from '@Images/no-cluster-empty-state.png'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
+import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
+import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 
-import { List } from '../../../components/globalConfigurations/GlobalConfiguration'
-import { ClusterListProps } from './cluster.type'
-import { renderNoEnvironmentTab } from './cluster.util'
-import { ClusterEnvironmentList } from './ClusterEnvironmentList'
+import { getClusterList, getEnvironmentList } from './cluster.service'
+import {
+    ClusterEnvFilterType,
+    ClusterEnvTabs,
+    ClusterListFields,
+    ClusterRowData,
+    ClusterTableProps,
+    Environment,
+    EnvListSortableKeys,
+} from './cluster.type'
+import { parseClusterEnvSearchParams } from './cluster.util'
+import { AddEnvironment, ClusterListCellComponent, DeleteCluster, EditCluster } from './ClusterList.components'
+import { ALL_CLUSTER_VALUE } from './constants'
+import EnvironmentList from './EnvironmentList'
 
-const EditClusterPopup = importComponentFromFELibrary('EditClusterPopup', null, 'function')
+const ManageCategories = importComponentFromFELibrary('ManageCategories', null, 'function')
+const ManageCategoryButton = importComponentFromFELibrary('ManageCategoryButton', null, 'function')
+const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'function')
+const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 
-export const ClusterList = ({
-    isVirtualCluster,
-    environments,
-    reload,
-    clusterName,
-    isProd,
-    serverURL,
-    clusterId,
-    category,
-}: ClusterListProps) => {
-    const history = useHistory()
+const ClusterList = () => {
+    const { isSuperAdmin } = useMainContext()
+    const isK8sClient = window._env_.K8S_CLIENT
 
-    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
-        containerSelector: '.global-configuration__component-wrapper',
-        identifier: `cluster-list__${clusterName}`,
+    const { push } = useHistory()
+    const { search } = useLocation()
+
+    const {
+        searchKey,
+        sortBy,
+        sortOrder,
+        selectedTab,
+        clusterId: filterClusterId,
+        updateSearchParams,
+        handleSearch,
+        handleSorting,
+    } = useUrlFilters<EnvListSortableKeys, ClusterEnvFilterType>({
+        parseSearchParams: parseClusterEnvSearchParams,
     })
 
-    const handleEdit = async () => {
-        history.push(generatePath(COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER, { clusterId }))
+    const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
+        getClusterList,
+        [],
+        isSuperAdmin,
+    )
+
+    const [envListLoading, envListResult, envListError, reloadEnvironments] = useAsync(
+        getEnvironmentList,
+        [],
+        isSuperAdmin && !isK8sClient,
+    )
+
+    const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
+
+    const clusterIdVsEnvMap: Record<number, Environment[]> = useMemo(
+        () =>
+            (envListResult ?? []).reduce<Record<number, Environment[]>>((agg, curr) => {
+                const { clusterId } = curr
+                if (!agg[clusterId]) {
+                    // eslint-disable-next-line no-param-reassign
+                    agg[clusterId] = []
+                }
+                agg[clusterId].push(curr)
+                return agg
+            }, {}),
+        [envListResult],
+    )
+
+    const clusterFilterOptions = useMemo(
+        () => [
+            { label: 'All Clusters', value: ALL_CLUSTER_VALUE },
+            ...(clusterListResult ?? []).map(({ clusterName, clusterId }) => ({
+                label: clusterName,
+                value: `${clusterId}`,
+            })),
+        ],
+        [clusterListResult],
+    )
+
+    const filteredClusterList = useMemo(
+        () => (clusterListResult ?? []).filter(({ clusterName }) => clusterName.toLowerCase().includes(searchKey)),
+        [clusterListResult, searchKey],
+    )
+
+    const {
+        tableColumns,
+        tableRows,
+    }: {
+        tableColumns: ClusterTableProps['columns']
+        tableRows: ClusterTableProps['rows']
+    } = useMemo(
+        () => ({
+            tableColumns: [
+                {
+                    field: ClusterListFields.ICON,
+                    label: '',
+                    size: { fixed: 24 },
+                    CellComponent: ClusterListCellComponent,
+                },
+                {
+                    field: ClusterListFields.CLUSTER_NAME,
+                    label: 'CLUSTER',
+                    size: { fixed: 200 },
+                    isSortable: true,
+                    comparator: stringComparatorBySortOrder,
+                    CellComponent: ClusterListCellComponent,
+                },
+                ...(isK8sClient
+                    ? []
+                    : [
+                          {
+                              field: ClusterListFields.ENV_COUNT,
+                              label: 'ENVIRONMENTS',
+                              size: { fixed: 150 },
+                              isSortable: true,
+                              comparator: numberComparatorBySortOrder,
+                              CellComponent: ClusterListCellComponent,
+                          } as TableColumnType<ClusterRowData, FiltersTypeEnum.STATE, {}>,
+                      ]),
+                {
+                    field: ClusterListFields.CLUSTER_TYPE,
+                    label: 'TYPE',
+                    size: { fixed: 100 },
+                    isSortable: true,
+                    comparator: stringComparatorBySortOrder,
+                    CellComponent: ClusterListCellComponent,
+                },
+                ...(ManageCategories
+                    ? [
+                          {
+                              field: ClusterListFields.CLUSTER_CATEGORY,
+                              label: 'CATEGORY',
+                              size: { fixed: 100 },
+                              isSortable: true,
+                              comparator: stringComparatorBySortOrder,
+                              CellComponent: ClusterListCellComponent,
+                          } as TableColumnType<ClusterRowData, FiltersTypeEnum.STATE, {}>,
+                      ]
+                    : []),
+                {
+                    field: ClusterListFields.SERVER_URL,
+                    label: 'SERVER URL',
+                    size: null,
+                    CellComponent: ClusterListCellComponent,
+                },
+                {
+                    field: ClusterListFields.ACTIONS,
+                    label: '',
+                    size: { fixed: 90 },
+                    CellComponent: ClusterListCellComponent,
+                },
+            ],
+            tableRows: filteredClusterList.map(
+                ({ clusterId, clusterName, isProd, category, serverUrl, isVirtualCluster }) => {
+                    const envCount = clusterIdVsEnvMap[clusterId]?.length
+                    return {
+                        id: `${clusterName}-${clusterId}`,
+                        data: {
+                            clusterId,
+                            clusterName,
+                            clusterType: isProd ? 'Production' : 'Non Production',
+                            serverUrl,
+                            envCount: envCount ?? 0,
+                            clusterCategory: (category?.label as string) ?? '',
+                            isVirtualCluster,
+                        },
+                    }
+                },
+            ),
+        }),
+        [filteredClusterList, clusterIdVsEnvMap],
+    )
+
+    const isEnvironmentsView = selectedTab === ClusterEnvTabs.ENVIRONMENTS
+    const isClusterEnvListLoading = clusterListLoading || envListLoading
+
+    // Early return for non super admin users
+    if (!isSuperAdmin) {
+        return <ErrorScreenNotAuthorized />
     }
 
-    const handleOpenPodSpreadModal = () => {
-        history.push(`${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}/${URLS.POD_SPREAD}`)
+    const handleToggleShowNamespaces = () => {
+        setShowUnmappedEnvs((prev) => !prev)
     }
 
-    const handleOpenHibernationRulesModal = () => {
-        history.push(`${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}/${URLS.HIBERNATION_RULES}`)
+    const handleActionMenuClick = (item: ActionMenuItemType) => {
+        switch (item.id) {
+            case 'show-unmapped-namespace':
+                handleToggleShowNamespaces()
+                break
+            default:
+                break
+        }
     }
 
-    const renderEditButton = () => {
-        if (!clusterName) {
-            return null
+    const handleChangeTab = (selectedSegment: OptionType<ClusterEnvTabs>) => {
+        updateSearchParams({ selectedTab: selectedSegment.value, clusterId: null })
+        if (searchKey) {
+            handleSearch('')
+        }
+        if (showUnmappedEnvs) {
+            setShowUnmappedEnvs(false)
+        }
+    }
+
+    const handleChangeClusterFilter = (selectedOption: SelectPickerOptionType<string>) => {
+        updateSearchParams({ clusterId: selectedOption.value === ALL_CLUSTER_VALUE ? null : selectedOption.value })
+    }
+
+    const handleRedirectToClusterList = () => {
+        push({ pathname: URLS.GLOBAL_CONFIG_CLUSTER, search })
+    }
+
+    const renderList = () => {
+        if (isClusterEnvListLoading) {
+            return Array.from({ length: 3 }).map(() => (
+                <div className="px-20 py-8 dc__grid cluster-row dc__align-items-center">
+                    {Array.from({ length: 5 }).map(() => (
+                        <span className="shimmer" />
+                    ))}
+                </div>
+            ))
         }
 
-        if (EditClusterPopup && !isVirtualCluster) {
+        if (clusterListError || envListError) {
+            return <ErrorScreenManager code={clusterListError?.code ?? envListError.code} />
+        }
+
+        if (isEnvironmentsView) {
             return (
-                <EditClusterPopup
-                    handleOpenEditClusterModal={handleEdit}
-                    handleOpenPodSpreadModal={handleOpenPodSpreadModal}
-                    handleOpenHibernationRulesModal={handleOpenHibernationRulesModal}
-                    clusterId={clusterId}
+                <EnvironmentList
+                    clusterIdVsEnvMap={clusterIdVsEnvMap}
+                    clusterList={clusterListResult ?? []}
+                    showUnmappedEnvs={showUnmappedEnvs}
+                    filterClusterId={filterClusterId}
+                    filterConfig={{ searchKey, sortBy, sortOrder }}
+                    handleSorting={handleSorting}
+                    isLoading={isClusterEnvListLoading}
+                    reloadEnvironments={reloadEnvironments}
                 />
             )
         }
 
+        if (searchKey && !filteredClusterList.length) {
+            return <GenericFilterEmptyState handleClearFilters={() => handleSearch('')} />
+        }
+
         return (
-            <Button
-                dataTestId={`edit_cluster_pencil-${clusterName}`}
-                ariaLabel="Edit Cluster"
-                icon={<Icon name="ic-pencil" color={null} />}
-                size={ComponentSizeType.small}
-                variant={ButtonVariantType.borderLess}
-                style={ButtonStyleType.neutral}
-                onClick={handleEdit}
+            <Table<ClusterRowData, FiltersTypeEnum.STATE, {}>
+                id="table__cluster-list"
+                columns={tableColumns}
+                rows={tableRows}
+                filtersVariant={FiltersTypeEnum.STATE}
+                paginationVariant={PaginationEnum.NOT_PAGINATED}
+                emptyStateConfig={null}
+                filter={() => true}
+                additionalFilterProps={{
+                    initialSortKey: 'clusterName',
+                }}
             />
         )
     }
 
-    const subTitle: string = isVirtualCluster ? 'Isolated cluster' : serverURL
+    if (clusterListResult && !clusterListResult.length) {
+        return (
+            <GenericEmptyState
+                title="Manage Clusters and Environments"
+                subTitle="It looks like you haven't set up any Kubernetes clusters yet. Start by adding your first cluster and environment."
+                isButtonAvailable
+                renderButton={noop}
+                image={NoClusterImg}
+            />
+        )
+    }
 
     return (
-        <article
-            data-testid={`${clusterName ?? 'create'}-cluster-container`}
-            className="cluster-list cluster-list--update"
-        >
-            <List
-                internalRef={stickyElementRef}
-                className={`dc__border dc__zi-1 ${getClassNameForStickyHeaderWithShadow(isHeaderStuck)} ${
-                    isHeaderStuck ? 'dc__no-border-radius' : ''
-                } cursor-default-imp`}
-                key={clusterId}
-            >
-                <div className="flex left dc__gap-16">
-                    <Icon name={isVirtualCluster ? 'ic-cluster-isolated' : 'ic-cluster'} color="B500" size={24} />
-                    <List.Title
-                        title={clusterName}
-                        subtitle={subTitle}
-                        className="fw-6"
-                        tag={isProd ? 'Prod' : null}
-                        category={category?.label ? String(category.label) : ''}
-                    />
-                    <div className="flex dc__align-right dc__gap-16 dc__no-shrink">
-                        <Button
-                            dataTestId={`add-environment-button-${clusterName}`}
-                            component={ButtonComponentType.link}
-                            linkProps={{
-                                to: `${URLS.GLOBAL_CONFIG_CLUSTER}/${clusterName}${URLS.CREATE_ENVIRONMENT}`,
-                            }}
-                            startIcon={<Icon name="ic-add" color={null} />}
-                            text="Add Environment"
-                            variant={ButtonVariantType.text}
-                            size={ComponentSizeType.small}
+        <div className="flexbox-col h-100">
+            <div className="flexbox-col bg__primary flex-grow-1">
+                {/* Header */}
+                <div className="flex p-16 dc__content-space">
+                    <div className="flex dc__gap-8">
+                        <SegmentedControl
+                            name="cluster-env-view-toggle"
+                            segments={[
+                                { label: 'Clusters', value: ClusterEnvTabs.CLUSTERS },
+                                ...(isK8sClient ? [] : [{ label: 'Environments', value: ClusterEnvTabs.ENVIRONMENTS }]),
+                            ]}
+                            value={selectedTab ?? ClusterEnvTabs.CLUSTERS}
+                            onChange={handleChangeTab}
+                            disabled={isClusterEnvListLoading}
                         />
-
-                        <div className="dc__divider" />
+                        {isEnvironmentsView && (
+                            <SelectPicker
+                                inputId="cluster-filter"
+                                placeholder="Cluster"
+                                options={clusterFilterOptions}
+                                isDisabled={clusterListLoading}
+                                isLoading={clusterListLoading}
+                                onChange={handleChangeClusterFilter}
+                                value={getSelectPickerOptionByValue(
+                                    clusterFilterOptions,
+                                    `${filterClusterId ?? ALL_CLUSTER_VALUE}`,
+                                )}
+                            />
+                        )}
+                    </div>
+                    <div className="flex dc__gap-8">
+                        <SearchBar
+                            containerClassName="w-250"
+                            dataTestId="search-cluster-env"
+                            initialSearchText={searchKey}
+                            inputProps={{
+                                placeholder: isEnvironmentsView ? 'Search environment' : 'Search cluster',
+                            }}
+                            handleEnter={handleSearch}
+                            size={ComponentSizeType.medium}
+                        />
+                        {ManageCategoryButton && <ManageCategoryButton search={search} />}
+                        <Button
+                            dataTestId={isEnvironmentsView ? 'add-environment-button' : 'add-cluster-button'}
+                            linkProps={{
+                                to: {
+                                    pathname: isEnvironmentsView
+                                        ? `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`
+                                        : generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                                              type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                                          }),
+                                    search,
+                                },
+                            }}
+                            component={ButtonComponentType.link}
+                            startIcon={<Icon name={isEnvironmentsView ? 'ic-add' : 'ic-link'} color={null} />}
+                            size={ComponentSizeType.medium}
+                            text={isEnvironmentsView ? 'Add Environment' : 'Connect Cluster'}
+                        />
+                        {isEnvironmentsView && (
+                            <ActionMenu
+                                id="additional-options-action-menu"
+                                buttonProps={{
+                                    icon: <Icon name="ic-more-vertical" color={null} />,
+                                    ariaLabel: 'additional-options',
+                                    dataTestId: 'additional-options',
+                                    showAriaLabelInTippy: false,
+                                    style: ButtonStyleType.neutral,
+                                    variant: ButtonVariantType.secondary,
+                                    size: ComponentSizeType.medium,
+                                }}
+                                options={[
+                                    {
+                                        items: [
+                                            {
+                                                id: 'show-unmapped-namespace',
+                                                label: 'Show unmapped namespaces',
+                                                description: 'Display namespaces not mapped to any environment',
+                                                trailingItem: {
+                                                    config: {
+                                                        onChange: handleToggleShowNamespaces,
+                                                        name: 'unmapped-env-toggle',
+                                                        ariaLabel: 'unmapped-env-toggle',
+                                                        isChecked: showUnmappedEnvs,
+                                                    },
+                                                    type: 'switch',
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ]}
+                                onClick={handleActionMenuClick}
+                            />
+                        )}
                     </div>
                 </div>
-                {renderEditButton()}
-            </List>
-
-            {!window._env_.K8S_CLIENT && Array.isArray(environments) && environments.length > 0 ? (
-                <ClusterEnvironmentList
-                    clusterId={String(clusterId)}
-                    reload={reload}
-                    newEnvs={environments}
-                    isVirtualCluster={isVirtualCluster}
-                    clusterName={clusterName}
-                />
-            ) : (
-                renderNoEnvironmentTab()
-            )}
-        </article>
+                {/* Body */}
+                {renderList()}
+                {/* Modals and Routes */}
+                {ManageCategories && <ManageCategories />}
+                <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
+                    <CreateCluster
+                        handleReloadClusterList={reloadClusterList}
+                        handleRedirectOnModalClose={handleRedirectToClusterList}
+                    />
+                </Route>
+                <Route path={COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER}>
+                    <EditCluster
+                        clusterList={clusterListResult ?? []}
+                        reloadClusterList={reloadClusterList}
+                        handleClose={handleRedirectToClusterList}
+                    />
+                </Route>
+                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId?`}>
+                    <AddEnvironment reloadEnvironments={reloadEnvironments} handleClose={handleRedirectToClusterList} />
+                </Route>
+                {PodSpreadModal && (
+                    <Route
+                        path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`}
+                        render={({ match }) => (
+                            <PodSpreadModal
+                                clusterId={match.params.clusterId}
+                                handleClose={handleRedirectToClusterList}
+                            />
+                        )}
+                    />
+                )}
+                {HibernationRulesModal && (
+                    <Route
+                        path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.HIBERNATION_RULES}/:clusterId`}
+                        render={({ match }) => (
+                            <HibernationRulesModal
+                                clusterId={match.params.clusterId}
+                                handleClose={handleRedirectToClusterList}
+                            />
+                        )}
+                    />
+                )}
+                <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.DELETE_CLUSTER}/:clusterId`}>
+                    <DeleteCluster
+                        clusterList={clusterListResult ?? []}
+                        reloadClusterList={reloadClusterList}
+                        handleClose={handleRedirectToClusterList}
+                    />
+                </Route>
+            </div>
+        </div>
     )
 }
+
+export default ClusterList
