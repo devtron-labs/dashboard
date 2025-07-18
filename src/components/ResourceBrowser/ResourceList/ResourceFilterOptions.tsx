@@ -22,7 +22,6 @@ import {
     ALL_NAMESPACE_OPTION,
     Checkbox,
     CHECKBOX_VALUE,
-    ComponentSizeType,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKOptionValueType,
@@ -210,7 +209,6 @@ const ResourceFilterOptions = ({
                         <SegmentedControl
                             name="event-type-control"
                             value={eventType}
-                            size={ComponentSizeType.small}
                             segments={[
                                 {
                                     icon: 'ic-warning',
