@@ -46,12 +46,13 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     const [loader, setLoader] = useState(false)
     const [resourceYAML, setResourceYAML] = useState('')
     const [resourceResponse, setResourceResponse] = useState<CreateResourceDTO[]>(null)
+    const [needsUpdate, setNeedsUpdate] = useState(false)
 
     const onClose = (): void => {
         if (loader) {
             return
         }
-        closePopup(true)
+        closePopup(needsUpdate)
     }
 
     useEffect(() => {
@@ -85,6 +86,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
             if (result) {
                 setResourceResponse(result)
                 toggleCodeEditorView(false)
+                setNeedsUpdate(true)
             }
         } catch (err) {
             showError(err)
@@ -96,7 +98,7 @@ export const CreateResource: React.FC<CreateResourceType> = ({ closePopup, clust
     const renderFooter = (): JSX.Element => {
         if (showCodeEditorView) {
             return (
-                <div className="dc__border-top flex right p-16">
+                <div className="dc__border-top flex right p-16 dc__gap-8">
                     <Button
                         dataTestId="cancel-create-resource"
                         text={CREATE_RESOURCE_MODAL_MESSAGING.actionButtonText.cancel}
