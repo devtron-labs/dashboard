@@ -167,10 +167,10 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
                 case NodeActionMenuOptionIdEnum.drain:
                     showDrainNodeModal()
                     break
-                case NodeActionMenuOptionIdEnum['edit-taints']:
+                case NodeActionMenuOptionIdEnum.editTaints:
                     showEditTaintsModal()
                     break
-                case NodeActionMenuOptionIdEnum['edit-yaml']:
+                case NodeActionMenuOptionIdEnum.editYaml:
                     handleEditYamlAction()
                     break
                 case NodeActionMenuOptionIdEnum.delete:
