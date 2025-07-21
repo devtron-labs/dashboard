@@ -25,17 +25,20 @@ export const getEnvironmentList = async (): Promise<Environment[]> => {
 
     return (result ?? []).map(
         // eslint-disable-next-line camelcase
-        ({ environment_name, cluster_id, cluster_name, prometheus_endpoint, default: isProd, namespace, ...res }) => ({
+        ({
+            environment_name: environmentName,
+            cluster_id: clusterId,
+            cluster_name: clusterName,
+            prometheus_endpoint: prometheusEndpoint,
+            default: isProd,
+            namespace,
+            ...res
+        }) => ({
             ...res,
-            // id,
-            // eslint-disable-next-line camelcase
-            environmentName: environment_name,
-            // eslint-disable-next-line camelcase
-            clusterId: cluster_id,
-            // eslint-disable-next-line camelcase
-            clusterName: cluster_name,
-            // eslint-disable-next-line camelcase
-            prometheusEndpoint: prometheus_endpoint ?? '',
+            environmentName,
+            clusterId,
+            clusterName,
+            prometheusEndpoint: prometheusEndpoint ?? '',
             isProd,
             namespace: namespace ?? '',
         }),
@@ -47,22 +50,30 @@ export const getClusterList = async (clusterIds?: number[]): Promise<Cluster[]> 
     const { result } = await get<ClusterDTO[]>(url)
 
     // eslint-disable-next-line camelcase
-    return (result ?? []).map(({ id, server_url, cluster_name, prometheus_url, category, ...res }) => ({
-        ...res,
-        clusterId: id,
-        // eslint-disable-next-line camelcase
-        serverUrl: server_url,
-        // eslint-disable-next-line camelcase
-        clusterName: cluster_name,
-        // eslint-disable-next-line camelcase
-        prometheusUrl: prometheus_url,
-        category: category?.name
-            ? {
-                  label: category.name,
-                  value: category.id,
-              }
-            : null,
-    }))
+    return (result ?? []).map(
+        ({
+            id,
+            server_url: serverUrl,
+            cluster_name: clusterName,
+            prometheus_url: prometheusUrl,
+            category,
+            clusterStatus,
+            ...res
+        }) => ({
+            ...res,
+            clusterId: id,
+            serverUrl,
+            clusterName,
+            prometheusUrl,
+            category: category?.name
+                ? {
+                      label: category.name,
+                      value: category.id,
+                  }
+                : null,
+            status: clusterStatus,
+        }),
+    )
 }
 
 export function getCluster(id: number) {

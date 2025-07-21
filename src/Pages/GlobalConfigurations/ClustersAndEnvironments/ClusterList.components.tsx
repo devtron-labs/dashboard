@@ -31,6 +31,7 @@ import {
     DEFAULT_CLUSTER_ID,
     EditDeleteClusterProps,
 } from './cluster.type'
+import { getBulletColorAccToStatus } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
@@ -43,7 +44,7 @@ export const ClusterListCellComponent: FunctionComponent<
 > = ({
     field,
     row: {
-        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster },
+        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
     },
     isRowActive,
 }: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
@@ -94,11 +95,17 @@ export const ClusterListCellComponent: FunctionComponent<
         }
     }
 
+    const statusColor = getBulletColorAccToStatus(status)
+
     switch (field) {
         case ClusterListFields.ICON:
             return (
-                <span className="flex py-8">
+                <span className="flex py-8 dc__position-rel dc__overflow-hidden">
                     <Icon name="ic-bg-cluster" color={null} size={24} />
+                    <span
+                        className={`dc__position-abs icon-dim-10 dc__border-radius-50-per dc__right-2--neg dc__bottom-7 ${statusColor}`}
+                        style={{ border: '2px solid var(--N0)' }}
+                    />
                 </span>
             )
         case ClusterListFields.CLUSTER_NAME:
