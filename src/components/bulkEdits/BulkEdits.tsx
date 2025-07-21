@@ -48,7 +48,6 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { SERVER_MODE, ViewType } from '../../config'
 import {
     OutputTabs,
@@ -59,26 +58,19 @@ import {
 } from './bulkedit.utils'
 import { getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
 import { BulkEditsProps, BulkEditsState, BulkEditVersion } from './bulkEdits.type'
-import { OutputDivider, OutputObjectTabs, STATUS } from './constants'
+import {
+    BULK_EDIT_RESIZE_HANDLE_CLASS,
+    INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE,
+    OutputDivider,
+    OutputObjectTabs,
+    ReadmeVersionOptions,
+    STATUS,
+} from './constants'
+import basicValidatorSchema from './schema.json'
 
 import './bulkEdit.scss'
 
-const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
-
-const ReadmeVersionOptions = [
-    ...(getBulkEditConfig
-        ? [
-              {
-                  label: 'v1beta2/application',
-                  value: BulkEditVersion.v2,
-              },
-          ]
-        : []),
-    {
-        label: 'v1beta1/application',
-        value: BulkEditVersion.v1,
-    },
-]
+export const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
 
 class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     private editorAndOutputContainerRef = createRef<HTMLDivElement>()
@@ -227,7 +219,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { showExamples } = this.state
 
         return (
-            <div className="flex bg__primary px-20 py-8 dc__border-bottom dc__content-space">
+            <div className="flex bg__primary px-16 py-8 border__secondary--bottom dc__content-space">
                 <div className="flexbox dc__gap-12">
                     <h1 className="m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans">Script</h1>
                     {!showExamples && (
@@ -296,21 +288,24 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { codeEditorPayload, schema, activeOutputTab } = this.state
         const { gridTemplateRows } = this.props
 
+        const isV2Schema = (codeEditorPayload ?? '').match('apiVersion:\\s*batch/v1beta2')?.length
+
+        const validatorSchema = isV2Schema ? schema : basicValidatorSchema
+
         if (activeOutputTab === 'none') {
             return (
                 <div className="dc__overflow-hidden flex-grow-1">
                     <CodeEditor
+                        key={isV2Schema}
                         mode={MODES.YAML}
                         height="100%"
                         value={codeEditorPayload}
                         onChange={this.handleConfigChange}
-                        validatorSchema={schema}
+                        validatorSchema={validatorSchema}
                     />
                 </div>
             )
         }
-
-        // TODO: make sure to disable cursor selection while dragging
 
         return (
             <motion.div
@@ -320,28 +315,30 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             >
                 <motion.div className="dc__overflow-hidden flex-grow-1">
                     <CodeEditor
+                        key={isV2Schema}
                         mode={MODES.YAML}
                         height="100%"
                         value={codeEditorPayload}
                         onChange={this.handleConfigChange}
-                        validatorSchema={schema}
+                        validatorSchema={validatorSchema}
                     />
                 </motion.div>
 
                 <Draggable
-                    handle=".bulk-edit"
+                    handle={`.${BULK_EDIT_RESIZE_HANDLE_CLASS}`}
+                    defaultClassNameDragging={`${BULK_EDIT_RESIZE_HANDLE_CLASS}--dragging`}
                     axis="none"
                     position={{ x: 0, y: 0 }}
                     bounds={{ left: 0, right: 0 }}
                     onDrag={this.handleDrag}
                 >
-                    <div className="bulk-edit border__secondary flex dc__zi-10">
+                    <div className={`${BULK_EDIT_RESIZE_HANDLE_CLASS} border__primary--bottom flex dc__zi-10`}>
                         <Icon name="ic-resize-handle" size={16} color={null} />
                     </div>
                 </Draggable>
 
                 <motion.div className="bulk-output-drawer bg__primary flexbox-col dc__overflow-auto">
-                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
+                    <div className="bulk-output-header flex left px-16 pt-6 border__secondary--bottom bg__primary">
                         <OutputTabs
                             handleOutputTabs={() => this.handleOutputTab('output')}
                             outputName={activeOutputTab}
@@ -486,7 +483,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { selectedReadmeVersionOption, readmeVersionOptions } = this.state
 
         return (
-            <div className="dc__border-bottom bg__primary py-8 px-20 flex dc__content-space">
+            <div className="border__secondary--bottom bg__primary py-10 px-16 flex dc__content-space">
                 <div className="flex left dc__gap-16">
                     <div className="fw-6 cn-9" data-testid="sample-application">
                         Sample:
@@ -505,13 +502,14 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                     />
                 </div>
                 <Button
-                    icon={<Close />}
+                    icon={<Icon name="ic-close-large" color={null} />}
                     onClick={this.onClickHideExamples}
                     dataTestId="hide-examples-button"
                     variant={ButtonVariantType.borderLess}
                     style={ButtonStyleType.negativeGrey}
                     ariaLabel="Hide Sample"
-                    size={ComponentSizeType.small}
+                    showAriaLabelInTippy={false}
+                    size={ComponentSizeType.xs}
                 />
             </div>
         )
@@ -589,7 +587,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 }
 
 const BulkEditsWithUseResizable = (props: Pick<BulkEditsProps, 'serverMode'>) => {
-    const outputHeightMV = useMotionValue(50)
+    const outputHeightMV = useMotionValue(INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE)
     const gridTemplateRows = useMotionTemplate`1fr 1px ${outputHeightMV}%`
 
     return <BulkEdits {...{ ...props, outputHeightMV, gridTemplateRows }} />

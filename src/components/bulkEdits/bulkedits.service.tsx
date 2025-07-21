@@ -27,7 +27,7 @@ const dryRunBulkEditScript = importComponentFromFELibrary('dryRunBulkEditScript'
 export function updateBulkList(request): Promise<any> {
     const { apiVersion } = request ?? {}
 
-    if (apiVersion === BulkEditVersion.v2 && postBulkEditScript) {
+    if (postBulkEditScript && apiVersion === BulkEditVersion.v2) {
         return postBulkEditScript(request)
     }
 
@@ -37,7 +37,7 @@ export function updateBulkList(request): Promise<any> {
 export function updateImpactedObjectsList(request): Promise<any> {
     const { apiVersion } = request
 
-    if (apiVersion === BulkEditVersion.v2 && dryRunBulkEditScript) {
+    if (dryRunBulkEditScript && apiVersion === BulkEditVersion.v2) {
         return dryRunBulkEditScript(request)
     }
 

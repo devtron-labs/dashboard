@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { importComponentFromFELibrary } from '@Components/common'
+
+import { BulkEditVersion } from './bulkEdits.type'
+
+const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
+
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
     IMPACTED_OBJECTS = 'Impacted objects',
@@ -25,3 +31,22 @@ export const STATUS = {
 }
 
 export const OutputDivider = '-----------------------------------------------------------------'
+
+export const BULK_EDIT_RESIZE_HANDLE_CLASS = 'bulk-edit__resize-handle'
+
+export const ReadmeVersionOptions = [
+    ...(getBulkEditConfig
+        ? [
+              {
+                  label: 'v1beta2/application',
+                  value: BulkEditVersion.v2,
+              },
+          ]
+        : []),
+    {
+        label: 'v1beta1/application',
+        value: BulkEditVersion.v1,
+    },
+]
+
+export const INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE = 50

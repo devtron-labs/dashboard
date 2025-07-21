@@ -30,6 +30,13 @@
         }
     }
 
+    .bulk-edit__resize-handle--dragging {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
     // Readme Section
     .deploy-chart__readme-column {
         .markdown {
