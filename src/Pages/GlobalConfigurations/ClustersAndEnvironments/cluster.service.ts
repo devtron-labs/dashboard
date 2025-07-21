@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    getUrlWithSearchParams,
+    post,
+    put,
+    stringComparatorBySortOrder,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
@@ -46,23 +53,27 @@ export const getClusterList = async (clusterIds?: number[]): Promise<Cluster[]> 
     const url = getUrlWithSearchParams(Routes.CLUSTER, { clusterId: clusterIds?.join() })
     const { result } = await get<ClusterDTO[]>(url)
 
-    // eslint-disable-next-line camelcase
-    return (result ?? []).map(({ id, server_url, cluster_name, prometheus_url, category, ...res }) => ({
-        ...res,
-        clusterId: id,
-        // eslint-disable-next-line camelcase
-        serverUrl: server_url,
-        // eslint-disable-next-line camelcase
-        clusterName: cluster_name,
-        // eslint-disable-next-line camelcase
-        prometheusUrl: prometheus_url,
-        category: category?.name
-            ? {
-                  label: category.name,
-                  value: category.id,
-              }
-            : null,
-    }))
+    return (
+        (result ?? [])
+            // eslint-disable-next-line camelcase
+            .map(({ id, server_url, cluster_name, prometheus_url, category, ...res }) => ({
+                ...res,
+                clusterId: id,
+                // eslint-disable-next-line camelcase
+                serverUrl: server_url,
+                // eslint-disable-next-line camelcase
+                clusterName: cluster_name,
+                // eslint-disable-next-line camelcase
+                prometheusUrl: prometheus_url,
+                category: category?.name
+                    ? {
+                          label: category.name,
+                          value: category.id,
+                      }
+                    : null,
+            }))
+            .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
+    )
 }
 
 export function getCluster(id: number) {

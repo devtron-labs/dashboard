@@ -66,7 +66,13 @@ import {
     EnvListSortableKeys,
 } from './cluster.type'
 import { parseClusterEnvSearchParams } from './cluster.util'
-import { AddEnvironment, ClusterListCellComponent, DeleteCluster, EditCluster } from './ClusterList.components'
+import {
+    AddEnvironment,
+    ClusterEnvLoader,
+    ClusterListCellComponent,
+    DeleteCluster,
+    EditCluster,
+} from './ClusterList.components'
 import { ALL_CLUSTER_VALUE } from './constants'
 import EnvironmentList from './EnvironmentList'
 
@@ -270,13 +276,7 @@ const ClusterList = () => {
 
     const renderList = () => {
         if (isClusterEnvListLoading) {
-            return Array.from({ length: 3 }).map(() => (
-                <div className="px-20 py-8 dc__grid cluster-row dc__align-items-center">
-                    {Array.from({ length: 5 }).map(() => (
-                        <span className="shimmer" />
-                    ))}
-                </div>
-            ))
+            return <ClusterEnvLoader />
         }
 
         if (clusterListError || envListError) {
