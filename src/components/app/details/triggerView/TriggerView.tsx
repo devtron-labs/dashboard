@@ -62,7 +62,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
-import BuildImageModal from './BuildImageModal/BuildImageModal'
+import { BuildImageModal } from './BuildImageModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')

@@ -57,7 +57,7 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import BuildImageModal from '@Components/app/details/triggerView/BuildImageModal/BuildImageModal'
+import { BuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
@@ -71,16 +71,15 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
+import { CI_MATERIAL_EMPTY_STATE_MESSAGING, TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import {
-    CI_MATERIAL_EMPTY_STATE_MESSAGING,
-    TRIGGER_VIEW_PARAMS,
-} from '../../../app/details/triggerView/Constants'
-import { CIMaterialRouterProps, CIPipelineMaterialDTO, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
+    CIMaterialRouterProps,
+    CIPipelineMaterialDTO,
+    MATERIAL_TYPE,
+    RuntimeParamsErrorState,
+} from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
-import {
-    triggerBranchChange,
-    triggerCINode,
-} from '../../../app/service'
+import { triggerBranchChange, triggerCINode } from '../../../app/service'
 import { CIPipelineBuildType } from '../../../ciPipeline/types'
 import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
@@ -96,10 +95,7 @@ import {
     WorkflowAppSelectionType,
     WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
-import {
-    handleSourceNotConfigured,
-    processWorkflowStatuses,
-} from '../../AppGroup.utils'
+import { handleSourceNotConfigured, processWorkflowStatuses } from '../../AppGroup.utils'
 import {
     BULK_CD_RESPONSE_STATUS_TEXT,
     BULK_CI_RESPONSE_STATUS_TEXT,
@@ -1097,7 +1093,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 }
 
                 history.forEach((element) => {
-                    const historyItem: CIPipelineMaterialDTO  = {
+                    const historyItem: CIPipelineMaterialDTO = {
                         Id: node.inputMaterialList[i].id,
                         GitCommit: {
                             Commit: element.commit,
