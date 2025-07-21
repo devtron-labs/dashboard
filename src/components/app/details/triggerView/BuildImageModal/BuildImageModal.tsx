@@ -36,6 +36,7 @@ import {
     ToastVariantType,
     Tooltip,
     useAsync,
+    usePrompt,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -104,6 +105,10 @@ const BuildImageModal = ({
 
     // TODO: Add as much type as possible to selectedCIPipeline
     const selectedCIPipeline = (filteredCIPipelines || []).find((_ci) => _ci.id === +ciNodeId)
+
+    usePrompt({
+        shouldPrompt: isBuildTriggerLoading,
+    })
 
     const onMaterialUpdate = (newMaterialList: CIMaterialType[]) => {
         setShowRegexBranchChangeModal(
@@ -383,7 +388,7 @@ const BuildImageModal = ({
             <Button
                 dataTestId="ci-trigger-start-build-button"
                 text={isJobView || ciNode?.isJobCI ? 'Run Job' : 'Start Build'}
-                disabled={!canTrigger}
+                disabled={!canTrigger || showContentLoader}
                 isLoading={isBuildTriggerLoading}
                 onClick={isCTAActionable ? handleStartBuildAction : noop}
                 size={ComponentSizeType.large}
@@ -450,8 +455,7 @@ const BuildImageModal = ({
         if (!isBlobStorageConfigured) {
             return (
                 <div className="flexbox dc__align-items-center dc__gap-8">
-                    {/* FIXME: Why is this not picking up :/ */}
-                    {/* <Icon name="ic-storage" color={null} size={24} /> */}
+                    <Icon name="ic-storage" color={null} size={24} />
                     <div>
                         <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
                         <div className="fw-4 fs-12 flexbox">
@@ -517,8 +521,6 @@ const BuildImageModal = ({
                 pageLoader: true,
             }}
         >
-            {/* TODO: Add prompt for unsaved changes */}
-            {/* TODO: Check by changing ciNodeId to `abc` */}
             <GitInfoMaterial
                 appId={appId}
                 workflow={selectedWorkflow}
@@ -586,7 +588,7 @@ const BuildImageModal = ({
                         <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
 
-                    {ciNode?.isTriggerBlocked || showWebhookModal ? null : (
+                    {ciNode?.isTriggerBlocked || showWebhookModal || materialListError ? null : (
                         <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
                             {isJobView ? renderEnvironments() : renderCacheInfo()}
                             {renderCTAButton()}
