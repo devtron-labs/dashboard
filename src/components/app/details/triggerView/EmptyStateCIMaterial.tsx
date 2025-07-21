@@ -107,7 +107,7 @@ export default function EmptyStateCIMaterial({
                 link: null,
             }
         }
-        if (!anyCommit && !showAllCommits && !!window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS) {
+        if (!anyCommit && !showAllCommits && !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS) {
             return {
                 img: NoEligibleCommit,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
