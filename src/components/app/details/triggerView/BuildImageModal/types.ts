@@ -1,15 +1,25 @@
-import { ChangeEvent, Dispatch, SetStateAction } from 'react'
+import { ChangeEvent } from 'react'
 
 import {
     CIMaterialSidebarType,
     CIMaterialType,
+    CommonNodeAttr,
+    RuntimeParamsTriggerPayloadType,
     RuntimePluginVariables,
-    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { BulkCIDetailType } from '@Components/ApplicationGroup/AppGroup.types'
+import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 
-import { BuildImageModalProps, HandleRuntimeParamChange, RefreshMaterialType, RuntimeParamsErrorState } from '../types'
+import {
+    BuildImageModalProps,
+    CIPipelineMaterialDTO,
+    HandleRuntimeParamChange,
+    RefreshMaterialType,
+    RuntimeParamsErrorState,
+    TriggerViewState,
+} from '../types'
 
 export interface TriggerBuildSidebarProps {
     currentSidebarTab: CIMaterialSidebarType
@@ -20,19 +30,90 @@ export interface TriggerBuildSidebarProps {
     selectMaterial: (materialId: string) => void
     refreshMaterial: RefreshMaterialType['refresh']
     ciNodeId: number
+    // For Bulk Trigger
+    appId?: number
+    appList?: BulkCIDetailType[]
+    handleAppChange?: (appId: number) => void
+    isBlobStorageConfigured?: boolean
+    toggleSelectedAppIgnoreCache?: () => void
 }
 
+type SetMaterialCBType = (prevMaterialList: CIMaterialType[]) => CIMaterialType[]
+
 export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'appId' | 'isJobView'> & {
-    workflow: WorkflowType
-    setMaterialList: Dispatch<SetStateAction<CIMaterialType[]>>
+    workflowId: string
+    node: CommonNodeAttr
+    setMaterialList: (cb: SetMaterialCBType) => void
     runtimeParamsErrorState: RuntimeParamsErrorState
     materialList: CIMaterialType[]
     showWebhookModal: boolean
     reloadCompleteMaterialList: () => void
-    onClickShowBranchRegexModal: () => void
     handleRuntimeParamChange: HandleRuntimeParamChange
     handleRuntimeParamError: (errorState: RuntimeParamsErrorState) => void
-    selectedEnv: EnvironmentWithSelectPickerType
+    /**
+     * Only required for isJobView
+     */
+    selectedEnv?: EnvironmentWithSelectPickerType
     runtimeParams: RuntimePluginVariables[]
     handleDisplayWebhookModal: () => void
+    selectedCIPipeline: TriggerViewState['filteredCIPipelines'][number]
+    handleReloadWithWorkflows: () => void
+} & (
+        | {
+              isBulkTrigger: true
+              appList: BulkCIDetailType[]
+              handleAppChange: (appId: number) => void
+              isBlobStorageConfigured: boolean
+              toggleSelectedAppIgnoreCache: () => void
+          }
+        | {
+              isBulkTrigger?: false
+              appList?: never
+              handleAppChange?: never
+              isBlobStorageConfigured?: never
+              toggleSelectedAppIgnoreCache?: never
+          }
+    )
+
+export interface BulkBuildImageModalProps
+    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflows'> {
+    filteredCIPipelineMap: Map<string, TriggerViewState['filteredCIPipelines']>
+}
+
+export interface BuildImageHeaderProps {
+    showWebhookModal: boolean
+    handleWebhookModalBack: () => void
+    pipelineName: string
+    handleClose: () => void
+    /**
+     * @default false
+     */
+    isJobView?: boolean
+}
+
+export interface GetTriggerBuildPayloadProps {
+    ciConfiguredGitMaterialId: number
+    materialList: CIMaterialType[]
+    runtimeParams: RuntimePluginVariables[]
+    selectedEnv: EnvironmentWithSelectPickerType
+    isJobCI: boolean
+    invalidateCache: boolean
+    ciNodeId: number
+}
+
+export interface TriggerBuildPayloadType {
+    pipelineId: number
+    ciPipelineMaterials: CIPipelineMaterialDTO[]
+    invalidateCache: boolean
+    pipelineType: CIPipelineBuildType.CI_JOB | CIPipelineBuildType.CI_BUILD
+    environmentId?: number
+    runtimeParamsPayload?: RuntimeParamsTriggerPayloadType
+}
+
+export interface TriggerBuildProps {
+    payload: TriggerBuildPayloadType
+    /**
+     * Only need in case of job
+     */
+    redirectToCIPipeline?: () => void
 }

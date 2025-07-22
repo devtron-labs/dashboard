@@ -6,10 +6,12 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     CIMaterialSidebarType,
+    CIMaterialType,
     CiPipelineSourceConfig,
     ComponentSizeType,
     ConditionalWrap,
     createGitCommitUrl,
+    GenericEmptyState,
     getHandleOpenURL,
     handleUTCTime,
     Icon,
@@ -22,15 +24,23 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import externalCiImg from '@Images/external-ci.webp'
+import linkedCDBuildCIImg from '@Images/linked-cd-bulk-ci.webp'
+import linkedCiImg from '@Images/linked-ci.webp'
 import { getCIMaterialList, getGitMaterialByCommitHash, refreshGitMaterial } from '@Components/app/service'
+import { BULK_CI_MESSAGING } from '@Components/ApplicationGroup/Constants'
 import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
 import { NO_COMMIT_SELECTED } from '@Config/constants'
+import { URLS } from '@Config/routes'
 
+import { EmptyView } from '../../cicdHistory/History.components'
+import BranchRegexModal from '../BranchRegexModal'
 import { CiWebhookModal } from '../CiWebhookDebuggingModal'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from '../Constants'
 import EmptyStateCIMaterial from '../EmptyStateCIMaterial'
 import TriggerBuildSidebar from './TriggerBuildSidebar'
 import { GitInfoMaterialProps } from './types'
+import { getIsRegexBranchNotAvailable } from './utils'
 
 import './GitInfoMaterial.scss'
 
@@ -39,38 +49,55 @@ const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null
 
 const GitInfoMaterial = ({
     appId,
-    workflow,
+    workflowId,
+    node,
     isJobView,
     setMaterialList,
     runtimeParamsErrorState,
     materialList,
     showWebhookModal,
     reloadCompleteMaterialList,
-    onClickShowBranchRegexModal,
     handleRuntimeParamChange,
     handleRuntimeParamError,
     selectedEnv,
     runtimeParams,
     handleDisplayWebhookModal,
+    selectedCIPipeline,
+    handleReloadWithWorkflows,
+    isBulkTrigger = false,
+    appList,
+    handleAppChange,
+    isBlobStorageConfigured,
+    toggleSelectedAppIgnoreCache,
 }: GitInfoMaterialProps) => {
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CIMaterialSidebarType>(CIMaterialSidebarType.CODE_SOURCE)
-    const workflowId = workflow.id
-    // TODO: Check if send prop
-    const ciNode = workflow.nodes.find((node) => node.type === WorkflowNodeType.CI)
-    const ciNodeId = ciNode?.id
-    const isCITriggerBlocked = ciNode?.isTriggerBlocked
+    const [showRegexBranchChangeModal, setShowRegexBranchChangeModal] = useState<boolean>(
+        getIsRegexBranchNotAvailable(selectedCIPipeline, materialList),
+    )
+    // in case of webhook [Not the CI one] we won't show
+    const nodeId = node?.id
+    const isCITriggerBlocked = node?.isTriggerBlocked
+
     // Can these be multiple?
-    const selectedMaterial = materialList.find((material) => material.isSelected)
+    const selectedMaterial = materialList.find((material) => material.isSelected) || ({} as CIMaterialType)
     const isWebhook = selectedMaterial?.type === SourceTypeMap.WEBHOOK
     const ciPipelineURL = getCIPipelineURL(
         String(appId),
         String(workflowId),
         true,
-        ciNode?.id,
+        node?.id,
         isJobView,
-        ciNode?.isJobCI,
+        node?.isJobCI,
         false,
     )
+
+    const handleCloseBranchRegexModal = () => {
+        setShowRegexBranchChangeModal(false)
+    }
+
+    const handleShowRegexBranchChangeModal = () => {
+        setShowRegexBranchChangeModal(true)
+    }
 
     const handleSelectMaterial = (materialId: string) => {
         setMaterialList((prevMaterialList) =>
@@ -101,7 +128,7 @@ const GitInfoMaterial = ({
         // FIXME: Lets disable search on refresh
         const newSelectedMaterialItem = await getCIMaterialList(
             {
-                pipelineId: String(ciNodeId),
+                pipelineId: String(nodeId),
                 materialId: updatedMaterial.gitMaterialId,
                 showExcluded: updatedMaterial.showAllCommits,
             },
@@ -329,7 +356,7 @@ const GitInfoMaterial = ({
             type="button"
             className="dc__transparent flex dc__gap-8"
             data-testid="edit-branch-name"
-            onClick={onClickShowBranchRegexModal}
+            onClick={handleShowRegexBranchChangeModal}
         >
             {children}
         </button>
@@ -379,7 +406,7 @@ const GitInfoMaterial = ({
             allowedExtensions,
             maxUploadSize,
             appId: +appId,
-            ciPipelineId: +ciNodeId,
+            ciPipelineId: +nodeId,
             envId: isJobView && selectedEnv ? +selectedEnv.id : null,
         })
 
@@ -441,7 +468,7 @@ const GitInfoMaterial = ({
                             size={ComponentSizeType.small}
                             showAriaLabelInTippy={false}
                             style={ButtonStyleType.neutral}
-                            onClick={onClickShowBranchRegexModal}
+                            onClick={handleShowRegexBranchChangeModal}
                         />
                     )}
                 </div>
@@ -513,7 +540,55 @@ const GitInfoMaterial = ({
         )
     }
 
+    const renderMissingPluginBlockState = () => (
+        <MissingPluginBlockState
+            configurePluginURL={ciPipelineURL}
+            nodeType={WorkflowNodeType.CI}
+            // In case of job [not jobCI] mandatory plugins are not applied
+            isJobView={node?.isJobCI}
+        />
+    )
+
     const renderMaterialHistory = () => {
+        if (MissingPluginBlockState && isCITriggerBlocked && isBulkTrigger) {
+            return renderMissingPluginBlockState()
+        }
+
+        if (isBulkTrigger) {
+            const selectedApp = appList.find((appDetails) => appDetails.appId === +appId)
+            if (selectedApp.node.type === WorkflowNodeType.WEBHOOK) {
+                return (
+                    <EmptyView
+                        imgSrc={externalCiImg}
+                        title={`${selectedApp.name}  ${BULK_CI_MESSAGING.webhookCI.title}`}
+                        subTitle={BULK_CI_MESSAGING.webhookCI.subTitle}
+                    />
+                )
+            }
+
+            if (selectedApp.node.isLinkedCI) {
+                return (
+                    <EmptyView
+                        imgSrc={linkedCiImg}
+                        title={`${selectedApp.name} ${BULK_CI_MESSAGING.emptyLinkedCI.title}`}
+                        subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
+                        link={`${URLS.APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
+                        linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
+                    />
+                )
+            }
+
+            if (selectedApp.node.isLinkedCD) {
+                return (
+                    <GenericEmptyState
+                        title={`${BULK_CI_MESSAGING.linkedCD.title(selectedApp.node.title)}`}
+                        subTitle={BULK_CI_MESSAGING.linkedCD.subTitle(selectedApp.node.title)}
+                        image={linkedCDBuildCIImg}
+                    />
+                )
+            }
+        }
+
         const areCommitsPresent = selectedMaterial.history?.length > 0
         const materialError =
             selectedMaterial.isMaterialLoading ||
@@ -523,7 +598,7 @@ const GitInfoMaterial = ({
 
         const showHeader =
             currentSidebarTab === CIMaterialSidebarType.CODE_SOURCE &&
-            !(ciNode.type === WorkflowNodeType.WEBHOOK || ciNode.isLinkedCI || ciNode.isLinkedCD)
+            !(node.type === WorkflowNodeType.WEBHOOK || node.isLinkedCI || node.isLinkedCD)
 
         if (materialError || !areCommitsPresent) {
             return (
@@ -579,7 +654,7 @@ const GitInfoMaterial = ({
                 <div className="py-12 px-16">
                     <MaterialHistory
                         material={selectedMaterial}
-                        pipelineName={ciNode?.title}
+                        pipelineName={node?.title}
                         selectCommit={selectCommit}
                     />
                 </div>
@@ -593,11 +668,11 @@ const GitInfoMaterial = ({
                 <CiWebhookModal
                     ciPipelineMaterialId={selectedMaterial.id}
                     gitMaterialUrl={selectedMaterial.gitMaterialUrl}
-                    ciPipelineId={+(ciNode?.id || 0)}
+                    ciPipelineId={+(node?.id || 0)}
                     workflowId={+workflowId}
                     appId={String(appId)}
                     isJobView={isJobView}
-                    isJobCI={ciNode?.isJobCI}
+                    isJobCI={node?.isJobCI}
                 />
             )
         }
@@ -605,7 +680,7 @@ const GitInfoMaterial = ({
         return (
             <div className="dc__grid git-info-material__container w-100 h-100 dc__overflow-auto">
                 <TriggerBuildSidebar
-                    ciNodeId={+ciNodeId}
+                    ciNodeId={+nodeId}
                     currentSidebarTab={currentSidebarTab}
                     handleSidebarTabChange={handleSidebarTabChange}
                     runtimeParamsErrorState={runtimeParamsErrorState}
@@ -613,6 +688,11 @@ const GitInfoMaterial = ({
                     selectMaterial={handleSelectMaterial}
                     clearSearch={clearSearchFromSelectedMaterial}
                     refreshMaterial={refreshMaterial}
+                    appList={appList}
+                    appId={appId}
+                    handleAppChange={handleAppChange}
+                    isBlobStorageConfigured={isBlobStorageConfigured}
+                    toggleSelectedAppIgnoreCache={toggleSelectedAppIgnoreCache}
                 />
 
                 {renderMaterialHistory()}
@@ -620,15 +700,25 @@ const GitInfoMaterial = ({
         )
     }
 
-    return MissingPluginBlockState && isCITriggerBlocked ? (
-        <MissingPluginBlockState
-            configurePluginURL={ciPipelineURL}
-            nodeType={WorkflowNodeType.CI}
-            // In case of job [not jobCI] mandatory plugins are not applied
-            isJobView={ciNode?.isJobCI}
-        />
-    ) : (
-        renderBody()
+    return (
+        <>
+            {MissingPluginBlockState && isCITriggerBlocked && !isBulkTrigger
+                ? renderMissingPluginBlockState()
+                : renderBody()}
+
+            {showRegexBranchChangeModal && (
+                <BranchRegexModal
+                    material={materialList}
+                    selectedCIPipeline={selectedCIPipeline}
+                    title={node?.title}
+                    onCloseBranchRegexModal={handleCloseBranchRegexModal}
+                    appId={appId}
+                    workflowId={workflowId}
+                    // This will ensure ciTriggerDetails are also updated
+                    handleReload={handleReloadWithWorkflows}
+                />
+            )}
+        </>
     )
 }
 

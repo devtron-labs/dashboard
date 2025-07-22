@@ -18,10 +18,7 @@ import { CommonNodeAttr, DeploymentNodeType } from '@devtron-labs/devtron-fe-com
 
 import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
 
-import { BulkCDDetailType, BulkCIDetailType } from '../../AppGroup.types'
-
-export const getIsAppUnorthodox = (app: BulkCIDetailType): boolean =>
-    app.isLinkedCI || app.isWebhookCI || app.isLinkedCD
+import { BulkCDDetailType } from '../../AppGroup.types'
 
 export const getIsNonApprovedImageSelected = (appList: BulkCDDetailType[]): boolean =>
     appList.some((app) => {

@@ -12,8 +12,6 @@ import { Prompt, useHistory, useParams } from 'react-router-dom'
 import {
     APIResponseHandler,
     Button,
-    ButtonStyleType,
-    ButtonVariantType,
     Checkbox,
     CIMaterialType,
     CIPipelineNodeType,
@@ -28,10 +26,7 @@ import {
     Icon,
     ModuleNameMap,
     noop,
-    ServerErrors,
-    showError,
     stopPropagation,
-    TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
     Tooltip,
@@ -40,20 +35,20 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCIMaterialList, triggerCINode } from '@Components/app/service'
+import { getCIMaterialList } from '@Components/app/service'
 import { handleSourceNotConfigured } from '@Components/ApplicationGroup/AppGroup.utils'
-import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { EnvironmentList } from '@Components/CIPipelineN/EnvironmentList'
 import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
-import { CI_CONFIGURED_GIT_MATERIAL_ERROR, NO_TASKS_CONFIGURED_ERROR } from '@Config/constantMessaging'
-import { BUILD_STATUS, DEFAULT_GIT_BRANCH_VALUE, SOURCE_NOT_CONFIGURED } from '@Config/constants'
+import { BUILD_STATUS, SOURCE_NOT_CONFIGURED } from '@Config/constants'
 
 import { getModuleConfigured } from '../../appDetails/appDetails.service'
-import BranchRegexModal from '../BranchRegexModal'
 import { IGNORE_CACHE_INFO, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
-import { BuildImageModalProps, CIMaterialRouterProps, CIPipelineMaterialDTO } from '../types'
+import { BuildImageModalProps, CIMaterialRouterProps } from '../types'
+import BuildImageHeader from './BuildImageHeader'
 import GitInfoMaterial from './GitInfoMaterial'
+import { triggerBuild } from './service'
 import { GitInfoMaterialProps } from './types'
+import { getTriggerBuildPayload } from './utils'
 
 const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const AllowedWithWarningTippy = importComponentFromFELibrary('AllowedWithWarningTippy')
@@ -62,7 +57,6 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
-const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 /**
  * TODO:
@@ -82,7 +76,6 @@ const BuildImageModal = ({
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
     const materialListAbortControllerRef = useRef<AbortController>(new AbortController())
 
-    const [showRegexBranchChangeModal, setShowRegexBranchChangeModal] = useState<boolean>(false)
     const [selectedEnv, setSelectedEnv] = useState<GitInfoMaterialProps['selectedEnv'] | null>(null)
     const [invalidateCache, setInvalidateCache] = useState<boolean>(false)
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<
@@ -110,16 +103,6 @@ const BuildImageModal = ({
         shouldPrompt: isBuildTriggerLoading,
     })
 
-    const onMaterialUpdate = (newMaterialList: CIMaterialType[]) => {
-        setShowRegexBranchChangeModal(
-            !!selectedCIPipeline?.ciMaterial?.some(
-                (material) =>
-                    material.isRegex &&
-                    newMaterialList.some((_mat) => _mat.gitMaterialId === material.gitMaterialId && !_mat.value),
-            ),
-        )
-    }
-
     const getMaterialList = async (): Promise<CIMaterialType[]> => {
         const { result: materialListResponse } = await getCIMaterialList(
             {
@@ -144,8 +127,6 @@ const BuildImageModal = ({
                 !gitMaterials[selectedWorkflow.ciConfiguredGitMaterialId],
             )
         }
-
-        onMaterialUpdate(materialListResponse)
         return materialListResponse
     }
 
@@ -190,14 +171,6 @@ const BuildImageModal = ({
     const handleReloadWithWorkflows = () => {
         reloadWorkflows()
         handleReload()
-    }
-
-    const handleCloseBranchRegexModal = () => {
-        setShowRegexBranchChangeModal(false)
-    }
-
-    const handleShowRegexBranchChangeModal = () => {
-        setShowRegexBranchChangeModal(true)
     }
 
     const toggleInvalidateCache = () => {
@@ -245,121 +218,44 @@ const BuildImageModal = ({
         setShowWebhookModal(true)
     }
 
-    const onClickTriggerCINode = () => {
+    const onClickTriggerCINode = async () => {
         handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.CITriggered)
         setIsBuildTriggerLoading(true)
 
-        const dockerfileConfiguredGitMaterialId = selectedWorkflow?.ciConfiguredGitMaterialId
-
-        const gitMaterials = new Map<number, string[]>()
-        const ciPipelineMaterials: CIPipelineMaterialDTO[] = []
-
-        materialList.forEach((material) => {
-            gitMaterials[material.gitMaterialId] = [material.gitMaterialName.toLowerCase(), material.value]
-
-            if (material.value === DEFAULT_GIT_BRANCH_VALUE) {
-                return
-            }
-
-            const history = material.history.filter((historyItem) => historyItem.isSelected)
-            if (!history.length) {
-                // FIXME: Will include/exclude impact this?
-                history.push(material.history[0])
-            }
-
-            history.forEach((element) => {
-                const historyItem: CIPipelineMaterialDTO = {
-                    Id: material.id,
-                    GitCommit: {
-                        Commit: element.commit,
-                    },
-                }
-                if (!element.commit) {
-                    historyItem.GitCommit.WebhookData = {
-                        id: element.webhookData.id,
-                    }
-                }
-                ciPipelineMaterials.push(historyItem)
-            })
+        const payload = getTriggerBuildPayload({
+            materialList,
+            ciConfiguredGitMaterialId: selectedWorkflow?.ciConfiguredGitMaterialId,
+            runtimeParams,
+            selectedEnv,
+            invalidateCache,
+            isJobCI: ciNode?.isJobCI,
+            ciNodeId: +ciNodeId,
         })
 
-        if (gitMaterials[dockerfileConfiguredGitMaterialId][1] === DEFAULT_GIT_BRANCH_VALUE) {
+        if (typeof payload === 'string') {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: CI_CONFIGURED_GIT_MATERIAL_ERROR.replace(
-                    '$GIT_MATERIAL_ID',
-                    `"${gitMaterials[dockerfileConfiguredGitMaterialId][0]}"`,
-                ),
+                description: payload,
             })
             setIsBuildTriggerLoading(false)
             return
         }
 
-        const envId = selectedEnv && selectedEnv.id !== 0 ? selectedEnv.id : undefined
-        const runtimeParamsPayload = getRuntimeParamsPayload?.(runtimeParams ?? [])
-
-        const payload = {
-            pipelineId: +ciNodeId,
-            ciPipelineMaterials,
-            invalidateCache,
-            environmentId: envId,
-            pipelineType: ciNode?.isJobCI ? CIPipelineBuildType.CI_JOB : CIPipelineBuildType.CI_BUILD,
-            ...(getRuntimeParamsPayload ? runtimeParamsPayload : {}),
+        try {
+            await triggerBuild({ payload, redirectToCIPipeline })
+            handleClose()
+        } catch {
+            // Do nothing
+        } finally {
+            setIsBuildTriggerLoading(false)
         }
-
-        // TODO: Lets move this service later
-        triggerCINode(payload)
-            .then((response) => {
-                if (response.result) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: 'Pipeline Triggered',
-                    })
-                    handleClose()
-                }
-            })
-            .catch((errors: ServerErrors) => {
-                if (errors.code === 403) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.notAuthorized,
-                        description: TOAST_ACCESS_DENIED.SUBTITLE,
-                    })
-                } else if (errors instanceof ServerErrors && Array.isArray(errors.errors) && errors.code === 409) {
-                    errors.errors.map((err) =>
-                        ToastManager.showToast({
-                            variant: ToastVariantType.error,
-                            description: err.internalMessage,
-                        }),
-                    )
-                } else {
-                    errors.errors.forEach((error) => {
-                        if (error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
-                            ToastManager.showToast({
-                                variant: ToastVariantType.error,
-                                title: 'Nothing to execute',
-                                description: error.userMessage,
-                                buttonProps: {
-                                    text: 'Edit Pipeline',
-                                    dataTestId: 'edit-pipeline-btn',
-                                    onClick: redirectToCIPipeline,
-                                },
-                            })
-                        } else {
-                            showError([error])
-                        }
-                    })
-                }
-            })
-            .finally(() => {
-                setIsBuildTriggerLoading(false)
-            })
     }
 
     const handleRuntimeParamChange: GitInfoMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
         setRuntimeParams(updatedRuntimeParams)
     }
 
-    const handleStartBuildAction = (e: SyntheticEvent) => {
+    const handleStartBuildAction = async (e: SyntheticEvent) => {
         const runtimeParamsUpdatedErrorState = validateRuntimeParameters(runtimeParams)
         handleRuntimeParamError(runtimeParamsUpdatedErrorState)
 
@@ -372,7 +268,7 @@ const BuildImageModal = ({
         }
 
         e.stopPropagation()
-        onClickTriggerCINode()
+        await onClickTriggerCINode()
     }
 
     const renderCTAButtonWithIcon = (isCTAActionable: boolean = true) => {
@@ -521,22 +417,26 @@ const BuildImageModal = ({
                 pageLoader: true,
             }}
         >
-            <GitInfoMaterial
-                appId={appId}
-                workflow={selectedWorkflow}
-                isJobView={isJobView}
-                setMaterialList={setMaterialList}
-                materialList={materialList}
-                showWebhookModal={showWebhookModal}
-                reloadCompleteMaterialList={reloadMaterialList}
-                onClickShowBranchRegexModal={handleShowRegexBranchChangeModal}
-                runtimeParams={runtimeParams}
-                runtimeParamsErrorState={runtimeParamsErrorState}
-                handleRuntimeParamChange={handleRuntimeParamChange}
-                handleRuntimeParamError={handleRuntimeParamError}
-                selectedEnv={selectedEnv}
-                handleDisplayWebhookModal={handleDisplayWebhookModal}
-            />
+            {!showContentLoader && (
+                <GitInfoMaterial
+                    appId={appId}
+                    workflowId={selectedWorkflow?.id}
+                    node={ciNode}
+                    isJobView={isJobView}
+                    setMaterialList={setMaterialList}
+                    materialList={materialList}
+                    showWebhookModal={showWebhookModal}
+                    reloadCompleteMaterialList={reloadMaterialList}
+                    runtimeParams={runtimeParams}
+                    runtimeParamsErrorState={runtimeParamsErrorState}
+                    handleRuntimeParamChange={handleRuntimeParamChange}
+                    handleRuntimeParamError={handleRuntimeParamError}
+                    selectedEnv={selectedEnv}
+                    handleDisplayWebhookModal={handleDisplayWebhookModal}
+                    selectedCIPipeline={selectedCIPipeline}
+                    handleReloadWithWorkflows={handleReloadWithWorkflows}
+                />
+            )}
         </APIResponseHandler>
     )
 
@@ -548,42 +448,13 @@ const BuildImageModal = ({
                     onClick={stopPropagation}
                 >
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        <div className="px-20 py-12 flexbox dc__content-space dc__align-items-center border__primary--bottom">
-                            {showWebhookModal ? (
-                                <div className="flexbox dc__gap-12" data-testid="build-deploy-pipeline-name-heading">
-                                    <Button
-                                        dataTestId="webhook-back-button"
-                                        ariaLabel="Back"
-                                        icon={<Icon name="ic-arrow-right" color="N700" rotateBy={180} />}
-                                        variant={ButtonVariantType.borderLess}
-                                        size={ComponentSizeType.xs}
-                                        showAriaLabelInTippy={false}
-                                        style={ButtonStyleType.neutral}
-                                        onClick={handleWebhookModalBack}
-                                    />
-
-                                    <h2 className="m-0 fs-16 fw-6 lh-24 cn-9 flexbox">
-                                        <span className="dc__truncate dc__mxw-250">{ciNode?.title}</span>
-                                        <span className="fs-16">&nbsp;/ All received webhooks </span>
-                                    </h2>
-                                </div>
-                            ) : (
-                                <h2 className="m-0 fs-16 fw-6 lh-24 cn-9 dc__truncate">
-                                    {isJobView ? 'Pipeline:' : 'Build Pipeline:'} {ciNode?.title}
-                                </h2>
-                            )}
-
-                            <Button
-                                dataTestId="header-close-button"
-                                ariaLabel="Close"
-                                showAriaLabelInTippy={false}
-                                onClick={handleClose}
-                                variant={ButtonVariantType.borderLess}
-                                style={ButtonStyleType.negativeGrey}
-                                icon={<Icon name="ic-close-large" color={null} />}
-                                size={ComponentSizeType.xs}
-                            />
-                        </div>
+                        <BuildImageHeader
+                            showWebhookModal={showWebhookModal}
+                            handleWebhookModalBack={handleWebhookModalBack}
+                            pipelineName={ciNode?.title}
+                            isJobView={isJobView}
+                            handleClose={handleClose}
+                        />
 
                         <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
@@ -597,19 +468,6 @@ const BuildImageModal = ({
                 </div>
             </Drawer>
             <Prompt when={isBuildTriggerLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-
-            {showRegexBranchChangeModal && (
-                <BranchRegexModal
-                    material={materialList}
-                    selectedCIPipeline={selectedCIPipeline}
-                    title={ciNode?.title}
-                    onCloseBranchRegexModal={handleCloseBranchRegexModal}
-                    appId={appId}
-                    workflowId={workflowId}
-                    // This will ensure ciTriggerDetails are also updated
-                    handleReload={handleReloadWithWorkflows}
-                />
-            )}
         </>
     )
 }
