@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE_TYPE } from '../../config'
 
@@ -102,9 +102,4 @@ export interface BulkEditsProps {
     serverMode: SERVER_MODE_TYPE
     outputHeightMV: ReturnType<typeof useMotionValue<number>>
     gridTemplateRows: ReturnType<typeof useMotionValue<string>>
-}
-
-export enum BulkEditVersion {
-    v1 = 'batch/v1beta1',
-    v2 = 'batch/v1beta2',
 }

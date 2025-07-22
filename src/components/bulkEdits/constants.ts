@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { BulkEditVersion } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { BulkEditVersion } from './bulkEdits.type'
-
-const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
+const BULK_EDIT_README_OPTIONS = importComponentFromFELibrary('BULK_EDIT_README_OPTIONS', [], 'function')
 
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
@@ -35,14 +35,7 @@ export const OutputDivider = '--------------------------------------------------
 export const BULK_EDIT_RESIZE_HANDLE_CLASS = 'bulk-edit__resize-handle'
 
 export const ReadmeVersionOptions = [
-    ...(getBulkEditConfig
-        ? [
-              {
-                  label: 'v1beta2/application',
-                  value: BulkEditVersion.v2,
-              },
-          ]
-        : []),
+    ...BULK_EDIT_README_OPTIONS,
     {
         label: 'v1beta1/application',
         value: BulkEditVersion.v1,

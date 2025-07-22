@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkEditVersion, get, post } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { Routes } from '../../config'
-import { BulkEditVersion } from './bulkEdits.type'
 
 const postBulkEditScript = importComponentFromFELibrary('postBulkEditScript', null, 'function')
 const dryRunBulkEditScript = importComponentFromFELibrary('dryRunBulkEditScript', null, 'function')

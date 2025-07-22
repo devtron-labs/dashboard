@@ -22,6 +22,7 @@ import yamlJsParser from 'yaml'
 
 import {
     BulkEditConfigV2Type,
+    BulkEditVersion,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -57,7 +58,7 @@ import {
     renderSecretOutput,
 } from './bulkedit.utils'
 import { getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
-import { BulkEditsProps, BulkEditsState, BulkEditVersion } from './bulkEdits.type'
+import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
 import {
     BULK_EDIT_RESIZE_HANDLE_CLASS,
     INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE,
@@ -66,10 +67,10 @@ import {
     ReadmeVersionOptions,
     STATUS,
 } from './constants'
-import basicValidatorSchema from './schema.json'
 
 import './bulkEdit.scss'
 
+const BULK_EDIT_VALIDATOR_SCHEMA = importComponentFromFELibrary('BULK_EDIT_VALIDATOR_SCHEMA', null, 'function')
 export const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
 
 class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
@@ -111,7 +112,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
     getInitialized() {
         Promise.allSettled([
-            (getBulkEditConfig?.() as Promise<ResponseType<BulkEditConfigV2Type>>).then(
+            (getBulkEditConfig?.() as Promise<ResponseType<BulkEditConfigV2Type>>)?.then(
                 ({ result: { readme, schema } }) => {
                     this.setState({ schema })
 
@@ -290,7 +291,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
         const isV2Schema = (codeEditorPayload ?? '').match('apiVersion:\\s*batch/v1beta2')?.length
 
-        const validatorSchema = isV2Schema ? schema : basicValidatorSchema
+        const validatorSchema = isV2Schema ? schema : BULK_EDIT_VALIDATOR_SCHEMA
 
         if (activeOutputTab === 'none') {
             return (
@@ -376,9 +377,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                 {renderDeploymentTemplateOutput(outputResult.deploymentTemplate)}
                 {renderSecretOutput(outputResult.secret)}
             </div>
-        ) : (
-            ''
-        )
+        ) : null
     }
 
     renderConfigMapImpObj = () => {
