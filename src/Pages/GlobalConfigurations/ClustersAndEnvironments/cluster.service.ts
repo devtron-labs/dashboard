@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { get, getUrlWithSearchParams, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    getUrlWithSearchParams,
+    post,
+    put,
+    stringComparatorBySortOrder,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
@@ -50,30 +57,32 @@ export const getClusterList = async (clusterIds?: number[]): Promise<Cluster[]> 
     const { result } = await get<ClusterDTO[]>(url)
 
     // eslint-disable-next-line camelcase
-    return (result ?? []).map(
-        ({
-            id,
-            server_url: serverUrl,
-            cluster_name: clusterName,
-            prometheus_url: prometheusUrl,
-            category,
-            clusterStatus,
-            ...res
-        }) => ({
-            ...res,
-            clusterId: id,
-            serverUrl,
-            clusterName,
-            prometheusUrl,
-            category: category?.name
-                ? {
-                      label: category.name,
-                      value: category.id,
-                  }
-                : null,
-            status: clusterStatus,
-        }),
-    )
+    return (result ?? [])
+        .map(
+            ({
+                id,
+                server_url: serverUrl,
+                cluster_name: clusterName,
+                prometheus_url: prometheusUrl,
+                category,
+                clusterStatus,
+                ...res
+            }) => ({
+                ...res,
+                clusterId: id,
+                serverUrl,
+                clusterName,
+                prometheusUrl,
+                category: category?.name
+                    ? {
+                          label: category.name,
+                          value: category.id,
+                      }
+                    : null,
+                status: clusterStatus,
+            }),
+        )
+        .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
 }
 
 export function getCluster(id: number) {

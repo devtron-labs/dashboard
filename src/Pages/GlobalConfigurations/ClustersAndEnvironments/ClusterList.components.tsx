@@ -292,3 +292,17 @@ export const DeleteCluster = ({ clusterList, reloadClusterList, handleClose }: E
         />
     )
 }
+
+export const ClusterEnvLoader = () => (
+    <>
+        {Array.from({ length: 3 }).map((_, idx) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <div key={idx} className="px-20 py-8 dc__grid environment-row dc__align-items-center">
+                {Array.from({ length: 5 }).map((_, index) => (
+                    // eslint-disable-next-line react/no-array-index-key
+                    <span key={index} className="shimmer" />
+                ))}
+            </div>
+        ))}
+    </>
+)

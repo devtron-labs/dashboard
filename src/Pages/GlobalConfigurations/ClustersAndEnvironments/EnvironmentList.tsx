@@ -35,6 +35,7 @@ import {
 } from './cluster.type'
 import { environmentNameComparator, getSelectParsedCategory } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
+import { ClusterEnvLoader } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 import './cluster.scss'
@@ -129,13 +130,7 @@ const ClustersEnvironmentsList = ({
 
     const renderNamespaceEnvList = () => {
         if (namespaceListLoading) {
-            return Array.from({ length: 3 }).map(() => (
-                <div className="px-20 py-8 dc__grid environment-row dc__align-items-center">
-                    {Array.from({ length: 5 }).map(() => (
-                        <span className="shimmer" />
-                    ))}
-                </div>
-            ))
+            return <ClusterEnvLoader />
         }
 
         if (namespaceListError) {
@@ -405,7 +400,6 @@ const EnvironmentList = ({
                 <SortableTableHeaderCell title="DESCRIPTION" isSortable={false} />
             </div>
             {clusterList
-                .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
                 .filter(({ clusterId }) => !filterClusterId || filterClusterId === String(clusterId))
                 .map(({ clusterId, clusterName, isProd, isVirtualCluster }) => (
                     <ClustersEnvironmentsList
