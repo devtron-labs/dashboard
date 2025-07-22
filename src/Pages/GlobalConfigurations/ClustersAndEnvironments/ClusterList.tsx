@@ -240,7 +240,7 @@ const ClusterList = () => {
     const isClusterEnvListLoading = clusterListLoading || envListLoading
 
     // Early return for non super admin users
-    if (!isSuperAdmin) {
+    if (!isK8sClient && !isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
     }
 
