@@ -70,7 +70,8 @@ const TriggerBuildSidebar = ({
                     <span className="dc__block dc__word-break">{appDetails.errorMessage}</span>
                 </span>
             )}
-            {appDetails.node.pluginBlockState.action !== ConsequenceAction.ALLOW_FOREVER &&
+            {appDetails.node?.pluginBlockState &&
+                appDetails.node?.pluginBlockState?.action !== ConsequenceAction.ALLOW_FOREVER &&
                 PolicyEnforcementMessage && (
                     <PolicyEnforcementMessage
                         consequence={appDetails.node.pluginBlockState}

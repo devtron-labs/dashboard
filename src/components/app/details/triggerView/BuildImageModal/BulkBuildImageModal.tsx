@@ -154,7 +154,7 @@ const BulkBuildImageModal = ({
                     (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
                 )
 
-                if (getCanNodeHaveMaterial(currentNode)) {
+                if (!getCanNodeHaveMaterial(currentNode)) {
                     acc.ciMaterialPromiseList.push(() => [])
                     acc.runtimeParamsPromiseList.push(() => [])
 
@@ -279,9 +279,12 @@ const BulkBuildImageModal = ({
         }
     }
 
-    useEffect(() => () => {
-        initialDataAbortControllerRef.current.abort()
-    })
+    useEffect(
+        () => () => {
+            initialDataAbortControllerRef.current.abort()
+        },
+        [],
+    )
 
     const handleWebhookModalBack = () => {
         setShowWebhookModal(false)
@@ -592,7 +595,7 @@ const BulkBuildImageModal = ({
     return (
         <Drawer position="right" minWidth="1024px" maxWidth="1200px" onClose={handleClose} onEscape={handleClose}>
             <div
-                className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
+                className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
                 onClick={stopPropagation}
             >
                 <div
