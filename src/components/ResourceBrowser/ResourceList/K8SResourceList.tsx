@@ -99,6 +99,8 @@ const K8SResourceListViewWrapper = ({
                 allColumns={allColumns}
                 searchParams={restProps}
                 rows={rows}
+                searchKey={searchKey}
+                handleSearch={handleSearch}
             />
         ) : (
             <ResourceFilterOptions
@@ -220,8 +222,10 @@ export const K8SResourceList = ({
     )
 
     const tableFilter: K8sResourceListTableProps['filter'] = (row, filterData) => {
+        let nodeFilters = true
+
         if (isNodeListing) {
-            return isItemASearchMatchForNodeListing(row.data, filterData)
+            nodeFilters = isItemASearchMatchForNodeListing(row.data, filterData)
         }
 
         const isSearchMatch =
@@ -241,7 +245,7 @@ export const K8SResourceList = ({
             )
         }
 
-        return isSearchMatch
+        return isSearchMatch && nodeFilters
     }
 
     const getDefaultSortKey = () => {

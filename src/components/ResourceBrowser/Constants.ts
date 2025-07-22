@@ -335,7 +335,6 @@ export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
     (typeof NODE_LIST_HEADERS_TO_KEY_MAP)[keyof typeof NODE_LIST_HEADERS_TO_KEY_MAP]
 > = {
     [NODE_SEARCH_KEYS.LABEL]: 'labels',
-    [NODE_SEARCH_KEYS.NAME]: 'name',
     [NODE_SEARCH_KEYS.NODE_GROUP]: 'nodeGroup',
 }
 

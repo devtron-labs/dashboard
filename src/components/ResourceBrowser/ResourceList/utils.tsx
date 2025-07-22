@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { GroupBase, OptionsOrGroups } from 'react-select'
-
 import {
     BaseRecentlyVisitedEntitiesTypes,
     ClusterDetail,
@@ -514,10 +512,9 @@ export const getRBSidebarTreeViewNodes = (list: ReturnType<typeof convertResourc
 }
 
 export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['rows']) => {
-    const { labels, nodeGroups, nodeNames } = (rows || []).reduce<{
+    const { labels, nodeGroups } = (rows || []).reduce<{
         labels: Map<string, NodeSearchListOptionType>
         nodeGroups: Map<string, NodeSearchListOptionType>
-        nodeNames: Map<string, NodeSearchListOptionType>
     }>(
         (acc, curr) => {
             ;(curr.data.labels as { key: string; value: string }[]).forEach(({ key, value }) => {
@@ -538,17 +535,9 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
                 })
             }
 
-            if (!acc.nodeNames.has(curr.data.name as string)) {
-                acc.nodeNames.set(curr.data.name as string, {
-                    label: curr.data.name,
-                    value: curr.data.name as string,
-                    identifier: NODE_SEARCH_KEYS.NAME,
-                })
-            }
-
             return acc
         },
-        { labels: new Map(), nodeGroups: new Map(), nodeNames: new Map() },
+        { labels: new Map(), nodeGroups: new Map() },
     )
 
     return {
@@ -558,31 +547,5 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
         nodeGroups: Array.from(nodeGroups)
             .map(([, value]) => value)
             .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
-        nodeNames: Array.from(nodeNames)
-            .map(([, value]) => value)
-            .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
-    }
-}
-
-export const getNodeListSearchOptions = ({
-    nodeSearchKey,
-    labels,
-    nodeGroups,
-    nodeNames,
-}: {
-    nodeSearchKey: NODE_SEARCH_KEYS
-    labels: NodeSearchListOptionType[]
-    nodeGroups: NodeSearchListOptionType[]
-    nodeNames: NodeSearchListOptionType[]
-}): OptionsOrGroups<NodeSearchListOptionType, GroupBase<NodeSearchListOptionType>> => {
-    switch (nodeSearchKey) {
-        case NODE_SEARCH_KEYS.NODE_GROUP:
-            return [{ label: 'Node Groups', options: nodeGroups }]
-        case NODE_SEARCH_KEYS.LABEL:
-            return [{ label: 'Labels', options: labels }]
-        case NODE_SEARCH_KEYS.NAME:
-            return [{ label: 'Names', options: nodeNames }]
-        default:
-            return []
     }
 }
