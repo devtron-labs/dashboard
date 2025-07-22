@@ -21,7 +21,7 @@ import {
     RefVariableStageType,
     RefVariableType,
     SelectPickerOptionType,
-    TippyCustomizedProps,
+    UsePopoverProps,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -138,13 +138,14 @@ export type VariableDataTableAction<
 
 export type HandleRowUpdateActionProps = VariableDataTableAction
 
-export interface VariableDataTablePopupMenuProps extends Pick<TippyCustomizedProps<false>, 'placement'> {
+export interface VariableDataTablePopupMenuProps {
     heading: string
     showHeaderIcon?: boolean
     showIconDot?: boolean
     disableClose?: boolean
     onClose?: () => void
     children: JSX.Element
+    position: UsePopoverProps['position']
 }
 
 export interface ConfigOverlayProps {

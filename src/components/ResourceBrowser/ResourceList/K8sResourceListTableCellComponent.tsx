@@ -12,7 +12,6 @@ import {
     highlightSearchText,
     Icon,
     IconName,
-    K8sResourceDetailDataType,
     Nodes,
     noop,
     RESOURCE_BROWSER_ROUTES,
@@ -27,7 +26,7 @@ import { AddEnvironmentFormPrefilledInfoType } from '@Pages/GlobalConfigurations
 import { ClusterEnvironmentDrawer } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterEnvironmentDrawer'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
-import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP } from '../Constants'
+import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
 import NodeActionsMenu from './NodeActionsMenu'
@@ -53,8 +52,8 @@ const K8sResourceListTableCellComponent = ({
     const { push } = useHistory()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const isNodeListing = selectedResource?.gvk.Kind === Nodes.Node
-    const isNodeListingAndNodeHasErrors = false
-    const isNodeUnschedulable = false
+    const isNodeListingAndNodeHasErrors = isNodeListing && !!resourceData[NODE_LIST_HEADERS_TO_KEY_MAP.errors]
+    const isNodeUnschedulable = isNodeListing && !!resourceData.unschedulable
     const nameButtonRef = useRef<HTMLButtonElement>(null)
     const contextMenuRef = useRef<HTMLButtonElement>(null)
 
@@ -169,7 +168,7 @@ const K8sResourceListTableCellComponent = ({
             <ResourceBrowserActionMenu
                 ref={contextMenuRef}
                 clusterId={clusterId}
-                resourceData={resourceData as K8sResourceDetailDataType}
+                resourceData={resourceData}
                 getResourceListData={reloadResourceListData as () => Promise<void>}
                 selectedResource={selectedResource}
                 handleResourceClick={handleResourceClick}
@@ -180,14 +179,14 @@ const K8sResourceListTableCellComponent = ({
                 ref={contextMenuRef}
                 getNodeListData={reloadResourceListData as () => Promise<void>}
                 addTab={addTab}
-                nodeData={resourceData as K8sResourceDetailDataType}
+                nodeData={resourceData}
                 handleClearBulkSelection={noop}
             />
         )
 
     const getConditionalWrap = () =>
         columnName === 'node'
-            ? getRenderNodeButton(resourceData as K8sResourceDetailDataType, columnName, handleNodeClick)
+            ? getRenderNodeButton(resourceData, columnName, handleNodeClick)
             : getRenderInvolvedObjectButton(resourceData[columnName] as string, handleEventInvolvedObjectClick)
 
     if (columnName === 'type' && isEventListing) {

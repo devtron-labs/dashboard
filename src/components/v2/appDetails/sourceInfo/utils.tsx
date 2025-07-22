@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { ReactComponent as RightArrow } from '@Icons/ic-arrow-right.svg'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const getEnvironmentName = (
     clusterName: string,
@@ -45,15 +51,14 @@ export const getUsedChartContent = (isDeprecated: boolean, onClickUpgrade: () =>
                 </div>
             )}
         </div>
-        {/* Due to missing support of white text, unable to use Button component */}
-        <button
-            type="button"
-            data-testid="chart-used-upgrade-button"
-            className="flexbox dc__gap-6 dc__transparent cn-0 fs-12 fw-6 lh-20 p-0 dc__align-items-center"
+        <Button
+            dataTestId="chart-used-upgrade-button"
+            variant={ButtonVariantType.text}
+            style={ButtonStyleType.neutralWhite}
+            size={ComponentSizeType.small}
             onClick={onClickUpgrade}
-        >
-            Go to Configure
-            <RightArrow className="dc__no-shrink icon-dim-16 scn-0" />
-        </button>
+            endIcon={<Icon name="ic-arrow-right" color={null} />}
+            text="Go to Configure"
+        />
     </div>
 )

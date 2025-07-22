@@ -348,7 +348,6 @@ const BulkCITrigger = ({
                     icon={<Close />}
                     showAriaLabelInTippy={false}
                     style={ButtonStyleType.negativeGrey}
-                    disabled={isLoading}
                 />
             </div>
         )
@@ -807,7 +806,7 @@ const BulkCITrigger = ({
     const responseListLength = responseList.length
 
     return (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onClose={closeBulkCIModal} >
             <div className="bg__primary bulk-ci-trigger-container">
                 <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                     {renderHeaderSection()}

@@ -61,5 +61,7 @@ export const DynamicTabComponentWrapper = ({
         updateTabUrl({ id: tabId, url: `${pathname}${search}` })
     }, [pathname, search])
 
-    return cloneElement(children, { ...children.props, key: getTabById(tabId)?.componentKey }) as ReactElement
+    return children
+        ? (cloneElement(children, { ...children.props, key: getTabById(tabId)?.componentKey }) as ReactElement)
+        : null
 }
