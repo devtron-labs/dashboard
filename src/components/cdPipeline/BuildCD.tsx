@@ -626,7 +626,7 @@ export default function BuildCD({
         return (
             <div className="form__row">
                 <p className="form__label form__label--caps mb-8-imp">
-                    <div className="flex  dc__content-space mt-16">
+                    <div className="flex dc__content-space mt-16">
                         <div className="flex left">
                             <span>Deployment Strategy</span>
                             {renderDeploymentStrategyTippy()}
