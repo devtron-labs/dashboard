@@ -21,16 +21,14 @@ import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryStri
 import {
     FilterChips,
     GroupedFilterSelectPicker,
-    OptionType,
     SearchBar,
-    SelectPicker,
     useAsync,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 
-import { DEFAULT_NODE_K8S_VERSION, NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
+import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
 import ColumnSelector from './ColumnSelector'
 import {
@@ -75,7 +73,10 @@ const NodeListSearchFilter = ({
     }, [])
 
     // CONSTANTS
-    const isNodeSearchFilterApplied = searchParams[NODE_SEARCH_KEYS.LABEL] || searchParams[NODE_SEARCH_KEYS.NODE_GROUP]
+    const isNodeSearchFilterApplied =
+        searchParams[NODE_SEARCH_KEYS.LABEL] ||
+        searchParams[NODE_SEARCH_KEYS.NODE_GROUP] ||
+        searchParams[NODE_K8S_VERSION_FILTER_KEY]
 
     // ASYNC CALLS
     const [nodeK8sVersionsLoading, nodeK8sVersionOptions, nodeK8sVersionsError, refetchNodeK8sVersions] =
@@ -84,34 +85,26 @@ const NodeListSearchFilter = ({
                 result: { nodeK8sVersions: versions },
             } = await getClusterCapacity(clusterId)
 
-            return [
-                DEFAULT_NODE_K8S_VERSION,
-                ...(versions?.map((version) => ({
-                    label: `K8s version: ${version}`,
-                    value: version,
-                })) || []),
-            ]
+            return (versions || []).map((version) => ({
+                label: version,
+                value: version,
+            }))
         }, [clusterId])
 
     // CONFIGS
-    const selectedK8sNodeVersion = searchParams[NODE_K8S_VERSION_FILTER_KEY] ?? ''
-
-    const selectedK8sVersionOption = useMemo(
-        () =>
-            nodeK8sVersionOptions?.find((option) => option.value === selectedK8sNodeVersion) ??
-            DEFAULT_NODE_K8S_VERSION,
-        [nodeK8sVersionOptions, selectedK8sNodeVersion],
-    )
-
     const { nodeGroups, labels } = useMemo(() => getNodeSearchKeysOptionsList(rows), [JSON.stringify(rows)])
 
     const appliedFilters = useMemo(() => {
         const nodeGroupMap = new Set(((searchParams[NODE_SEARCH_KEYS.NODE_GROUP] as string) || '').split(','))
         const labelMap = new Set(((searchParams[NODE_SEARCH_KEYS.LABEL] as string) || '').split(','))
+        const k8sNodeVersionMap = new Set(((searchParams[NODE_K8S_VERSION_FILTER_KEY] as string) || '').split(','))
 
         return {
             [NODE_SEARCH_KEYS.NODE_GROUP]: nodeGroups.filter(({ value }) => nodeGroupMap.has(value)),
             [NODE_SEARCH_KEYS.LABEL]: labels.filter(({ value }) => labelMap.has(value)),
+            [NODE_K8S_VERSION_FILTER_KEY]: (nodeK8sVersionOptions || []).filter(({ value }) =>
+                k8sNodeVersionMap.has(value),
+            ),
         }
     }, [searchParams])
 
@@ -127,20 +120,6 @@ const NodeListSearchFilter = ({
         push(`?${finalQueryString}`)
     }
 
-    const handleApplyNodeK8sVersion = (option: OptionType) => {
-        handleQueryParamsUpdate((queryObject) => {
-            const finalQueryObject = structuredClone(queryObject)
-
-            if (option.value === DEFAULT_NODE_K8S_VERSION.value) {
-                delete finalQueryObject[NODE_K8S_VERSION_FILTER_KEY]
-            } else {
-                finalQueryObject[NODE_K8S_VERSION_FILTER_KEY] = option.value
-            }
-
-            return finalQueryObject
-        })
-    }
-
     const handleSearchInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Escape' || e.key === 'Esc') {
             searchInputRef.current?.blur()
@@ -148,7 +127,8 @@ const NodeListSearchFilter = ({
     }
 
     const handleSearchFilterChange =
-        (nodeSearchKey: NODE_SEARCH_KEYS) => (filtersToApply: NodeSearchListOptionType[]) => {
+        (nodeSearchKey: NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY) =>
+        (filtersToApply: NodeSearchListOptionType[]) => {
             handleQueryParamsUpdate((queryObject) => {
                 const updatedQueryObject = structuredClone(queryObject)
 
@@ -188,6 +168,8 @@ const NodeListSearchFilter = ({
                 delete updatedQueryObject[keyValue]
             })
 
+            delete updatedQueryObject[NODE_K8S_VERSION_FILTER_KEY]
+
             return updatedQueryObject
         })
     }
@@ -196,7 +178,9 @@ const NodeListSearchFilter = ({
 
     return (
         <>
-            <div className="node-listing-search-container pt-16 px-20 dc__zi-5">
+            <div
+                className={`node-listing-search-container pt-16 px-20 dc__zi-5 ${!isNodeSearchFilterApplied ? 'pb-12' : ''}`}
+            >
                 <SearchBar
                     initialSearchText={searchKey}
                     handleSearchChange={handleSearch}
@@ -208,7 +192,7 @@ const NodeListSearchFilter = ({
                     }}
                 />
 
-                <GroupedFilterSelectPicker<NODE_SEARCH_KEYS>
+                <GroupedFilterSelectPicker<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY>
                     filterSelectPickerPropsMap={{
                         [NODE_SEARCH_KEYS.NODE_GROUP]: {
                             inputId: 'node-search-filter-node-groups',
@@ -230,21 +214,23 @@ const NodeListSearchFilter = ({
                             isDisabled: false,
                             isLoading: false,
                         },
+                        [NODE_K8S_VERSION_FILTER_KEY]: {
+                            inputId: 'k8s-version-select',
+                            placeholder: NODE_SEARCH_KEY_PLACEHOLDER[NODE_K8S_VERSION_FILTER_KEY],
+                            options: [{ label: 'K8s version', options: nodeK8sVersionOptions || [] }],
+                            getOptionValue,
+                            appliedFilterOptions: appliedFilters[NODE_K8S_VERSION_FILTER_KEY],
+                            handleApplyFilter: handleSearchFilterChange(NODE_K8S_VERSION_FILTER_KEY),
+                            isDisabled: false,
+                            isLoading: nodeK8sVersionsLoading,
+                            optionListError: nodeK8sVersionsError,
+                            reloadOptionList: refetchNodeK8sVersions,
+                        },
                     }}
                     id="node-list-search-filter"
                     options={NODE_LIST_SEARCH_FILTER_OPTIONS}
                     isFilterApplied={isNodeSearchFilterApplied}
                     width={150}
-                />
-
-                <SelectPicker
-                    inputId="k8s-version-select"
-                    optionListError={nodeK8sVersionsError}
-                    reloadOptionList={refetchNodeK8sVersions}
-                    isLoading={nodeK8sVersionsLoading}
-                    options={nodeK8sVersionOptions ?? []}
-                    onChange={handleApplyNodeK8sVersion}
-                    value={selectedK8sVersionOption}
                 />
 
                 <div className="dc__border-left h-20 mt-6" />
@@ -261,13 +247,16 @@ const NodeListSearchFilter = ({
                     <div className="shimmer h-32" />
                 )}
             </div>
-            <FilterChips<Partial<Record<NODE_SEARCH_KEYS, string[]>>>
+            <FilterChips<Partial<Record<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY, string[]>>>
                 className="px-20 pb-12"
                 filterConfig={{
                     [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP].map(
                         ({ value }) => value,
                     ),
                     [NODE_SEARCH_KEYS.LABEL]: appliedFilters[NODE_SEARCH_KEYS.LABEL].map(({ value }) => value),
+                    [NODE_K8S_VERSION_FILTER_KEY]: appliedFilters[NODE_K8S_VERSION_FILTER_KEY].map(
+                        ({ value }) => value,
+                    ),
                 }}
                 onRemoveFilter={handleRemoveFilter}
                 clearFilters={handleClearFilters}

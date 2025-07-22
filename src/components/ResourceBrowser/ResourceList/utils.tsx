@@ -265,7 +265,7 @@ export const dynamicSort = (property: string) => (valueA: unknown, valueB: unkno
 export const isItemASearchMatchForNodeListing = (item: Record<string, any>, searchParams: Record<string, any>) => {
     const isK8sVersionFilterAppliedAndMatchFound =
         !searchParams[NODE_K8S_VERSION_FILTER_KEY] ||
-        item[NODE_K8S_VERSION_FILTER_KEY] === searchParams[NODE_K8S_VERSION_FILTER_KEY]
+        searchParams[NODE_K8S_VERSION_FILTER_KEY].includes(item[NODE_K8S_VERSION_FILTER_KEY])
 
     if (!isK8sVersionFilterAppliedAndMatchFound) {
         return false
