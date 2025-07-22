@@ -18,18 +18,16 @@ import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtr
 
 import { SERVER_MODE_TYPE } from '../../config'
 
-export interface DTImpactedObjects {
+interface BaseOperationResponseType {
     appId: number
     appName: string
     envId: number
     envName?: string // Only received for v1beta2
 }
 
-export interface CMandSecretImpactedObjects {
-    appId: number
-    appName: string
-    envId: number
-    envName?: string // Only received for v1beta2
+export interface DTImpactedObjects extends BaseOperationResponseType {}
+
+export interface CMandSecretImpactedObjects extends BaseOperationResponseType {
     names: string[]
 }
 
@@ -39,21 +37,13 @@ export interface ImpactedObjects {
     secret: CMandSecretImpactedObjects[]
 }
 
-export interface DtOutputKeys {
-    appId: number
-    appName: string
-    envId: number
+export interface DtOutputKeys extends BaseOperationResponseType {
     message: string
-    envName?: string // Only received for v1beta2
 }
 
-export interface CMandSecretOutputKeys {
-    appId: number
-    appName: string
-    envId: number
-    message: string
+export interface CMandSecretOutputKeys extends BaseOperationResponseType {
     names: string[]
-    envName?: string // Only received for v1beta2
+    message: string
 }
 
 export interface DTBulkOutput {
