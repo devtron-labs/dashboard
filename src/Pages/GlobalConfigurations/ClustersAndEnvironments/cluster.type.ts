@@ -302,15 +302,17 @@ export interface ClusterDTO {
 }
 
 export interface Cluster
-    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category'> {
+    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category' | 'clusterStatus'> {
     serverUrl: ClusterDTO['server_url']
     clusterName: ClusterDTO['cluster_name']
     prometheusUrl: ClusterDTO['prometheus_url']
     clusterId: ClusterDTO['id']
     category: SelectPickerOptionType
+    status: ClusterStatusType
 }
 
-export interface ClusterRowData extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster'> {
+export interface ClusterRowData
+    extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
     envCount: number
     clusterType: string
     clusterCategory: string

@@ -16,6 +16,7 @@
 
 import {
     ClusterEnvironmentCategoryType,
+    ClusterStatusType,
     Icon,
     NodeTaintType,
     OptionType,
@@ -156,4 +157,15 @@ export const environmentNameComparator = (a: string, b: string, sortOrder: Sorti
     if (aIsEmpty) return sortOrder === SortingOrder.ASC ? 1 : -1
     if (bIsEmpty) return sortOrder === SortingOrder.ASC ? -1 : 1
     return stringComparatorBySortOrder(a, b, sortOrder)
+}
+
+export const getBulletColorAccToStatus = (status: ClusterStatusType) => {
+    switch (status) {
+        case ClusterStatusType.HEALTHY:
+            return 'bcg-5'
+        case ClusterStatusType.UNHEALTHY:
+            return 'bcy-5'
+        default:
+            return 'bcr-5'
+    }
 }

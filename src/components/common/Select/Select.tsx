@@ -117,7 +117,7 @@ const Select: React.FC<SelectProps> & SelectComposition = ({
                     {button}
                 </PopupMenu.Button>
                 {popupOpen && AsyncComponent}
-                <PopupMenu.Body rootClassName={`select-popup ${rootClassName || ''}`} autoWidth={autoWidth}>
+                <PopupMenu.Body noBackDrop rootClassName={`select-popup ${rootClassName || ''}`} autoWidth={autoWidth}>
                     {loading ? null : (
                         <>
                             {optionLength === 0 && (
