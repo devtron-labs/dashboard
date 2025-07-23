@@ -70,17 +70,17 @@ const GitInfoMaterial = ({
     isBlobStorageConfigured,
     toggleSelectedAppIgnoreCache,
 }: GitInfoMaterialProps) => {
+    // TODO: Discuss if we can remove key in case of bulk? Maybe one useEffect?
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CIMaterialSidebarType>(CIMaterialSidebarType.CODE_SOURCE)
     const [showRegexBranchChangeModal, setShowRegexBranchChangeModal] = useState<boolean>(
         getIsRegexBranchNotAvailable(selectedCIPipeline, materialList),
     )
-    // in case of webhook [Not the CI one] we won't show
     const nodeId = node?.id
     const isCITriggerBlocked = node?.isTriggerBlocked
 
     // Can these be multiple?
     const selectedMaterial = materialList.find((material) => material.isSelected) || ({} as CIMaterialType)
-    const isWebhook = selectedMaterial?.type === SourceTypeMap.WEBHOOK
+    const isWebhookCI = selectedMaterial.type === SourceTypeMap.WEBHOOK
     const ciPipelineURL = getCIPipelineURL(
         String(appId),
         String(workflowId),
@@ -90,6 +90,8 @@ const GitInfoMaterial = ({
         node?.isJobCI,
         false,
     )
+
+    const selectedApp = (appList || []).find((appDetails) => appDetails.appId === +appId)
 
     const handleCloseBranchRegexModal = () => {
         setShowRegexBranchChangeModal(false)
@@ -124,8 +126,7 @@ const GitInfoMaterial = ({
      * Common utility method that takes in updated material [one with update loading state and filters] and fetches the latest material list.
      */
     const fetchMaterialList = async (updatedMaterial: typeof selectedMaterial) => {
-        // TODO: Check if abortController is needed
-        // FIXME: Lets disable search on refresh
+        // Not using abortController rather disabling the actions since it fetches a specific material
         const newSelectedMaterialItem = await getCIMaterialList(
             {
                 pipelineId: String(nodeId),
@@ -145,9 +146,12 @@ const GitInfoMaterial = ({
                 if (material.id === updatedMaterial.id) {
                     return {
                         ...newSelectedMaterialItem.result[0],
+                        // For search there we are using updateGitCommitHistory
                         searchText: '',
                         isMaterialLoading: false,
+                        // Since material selection can change
                         isSelected: material.isSelected,
+                        // This will remain same since disabled
                         showAllCommits: updatedMaterial.showAllCommits,
                     }
                 }
@@ -157,14 +161,16 @@ const GitInfoMaterial = ({
     }
 
     const updateGitCommitHistory = async (commitHash: string) => {
-        const updatedMaterial: typeof selectedMaterial = {
-            ...selectedMaterial,
-            isMaterialLoading: true,
-            searchText: commitHash,
-        }
-
         setMaterialList((prevMaterialList) =>
-            prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
+            prevMaterialList.map((material) =>
+                material.id === selectedMaterial.id
+                    ? {
+                          ...material,
+                          isMaterialLoading: true,
+                          searchText: commitHash,
+                      }
+                    : material,
+            ),
         )
 
         try {
@@ -174,10 +180,19 @@ const GitInfoMaterial = ({
                 commitHash,
             )
 
-            updatedMaterial.history = [
+            const updatedMaterialKeys = {} as Pick<
+                typeof selectedMaterial,
+                | 'history'
+                | 'isMaterialLoading'
+                | 'showAllCommits'
+                | 'isMaterialSelectionError'
+                | 'materialSelectionErrorMsg'
+            >
+
+            updatedMaterialKeys.history = [
                 {
-                    commitURL: updatedMaterial.gitURL
-                        ? createGitCommitUrl(updatedMaterial.gitURL, commitHistoryResult.Commit)
+                    commitURL: selectedMaterial.gitURL
+                        ? createGitCommitUrl(selectedMaterial.gitURL, commitHistoryResult.Commit)
                         : '',
                     commit: commitHistoryResult.Commit || '',
                     author: commitHistoryResult.Author || '',
@@ -191,25 +206,34 @@ const GitInfoMaterial = ({
                 },
             ]
 
-            updatedMaterial.isMaterialLoading = false
-            updatedMaterial.showAllCommits = false
-            updatedMaterial.isMaterialSelectionError = updatedMaterial.history[0].excluded
-            updatedMaterial.materialSelectionErrorMsg = updatedMaterial.history[0].excluded ? NO_COMMIT_SELECTED : ''
+            updatedMaterialKeys.isMaterialLoading = false
+            updatedMaterialKeys.showAllCommits = false
+            updatedMaterialKeys.isMaterialSelectionError = updatedMaterialKeys.history[0].excluded
+            updatedMaterialKeys.materialSelectionErrorMsg = updatedMaterialKeys.history[0].excluded
+                ? NO_COMMIT_SELECTED
+                : ''
 
             setMaterialList((prevMaterialList) =>
-                prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
+                prevMaterialList.map((material) =>
+                    material.id === selectedMaterial.id
+                        ? {
+                              ...material,
+                              ...updatedMaterialKeys,
+                          }
+                        : material,
+                ),
             )
         } catch (error) {
             showError(error)
 
             setMaterialList((prevMaterialList) =>
                 prevMaterialList.map((material) =>
-                    material.id === updatedMaterial.id
+                    material.id === selectedMaterial.id
                         ? {
                               ...material,
                               isMaterialLoading: false,
                               history: [],
-                              noSearchResultsMsg: `Commit not found for ‘${commitHash}’ in branch ‘${updatedMaterial.value}’`,
+                              noSearchResultsMsg: `Commit not found for ‘${commitHash}’ in branch ‘${selectedMaterial.value}’`,
                               noSearchResult: true,
                               showAllCommits: false,
                               isMaterialSelectionError: true,
@@ -264,7 +288,6 @@ const GitInfoMaterial = ({
                 await fetchMaterialList(updatedMaterial)
             } catch (error) {
                 showError(error)
-                // TODO: Can common out
                 setMaterialList((prevMaterialList) =>
                     prevMaterialList.map((material) =>
                         material.id === updatedMaterial.id ? { ...material, isMaterialLoading: false } : material,
@@ -274,13 +297,18 @@ const GitInfoMaterial = ({
         }
     }
 
-    // This also needs to trigger re-fetch of material list
-    // TODO: Look into searchText reset states
+    /**
+     * This method only clears search and not applies it
+     */
     const clearSearchFromSelectedMaterial = () => {
         handleSearchChange('')
     }
 
-    const refreshMaterial = async (pipelineId: number, gitMaterialId: number) => {
+    const clearAndApplySearch = async () => {
+        await handleSearchApply('')
+    }
+
+    const refreshMaterial = async (gitMaterialId: number) => {
         const requiredMaterial = materialList.find((material) => material.gitMaterialId === gitMaterialId)
 
         if (!requiredMaterial) {
@@ -298,7 +326,6 @@ const GitInfoMaterial = ({
                 prevMaterialList.map((material) => (material.id === updatedMaterial.id ? updatedMaterial : material)),
             )
 
-            // TODO: Disable search
             await refreshGitMaterial(String(updatedMaterial.gitMaterialId), null)
             await fetchMaterialList(updatedMaterial)
         } catch (error) {
@@ -322,7 +349,7 @@ const GitInfoMaterial = ({
 
         const selectedMaterialId = selectedMaterial.id
 
-        // TODO: Need to confirm earlier the key was showChanges in some places but this makes sense
+        // TODO: Need to confirm earlier the key was showChanges in some places but this does not makes sense
         try {
             const updatedMaterial: typeof selectedMaterial = {
                 ...selectedMaterial,
@@ -377,6 +404,12 @@ const GitInfoMaterial = ({
                                 name: selectedMaterial.showAllCommits ? 'ic-visibility-off' : 'ic-visibility-on',
                                 color: 'N700',
                             },
+                            isDisabled: selectedMaterial.isMaterialLoading,
+                            tooltipProps: selectedMaterial.isMaterialLoading
+                                ? {
+                                      content: 'Loading commits, please wait...',
+                                  }
+                                : null,
                         },
                     ],
                 },
@@ -412,7 +445,7 @@ const GitInfoMaterial = ({
         })
 
     const renderHeader = () => {
-        if (isWebhook) {
+        if (isWebhookCI) {
             return (
                 <div className="flex left cn-7 fs-13 fw-6 px-20 py-14 dc__gap-8 bg__tertiary dc__position-sticky dc__top-0">
                     <Icon name="ic-info-filled" color="B500" size={16} />
@@ -484,6 +517,7 @@ const GitInfoMaterial = ({
                             inputProps={{
                                 placeholder: 'Search by commit hash',
                                 autoFocus: true,
+                                disabled: selectedMaterial.isMaterialLoading,
                             }}
                             dataTestId="ci-trigger-search-by-commit-hash"
                         />
@@ -497,10 +531,8 @@ const GitInfoMaterial = ({
 
     const getRuntimeParametersHeading = () => {
         const headingPrefix = 'Runtime parameters'
-        // FIXME: Add for bulk
-        // const headingSuffix = appName ? `for '${appName}'` : ''
-        // return `${headingPrefix} ${headingSuffix}`
-        return headingPrefix
+        const headingSuffix = selectedApp ? `for '${selectedApp.name}'` : ''
+        return `${headingPrefix} ${headingSuffix}`
     }
 
     const selectCommit = (commitId: string) => {
@@ -515,7 +547,7 @@ const GitInfoMaterial = ({
                             }
                         }
 
-                        if (isWebhook) {
+                        if (isWebhookCI) {
                             return {
                                 ...commitHistory,
                                 isSelected:
@@ -556,13 +588,13 @@ const GitInfoMaterial = ({
         }
 
         if (isBulkTrigger) {
-            const selectedApp = appList.find((appDetails) => appDetails.appId === +appId)
             if (selectedApp.node.type === WorkflowNodeType.WEBHOOK) {
                 return (
                     <EmptyView
                         imgSrc={externalCiImg}
                         title={`${selectedApp.name}  ${BULK_CI_MESSAGING.webhookCI.title}`}
                         subTitle={BULK_CI_MESSAGING.webhookCI.subTitle}
+                        rootClassName=""
                     />
                 )
             }
@@ -575,6 +607,7 @@ const GitInfoMaterial = ({
                         subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
                         link={`${URLS.APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
                         linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
+                        rootClassName=""
                     />
                 )
             }
@@ -609,7 +642,7 @@ const GitInfoMaterial = ({
                         isRepoError={selectedMaterial.isRepoError}
                         isBranchError={selectedMaterial.isBranchError}
                         isDockerFileError={selectedMaterial.isDockerFileError}
-                        isWebHook={isWebhook}
+                        isWebHook={isWebhookCI}
                         gitMaterialName={selectedMaterial.gitMaterialName}
                         sourceValue={selectedMaterial.value}
                         repoErrorMsg={selectedMaterial.repoErrorMsg}
@@ -621,8 +654,8 @@ const GitInfoMaterial = ({
                         anyCommit={areCommitsPresent}
                         noSearchResults={selectedMaterial.noSearchResult}
                         noSearchResultsMsg={selectedMaterial.noSearchResultsMsg}
-                        clearSearch={clearSearchFromSelectedMaterial}
-                        handleGoToWorkFlowEditor={getHandleOpenURL(ciPipelineURL)}
+                        clearSearch={clearAndApplySearch}
+                        handleGoToWorkFlowEditor={getHandleOpenURL(`${window.__BASE_URL__}${ciPipelineURL}`)}
                         showAllCommits={selectedMaterial.showAllCommits}
                         toggleExclude={toggleIncludeExcludeCommits}
                         handleDisplayWebhookModal={handleDisplayWebhookModal}
@@ -681,7 +714,6 @@ const GitInfoMaterial = ({
         return (
             <div className="dc__grid git-info-material__container w-100 h-100 dc__overflow-auto">
                 <TriggerBuildSidebar
-                    ciNodeId={+nodeId}
                     currentSidebarTab={currentSidebarTab}
                     handleSidebarTabChange={handleSidebarTabChange}
                     runtimeParamsErrorState={runtimeParamsErrorState}

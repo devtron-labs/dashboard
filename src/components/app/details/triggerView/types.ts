@@ -410,6 +410,7 @@ export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
      */
     appId?: number
     environmentLists: EnvironmentWithSelectPickerType[]
+    reloadWorkflowStatus: () => void
 } & (
         | {
               filteredCIPipelines: TriggerViewState['filteredCIPipelines']
@@ -633,14 +634,10 @@ export interface EmptyStateCIMaterialProps {
     handleDisplayWebhookModal: () => void
 }
 
-export interface RefreshMaterialType {
-    pipelineId: number
-    refresh: (pipelineId: number, gitMaterialId: number) => void
-}
 export interface MaterialSourceProps {
     material: CIMaterialType[]
     selectMaterial: (materialId: string, ciPipelineId?: number) => void
-    refreshMaterial?: RefreshMaterialType
+    refreshMaterial?: (gitMaterialId: number) => void
     ciPipelineId?: number
     clearSearch?: (e: any) => void
 }

@@ -55,7 +55,7 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { BuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
+import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
@@ -70,11 +70,7 @@ import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
 import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
-import {
-    CIMaterialRouterProps,
-    MATERIAL_TYPE,
-    RuntimeParamsErrorState,
-} from '../../../app/details/triggerView/types'
+import { CIMaterialRouterProps, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
 import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
@@ -105,7 +101,6 @@ import BulkCDTrigger from './BulkCDTrigger'
 import BulkSourceChange from './BulkSourceChange'
 import { RenderCDMaterialContentProps } from './types'
 import { getSelectedCDNode } from './utils'
-import BulkBuildImageModal from '@Components/app/details/triggerView/BuildImageModal/BulkBuildImageModal'
 
 import './EnvTriggerView.scss'
 
@@ -151,7 +146,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [filteredWorkflows, setFilteredWorkflows] = useState<WorkflowType[]>([])
     const [selectedCDNode, setSelectedCDNode] = useState<WorkflowNodeSelectionType>(null)
-    const [selectedCINode, setSelectedCINode] = useState<WorkflowNodeSelectionType>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
@@ -277,21 +271,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             if (processDeploymentWindowStateAppGroup && _workflows.length) {
                 await processDeploymentWindowStateAppGroup(_workflows)
             }
-            if (selectedCINode?.id) {
-                _workflows.forEach((wf) =>
-                    wf.nodes.forEach((n) => {
-                        if (+n.id === selectedCINode.id) {
-                            workflows.forEach((sw) =>
-                                sw.nodes.forEach((sn) => {
-                                    if (+sn.id === selectedCINode.id) {
-                                        n.inputMaterialList = sn.inputMaterialList
-                                    }
-                                }),
-                            )
-                        }
-                    }),
-                )
-            }
             preserveSelection(_workflows)
             setWorkflows(_workflows)
             setFilteredCIPipelines(filteredCIPipelines)
@@ -353,7 +332,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
-    const getWorkflowStatusData = (workflowsList: WorkflowType[]) => {
+    const getWorkflowStatusData = (workflowsList: WorkflowType[] = workflows) => {
         getWorkflowStatus(envId, filteredAppIds)
             .then((response) => {
                 const _processedWorkflowsData = processWorkflowStatuses(
@@ -1543,6 +1522,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                                 filteredCIPipelineMap={filteredCIPipelines}
                                 workflows={workflows}
                                 reloadWorkflows={getWorkflowsData}
+                                reloadWorkflowStatus={getWorkflowStatusData}
                                 environmentLists={[]}
                             />
                         </Route>

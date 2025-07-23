@@ -228,10 +228,7 @@ const BranchRegexModal = ({
         </div>
     )
     const renderMaterialRegexFooterNextButton = () => {
-        const isDisabled = material.some((selectedMaterial) => {
-            const _regexValue = regexValue[selectedMaterial.gitMaterialId]
-            return _regexValue.isInvalid
-        })
+        const isDisabled = material.some((selectedMaterial) => regexValue[selectedMaterial.gitMaterialId].isInvalid)
 
         return (
             <div className="trigger-modal__trigger flex right dc__gap-12 dc__position-rel-imp dc__bottom-radius-4">

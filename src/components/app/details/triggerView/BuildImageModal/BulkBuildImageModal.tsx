@@ -610,6 +610,7 @@ const BulkBuildImageModal = ({
                                     handleWebhookModalBack={handleWebhookModalBack}
                                     pipelineName={appInfoMap?.[selectedAppId]?.node?.title}
                                     handleClose={handleClose}
+                                    isBulkTrigger
                                 />
 
                                 <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>

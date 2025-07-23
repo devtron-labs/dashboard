@@ -1,11 +1,13 @@
 import { ChangeEvent } from 'react'
 
 import {
+    APIOptions,
     CIMaterialSidebarType,
     CIMaterialType,
     CommonNodeAttr,
     RuntimeParamsTriggerPayloadType,
     RuntimePluginVariables,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BulkCIDetailType } from '@Components/ApplicationGroup/AppGroup.types'
@@ -16,7 +18,7 @@ import {
     BuildImageModalProps,
     CIPipelineMaterialDTO,
     HandleRuntimeParamChange,
-    RefreshMaterialType,
+    MaterialSourceProps,
     RuntimeParamsErrorState,
     TriggerViewState,
 } from '../types'
@@ -28,8 +30,7 @@ export interface TriggerBuildSidebarProps {
     materialList: CIMaterialType[]
     clearSearch: () => void
     selectMaterial: (materialId: string) => void
-    refreshMaterial: RefreshMaterialType['refresh']
-    ciNodeId: number
+    refreshMaterial: MaterialSourceProps['refreshMaterial']
     // For Bulk Trigger
     appId?: number
     appList?: BulkCIDetailType[]
@@ -89,6 +90,10 @@ export interface BuildImageHeaderProps {
      * @default false
      */
     isJobView?: boolean
+    /**
+     * @default false
+     */
+    isBulkTrigger?: boolean
 }
 
 export interface GetTriggerBuildPayloadProps {
@@ -116,4 +121,10 @@ export interface TriggerBuildProps {
      * Only need in case of job
      */
     redirectToCIPipeline?: () => void
+}
+
+export interface GetCIMaterialsProps extends Pick<APIOptions, 'abortControllerRef'> {
+    ciNodeId: string
+    selectedWorkflow: WorkflowType
+    isCINodePresent: boolean
 }

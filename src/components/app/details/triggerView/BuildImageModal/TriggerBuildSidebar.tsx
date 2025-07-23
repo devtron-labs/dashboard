@@ -20,6 +20,33 @@ import { getCanNodeHaveMaterial } from './utils'
 const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 
+const SIDEBAR_TABS = Object.values(CIMaterialSidebarType).map((tabValue) => ({
+    value: tabValue,
+    label: tabValue,
+}))
+
+const tippyContent = (tippyTile: string, tippyDescription: string): JSX.Element => (
+    <div>
+        <div className="fs-12 fw-6">{tippyTile}</div>
+        <div className="fs-12 fw-4">{tippyDescription}</div>
+    </div>
+)
+
+const renderTippy = (infoText: string, tippyTile: string, tippyDescription: string): JSX.Element | null => (
+    <Tooltip
+        alwaysShowTippyOnHover
+        className="default-tt w-200 fs-12"
+        arrow={false}
+        placement="right"
+        content={tippyContent(tippyTile, tippyDescription)}
+    >
+        <div className="flex left cursor dc_width-max-content">
+            <Icon name="ic-info-filled" size={20} color={null} />
+            <span className="fw-4 fs-13 cn-9">{infoText}</span>
+        </div>
+    </Tooltip>
+)
+
 const TriggerBuildSidebar = ({
     currentSidebarTab,
     handleSidebarTabChange,
@@ -28,18 +55,12 @@ const TriggerBuildSidebar = ({
     selectMaterial,
     clearSearch,
     refreshMaterial,
-    ciNodeId,
     appId,
     appList,
     handleAppChange,
     isBlobStorageConfigured,
     toggleSelectedAppIgnoreCache,
 }: TriggerBuildSidebarProps) => {
-    const sidebarTabs = Object.values(CIMaterialSidebarType).map((tabValue) => ({
-        value: tabValue,
-        label: tabValue,
-    }))
-
     const getHandleAppChange = (newAppId: number) => (e: React.MouseEvent | React.KeyboardEvent) => {
         if ('key' in e && e.key !== 'Enter' && e.key !== ' ') {
             return
@@ -59,19 +80,19 @@ const TriggerBuildSidebar = ({
         >
             <span className="dc__word-break fw-6 fs-13 cn-9">{appDetails.name}</span>
             {appDetails.warningMessage && (
-                <span className="flex dc__gap-4 left cy-7 fw-4 fs-12 dc__word-break">
-                    <Icon name="ic-warning" size={12} color={null} />
+                <span className="flexbox dc__gap-4 cy-7 fw-4 fs-12 dc__word-break lh-20">
+                    <Icon name="ic-warning" size={20} color={null} />
                     {appDetails.warningMessage}
                 </span>
             )}
             {appDetails.appId !== appId && appDetails.errorMessage && (
-                <span className="flex left cr-5 fw-4 fs-12 dc__gap-4">
-                    <Icon name="ic-error" size={12} color={null} />
-                    <span className="dc__block dc__word-break">{appDetails.errorMessage}</span>
+                <span className="flexbox cr-5 fw-4 fs-12 dc__gap-4">
+                    <Icon name="ic-error" size={20} color={null} />
+                    <span className="dc__block dc__word-break lh-20">{appDetails.errorMessage}</span>
                 </span>
             )}
             {appDetails.node?.pluginBlockState &&
-                appDetails.node?.pluginBlockState?.action !== ConsequenceAction.ALLOW_FOREVER &&
+                appDetails.node.pluginBlockState.action !== ConsequenceAction.ALLOW_FOREVER &&
                 PolicyEnforcementMessage && (
                     <PolicyEnforcementMessage
                         consequence={appDetails.node.pluginBlockState}
@@ -95,34 +116,9 @@ const TriggerBuildSidebar = ({
         <MaterialSource
             material={materialList}
             selectMaterial={selectMaterial}
-            refreshMaterial={{
-                pipelineId: ciNodeId,
-                refresh: refreshMaterial,
-            }}
+            refreshMaterial={refreshMaterial}
             clearSearch={clearSearch}
         />
-    )
-
-    const tippyContent = (tippyTile: string, tippyDescription: string): JSX.Element => (
-        <div>
-            <div className="fs-12 fw-6">{tippyTile}</div>
-            <div className="fs-12 fw-4">{tippyDescription}</div>
-        </div>
-    )
-
-    const renderTippy = (infoText: string, tippyTile: string, tippyDescription: string): JSX.Element | null => (
-        <Tooltip
-            alwaysShowTippyOnHover
-            className="default-tt w-200 fs-12"
-            arrow={false}
-            placement="right"
-            content={tippyContent(tippyTile, tippyDescription)}
-        >
-            <div className="flex left cursor dc_width-max-content">
-                <Icon name="ic-info-filled" size={20} color={null} />
-                <span className="fw-4 fs-13 cn-9">{infoText}</span>
-            </div>
-        </Tooltip>
     )
 
     const renderCacheSection = (currentAppDetails: BulkCIDetailType): JSX.Element | null => {
@@ -195,7 +191,7 @@ const TriggerBuildSidebar = ({
             {RuntimeParamTabs ? (
                 <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4 dc__border-bottom">
                     <RuntimeParamTabs
-                        tabs={sidebarTabs}
+                        tabs={SIDEBAR_TABS}
                         initialTab={currentSidebarTab}
                         onChange={handleSidebarTabChange}
                         hasError={{
@@ -204,7 +200,7 @@ const TriggerBuildSidebar = ({
                     />
                 </div>
             ) : (
-                <div className="material-list__title material-list__title--border-bottom pt-12 pb-12 pl-20 pr-20">
+                <div className="material-list__title material-list__title--border-bottom py-12 px-20">
                     {appList ? 'Applications' : 'Git Repository'}
                 </div>
             )}

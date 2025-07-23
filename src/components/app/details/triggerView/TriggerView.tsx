@@ -643,6 +643,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                     reloadWorkflows={this.getWorkflows}
                                     appId={+this.props.match.params.appId}
                                     environmentLists={this.state.environmentLists}
+                                    reloadWorkflowStatus={this.getWorkflowStatus}
                                 />
                             </Route>
                         </Switch>

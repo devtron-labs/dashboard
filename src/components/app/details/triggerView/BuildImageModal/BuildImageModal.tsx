@@ -6,7 +6,7 @@
  * - If !isLoading and filteredCIPipelines does not contain the selected pipeline, we will show error
  */
 
-import { SyntheticEvent, useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Prompt, useHistory, useParams } from 'react-router-dom'
 
 import {
@@ -14,7 +14,6 @@ import {
     Button,
     Checkbox,
     CIPipelineNodeType,
-    CommonNodeAttr,
     ComponentSizeType,
     ConsequenceAction,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
@@ -64,6 +63,7 @@ const BuildImageModal = ({
     reloadWorkflows,
     appId: appIdProp,
     environmentLists,
+    reloadWorkflowStatus,
 }: BuildImageModalProps) => {
     const { push } = useHistory()
     const { ciNodeId } = useParams<Pick<CIMaterialRouterProps, 'ciNodeId'>>()
@@ -89,7 +89,7 @@ const BuildImageModal = ({
     const appId = appIdProp || selectedWorkflow?.appId
     const filteredCIPipelines = filteredCIPipelinesProp || filteredCIPipelineMap?.get(String(appId)) || []
 
-    const selectedCIPipeline = (filteredCIPipelines || []).find((_ci) => _ci.id === +ciNodeId)
+    const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
 
     usePrompt({
         shouldPrompt: isBuildTriggerLoading,
@@ -98,10 +98,11 @@ const BuildImageModal = ({
     const [areRuntimeParamsLoading, runtimeParams, runtimeParamsError, reloadRuntimeParams, setRuntimeParams] =
         useAsync<GitInfoMaterialProps['runtimeParams']>(
             () => getRuntimeParams(ciNodeId, true),
-            [ciNodeId],
-            !!ciNodeId && !!getRuntimeParams,
+            [ciNodeId, ciNode?.isTriggerBlocked],
+            !!ciNodeId && !ciNode?.isTriggerBlocked && !!getRuntimeParams,
         )
 
+    // Just added abortController for first time mount and unmount, no need to use it later since, if materials are loading then loading state will be true
     const [isMaterialListLoading, _materialList, materialListError, reloadMaterialList, setMaterialList] = useAsync(
         () =>
             getCIMaterials({
@@ -110,15 +111,19 @@ const BuildImageModal = ({
                 isCINodePresent: !!ciNode,
                 selectedWorkflow,
             }),
-        [ciNodeId],
-        !!ciNodeId,
+        [ciNodeId, ciNode?.isTriggerBlocked],
+        !!ciNodeId && !ciNode?.isTriggerBlocked,
     )
 
     const materialList = _materialList || []
 
-    const [isLoadingBlobStorageModule, blobStorageModuleRes, , reloadBlobStorageModule] = useAsync(() =>
-        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+    const [isLoadingBlobStorageModule, blobStorageModuleRes, , reloadBlobStorageModule] = useAsync(
+        () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
+        [ciNode?.isTriggerBlocked],
+        !ciNode?.isTriggerBlocked,
     )
+
+    const isBlobStorageConfigured = !!blobStorageModuleRes?.result?.enabled
 
     useEffect(() => {
         if (isJobView && environmentLists?.length > 0) {
@@ -129,8 +134,6 @@ const BuildImageModal = ({
 
         return () => materialListAbortControllerRef.current.abort()
     }, [])
-
-    const isBlobStorageConfigured = !!blobStorageModuleRes?.result?.enabled
 
     const handleReload = () => {
         reloadMaterialList()
@@ -148,6 +151,7 @@ const BuildImageModal = ({
     }
 
     const showContentLoader = areRuntimeParamsLoading || isMaterialListLoading || isLoadingBlobStorageModule
+    const screenErrorData = materialListError || runtimeParamsError
 
     const getErrorScreenManagerProps = (): ErrorScreenManagerProps => {
         if (materialListError) {
@@ -194,11 +198,11 @@ const BuildImageModal = ({
 
         const payload = getTriggerBuildPayload({
             materialList,
-            ciConfiguredGitMaterialId: selectedWorkflow?.ciConfiguredGitMaterialId,
+            ciConfiguredGitMaterialId: selectedWorkflow.ciConfiguredGitMaterialId,
             runtimeParams,
             selectedEnv,
             invalidateCache,
-            isJobCI: ciNode?.isJobCI,
+            isJobCI: ciNode.isJobCI,
             ciNodeId: +ciNodeId,
         })
 
@@ -213,6 +217,7 @@ const BuildImageModal = ({
 
         try {
             await triggerBuild({ payload, redirectToCIPipeline })
+            reloadWorkflowStatus()
             handleClose()
         } catch {
             // Do nothing
@@ -225,7 +230,7 @@ const BuildImageModal = ({
         setRuntimeParams(updatedRuntimeParams)
     }
 
-    const handleStartBuildAction = async (e: SyntheticEvent) => {
+    const handleStartBuildAction = async () => {
         const runtimeParamsUpdatedErrorState = validateRuntimeParameters(runtimeParams)
         handleRuntimeParamError(runtimeParamsUpdatedErrorState)
 
@@ -237,7 +242,6 @@ const BuildImageModal = ({
             return
         }
 
-        e.stopPropagation()
         await onClickTriggerCINode()
     }
 
@@ -264,8 +268,6 @@ const BuildImageModal = ({
     }
 
     const renderCTAButton = () => {
-        const nodeType: CommonNodeAttr['type'] = 'CI'
-
         if (
             AllowedWithWarningTippy &&
             ciNode?.pluginBlockState?.action === ConsequenceAction.ALLOW_UNTIL_TIME &&
@@ -274,18 +276,10 @@ const BuildImageModal = ({
             return (
                 <AllowedWithWarningTippy
                     consequence={ciNode.pluginBlockState}
-                    configurePluginURL={getCIPipelineURL(
-                        String(appId),
-                        String(workflowId),
-                        true,
-                        ciNodeId,
-                        false,
-                        ciNode.isJobCI,
-                        false,
-                    )}
+                    configurePluginURL={getCIPipelineURLWrapper()}
                     showTriggerButton
                     onTrigger={handleStartBuildAction}
-                    nodeType={nodeType}
+                    nodeType={WorkflowNodeType.CI}
                     isJobView={ciNode.isJobCI}
                 >
                     {renderCTAButtonWithIcon(false)}
@@ -309,21 +303,25 @@ const BuildImageModal = ({
     const renderCacheInfo = () => {
         if (ciNode?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED) {
             return (
-                <div className="flexbox dc__align-items-center dc__gap-8">
-                    <Icon name="ic-info-filled" color="B500" size={20} />
-                    <div>
-                        <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.FirstTrigger.title}</div>
-                        <div className="fw-4 fs-12">{IGNORE_CACHE_INFO.FirstTrigger.infoText}</div>
+                <div className="flexbox dc__gap-8">
+                    <div className="m-4">
+                        <Icon name="ic-info-filled" color="B500" size={20} />
+                    </div>
+                    <div className="flexbox-col">
+                        <span className="fw-6 fs-13">{IGNORE_CACHE_INFO.FirstTrigger.title}</span>
+                        <span className="fw-4 fs-12">{IGNORE_CACHE_INFO.FirstTrigger.infoText}</span>
                     </div>
                 </div>
             )
         }
         if (!isBlobStorageConfigured) {
             return (
-                <div className="flexbox dc__align-items-center dc__gap-8">
-                    <Icon name="ic-storage" color={null} size={24} />
-                    <div>
-                        <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</div>
+                <div className="flexbox dc__gap-8">
+                    <div className="m-4">
+                        <Icon name="ic-storage" color={null} size={24} />
+                    </div>
+                    <div className="flexbox-col">
+                        <span className="fw-6 fs-13">{IGNORE_CACHE_INFO.BlobStorageNotConfigured.title}</span>
                         <div className="fw-4 fs-12 flexbox">
                             <span>{IGNORE_CACHE_INFO.BlobStorageNotConfigured.infoText}</span>&nbsp;
                             <DocLink
@@ -342,11 +340,13 @@ const BuildImageModal = ({
         }
         if (!ciNode?.storageConfigured) {
             return (
-                <div className="flexbox dc__align-items-center dc__gap-8">
-                    <Icon name="ic-info-filled" color="B500" size={20} />
-                    <div>
-                        <div className="fw-6 fs-13">{IGNORE_CACHE_INFO.CacheNotAvailable.title}</div>
-                        <div className="fw-4 fs-12">{IGNORE_CACHE_INFO.CacheNotAvailable.infoText}</div>
+                <div className="flexbox dc__gap-8">
+                    <div className="m-4">
+                        <Icon name="ic-info-filled" color="B500" size={20} />
+                    </div>
+                    <div className="flexbox-col">
+                        <span className="fw-6 fs-13">{IGNORE_CACHE_INFO.CacheNotAvailable.title}</span>
+                        <span className="fw-4 fs-12">{IGNORE_CACHE_INFO.CacheNotAvailable.infoText}</span>
                     </div>
                 </div>
             )
@@ -354,14 +354,13 @@ const BuildImageModal = ({
         return (
             <Checkbox
                 isChecked={invalidateCache}
-                onClick={stopPropagation}
                 rootClassName="mb-0 flex top"
                 value="CHECKED"
                 onChange={toggleInvalidateCache}
                 data-testid="set-clone-directory"
             >
-                <div>
-                    <div className="fs-13 fw-6 lh-20">{IGNORE_CACHE_INFO.IgnoreCache.title}</div>
+                <div className="flexbox-col">
+                    <span className="fs-13 fw-6 lh-20">{IGNORE_CACHE_INFO.IgnoreCache.title}</span>
 
                     <div className="flex dc__gap-4">
                         <span className="fs-12 fw-4 lh-16">{IGNORE_CACHE_INFO.IgnoreCache.infoText}</span>
@@ -377,17 +376,16 @@ const BuildImageModal = ({
         )
     }
 
-    // TODO: Make sure empty states in case of filter
     const renderContent = () => (
         <APIResponseHandler
             isLoading={showContentLoader}
-            error={materialListError}
+            error={screenErrorData}
             errorScreenManagerProps={getErrorScreenManagerProps()}
             progressingProps={{
                 pageLoader: true,
             }}
         >
-            {!showContentLoader && (
+            {!showContentLoader && !screenErrorData && (
                 <GitInfoMaterial
                     appId={appId}
                     workflowId={selectedWorkflow?.id}
@@ -429,7 +427,7 @@ const BuildImageModal = ({
                         <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
 
-                    {ciNode?.isTriggerBlocked || showWebhookModal || materialListError ? null : (
+                    {ciNode?.isTriggerBlocked || showWebhookModal || !!screenErrorData ? null : (
                         <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
                             {isJobView ? renderEnvironments() : renderCacheInfo()}
                             {renderCTAButton()}

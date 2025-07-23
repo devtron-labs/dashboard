@@ -12,8 +12,9 @@ const BuildImageHeader = ({
     showWebhookModal,
     handleWebhookModalBack,
     pipelineName,
-    isJobView,
     handleClose,
+    isJobView = false,
+    isBulkTrigger = false,
 }: BuildImageHeaderProps) => (
     <div className="px-20 py-12 flexbox dc__content-space dc__align-items-center border__primary--bottom">
         {showWebhookModal ? (
@@ -36,7 +37,8 @@ const BuildImageHeader = ({
             </div>
         ) : (
             <h2 className="m-0 fs-16 fw-6 lh-24 cn-9 dc__truncate">
-                {isJobView ? 'Pipeline' : 'Build Pipeline'} {pipelineName ? `: ${pipelineName}` : ''}
+                {isJobView ? 'Job Pipeline' : 'Build Pipeline'}{' '}
+                {pipelineName && !isBulkTrigger ? `'${pipelineName}'` : ''}
             </h2>
         )}
 

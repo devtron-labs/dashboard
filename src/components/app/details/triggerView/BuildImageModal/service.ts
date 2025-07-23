@@ -38,8 +38,10 @@ export const triggerBuild = async ({ payload, redirectToCIPipeline }: TriggerBui
                 }),
             )
         } else {
-            errors.errors.forEach((error) => {
-                if (redirectToCIPipeline && error.userMessage === NO_TASKS_CONFIGURED_ERROR) {
+            errors.errors = errors.errors.filter((error) => {
+                const isNoTaskConfiguredError = redirectToCIPipeline && error.userMessage === NO_TASKS_CONFIGURED_ERROR
+
+                if (isNoTaskConfiguredError) {
                     ToastManager.showToast({
                         variant: ToastVariantType.error,
                         title: 'Nothing to execute',
@@ -50,10 +52,14 @@ export const triggerBuild = async ({ payload, redirectToCIPipeline }: TriggerBui
                             onClick: redirectToCIPipeline,
                         },
                     })
-                } else {
-                    showError([error])
                 }
+
+                return !isNoTaskConfiguredError
             })
+
+            if (errors.errors.length) {
+                showError(errors)
+            }
         }
         throw errors
     }

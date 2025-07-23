@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import moment from 'moment'
 
 import {
@@ -30,7 +30,6 @@ import {
     Icon,
     MODES,
     Progressing,
-    ResponseType,
     showError,
     sortCallback,
     Tooltip,
@@ -61,12 +60,6 @@ export const CiWebhookModal = ({
     appId,
     isJobCI,
 }: CiWebhookModalProps) => {
-    const [isWebhookPayloadLoading, webhookPayloadsResponse, webhookPayloadsError, reloadWebhookPayloads] = useAsync<
-        ResponseType<WebhookPayloadType>
-    >(() => getCIWebhookRes(ciPipelineMaterialId), [ciPipelineMaterialId], !!ciPipelineMaterialId)
-
-    const webhookPayloads = webhookPayloadsResponse?.result
-
     const [isPayloadLoading, setIsPayloadLoading] = useState(false)
     const [webhookIncomingPayload, setWebhookIncomingPayload] = useState<CIWebhookPayload | null>(null)
     const [selectedWebhookPayload, setSelectedWebhookPayload] = useState<WebhookPayload | null>(null)
@@ -84,13 +77,16 @@ export const CiWebhookModal = ({
             setIsPayloadLoading(false)
         }
     }
-
-    useEffect(() => {
-        if (ciPipelineMaterialId && webhookPayloads?.payloads?.[0]) {
-            // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getCIWebhookPayloadRes(webhookPayloads?.payloads[0])
+    const getCIWebhookDetails = async () => {
+        const { result } = await getCIWebhookRes(ciPipelineMaterialId)
+        if (result?.payloads?.length) {
+            await getCIWebhookPayloadRes(result.payloads[0])
         }
-    }, [ciPipelineMaterialId, webhookPayloads])
+        return result
+    }
+
+    const [isWebhookPayloadLoading, webhookPayloads, webhookPayloadsError, reloadWebhookPayloads] =
+        useAsync<WebhookPayloadType>(getCIWebhookDetails, [ciPipelineMaterialId], !!ciPipelineMaterialId)
 
     const renderSelectedPassedCountRatio = (matchedFiltersCount: number, failedFiltersCount: number): string => {
         const totalFilters = matchedFiltersCount + failedFiltersCount
@@ -114,6 +110,10 @@ export const CiWebhookModal = ({
         </div>
     )
 
+    const getOnWebhookPayloadClick = (webhookPayload: WebhookPayload) => async () => {
+        await getCIWebhookPayloadRes(webhookPayload)
+    }
+
     const renderSidebar = () => (
         <div className="flexbox-col dc__border-right-n2 dc__overflow-hidden dc__border-right-n1">
             <span className="py-14 fw-6 lh-20 px-16">Received webhooks</span>
@@ -128,7 +128,7 @@ export const CiWebhookModal = ({
                             key={webhookPayloadId}
                             data-testid={`payload-id-${webhookPayloadId}-anchor`}
                             className={`dc__transparent cn-5 p-8 dc__hover-n50 ${isActive ? 'bcb-1 br-4' : ''}`}
-                            onClick={() => getCIWebhookPayloadRes(webhookPayload)}
+                            onClick={getOnWebhookPayloadClick(webhookPayload)}
                             type="button"
                         >
                             <div className="flex left top dc__gap-8">
@@ -184,7 +184,7 @@ export const CiWebhookModal = ({
                 size={ComponentSizeType.xs}
                 component={ButtonComponentType.anchor}
                 anchorProps={{
-                    href: getCIPipelineURL(appId, String(workflowId), true, ciPipelineId, isJobView, isJobCI, false),
+                    href: `${window.__BASE_URL__}${getCIPipelineURL(appId, String(workflowId), true, ciPipelineId, isJobView, isJobCI, false)}`,
                 }}
             />
         </div>

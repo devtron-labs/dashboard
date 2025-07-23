@@ -155,7 +155,17 @@ export default function EmptyStateCIMaterial({
         />
     )
 
-    const { title, subtitle, img, link } = getData()
+    const { title, subtitle, img, link, cta } = getData()
+
+    const renderCTA = (): JSX.Element => {
+        if (isWebHook) {
+            return handleMaterialLoadingButton()
+        }
+
+        return (
+            cta as JSX.Element
+        )
+    }
     return isMaterialLoading ? (
         <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
@@ -168,8 +178,8 @@ export default function EmptyStateCIMaterial({
                     {link}
                 </>
             }
-            isButtonAvailable={isWebHook}
-            renderButton={handleMaterialLoadingButton}
+            isButtonAvailable={isWebHook || !!cta}
+            renderButton={renderCTA}
         />
     )
 }

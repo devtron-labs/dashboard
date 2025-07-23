@@ -68,7 +68,7 @@ export default function MaterialSource({
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(refreshMaterial.pipelineId, Number(e.currentTarget.dataset.id))
+        refreshMaterial(Number(e.currentTarget.dataset.id))
 
         if (clearSearch) {
             clearSearch(e)
