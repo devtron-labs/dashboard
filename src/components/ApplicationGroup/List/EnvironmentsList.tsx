@@ -83,7 +83,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const [clusterListLoading, clusterListRes, clusterListError, reloadClusterList] =
         useAsync(getClusterListMinWithoutAuth)
 
-    const clusterOptions: SelectPickerOptionType[] = useMemo(
+    const clusterOptions: SelectPickerOptionType<string, string>[] = useMemo(
         () =>
             clusterListRes?.result.map((clusterItem) => ({
                 label: clusterItem.cluster_name,
