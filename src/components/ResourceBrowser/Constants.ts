@@ -325,6 +325,8 @@ export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[num
     unschedulable: 'unschedulable',
 } as const
 
+export const NODE_LIST_HEADER_KEYS_TO_SEARCH = Object.values(NODE_LIST_HEADERS_TO_KEY_MAP)
+
 export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
     NODE_SEARCH_KEYS,
     (typeof NODE_LIST_HEADERS_TO_KEY_MAP)[keyof typeof NODE_LIST_HEADERS_TO_KEY_MAP]

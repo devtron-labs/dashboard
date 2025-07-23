@@ -190,6 +190,7 @@ const NodeListSearchFilter = ({
                         placeholder: 'Search Nodes',
                         onKeyUp: handleSearchInputKeyUp,
                     }}
+                    containerClassName="w-250"
                 />
 
                 <GroupedFilterSelectPicker<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY>

@@ -44,7 +44,7 @@ import {
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
-import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
+import { NODE_LIST_HEADER_KEYS_TO_SEARCH, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
@@ -233,6 +233,7 @@ export const K8SResourceList = ({
             Object.entries(row.data).some(
                 ([key, value]) =>
                     key !== 'id' &&
+                    (!isNodeListing || NODE_LIST_HEADER_KEYS_TO_SEARCH.includes(key)) &&
                     value !== null &&
                     value !== undefined &&
                     String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),

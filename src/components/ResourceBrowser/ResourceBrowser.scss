@@ -68,6 +68,13 @@
             display: grid;
             grid-template-columns: 1fr auto 1px 180px;
             column-gap: 8px;
+
+            .grouped-filter-select-picker {
+                width: 350px;
+                > .dc__mxw-250 {
+                    max-width: 350px;
+                }
+            }
         }
 
         .resource-filter-options-container {
@@ -87,6 +94,7 @@
 .cluster-terminal-hidden {
     visibility: hidden;
     height: 0;
+
     .terminal-action-strip {
         display: none;
     }
