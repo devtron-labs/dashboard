@@ -13,7 +13,6 @@ import {
     APIResponseHandler,
     Button,
     Checkbox,
-    CIMaterialType,
     CIPipelineNodeType,
     CommonNodeAttr,
     ComponentSizeType,
@@ -35,8 +34,6 @@ import {
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getCIMaterialList } from '@Components/app/service'
-import { handleSourceNotConfigured } from '@Components/ApplicationGroup/AppGroup.utils'
 import { EnvironmentList } from '@Components/CIPipelineN/EnvironmentList'
 import { getCIPipelineURL, importComponentFromFELibrary } from '@Components/common'
 import { BUILD_STATUS, SOURCE_NOT_CONFIGURED } from '@Config/constants'
@@ -46,7 +43,7 @@ import { IGNORE_CACHE_INFO, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { BuildImageModalProps, CIMaterialRouterProps } from '../types'
 import BuildImageHeader from './BuildImageHeader'
 import GitInfoMaterial from './GitInfoMaterial'
-import { triggerBuild } from './service'
+import { getCIMaterials, triggerBuild } from './service'
 import { GitInfoMaterialProps } from './types'
 import { getTriggerBuildPayload } from './utils'
 
@@ -58,10 +55,6 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     'function',
 )
 
-/**
- * TODO:
- * - On save/change of branch call plugin state api and update the state of workflow
- */
 const BuildImageModal = ({
     handleClose,
     isJobView,
@@ -87,48 +80,20 @@ const BuildImageModal = ({
     const [isBuildTriggerLoading, setIsBuildTriggerLoading] = useState<boolean>(false)
     const [showWebhookModal, setShowWebhookModal] = useState<boolean>(false)
 
-    const selectedWorkflow = workflows?.find((workflow) =>
-        workflow.nodes.some((node) => node.type === WorkflowNodeType.CI && Number(node.id) === +ciNodeId),
+    // Workflows will be present since this modal is only opened when workflows are loaded
+    const selectedWorkflow = workflows.find((workflow) =>
+        workflow.nodes.some((node) => node.type === WorkflowNodeType.CI && +node.id === +ciNodeId),
     )
     const workflowId = selectedWorkflow?.id
-    // Workflows will be present since this modal is only opened when workflows are loaded
     const ciNode = selectedWorkflow?.nodes.find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
     const appId = appIdProp || selectedWorkflow?.appId
     const filteredCIPipelines = filteredCIPipelinesProp || filteredCIPipelineMap?.get(String(appId)) || []
 
-    // TODO: Add as much type as possible to selectedCIPipeline
     const selectedCIPipeline = (filteredCIPipelines || []).find((_ci) => _ci.id === +ciNodeId)
 
     usePrompt({
         shouldPrompt: isBuildTriggerLoading,
     })
-
-    const getMaterialList = async (): Promise<CIMaterialType[]> => {
-        const { result: materialListResponse } = await getCIMaterialList(
-            {
-                pipelineId: ciNodeId,
-            },
-            materialListAbortControllerRef.current.signal,
-        )
-
-        const configuredMaterialList = new Map<number, Set<number>>()
-        if (ciNode) {
-            const gitMaterials = new Map<number, string[]>()
-            materialListResponse?.forEach((material) => {
-                gitMaterials[material.gitMaterialId] = [material.gitMaterialName.toLowerCase(), material.value]
-            })
-
-            configuredMaterialList[selectedWorkflow.name] = new Set<number>()
-
-            handleSourceNotConfigured(
-                configuredMaterialList,
-                selectedWorkflow,
-                materialListResponse || [],
-                !gitMaterials[selectedWorkflow.ciConfiguredGitMaterialId],
-            )
-        }
-        return materialListResponse
-    }
 
     const [areRuntimeParamsLoading, runtimeParams, runtimeParamsError, reloadRuntimeParams, setRuntimeParams] =
         useAsync<GitInfoMaterialProps['runtimeParams']>(
@@ -138,7 +103,13 @@ const BuildImageModal = ({
         )
 
     const [isMaterialListLoading, _materialList, materialListError, reloadMaterialList, setMaterialList] = useAsync(
-        getMaterialList,
+        () =>
+            getCIMaterials({
+                ciNodeId,
+                abortControllerRef: materialListAbortControllerRef,
+                isCINodePresent: !!ciNode,
+                selectedWorkflow,
+            }),
         [ciNodeId],
         !!ciNodeId,
     )
@@ -159,7 +130,6 @@ const BuildImageModal = ({
         return () => materialListAbortControllerRef.current.abort()
     }, [])
 
-    // TODO: Maybe extract component for storage module for bulk view as well
     const isBlobStorageConfigured = !!blobStorageModuleRes?.result?.enabled
 
     const handleReload = () => {

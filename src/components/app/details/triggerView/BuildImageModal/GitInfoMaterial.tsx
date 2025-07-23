@@ -134,6 +134,7 @@ const GitInfoMaterial = ({
             },
             null,
         )
+        // Not added source not configured check here since ideally this should not be even called at that moment and we are not adding a new material
 
         if (!newSelectedMaterialItem.result.length) {
             throw new Error('Unable to fetch material details')

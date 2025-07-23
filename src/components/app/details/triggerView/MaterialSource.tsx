@@ -95,7 +95,7 @@ export default function MaterialSource({
     }
 
     return (
-        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+        <div className="flexbox-col flex-grow-1">
             {material.map((mat, index) => {
                 return (
                     <div

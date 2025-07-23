@@ -28,6 +28,7 @@ import {
     ToastVariantType,
     getEnvironmentListMinPublic,
     DocLink,
+    DEFAULT_ENV,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'
@@ -51,7 +52,7 @@ import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { TriggerViewContext } from './config'
-import { DEFAULT_ENV, TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
+import { TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import {
     APP_DETAILS,
 } from '../../../../config/constantMessaging'
@@ -279,7 +280,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     openCIMaterialModal = (ciNodeId: string) => {
-        // TODO: Check if match.url support fw/bw navigation
         this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
     }
 

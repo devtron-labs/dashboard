@@ -126,7 +126,7 @@ const TriggerBuildSidebar = ({
     )
 
     const renderCacheSection = (currentAppDetails: BulkCIDetailType): JSX.Element | null => {
-        if (!getCanNodeHaveMaterial(currentAppDetails.node)) {
+        if (getCanNodeHaveMaterial(currentAppDetails.node)) {
             if (currentAppDetails.node.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED) {
                 return renderTippy(
                     BULK_CI_MESSAGING.isFirstTrigger.infoText,
@@ -179,8 +179,8 @@ const TriggerBuildSidebar = ({
 
         return appList.map((app) => (
             <div
-                className={`material-list pr-12 pl-12 pb-12 ${
-                    app.appId === appId ? 'bg__tertiary' : 'dc__border-bottom-n1 cursor'
+                className={`material-list px-12 pb-12 dc__border-bottom-n1 ${
+                    app.appId === appId ? 'bg__tertiary' : 'bg__primary'
                 }`}
                 key={`app-${app.appId}`}
             >
@@ -191,9 +191,9 @@ const TriggerBuildSidebar = ({
     }
 
     return (
-        <div className="material-list dc__overflow-hidden flexbox-col flex-grow-1 mh-0">
+        <div className="material-list dc__overflow-hidden flexbox-col flex-grow-1 mh-0 border__primary--right">
             {RuntimeParamTabs ? (
-                <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4">
+                <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4 dc__border-bottom">
                     <RuntimeParamTabs
                         tabs={sidebarTabs}
                         initialTab={currentSidebarTab}
@@ -209,7 +209,7 @@ const TriggerBuildSidebar = ({
                 </div>
             )}
 
-            {renderContent()}
+            <div className="flexbox-col dc__overflow-auto flex-grow-1">{renderContent()}</div>
         </div>
     )
 }

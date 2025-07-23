@@ -48,6 +48,7 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import { AppContextType } from '@Components/common'
 
@@ -355,6 +356,27 @@ export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterPr
     appContext: AppContextType
 }
 
+interface FilteredCIPipelinesType {
+    active: boolean
+    ciMaterial: CiMaterial[]
+    dockerArgs: any
+    dockerConfigOverride: {
+        ciBuildConfig: any
+    }
+    enableCustomTag: boolean
+    externalCiConfig: ExternalCiConfig
+    id: number
+    isDockerConfigOverridden: boolean
+    isExternal: boolean
+    isManual: boolean
+    lastTriggeredEnvId: number
+    linkedCount: number
+    name: string
+    pipelineType: CIPipelineBuildType
+    environmentId: number
+    scanEnabled: boolean
+}
+
 export interface TriggerViewState {
     code: number
     view: string
@@ -365,7 +387,7 @@ export interface TriggerViewState {
     isLoading: boolean
     hostURLConfig: HostURLConfig
     workflowId: number
-    filteredCIPipelines: any[]
+    filteredCIPipelines: FilteredCIPipelinesType[]
     isSaveLoading?: boolean
     environmentLists?: any[]
     appReleaseTags?: string[]
@@ -463,7 +485,7 @@ export interface DockerBuildConfig {
     targetPlatform: any
 }
 
-export interface ExternalCiConfig {
+interface ExternalCiConfig {
     id: number
     webhookUrl: string
     payload: string
@@ -476,7 +498,7 @@ export interface Source {
     regex?: string
 }
 
-export interface CiMaterial {
+interface CiMaterial {
     source: Source
     gitMaterialId: number
     id: number

@@ -7,10 +7,11 @@ import {
     ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { triggerCINode } from '@Components/app/service'
+import { getCIMaterialList, triggerCINode } from '@Components/app/service'
+import { handleSourceNotConfigured } from '@Components/ApplicationGroup/AppGroup.utils'
 import { NO_TASKS_CONFIGURED_ERROR } from '@Config/constantMessaging'
 
-import { TriggerBuildProps } from './types'
+import { GetCIMaterialsProps, TriggerBuildProps } from './types'
 
 export const triggerBuild = async ({ payload, redirectToCIPipeline }: TriggerBuildProps) => {
     try {
@@ -56,4 +57,36 @@ export const triggerBuild = async ({ payload, redirectToCIPipeline }: TriggerBui
         }
         throw errors
     }
+}
+
+export const getCIMaterials = async ({
+    ciNodeId,
+    abortControllerRef,
+    isCINodePresent,
+    selectedWorkflow,
+}: GetCIMaterialsProps) => {
+    const { result: materialListResponse } = await getCIMaterialList(
+        {
+            pipelineId: ciNodeId,
+        },
+        abortControllerRef,
+    )
+
+    const configuredMaterialList = new Map<number, Set<number>>()
+    if (isCINodePresent) {
+        const gitMaterials = new Map<number, string[]>()
+        materialListResponse?.forEach((material) => {
+            gitMaterials[material.gitMaterialId] = [material.gitMaterialName.toLowerCase(), material.value]
+        })
+
+        configuredMaterialList[selectedWorkflow.name] = new Set<number>()
+
+        handleSourceNotConfigured(
+            configuredMaterialList,
+            selectedWorkflow,
+            materialListResponse || [],
+            !gitMaterials[selectedWorkflow.ciConfiguredGitMaterialId],
+        )
+    }
+    return materialListResponse
 }

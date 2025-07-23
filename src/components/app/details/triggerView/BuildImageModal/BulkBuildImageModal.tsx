@@ -27,7 +27,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
-import { getCIMaterialList } from '@Components/app/service'
 import { BulkCIDetailType, ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BULK_CI_BUILD_STATUS,
@@ -48,7 +47,7 @@ import { getModuleConfigured } from '../../appDetails/appDetails.service'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING, IGNORE_CACHE_INFO } from '../Constants'
 import BuildImageHeader from './BuildImageHeader'
 import GitInfoMaterial from './GitInfoMaterial'
-import { triggerBuild } from './service'
+import { getCIMaterials, triggerBuild } from './service'
 import { BulkBuildImageModalProps, GitInfoMaterialProps } from './types'
 import { getCanNodeHaveMaterial, getIsRegexBranchNotAvailable, getTriggerBuildPayload } from './utils'
 
@@ -162,12 +161,12 @@ const BulkBuildImageModal = ({
                 }
 
                 acc.ciMaterialPromiseList.push(() =>
-                    getCIMaterialList(
-                        {
-                            pipelineId: currentNode.id,
-                        },
-                        initialDataAbortControllerRef.current.signal,
-                    ),
+                    getCIMaterials({
+                        ciNodeId: currentNode.id,
+                        abortControllerRef: initialDataAbortControllerRef,
+                        isCINodePresent: !!currentNode,
+                        selectedWorkflow: workflow,
+                    }),
                 )
 
                 // TODO: Check runtime param page should show error state in case of its error
@@ -187,7 +186,7 @@ const BulkBuildImageModal = ({
         }
 
         const ciMaterialList =
-            await ApiQueuingWithBatch<Awaited<ReturnType<typeof getCIMaterialList>>>(ciMaterialPromiseList)
+            await ApiQueuingWithBatch<Awaited<ReturnType<typeof getCIMaterials>>>(ciMaterialPromiseList)
         // TODO: Add show regex modal logic later
         const runtimeParamsList = await ApiQueuingWithBatch<RuntimePluginVariables[]>(runtimeParamsPromiseList)
 
@@ -202,9 +201,8 @@ const BulkBuildImageModal = ({
             }
 
             const currentMaterial =
-                (ciMaterialList[index].status === PromiseAllStatusType.FULFILLED
-                    ? ciMaterialList[index].value?.result
-                    : []) || []
+                (ciMaterialList[index].status === PromiseAllStatusType.FULFILLED ? ciMaterialList[index].value : []) ||
+                []
             const runtimeParams =
                 runtimeParamsList[index].status === PromiseAllStatusType.FULFILLED ? runtimeParamsList[index].value : []
 
@@ -593,13 +591,13 @@ const BulkBuildImageModal = ({
     }
 
     return (
-        <Drawer position="right" minWidth="1024px" maxWidth="1200px" onClose={handleClose} onEscape={handleClose}>
+        <Drawer position="right" width="1080px" onClose={handleClose} onEscape={handleClose}>
             <div
                 className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
                 onClick={stopPropagation}
             >
                 <div
-                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
+                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger"
                     onClick={stopPropagation}
                 >
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">

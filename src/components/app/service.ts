@@ -34,12 +34,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
-import {
-    AppDetails,
-    ArtifactsCiJob,
-    EditAppRequest,
-    AppMetaInfo,
-} from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
@@ -216,18 +211,20 @@ const processCIMaterialResponse = (response): CIMaterialType[] => {
     return []
 }
 
-// TODO: Make it ref for abortSignal
-export const getCIMaterialList = (params: {
-    pipelineId: string,
-    materialId?: number,
-    showExcluded?: boolean,
-}, abortSignal: AbortSignal) => {
+export const getCIMaterialList = (
+    params: {
+        pipelineId: string
+        materialId?: number
+        showExcluded?: boolean
+    },
+    abortControllerRef: APIOptions['abortControllerRef'],
+) => {
     let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
     if (params.materialId) {
         url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
     }
     return get(url, {
-        signal: abortSignal,
+        abortControllerRef,
     }).then((response) => {
         const materials = processCIMaterialResponse(response)
         return {
