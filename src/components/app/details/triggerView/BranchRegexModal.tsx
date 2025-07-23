@@ -23,6 +23,7 @@ import {
     CIMaterialType,
     ComponentSizeType,
     CustomInput,
+    Icon,
     InfoBlock,
     savePipeline,
     showError,
@@ -90,7 +91,8 @@ const BranchRegexModal = ({
         }
     }
 
-    const handleSave = async () => {
+    const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         setIsSavingRegexValue(true)
         const payload: Parameters<typeof savePipeline>[0] = {
             appId: +appId,
@@ -243,12 +245,15 @@ const BranchRegexModal = ({
                 />
                 <Button
                     variant={ButtonVariantType.primary}
+                    buttonProps={{
+                        type: 'submit',
+                    }}
                     text="Fetch commits"
                     dataTestId="branch-regex-save-next-button"
-                    onClick={handleSave}
                     disabled={isDisabled || isSavingRegexValue}
                     isLoading={isSavingRegexValue}
                     size={ComponentSizeType.medium}
+                    endIcon={<Icon name="ic-key-enter" color={null} />}
                 />
             </div>
         )
@@ -256,12 +261,16 @@ const BranchRegexModal = ({
 
     return (
         <VisibleModal2 className="visible-modal__body">
-            <div onClick={stopPropagation} className="ci-trigger__branch-regex-wrapper modal__body w-600 p-0 fs-13">
+            <form
+                onSubmit={handleSave}
+                onClick={stopPropagation}
+                className="ci-trigger__branch-regex-wrapper modal__body w-600 p-0 fs-13"
+            >
                 {renderBranchRegexMaterialHeader()}
                 {renderRegexInfo()}
                 {renderBranchRegexContent()}
                 {renderMaterialRegexFooterNextButton()}
-            </div>
+            </form>
         </VisibleModal2>
     )
 }
