@@ -31,12 +31,12 @@ export const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputNa
 const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOutputKeys) => {
     return (
         <div>
-            App Id: {CMandSecretOutputKeys.appId} <br />
-            App Name: {CMandSecretOutputKeys.appName} <br />
+            {CMandSecretOutputKeys.appId && <>App Id: {CMandSecretOutputKeys.appId} <br /></>}
+            {CMandSecretOutputKeys.appName && <>App Name: {CMandSecretOutputKeys.appName} <br /></>}
             {CMandSecretOutputKeys.envId && <>Environment Id: {CMandSecretOutputKeys.envId} <br /></>}
             {CMandSecretOutputKeys.envName && <>Environment Name: {CMandSecretOutputKeys.envName} <br /></>}
-            Names : {CMandSecretOutputKeys.names.join(', ')} <br />
-            Message: {CMandSecretOutputKeys.message} <br />
+            {CMandSecretOutputKeys.names && <>Names : {CMandSecretOutputKeys.names.join(', ')} <br /></>}
+            {CMandSecretOutputKeys.message && <>Message: {CMandSecretOutputKeys.message} <br /></>}
             <br />
         </div>
     )
@@ -100,11 +100,11 @@ export const renderConfigMapOutput = (configMap) => {
 export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
     return (
         <div>
-            App Id: {DTOutputKeys.appId} <br />
-            App Name: {DTOutputKeys.appName} <br />
+            {DTOutputKeys.appId && <>App Id: {DTOutputKeys.appId} <br /></>}
+            {DTOutputKeys.appName && <>App Name: {DTOutputKeys.appName} <br /></>}
             {DTOutputKeys.envId && <>Environment Id: {DTOutputKeys.envId} <br /></>}
             {DTOutputKeys.envName && <>Environment Name: {DTOutputKeys.envName} <br /></>}
-            Message: {DTOutputKeys.message} <br />
+            {DTOutputKeys.message && <>Message: {DTOutputKeys.message} <br /></>}
             <br />
         </div>
     )
@@ -113,11 +113,11 @@ export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
 export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretImpactedObjects) => {
     return (
         <div>
-            App Id: {CMandSecretImpactedObject.appId} <br />
-            App Name: {CMandSecretImpactedObject.appName} <br />
+            {CMandSecretImpactedObject.appId && <>App Id: {CMandSecretImpactedObject.appId} <br /></>}
+            {CMandSecretImpactedObject.appName && <>App Name: {CMandSecretImpactedObject.appName} <br /></>}
             {CMandSecretImpactedObject.envId && <>Environment Id: {CMandSecretImpactedObject.envId} <br /></>}
             {CMandSecretImpactedObject.envName && <>Environment Name: {CMandSecretImpactedObject.envName} <br /></>}
-            Names : {CMandSecretImpactedObject.names.join(', ')} <br />
+            {CMandSecretImpactedObject.names && CMandSecretImpactedObject.names.length > 0 && <>Names : {CMandSecretImpactedObject.names.join(', ')} <br /></>}
             <br />
         </div>
     )

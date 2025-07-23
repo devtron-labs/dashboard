@@ -411,8 +411,16 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         <>
                             {impactedObjects.deploymentTemplate.map((elm) => (
                                 <div>
-                                    App Id: {elm.appId} <br />
-                                    App Name: {elm.appName} <br />
+                                    {elm.appId && (
+                                        <>
+                                            App Id: {elm.appId} <br />
+                                        </>
+                                    )}
+                                    {elm.appName && (
+                                        <>
+                                            App Name: {elm.appName} <br />
+                                        </>
+                                    )}
                                     {elm.envId && (
                                         <>
                                             Environment Id: {elm.envId} <br />
