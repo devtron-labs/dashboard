@@ -77,7 +77,7 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'appId' | 'isJobVi
     )
 
 export interface BulkBuildImageModalProps
-    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflows'> {
+    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflows' | 'reloadWorkflowStatus'> {
     filteredCIPipelineMap: Map<string, TriggerViewState['filteredCIPipelines']>
 }
 

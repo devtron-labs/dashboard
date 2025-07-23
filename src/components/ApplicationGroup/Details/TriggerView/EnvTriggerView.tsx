@@ -1151,6 +1151,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 workflows={filteredWorkflows}
                 reloadWorkflows={getWorkflowsData}
                 filteredCIPipelineMap={filteredCIPipelines}
+                reloadWorkflowStatus={getWorkflowStatusData}
             />
         )
     }

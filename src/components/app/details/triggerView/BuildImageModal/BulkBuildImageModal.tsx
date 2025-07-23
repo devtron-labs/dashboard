@@ -4,8 +4,6 @@ import {
     API_STATUS_CODES,
     ApiQueuingWithBatch,
     Button,
-    CIMaterialType,
-    CommonNodeAttr,
     ComponentSizeType,
     DocLink,
     Drawer,
@@ -17,7 +15,6 @@ import {
     PromiseAllStatusType,
     RuntimePluginVariables,
     showError,
-    SourceTypeMap,
     stopPropagation,
     stringComparatorBySortOrder,
     ToastManager,
@@ -44,14 +41,19 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { SOURCE_NOT_CONFIGURED } from '@Config/constants'
 
 import { getModuleConfigured } from '../../appDetails/appDetails.service'
-import { CI_MATERIAL_EMPTY_STATE_MESSAGING, IGNORE_CACHE_INFO } from '../Constants'
+import { IGNORE_CACHE_INFO } from '../Constants'
 import BuildImageHeader from './BuildImageHeader'
 import GitInfoMaterial from './GitInfoMaterial'
 import { getCIMaterials, triggerBuild } from './service'
 import { BulkBuildImageModalProps, GitInfoMaterialProps } from './types'
-import { getCanNodeHaveMaterial, getIsRegexBranchNotAvailable, getTriggerBuildPayload } from './utils'
+import {
+    getBulkCIDataPromiseGetterList,
+    getBulkCIErrorMessage,
+    getBulkCIWarningMessage,
+    getCanNodeHaveMaterial,
+    getTriggerBuildPayload,
+} from './utils'
 
-const getRuntimeParams = importComponentFromFELibrary('getRuntimeParams', null, 'function')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
@@ -59,126 +61,38 @@ const validateRuntimeParameters = importComponentFromFELibrary(
 )
 
 const BulkBuildImageModal = ({
-    handleClose,
+    handleClose: handleCloseProp,
     workflows,
     reloadWorkflows,
     filteredCIPipelineMap,
+    reloadWorkflowStatus,
 }: BulkBuildImageModalProps) => {
     const [selectedAppIdState, setSelectedAppIdState] = useState<number | null>(null)
     const [showWebhookModal, setShowWebhookModal] = useState(false)
     const [isBuildTriggerLoading, setIsBuildTriggerLoading] = useState(false)
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
 
-    const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(
-        () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-        [],
+    const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(() =>
+        getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     )
 
     const blobStorageNotConfigured = !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
 
-    const getWarningMessage = (ciNode: CommonNodeAttr): string => {
-        if (ciNode.isLinkedCD) {
-            return 'Uses another environment as image source'
-        }
-
-        if (ciNode.isLinkedCI) {
-            return 'Has linked build pipeline'
-        }
-
-        if (ciNode.type === WorkflowNodeType.WEBHOOK) {
-            return 'Has webhook build pipeline'
-        }
-
-        return ''
-    }
-
-    const getErrorMessage = (
-        _appId: number,
-        _ciNode: CommonNodeAttr,
-        filteredCIPipelines: BulkCIDetailType['filteredCIPipelines'],
-        materialList: CIMaterialType[],
-    ): string => {
-        const selectedCIPipeline = filteredCIPipelines?.find((_ci) => _ci.id === +_ciNode.id)
-
-        if (_ciNode.inputMaterialList?.length > 0) {
-            if (getIsRegexBranchNotAvailable(selectedCIPipeline, materialList)) {
-                return 'Primary branch is not set'
-            }
-            if (selectedCIPipeline?.ciMaterial) {
-                const invalidInputMaterial = _ciNode.inputMaterialList.find(
-                    (_mat) =>
-                        _mat.isBranchError ||
-                        _mat.isRepoError ||
-                        _mat.isDockerFileError ||
-                        _mat.isMaterialSelectionError ||
-                        (_mat.type === SourceTypeMap.WEBHOOK && _mat.history.length === 0),
-                )
-
-                if (invalidInputMaterial) {
-                    if (invalidInputMaterial.isRepoError) {
-                        return invalidInputMaterial.repoErrorMsg
-                    }
-                    if (invalidInputMaterial.isDockerFileError) {
-                        return invalidInputMaterial.dockerFileErrorMsg
-                    }
-                    if (invalidInputMaterial.isBranchError) {
-                        return invalidInputMaterial.branchErrorMsg
-                    }
-                    if (invalidInputMaterial.isMaterialSelectionError) {
-                        return invalidInputMaterial.materialSelectionErrorMsg
-                    }
-                    return CI_MATERIAL_EMPTY_STATE_MESSAGING.NoMaterialFound
-                }
-            }
-        }
-        return ''
-    }
-
     const initialDataAbortControllerRef = useRef<AbortController>(new AbortController())
+
+    const selectedWorkflows = workflows.filter(
+        (workflow) =>
+            workflow.isSelected &&
+            workflow.nodes.some((node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK),
+    )
 
     // Returns map of appId to BulkCIDetailType
     const getInitialAppList = async (appId?: number): Promise<Record<number, BulkCIDetailType>> => {
-        const validWorkflows = workflows.filter(
-            (workflow) =>
-                workflow.isSelected &&
-                (!appId || workflow.appId === appId) &&
-                workflow.nodes.some(
-                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                ),
-        )
+        const validWorkflows = selectedWorkflows.filter((workflow) => !appId || workflow.appId === appId)
 
-        const { ciMaterialPromiseList, runtimeParamsPromiseList } = validWorkflows.reduce(
-            (acc, workflow) => {
-                const currentNode = workflow.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                )
-
-                if (!getCanNodeHaveMaterial(currentNode)) {
-                    acc.ciMaterialPromiseList.push(() => [])
-                    acc.runtimeParamsPromiseList.push(() => [])
-
-                    return acc
-                }
-
-                acc.ciMaterialPromiseList.push(() =>
-                    getCIMaterials({
-                        ciNodeId: currentNode.id,
-                        abortControllerRef: initialDataAbortControllerRef,
-                        isCINodePresent: !!currentNode,
-                        selectedWorkflow: workflow,
-                    }),
-                )
-
-                // TODO: Check runtime param page should show error state in case of its error
-                if (getRuntimeParams) {
-                    acc.runtimeParamsPromiseList.push(() => getRuntimeParams(currentNode.id))
-                } else {
-                    acc.runtimeParamsPromiseList.push(() => [])
-                }
-
-                return acc
-            },
-            { ciMaterialPromiseList: [], runtimeParamsPromiseList: [] },
+        const { ciMaterialPromiseList, runtimeParamsPromiseList } = getBulkCIDataPromiseGetterList(
+            validWorkflows,
+            initialDataAbortControllerRef,
         )
 
         if (ciMaterialPromiseList.length === 0) {
@@ -187,7 +101,6 @@ const BulkBuildImageModal = ({
 
         const ciMaterialList =
             await ApiQueuingWithBatch<Awaited<ReturnType<typeof getCIMaterials>>>(ciMaterialPromiseList)
-        // TODO: Add show regex modal logic later
         const runtimeParamsList = await ApiQueuingWithBatch<RuntimePluginVariables[]>(runtimeParamsPromiseList)
 
         return validWorkflows.reduce<Record<number, BulkCIDetailType>>((acc, workflow, index) => {
@@ -225,8 +138,8 @@ const BulkBuildImageModal = ({
                     isValid: runtimeParamsList[index].status !== PromiseAllStatusType.REJECTED,
                     cellError: {},
                 },
-                warningMessage: getWarningMessage(node),
-                errorMessage: getErrorMessage(
+                warningMessage: getBulkCIWarningMessage(node),
+                errorMessage: getBulkCIErrorMessage(
                     workflow.appId,
                     node,
                     filteredCIPipelineMap.get(String(workflow.appId)),
@@ -286,6 +199,13 @@ const BulkBuildImageModal = ({
 
     const handleWebhookModalBack = () => {
         setShowWebhookModal(false)
+    }
+
+    const handleClose = () => {
+        if (responseList.length) {
+            reloadWorkflowStatus()
+        }
+        handleCloseProp()
     }
 
     const validateBulkRuntimeParams = (): boolean => {
@@ -451,7 +371,6 @@ const BulkBuildImageModal = ({
         if (responseList.length) {
             return (
                 <TriggerResponseModalFooter
-                    // TODO: Refetch workflows after triggering build
                     closePopup={handleClose}
                     responseList={responseList}
                     isLoading={isBuildTriggerLoading}
@@ -551,8 +470,8 @@ const BulkBuildImageModal = ({
     const renderContent = () => {
         if (isLoadingAppInfoMap || isBuildTriggerLoading) {
             const message = isBuildTriggerLoading
-                ? BULK_CI_BUILD_STATUS(sortedAppList.length)
-                : BULK_CI_MATERIAL_STATUS(sortedAppList.length)
+                ? BULK_CI_BUILD_STATUS(selectedWorkflows.length)
+                : BULK_CI_MATERIAL_STATUS(selectedWorkflows.length)
 
             return <GenericEmptyState {...message} SvgImage={MechanicalOperation} contentClassName="text-center" />
         }
