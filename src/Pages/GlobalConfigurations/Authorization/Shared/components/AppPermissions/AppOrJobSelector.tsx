@@ -70,7 +70,7 @@ const AppOrJobSelector = ({
                 _permission.entityName.filter((option) => option.value !== SELECT_ALL_VALUE).map((app) => app.label) ??
                 []
             const { appIdWorkflowNamesMapping } = await getUserAccessAllWorkflows({
-                appIds: jobNames,
+                appNames: jobNames,
                 options: { abortControllerRef },
             })
             const workflowOptions = getWorkflowOptions(appIdWorkflowNamesMapping)

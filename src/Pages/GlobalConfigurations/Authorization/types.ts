@@ -345,6 +345,7 @@ export interface GetUserPermissionResourcesPayload
     accessType?: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS
     teamIds?: number[]
     appIds?: string[]
+    appNames?: string[]
 }
 
 export interface GetUserResourceOptionsProps {
@@ -354,5 +355,5 @@ export interface GetUserResourceOptionsProps {
 }
 
 export interface GetUserAccessAllWorkflowsParams
-    extends Pick<GetUserPermissionResourcesPayload, 'appIds'>,
+    extends Pick<GetUserPermissionResourcesPayload, 'appNames'>,
         Pick<GetUserResourceOptionsProps, 'options'> {}
