@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { BulkEditVersion } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
+
+const BULK_EDIT_README_OPTIONS = importComponentFromFELibrary('BULK_EDIT_README_OPTIONS', [], 'function')
+
 export enum OutputObjectTabs {
     OUTPUT = 'Output',
     IMPACTED_OBJECTS = 'Impacted objects',
@@ -25,3 +31,15 @@ export const STATUS = {
 }
 
 export const OutputDivider = '-----------------------------------------------------------------'
+
+export const BULK_EDIT_RESIZE_HANDLE_CLASS = 'bulk-edit__resize-handle'
+
+export const ReadmeVersionOptions = [
+    ...BULK_EDIT_README_OPTIONS,
+    {
+        label: 'v1beta1/application',
+        value: BulkEditVersion.v1,
+    },
+]
+
+export const INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE = 50

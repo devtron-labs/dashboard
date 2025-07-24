@@ -17,7 +17,6 @@
 
 
 .bulk-container {
-
     // Editor section
     .bulk-output-body {
         letter-spacing: 0.2px;
@@ -31,9 +30,11 @@
         }
     }
 
-    .code-editor-readme {
-        display: grid;
-        grid-template-columns: auto auto;
+    .bulk-edit__resize-handle--dragging {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
     }
 
     // Readme Section

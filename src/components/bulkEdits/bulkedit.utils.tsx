@@ -31,18 +31,19 @@ export const OutputTabs: React.FC<OutputTabType> = ({ handleOutputTabs, outputNa
 const renderCmAndSecretResponseForOneApp = (CMandSecretOutputKeys: CMandSecretOutputKeys) => {
     return (
         <div>
-            App Id: {CMandSecretOutputKeys.appId} <br />
-            App Name: {CMandSecretOutputKeys.appName} <br />
-            Environment Id: {CMandSecretOutputKeys.envId} <br />
-            Names : {CMandSecretOutputKeys.names.join(', ')} <br />
-            Message: {CMandSecretOutputKeys.message} <br />
+            {CMandSecretOutputKeys.appId && <>App Id: {CMandSecretOutputKeys.appId} <br /></>}
+            {CMandSecretOutputKeys.appName && <>App Name: {CMandSecretOutputKeys.appName} <br /></>}
+            {CMandSecretOutputKeys.envId && <>Environment Id: {CMandSecretOutputKeys.envId} <br /></>}
+            {CMandSecretOutputKeys.envName && <>Environment Name: {CMandSecretOutputKeys.envName} <br /></>}
+            {CMandSecretOutputKeys.names && <>Names : {CMandSecretOutputKeys.names.join(', ')} <br /></>}
+            {CMandSecretOutputKeys.message && <>Message: {CMandSecretOutputKeys.message} <br /></>}
             <br />
         </div>
     )
 }
 
 export const renderConfigMapOutput = (configMap) => {
-    return (
+    return configMap ? (
         <div>
             <div>
                 *CONFIGMAPS: <br />
@@ -51,7 +52,7 @@ export const renderConfigMapOutput = (configMap) => {
             <div>
                 #Message: <br />
                 <br />
-                {configMap?.message?.map((elm) => {
+                {configMap.message?.map((elm) => {
                     return (
                         <>
                             {elm}
@@ -66,11 +67,11 @@ export const renderConfigMapOutput = (configMap) => {
                 #Failed Operations:
                 <br />
                 <br />
-                {configMap?.failure == null ? (
+                {configMap.failure == null ? (
                     <>No Result Found</>
                 ) : (
                     <>
-                        {configMap?.failure.map((elm) => {
+                        {configMap.failure.map((elm) => {
                             return renderCmAndSecretResponseForOneApp(elm)
                         })}
                     </>
@@ -81,11 +82,11 @@ export const renderConfigMapOutput = (configMap) => {
             <div>
                 #Successful Operations: <br />
                 <br />
-                {configMap?.successful == null ? (
+                {configMap.successful == null ? (
                     <>No Result Found</>
                 ) : (
                     <>
-                        {configMap?.successful.map((elm) => {
+                        {configMap.successful.map((elm) => {
                             return renderCmAndSecretResponseForOneApp(elm)
                         })}
                     </>
@@ -93,16 +94,17 @@ export const renderConfigMapOutput = (configMap) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
 
 export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
     return (
         <div>
-            App Id: {DTOutputKeys.appId} <br />
-            App Name: {DTOutputKeys.appName} <br />
-            Environment Id: {DTOutputKeys.envId} <br />
-            Message: {DTOutputKeys.message} <br />
+            {DTOutputKeys.appId && <>App Id: {DTOutputKeys.appId} <br /></>}
+            {DTOutputKeys.appName && <>App Name: {DTOutputKeys.appName} <br /></>}
+            {DTOutputKeys.envId && <>Environment Id: {DTOutputKeys.envId} <br /></>}
+            {DTOutputKeys.envName && <>Environment Name: {DTOutputKeys.envName} <br /></>}
+            {DTOutputKeys.message && <>Message: {DTOutputKeys.message} <br /></>}
             <br />
         </div>
     )
@@ -111,17 +113,18 @@ export const renderDTResponseForOneApp = (DTOutputKeys: DtOutputKeys) => {
 export const renderCMAndSecretImpObj = (CMandSecretImpactedObject: CMandSecretImpactedObjects) => {
     return (
         <div>
-            App Id: {CMandSecretImpactedObject.appId} <br />
-            App Name: {CMandSecretImpactedObject.appName} <br />
-            Environment Id: {CMandSecretImpactedObject.envId} <br />
-            Names : {CMandSecretImpactedObject.names.join(', ')} <br />
+            {CMandSecretImpactedObject.appId && <>App Id: {CMandSecretImpactedObject.appId} <br /></>}
+            {CMandSecretImpactedObject.appName && <>App Name: {CMandSecretImpactedObject.appName} <br /></>}
+            {CMandSecretImpactedObject.envId && <>Environment Id: {CMandSecretImpactedObject.envId} <br /></>}
+            {CMandSecretImpactedObject.envName && <>Environment Name: {CMandSecretImpactedObject.envName} <br /></>}
+            {CMandSecretImpactedObject.names && CMandSecretImpactedObject.names.length > 0 && <>Names : {CMandSecretImpactedObject.names.join(', ')} <br /></>}
             <br />
         </div>
     )
 }
 
 export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
-    return (
+    return deploymentTemplate ? (
         <div>
             <div>
                 *DEPLOYMENT TEMPLATE: <br />
@@ -130,7 +133,7 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
             <div>
                 #Message: <br />
                 <br />
-                {deploymentTemplate?.message?.map((elm) => {
+                {deploymentTemplate.message?.map((elm) => {
                     return (
                         <div>
                             {elm}
@@ -145,11 +148,11 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
                 #Failed Operations:
                 <br />
                 <br />
-                {deploymentTemplate?.failure === null ? (
+                {deploymentTemplate.failure === null ? (
                     <>No Result Found</>
                 ) : (
                     <>
-                        {deploymentTemplate?.failure.map((elm) => {
+                        {deploymentTemplate.failure.map((elm) => {
                             return renderDTResponseForOneApp(elm)
                         })}
                     </>
@@ -161,11 +164,11 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
             <div>
                 #Successful Operations: <br />
                 <br />
-                {deploymentTemplate?.successful == null ? (
+                {deploymentTemplate.successful == null ? (
                     <>No Result Found</>
                 ) : (
                     <>
-                        {deploymentTemplate?.successful.map((elm) => {
+                        {deploymentTemplate.successful.map((elm) => {
                             return renderDTResponseForOneApp(elm)
                         })}
                     </>
@@ -173,11 +176,11 @@ export const renderDeploymentTemplateOutput = (deploymentTemplate) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }
 
 export const renderSecretOutput = (secret) => {
-    return (
+    return secret ? (
         <div>
             <div>
                 *SECRETS: <br />
@@ -186,7 +189,7 @@ export const renderSecretOutput = (secret) => {
             <div>
                 #Message: <br />
                 <br />
-                {secret?.message?.map((elm) => {
+                {secret.message?.map((elm) => {
                     return (
                         <>
                             {elm}
@@ -201,11 +204,11 @@ export const renderSecretOutput = (secret) => {
                 #Failed Operations:
                 <br />
                 <br />
-                {secret?.failure == null ? (
+                {secret.failure == null ? (
                     <>No Result Found</>
                 ) : (
                     <>
-                        {secret?.failure.map((elm) => {
+                        {secret.failure.map((elm) => {
                             return renderCmAndSecretResponseForOneApp(elm)
                         })}
                     </>
@@ -217,11 +220,11 @@ export const renderSecretOutput = (secret) => {
             <div>
                 #Successful Operations: <br />
                 <br />
-                {secret?.successful == null ? (
+                {secret.successful == null ? (
                     <>No Result Found</>
                 ) : (
                     <>
-                        {secret?.successful.map((elm) => {
+                        {secret.successful.map((elm) => {
                             return renderCmAndSecretResponseForOneApp(elm)
                         })}
                     </>
@@ -229,5 +232,5 @@ export const renderSecretOutput = (secret) => {
             </div>
             {OutputDivider}
         </div>
-    )
+    ) : null
 }

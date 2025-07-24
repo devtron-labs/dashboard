@@ -14,25 +14,35 @@
  * limitations under the License.
  */
 
-import { get, post } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkEditVersion, get, post } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { Routes } from '../../config'
 
+const postBulkEditScript = importComponentFromFELibrary('postBulkEditScript', null, 'function')
+const dryRunBulkEditScript = importComponentFromFELibrary('dryRunBulkEditScript', null, 'function')
+
 export function updateBulkList(request): Promise<any> {
-    const { apiVersion } = request
-    const kind = request.kind.toLocaleLowerCase()
-    const URL = `${apiVersion}/${kind} `
-    return post(URL, request)
+    const { apiVersion } = request ?? {}
+
+    if (postBulkEditScript && apiVersion === BulkEditVersion.v2) {
+        return postBulkEditScript(request)
+    }
+
+    return post(Routes.BULK_EDIT_V1_BASEPATH, request)
 }
 
 export function updateImpactedObjectsList(request): Promise<any> {
     const { apiVersion } = request
-    const kind = request.kind.toLocaleLowerCase()
-    const URL = `${apiVersion}/${kind}/dryrun `
-    return post(URL, request)
+
+    if (dryRunBulkEditScript && apiVersion === BulkEditVersion.v2) {
+        return dryRunBulkEditScript(request)
+    }
+
+    return post(`${Routes.BULK_EDIT_V1_BASEPATH}/dryrun`, request)
 }
 
 export function getSeeExample() {
-    const URL = `${Routes.BULK_UPDATE_APIVERSION}/${Routes.BULK_UPDATE_KIND}/readme`
-    return get(URL)
+    return get(`${Routes.BULK_EDIT_V1_BASEPATH}/readme`)
 }
