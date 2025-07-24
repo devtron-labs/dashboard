@@ -71,6 +71,22 @@ const TriggerBuildSidebar = ({
         }
     }
 
+    const getErrorMessageFromAppDetails = (appDetails: (typeof appList)[number]): string | null => {
+        const materialListError = appDetails.materialInitialError
+            ? appDetails.materialInitialError.errors?.[0].userMessage || 'Error fetching material list'
+            : null
+
+        const runtimeParamsInitialError = appDetails.runtimeParamsInitialError
+            ? appDetails.runtimeParamsInitialError.errors?.[0].userMessage || 'Error fetching runtime parameters'
+            : null
+
+        const runtimeParamsDataError = !appDetails.runtimeParamsErrorState?.isValid
+            ? 'Invalid runtime parameters'
+            : null
+
+        return appDetails.errorMessage || materialListError || runtimeParamsInitialError || runtimeParamsDataError
+    }
+
     const renderAppName = (appDetails: (typeof appList)[number]): JSX.Element | null => (
         <div
             role="button"
@@ -85,10 +101,10 @@ const TriggerBuildSidebar = ({
                     {appDetails.warningMessage}
                 </span>
             )}
-            {appDetails.appId !== appId && appDetails.errorMessage && (
+            {appDetails.appId !== appId && !!getErrorMessageFromAppDetails(appDetails) && (
                 <span className="flexbox cr-5 fw-4 fs-12 dc__gap-4">
                     <Icon name="ic-error" size={20} color={null} />
-                    <span className="dc__block dc__word-break lh-20">{appDetails.errorMessage}</span>
+                    <span className="dc__block dc__word-break lh-20">{getErrorMessageFromAppDetails(appDetails)}</span>
                 </span>
             )}
             {appDetails.node?.pluginBlockState &&

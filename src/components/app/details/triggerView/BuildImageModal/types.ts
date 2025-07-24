@@ -2,6 +2,7 @@ import { ChangeEvent } from 'react'
 
 import {
     APIOptions,
+    ApiQueuingWithBatchResponseItem,
     CIMaterialSidebarType,
     CIMaterialType,
     CommonNodeAttr,
@@ -17,6 +18,7 @@ import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 import {
     BuildImageModalProps,
     CIPipelineMaterialDTO,
+    FilteredCIPipelineMapType,
     HandleRuntimeParamChange,
     MaterialSourceProps,
     RuntimeParamsErrorState,
@@ -78,7 +80,7 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'appId' | 'isJobVi
 
 export interface BulkBuildImageModalProps
     extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflows' | 'reloadWorkflowStatus'> {
-    filteredCIPipelineMap: Map<string, TriggerViewState['filteredCIPipelines']>
+    filteredCIPipelineMap: FilteredCIPipelineMapType
 }
 
 export interface BuildImageHeaderProps {
@@ -127,4 +129,16 @@ export interface GetCIMaterialsProps extends Pick<APIOptions, 'abortControllerRe
     ciNodeId: string
     selectedWorkflow: WorkflowType
     isCINodePresent: boolean
+}
+
+export interface GetBulkCIDataPromiseGetterListProps {
+    ciMaterialPromiseList: (() => Promise<CIMaterialType[]>)[]
+    runtimeParamsPromiseList: (() => Promise<RuntimePluginVariables[]>)[]
+}
+
+export interface ParseBulkCIResponseIntoBulkCIDetailProps {
+    validWorkflows: WorkflowType[]
+    ciMaterialList: ApiQueuingWithBatchResponseItem<CIMaterialType[]>[]
+    runtimeParamsList: ApiQueuingWithBatchResponseItem<RuntimePluginVariables[]>[]
+    filteredCIPipelineMap: FilteredCIPipelineMapType
 }

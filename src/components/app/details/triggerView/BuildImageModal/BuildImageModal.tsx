@@ -87,7 +87,7 @@ const BuildImageModal = ({
     const workflowId = selectedWorkflow?.id
     const ciNode = selectedWorkflow?.nodes.find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
     const appId = appIdProp || selectedWorkflow?.appId
-    const filteredCIPipelines = filteredCIPipelinesProp || filteredCIPipelineMap?.get(String(appId)) || []
+    const filteredCIPipelines = filteredCIPipelinesProp || filteredCIPipelineMap?.get(appId) || []
 
     const selectedCIPipeline = filteredCIPipelines.find((_ci) => _ci.id === +ciNodeId)
 
@@ -387,7 +387,6 @@ const BuildImageModal = ({
         >
             {!showContentLoader && !screenErrorData && (
                 <GitInfoMaterial
-                    appId={appId}
                     workflowId={selectedWorkflow?.id}
                     node={ciNode}
                     isJobView={isJobView}

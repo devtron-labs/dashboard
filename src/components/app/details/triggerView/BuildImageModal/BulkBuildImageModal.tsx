@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
 
 import {
     API_STATUS_CODES,
@@ -31,8 +31,6 @@ import {
     BULK_CI_RESPONSE_STATUS_TEXT,
     BulkResponseStatus,
     ENV_TRIGGER_VIEW_GA_EVENTS,
-    SKIPPED_RESOURCES_MESSAGE,
-    SKIPPED_RESOURCES_STATUS_TEXT,
 } from '@Components/ApplicationGroup/Constants'
 import TriggerResponseModalBody, {
     TriggerResponseModalFooter,
@@ -44,14 +42,13 @@ import { getModuleConfigured } from '../../appDetails/appDetails.service'
 import { IGNORE_CACHE_INFO } from '../Constants'
 import BuildImageHeader from './BuildImageHeader'
 import GitInfoMaterial from './GitInfoMaterial'
-import { getCIMaterials, triggerBuild } from './service'
+import { getCIMaterials } from './service'
 import { BulkBuildImageModalProps, GitInfoMaterialProps } from './types'
 import {
     getBulkCIDataPromiseGetterList,
     getBulkCIErrorMessage,
-    getBulkCIWarningMessage,
-    getCanNodeHaveMaterial,
-    getTriggerBuildPayload,
+    getTriggerCIPromiseListAndSkippedResources,
+    parseBulkCIResponseIntoBulkCIDetail,
 } from './utils'
 
 const validateRuntimeParameters = importComponentFromFELibrary(
@@ -86,6 +83,8 @@ const BulkBuildImageModal = ({
             workflow.nodes.some((node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK),
     )
 
+    const [numberOfAppsLoading, setNumberOfAppsLoading] = useState<number>(0)
+
     // Returns map of appId to BulkCIDetailType
     const getInitialAppList = async (appId?: number): Promise<Record<number, BulkCIDetailType>> => {
         const validWorkflows = selectedWorkflows.filter((workflow) => !appId || workflow.appId === appId)
@@ -95,6 +94,8 @@ const BulkBuildImageModal = ({
             initialDataAbortControllerRef,
         )
 
+        setNumberOfAppsLoading(validWorkflows.length)
+
         if (ciMaterialPromiseList.length === 0) {
             return []
         }
@@ -103,59 +104,22 @@ const BulkBuildImageModal = ({
             await ApiQueuingWithBatch<Awaited<ReturnType<typeof getCIMaterials>>>(ciMaterialPromiseList)
         const runtimeParamsList = await ApiQueuingWithBatch<RuntimePluginVariables[]>(runtimeParamsPromiseList)
 
-        return validWorkflows.reduce<Record<number, BulkCIDetailType>>((acc, workflow, index) => {
-            const node = workflow.nodes.find(
-                (currentNode) =>
-                    currentNode.type === WorkflowNodeType.CI || currentNode.type === WorkflowNodeType.WEBHOOK,
-            )
+        setNumberOfAppsLoading(0)
 
-            if (!node) {
-                return acc
-            }
+        const bulkCIDetailsMap = parseBulkCIResponseIntoBulkCIDetail({
+            ciMaterialList,
+            runtimeParamsList,
+            validWorkflows,
+            filteredCIPipelineMap,
+        })
 
-            const currentMaterial =
-                (ciMaterialList[index].status === PromiseAllStatusType.FULFILLED ? ciMaterialList[index].value : []) ||
-                []
-            const runtimeParams =
-                runtimeParamsList[index].status === PromiseAllStatusType.FULFILLED ? runtimeParamsList[index].value : []
-
-            acc[workflow.appId] = {
-                workflowId: workflow.id,
-                appId: workflow.appId,
-                name: workflow.name,
-                node,
-                material: currentMaterial,
-                materialInitialError:
-                    ciMaterialList[index].status === PromiseAllStatusType.REJECTED
-                        ? ciMaterialList[index].reason
-                        : null,
-                runtimeParams: runtimeParams || [],
-                runtimeParamsInitialError:
-                    runtimeParamsList[index].status === PromiseAllStatusType.REJECTED
-                        ? runtimeParamsList[index].reason
-                        : null,
-                runtimeParamsErrorState: {
-                    isValid: runtimeParamsList[index].status !== PromiseAllStatusType.REJECTED,
-                    cellError: {},
-                },
-                warningMessage: getBulkCIWarningMessage(node),
-                errorMessage: getBulkCIErrorMessage(
-                    workflow.appId,
-                    node,
-                    filteredCIPipelineMap.get(String(workflow.appId)),
-                    currentMaterial,
-                ),
-                filteredCIPipelines: filteredCIPipelineMap.get(String(workflow.appId)),
-                ignoreCache: false,
-                ciConfiguredGitMaterialId: workflow.ciConfiguredGitMaterialId,
-            }
-
-            return acc
-        }, {})
+        return bulkCIDetailsMap
     }
 
-    const [isLoadingAppInfoMap, appInfoMapRes, , , setAppInfoMapRes] = useAsync(getInitialAppList)
+    const [isLoadingAppInfoMap, appInfoMapRes, , , setAppInfoMapResWithoutType] = useAsync(getInitialAppList)
     const [isLoadingSingleAppInfoMap, setIsLoadingSingleAppInfoMap] = useState<boolean>(false)
+
+    const setAppInfoMapRes: Dispatch<SetStateAction<Record<number, BulkCIDetailType>>> = setAppInfoMapResWithoutType
 
     const appInfoMap = appInfoMapRes || {}
 
@@ -168,9 +132,10 @@ const BulkBuildImageModal = ({
             setIsLoadingSingleAppInfoMap(true)
             initialDataAbortControllerRef.current.abort()
             initialDataAbortControllerRef.current = new AbortController()
+            // Will also handle error state
             const currentAppInfo = await getInitialAppList(selectedAppId)
             setAppInfoMapRes((prevAppInfoMapRes) => {
-                const updatedAppInfoMap = { ...prevAppInfoMapRes }
+                const updatedAppInfoMap = structuredClone(prevAppInfoMapRes)
                 updatedAppInfoMap[selectedAppId] = currentAppInfo[selectedAppId]
                 return updatedAppInfoMap
             })
@@ -230,17 +195,6 @@ const BulkBuildImageModal = ({
         return true
     }
 
-    const getPayloadFromAppDetails = (appDetails: BulkCIDetailType) =>
-        getTriggerBuildPayload({
-            materialList: appDetails.material,
-            ciConfiguredGitMaterialId: appDetails.ciConfiguredGitMaterialId,
-            runtimeParams: appDetails.runtimeParams,
-            invalidateCache: appDetails.ignoreCache,
-            isJobCI: appDetails.node?.isJobCI,
-            ciNodeId: +(appDetails.node?.id || 0),
-            selectedEnv: null,
-        })
-
     const getResponseStatusFromCode = (errorCode: number): BulkResponseStatus => {
         switch (errorCode) {
             case API_STATUS_CODES.EXPECTATION_FAILED:
@@ -262,45 +216,11 @@ const BulkBuildImageModal = ({
         handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
         setIsBuildTriggerLoading(true)
 
-        const newResourceList: ResponseRowType[] = []
-        const appsToTrigger = sortedAppList.filter((appDetails) => {
-            if (appsToRetry && !appsToRetry[appDetails.appId]) {
-                return false
-            }
-
-            if (!getCanNodeHaveMaterial(appDetails.node)) {
-                newResourceList.push({
-                    appId: appDetails.appId,
-                    appName: appDetails.name,
-                    statusText: SKIPPED_RESOURCES_STATUS_TEXT,
-                    status: BulkResponseStatus.SKIP,
-                    message: SKIPPED_RESOURCES_MESSAGE,
-                })
-            }
-
-            const payload = getPayloadFromAppDetails(appDetails)
-
-            if (typeof payload === 'string') {
-                newResourceList.push({
-                    appId: appDetails.appId,
-                    appName: appDetails.name,
-                    statusText: SKIPPED_RESOURCES_STATUS_TEXT,
-                    status: BulkResponseStatus.SKIP,
-                    message: payload,
-                })
-            }
-
-            return getCanNodeHaveMaterial(appDetails.node) && typeof payload !== 'string'
-        })
-
-        const promiseList = appsToTrigger.map((appDetails) => {
-            const payload = getPayloadFromAppDetails(appDetails) as Exclude<
-                ReturnType<typeof getTriggerBuildPayload>,
-                string
-            >
-
-            return () => triggerBuild({ payload })
-        })
+        const {
+            promiseList,
+            appsToTrigger,
+            skippedResourceList: newResourceList,
+        } = getTriggerCIPromiseListAndSkippedResources(sortedAppList, appsToRetry)
 
         if (!promiseList.length) {
             ToastManager.showToast({
@@ -351,10 +271,11 @@ const BulkBuildImageModal = ({
         await handleTriggerBuild()
     }
 
-    // TODO: Need to understand this
     const isStartBuildDisabled = (): boolean =>
         sortedAppList.some(
             (app) =>
+                !!app.runtimeParamsInitialError ||
+                !!app.materialInitialError ||
                 app.node.isTriggerBlocked ||
                 (app.errorMessage &&
                     (app.errorMessage !== SOURCE_NOT_CONFIGURED ||
@@ -419,11 +340,17 @@ const BulkBuildImageModal = ({
 
     const setCurrentAppMaterialList: GitInfoMaterialProps['setMaterialList'] = (getUpdatedMaterialList) => {
         setAppInfoMapRes((prevAppInfoMapRes) => {
-            const updatedAppInfoMap = { ...prevAppInfoMapRes }
+            const updatedAppInfoMap = structuredClone(prevAppInfoMapRes)
             const currentApp = updatedAppInfoMap[selectedAppId]
 
             if (currentApp) {
                 currentApp.material = getUpdatedMaterialList(currentApp.material)
+                currentApp.errorMessage = getBulkCIErrorMessage(
+                    currentApp.appId,
+                    currentApp.node,
+                    currentApp.filteredCIPipelines,
+                    currentApp.material,
+                )
             }
 
             return updatedAppInfoMap
@@ -432,7 +359,7 @@ const BulkBuildImageModal = ({
 
     const handleRuntimeParamChange: GitInfoMaterialProps['handleRuntimeParamChange'] = (updatedRuntimeParams) => {
         setAppInfoMapRes((prevAppInfoMapRes) => {
-            const updatedAppInfoMap = { ...prevAppInfoMapRes }
+            const updatedAppInfoMap = structuredClone(prevAppInfoMapRes)
             const currentApp = updatedAppInfoMap[selectedAppId]
             if (currentApp) {
                 currentApp.runtimeParams = updatedRuntimeParams
@@ -443,7 +370,7 @@ const BulkBuildImageModal = ({
 
     const handleRuntimeParamError: GitInfoMaterialProps['handleRuntimeParamError'] = (errorState) => {
         setAppInfoMapRes((prevAppInfoMapRes) => {
-            const updatedAppInfoMap = { ...prevAppInfoMapRes }
+            const updatedAppInfoMap = structuredClone(prevAppInfoMapRes)
             const currentApp = updatedAppInfoMap[selectedAppId]
             if (currentApp) {
                 currentApp.runtimeParamsErrorState = errorState
@@ -454,8 +381,9 @@ const BulkBuildImageModal = ({
 
     const toggleSelectedAppIgnoreCache = () => {
         setAppInfoMapRes((prevAppInfoMapRes) => {
-            const updatedAppInfoMap = { ...prevAppInfoMapRes }
+            const updatedAppInfoMap = structuredClone(prevAppInfoMapRes)
             const currentApp = updatedAppInfoMap[selectedAppId]
+
             if (currentApp) {
                 currentApp.ignoreCache = !currentApp.ignoreCache
             }
@@ -470,8 +398,8 @@ const BulkBuildImageModal = ({
     const renderContent = () => {
         if (isLoadingAppInfoMap || isBuildTriggerLoading) {
             const message = isBuildTriggerLoading
-                ? BULK_CI_BUILD_STATUS(selectedWorkflows.length)
-                : BULK_CI_MATERIAL_STATUS(selectedWorkflows.length)
+                ? BULK_CI_BUILD_STATUS(numberOfAppsLoading)
+                : BULK_CI_MATERIAL_STATUS(numberOfAppsLoading)
 
             return <GenericEmptyState {...message} SvgImage={MechanicalOperation} contentClassName="text-center" />
         }
@@ -485,7 +413,6 @@ const BulkBuildImageModal = ({
 
         return (
             <GitInfoMaterial
-                key={selectedAppId}
                 workflowId={appData.workflowId}
                 appId={selectedAppId}
                 node={appData.node}

@@ -401,6 +401,8 @@ export interface TriggerViewState {
     isEnvListLoading?: boolean
 }
 
+export type FilteredCIPipelineMapType = Map<number, TriggerViewState['filteredCIPipelines']>
+
 export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
     handleClose: () => void
     reloadWorkflows: () => void
@@ -417,7 +419,7 @@ export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
               filteredCIPipelineMap?: never
           }
         | {
-              filteredCIPipelineMap: Map<string, TriggerViewState['filteredCIPipelines']>
+              filteredCIPipelineMap: FilteredCIPipelineMapType
               filteredCIPipelines?: never
           }
     )

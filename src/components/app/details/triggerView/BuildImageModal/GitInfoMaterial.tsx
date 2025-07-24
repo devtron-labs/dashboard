@@ -11,6 +11,7 @@ import {
     ComponentSizeType,
     ConditionalWrap,
     createGitCommitUrl,
+    ErrorScreenManager,
     GenericEmptyState,
     getHandleOpenURL,
     handleUTCTime,
@@ -66,15 +67,30 @@ const GitInfoMaterial = ({
     handleReloadWithWorkflows,
     isBulkTrigger = false,
     appList,
-    handleAppChange,
+    handleAppChange: handleAppChangeProp,
     isBlobStorageConfigured,
     toggleSelectedAppIgnoreCache,
 }: GitInfoMaterialProps) => {
-    // TODO: Discuss if we can remove key in case of bulk? Maybe one useEffect?
     const [currentSidebarTab, setCurrentSidebarTab] = useState<CIMaterialSidebarType>(CIMaterialSidebarType.CODE_SOURCE)
     const [showRegexBranchChangeModal, setShowRegexBranchChangeModal] = useState<boolean>(
         getIsRegexBranchNotAvailable(selectedCIPipeline, materialList),
     )
+
+    const handleAppChange = (newAppId: number) => {
+        handleAppChangeProp?.(newAppId)
+
+        // appId will only change in case of bulk trigger
+        setCurrentSidebarTab(CIMaterialSidebarType.CODE_SOURCE)
+        if (appList) {
+            const targetApp = appList.find((app) => app.appId === newAppId)
+            const { filteredCIPipelines, node: targetAppNode, material } = targetApp
+            const newSelectedCIPipeline = targetAppNode
+                ? filteredCIPipelines.find((pipeline) => +pipeline.id === +targetAppNode.id)
+                : null
+            setShowRegexBranchChangeModal(getIsRegexBranchNotAvailable(newSelectedCIPipeline, material))
+        }
+    }
+
     const nodeId = node?.id
     const isCITriggerBlocked = node?.isTriggerBlocked
 
@@ -618,6 +634,15 @@ const GitInfoMaterial = ({
                         title={`${BULK_CI_MESSAGING.linkedCD.title(selectedApp.node.title)}`}
                         subTitle={BULK_CI_MESSAGING.linkedCD.subTitle(selectedApp.node.title)}
                         image={linkedCDBuildCIImg}
+                    />
+                )
+            }
+
+            if (selectedApp.materialInitialError || selectedApp.runtimeParamsInitialError) {
+                return (
+                    <ErrorScreenManager
+                        code={selectedApp.materialInitialError?.code || selectedApp.runtimeParamsInitialError?.code}
+                        reload={reloadCompleteMaterialList}
                     />
                 )
             }
