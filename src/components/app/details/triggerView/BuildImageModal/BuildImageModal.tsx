@@ -402,6 +402,7 @@ const BuildImageModal = ({
                     handleDisplayWebhookModal={handleDisplayWebhookModal}
                     selectedCIPipeline={selectedCIPipeline}
                     handleReloadWithWorkflows={handleReloadWithWorkflows}
+                    appId={appId}
                 />
             )}
         </APIResponseHandler>

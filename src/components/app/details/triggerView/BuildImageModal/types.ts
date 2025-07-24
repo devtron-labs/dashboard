@@ -43,7 +43,7 @@ export interface TriggerBuildSidebarProps {
 
 type SetMaterialCBType = (prevMaterialList: CIMaterialType[]) => CIMaterialType[]
 
-export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'appId' | 'isJobView'> & {
+export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'isJobView'> & {
     workflowId: string
     node: CommonNodeAttr
     setMaterialList: (cb: SetMaterialCBType) => void
@@ -53,14 +53,15 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'appId' | 'isJobVi
     reloadCompleteMaterialList: () => void
     handleRuntimeParamChange: HandleRuntimeParamChange
     handleRuntimeParamError: (errorState: RuntimeParamsErrorState) => void
-    /**
-     * Only required for isJobView
-     */
-    selectedEnv?: EnvironmentWithSelectPickerType
     runtimeParams: RuntimePluginVariables[]
     handleDisplayWebhookModal: () => void
     selectedCIPipeline: TriggerViewState['filteredCIPipelines'][number]
     handleReloadWithWorkflows: () => void
+    appId: number
+    /**
+     * Only required for isJobView
+     */
+    selectedEnv?: EnvironmentWithSelectPickerType
 } & (
         | {
               isBulkTrigger: true
