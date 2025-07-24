@@ -39,7 +39,6 @@ import {
     getCDPipelineURL,
     importComponentFromFELibrary,
     InValidHostUrlWarningBlock,
-    preventBodyScroll,
     sortObjectArrayAlphabetically,
     withAppContext,
 } from '../../../common'
@@ -308,7 +307,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             cdNodeId,
             nodeType,
         })
-        preventBodyScroll(true)
 
         const newParams = new URLSearchParams(this.props.location.search)
         newParams.set(
@@ -357,7 +355,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 nodeType: 'CD',
             },
             () => {
-                preventBodyScroll(true)
                 this.getWorkflowStatus()
             },
         )
@@ -375,17 +372,14 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push({
             search: '',
         })
-        preventBodyScroll(false)
         this.getWorkflowStatus()
     }
 
     closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        preventBodyScroll(false)
         this.props.history.push({
             search: '',
         })
-        preventBodyScroll(false)
         this.getWorkflowStatus()
     }
 
@@ -464,7 +458,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const material = cdNode[this.state.materialType] || []
 
             return (
-                <VisibleModal className="" parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
+                <VisibleModal parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
                     <div
                         className={`modal-body--cd-material h-100 flexbox-col contains-diff-view ${
                             material.length > 0 ? '' : 'no-material'

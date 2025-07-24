@@ -22,7 +22,6 @@ import Tippy from '@tippyjs/react'
 import {
     API_STATUS_CODES,
     ApiQueuingWithBatch,
-    BlockedStateData,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -38,7 +37,6 @@ import {
     getStageTitle,
     PipelineIdsVsDeploymentStrategyMap,
     PopupMenu,
-    preventBodyScroll,
     Progressing,
     RuntimePluginVariables,
     ServerErrors,
@@ -491,7 +489,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.inputMaterialList)
-        preventBodyScroll(true)
 
         const newParams = new URLSearchParams(location.search)
         newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
@@ -545,7 +542,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         setFilteredWorkflows(_workflows)
         setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
         setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
-        preventBodyScroll(true)
         getWorkflowStatusData(_workflows)
 
         const newParams = new URLSearchParams(location.search)
@@ -600,7 +596,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             setIsBranchChangeLoading(false)
             setCDLoading(false)
             setCILoading(false)
-            preventBodyScroll(true)
             return
         }
 
@@ -620,7 +615,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 updateResponseListData([..._responseList, ...skippedResources])
                 setCDLoading(false)
                 setCILoading(false)
-                preventBodyScroll(true)
             })
             .catch((error) => {
                 showError(error)
@@ -631,14 +625,13 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const closeCDModal = (e: React.MouseEvent): void => {
-        e.stopPropagation()
+        e?.stopPropagation()
         abortControllerRef.current.abort()
         setCDLoading(false)
         history.push({
             search: '',
         })
         getWorkflowStatusData(workflows)
-        preventBodyScroll(false)
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
@@ -647,7 +640,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             search: '',
         })
         getWorkflowStatusData(workflows)
-        preventBodyScroll(false)
     }
 
     const hideBulkCDModal = () => {
@@ -697,7 +689,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         setIsBranchChangeLoading(false)
         setShowBulkSourceChangeModal(false)
         setResponseList([])
-        preventBodyScroll(false)
     }
 
     const handleCloseChangeImageSource = () => {
@@ -965,7 +956,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 setCDLoading(false)
                 setCILoading(false)
                 setIsBulkTriggerLoading(false)
-                preventBodyScroll(false)
                 getWorkflowStatusData(workflows)
             })
         } else {
@@ -1243,7 +1233,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             const material = node?.[materialType] || []
 
             return (
-                <VisibleModal className="" parentClassName="dc__overflow-hidden" close={closeCDModal}>
+                <VisibleModal parentClassName="dc__overflow-hidden" close={closeCDModal}>
                     <div
                         className={`modal-body--cd-material h-100 contains-diff-view flexbox-col ${
                             material.length > 0 ? '' : 'no-material'

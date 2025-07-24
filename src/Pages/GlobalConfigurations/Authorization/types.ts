@@ -37,6 +37,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE } from '../../../config'
+import { TokenResponseType } from './APITokens/apiToken.type'
 import { PermissionType, UserRoleType } from './constants'
 
 export interface UserAndGroupPermissionsWrapProps {
@@ -311,7 +312,8 @@ export interface CreateUserPermissionPayloadParams
     extends Pick<User, 'userStatus' | 'timeToLive' | 'userRoleGroups' | 'canManageAllAccess'> {
     id: number
     userGroups: Pick<UserGroupType, 'name' | 'userGroupId'>[]
-    userIdentifier: string
+    hideApiToken?: TokenResponseType['hideApiToken']
+    userIdentifier: TokenResponseType['userIdentifier']
     serverMode: SERVER_MODE
     directPermission: DirectPermissionsRoleFilter[]
     chartPermission: ChartGroupPermissionsFilter

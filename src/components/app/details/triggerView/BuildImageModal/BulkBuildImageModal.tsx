@@ -1,10 +1,12 @@
 import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { Prompt } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
     ApiQueuingWithBatch,
     Button,
     ComponentSizeType,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DocLink,
     Drawer,
     GenericEmptyState,
@@ -20,6 +22,7 @@ import {
     ToastManager,
     ToastVariantType,
     useAsync,
+    usePrompt,
     WorkflowNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -72,6 +75,10 @@ const BulkBuildImageModal = ({
     const [blobStorageConfigurationLoading, blobStorageConfiguration] = useAsync(() =>
         getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
     )
+
+    usePrompt({
+        shouldPrompt: isBuildTriggerLoading,
+    })
 
     const blobStorageNotConfigured = !blobStorageConfigurationLoading && !blobStorageConfiguration?.result?.enabled
 
@@ -467,6 +474,8 @@ const BulkBuildImageModal = ({
                     {!showWebhookModal && !isLoadingAppInfoMap && renderFooter()}
                 </div>
             </div>
+
+            <Prompt when={isBuildTriggerLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
         </Drawer>
     )
 }

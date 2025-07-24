@@ -42,7 +42,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
-import { getSeverityWithCount, importComponentFromFELibrary } from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
@@ -58,7 +58,12 @@ import {
     SecurityScansTabMultiFilterKeys,
     SeverityFilterValues,
 } from './types'
-import { getSearchLabelFromValue, getSeverityFilterLabelFromValue, parseSearchParams } from './utils'
+import {
+    getSearchLabelFromValue,
+    getSeverityFilterLabelFromValue,
+    getSeverityWithCount,
+    parseSearchParams,
+} from './utils'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 

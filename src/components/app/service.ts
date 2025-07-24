@@ -87,40 +87,6 @@ export function fetchResourceTreeInTime(
     })
 }
 
-export function getEvents(pathParams) {
-    const URL = `${Routes.APPLICATIONS}/${pathParams.appName}-${pathParams.env}/events?resourceNamespace=${pathParams.resourceNamespace}&resourceUID=${pathParams.uid}&resourceName=${pathParams.resourceName}`
-    return URL
-}
-
-export function getCITriggerDetails(params: {
-    appId: number | string
-    pipelineId: number | string
-}): Promise<{ code: number; status: string; triggerDetails: any }> {
-    const URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/last`
-    return get(URL).then((response) => {
-        if (response.result && !response.errors) {
-            return {
-                code: response.code,
-                status: response.status,
-                triggerDetails: {
-                    id: response.result.id || 0,
-                    startedOn: response.result.startedOn,
-                    finishedOn: response.result.finishedOn,
-                    status: response.result.status || '',
-                    name: response.result.name || '',
-                    namespace: response.result.namespace || '',
-                    podStatus: response.result.podStatus || '',
-                    message: response.result.message || '',
-                    gitTriggers: response.result.gitTriggers
-                        ? gitTriggersModal(response.result.gitTriggers, response.result.ciMaterials)
-                        : [],
-                },
-            }
-        }
-        throw new ServerErrors({ code: response.code, errors: response.errors })
-    })
-}
-
 interface CIHistoricalStatus extends ResponseType {
     result?: History
 }
@@ -133,23 +99,6 @@ export const getCIHistoricalStatus = (params): Promise<CIHistoricalStatus> => {
 export const getTagDetails = (params) => {
     const URL = `${Routes.IMAGE_TAGGING}/${params.pipelineId}/${params.artifactId}`
     return get(URL)
-}
-
-const gitTriggersModal = (triggers, materials) => {
-    const ids = Object.keys(triggers)
-    return ids.map((key) => {
-        const material = materials.find((mat) => mat.id === Number(key))
-        return {
-            id: key,
-            gitMaterialName: material?.gitMaterialName || '',
-            changes: triggers[key].Changes,
-            commit: triggers[key].Commit,
-            author: triggers[key].Author,
-            message: triggers[key].Message,
-            url: material?.url || '',
-            date: triggers[key].Date ? handleUTCTime(triggers[key].Date) : '',
-        }
-    })
 }
 
 const processMaterialHistoryAndSelectionError = (material) => {
@@ -291,11 +240,6 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
     })
 }
 
-export const getPrePostCDTriggerStatus = (params) => {
-    const URL = `${Routes.APP}/cd-pipeline/workflow/status/${params.appId}/${params.environmentId}/${params.pipelineId}`
-    return get(URL)
-}
-
 export const getWorkflowStatus = (appId: string) => {
     const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/${Routes.APP_LIST_V2}`
     return get(URL)
@@ -340,27 +284,6 @@ export function getGitMaterialByCommitHash(materialId: string, commitHash: strin
     return get(`${Routes.COMMIT_INFO}/${materialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
 }
 
-export const getCDTriggerStatus = (appId) => {
-    const URL = `${Routes.CD_TRIGGER_STATUS}?app-id=${appId}`
-    return get(URL, { timeout: 3 * 60000 }).then((response) => {
-        return response.result
-            ? response?.result?.map((status) => {
-                  return {
-                      ciPipelineId: status.ciPipelineId,
-                      ciPipelineName: status.ciPipelineName,
-                      cdPipelineId: status.cdPipelineId,
-                      cdPipelineName: status.cdPipelineName,
-                      status: status.status,
-                      environmentName: status.environmentName,
-                      materialInfo: status.materialInfo,
-                      lastDeployedBy: status.lastDeployedBy,
-                      lastDeployedTime: status.lastDeployedTime ? handleUTCTime(status.lastDeployedTime, true) : '',
-                  }
-              })
-            : []
-    })
-}
-
 export function getTriggerHistory(pipelineId, params) {
     const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
@@ -369,23 +292,6 @@ export function setImageTags(request, pipelineId: number, artifactId: number) {
     return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`, request)
 }
 
-export function getImageTags(pipelineId: number, artifactId: number) {
-    return get(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`)
-}
-
-export function handleTimeWithOffset(ts: string) {
-    let timestamp = ''
-    try {
-        if (ts && ts.length) {
-            // FIXME: fix the hardcoded offset, not fixing now as this is not being used anywhere
-            const date = moment(ts).add(5, 'hours').add(30, 'minutes')
-            timestamp = date.format(DATE_TIME_FORMAT_STRING)
-        }
-    } catch (error) {
-        console.error('Error Parsing Date:', ts)
-    }
-    return timestamp
-}
 
 export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJobResponse> {
     const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${workflowId}/ci-job/artifacts`

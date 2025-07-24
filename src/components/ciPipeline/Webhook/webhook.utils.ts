@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { TabDetailsType, TokenListOptionsType } from './types'
+import { TabDetailsType } from './types'
 
 export const TOKEN_TAB_LIST: TabDetailsType[] = [
     { key: 'selectToken', value: 'Select API token' },
     { key: 'autoToken', value: 'Auto-generate token' },
 ]
+
 export const PLAYGROUND_TAB_LIST: TabDetailsType[] = [
     { key: 'webhookURL', value: 'Webhook URL' },
     { key: 'sampleCurl', value: 'Sample cURL request' },
@@ -40,47 +41,7 @@ export const CURL_PREFIX = `curl --location --request POST \\
 --header 'api-token: {token}' \\
 --data-raw '{data}'`
 
-export const SELECT_TOKEN_STYLE = {
-    control: (base, state) => ({
-        ...base,
-        border: '1px solid var(--N200)',
-        boxShadow: 'none',
-        minHeight: 'auto',
-        height: '32px',
-        fontSize: '13px',
-    }),
-    option: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        fontSize: '13px',
-        padding: '5px 10px',
-    }),
-    dropdownIndicator: (styles) => ({ ...styles, padding: 0 }),
-    valueContainer: (base, state) => ({
-        ...base,
-        color: 'var(--N900)',
-        background: 'var(--N50) !important',
-        padding: '0px 10px',
-        display: 'flex',
-        height: '30px',
-        fontSize: '13px',
-        pointerEvents: 'all',
-        whiteSpace: 'nowrap',
-        borderRadius: '4px',
-    }),
-    indicatorsContainer: (base, state) => ({
-        ...base,
-        background: 'var(--N50) !important',
-    }),
-}
+export const GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS = 'Generate token with required permissions'
+export const SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS =
+    'Select or auto-generate token with required permissions'
 
-export const getWebhookTokenListOptions = (tokenList: TokenListOptionsType[]) => {
-    return tokenList.map((token) => {
-        return {
-            ...token,
-            label: token.label,
-            value: token.value,
-            description: 'Has access',
-        }
-    })
-}

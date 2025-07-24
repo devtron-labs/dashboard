@@ -1722,9 +1722,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.17.0-pre-0":
-  version: 1.17.0-pre-0
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.17.0-pre-0"
+"@devtron-labs/devtron-fe-common-lib@npm:1.18.0-pre-0":
+  version: 1.18.0-pre-0
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.18.0-pre-0"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1737,7 +1737,7 @@ __metadata:
     "@lezer/highlight": "npm:1.2.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@replit/codemirror-vscode-keymap": "npm:6.0.2"
-    "@types/react-dates": "npm:^21.8.6"
+    "@tanstack/react-query": "npm:<5"
     "@uiw/codemirror-extensions-hyper-link": "npm:4.23.10"
     "@uiw/codemirror-theme-github": "npm:4.23.7"
     "@uiw/react-codemirror": "npm:4.23.7"
@@ -1746,6 +1746,7 @@ __metadata:
     codemirror-json-schema: "npm:0.8.0"
     dayjs: "npm:^1.11.13"
     fast-json-patch: "npm:^3.1.1"
+    focus-trap-react: "npm:^10.3.1"
     framer-motion: "npm:^6.5.1"
     jsonpath-plus: "npm:^10.3.0"
     marked: "npm:^13.0.3"
@@ -1773,7 +1774,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/b73859860e959e79fcc358de6611c6a3501cd35c8fd7ea743f488e9f89bc605abb4e691f2f52c709c434d12b65fda3bd42e4b216b061378e0ebee61af25e7b75
+  checksum: 10c0/1bcecf97315a63222d7063d181ec751fb7a8970e0de585e71d0725acaa2d0d60e264311404bd1c333ae2623fc9607ad965e47a26948156a7e4942b77bb1c1303
   languageName: node
   linkType: hard
 
@@ -3534,6 +3535,41 @@ __metadata:
   peerDependencies:
     "@svgr/core": ^6.0.0
   checksum: 10c0/365da6e43ceeff6b49258fa2fbb3c880210300e4a85ba74831e92d2dc9c53e6ab8dda422dc33fb6a339803227cf8d9a0024ce769401c46fd87209abe36d5ae43
+  languageName: node
+  linkType: hard
+
+"@tanstack/eslint-plugin-query@npm:<5":
+  version: 4.39.1
+  resolution: "@tanstack/eslint-plugin-query@npm:4.39.1"
+  peerDependencies:
+    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
+  checksum: 10c0/0bcc828fdbdc0c128bb3363353ebea51a243ce1cdd7650d8cd38e845f747488d3168539042cd14221fe183abaebcba4d09924fddcf0952b306697c2380c36dca
+  languageName: node
+  linkType: hard
+
+"@tanstack/query-core@npm:4.40.0":
+  version: 4.40.0
+  resolution: "@tanstack/query-core@npm:4.40.0"
+  checksum: 10c0/c04ebaae3b30d59fcf647c3e3aed95bc7aea632a37088f6066b9958ac2144613ed545471e9ecefd78b1ebe2536fbc74eb708f8614334d012156d82aabfef5fd6
+  languageName: node
+  linkType: hard
+
+"@tanstack/react-query@npm:<5":
+  version: 4.40.1
+  resolution: "@tanstack/react-query@npm:4.40.1"
+  dependencies:
+    "@tanstack/query-core": "npm:4.40.0"
+    use-sync-external-store: "npm:^1.2.0"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-native: "*"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/19d93d60fc39872683da0b74ca11cf78cc6186c8eec8b4732bec3efb83d553e94108a838d6d20dd54f109f330a56858133df85b4a4700c641c1fb3eb11855d35
   languageName: node
   linkType: hard
 
@@ -5685,7 +5721,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.17.0-pre-0"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.18.0-pre-0"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"
@@ -5695,6 +5731,7 @@ __metadata:
     "@sentry/cli": "npm:^2.2.0"
     "@sentry/integrations": "npm:7.50.0"
     "@sentry/tracing": "npm:7.50.0"
+    "@tanstack/eslint-plugin-query": "npm:<5"
     "@testing-library/jest-dom": "npm:^5.16.2"
     "@testing-library/react": "npm:^12.1.4"
     "@tippyjs/react": "npm:4.2.6"
@@ -5703,6 +5740,7 @@ __metadata:
     "@types/node": "npm:20.11.0"
     "@types/react": "npm:17.0.39"
     "@types/react-csv": "npm:^1.1.3"
+    "@types/react-dates": "npm:^21.8.6"
     "@types/react-dom": "npm:17.0.13"
     "@types/react-router-dom": "npm:^5.3.3"
     "@types/react-transition-group": "npm:^4.4.4"
@@ -7038,6 +7076,29 @@ __metadata:
   version: 0.6.32
   resolution: "flexsearch@npm:0.6.32"
   checksum: 10c0/f033fba51568bcd4f8fc0588cd457a0af15b48dfcdf1128341b0af19949ba957ada2ff2b39bb28a5a11df0dda8e73ca6fb7518d06c42f8fd8adc1679b93d0d41
+  languageName: node
+  linkType: hard
+
+"focus-trap-react@npm:^10.3.1":
+  version: 10.3.1
+  resolution: "focus-trap-react@npm:10.3.1"
+  dependencies:
+    focus-trap: "npm:^7.6.1"
+    tabbable: "npm:^6.2.0"
+  peerDependencies:
+    prop-types: ^15.8.1
+    react: ">=16.3.0"
+    react-dom: ">=16.3.0"
+  checksum: 10c0/ac39d46e5bc4eacfc3465915fe8c223283a99ae743afa73412416238b633fc0af19df023dca469945639b9151fc1572c59985f978405f1db9fe8f4c23f3db1a2
+  languageName: node
+  linkType: hard
+
+"focus-trap@npm:^7.6.1":
+  version: 7.6.5
+  resolution: "focus-trap@npm:7.6.5"
+  dependencies:
+    tabbable: "npm:^6.2.0"
+  checksum: 10c0/36cac0d9b05fe5824733675bb49792842dae4704286ef7e17c736ee0c9c14701e874e6821449e78b70c17e42ba1b2c98ef10434bfe644b9d7654d8ef7f1c8faf
   languageName: node
   linkType: hard
 
@@ -11296,6 +11357,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tabbable@npm:^6.2.0":
+  version: 6.2.0
+  resolution: "tabbable@npm:6.2.0"
+  checksum: 10c0/ced8b38f05f2de62cd46836d77c2646c42b8c9713f5bd265daf0e78ff5ac73d3ba48a7ca45f348bafeef29b23da7187c72250742d37627883ef89cbd7fa76898
+  languageName: node
+  linkType: hard
+
 "tapable@npm:^2.2.0":
   version: 2.2.1
   resolution: "tapable@npm:2.2.1"
@@ -11900,7 +11968,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.2.2":
+"use-sync-external-store@npm:^1.2.0, use-sync-external-store@npm:^1.2.2":
   version: 1.5.0
   resolution: "use-sync-external-store@npm:1.5.0"
   peerDependencies:

@@ -23,9 +23,7 @@ import {
     copyToClipboard,
     CustomInput,
     ClipboardButton,
-    ButtonWithLoader,
     CodeEditor,
-    SelectPicker,
     TabGroup,
     ComponentSizeType,
     ToastVariantType,
@@ -37,6 +35,10 @@ import {
     ActionTypes,
     InfoBlock,
     DocLink,
+    stopPropagation,
+    ButtonStyleType,
+    Icon,
+    SelectPicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -44,21 +46,18 @@ import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as Help } from '../../../assets/icons/ic-help.svg'
 import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
-import { ReactComponent as PlayButton } from '../../../assets/icons/ic-play.svg'
 import { ReactComponent as Tag } from '../../../assets/icons/ic-tag.svg'
 import './webhookDetails.scss'
-import {
-    getUserRole,
-    createOrUpdateUser,
-} from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import { getUserRole, createOrUpdateUser } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { MODES, SERVER_MODE, WEBHOOK_NO_API_TOKEN_ERROR } from '../../../config'
 import { createGeneratedAPIToken } from '@Pages/GlobalConfigurations/Authorization/APITokens/service'
 import {
     CURL_PREFIX,
-    getWebhookTokenListOptions,
+    GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
     PLAYGROUND_TAB_LIST,
     REQUEST_BODY_TAB_LIST,
     RESPONSE_TAB_LIST,
+    SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS,
     TOKEN_TAB_LIST,
 } from './webhook.utils'
 import { SchemaType, TabDetailsType, TokenListOptionsType, WebhookDetailsType, WebhookDetailType } from './types'
@@ -71,6 +70,7 @@ import {
     getDefaultStatusAndTimeout,
     getDefaultUserStatusAndTimeout,
 } from '@Pages/GlobalConfigurations/Authorization/libUtils'
+import { getApiTokenHeader } from '@Pages/GlobalConfigurations/Authorization/APITokens/apiToken.utils'
 
 export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType) => {
     const { appId, webhookId } = useParams<{
@@ -82,15 +82,13 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const [loader, setLoader] = useState(false)
     const [webhookExecutionLoader, setWebhookExecutionLoader] = useState(false)
     const [generateTokenLoader, setGenerateTokenLoader] = useState(false)
-    const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
     const [tokenName, setTokenName] = useState<string>('')
     const [showTokenNameError, setTokenNameError] = useState(false)
     const [selectedPlaygroundTab, setSelectedPlaygroundTab] = useState<string>(PLAYGROUND_TAB_LIST[0].key)
     const [selectedRequestBodyTab, setRequestBodyPlaygroundTab] = useState<string>(REQUEST_BODY_TAB_LIST[0].key)
     const [webhookResponse, setWebhookResponse] = useState<Object>(null)
-    const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
     const [generatedAPIToken, setGeneratedAPIToken] = useState<string>(null)
-    const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(undefined)
+    const [selectedTokenTab, setSelectedTokenTab] = useState<string>(TOKEN_TAB_LIST[0].key)
     const [showTokenSection, setShowTokenSection] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
     const [samplePayload, setSamplePayload] = useState<any>(null)
@@ -101,6 +99,8 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const [tryoutAPIToken, setTryoutAPIToken] = useState<string>(null)
     const [showTryoutAPITokenError, setTryoutAPITokenError] = useState(false)
     const [webhookDetails, setWebhookDetails] = useState<WebhookDetailsType>(null)
+    const [selectedToken, setSelectedToken] = useState<TokenListOptionsType>(null)
+    const [tokenList, setTokenList] = useState<TokenListOptionsType[]>(null)
     const [selectedSchema, setSelectedSchema] = useState<string>('')
     const [errorInGetData, setErrorInGetData] = useState(false)
     const [copyToClipboardPromise, setCopyToClipboardPromise] = useState<ReturnType<typeof copyToClipboard>>(null)
@@ -200,9 +200,12 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 const sortedResult =
                     result
                         ?.sort((a, b) => a['name'].localeCompare(b['name']))
-                        .map((tokenData) => {
-                            return { label: tokenData.name, value: tokenData.id, ...tokenData }
-                        }) || []
+                        .map((tokenData) => ({
+                            ...tokenData,
+                            label: tokenData.name,
+                            value: tokenData.id.toString(),
+                            description: 'Has access',
+                        })) || []
                 setTokenList(sortedResult)
             }
             setLoader(false)
@@ -212,6 +215,9 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
             setErrorInGetData(true)
         }
     }
+
+    const hideApiToken = !tokenList?.[0]?.token
+
     const generateToken = async (): Promise<void> => {
         if (!tokenName) {
             setTokenNameError(true)
@@ -229,6 +235,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 const userPermissionPayload = createUserPermissionPayload({
                     id: result.userId,
                     userIdentifier: result.userIdentifier,
+                    hideApiToken: result.hideApiToken,
                     userRoleGroups: [],
                     serverMode: SERVER_MODE.FULL,
                     directPermission: [],
@@ -379,42 +386,31 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-    const renderSelectedToken = (titlePrefix: string, token: string): JSX.Element => {
-        return (
-            <div>
-                <div className="cn-7 mt-16 mb-8 fs-13">{titlePrefix} API token</div>
-                <div className="fs-13 font-roboto flexbox dc__word-break pl-8-imp" data-testid="generated-api-token">
-                    {token}
-                    <div className="flex pl-4">
-                        <ClipboardButton content={token} />
-                    </div>
-                </div>
-            </div>
-        )
+    const handleCopyToClipboard = async ({ e, token }: { e: React.MouseEvent; token: string }) => {
+        stopPropagation(e)
+        setCopyToClipboardPromise(copyToClipboard(token))
     }
 
-    const renderSelectTokenSection = (): JSX.Element => {
-        const handleSelectedTokenChange = (selectedToken): void => {
-            setSelectedToken(selectedToken)
-        }
-
+    const renderSelectedToken = (token: string): JSX.Element => {
         return (
-            <>
-                <div className="w-400 h-32 mt-16">
-                    <SelectPicker
-                        inputId="select-token"
-                        name="select-token"
-                        classNamePrefix="select-token"
-                        placeholder="Select API token"
-                        isClearable={false}
-                        options={getWebhookTokenListOptions(tokenList)}
-                        value={selectedToken}
-                        onChange={handleSelectedTokenChange}
-                        isSearchable={false}
-                    />
-                </div>
-                {selectedToken?.value && renderSelectedToken('Selected', selectedToken.token)}
-            </>
+            <div className="mt-16">
+                <InfoBlock
+                    heading={getApiTokenHeader(hideApiToken)}
+                    description={
+                        <div className="fs-13 font-roboto flexbox dc__word-break" data-testid="generated-api-token">
+                            {token}
+                        </div>
+                    }
+                    buttonProps={{
+                        text: 'Copy',
+                        startIcon: <ClipboardButton content={token} copyToClipboardPromise={copyToClipboardPromise} />,
+                        dataTestId: 'copy-generated-api-token',
+                        variant: ButtonVariantType.text,
+                        onClick: (e) => handleCopyToClipboard({ e, token }),
+                    }}
+                    variant="success"
+                />
+            </div>
         )
     }
 
@@ -428,7 +424,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderGenerateTokenSection = (): JSX.Element => {
         return (
             <div className="flexbox-col dc__gap-16">
-                <div className="mt-16">
+                <div className="mt-8">
                     <CustomInput
                         placeholder="Enter token name"
                         name="token-name"
@@ -437,9 +433,10 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         onChange={handleTokenNameChange}
                         disabled={!!generatedAPIToken}
                         error={showTokenNameError && GENERATE_TOKEN_NAME_VALIDATION}
-                        helperText="An API token with the required permissions will be auto-generated."
+                        helperText="An API token with the required permissions will be generated."
+                        required
                     />
-                    {generatedAPIToken && renderSelectedToken('Generated', generatedAPIToken)}
+                    {generatedAPIToken && renderSelectedToken(generatedAPIToken)}
                 </div>
                 {!generatedAPIToken && (
                     <Button
@@ -451,6 +448,47 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                         isLoading={generateTokenLoader}
                     />
                 )}
+            </div>
+        )
+    }
+
+    const handleSelectedTokenChange = (selectedToken): void => {
+        setSelectedToken(selectedToken)
+    }
+
+    const renderSelectTokenSection = (): JSX.Element => (
+        <>
+            <div className="w-400 h-32 mt-16">
+                <SelectPicker
+                    inputId="select-token"
+                    name="select-token"
+                    classNamePrefix="select-token"
+                    placeholder="Select API token"
+                    isClearable={false}
+                    options={tokenList}
+                    value={selectedToken}
+                    onChange={handleSelectedTokenChange}
+                    isSearchable={false}
+                />
+            </div>
+            {selectedToken?.name && renderSelectedToken(selectedToken.token)}
+        </>
+    )
+
+    const renderGeneratedTokenDetails = () => {
+        if (hideApiToken) {
+            return (
+                <div className="cn-9 fs-13 mb-8">
+                    <span className="fs-13 lh-1-5 fw-6">{GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS}</span>
+                    {renderGenerateTokenSection()}
+                </div>
+            )
+        }
+        return (
+            <div>
+                {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
+                {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
+                {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
             </div>
         )
     }
@@ -471,14 +509,14 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                 dataTestId="select-or-generate-token"
                 variant={ButtonVariantType.text}
                 onClick={toggleTokenSection}
-                text="Select or auto-generate token with required permissions"
+                text={
+                    hideApiToken
+                        ? GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS
+                        : SELECT_AUTO_GENERATE_TOKEN_WITH_REQUIRED_PERMISSIONS
+                }
             />
         ) : (
-            <div>
-                {generateTabHeader(TOKEN_TAB_LIST, selectedTokenTab, setSelectedTokenTab)}
-                {selectedTokenTab === TOKEN_TAB_LIST[0].key && renderSelectTokenSection()}
-                {selectedTokenTab === TOKEN_TAB_LIST[1].key && renderGenerateTokenSection()}
-            </div>
+            renderGeneratedTokenDetails()
         )
     }
 
@@ -821,19 +859,23 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderTryoutActionSection = (): JSX.Element => {
         return (
             <div className="flex left mt-20">
-                <ButtonWithLoader
-                    rootClassName="cta h-28 flex mr-8"
+                <Button
+                    dataTestId="execute-token"
                     onClick={executeWebhook}
+                    text="Execute"
+                    startIcon={<Icon name="ic-play-outline" color="N0" size={18} />}
                     isLoading={webhookExecutionLoader}
-                >
-                    <PlayButton className="icon-dim-18 mr-8" />
-                    Execute
-                </ButtonWithLoader>
+                    size={ComponentSizeType.small}
+                />
                 {webhookResponse && (
-                    <button className="cta cancel h-28 flex" onClick={clearWebhookResponse}>
-                        <Close className="icon-dim-18 mr-8" />
-                        Clear
-                    </button>
+                    <Button
+                        dataTestId="clear-response"
+                        onClick={clearWebhookResponse}
+                        text="Clear"
+                        startIcon={<Icon name="ic-close-large" color="N0" size={18} />}
+                        size={ComponentSizeType.small}
+                        variant={ButtonVariantType.secondary}
+                    />
                 )}
             </div>
         )
@@ -870,9 +912,15 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         return (
             <div className="flex flex-align-center flex-justify dc__border-bottom bg__primary pt-16 pr-20 pb-16 pl-20">
                 <h2 className="fs-16 fw-6 lh-1-43 m-0">Webhook Details</h2>
-                <button type="button" className="dc__transparent flex icon-dim-24" onClick={closeWebhook}>
-                    <Close className="icon-dim-24" />
-                </button>
+                <Button
+                    dataTestId="close-webhook-details-modal"
+                    icon={<Icon name="ic-close-large" color={null} />}
+                    ariaLabel="Close"
+                    showAriaLabelInTippy={false}
+                    onClick={closeWebhook}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.negativeGrey}
+                />
             </div>
         )
     }
