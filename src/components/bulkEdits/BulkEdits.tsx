@@ -354,7 +354,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         />
                     </div>
                     <div
-                        className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1"
+                        className="cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1"
                         data-testid="output-message"
                     >
                         {this.renderOutputContent()}
@@ -371,13 +371,25 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             return <Progressing pageLoader />
         }
 
-        return outputResult ? (
-            <div>
+        if (!outputResult) {
+            return (
+                <GenericSectionErrorState
+                    useInfoIcon
+                    title="Nothing to show yet"
+                    subTitle="Enter a valid payload and click Run to see the operation result."
+                    description=""
+                    rootClassName="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <div className="bulk-output-body">
                 {renderConfigMapOutput(outputResult.configMap)}
                 {renderDeploymentTemplateOutput(outputResult.deploymentTemplate)}
                 {renderSecretOutput(outputResult.secret)}
             </div>
-        ) : null
+        )
     }
 
     renderConfigMapImpObj = () => {
@@ -467,14 +479,24 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             return <Progressing pageLoader />
         }
 
-        return impactedObjects ? (
-            <div>
+        if (!impactedObjects) {
+            return (
+                <GenericSectionErrorState
+                    useInfoIcon
+                    title="Nothing to show yet"
+                    subTitle="Enter a valid payload and click Show Impacted Objects to see which applications will be affected."
+                    description=""
+                    rootClassName="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <div className="bulk-output-body">
                 {this.renderConfigMapImpObj()}
                 {this.renderDeploymentTemplateImpObj()}
                 {this.renderSecretImpObj()}
             </div>
-        ) : (
-            ''
         )
     }
 
