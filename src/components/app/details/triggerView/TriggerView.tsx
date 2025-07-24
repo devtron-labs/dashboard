@@ -29,12 +29,11 @@ import {
     getEnvironmentListMinPublic,
     DocLink,
     DEFAULT_ENV,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { withRouter, Route, Switch } from 'react-router-dom'
-import {
-    getWorkflowStatus,
-} from '../../service'
+import { getWorkflowStatus } from '../../service'
 import {
     getCDPipelineURL,
     importComponentFromFELibrary,
@@ -52,12 +51,8 @@ import { getHostURLConfiguration } from '../../../../services/service'
 import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { TriggerViewContext } from './config'
 import { TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
-import {
-    APP_DETAILS,
-} from '../../../../config/constantMessaging'
-import {
-    processWorkflowStatuses,
-} from '../../../ApplicationGroup/AppGroup.utils'
+import { APP_DETAILS } from '../../../../config/constantMessaging'
+import { processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.utils'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
@@ -155,86 +150,90 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
             .catch((error) => {
                 showError(error)
-            }).finally(() => {
+            })
+            .finally(() => {
                 this.setState({ isEnvListLoading: false })
             })
     }
 
-    getWorkflows = (isFromOnMount?: boolean) => {
-        getTriggerWorkflows(
-            this.props.match.params.appId,
-            !this.props.isJobView,
-            this.props.isJobView,
-            this.props.filteredEnvIds,
-        )
-            .then((result) => {
-                const _filteredCIPipelines = result.filteredCIPipelines || []
-                const workflows = result.workflows || []
-                this.setState({ workflows, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
-                    this.getWorkflowStatus()
-                    if (isFromOnMount) {
-                        if (ApprovalMaterialModal) {
-                            if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
-                                const searchParams = new URLSearchParams(this.props.location.search)
-                                const nodeId = searchParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)
-                                this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                            }
-                        }
+    getWorkflows = async (isFromOnMount?: boolean): Promise<WorkflowType[]> => {
+        try {
+            const result = await getTriggerWorkflows(
+                this.props.match.params.appId,
+                !this.props.isJobView,
+                this.props.isJobView,
+                this.props.filteredEnvIds,
+            )
 
-                        if (this.props.location.search.includes('rollback-node')) {
+            const _filteredCIPipelines = result.filteredCIPipelines || []
+            const workflows = result.workflows || []
+            this.setState({ workflows, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
+                this.getWorkflowStatus()
+                if (isFromOnMount) {
+                    if (ApprovalMaterialModal) {
+                        if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
                             const searchParams = new URLSearchParams(this.props.location.search)
-                            const nodeId = Number(searchParams.get('rollback-node'))
-                            if (!isNaN(nodeId)) {
-                                this.onClickRollbackMaterial(nodeId)
-                            } else {
-                                ToastManager.showToast({
-                                    variant: ToastVariantType.error,
-                                    description: 'Invalid node id',
-                                })
-                                this.props.history.push({
-                                    search: '',
-                                })
-                            }
-                        } else if (this.props.location.search.includes('cd-node')) {
-                            const searchParams = new URLSearchParams(this.props.location.search)
-                            const nodeId = Number(searchParams.get('cd-node'))
-                            const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
-
-                            if (
-                                nodeType !== DeploymentNodeType.CD &&
-                                nodeType !== DeploymentNodeType.PRECD &&
-                                nodeType !== DeploymentNodeType.POSTCD
-                            ) {
-                                ToastManager.showToast({
-                                    variant: ToastVariantType.error,
-                                    description: 'Invalid node type',
-                                })
-                                this.props.history.push({
-                                    search: '',
-                                })
-                            } else if (!isNaN(nodeId)) {
-                                this.onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
-                            } else {
-                                ToastManager.showToast({
-                                    variant: ToastVariantType.error,
-                                    description: 'Invalid node id',
-                                })
-                                this.props.history.push({
-                                    search: '',
-                                })
-                            }
+                            const nodeId = searchParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)
+                            this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
                         }
                     }
-                    this.timerRef && clearInterval(this.timerRef)
-                    this.timerRef = setInterval(() => {
-                        this.getWorkflowStatus()
-                    }, 30000)
-                })
+
+                    if (this.props.location.search.includes('rollback-node')) {
+                        const searchParams = new URLSearchParams(this.props.location.search)
+                        const nodeId = Number(searchParams.get('rollback-node'))
+                        if (!isNaN(nodeId)) {
+                            this.onClickRollbackMaterial(nodeId)
+                        } else {
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: 'Invalid node id',
+                            })
+                            this.props.history.push({
+                                search: '',
+                            })
+                        }
+                    } else if (this.props.location.search.includes('cd-node')) {
+                        const searchParams = new URLSearchParams(this.props.location.search)
+                        const nodeId = Number(searchParams.get('cd-node'))
+                        const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
+
+                        if (
+                            nodeType !== DeploymentNodeType.CD &&
+                            nodeType !== DeploymentNodeType.PRECD &&
+                            nodeType !== DeploymentNodeType.POSTCD
+                        ) {
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: 'Invalid node type',
+                            })
+                            this.props.history.push({
+                                search: '',
+                            })
+                        } else if (!isNaN(nodeId)) {
+                            this.onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
+                        } else {
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: 'Invalid node id',
+                            })
+                            this.props.history.push({
+                                search: '',
+                            })
+                        }
+                    }
+                }
+                this.timerRef && clearInterval(this.timerRef)
+                this.timerRef = setInterval(() => {
+                    this.getWorkflowStatus()
+                }, 30000)
             })
-            .catch((errors: ServerErrors) => {
-                showError(errors)
-                this.setState({ code: errors.code, view: ViewType.ERROR })
-            })
+
+            return workflows
+        } catch (errors) {
+            showError(errors)
+            this.setState({ code: errors.code, view: ViewType.ERROR })
+            return this.state.workflows
+        }
     }
 
     getHostURLConfig() {

@@ -502,9 +502,7 @@ const GitInfoMaterial = ({
                                 alwaysShowTippyOnHover
                                 interactive
                             >
-                                <span className="dc__ellipsis-right fs-13 lh-20 fw-6 cn-9">
-                                    {selectedMaterial.value}
-                                </span>
+                                <span className="dc__truncate fs-13 lh-20 fw-6 cn-9">{selectedMaterial.value}</span>
                             </Tooltip>
                         </span>
                     </ConditionalWrap>
@@ -610,7 +608,7 @@ const GitInfoMaterial = ({
                         imgSrc={externalCiImg}
                         title={`${selectedApp.name}  ${BULK_CI_MESSAGING.webhookCI.title}`}
                         subTitle={BULK_CI_MESSAGING.webhookCI.subTitle}
-                        rootClassName=""
+                        rootClassName="bg__tertiary"
                     />
                 )
             }
@@ -623,7 +621,7 @@ const GitInfoMaterial = ({
                         subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
                         link={`${URLS.APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
                         linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
-                        rootClassName=""
+                        rootClassName="bg__tertiary"
                     />
                 )
             }
@@ -634,6 +632,7 @@ const GitInfoMaterial = ({
                         title={`${BULK_CI_MESSAGING.linkedCD.title(selectedApp.node.title)}`}
                         subTitle={BULK_CI_MESSAGING.linkedCD.subTitle(selectedApp.node.title)}
                         image={linkedCDBuildCIImg}
+                        classname="bg__tertiary"
                     />
                 )
             }

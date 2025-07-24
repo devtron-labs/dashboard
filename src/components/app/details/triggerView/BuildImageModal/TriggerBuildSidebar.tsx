@@ -91,7 +91,7 @@ const TriggerBuildSidebar = ({
         <div
             role="button"
             tabIndex={0}
-            className={`pt-12 dc__tab-focus ${appDetails.appId === appId ? 'pb-12' : ''}`}
+            className={`pt-12 dc__tab-focus ${appDetails.appId === appId && getCanNodeHaveMaterial(appDetails.node) ? 'pb-12' : ''}`}
             onClick={getHandleAppChange(appDetails.appId)}
         >
             <span className="dc__word-break fw-6 fs-13 cn-9">{appDetails.name}</span>
@@ -104,7 +104,9 @@ const TriggerBuildSidebar = ({
             {appDetails.appId !== appId && !!getErrorMessageFromAppDetails(appDetails) && (
                 <span className="flexbox cr-5 fw-4 fs-12 dc__gap-4">
                     <Icon name="ic-error" size={20} color={null} />
-                    <span className="dc__block dc__word-break lh-20">{getErrorMessageFromAppDetails(appDetails)}</span>
+                    <span className="dc__block dc__word-break lh-20 dc__truncate--clamp-6">
+                        {getErrorMessageFromAppDetails(appDetails)}
+                    </span>
                 </span>
             )}
             {appDetails.node?.pluginBlockState &&
@@ -203,7 +205,7 @@ const TriggerBuildSidebar = ({
     }
 
     return (
-        <div className="material-list dc__overflow-hidden flexbox-col flex-grow-1 mh-0 border__primary--right">
+        <div className="material-list dc__overflow-hidden flexbox-col flex-grow-1 mh-0">
             {RuntimeParamTabs ? (
                 <div className="flex pt-12 pb-12 pl-16 pr-16 dc__gap-4 dc__border-bottom">
                     <RuntimeParamTabs

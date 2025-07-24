@@ -13,14 +13,21 @@ import { NO_TASKS_CONFIGURED_ERROR } from '@Config/constantMessaging'
 
 import { GetCIMaterialsProps, TriggerBuildProps } from './types'
 
-export const triggerBuild = async ({ payload, redirectToCIPipeline }: TriggerBuildProps) => {
+export const triggerBuild = async ({ payload, redirectToCIPipeline, showToast = true }: TriggerBuildProps) => {
     try {
         await triggerCINode(payload)
-        ToastManager.showToast({
-            variant: ToastVariantType.success,
-            description: 'Pipeline Triggered',
-        })
+
+        if (showToast) {
+            ToastManager.showToast({
+                variant: ToastVariantType.success,
+                description: 'Pipeline Triggered',
+            })
+        }
     } catch (errors) {
+        if (!showToast) {
+            throw errors
+        }
+
         if (errors.code === API_STATUS_CODES.PERMISSION_DENIED) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,

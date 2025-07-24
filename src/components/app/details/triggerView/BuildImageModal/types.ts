@@ -56,7 +56,7 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'isJobView'> & {
     runtimeParams: RuntimePluginVariables[]
     handleDisplayWebhookModal: () => void
     selectedCIPipeline: TriggerViewState['filteredCIPipelines'][number]
-    handleReloadWithWorkflows: () => void
+    handleReloadWithWorkflows: () => Promise<void>
     appId: number
     /**
      * Only required for isJobView
@@ -124,6 +124,10 @@ export interface TriggerBuildProps {
      * Only need in case of job
      */
     redirectToCIPipeline?: () => void
+    /**
+     * @default true
+     */
+    showToast?: boolean
 }
 
 export interface GetCIMaterialsProps extends Pick<APIOptions, 'abortControllerRef'> {

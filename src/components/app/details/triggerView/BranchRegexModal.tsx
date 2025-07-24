@@ -134,8 +134,8 @@ const BranchRegexModal = ({
                 isRegexMaterial: true,
                 isTemplateView: false,
             })
+            await handleReload()
             onCloseBranchRegexModal()
-            handleReload()
         } catch (error) {
             showError(error)
         } finally {

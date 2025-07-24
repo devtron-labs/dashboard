@@ -263,7 +263,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         })
     }
 
-    const getWorkflowsData = async (): Promise<void> => {
+    const getWorkflowsData = async (): Promise<WorkflowType[]> => {
         try {
             const { workflows: _workflows, filteredCIPipelines } = await getWorkflows(envId, filteredAppIds)
             if (processDeploymentWindowStateAppGroup && _workflows.length) {
@@ -276,6 +276,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             setPageViewType(ViewType.FORM)
             getWorkflowStatusData(_workflows)
             processFilteredData(_workflows)
+
+            return _workflows
         } catch (error) {
             showError(error)
             setErrorCode(error.code)

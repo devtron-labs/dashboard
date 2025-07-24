@@ -24,6 +24,7 @@ import {
     useAsync,
     usePrompt,
     WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
@@ -84,16 +85,21 @@ const BulkBuildImageModal = ({
 
     const initialDataAbortControllerRef = useRef<AbortController>(new AbortController())
 
-    const selectedWorkflows = workflows.filter(
-        (workflow) =>
-            workflow.isSelected &&
-            workflow.nodes.some((node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK),
-    )
-
     const [numberOfAppsLoading, setNumberOfAppsLoading] = useState<number>(0)
 
     // Returns map of appId to BulkCIDetailType
-    const getInitialAppList = async (appId?: number): Promise<Record<number, BulkCIDetailType>> => {
+    const getInitialAppList = async (
+        appId?: number,
+        newWorkflows: WorkflowType[] = workflows,
+    ): Promise<Record<number, BulkCIDetailType>> => {
+        const selectedWorkflows = newWorkflows.filter(
+            (workflow) =>
+                workflow.isSelected &&
+                workflow.nodes.some(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                ),
+        )
+
         const validWorkflows = selectedWorkflows.filter((workflow) => !appId || workflow.appId === appId)
 
         const { ciMaterialPromiseList, runtimeParamsPromiseList } = getBulkCIDataPromiseGetterList(
@@ -134,13 +140,13 @@ const BulkBuildImageModal = ({
 
     const selectedAppId = selectedAppIdState ?? sortedAppList[0]?.appId ?? null
 
-    const reloadSelectedAppMaterialList = async () => {
+    const reloadSelectedAppMaterialList = async (newWorkflows: WorkflowType[] = workflows) => {
         try {
             setIsLoadingSingleAppInfoMap(true)
             initialDataAbortControllerRef.current.abort()
             initialDataAbortControllerRef.current = new AbortController()
             // Will also handle error state
-            const currentAppInfo = await getInitialAppList(selectedAppId)
+            const currentAppInfo = await getInitialAppList(selectedAppId, newWorkflows)
             setAppInfoMapRes((prevAppInfoMapRes) => {
                 const updatedAppInfoMap = structuredClone(prevAppInfoMapRes)
                 updatedAppInfoMap[selectedAppId] = currentAppInfo[selectedAppId]
@@ -155,8 +161,8 @@ const BulkBuildImageModal = ({
 
     const handleReloadSelectedMaterialWithWorkflows = async () => {
         try {
-            await reloadSelectedAppMaterialList()
-            reloadWorkflows()
+            const newWorkflows = await reloadWorkflows()
+            await reloadSelectedAppMaterialList(newWorkflows)
         } catch (error) {
             showError(error)
         }
@@ -221,7 +227,6 @@ const BulkBuildImageModal = ({
         }
 
         handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCITriggered)
-        setIsBuildTriggerLoading(true)
 
         const {
             promiseList,
@@ -234,10 +239,11 @@ const BulkBuildImageModal = ({
                 variant: ToastVariantType.error,
                 description: 'No valid CI pipeline found',
             })
-            setIsBuildTriggerLoading(false)
             return
         }
 
+        setIsBuildTriggerLoading(true)
+        setNumberOfAppsLoading(promiseList.length + newResourceList.length)
         try {
             const responseArray = await ApiQueuingWithBatch(promiseList)
 
@@ -271,6 +277,7 @@ const BulkBuildImageModal = ({
             // Do nothing
         } finally {
             setIsBuildTriggerLoading(false)
+            setNumberOfAppsLoading(0)
         }
     }
 
@@ -454,20 +461,18 @@ const BulkBuildImageModal = ({
                     onClick={stopPropagation}
                 >
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                        <BuildImageHeader
+                            showWebhookModal={showWebhookModal}
+                            handleWebhookModalBack={handleWebhookModalBack}
+                            pipelineName={appInfoMap?.[selectedAppId]?.node?.title}
+                            handleClose={handleClose}
+                            isBulkTrigger
+                        />
+
                         {responseList.length > 0 ? (
                             <TriggerResponseModalBody responseList={responseList} isLoading={isBuildTriggerLoading} />
                         ) : (
-                            <>
-                                <BuildImageHeader
-                                    showWebhookModal={showWebhookModal}
-                                    handleWebhookModalBack={handleWebhookModalBack}
-                                    pipelineName={appInfoMap?.[selectedAppId]?.node?.title}
-                                    handleClose={handleClose}
-                                    isBulkTrigger
-                                />
-
-                                <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
-                            </>
+                            <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                         )}
                     </div>
 

@@ -405,7 +405,7 @@ export type FilteredCIPipelineMapType = Map<number, TriggerViewState['filteredCI
 
 export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
     handleClose: () => void
-    reloadWorkflows: () => void
+    reloadWorkflows: () => Promise<WorkflowType[]>
     workflows: WorkflowType[]
     /**
      * If not present would extract from selected workflow
@@ -586,7 +586,7 @@ export interface BranchRegexModalProps {
     onCloseBranchRegexModal: () => void
     appId: number
     workflowId: string
-    handleReload: () => void
+    handleReload: () => Promise<void>
 }
 
 export interface TriggerViewDeploymentConfigType {

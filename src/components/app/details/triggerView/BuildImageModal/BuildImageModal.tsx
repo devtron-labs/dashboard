@@ -13,7 +13,7 @@ import {
     APIResponseHandler,
     Button,
     Checkbox,
-    CIPipelineNodeType,
+    CommonNodeAttr,
     ComponentSizeType,
     ConsequenceAction,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
@@ -80,12 +80,12 @@ const BuildImageModal = ({
     const [isBuildTriggerLoading, setIsBuildTriggerLoading] = useState<boolean>(false)
     const [showWebhookModal, setShowWebhookModal] = useState<boolean>(false)
 
+    const getIsItCurrentCINode = (node: CommonNodeAttr) => node.type === WorkflowNodeType.CI && +node.id === +ciNodeId
+
     // Workflows will be present since this modal is only opened when workflows are loaded
-    const selectedWorkflow = workflows.find((workflow) =>
-        workflow.nodes.some((node) => node.type === WorkflowNodeType.CI && +node.id === +ciNodeId),
-    )
+    const selectedWorkflow = workflows.find((workflow) => workflow.nodes.some(getIsItCurrentCINode))
     const workflowId = selectedWorkflow?.id
-    const ciNode = selectedWorkflow?.nodes.find((node) => node.type === CIPipelineNodeType.CI && node.id === ciNodeId)
+    const ciNode = selectedWorkflow?.nodes.find(getIsItCurrentCINode)
     const appId = appIdProp || selectedWorkflow?.appId
     const filteredCIPipelines = filteredCIPipelinesProp || filteredCIPipelineMap?.get(appId) || []
 
@@ -98,7 +98,7 @@ const BuildImageModal = ({
     const [areRuntimeParamsLoading, runtimeParams, runtimeParamsError, reloadRuntimeParams, setRuntimeParams] =
         useAsync<GitInfoMaterialProps['runtimeParams']>(
             () => getRuntimeParams(ciNodeId, true),
-            [ciNodeId, ciNode?.isTriggerBlocked],
+            [ciNodeId],
             !!ciNodeId && !ciNode?.isTriggerBlocked && !!getRuntimeParams,
         )
 
@@ -111,7 +111,7 @@ const BuildImageModal = ({
                 isCINodePresent: !!ciNode,
                 selectedWorkflow,
             }),
-        [ciNodeId, ciNode?.isTriggerBlocked],
+        [ciNodeId],
         !!ciNodeId && !ciNode?.isTriggerBlocked,
     )
 
@@ -119,7 +119,7 @@ const BuildImageModal = ({
 
     const [isLoadingBlobStorageModule, blobStorageModuleRes, , reloadBlobStorageModule] = useAsync(
         () => getModuleConfigured(ModuleNameMap.BLOB_STORAGE),
-        [ciNode?.isTriggerBlocked],
+        [],
         !ciNode?.isTriggerBlocked,
     )
 
@@ -135,15 +135,14 @@ const BuildImageModal = ({
         return () => materialListAbortControllerRef.current.abort()
     }, [])
 
-    const handleReload = () => {
-        reloadMaterialList()
-        reloadRuntimeParams()
-        reloadBlobStorageModule()
+    const handleReload = async () => {
+        await Promise.allSettled([reloadMaterialList(), reloadRuntimeParams(), reloadBlobStorageModule()])
     }
 
-    const handleReloadWithWorkflows = () => {
-        reloadWorkflows()
-        handleReload()
+    const handleReloadWithWorkflows = async () => {
+        await reloadWorkflows()
+        // Not passing new workflows since it is only used for ciConfiguredGitMaterialId, and name which should not change
+        await handleReload()
     }
 
     const toggleInvalidateCache = () => {
@@ -158,6 +157,7 @@ const BuildImageModal = ({
             return {
                 code: materialListError.code,
                 reload: handleReload,
+                on404Redirect: handleClose,
             }
         }
 
@@ -165,6 +165,7 @@ const BuildImageModal = ({
             return {
                 code: runtimeParamsError.code,
                 reload: handleReload,
+                on404Redirect: handleClose,
             }
         }
 
@@ -217,11 +218,10 @@ const BuildImageModal = ({
 
         try {
             await triggerBuild({ payload, redirectToCIPipeline })
+            setIsBuildTriggerLoading(false)
             reloadWorkflowStatus()
             handleClose()
         } catch {
-            // Do nothing
-        } finally {
             setIsBuildTriggerLoading(false)
         }
     }

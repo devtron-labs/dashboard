@@ -307,7 +307,7 @@ export const getTriggerCIPromiseListAndSkippedResources = (
             string
         >
 
-        return () => triggerBuild({ payload })
+        return () => triggerBuild({ payload, showToast: false })
     })
 
     return {
