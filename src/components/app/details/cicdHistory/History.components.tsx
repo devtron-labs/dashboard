@@ -21,7 +21,7 @@ import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in
 import AppNotDeployed from '../../../../assets/img/app-not-deployed.svg'
 import { EmptyViewType } from './types'
 
-export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyViewType) => {
+export const EmptyView = ({ imgSrc, title, subTitle, link, linkText, rootClassName = 'w-300 dc__align-reload-center' }: EmptyViewType) => {
     const EmptyViewButton = () => {
         return link ? (
             <NavLink to={link} className="cta cta--ci-details flex" target="_blank">
@@ -33,7 +33,7 @@ export const EmptyView = ({ imgSrc, title, subTitle, link, linkText }: EmptyView
     return (
         <GenericEmptyState
             image={imgSrc ?? AppNotDeployed}
-            classname="w-300 dc__text-center lh-1-4 dc__align-reload-center"
+            classname={`${rootClassName} dc__text-center lh-1-4`}
             title={title}
             subTitle={subTitle}
             isButtonAvailable

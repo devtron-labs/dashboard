@@ -82,6 +82,10 @@ export const EnvironmentList = ({
         return _selectedEnv
     }
 
+    const getIsOptionSelected = (option: EnvironmentWithSelectPickerType): boolean => {
+        return selectedEnv?.id === option.id
+    }
+
     const getEnvironmentSelectLabel = (): JSX.Element => {
         if (isBuildStage) {
             return <span>Execute tasks in environment</span>
@@ -107,6 +111,7 @@ export const EnvironmentList = ({
                     onChange={selectEnvironment}
                     size={ComponentSizeType.large}
                     variant={isBorderLess ? SelectPickerVariantType.COMPACT : SelectPickerVariantType.DEFAULT}
+                    isOptionSelected={getIsOptionSelected}
                 />
             </div>
         </div>

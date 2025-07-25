@@ -42,4 +42,8 @@ export interface EmptyViewType {
     subTitle: string
     link?: string
     linkText?: string
+    /**
+     * @default 'w-300 dc__align-reload-center'
+     */
+    rootClassName?: string
 }

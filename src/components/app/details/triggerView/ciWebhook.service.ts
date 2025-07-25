@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { get, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 import { TIME_STAMP_ORDER } from './Constants'
+import { WebhookPayloadType } from './types'
 
-export function getCIWebhookRes(pipelineMaterialId: number, timestampOrder = TIME_STAMP_ORDER.DESCENDING): Promise<any> {
+export function getCIWebhookRes(pipelineMaterialId: number, timestampOrder = TIME_STAMP_ORDER.DESCENDING): Promise<ResponseType<WebhookPayloadType>> {
     const URL = `app/ci-pipeline/webhook-payload/${pipelineMaterialId}?limit=1000&offset=0&timeSort=${timestampOrder}`
     return get(URL)
 }

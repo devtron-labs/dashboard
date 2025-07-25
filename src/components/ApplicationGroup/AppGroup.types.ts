@@ -22,6 +22,7 @@ import {
     AppInfoListType,
     ApprovalConfigDataType,
     CDModalTabType,
+    CIMaterialType,
     CommonNodeAttr,
     DeploymentNodeType,
     DeploymentStrategyTypeWithDefault,
@@ -32,13 +33,14 @@ import {
     PipelineIdsVsDeploymentStrategyMap,
     ResponseType,
     RuntimePluginVariables,
+    ServerErrors,
     UseUrlFiltersReturnType,
     WorkflowNodeType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
-import { CDMaterialProps, RuntimeParamsErrorState, WebhookPayloadType } from '@Components/app/details/triggerView/types'
+import { GitInfoMaterialProps } from '@Components/app/details/triggerView/BuildImageModal/types'
+import { CDMaterialProps, RuntimeParamsErrorState } from '@Components/app/details/triggerView/types'
 import {
     AppConfigState,
     EnvConfigurationsNavProps,
@@ -50,7 +52,6 @@ import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/sc
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
-    workFlowId: string
     appId: number
     name: string
     material?: any[]
@@ -58,20 +59,17 @@ interface BulkTriggerAppDetailType {
 }
 
 export interface BulkCIDetailType extends BulkTriggerAppDetailType {
-    ciPipelineName: string
-    ciPipelineId: string
-    isFirstTrigger: boolean
-    isCacheAvailable: boolean
-    isLinkedCI: boolean
-    isLinkedCD: boolean
-    title: string
-    isJobCI: boolean
-    isWebhookCI: boolean
-    parentAppId: number
-    parentCIPipelineId: number
+    workflowId: string
+    material: CIMaterialType[]
+    runtimeParams: RuntimePluginVariables[]
+    node: CommonNodeAttr
     errorMessage: string
-    hideSearchHeader: boolean
+    runtimeParamsInitialError: ServerErrors | null
+    materialInitialError: ServerErrors | null
     filteredCIPipelines: any
+    ciConfiguredGitMaterialId: WorkflowType['ciConfiguredGitMaterialId']
+    runtimeParamsErrorState: GitInfoMaterialProps['runtimeParamsErrorState']
+    ignoreCache: boolean
 }
 
 export interface BulkCDDetailTypeResponse {
@@ -83,6 +81,7 @@ export interface BulkCDDetailType
     extends BulkTriggerAppDetailType,
         Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>,
         Partial<Pick<CommonNodeAttr, 'showPluginWarning' | 'triggerBlockedInfo'>> {
+    workFlowId: string
     cdPipelineName?: string
     cdPipelineId?: string
     stageType?: DeploymentNodeType
@@ -128,22 +127,6 @@ interface BulkRuntimeParamsType {
     setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimePluginVariables[]>>>
     runtimeParamsErrorState: Record<string, RuntimeParamsErrorState>
     setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsErrorState>>>
-}
-
-export interface BulkCITriggerType extends BulkRuntimeParamsType {
-    appList: BulkCIDetailType[]
-    closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
-    onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
-    webhookPayloads: WebhookPayloadType
-    setWebhookPayloads: React.Dispatch<React.SetStateAction<WebhookPayloadType>>
-    isWebhookPayloadLoading: boolean
-    isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
-    responseList: ResponseRowType[]
-    isLoading: boolean
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    setPageViewType: React.Dispatch<React.SetStateAction<string>>
 }
 
 export interface BulkCDTriggerType extends BulkRuntimeParamsType {

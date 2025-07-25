@@ -30,15 +30,11 @@ import {
     PromiseAllStatusType,
     ApiQueuingWithBatch,
     APIOptions,
+    CIMaterialType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
-import {
-    AppDetails,
-    ArtifactsCiJob,
-    EditAppRequest,
-    AppMetaInfo,
-} from './types'
+import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
 export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
@@ -145,7 +141,7 @@ const processMaterialHistoryAndSelectionError = (material) => {
     return data
 }
 
-const processCIMaterialResponse = (response) => {
+const processCIMaterialResponse = (response): CIMaterialType[] => {
     if (Array.isArray(response?.result)) {
         const sortedCIMaterials = response.result.sort((a, b) => sortCallback('id', a, b))
         return sortedCIMaterials.map((material, index) => {
@@ -157,20 +153,27 @@ const processCIMaterialResponse = (response) => {
                 isMaterialLoading: false,
                 showAllCommits: false,
                 ...processMaterialHistoryAndSelectionError(material),
-            }
+            } satisfies CIMaterialType
         })
     }
 
     return []
 }
 
-export const getCIMaterialList = (params, abortSignal: AbortSignal) => {
+export const getCIMaterialList = (
+    params: {
+        pipelineId: string
+        materialId?: number
+        showExcluded?: boolean
+    },
+    abortControllerRef: APIOptions['abortControllerRef'],
+) => {
     let url = `${Routes.CI_CONFIG_GET}/${params.pipelineId}/material`
     if (params.materialId) {
         url += `/${params.materialId}${params.showExcluded ? '?showAll=true' : ''} `
     }
     return get(url, {
-        signal: abortSignal,
+        abortControllerRef,
     }).then((response) => {
         const materials = processCIMaterialResponse(response)
         return {
@@ -277,8 +280,8 @@ export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSign
     })
 }
 
-export function getGitMaterialByCommitHash(gitMaterialId: string, commitHash: string, abortSignal?: AbortSignal) {
-    return get(`${Routes.COMMIT_INFO}/${gitMaterialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
+export function getGitMaterialByCommitHash(materialId: string, commitHash: string, abortSignal?: AbortSignal) {
+    return get(`${Routes.COMMIT_INFO}/${materialId}/${commitHash}`, abortSignal ? { signal: abortSignal } : null)
 }
 
 export function getTriggerHistory(pipelineId, params) {
