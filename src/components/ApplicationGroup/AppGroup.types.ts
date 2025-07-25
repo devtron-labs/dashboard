@@ -216,11 +216,6 @@ export interface TriggerModalRowType {
     isVirtualEnv?: boolean
 }
 
-export interface WorkflowNodeSelectionType {
-    id: number
-    name: string
-    type: WorkflowNodeType
-}
 export interface WorkflowAppSelectionType {
     id: number
     name: string

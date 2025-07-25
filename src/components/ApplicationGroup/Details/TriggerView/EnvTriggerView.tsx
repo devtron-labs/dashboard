@@ -35,6 +35,7 @@ import {
     DeploymentStrategyTypeWithDefault,
     ErrorScreenManager,
     getStageTitle,
+    handleAnalyticsEvent,
     PipelineIdsVsDeploymentStrategyMap,
     PopupMenu,
     Progressing,
@@ -82,7 +83,6 @@ import {
     ResponseRowType,
     TriggerVirtualEnvResponseRowType,
     WorkflowAppSelectionType,
-    WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
 import { processWorkflowStatuses } from '../../AppGroup.utils'
 import {
@@ -98,7 +98,7 @@ import {
 import BulkCDTrigger from './BulkCDTrigger'
 import BulkSourceChange from './BulkSourceChange'
 import { RenderCDMaterialContentProps } from './types'
-import { getSelectedCDNode } from './utils'
+import { getSelectedCDNode, getSelectedNodeAndAppId, getSelectedNodeAndMeta } from './utils'
 
 import './EnvTriggerView.scss'
 
@@ -126,8 +126,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const match = useRouteMatch<CIMaterialRouterProps>()
     const { url } = useRouteMatch()
 
-    // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
-    const handledLocation = useRef(false)
     const abortControllerRef = useRef(new AbortController())
 
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
@@ -143,7 +141,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const [selectedAppList, setSelectedAppList] = useState<WorkflowAppSelectionType[]>([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [filteredWorkflows, setFilteredWorkflows] = useState<WorkflowType[]>([])
-    const [selectedCDNode, setSelectedCDNode] = useState<WorkflowNodeSelectionType>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
@@ -159,13 +156,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
     const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
-
-    useEffect(
-        () => () => {
-            handledLocation.current = false
-        },
-        [],
-    )
 
     useEffect(() => {
         if (envId) {
@@ -183,72 +173,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         getWorkflowsData()
     }
-
-    useEffect(() => {
-        if (!handledLocation.current && filteredWorkflows?.length) {
-            handledLocation.current = true
-            // Would have been better if filteredWorkflows had default value to null since we are using it as a flag
-            // URL Encoding for Bulk is not planned as of now
-            setShowBulkCDModal(false)
-            if (location.search.includes('approval-node')) {
-                const searchParams = new URLSearchParams(location.search)
-                const nodeId = Number(searchParams.get('approval-node'))
-                if (!isNaN(nodeId)) {
-                    onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node id',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                }
-            } else if (location.search.includes('rollback-node')) {
-                const searchParams = new URLSearchParams(location.search)
-                const nodeId = Number(searchParams.get('rollback-node'))
-                if (!isNaN(nodeId)) {
-                    onClickRollbackMaterial(nodeId)
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node id',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                }
-            } else if (location.search.includes('cd-node')) {
-                const searchParams = new URLSearchParams(location.search)
-                const nodeId = Number(searchParams.get('cd-node'))
-                const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
-
-                if (
-                    nodeType !== DeploymentNodeType.CD &&
-                    nodeType !== DeploymentNodeType.PRECD &&
-                    nodeType !== DeploymentNodeType.POSTCD
-                ) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node type',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                } else if (!isNaN(nodeId)) {
-                    onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node id',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                }
-            }
-        }
-    }, [filteredWorkflows])
 
     const preserveSelection = (_workflows: WorkflowType[]) => {
         if (!workflows || !_workflows) {
@@ -450,104 +374,33 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false): void => {
-        ReactGA.event(
-            isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked,
-        )
+    const onClickApprovalNode = (cdNodeId: number) => {
+        handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked)
 
-        let _workflowId
-        let _appID
-        let _selectedNode
+        const newParams = new URLSearchParams([
+            [TRIGGER_VIEW_PARAMS.APPROVAL_NODE, cdNodeId.toString()],
+            [TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL],
+        ])
+        history.push({ search: newParams.toString() })
+    }
 
-        // FIXME: This needs to be replicated in rollback, env group since we need cipipelineid as 0 in external case
-        const _workflows = [...filteredWorkflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (cdNodeId == node.id && node.type === nodeType) {
-                    // TODO: Ig not using this, can remove it
-                    if (node.type === WorkflowNodeType.CD) {
-                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
-                    }
-                    _selectedNode = node
-                    _workflowId = workflow.id
-                    _appID = workflow.appId
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
+    const onClickCDMaterial = (cdNodeId: number, nodeType: DeploymentNodeType) => {
+        handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked)
 
-        if (!_selectedNode) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Invalid node id',
-            })
-            history.push({
-                search: '',
-            })
-            return
-        }
-
-        setFilteredWorkflows(_workflows)
-        setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
-        setMaterialType(MATERIAL_TYPE.inputMaterialList)
-
-        const newParams = new URLSearchParams(location.search)
-        newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
-        if (!isApprovalNode) {
-            newParams.set('node-type', nodeType)
-        } else {
-            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
-            // If the current state is pending, then we should change the state to pending
-            const approvalState =
-                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
-                    ? TRIGGER_VIEW_PARAMS.PENDING
-                    : TRIGGER_VIEW_PARAMS.APPROVAL
-
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
-            newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
-            newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
-        }
+        const newParams = new URLSearchParams([
+            [TRIGGER_VIEW_PARAMS.CD_NODE, cdNodeId.toString()],
+            [TRIGGER_VIEW_PARAMS.NODE_TYPE, nodeType],
+        ])
         history.push({
             search: newParams.toString(),
         })
     }
 
+    // Assuming that rollback has only CD as nodeType
     const onClickRollbackMaterial = (cdNodeId: number) => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
+        handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
 
-        let _selectedNode
-
-        const _workflows = [...filteredWorkflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (node.type === 'CD' && +node.id == cdNodeId) {
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
-                    _selectedNode = node
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-
-        if (!_selectedNode) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Invalid node id',
-            })
-            history.push({
-                search: '',
-            })
-            return
-        }
-
-        setFilteredWorkflows(_workflows)
-        setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
-        setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
-        getWorkflowStatusData(_workflows)
-
-        const newParams = new URLSearchParams(location.search)
-        newParams.set('rollback-node', cdNodeId.toString())
+        const newParams = new URLSearchParams([[TRIGGER_VIEW_PARAMS.ROLLBACK_NODE, cdNodeId.toString()]])
         history.push({
             search: newParams.toString(),
         })
@@ -1186,8 +1039,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 materialType={materialType}
                 appId={appId}
                 envId={node?.environmentId}
-                pipelineId={selectedCDNode?.id}
-                stageType={DeploymentNodeType[selectedCDNode?.type]}
+                pipelineId={+node.id}
+                stageType={node.type as DeploymentNodeType}
                 envName={node?.environmentName}
                 closeCDModal={closeCDModal}
                 triggerType={node?.triggerType}
@@ -1207,32 +1060,22 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const renderCDMaterial = (): JSX.Element | null => {
-        if (!selectedCDNode?.id) {
-            return null
-        }
+        if (
+            location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
+            location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
+        ) {
 
-        if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
-            let node: CommonNodeAttr
-            let _appID
-            let selectedAppName: string
-            let workflowId: string
-            let selectedCINode: CommonNodeAttr
+            const { node, appId, workflowId, appName, selectedCINode } = getSelectedNodeAndMeta(filteredWorkflows, location.search)
 
-            if (selectedCDNode?.id) {
-                for (const _wf of filteredWorkflows) {
-                    node = _wf.nodes.find((el) => +el.id == selectedCDNode.id && el.type == selectedCDNode.type)
-                    if (node) {
-                        selectedCINode = _wf.nodes.find(
-                            (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                        )
-                        workflowId = _wf.id
-                        _appID = _wf.appId
-                        selectedAppName = _wf.name
-                        break
-                    }
-                }
+            if (!node?.id) {
+                return null
             }
-            const material = node?.[materialType] || []
+
+            const cdMaterialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
+                ? MATERIAL_TYPE.inputMaterialList
+                : MATERIAL_TYPE.rollbackMaterialList
+
+            const material = node[cdMaterialType] || []
 
             return (
                 <VisibleModal parentClassName="dc__overflow-hidden" close={closeCDModal}>
@@ -1256,8 +1099,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                         ) : (
                             renderCDMaterialContent({
                                 node,
-                                appId: _appID,
-                                selectedAppName,
+                                appId,
+                                selectedAppName: appName,
                                 workflowId,
                                 doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
                                 ciNodeId: selectedCINode?.id,
@@ -1273,16 +1116,11 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
-            let node: CommonNodeAttr
-            let _appID
-            if (selectedCDNode?.id) {
-                for (const _wf of filteredWorkflows) {
-                    node = _wf.nodes.find((el) => +el.id == selectedCDNode.id && el.type == selectedCDNode.type)
-                    if (node) {
-                        _appID = _wf.appId
-                        break
-                    }
-                }
+            const { node, appId } = getSelectedNodeAndAppId(filteredWorkflows, location.search)
+
+            if (!node?.id || !appId) {
+                showError('Invalid node id')
+                return null
             }
 
             return (
@@ -1290,10 +1128,10 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     isLoading={isCDLoading}
                     node={node ?? ({} as CommonNodeAttr)}
                     materialType={materialType}
-                    stageType={DeploymentNodeType[selectedCDNode?.type]}
+                    stageType={DeploymentNodeType.CD}
                     closeApprovalModal={closeApprovalModal}
-                    appId={_appID}
-                    pipelineId={selectedCDNode?.id}
+                    appId={appId}
+                    pipelineId={node.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
                     history={history}
@@ -1503,8 +1341,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                         onClickCDMaterial,
                         onClickRollbackMaterial,
                         reloadTriggerView,
-                        // TODO: Update below function
-                        onClickApprovalNode: () => {}
+                        onClickApprovalNode,
                     }}
                 >
                     {renderWorkflow()}

@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { CommonNodeAttr, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, DeploymentNodeType, WorkflowNodeType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
+import { getNodeIdAndTypeFromSearch } from '@Components/app/details/triggerView/TriggerView.utils'
 
 import { BulkCDDetailType } from '../../AppGroup.types'
 
@@ -62,3 +63,59 @@ export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[], f
     appList
         .map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))
         .filter(({ pipelineId }) => feasiblePipelineIds.has(pipelineId))
+
+export const getSelectedNodeAndMeta = (
+    workflows: WorkflowType[],
+    search: string,
+): { node: CommonNodeAttr; workflowId: string; appId: number; appName: string; selectedCINode: CommonNodeAttr } => {
+    const { cdNodeId, nodeType } = getNodeIdAndTypeFromSearch(search)
+
+    const result = workflows.reduce(
+        (acc, workflow) => {
+            if (acc.node) return acc
+            const foundNode = workflow.nodes.find((node) => cdNodeId === node.id && node.type === nodeType)
+
+            if (foundNode) {
+                const selectedCINode = workflow.nodes.find(
+                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+                )
+                return {
+                    node: foundNode,
+                    workflowId: workflow.id,
+                    appId: workflow.appId,
+                    appName: workflow.name,
+                    selectedCINode,
+                }
+            }
+            return acc
+        },
+        { node: undefined, workflowId: undefined, appId: undefined, appName: undefined, selectedCINode: undefined },
+    )
+
+    return (
+        result || {
+            node: undefined,
+            workflowId: undefined,
+            appId: undefined,
+            appName: undefined,
+            selectedCINode: undefined,
+        }
+    )
+}
+
+export const getSelectedNodeAndAppId = (
+    workflows: WorkflowType[],
+    search: string,
+): { node: CommonNodeAttr; appId: number } => {
+    const { cdNodeId, nodeType } = getNodeIdAndTypeFromSearch(search)
+
+    const result = workflows.reduce(
+        (acc, workflow) => {
+            if (acc.node) return acc
+            const node = workflow.nodes.find((n) => n.id === cdNodeId && n.type === nodeType)
+            return node ? { node, appId: workflow.appId } : acc
+        },
+        { node: undefined, appId: undefined },
+    )
+    return result
+}

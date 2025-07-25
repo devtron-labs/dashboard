@@ -43,7 +43,7 @@ import {
 } from '../../../common'
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
-import { TriggerViewProps, TriggerViewState } from './types'
+import { MATERIAL_TYPE, TriggerViewProps, TriggerViewState } from './types'
 import CDMaterial from './cdMaterial'
 import { URLS, ViewType } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
@@ -246,7 +246,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         })
     }
 
-    // Assuming that rollback has only CD as nodeType
     onClickRollbackMaterial = (cdNodeId: number) => {
         handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
 
@@ -330,12 +329,13 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 this.state.workflows,
                 this.props.location.search,
             )
-            if (!cdNode) {
+            if (!cdNode.id) {
                 return null
             }
             const materialType = this.props.location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
-                ? 'inputMaterialList'
-                : 'rollbackMaterialList'
+                ? MATERIAL_TYPE.inputMaterialList
+                : MATERIAL_TYPE.rollbackMaterialList
+
             const material = cdNode[materialType] || []
 
             return (
@@ -372,7 +372,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         if (ApprovalMaterialModal && this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             const node = getSelectedNodeFromWorkflows(this.state.workflows, this.props.location.search)
 
-            if (!node) {
+            if (!node.id) {
                 return null
             }
 
@@ -380,7 +380,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 <ApprovalMaterialModal
                     isLoading={this.state.isLoading}
                     node={node}
-                    materialType="inputMaterialList"
+                    materialType={MATERIAL_TYPE.inputMaterialList}
                     stageType={node.type}
                     closeApprovalModal={this.closeApprovalModal}
                     appId={Number(this.props.match.params.appId)}
