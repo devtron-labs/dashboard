@@ -181,6 +181,7 @@ if (!window || !window._env_) {
         FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE: true,
         FEATURE_FLUX_DEPLOYMENTS_ENABLE: false,
         FEATURE_LINK_EXTERNAL_FLUX_ENABLE: false,
+        FEATURE_CANARY_ROLLOUT_PROGRESS_ENABLE: true,
     }
 }
 
