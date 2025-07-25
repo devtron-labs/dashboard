@@ -381,41 +381,39 @@ export const ClusterEnvironmentDrawer = ({
                             autoFocus={!!envId}
                             shouldTrim={false}
                         />
-                        {!isSelectedClusterVirtual && (
-                            <div className="flex left dc__gap-24 fs-13">
-                                <div className="dc__required-field cn-7">Type of Environment</div>
-                                <div className="flex left dc__gap-16">
-                                    <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
-                                        <input
-                                            id="env-production-checkbox"
-                                            data-testid="production"
-                                            type="radio"
-                                            checked={data.isProduction}
-                                            value="true"
-                                            {...register('isProduction', {
-                                                sanitizeFn: (value) => value === 'true',
-                                                noTrim: true,
-                                            })}
-                                        />
-                                        <span className="ml-10 fw-4 mt-4">Production</span>
-                                    </label>
-                                    <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
-                                        <input
-                                            id="env-non-production-checkbox"
-                                            data-testid="nonProduction"
-                                            type="radio"
-                                            checked={!data.isProduction}
-                                            value="false"
-                                            {...register('isProduction', {
-                                                sanitizeFn: (value) => value === 'true',
-                                                noTrim: true,
-                                            })}
-                                        />
-                                        <span className="ml-10 fw-4 mt-4">Non - Production</span>
-                                    </label>
-                                </div>
+                        <div className="flex left dc__gap-24 fs-13">
+                            <div className="dc__required-field cn-7">Type of Environment</div>
+                            <div className="flex left dc__gap-16">
+                                <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
+                                    <input
+                                        id="env-production-checkbox"
+                                        data-testid="production"
+                                        type="radio"
+                                        checked={data.isProduction}
+                                        value="true"
+                                        {...register('isProduction', {
+                                            sanitizeFn: (value) => value === 'true',
+                                            noTrim: true,
+                                        })}
+                                    />
+                                    <span className="ml-10 fw-4 mt-4">Production</span>
+                                </label>
+                                <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
+                                    <input
+                                        id="env-non-production-checkbox"
+                                        data-testid="nonProduction"
+                                        type="radio"
+                                        checked={!data.isProduction}
+                                        value="false"
+                                        {...register('isProduction', {
+                                            sanitizeFn: (value) => value === 'true',
+                                            noTrim: true,
+                                        })}
+                                    />
+                                    <span className="ml-10 fw-4 mt-4">Non - Production</span>
+                                </label>
                             </div>
-                        )}
+                        </div>
                         {AssignCategorySelect && (
                             <div className="w-250">
                                 <AssignCategorySelect
