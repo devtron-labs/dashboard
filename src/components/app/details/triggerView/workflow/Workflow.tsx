@@ -321,7 +321,7 @@ export class Workflow extends Component<WorkflowProps> {
     }
 
     onClickNodeEdge = (nodeId: number) => {
-        this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
+        this.context.onClickApprovalModal(nodeId)
         this.props.history.push({
             search: `${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${nodeId}`,
         })
