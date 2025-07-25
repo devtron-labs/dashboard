@@ -115,7 +115,7 @@ export const ClusterEnvironmentDrawer = ({
     )
 
     // FORM METHODS
-    const { data, errors, register, handleSubmit, trigger } = useForm<EnvironmentFormType>({
+    const { data, errors, register, handleSubmit, trigger, reset } = useForm<EnvironmentFormType>({
         initialValues: {
             clusterId: clusterId ?? null,
             envName: envName ?? '',
@@ -138,6 +138,7 @@ export const ClusterEnvironmentDrawer = ({
             setIsSelectedClusterVirtual(clusterDetails[0].isVirtualCluster)
             setClusterNamespaces(INITIAL_NAMESPACES)
             setNamespaceLabels(INITIAL_NAMESPACE_LABELS)
+            reset(data, { keepErrors: false })
         }
     }, [clusterDetails])
 
@@ -321,7 +322,7 @@ export const ClusterEnvironmentDrawer = ({
                 <div className="flexbox p-20 bg__secondary flex-grow-1 dc__overflow-auto">
                     <div className="flexbox-col dc__gap-16 bg__primary br-12 p-20 flex-grow-1 dc__h-fit-content">
                         <div className="flexbox dc__gap-8">
-                            <div className="w-200">
+                            <div className="w-250 dc__no-shrink">
                                 <SelectPicker
                                     inputId="create-env-select-cluster"
                                     label="Cluster"
@@ -342,6 +343,7 @@ export const ClusterEnvironmentDrawer = ({
                                     }
                                     error={errors.clusterId}
                                     size={ComponentSizeType.large}
+                                    fullWidth
                                 />
                             </div>
                             <span className="lh-36 fs-20 fw-4 cn-7 pt-26">/</span>
@@ -379,41 +381,39 @@ export const ClusterEnvironmentDrawer = ({
                             autoFocus={!!envId}
                             shouldTrim={false}
                         />
-                        {!isSelectedClusterVirtual && (
-                            <div className="flex left dc__gap-24 fs-13">
-                                <div className="dc__required-field cn-7">Type of Environment</div>
-                                <div className="flex left dc__gap-16">
-                                    <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
-                                        <input
-                                            id="env-production-checkbox"
-                                            data-testid="production"
-                                            type="radio"
-                                            checked={data.isProduction}
-                                            value="true"
-                                            {...register('isProduction', {
-                                                sanitizeFn: (value) => value === 'true',
-                                                noTrim: true,
-                                            })}
-                                        />
-                                        <span className="ml-10 fw-4 mt-4">Production</span>
-                                    </label>
-                                    <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
-                                        <input
-                                            id="env-non-production-checkbox"
-                                            data-testid="nonProduction"
-                                            type="radio"
-                                            checked={!data.isProduction}
-                                            value="false"
-                                            {...register('isProduction', {
-                                                sanitizeFn: (value) => value === 'true',
-                                                noTrim: true,
-                                            })}
-                                        />
-                                        <span className="ml-10 fw-4 mt-4">Non - Production</span>
-                                    </label>
-                                </div>
+                        <div className="flex left dc__gap-24 fs-13">
+                            <div className="dc__required-field cn-7">Type of Environment</div>
+                            <div className="flex left dc__gap-16">
+                                <label htmlFor="env-production-checkbox" className="flex cursor mb-0">
+                                    <input
+                                        id="env-production-checkbox"
+                                        data-testid="production"
+                                        type="radio"
+                                        checked={data.isProduction}
+                                        value="true"
+                                        {...register('isProduction', {
+                                            sanitizeFn: (value) => value === 'true',
+                                            noTrim: true,
+                                        })}
+                                    />
+                                    <span className="ml-10 fw-4 mt-4">Production</span>
+                                </label>
+                                <label htmlFor="env-non-production-checkbox" className="flex cursor mb-0">
+                                    <input
+                                        id="env-non-production-checkbox"
+                                        data-testid="nonProduction"
+                                        type="radio"
+                                        checked={!data.isProduction}
+                                        value="false"
+                                        {...register('isProduction', {
+                                            sanitizeFn: (value) => value === 'true',
+                                            noTrim: true,
+                                        })}
+                                    />
+                                    <span className="ml-10 fw-4 mt-4">Non - Production</span>
+                                </label>
                             </div>
-                        )}
+                        </div>
                         {AssignCategorySelect && (
                             <div className="w-250">
                                 <AssignCategorySelect
@@ -480,7 +480,7 @@ export const ClusterEnvironmentDrawer = ({
                 noValidate
             >
                 <div className="flexbox dc__align-items-center dc__content-space dc__border-bottom bg__primary py-12 px-20">
-                    <h3 className="m-0 fs-16 fw-6 lh-1-43 dc__truncate">{envId ? 'Edit' : 'Create'} Environment</h3>
+                    <h3 className="m-0 fs-16 fw-6 lh-1-43 cn-9 dc__truncate">{envId ? 'Edit' : 'Add'} Environment</h3>
                     <Button
                         dataTestId="close-env-modal"
                         ariaLabel="close-btn"
