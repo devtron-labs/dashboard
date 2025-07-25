@@ -465,6 +465,7 @@ export enum ManifestCodeEditorMode {
     EDIT = 'edit',
     APPLY_CHANGES = 'applyChanges',
     CANCEL = 'cancel',
+    'REVIEW' = 'review',
 }
 
 export type ManifestActionPropsType = Omit<
