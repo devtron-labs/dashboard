@@ -15,6 +15,8 @@
  */
 
 import React, { Component } from 'react'
+import { withRouter, Route, Switch } from 'react-router-dom'
+
 import {
     ServerErrors,
     showError,
@@ -24,15 +26,13 @@ import {
     VisibleModal,
     DeploymentNodeType,
     CommonNodeAttr,
-    ToastManager,
-    ToastVariantType,
     getEnvironmentListMinPublic,
     DocLink,
     DEFAULT_ENV,
+    handleAnalyticsEvent,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import ReactGA from 'react-ga4'
-import { withRouter, Route, Switch } from 'react-router-dom'
+
 import { getWorkflowStatus } from '../../service'
 import {
     getCDPipelineURL,
@@ -56,7 +56,7 @@ import { processWorkflowStatuses } from '../../../ApplicationGroup/AppGroup.util
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
-import { shouldRenderWebhookAddImageModal } from './TriggerView.utils'
+import { getSelectedNodeFromWorkflows, shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 import { BuildImageModal } from './BuildImageModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
@@ -78,10 +78,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             code: 0,
             view: ViewType.LOADING,
             workflows: [],
-            cdNodeId: 0,
             workflowId: 0,
-            nodeType: null,
-            materialType: '',
             isLoading: false,
             hostURLConfig: undefined,
             filteredCIPipelines: [],
@@ -96,7 +93,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             selectedWebhookNodeId: null,
             isEnvListLoading: false,
         }
-        this.onClickCDMaterial = this.onClickCDMaterial.bind(this)
         this.abortController = new AbortController()
         this.abortCIBuild = new AbortController()
     }
@@ -108,7 +104,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     componentDidMount() {
         this.getHostURLConfig()
-        this.getWorkflows(true)
+        this.getWorkflows()
         this.getEnvironments()
     }
 
@@ -156,7 +152,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             })
     }
 
-    getWorkflows = async (isFromOnMount?: boolean): Promise<WorkflowType[]> => {
+    getWorkflows = async (): Promise<WorkflowType[]> => {
         try {
             const result = await getTriggerWorkflows(
                 this.props.match.params.appId,
@@ -169,59 +165,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             const workflows = result.workflows || []
             this.setState({ workflows, view: ViewType.FORM, filteredCIPipelines: _filteredCIPipelines }, () => {
                 this.getWorkflowStatus()
-                if (isFromOnMount) {
-                    if (ApprovalMaterialModal) {
-                        if (this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
-                            const searchParams = new URLSearchParams(this.props.location.search)
-                            const nodeId = searchParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)
-                            this.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                        }
-                    }
-
-                    if (this.props.location.search.includes('rollback-node')) {
-                        const searchParams = new URLSearchParams(this.props.location.search)
-                        const nodeId = Number(searchParams.get('rollback-node'))
-                        if (!isNaN(nodeId)) {
-                            this.onClickRollbackMaterial(nodeId)
-                        } else {
-                            ToastManager.showToast({
-                                variant: ToastVariantType.error,
-                                description: 'Invalid node id',
-                            })
-                            this.props.history.push({
-                                search: '',
-                            })
-                        }
-                    } else if (this.props.location.search.includes('cd-node')) {
-                        const searchParams = new URLSearchParams(this.props.location.search)
-                        const nodeId = Number(searchParams.get('cd-node'))
-                        const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
-
-                        if (
-                            nodeType !== DeploymentNodeType.CD &&
-                            nodeType !== DeploymentNodeType.PRECD &&
-                            nodeType !== DeploymentNodeType.POSTCD
-                        ) {
-                            ToastManager.showToast({
-                                variant: ToastVariantType.error,
-                                description: 'Invalid node type',
-                            })
-                            this.props.history.push({
-                                search: '',
-                            })
-                        } else if (!isNaN(nodeId)) {
-                            this.onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
-                        } else {
-                            ToastManager.showToast({
-                                variant: ToastVariantType.error,
-                                description: 'Invalid node id',
-                            })
-                            this.props.history.push({
-                                search: '',
-                            })
-                        }
-                    }
-                }
                 this.timerRef && clearInterval(this.timerRef)
                 this.timerRef = setInterval(() => {
                     this.getWorkflowStatus()
@@ -241,7 +184,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
             .then((response) => {
                 this.setState({ hostURLConfig: response.result })
             })
-            .catch((error) => {})
+            .catch(() => {})
     }
 
     componentDidUpdate(prevProps) {
@@ -281,85 +224,33 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.props.history.push(`${this.props.match.url}${URLS.BUILD}/${ciNodeId}`)
     }
 
-    // TODO: Can also combine rollback and onClickCDMaterial
-    // Till then make sure that they are consistent
-    onClickCDMaterial(cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false) {
-        ReactGA.event(isApprovalNode ? TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked)
+    onClickApprovalNode = (cdNodeId: number) => {
+        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked)
 
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (cdNodeId == node.id && node.type === nodeType) {
-                    if (node.type === 'CD') {
-                        // TODO: Potential bug since removed, data was from api which is now in cdmaterials data.userApprovalConfig ?? workflow.approvalConfiguredIdsMap[cdNodeId]
-                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
-                    }
-                }
-                return node
-            })
+        const newParams = new URLSearchParams([
+            [TRIGGER_VIEW_PARAMS.APPROVAL_NODE, cdNodeId.toString()],
+            [TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL],
+        ])
+        this.props.history.push({ search: newParams.toString() })
+    }
 
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState({
-            workflows,
-            materialType: 'inputMaterialList',
-            cdNodeId,
-            nodeType,
-        })
+    onClickCDMaterial = (cdNodeId: number, nodeType: DeploymentNodeType) => {
+        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
 
-        const newParams = new URLSearchParams(this.props.location.search)
-        newParams.set(
-            isApprovalNode ? TRIGGER_VIEW_PARAMS.APPROVAL_NODE : TRIGGER_VIEW_PARAMS.CD_NODE,
-            cdNodeId.toString(),
-        )
-        if (!isApprovalNode) {
-            newParams.set('node-type', nodeType)
-        } else {
-            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
-            const approvalState =
-                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
-                    ? TRIGGER_VIEW_PARAMS.PENDING
-                    : TRIGGER_VIEW_PARAMS.APPROVAL
-
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
-            newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
-            newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
-        }
+        const newParams = new URLSearchParams([
+            [TRIGGER_VIEW_PARAMS.CD_NODE, cdNodeId.toString()],
+            [TRIGGER_VIEW_PARAMS.NODE_TYPE, nodeType],
+        ])
         this.props.history.push({
             search: newParams.toString(),
         })
     }
 
     // Assuming that rollback has only CD as nodeType
-    onClickRollbackMaterial = (cdNodeId: number, offset?: number, size?: number) => {
-        if (!offset && !size) {
-            ReactGA.event(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
-        }
+    onClickRollbackMaterial = (cdNodeId: number) => {
+        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
 
-        const workflows = [...this.state.workflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (node.type === 'CD' && +node.id == cdNodeId) {
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-        this.setState(
-            {
-                workflows,
-                materialType: 'rollbackMaterialList',
-                cdNodeId,
-                nodeType: 'CD',
-            },
-            () => {
-                this.getWorkflowStatus()
-            },
-        )
-
-        const newParams = new URLSearchParams(this.props.location.search)
-        newParams.set('rollback-node', cdNodeId.toString())
+        const newParams = new URLSearchParams([[TRIGGER_VIEW_PARAMS.ROLLBACK_NODE, cdNodeId.toString()]])
         this.props.history.push({
             search: newParams.toString(),
         })
@@ -393,25 +284,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ selectedWebhookNodeId: null })
     }
 
-    getCDNode = (): CommonNodeAttr => {
-        let node: CommonNodeAttr
-        if (this.state.cdNodeId) {
-            for (const _workflow of this.state.workflows) {
-                node = _workflow.nodes.find((el) => {
-                    // NOTE: cdNodeId is not a number here
-                    return +el.id == this.state.cdNodeId && el.type == this.state.nodeType
-                })
-
-                if (node) {
-                    break
-                }
-            }
-        }
-
-        return node ?? ({} as CommonNodeAttr)
-    }
-
-    renderCDMaterialContent = (cdNode: CommonNodeAttr) => {
+    renderCDMaterialContent = (cdNode: CommonNodeAttr, materialType: string) => {
         const selectedWorkflow = this.state.workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
         const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
         const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
@@ -426,10 +299,10 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
         return (
             <CDMaterial
-                materialType={this.state.materialType}
+                materialType={materialType}
                 appId={Number(this.props.match.params.appId)}
-                pipelineId={Number(this.state.cdNodeId)}
-                stageType={DeploymentNodeType[this.state.nodeType]}
+                pipelineId={Number(cdNode.id)}
+                stageType={cdNode.type as DeploymentNodeType}
                 envName={cdNode?.environmentName}
                 envId={cdNode?.environmentId}
                 closeCDModal={this.closeCDModal}
@@ -449,12 +322,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
     }
 
     renderCDMaterial() {
-        if (this.props.location.search.includes('cd-node') || this.props.location.search.includes('rollback-node')) {
-            const cdNode: CommonNodeAttr = this.getCDNode()
-            if (!cdNode.id) {
+        if (
+            this.props.location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
+            this.props.location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
+        ) {
+            const cdNode: CommonNodeAttr = getSelectedNodeFromWorkflows(
+                this.state.workflows,
+                this.props.location.search,
+            )
+            if (!cdNode) {
                 return null
             }
-            const material = cdNode[this.state.materialType] || []
+            const materialType = this.props.location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
+                ? 'inputMaterialList'
+                : 'rollbackMaterialList'
+            const material = cdNode[materialType] || []
 
             return (
                 <VisibleModal parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
@@ -476,7 +358,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                                 </div>
                             </>
                         ) : (
-                            this.renderCDMaterialContent(cdNode)
+                            this.renderCDMaterialContent(cdNode, materialType)
                         )}
                     </div>
                 </VisibleModal>
@@ -488,16 +370,21 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
 
     renderApprovalMaterial() {
         if (ApprovalMaterialModal && this.props.location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
-            const node: CommonNodeAttr = this.getCDNode()
+            const node = getSelectedNodeFromWorkflows(this.state.workflows, this.props.location.search)
+
+            if (!node) {
+                return null
+            }
+
             return (
                 <ApprovalMaterialModal
                     isLoading={this.state.isLoading}
                     node={node}
-                    materialType={this.state.materialType}
-                    stageType={DeploymentNodeType[this.state.nodeType]}
+                    materialType="inputMaterialList"
+                    stageType={node.type}
                     closeApprovalModal={this.closeApprovalModal}
                     appId={Number(this.props.match.params.appId)}
-                    pipelineId={this.state.cdNodeId}
+                    pipelineId={node.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node.connectingCiPipelineId}
                     history={this.props.history}
@@ -620,6 +507,7 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                         value={{
                             onClickCDMaterial: this.onClickCDMaterial,
                             onClickRollbackMaterial: this.onClickRollbackMaterial,
+                            onClickApprovalNode: this.onClickApprovalNode,
                             reloadTriggerView: this.reloadTriggerView,
                         }}
                     >

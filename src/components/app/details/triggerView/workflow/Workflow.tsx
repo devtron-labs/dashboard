@@ -35,6 +35,7 @@ import { WorkflowProps, TriggerViewContextType } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
 import { TriggerViewContext } from '../config'
+import { TRIGGER_VIEW_PARAMS } from '../Constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
@@ -322,7 +323,7 @@ export class Workflow extends Component<WorkflowProps> {
     onClickNodeEdge = (nodeId: number) => {
         this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
         this.props.history.push({
-            search: `approval-node=${nodeId}`,
+            search: `${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${nodeId}`,
         })
     }
 

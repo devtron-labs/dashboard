@@ -16,7 +16,14 @@
 
 import { useLocation } from 'react-router-dom'
 
-import { DeploymentHistoryDetail, DeploymentWithConfigType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CommonNodeAttr,
+    DeploymentHistoryDetail,
+    DeploymentNodeType,
+    DeploymentWithConfigType,
+    showError,
+    WorkflowType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 
@@ -190,3 +197,29 @@ export const shouldRenderWebhookAddImageModal = (location: ReturnType<typeof use
         location.pathname.includes(URLS.BUILD) ||
         location.pathname.includes(URLS.LINKED_CI_DETAILS)
     )
+
+export const getSelectedNodeFromWorkflows = (workflows: WorkflowType[], search: string): CommonNodeAttr => {
+    const searchParams = new URLSearchParams(search)
+    const cdNodeId =
+        searchParams.get(TRIGGER_VIEW_PARAMS.CD_NODE) ||
+        searchParams.get(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE) ||
+        searchParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)
+
+    if (!cdNodeId) {
+        showError('Could not find node')
+        return {} as CommonNodeAttr
+    }
+    const nodeType = searchParams.get(TRIGGER_VIEW_PARAMS.NODE_TYPE) ?? DeploymentNodeType.CD
+
+    // Use flatMap to flatten all nodes, then find the matching node
+    const allNodes = workflows.flatMap((workflow) => workflow.nodes)
+
+    const foundNode = allNodes.find((n) => cdNodeId === n.id && n.type === nodeType)
+
+    if (foundNode) {
+        return foundNode
+    }
+
+    showError('Could not find node')
+    return {} as CommonNodeAttr
+}

@@ -1503,6 +1503,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                         onClickCDMaterial,
                         onClickRollbackMaterial,
                         reloadTriggerView,
+                        // TODO: Update below function
+                        onClickApprovalNode: () => {}
                     }}
                 >
                     {renderWorkflow()}

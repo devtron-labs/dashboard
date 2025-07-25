@@ -22,9 +22,10 @@ import { importComponentFromFELibrary } from '@Components/common'
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag?: string) => {},
-    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
+    onClickCDMaterial: (cdNodeId: number, nodeType: DeploymentNodeType) => {},
+    onClickRollbackMaterial: (cdNodeId: number) => {},
     reloadTriggerView: () => {},
+    onClickApprovalNode: (cdNodeId: number) => {},
 })
 
 export enum WorkflowDimensionType {

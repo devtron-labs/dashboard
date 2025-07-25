@@ -336,8 +336,9 @@ export interface WorkflowProps
 }
 
 export interface TriggerViewContextType {
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
-    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
+    onClickCDMaterial: (cdNodeId: number, nodeType: DeploymentNodeType) => void
+    onClickApprovalNode: (cdNodeId: number) => void
+    onClickRollbackMaterial: (cdNodeId: number) => void
     reloadTriggerView: () => void
 }
 
@@ -381,9 +382,6 @@ export interface TriggerViewState {
     code: number
     view: string
     workflows: WorkflowType[]
-    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
-    cdNodeId: number
-    materialType: '' | 'inputMaterialList' | 'rollbackMaterialList'
     isLoading: boolean
     hostURLConfig: HostURLConfig
     workflowId: number
