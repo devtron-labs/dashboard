@@ -310,7 +310,7 @@ const CDMaterial = ({
     const materialsResult: CDMaterialResponseType = responseList?.[0]
     const deploymentWindowMetadata = responseList?.[1] ?? {}
 
-    const { onClickCDMaterial } = useContext<TriggerViewContextType>(TriggerViewContext)
+    const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
     const [noMoreImages, setNoMoreImages] = useState<boolean>(false)
     const [tagsEditable, setTagsEditable] = useState<boolean>(false)
     const [appReleaseTagNames, setAppReleaseTagNames] = useState<string[]>([])
@@ -662,7 +662,7 @@ const CDMaterial = ({
             })
         } else {
             closeCDModal(e)
-            onClickCDMaterial(pipelineId, DeploymentNodeType.CD, true)
+            onClickApprovalNode(pipelineId)
         }
     }
 
