@@ -20,6 +20,8 @@ import {
     NodeTaintType,
     OptionType,
     SelectPickerOptionType,
+    SortingOrder,
+    stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
@@ -27,6 +29,7 @@ import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
 import {
     AddClusterFormPrefilledInfoType,
     AddEnvironmentFormPrefilledInfoType,
+    ClusterEnvFilterKeys,
     ClusterTerminalParamsType,
     emptyClusterTerminalParamsData,
 } from './cluster.type'
@@ -132,15 +135,6 @@ export const renderKubeConfigClusterCountInfo = (clusterCount: number) => (
     </div>
 )
 
-export const renderNoEnvironmentTab = () => (
-    <div className="br-4 dashed dc__border flex bg__secondary pb-16 pt-16 m-16 fs-12 fw-4">
-        <div className="dc__align-center">
-            <div className="fw-6">No Environments Added</div>
-            <div>This cluster doesn&apos;t have any environments yet</div>
-        </div>
-    </div>
-)
-
 export const getSelectParsedCategory = (category: ClusterEnvironmentCategoryType): SelectPickerOptionType =>
     category?.name
         ? {
@@ -148,3 +142,18 @@ export const getSelectParsedCategory = (category: ClusterEnvironmentCategoryType
               value: category.id,
           }
         : null
+
+export const parseClusterEnvSearchParams = (searchParams: URLSearchParams) => ({
+    [ClusterEnvFilterKeys.SELECTED_TAB]: searchParams.get(ClusterEnvFilterKeys.SELECTED_TAB),
+    [ClusterEnvFilterKeys.CLUSTER_ID]: searchParams.get(ClusterEnvFilterKeys.CLUSTER_ID),
+})
+
+// Local comparator: empty string is treated as larger string
+export const environmentNameComparator = (a: string, b: string, sortOrder: SortingOrder) => {
+    const aIsEmpty = !a
+    const bIsEmpty = !b
+    if (aIsEmpty && bIsEmpty) return 0
+    if (aIsEmpty) return sortOrder === SortingOrder.ASC ? 1 : -1
+    if (bIsEmpty) return sortOrder === SortingOrder.ASC ? -1 : 1
+    return stringComparatorBySortOrder(a, b, sortOrder)
+}

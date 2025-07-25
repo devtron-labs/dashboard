@@ -20,13 +20,11 @@ import YAML from 'yaml'
 
 import {
     Button,
-    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
     CodeEditor,
-    ComponentSizeType,
     CustomInput,
     DEFAULT_SECRET_PLACEHOLDER,
     DTSwitch,
@@ -620,27 +618,6 @@ const ClusterForm = ({
         inputFileRef.current.click()
     }
 
-    const handleCloseButton = () => {
-        if (id) {
-            setRemoteConnectionFalse()
-            setTlsConnectionFalse()
-            hideEditModal()
-            return
-        }
-        if (isKubeConfigFile) {
-            toggleKubeConfigFile(!isKubeConfigFile)
-        }
-        if (isClusterDetails) {
-            toggleClusterDetails(!isClusterDetails)
-        }
-        setRemoteConnectionFalse()
-        setTlsConnectionFalse()
-        handleCloseCreateClusterForm()
-
-        setLoadingState(false)
-        reload()
-    }
-
     const changeRemoteConnectionType = (connectionType) => {
         setRemoteConnectionMethod(connectionType)
         if (connectionType === RemoteConnectionType.Proxy) {
@@ -656,34 +633,6 @@ const ClusterForm = ({
     const changeSSHAuthenticationType = (authType) => {
         setSSHConnectionType(authType)
     }
-
-    const clusterTitle = () => {
-        if (!id) {
-            return 'Add Cluster'
-        }
-        return 'Edit Cluster'
-    }
-
-    const renderHeader = () => (
-        <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
-            <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
-                <span className="fw-6 fs-16 cn-9">{clusterTitle()}</span>
-            </h2>
-
-            <Button
-                icon={<Icon name="ic-close-large" color={null} />}
-                dataTestId="header_close_icon"
-                component={ButtonComponentType.button}
-                style={ButtonStyleType.negativeGrey}
-                size={ComponentSizeType.xs}
-                variant={ButtonVariantType.borderLess}
-                ariaLabel="Close edit cluster drawer"
-                disabled={loader}
-                onClick={handleCloseButton}
-                showAriaLabelInTippy={false}
-            />
-        </div>
-    )
 
     const renderUrlAndBearerToken = () => {
         let proxyConfig
@@ -1073,7 +1022,7 @@ const ClusterForm = ({
                         data-testid="close_after_cluster_list_display"
                         className="cta  h-36 lh-36"
                         type="button"
-                        onClick={handleCloseButton}
+                        onClick={hideEditModal}
                         style={{ marginLeft: 'auto' }}
                     >
                         Close
@@ -1384,7 +1333,7 @@ const ClusterForm = ({
                         data-testid="cancel_kubeconfig_button"
                         className="cta cancel h-36 lh-36"
                         type="button"
-                        onClick={handleCloseButton}
+                        onClick={hideEditModal}
                     >
                         Cancel
                     </button>
@@ -1443,7 +1392,7 @@ const ClusterForm = ({
                             style={ButtonStyleType.neutral}
                             disabled={loader}
                             dataTestId="cancel_button"
-                            onClick={handleCloseButton}
+                            onClick={hideEditModal}
                         />
                         <Button
                             dataTestId="save_cluster_after_entering_cluster_details"
@@ -1474,58 +1423,50 @@ const ClusterForm = ({
         )
     }
 
-    return (
-        <div
-            className={`${id ? 'dc__position-rel h-100' : 'br-8 border__secondary'} ${isKubeConfigFile && !dataList.length ? 'flex-grow-1' : ''} cluster-form bg__primary flexbox-col`}
-        >
-            {id && renderHeader()}
-
-            {dataList.length ? (
-                displayClusterDetails()
-            ) : (
-                <>
-                    <div className={`flex-grow-1 flexbox-col ${id ? 'dc__overflow-auto' : ''}`}>
-                        <div className="p-20 flex-grow-1 flexbox-col dc__gap-16">
-                            {!id && (
-                                <div className="clone-apps dc__inline-block p-0">
-                                    <RadioGroup
-                                        className="radio-group-no-border"
-                                        value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
-                                        name="trigger-type"
-                                        onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
-                                    >
-                                        <RadioGroupItem value={AppCreationType.Blank}>
-                                            Use Server URL & Bearer token
-                                        </RadioGroupItem>
-                                        <RadioGroupItem
-                                            dataTestId="add_cluster_from_kubeconfig_file"
-                                            value={AppCreationType.Existing}
-                                        >
-                                            From kubeconfig
-                                        </RadioGroupItem>
-                                    </RadioGroup>
-                                </div>
-                            )}
-
-                            {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
+    return dataList.length ? (
+        displayClusterDetails()
+    ) : (
+        <>
+            <div className={`flex-grow-1 flexbox-col bg__primary ${id ? 'dc__overflow-auto' : 'br-8'}`}>
+                <div className="p-20 flex-grow-1 flexbox-col dc__gap-16">
+                    {!id && (
+                        <div className="clone-apps dc__inline-block p-0">
+                            <RadioGroup
+                                className="radio-group-no-border"
+                                value={isKubeConfigFile ? 'EXISTING' : 'BLANK'}
+                                name="trigger-type"
+                                onChange={() => toggleKubeConfigFile(!isKubeConfigFile)}
+                            >
+                                <RadioGroupItem value={AppCreationType.Blank}>
+                                    Use Server URL & Bearer token
+                                </RadioGroupItem>
+                                <RadioGroupItem
+                                    dataTestId="add_cluster_from_kubeconfig_file"
+                                    value={AppCreationType.Existing}
+                                >
+                                    From kubeconfig
+                                </RadioGroupItem>
+                            </RadioGroup>
                         </div>
+                    )}
 
-                        {confirmation && (
-                            <DeleteClusterConfirmationModal
-                                clusterId={String(id)}
-                                clusterName={clusterName}
-                                handleClose={hideConfirmationModal}
-                                handleSuccess={hideEditModal}
-                                reload={reload}
-                                installationId={String(installationId)}
-                            />
-                        )}
-                    </div>
+                    {isKubeConfigFile ? codeEditor() : renderUrlAndBearerToken()}
+                </div>
 
-                    {renderFooter()}
-                </>
-            )}
-        </div>
+                {confirmation && (
+                    <DeleteClusterConfirmationModal
+                        clusterId={String(id)}
+                        clusterName={clusterName}
+                        handleClose={hideConfirmationModal}
+                        handleSuccess={hideEditModal}
+                        reload={reload}
+                        installationId={String(installationId)}
+                    />
+                )}
+            </div>
+
+            {renderFooter()}
+        </>
     )
 }
 
