@@ -37,8 +37,7 @@ const BuildImageHeader = ({
             </div>
         ) : (
             <h2 className="m-0 fs-16 fw-6 lh-24 cn-9 dc__truncate">
-                {isJobView ? 'Job Pipeline' : 'Build Pipeline'}{' '}
-                {pipelineName && !isBulkTrigger ? `'${pipelineName}'` : ''}
+                {`${isJobView ? 'Job' : 'Build'} Pipeline ${pipelineName && !isBulkTrigger ? `'${pipelineName}'` : ''}`}
             </h2>
         )}
 

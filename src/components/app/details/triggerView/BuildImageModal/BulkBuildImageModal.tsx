@@ -107,11 +107,11 @@ const BulkBuildImageModal = ({
             initialDataAbortControllerRef,
         )
 
-        setNumberOfAppsLoading(validWorkflows.length)
-
         if (ciMaterialPromiseList.length === 0) {
             return []
         }
+
+        setNumberOfAppsLoading(validWorkflows.length)
 
         const ciMaterialList =
             await ApiQueuingWithBatch<Awaited<ReturnType<typeof getCIMaterials>>>(ciMaterialPromiseList)
@@ -456,10 +456,7 @@ const BulkBuildImageModal = ({
                 className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
                 onClick={stopPropagation}
             >
-                <div
-                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger"
-                    onClick={stopPropagation}
-                >
+                <div className="flexbox-col dc__content-space h-100 dc__overflow-auto bulk-ci-trigger">
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">
                         <BuildImageHeader
                             showWebhookModal={showWebhookModal}

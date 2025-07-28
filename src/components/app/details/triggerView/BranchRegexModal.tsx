@@ -38,6 +38,7 @@ import { getGitProviderIcon } from '@Components/common'
 import { REQUIRED_FIELD_MSG } from '../../../../config/constantMessaging'
 import { BRANCH_REGEX_MODAL_MESSAGING } from './Constants'
 import { BranchRegexModalProps, RegexValueType } from './types'
+import { getInitialRegexValue } from './utils'
 
 const renderRegexInfo = () => (
     <InfoBlock
@@ -65,19 +66,8 @@ const BranchRegexModal = ({
     workflowId,
     handleReload,
 }: BranchRegexModalProps) => {
-    const getInitialRegexValue = () => {
-        const initialValue: Record<number, RegexValueType> = {}
-        material.forEach((mat) => {
-            initialValue[mat.gitMaterialId] = {
-                value: mat.value,
-                isInvalid: mat.regex && !new RegExp(mat.regex).test(mat.value),
-            }
-        })
-        return initialValue
-    }
-
     const [isSavingRegexValue, setIsSavingRegexValue] = useState(false)
-    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getInitialRegexValue)
+    const [regexValue, setRegexValue] = useState<Record<number, RegexValueType>>(getInitialRegexValue(material))
 
     const isRegexValueInvalid = (_cm): void => {
         const regExp = new RegExp(_cm.source.regex)
