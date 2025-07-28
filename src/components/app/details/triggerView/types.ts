@@ -609,7 +609,7 @@ export const MATERIAL_TYPE = {
     rollbackMaterialList: 'rollbackMaterialList',
     inputMaterialList: 'inputMaterialList',
     none: 'none',
-}
+} as const
 
 export interface EmptyStateCIMaterialProps {
     isRepoError: boolean
