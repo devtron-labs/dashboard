@@ -100,7 +100,7 @@ const ClusterList = () => {
         handleSorting,
     } = useUrlFilters<EnvListSortableKeys, ClusterEnvFilterType>({
         parseSearchParams: parseClusterEnvSearchParams,
-        initialSortKey: EnvListSortableKeys.ENV_NAME
+        initialSortKey: EnvListSortableKeys.ENV_NAME,
     })
 
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(

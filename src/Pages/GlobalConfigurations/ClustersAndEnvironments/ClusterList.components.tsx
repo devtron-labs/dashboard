@@ -148,7 +148,6 @@ export const ClusterListCellComponent: FunctionComponent<
         case ClusterListFields.CLUSTER_CATEGORY:
             return (
                 <div className="flex left py-10">
-                    {' '}
                     <Tooltip content={clusterCategory}>
                         <span className="dc__truncate">{clusterCategory}</span>
                     </Tooltip>
