@@ -53,11 +53,12 @@ import {
     ClusterOptionType,
     K8SResourceListType,
     NODE_SEARCH_KEYS,
+    NodeListSearchFilterType,
     RBResourceSidebarDataAttributeType,
     ShowAIButtonConfig,
 } from '../Types'
 import { convertResourceGroupListToK8sObjectList } from '../Utils'
-import { K8sResourceListFilterType, ResourceListUrlFiltersType } from './types'
+import { K8sResourceListFilterType, NodeSearchListOptionType, ResourceListUrlFiltersType } from './types'
 
 const getFilterOptionsFromSearchParams = importComponentFromFELibrary(
     'getFilterOptionsFromSearchParams',
@@ -264,7 +265,7 @@ export const dynamicSort = (property: string) => (valueA: unknown, valueB: unkno
 export const isItemASearchMatchForNodeListing = (item: Record<string, any>, searchParams: Record<string, any>) => {
     const isK8sVersionFilterAppliedAndMatchFound =
         !searchParams[NODE_K8S_VERSION_FILTER_KEY] ||
-        item[NODE_K8S_VERSION_FILTER_KEY] === searchParams[NODE_K8S_VERSION_FILTER_KEY]
+        searchParams[NODE_K8S_VERSION_FILTER_KEY].includes(item[NODE_K8S_VERSION_FILTER_KEY])
 
     if (!isK8sVersionFilterAppliedAndMatchFound) {
         return false
@@ -508,4 +509,43 @@ export const getRBSidebarTreeViewNodes = (list: ReturnType<typeof convertResourc
     }))
 
     return fixedNodes.concat(dynamicNodes)
+}
+
+export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['rows']) => {
+    const { labels, nodeGroups } = (rows || []).reduce<{
+        labels: Map<string, NodeSearchListOptionType>
+        nodeGroups: Map<string, NodeSearchListOptionType>
+    }>(
+        (acc, curr) => {
+            ;(curr.data.labels as { key: string; value: string }[]).forEach(({ key, value }) => {
+                if (!acc.labels.has(`${key}/${value}`)) {
+                    acc.labels.set(`${key}/${value}`, {
+                        label: `${key}=${value}`,
+                        value: `${key}=${value}`,
+                        identifier: NODE_SEARCH_KEYS.LABEL,
+                    })
+                }
+            })
+
+            if (!acc.nodeGroups.has(curr.data.nodeGroup as string)) {
+                acc.nodeGroups.set(curr.data.nodeGroup as string, {
+                    label: curr.data.nodeGroup,
+                    value: curr.data.nodeGroup as string,
+                    identifier: NODE_SEARCH_KEYS.NODE_GROUP,
+                })
+            }
+
+            return acc
+        },
+        { labels: new Map(), nodeGroups: new Map() },
+    )
+
+    return {
+        labels: Array.from(labels)
+            .map(([, value]) => value)
+            .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
+        nodeGroups: Array.from(nodeGroups)
+            .map(([, value]) => value)
+            .sort((a, b) => stringComparatorBySortOrder(a.label as string, b.label as string)),
+    }
 }
