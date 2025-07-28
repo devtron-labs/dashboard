@@ -66,12 +66,14 @@
     .resource-list-container {
         .node-listing-search-container {
             display: grid;
-            grid-template-columns: auto 160px 1px 180px;
+            grid-template-columns: 1fr auto 1px 180px;
             column-gap: 8px;
 
-            &__shortcut-key {
-                right: 10px;
-                top: 6px;
+            .grouped-filter-select-picker {
+                width: 350px;
+                > .dc__mxw-250 {
+                    max-width: 350px;
+                }
             }
         }
 
@@ -92,6 +94,7 @@
 .cluster-terminal-hidden {
     visibility: hidden;
     height: 0;
+
     .terminal-action-strip {
         display: none;
     }
