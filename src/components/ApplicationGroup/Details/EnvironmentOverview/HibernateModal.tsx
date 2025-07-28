@@ -110,8 +110,8 @@ export const HibernateModal = ({
         <VisibleModal close={closeModal} onEscape={closeModal} className="">
             <div onClick={stopPropagation} className="modal__body w-400 pl-24 pr-24 pt-24 pb-24 fs-14 flex column">
                 {isDeploymentWindowLoading ? (
-                    <div className="mh-320 flex">
-                        <Progressing pageLoader />
+                    <div className="mh-150 flex">
+                        <Progressing />
                     </div>
                 ) : (
                     <>
@@ -130,25 +130,25 @@ export const HibernateModal = ({
                             </span>
                             {renderHibernateModalBody()}
                         </div>
-                        <div className="pt-40 flexbox dc__content-end w-100 dc__align-end dc__gap-12">
-                            <button
-                                onClick={closeModal}
-                                className="flex bg__primary dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
-                            >
-                                Cancel
-                            </button>
-
-                            <button
-                                type="button"
-                                className="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
-                                disabled={!showDefaultDrawer && isActionButtonDisabled}
-                                onClick={handleAction}
-                            >
-                                {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'}
-                            </button>
-                        </div>
                     </>
                 )}
+                <div className="pt-40 flexbox dc__content-end w-100 dc__align-end dc__gap-12">
+                    <button
+                        onClick={closeModal}
+                        className="flex bg__primary dc__border-radius-4-imp h-36 pl-16 pr-16 pt-8 pb-8 dc__border"
+                    >
+                        Cancel
+                    </button>
+
+                    <button
+                        type="button"
+                        className="cta flex h-36 pl-16 pr-16 pt-8 pb-8 w-96 dc__border-radius-4-imp"
+                        disabled={!showDefaultDrawer && isActionButtonDisabled}
+                        onClick={handleAction}
+                    >
+                        {openedHibernateModalType === MODAL_TYPE.HIBERNATE ? 'Hibernate' : 'Unhibernate'}
+                    </button>
+                </div>
             </div>
         </VisibleModal>
     )

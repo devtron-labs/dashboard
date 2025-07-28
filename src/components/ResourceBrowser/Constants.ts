@@ -325,29 +325,13 @@ export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[num
     unschedulable: 'unschedulable',
 } as const
 
-export const NODE_SEARCH_KEY_OPTIONS = [
-    { value: NODE_SEARCH_KEYS.NAME, label: 'Name' },
-    { value: NODE_SEARCH_KEYS.LABEL, label: 'Label' },
-    { value: NODE_SEARCH_KEYS.NODE_GROUP, label: 'Node group' },
-] as const
-
-export const DEFAULT_NODE_K8S_VERSION = {
-    label: 'K8s version: Any',
-    value: 'K8s version: Any',
-}
-
-export const NODE_SEARCH_KEY_PLACEHOLDER: Record<NODE_SEARCH_KEYS, string> = {
-    [NODE_SEARCH_KEYS.NAME]: 'Search by node name Eg. ip-172-31-2-152.us-east-2.compute.internal',
-    [NODE_SEARCH_KEYS.LABEL]: 'Search by key=value Eg. environment=production, tier=frontend',
-    [NODE_SEARCH_KEYS.NODE_GROUP]: 'Search by node group name Eg. mainnode',
-}
+export const NODE_LIST_HEADER_KEYS_TO_SEARCH = Object.values(NODE_LIST_HEADERS_TO_KEY_MAP)
 
 export const NODE_SEARCH_KEYS_TO_OBJECT_KEYS: Record<
     NODE_SEARCH_KEYS,
     (typeof NODE_LIST_HEADERS_TO_KEY_MAP)[keyof typeof NODE_LIST_HEADERS_TO_KEY_MAP]
 > = {
     [NODE_SEARCH_KEYS.LABEL]: 'labels',
-    [NODE_SEARCH_KEYS.NAME]: 'name',
     [NODE_SEARCH_KEYS.NODE_GROUP]: 'nodeGroup',
 }
 

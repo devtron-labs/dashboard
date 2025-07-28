@@ -47,7 +47,6 @@ const K8sResourceListTableCellComponent = ({
     addTab,
     isEventListing,
     lowercaseKindToResourceGroupMap,
-    clusterName,
 }: K8sResourceListTableCellComponentProps) => {
     const { push } = useHistory()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
@@ -350,17 +349,10 @@ const K8sResourceListTableCellComponent = ({
 
             {showCreateEnvironmentDrawer && (
                 <ClusterEnvironmentDrawer
+                    drawerType="addEnv"
                     reload={reloadResourceListData}
-                    clusterName={clusterName}
-                    id={null}
-                    environmentName={null}
                     clusterId={Number(clusterId)}
-                    namespace={null}
-                    isProduction={null}
-                    description={null}
                     hideClusterDrawer={handleCloseCreateEnvironmentDrawer}
-                    isVirtual={false} // NOTE: if a cluster is visible in RB, it is not a virtual cluster
-                    category={null}
                 />
             )}
         </>

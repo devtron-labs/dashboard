@@ -21,6 +21,7 @@ import {
     BulkSelectionIdentifiersType,
     ClusterDetail,
     ClusterFiltersType,
+    ClusterMap,
     GenericEmptyState,
     useBulkSelection,
     useUrlFilters,
@@ -38,7 +39,6 @@ import { ClusterSelectionBodyTypes } from './types'
 
 import '../clusterNodes.scss'
 
-const ClusterMap = importComponentFromFELibrary('ClusterMap', null, 'function')
 const ClusterBulkSelectionActionWidget = importComponentFromFELibrary(
     'ClusterBulkSelectionActionWidget',
     null,
@@ -94,14 +94,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
 
     const renderClusterList = () => (
         <div className="cluster-list-main-container flex-grow-1 flexbox-col bg__primary dc__overflow-auto">
-            {ClusterMap && window._env_.FEATURE_CLUSTER_MAP_ENABLE && (
-                <ClusterMap
-                    isLoading={clusterListLoader}
-                    filteredList={filteredList}
-                    clusterListLoader={clusterListLoader}
-                    isProportional
-                />
-            )}
+            <ClusterMap isLoading={clusterListLoader} filteredList={filteredList} />
             {!filteredList?.length ? (
                 <div className="flex-grow-1">
                     <ClusterNodeEmptyState actionHandler={clearFilters} />

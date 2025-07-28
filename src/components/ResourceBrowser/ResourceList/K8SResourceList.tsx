@@ -44,7 +44,7 @@ import {
     updateManifestResourceHelmApps,
 } from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
-import { NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
+import { NODE_LIST_HEADER_KEYS_TO_SEARCH, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { getResourceData } from '../ResourceBrowser.service'
 import { K8SResourceListType } from '../Types'
 import K8sResourceListTableCellComponent from './K8sResourceListTableCellComponent'
@@ -88,6 +88,7 @@ const K8SResourceListViewWrapper = ({
     updateSearchParams,
     eventType = 'warning',
     filteredRows,
+    rows,
     ...restProps
 }: K8SResourceListViewWrapperProps) => (
     <div className="flexbox-col flex-grow-1 resource-list-container dc__overflow-hidden border__primary--left">
@@ -97,6 +98,9 @@ const K8SResourceListViewWrapper = ({
                 setVisibleColumns={setVisibleColumns}
                 allColumns={allColumns}
                 searchParams={restProps}
+                rows={rows}
+                searchKey={searchKey}
+                handleSearch={handleSearch}
             />
         ) : (
             <ResourceFilterOptions
@@ -218,8 +222,10 @@ export const K8SResourceList = ({
     )
 
     const tableFilter: K8sResourceListTableProps['filter'] = (row, filterData) => {
+        let nodeFilters = true
+
         if (isNodeListing) {
-            return isItemASearchMatchForNodeListing(row.data, filterData)
+            nodeFilters = isItemASearchMatchForNodeListing(row.data, filterData)
         }
 
         const isSearchMatch =
@@ -227,6 +233,7 @@ export const K8SResourceList = ({
             Object.entries(row.data).some(
                 ([key, value]) =>
                     key !== 'id' &&
+                    (!isNodeListing || NODE_LIST_HEADER_KEYS_TO_SEARCH.includes(key)) &&
                     value !== null &&
                     value !== undefined &&
                     String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
@@ -239,7 +246,7 @@ export const K8SResourceList = ({
             )
         }
 
-        return isSearchMatch
+        return isSearchMatch && nodeFilters
     }
 
     const getDefaultSortKey = () => {
