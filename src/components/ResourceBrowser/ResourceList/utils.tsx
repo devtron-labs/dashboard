@@ -325,6 +325,16 @@ export const getStatusClass = (status: string, isNodeListing: boolean) => {
 
 export const getColumnSize = (field: string, isEventListing: boolean) => {
     if (!isEventListing) {
+        if (field === 'pods' || field === 'taints' || field === 'errors') {
+            return {
+                range: {
+                    maxWidth: 600,
+                    minWidth: 120,
+                    startWidth: 120,
+                },
+            }
+        }
+
         return {
             range: {
                 maxWidth: 600,
