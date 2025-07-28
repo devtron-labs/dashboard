@@ -7,6 +7,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ClusterStatusType,
     ComponentSizeType,
     Drawer,
     FiltersTypeEnum,
@@ -19,7 +20,6 @@ import {
     TableCellComponentProps,
     Tooltip,
     URLS as COMMON_URLS,
-    ClusterStatusType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -176,7 +176,7 @@ export const ClusterListCellComponent: FunctionComponent<
                             onClick={handleAddEnv}
                             showTooltip
                             tooltipProps={{
-                                content: 'Add Environment'
+                                content: 'Add Environment',
                             }}
                         />
                         <Button
@@ -190,7 +190,7 @@ export const ClusterListCellComponent: FunctionComponent<
                             onClick={handleEditCluster}
                             showTooltip
                             tooltipProps={{
-                                content: 'Edit Cluster'
+                                content: 'Edit Cluster',
                             }}
                         />
                         <ActionMenu
@@ -307,6 +307,7 @@ export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: Edi
             handleModalClose={handleClose}
             reload={reloadClusterList}
             category={cluster.category}
+            isProd={cluster.isProd}
         />
     )
 }
@@ -334,12 +335,12 @@ export const DeleteCluster = ({ clusterList, reloadClusterList, handleClose }: E
 export const ClusterEnvLoader = () => (
     <>
         {Array.from({ length: 3 }).map((_, idx) => (
-            // eslint-disable-next-line react/no-array-index-key
             <div
+                // eslint-disable-next-line react/no-array-index-key
                 key={idx}
-                className={`px-20 py-8 dc__grid environment-row ${!!VirtualClusterForm ? 'with-category' : ''} dc__align-items-center`}
+                className={`px-20 py-8 dc__grid environment-row ${VirtualClusterForm ? 'with-category' : ''} dc__align-items-center`}
             >
-                {Array.from({ length: 5 }).map((_, index) => (
+                {Array.from({ length: 5 }).map((_val, index) => (
                     // eslint-disable-next-line react/no-array-index-key
                     <span key={index} className="shimmer" />
                 ))}
