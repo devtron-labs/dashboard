@@ -7,6 +7,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ClusterStatusType,
     ComponentSizeType,
     Drawer,
     FiltersTypeEnum,
@@ -31,6 +32,7 @@ import {
     DEFAULT_CLUSTER_ID,
     EditDeleteClusterProps,
 } from './cluster.type'
+import { getBulletColorAccToStatus } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
@@ -38,12 +40,33 @@ import EditClusterDrawerContent from './EditClusterDrawerContent'
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
 
+export const ClusterIconWithStatus = ({
+    clusterStatus,
+    isVirtualCluster,
+}: {
+    clusterStatus: ClusterStatusType
+    isVirtualCluster: boolean
+}) => {
+    const statusColor = getBulletColorAccToStatus(clusterStatus)
+    return (
+        <span className="dc__position-rel dc__overflow-hidden icon-dim-24">
+            <Icon name="ic-bg-cluster" color={null} size={24} />
+            {!isVirtualCluster && (
+                <span
+                    className={`dc__position-abs dc__top-16 icon-dim-10 dc__border-radius-50-per dc__right-2--neg ${statusColor}`}
+                    style={{ border: '2px solid var(--N0)' }}
+                />
+            )}
+        </span>
+    )
+}
+
 export const ClusterListCellComponent: FunctionComponent<
     TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
 > = ({
     field,
     row: {
-        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster },
+        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
     },
     isRowActive,
 }: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
@@ -82,6 +105,9 @@ export const ClusterListCellComponent: FunctionComponent<
                 })
                 break
             case 'delete-cluster':
+                if (clusterId === DEFAULT_CLUSTER_ID) {
+                    break
+                }
                 push({
                     pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.DELETE_CLUSTER}/:clusterId`, {
                         clusterId,
@@ -97,9 +123,9 @@ export const ClusterListCellComponent: FunctionComponent<
     switch (field) {
         case ClusterListFields.ICON:
             return (
-                <span className="flex py-8">
-                    <Icon name="ic-bg-cluster" color={null} size={24} />
-                </span>
+                <div className="flex left py-10">
+                    <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
+                </div>
             )
         case ClusterListFields.CLUSTER_NAME:
             return (
@@ -108,27 +134,37 @@ export const ClusterListCellComponent: FunctionComponent<
                         selectedTab: ClusterEnvTabs.ENVIRONMENTS,
                         clusterId,
                     })}
-                    className="flex left py-8 dc__truncate"
+                    className="flex left py-10"
                 >
-                    {clusterName}
+                    <Tooltip content={clusterName}>
+                        <span className="dc__truncate">{clusterName}</span>
+                    </Tooltip>
                 </Link>
             )
         case ClusterListFields.CLUSTER_TYPE:
-            return <span className="flex left py-8">{clusterType}</span>
+            return <span className="flex left py-10">{clusterType}</span>
         case ClusterListFields.ENV_COUNT:
-            return <span className="flex left py-8">{envCount ? `${envCount}` : 'No'} Environments</span>
+            return <span className="flex left py-10">{envCount ? `${envCount}` : 'No'} Environments</span>
         case ClusterListFields.CLUSTER_CATEGORY:
-            return <span className="flex left py-8 dc__truncate">{clusterCategory}</span>
+            return (
+                <div className="flex left py-10">
+                    <Tooltip content={clusterCategory}>
+                        <span className="dc__truncate">{clusterCategory}</span>
+                    </Tooltip>
+                </div>
+            )
         case ClusterListFields.SERVER_URL:
             return (
-                <Tooltip content={serverUrl}>
-                    <span className="flex left py-8 dc__truncate">{serverUrl}</span>
-                </Tooltip>
+                <div className="flex left py-10">
+                    <Tooltip content={serverUrl}>
+                        <span className="dc__truncate">{serverUrl}</span>
+                    </Tooltip>
+                </div>
             )
         case ClusterListFields.ACTIONS:
             return (
                 <div className={isRowActive ? '' : 'dc__opacity-hover--child'}>
-                    <div className="flex dc__gap-8 py-8">
+                    <div className="flex dc__gap-8 py-10">
                         <Button
                             dataTestId={`add-env-${clusterId}`}
                             ariaLabel={`add-env-${clusterId}`}
@@ -137,6 +173,10 @@ export const ClusterListCellComponent: FunctionComponent<
                             variant={ButtonVariantType.borderLess}
                             size={ComponentSizeType.xs}
                             onClick={handleAddEnv}
+                            showTooltip
+                            tooltipProps={{
+                                content: 'Add Environment',
+                            }}
                         />
                         <Button
                             dataTestId={`edit-cluster-${clusterId}`}
@@ -147,6 +187,10 @@ export const ClusterListCellComponent: FunctionComponent<
                             style={ButtonStyleType.neutral}
                             size={ComponentSizeType.xs}
                             onClick={handleEditCluster}
+                            showTooltip
+                            tooltipProps={{
+                                content: 'Edit Cluster',
+                            }}
                         />
                         <ActionMenu
                             id="cluster-actions-action-menu"
@@ -262,6 +306,7 @@ export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: Edi
             handleModalClose={handleClose}
             reload={reloadClusterList}
             category={cluster.category}
+            isProd={cluster.isProd}
         />
     )
 }
@@ -289,9 +334,12 @@ export const DeleteCluster = ({ clusterList, reloadClusterList, handleClose }: E
 export const ClusterEnvLoader = () => (
     <>
         {Array.from({ length: 3 }).map((_, idx) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <div key={idx} className="px-20 py-8 dc__grid environment-row dc__align-items-center">
-                {Array.from({ length: 5 }).map((_, index) => (
+            <div
+                // eslint-disable-next-line react/no-array-index-key
+                key={idx}
+                className={`px-20 py-8 dc__grid environment-row ${VirtualClusterForm ? 'with-category' : ''} dc__align-items-center`}
+            >
+                {Array.from({ length: 5 }).map((_val, index) => (
                     // eslint-disable-next-line react/no-array-index-key
                     <span key={index} className="shimmer" />
                 ))}

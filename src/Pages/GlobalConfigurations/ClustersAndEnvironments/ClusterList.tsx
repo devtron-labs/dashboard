@@ -24,6 +24,7 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    ClusterMap,
     ComponentSizeType,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
@@ -99,6 +100,7 @@ const ClusterList = () => {
         handleSorting,
     } = useUrlFilters<EnvListSortableKeys, ClusterEnvFilterType>({
         parseSearchParams: parseClusterEnvSearchParams,
+        initialSortKey: EnvListSortableKeys.ENV_NAME,
     })
 
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
@@ -193,7 +195,7 @@ const ClusterList = () => {
                           {
                               field: ClusterListFields.CLUSTER_CATEGORY,
                               label: 'CATEGORY',
-                              size: { fixed: 100 },
+                              size: { fixed: 150 },
                               isSortable: true,
                               comparator: stringComparatorBySortOrder,
                               CellComponent: ClusterListCellComponent,
@@ -214,7 +216,7 @@ const ClusterList = () => {
                 },
             ],
             tableRows: filteredClusterList.map(
-                ({ clusterId, clusterName, isProd, category, serverUrl, isVirtualCluster }) => {
+                ({ clusterId, clusterName, isProd, category, serverUrl, isVirtualCluster, status }) => {
                     const envCount = clusterIdVsEnvMap[clusterId]?.length
                     return {
                         id: `${clusterName}-${clusterId}`,
@@ -226,6 +228,7 @@ const ClusterList = () => {
                             envCount: envCount ?? 0,
                             clusterCategory: (category?.label as string) ?? '',
                             isVirtualCluster,
+                            status,
                         },
                     }
                 },
@@ -238,7 +241,7 @@ const ClusterList = () => {
     const isClusterEnvListLoading = clusterListLoading || envListLoading
 
     // Early return for non super admin users
-    if (!isSuperAdmin) {
+    if (!isK8sClient && !isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
     }
 
@@ -303,18 +306,21 @@ const ClusterList = () => {
         }
 
         return (
-            <Table<ClusterRowData, FiltersTypeEnum.STATE, {}>
-                id="table__cluster-list"
-                columns={tableColumns}
-                rows={tableRows}
-                filtersVariant={FiltersTypeEnum.STATE}
-                paginationVariant={PaginationEnum.NOT_PAGINATED}
-                emptyStateConfig={null}
-                filter={() => true}
-                additionalFilterProps={{
-                    initialSortKey: 'clusterName',
-                }}
-            />
+            <>
+                <ClusterMap isLoading={isClusterEnvListLoading} filteredList={filteredClusterList} />
+                <Table<ClusterRowData, FiltersTypeEnum.STATE, {}>
+                    id="table__cluster-list"
+                    columns={tableColumns}
+                    rows={tableRows}
+                    filtersVariant={FiltersTypeEnum.STATE}
+                    paginationVariant={PaginationEnum.NOT_PAGINATED}
+                    emptyStateConfig={null}
+                    filter={() => true}
+                    additionalFilterProps={{
+                        initialSortKey: 'clusterName',
+                    }}
+                />
+            </>
         )
     }
 

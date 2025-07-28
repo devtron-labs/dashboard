@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { SyntheticEvent, useMemo, useState } from 'react'
 import { generatePath, useHistory, useLocation } from 'react-router-dom'
 
 import {
@@ -15,6 +15,7 @@ import {
     SortableTableHeaderCell,
     SortingOrder,
     stringComparatorBySortOrder,
+    Tooltip,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,10 +36,13 @@ import {
 } from './cluster.type'
 import { environmentNameComparator, getSelectParsedCategory } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
-import { ClusterEnvLoader } from './ClusterList.components'
+import { ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
+
 import './cluster.scss'
+import { importComponentFromFELibrary } from '@Components/common'
 
 // This is a list of namespaces and environments mapped to a cluster
 const ClustersEnvironmentsList = ({
@@ -47,6 +51,7 @@ const ClustersEnvironmentsList = ({
     clusterType,
     environments,
     isVirtualCluster,
+    status,
     filterConfig: { sortBy, searchKey, sortOrder },
     showUnmappedEnvs,
     setDeleteEnvConfig: setDeleteEnvId,
@@ -110,7 +115,8 @@ const ClustersEnvironmentsList = ({
         [environments, namespaceListResult],
     )
 
-    const handleDeleteEnv = (envId: number) => () => {
+    const handleDeleteEnv = (envId: number) => (e: SyntheticEvent) => {
+        e?.stopPropagation()
         setDeleteEnvId({ envId, clusterId })
     }
 
@@ -118,8 +124,10 @@ const ClustersEnvironmentsList = ({
         setEditEnvId({ envId, clusterId, isVirtualCluster })
     }
 
-    const getAddAsEnvHandler = (namespace: string) => () => {
-        localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify({ namespace }))
+    const getAddAsEnvHandler = (namespace?: string) => () => {
+        if (namespace) {
+            localStorage.setItem(ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY, JSON.stringify({ namespace }))
+        }
         push({
             pathname: generatePath(`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId`, {
                 clusterId,
@@ -159,13 +167,15 @@ const ClustersEnvironmentsList = ({
 
         if (searchKey && !sortedFilteredList.length) {
             return (
-                <div className="flex column py-20 dc__gap-12">
-                    <Icon name="ic-info-outline" size={24} color={null} />
-                    <div className="flexbox-col fs-13 lh-20">
-                        <span className="text-center fw-6 cn-9">No matching environments</span>
-                        <span className="text-center fw-4 cn-8">
-                            {clusterName} does not have any matching environments for ‘{searchKey}’
-                        </span>
+                <div className="p-16">
+                    <div className="flex column p-20 dc__gap-12 br-6 border__primary--dashed">
+                        <Icon name="ic-info-outline" size={24} color={null} />
+                        <div className="flexbox-col fs-13 lh-20">
+                            <span className="text-center fw-6 cn-9">No matching environments</span>
+                            <span className="text-center fw-4 cn-8">
+                                {clusterName} does not have any matching environments for ‘{searchKey}’
+                            </span>
+                        </div>
                     </div>
                 </div>
             )
@@ -173,17 +183,20 @@ const ClustersEnvironmentsList = ({
 
         if (!namespaceEnvList.length) {
             return (
-                <div className="flex column py-20 dc__gap-12">
-                    <Icon name="ic-info-outline" size={24} color={null} />
-                    <span className="fs-13 fw-6 lh-20 cn-9">No Environment available for this cluster</span>
-                    {/* TODO: Add on click */}
-                    <Button
-                        dataTestId={`add-env-${clusterName}`}
-                        startIcon={<Icon name="ic-add" color={null} />}
-                        text="Add Environment"
-                        size={ComponentSizeType.small}
-                        variant={ButtonVariantType.borderLess}
-                    />
+                <div className="p-16">
+                    <div className="flex column p-20 dc__gap-12 border__primary--dashed br-6">
+                        <Icon name="ic-info-outline" size={24} color={null} />
+                        <span className="fs-13 fw-6 lh-20 cn-9">No Environment available for this cluster</span>
+                        {/* TODO: Add on click */}
+                        <Button
+                            dataTestId={`add-env-${clusterName}`}
+                            startIcon={<Icon name="ic-add" color={null} />}
+                            text="Add Environment"
+                            size={ComponentSizeType.small}
+                            variant={ButtonVariantType.borderLess}
+                            onClick={getAddAsEnvHandler()}
+                        />
+                    </div>
                 </div>
             )
         }
@@ -192,19 +205,29 @@ const ClustersEnvironmentsList = ({
             ({ namespace, namespaceNotFound, envId, envType, environmentName, category, description }) => (
                 <div
                     role="button"
-                    key={namespace}
-                    className="px-20 py-8 dc__grid environment-row dc__align-items-center fs-13 fw-4 lh-20 dc__hover-n50 dc__opacity-hover dc__opacity-hover--parent"
-                    onClick={envId ? noop : getAddAsEnvHandler(namespace)}
+                    key={`${envId}-${namespace}-${environmentName}`}
+                    className={`px-20 py-10 dc__grid environment-row ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center fs-13 fw-4 lh-20 dc__hover-n50 dc__opacity-hover dc__opacity-hover--parent`}
+                    onClick={envId ? handleEditEnv(envId) : getAddAsEnvHandler(namespace)}
                     tabIndex={0}
                 >
                     {envId ? (
                         <>
-                            <Icon name="ic-bg-environment" size={20} color={null} />
-                            <span className="cb-5">{environmentName}</span>
-                            <span>{`${namespace}${namespaceNotFound ? ' (Not Found)' : ''}`}</span>
+                            <Icon name="ic-bg-environment" size={24} color={null} />
+                            <Tooltip content={environmentName}>
+                                <span className="cb-5 dc__truncate">{environmentName}</span>
+                            </Tooltip>
+                            <Tooltip content={`${namespace}${namespaceNotFound ? ' (Not Found)' : ''}`}>
+                                <span className="dc__truncate">{`${namespace}${namespaceNotFound ? ' (Not Found)' : ''}`}</span>
+                            </Tooltip>
                             <span>{envType}</span>
-                            <span>{category}</span>
-                            <span>{description}</span>
+                            {isFELibAvailable && (
+                                <Tooltip content={category}>
+                                    <span className="dc__truncate">{category}</span>
+                                </Tooltip>
+                            )}
+                            <Tooltip content={description}>
+                                <span className="dc__truncate">{description}</span>
+                            </Tooltip>
                             <div className="dc__opacity-hover--child">
                                 <div className="flexbox dc__gap-8">
                                     <Button
@@ -217,7 +240,7 @@ const ClustersEnvironmentsList = ({
                                         showTooltip
                                         showAriaLabelInTippy={false}
                                         tooltipProps={{
-                                            content: 'Edit environment',
+                                            content: 'Edit Environment',
                                         }}
                                         onClick={handleEditEnv(envId)}
                                     />
@@ -231,7 +254,7 @@ const ClustersEnvironmentsList = ({
                                         showAriaLabelInTippy={false}
                                         showTooltip
                                         tooltipProps={{
-                                            content: 'Delete environment',
+                                            content: 'Delete Environment',
                                         }}
                                         onClick={handleDeleteEnv(envId)}
                                     />
@@ -240,7 +263,7 @@ const ClustersEnvironmentsList = ({
                         </>
                     ) : (
                         <>
-                            <Icon name="ic-add" size={20} color="B500" />
+                            <Icon name="ic-add" size={24} color="B500" />
                             <span className="cb-5">Add as Environment</span>
                             <span>{namespace}</span>
                         </>
@@ -257,7 +280,7 @@ const ClustersEnvironmentsList = ({
                 className="px-20 py-6 bg__secondary flex dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
                 style={{ top: '37px' }}
             >
-                <Icon name="ic-bg-cluster" size={24} color={null} />
+                <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
                 <span className="fw-6">{clusterName}</span>
                 <div className="flex dc__gap-4 fw-4">
                     <span>{clusterType}</span>
@@ -362,7 +385,9 @@ const EnvironmentList = ({
 
     return (
         <>
-            <div className="border__secondary--bottom bg__primary px-20 py-8 dc__grid environment-row dc__align-items-center dc__position-sticky dc__top-0">
+            <div
+                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
+            >
                 {/* Empty div for icon */}
                 <div />
                 <SortableTableHeaderCell
@@ -389,19 +414,21 @@ const EnvironmentList = ({
                     sortOrder={sortOrder}
                     disabled={isLoading}
                 />
-                <SortableTableHeaderCell
-                    title="CATEGORY"
-                    isSortable
-                    triggerSorting={handleEnvListSorting(EnvListSortableKeys.ENV_CATEGORY)}
-                    isSorted={sortBy === EnvListSortableKeys.ENV_CATEGORY}
-                    sortOrder={sortOrder}
-                    disabled={isLoading}
-                />
+                {isFELibAvailable && (
+                    <SortableTableHeaderCell
+                        title="CATEGORY"
+                        isSortable
+                        triggerSorting={handleEnvListSorting(EnvListSortableKeys.ENV_CATEGORY)}
+                        isSorted={sortBy === EnvListSortableKeys.ENV_CATEGORY}
+                        sortOrder={sortOrder}
+                        disabled={isLoading}
+                    />
+                )}
                 <SortableTableHeaderCell title="DESCRIPTION" isSortable={false} />
             </div>
             {clusterList
                 .filter(({ clusterId }) => !filterClusterId || filterClusterId === String(clusterId))
-                .map(({ clusterId, clusterName, isProd, isVirtualCluster }) => (
+                .map(({ clusterId, clusterName, isProd, isVirtualCluster, status }) => (
                     <ClustersEnvironmentsList
                         key={`${clusterName}-${clusterId}`}
                         clusterId={clusterId}
@@ -417,6 +444,7 @@ const EnvironmentList = ({
                         showUnmappedEnvs={showUnmappedEnvs}
                         setDeleteEnvConfig={setDeleteEnvConfig}
                         setEditEnvConfig={setEditEnvConfig}
+                        status={status}
                     />
                 ))}
             {deleteEnvConfig && (

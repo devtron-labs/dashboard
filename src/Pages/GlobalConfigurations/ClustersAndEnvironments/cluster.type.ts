@@ -302,15 +302,17 @@ export interface ClusterDTO {
 }
 
 export interface Cluster
-    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category'> {
+    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category' | 'clusterStatus'> {
     serverUrl: ClusterDTO['server_url']
     clusterName: ClusterDTO['cluster_name']
     prometheusUrl: ClusterDTO['prometheus_url']
     clusterId: ClusterDTO['id']
     category: SelectPickerOptionType
+    status: ClusterStatusType
 }
 
-export interface ClusterRowData extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster'> {
+export interface ClusterRowData
+    extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
     envCount: number
     clusterType: string
     clusterCategory: string
@@ -371,12 +373,9 @@ export interface EnvironmentListProps {
 
 export type DeleteEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'>
 export type EditEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'> & { isVirtualCluster: boolean }
-export interface ClusterEnvListProps extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs'> {
-    clusterId: number
-    clusterName: string
+export interface ClusterEnvListProps extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs'>, Pick<Cluster, 'clusterId' | 'clusterName' | 'status' | 'isVirtualCluster'> {
     clusterType: string
     environments: Environment[]
-    isVirtualCluster: boolean
     setDeleteEnvConfig: Dispatch<SetStateAction<DeleteEnvConfigType>>
     setEditEnvConfig: Dispatch<SetStateAction<EditEnvConfigType>>
 }
