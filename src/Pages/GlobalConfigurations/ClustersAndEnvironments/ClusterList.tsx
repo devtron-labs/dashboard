@@ -100,6 +100,7 @@ const ClusterList = () => {
         handleSorting,
     } = useUrlFilters<EnvListSortableKeys, ClusterEnvFilterType>({
         parseSearchParams: parseClusterEnvSearchParams,
+        initialSortKey: EnvListSortableKeys.ENV_NAME,
     })
 
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
@@ -194,7 +195,7 @@ const ClusterList = () => {
                           {
                               field: ClusterListFields.CLUSTER_CATEGORY,
                               label: 'CATEGORY',
-                              size: { fixed: 100 },
+                              size: { fixed: 150 },
                               isSortable: true,
                               comparator: stringComparatorBySortOrder,
                               CellComponent: ClusterListCellComponent,

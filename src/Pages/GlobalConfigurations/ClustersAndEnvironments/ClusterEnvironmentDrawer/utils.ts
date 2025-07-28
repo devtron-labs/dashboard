@@ -36,6 +36,7 @@ export const getClusterEnvironmentUpdatePayload = ({
               cluster_id: data.clusterId,
               description: data.description || '',
               ...(getCategoryPayload ? getCategoryPayload(data.category) : null),
+              isProd: data.isProduction,
           }
         : {
               id: envId,
