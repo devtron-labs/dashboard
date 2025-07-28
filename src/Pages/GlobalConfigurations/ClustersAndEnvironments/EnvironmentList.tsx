@@ -45,17 +45,15 @@ const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 
 
 // This is a list of namespaces and environments mapped to a cluster
 const ClustersEnvironmentsList = ({
-    clusterId,
-    clusterName,
-    clusterType,
+    clusterDetails,
     environments,
-    isVirtualCluster,
-    status,
     filterConfig: { sortBy, searchKey, sortOrder },
     showUnmappedEnvs,
     setDeleteEnvConfig: setDeleteEnvId,
     setEditEnvConfig: setEditEnvId,
 }: ClusterEnvListProps) => {
+    const { clusterId, clusterName, isVirtualCluster, status, isProd, category } = clusterDetails
+
     const [namespaceListLoading, namespaceListResult, namespaceListError, reloadNamespaces] = useAsync(
         () => namespaceListByClusterId(`${clusterId}`),
         [],
@@ -87,17 +85,19 @@ const ClustersEnvironmentsList = ({
 
     const namespaceEnvList: EnvNamespaceRowType[] = useMemo(
         () => [
-            ...environments.map(({ id: envId, environmentName, namespace, isProd, category, description }) => ({
-                clusterId,
-                envId,
-                environmentName,
-                namespace,
-                envType: isProd ? 'Production' : 'Non Production',
-                category: category?.name ?? '',
-                description,
-                // false for virtual clusters and actual namespaces might not exist, for physical cluster showing not found if does not exist
-                namespaceNotFound: isVirtualCluster || !showUnmappedEnvs ? false : !namespacesMap[namespace],
-            })),
+            ...environments.map(
+                ({ id: envId, environmentName, namespace, isProd: isProdEnv, category, description }) => ({
+                    clusterId,
+                    envId,
+                    environmentName,
+                    namespace,
+                    envType: isProdEnv ? 'Production' : 'Non Production',
+                    category: category?.name ?? '',
+                    description,
+                    // false for virtual clusters and actual namespaces might not exist, for physical cluster showing not found if does not exist
+                    namespaceNotFound: isVirtualCluster || !showUnmappedEnvs ? false : !namespacesMap[namespace],
+                }),
+            ),
             ...(namespaceListResult?.result ?? [])
                 .filter((namespace) => !mappedNamespacesMap[namespace])
                 .map((namespace) => ({
@@ -276,28 +276,23 @@ const ClustersEnvironmentsList = ({
         <>
             {/* Cluster metadata */}
             <div
-                className="px-20 py-6 bg__secondary flex dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
+                className="px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
                 style={{ top: '37px' }}
             >
                 <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
-                <span className="fw-6">{clusterName}</span>
-                <div className="flex dc__gap-4 fw-4">
-                    <span>{clusterType}</span>
-                    <span>·</span>
-                    <span>{environments.length} Environments</span>
-                    {showUnmappedEnvs && (
-                        <>
-                            <span>·</span>
-                            {isVirtualCluster ? (
-                                <span>{environments.filter(({ namespace }) => !!namespace).length} Namespaces</span>
-                            ) : (
-                                !namespaceListError && (
-                                    <span>{(namespaceListResult?.result ?? []).length} Namespaces</span>
-                                )
-                            )}
-                        </>
-                    )}
-                </div>
+                <Tooltip
+                    content={`${clusterName} (${environments.length} Environments)`}
+                    alwaysShowTippyOnHover
+                    maxWidth={250}
+                >
+                    <div className="flex left dc__gap-6">
+                        <span className="fw-6 dc__white-space-nowrap">{clusterName}</span>
+                        <span className="dc__ellipsis-right">({environments.length} Environments)</span>
+                    </div>
+                </Tooltip>
+                {showUnmappedEnvs ? <span>{(namespaceListResult?.result ?? []).length} Namespaces</span> : <span />}
+                <span>{isProd ? 'Production' : 'Non Production'}</span>
+                {category?.label && <span>{category.label}</span>}
             </div>
             {/* Env and Namespace List */}
             {renderNamespaceEnvList()}
@@ -427,14 +422,11 @@ const EnvironmentList = ({
             </div>
             {clusterList
                 .filter(({ clusterId }) => !filterClusterId || filterClusterId === String(clusterId))
-                .map(({ clusterId, clusterName, isProd, isVirtualCluster, status }) => (
+                .map((clusterDetails) => (
                     <ClustersEnvironmentsList
-                        key={`${clusterName}-${clusterId}`}
-                        clusterId={clusterId}
-                        clusterName={clusterName}
-                        clusterType={isProd ? 'Production' : 'Non Production'}
-                        environments={clusterIdVsEnvMap[clusterId] ?? []}
-                        isVirtualCluster={isVirtualCluster}
+                        key={`${clusterDetails.clusterName}-${clusterDetails.clusterId}`}
+                        clusterDetails={clusterDetails}
+                        environments={clusterIdVsEnvMap[clusterDetails.clusterId] ?? []}
                         filterConfig={{
                             sortBy,
                             sortOrder,
@@ -443,7 +435,6 @@ const EnvironmentList = ({
                         showUnmappedEnvs={showUnmappedEnvs}
                         setDeleteEnvConfig={setDeleteEnvConfig}
                         setEditEnvConfig={setEditEnvConfig}
-                        status={status}
                     />
                 ))}
             {deleteEnvConfig && (

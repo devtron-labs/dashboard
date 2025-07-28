@@ -92,3 +92,8 @@
         grid-template-columns: 24px 200px 200px 100px 150px 1fr 60px;
     }
 }
+
+.cluster-metadata-header {
+    grid-template-columns: 24px 200px 200px 100px 100px;
+    grid-column-gap: 16px;
+}
