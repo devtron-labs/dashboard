@@ -11,7 +11,6 @@ import {
     ERROR_STATUS_CODE,
     GenericSectionErrorState,
     Icon,
-    noop,
     SortableTableHeaderCell,
     SortingOrder,
     stringComparatorBySortOrder,
@@ -19,6 +18,7 @@ import {
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import { namespaceListByClusterId } from '@Components/ResourceBrowser/ResourceBrowser.service'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 import { URLS } from '@Config/routes'
@@ -39,10 +39,9 @@ import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import { ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
-const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
-
 import './cluster.scss'
-import { importComponentFromFELibrary } from '@Components/common'
+
+const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
 
 // This is a list of namespaces and environments mapped to a cluster
 const ClustersEnvironmentsList = ({
