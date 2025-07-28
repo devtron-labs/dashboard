@@ -216,6 +216,7 @@ const K8sResourceListTableCellComponent = ({
             <K8sResourceListTableUsageCell
                 percentage={resourceData['cpu.usagePercentage'] as string}
                 absoluteValue={resourceData['cpu.usage'] as string}
+                totalValue={resourceData['cpu.allocatable'] as string}
                 color="var(--B300)"
             />
         )
@@ -226,6 +227,7 @@ const K8sResourceListTableCellComponent = ({
             <K8sResourceListTableUsageCell
                 percentage={resourceData['memory.usagePercentage'] as string}
                 absoluteValue={resourceData['memory.usage'] as string}
+                totalValue={resourceData['memory.allocatable'] as string}
                 color="var(--V300)"
             />
         )
