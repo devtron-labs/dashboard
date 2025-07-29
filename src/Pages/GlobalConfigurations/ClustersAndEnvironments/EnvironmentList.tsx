@@ -86,13 +86,13 @@ const ClustersEnvironmentsList = ({
     const namespaceEnvList: EnvNamespaceRowType[] = useMemo(
         () => [
             ...environments.map(
-                ({ id: envId, environmentName, namespace, isProd: isProdEnv, category, description }) => ({
+                ({ id: envId, environmentName, namespace, isProd: isProdEnv, category: envCategory, description }) => ({
                     clusterId,
                     envId,
                     environmentName,
                     namespace,
                     envType: isProdEnv ? 'Production' : 'Non Production',
-                    category: category?.name ?? '',
+                    category: envCategory?.name ?? '',
                     description,
                     // false for virtual clusters and actual namespaces might not exist, for physical cluster showing not found if does not exist
                     namespaceNotFound: isVirtualCluster || !showUnmappedEnvs ? false : !namespacesMap[namespace],
@@ -201,7 +201,7 @@ const ClustersEnvironmentsList = ({
         }
 
         return sortedFilteredList.map(
-            ({ namespace, namespaceNotFound, envId, envType, environmentName, category, description }) => (
+            ({ namespace, namespaceNotFound, envId, envType, environmentName, category: envCategory, description }) => (
                 <div
                     role="button"
                     key={`${envId}-${namespace}-${environmentName}`}
@@ -220,8 +220,8 @@ const ClustersEnvironmentsList = ({
                             </Tooltip>
                             <span>{envType}</span>
                             {isFELibAvailable && (
-                                <Tooltip content={category}>
-                                    <span className="dc__truncate">{category}</span>
+                                <Tooltip content={envCategory}>
+                                    <span className="dc__truncate">{envCategory}</span>
                                 </Tooltip>
                             )}
                             <Tooltip content={description}>
