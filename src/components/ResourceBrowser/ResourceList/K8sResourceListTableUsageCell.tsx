@@ -1,4 +1,4 @@
-import { SegmentedBarChart, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
+import { InfoIconTippy, isNullOrUndefined, SegmentedBarChart, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 export const K8sResourceListTableUsageCell = ({
     percentage,
@@ -14,7 +14,7 @@ export const K8sResourceListTableUsageCell = ({
     const percentageInNumber = parseInt(percentage, 10)
     const usagePercentage = Number.isNaN(percentageInNumber) ? 0 : percentageInNumber
 
-    return (
+    return !isNullOrUndefined(absoluteValue) ? (
         <Tooltip
             className="no-content-padding w-160"
             alwaysShowTippyOnHover
@@ -49,5 +49,29 @@ export const K8sResourceListTableUsageCell = ({
                 />
             </div>
         </Tooltip>
+    ) : (
+        <div className="flex left dc__gap-6">
+            <span>NA</span>
+            <InfoIconTippy
+                heading="Metrics API is not available"
+                additionalContent={
+                    <div className="dc__align-left dc__word-break dc__hyphens-auto fs-13 fw-4 lh-20 p-12">
+                        Devtron uses Kubernetes’s&nbsp;
+                        <a
+                            href="https://kubernetes.io/docs/tasks/debug/debug-cluster/resource-metrics-pipeline/#metrics-api"
+                            rel="noreferrer noopener"
+                            target="_blank"
+                        >
+                            Metrics API
+                        </a>
+                        &nbsp; to show CPU and Memory Capacity. Please install metrics-server in this cluster to display
+                        CPU and Memory Capacity.
+                    </div>
+                }
+                documentationLinkText="View metrics-server helm chart"
+                documentationLink="CHART_STORE_METRICS_SERVER"
+                iconClassName="icon-dim-20 fcn-5"
+            />
+        </div>
     )
 }
