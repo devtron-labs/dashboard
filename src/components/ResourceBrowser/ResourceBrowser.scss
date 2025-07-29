@@ -76,18 +76,6 @@
                 }
             }
         }
-
-        .resource-filter-options-container {
-            &__search-box {
-                width: 250px;
-
-                .resource-search-shortcut-key {
-                    right: 8px;
-                    top: 50%;
-                    transform: translateY(-50%);
-                }
-            }
-        }
     }
 }
 

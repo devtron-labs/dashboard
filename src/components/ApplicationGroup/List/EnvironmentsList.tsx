@@ -118,6 +118,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
                 autoFocus: true,
             }}
             dataTestId="environment-search-box"
+            keyboardShortcut="/"
         />
     )
 
