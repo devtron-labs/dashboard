@@ -36,7 +36,7 @@ export type EnvDrawerProps = { reload: () => void; hideClusterDrawer: () => void
     | ({ drawerType: 'editEnv'; clusterId: number; clusterName: string } & EnvDetails)
 )
 
-export type EnvironmentFormType = Omit<EnvDetails, 'isVirtualCluster' | 'envId'> & {
+export type EnvironmentFormType = Omit<EnvDetails, 'envId'> & {
     clusterId: number
 }
 
@@ -44,7 +44,6 @@ export type GetClusterEnvironmentUpdatePayloadType = Partial<Pick<ClusterNamespa
     data: EnvironmentFormType
     envId: number
     namespaceLabels?: TagType[]
-    isVirtualCluster: boolean
 }
 
 interface ClusterNamespacesLabel {
