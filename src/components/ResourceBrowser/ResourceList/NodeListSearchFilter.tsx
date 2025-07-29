@@ -251,9 +251,9 @@ const NodeListSearchFilter = ({
             <FilterChips<Partial<Record<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY, string[]>>>
                 className="px-20 py-16"
                 filterConfig={{
-                    [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP].map(
-                        ({ value }) => value,
-                    ),
+                    [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP]
+                        .filter(({ value }) => !!value)
+                        .map(({ value }) => value),
                     [NODE_SEARCH_KEYS.LABEL]: appliedFilters[NODE_SEARCH_KEYS.LABEL].map(({ value }) => value),
                     [NODE_K8S_VERSION_FILTER_KEY]: appliedFilters[NODE_K8S_VERSION_FILTER_KEY].map(
                         ({ value }) => value,
