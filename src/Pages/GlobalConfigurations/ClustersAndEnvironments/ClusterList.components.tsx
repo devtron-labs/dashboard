@@ -61,15 +61,7 @@ export const ClusterIconWithStatus = ({
     )
 }
 
-export const ClusterListCellComponent: FunctionComponent<
-    TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
-> = ({
-    field,
-    row: {
-        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
-    },
-    isRowActive,
-}: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
+export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: number; isVirtualCluster: boolean }) => {
     const { push } = useHistory()
     const { search } = useLocation()
 
@@ -120,6 +112,94 @@ export const ClusterListCellComponent: FunctionComponent<
         }
     }
 
+    return (
+        <div className="flex dc__gap-8">
+            <Button
+                dataTestId={`add-env-${clusterId}`}
+                ariaLabel={`add-env-${clusterId}`}
+                icon={<Icon name="ic-add" color={null} />}
+                showAriaLabelInTippy={false}
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.xs}
+                onClick={handleAddEnv}
+                showTooltip
+                tooltipProps={{
+                    content: 'Add Environment',
+                }}
+            />
+            <Button
+                dataTestId={`edit-cluster-${clusterId}`}
+                ariaLabel={`edit-cluster-${clusterId}`}
+                icon={<Icon name="ic-pencil" color={null} />}
+                variant={ButtonVariantType.borderLess}
+                showAriaLabelInTippy={false}
+                style={ButtonStyleType.neutral}
+                size={ComponentSizeType.xs}
+                onClick={handleEditCluster}
+                showTooltip
+                tooltipProps={{
+                    content: 'Edit Cluster',
+                }}
+            />
+            <ActionMenu
+                id="cluster-actions-action-menu"
+                onClick={handleActionMenuClick}
+                options={[
+                    ...(!isVirtualCluster && HibernationRulesModal
+                        ? [
+                              {
+                                  items: [
+                                      {
+                                          id: 'edit-pod-spread',
+                                          label: 'Edit Pod Spread',
+                                          startIcon: { name: 'ic-two-cubes' as IconName },
+                                      },
+                                      {
+                                          id: 'hibernation-rules',
+                                          label: 'Hibernation Rules',
+                                          startIcon: {
+                                              name: 'ic-hibernate-circle' as IconName,
+                                          },
+                                      },
+                                  ],
+                              },
+                          ]
+                        : []),
+                    {
+                        items: [
+                            {
+                                id: 'delete-cluster',
+                                label: 'Delete cluster',
+                                startIcon: { name: 'ic-delete' },
+                                isDisabled: clusterId === DEFAULT_CLUSTER_ID,
+                                type: 'negative',
+                            },
+                        ],
+                    },
+                ]}
+                buttonProps={{
+                    ariaLabel: 'cluster-actions',
+                    dataTestId: `cluster-actions-${clusterId}`,
+                    icon: <Icon name="ic-more-vertical" color={null} />,
+                    size: ComponentSizeType.xs,
+                    variant: ButtonVariantType.borderLess,
+                    style: ButtonStyleType.neutral,
+                    showAriaLabelInTippy: false,
+                }}
+            />
+        </div>
+    )
+}
+
+export const ClusterListCellComponent: FunctionComponent<
+    TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
+> = ({
+    field,
+    row: {
+        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
+    },
+    isRowActive,
+}: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
     switch (field) {
         case ClusterListFields.ICON:
             return (
@@ -163,82 +243,8 @@ export const ClusterListCellComponent: FunctionComponent<
             )
         case ClusterListFields.ACTIONS:
             return (
-                <div className={isRowActive ? '' : 'dc__opacity-hover--child'}>
-                    <div className="flex dc__gap-8 py-10">
-                        <Button
-                            dataTestId={`add-env-${clusterId}`}
-                            ariaLabel={`add-env-${clusterId}`}
-                            icon={<Icon name="ic-add" color={null} />}
-                            showAriaLabelInTippy={false}
-                            variant={ButtonVariantType.borderLess}
-                            size={ComponentSizeType.xs}
-                            onClick={handleAddEnv}
-                            showTooltip
-                            tooltipProps={{
-                                content: 'Add Environment',
-                            }}
-                        />
-                        <Button
-                            dataTestId={`edit-cluster-${clusterId}`}
-                            ariaLabel={`edit-cluster-${clusterId}`}
-                            icon={<Icon name="ic-pencil" color={null} />}
-                            variant={ButtonVariantType.borderLess}
-                            showAriaLabelInTippy={false}
-                            style={ButtonStyleType.neutral}
-                            size={ComponentSizeType.xs}
-                            onClick={handleEditCluster}
-                            showTooltip
-                            tooltipProps={{
-                                content: 'Edit Cluster',
-                            }}
-                        />
-                        <ActionMenu
-                            id="cluster-actions-action-menu"
-                            onClick={handleActionMenuClick}
-                            options={[
-                                ...(!isVirtualCluster && HibernationRulesModal
-                                    ? [
-                                          {
-                                              items: [
-                                                  {
-                                                      id: 'edit-pod-spread',
-                                                      label: 'Edit Pod Spread',
-                                                      startIcon: { name: 'ic-two-cubes' as IconName },
-                                                  },
-                                                  {
-                                                      id: 'hibernation-rules',
-                                                      label: 'Hibernation Rules',
-                                                      startIcon: {
-                                                          name: 'ic-hibernate-circle' as IconName,
-                                                      },
-                                                  },
-                                              ],
-                                          },
-                                      ]
-                                    : []),
-                                {
-                                    items: [
-                                        {
-                                            id: 'delete-cluster',
-                                            label: 'Delete cluster',
-                                            startIcon: { name: 'ic-delete' },
-                                            isDisabled: clusterId === DEFAULT_CLUSTER_ID,
-                                            type: 'negative',
-                                        },
-                                    ],
-                                },
-                            ]}
-                            buttonProps={{
-                                ariaLabel: 'cluster-actions',
-                                dataTestId: 'cluster-actions',
-                                icon: <Icon name="ic-more-vertical" color={null} />,
-                                size: ComponentSizeType.xs,
-                                variant: ButtonVariantType.borderLess,
-                                style: ButtonStyleType.neutral,
-                                showAriaLabelInTippy: false,
-                            }}
-                        />
-                    </div>
+                <div className={`${isRowActive ? '' : 'dc__opacity-hover--child'} py-10`}>
+                    <ClusterActions clusterId={clusterId} isVirtualCluster={isVirtualCluster} />
                 </div>
             )
         default:

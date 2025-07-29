@@ -36,7 +36,7 @@ import {
 } from './cluster.type'
 import { environmentNameComparator, getSelectParsedCategory } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
-import { ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
+import { ClusterActions, ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 import './cluster.scss'
@@ -292,7 +292,10 @@ const ClustersEnvironmentsList = ({
                 </Tooltip>
                 {showUnmappedEnvs ? <span>{(namespaceListResult?.result ?? []).length} Namespaces</span> : <span />}
                 <span>{isProd ? 'Production' : 'Non Production'}</span>
-                {category?.label && <span>{category.label}</span>}
+                {category?.label ? <span>{category.label}</span> : <span />}
+                <div className="flex right">
+                    <ClusterActions clusterId={clusterId} isVirtualCluster={isVirtualCluster} />
+                </div>
             </div>
             {/* Env and Namespace List */}
             {renderNamespaceEnvList()}
