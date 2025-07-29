@@ -64,8 +64,14 @@ export interface BulkOutput {
     secret: CMandSecretBulkOutput
 }
 
+export enum BulkEditViewType {
+    FORM = 'FORM',
+    LOADING_IMPACTED_OUTPUT = 'LOADING_IMPACTED_OUTPUT',
+    LOADING_OUTPUT = 'LOADING_OUTPUT',
+}
+
 export interface BulkEditsState {
-    view: string
+    view: BulkEditViewType
     statusCode: number
     isReadmeLoading: boolean
     impactedObjects: ImpactedObjects

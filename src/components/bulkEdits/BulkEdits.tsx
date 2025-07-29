@@ -28,7 +28,6 @@ import {
     ButtonVariantType,
     CodeEditor,
     ComponentSizeType,
-    ErrorScreenManager,
     GenericSectionErrorState,
     Icon,
     MarkDown,
@@ -49,7 +48,7 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { SERVER_MODE, ViewType } from '../../config'
+import { SERVER_MODE } from '../../config'
 import {
     OutputTabs,
     renderCMAndSecretImpObj,
@@ -58,7 +57,7 @@ import {
     renderSecretOutput,
 } from './bulkedit.utils'
 import { getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
-import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
+import { BulkEditsProps, BulkEditsState, BulkEditViewType } from './bulkEdits.type'
 import {
     BULK_EDIT_RESIZE_HANDLE_CLASS,
     INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE,
@@ -80,7 +79,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         super(props)
 
         this.state = {
-            view: ViewType.LOADING,
+            view: BulkEditViewType.FORM,
             statusCode: 0,
             outputResult: undefined,
             impactedObjects: undefined,
@@ -103,9 +102,6 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { serverMode } = this.props
 
         if (serverMode === SERVER_MODE.FULL) {
-            this.setState({
-                view: ViewType.LOADING,
-            })
             this.getInitialized()
         }
     }
@@ -127,7 +123,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
 
                 this.setState({
                     isReadmeLoading: false,
-                    view: ViewType.FORM,
+                    view: BulkEditViewType.FORM,
                     readmeResult: { [BulkEditVersion.v1]: v1Readme, [BulkEditVersion.v2]: v2Readme },
                 })
             })
@@ -138,7 +134,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { codeEditorPayload } = this.state
 
         this.setState({
-            view: ViewType.LOADING,
+            view: BulkEditViewType.LOADING_OUTPUT,
         })
 
         let configJson: any = {}
@@ -150,7 +146,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                 variant: ToastVariantType.error,
                 description: 'Invalid Yaml',
             })
-            this.setState({ view: ViewType.FORM })
+            this.setState({ view: BulkEditViewType.FORM })
             return
         }
         const errorMessage = []
@@ -163,7 +159,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                 const outputResult = response.result
                 this.setState({
                     statusCode: 0,
-                    view: ViewType.FORM,
+                    view: BulkEditViewType.FORM,
                     activeOutputTab: 'output',
                     outputResult,
                     impactedObjects: undefined,
@@ -171,7 +167,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code })
+                this.setState({ view: BulkEditViewType.FORM, statusCode: error.code })
             })
     }
 
@@ -179,7 +175,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { codeEditorPayload } = this.state
 
         this.setState({
-            view: ViewType.LOADING,
+            view: BulkEditViewType.LOADING_IMPACTED_OUTPUT,
         })
 
         let configJson: any = {}
@@ -191,7 +187,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                 variant: ToastVariantType.error,
                 description: 'Invalid Yaml',
             })
-            this.setState({ view: ViewType.FORM })
+            this.setState({ view: BulkEditViewType.FORM })
             return
         }
 
@@ -202,7 +198,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                 const impactedObjects = response.result
                 this.setState({
                     statusCode: 0,
-                    view: ViewType.FORM,
+                    view: BulkEditViewType.FORM,
                     impactedObjects,
                     outputResult: undefined,
                     activeOutputTab: 'impacted',
@@ -210,23 +206,23 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code })
+                this.setState({ view: BulkEditViewType.FORM, statusCode: error.code })
             })
     }
 
     handleReferSampleScriptClick = () => this.setState({ showExamples: true })
 
     renderCodeEditorHeader = () => {
-        const { showExamples } = this.state
+        const { showExamples, view } = this.state
 
         return (
             <div className="flex bg__primary px-16 py-8 border__secondary--bottom dc__content-space">
                 <div className="flexbox dc__gap-12">
-                    <h1 className="m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans">Script</h1>
+                    <h1 className="m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans">Payload</h1>
                     {!showExamples && (
                         <Button
                             dataTestId="refer-sample-script-button"
-                            text="Refer Sample Script"
+                            text="Refer Sample Payload"
                             variant={ButtonVariantType.text}
                             size={ComponentSizeType.medium}
                             onClick={this.handleReferSampleScriptClick}
@@ -241,6 +237,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         dataTestId="show-impacted-objects-button"
                         size={ComponentSizeType.small}
                         variant={ButtonVariantType.secondary}
+                        isLoading={view === BulkEditViewType.LOADING_IMPACTED_OUTPUT}
                     />
                     <Button
                         text="Run"
@@ -248,6 +245,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         dataTestId="run-button"
                         startIcon={<Icon name="ic-play-outline" color={null} />}
                         size={ComponentSizeType.small}
+                        isLoading={view === BulkEditViewType.LOADING_OUTPUT}
                     />
                 </div>
             </div>
@@ -367,8 +365,8 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     renderOutputs = () => {
         const { view, outputResult } = this.state
 
-        if (view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+        if (view === BulkEditViewType.LOADING_OUTPUT) {
+            return <Progressing size={32} />
         }
 
         if (!outputResult) {
@@ -475,8 +473,8 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     renderImpactedObjects = () => {
         const { view, impactedObjects } = this.state
 
-        if (view === ViewType.LOADING) {
-            return <Progressing pageLoader />
+        if (view === BulkEditViewType.LOADING_IMPACTED_OUTPUT) {
+            return <Progressing size={32} />
         }
 
         if (!impactedObjects) {
@@ -549,7 +547,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const readmeJson = readmeResult[selectedReadmeVersionOption.value]
 
         if (isReadmeLoading) {
-            return <Progressing pageLoader />
+            return <Progressing size={32} />
         }
 
         if (!readmeJson) {
@@ -590,22 +588,14 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     }
 
     render() {
-        const { view, statusCode } = this.state
-        if (view === ViewType.ERROR) {
-            return (
-                <div className="dc__align-reload-center">
-                    <ErrorScreenManager code={statusCode} />
-                </div>
-            )
-        }
-
         return (
             <div className="fs-13 flexbox-col flex-grow-1 h-100 dc__overflow-hidden">
                 <PageHeader
                     headerName="Bulk Edit"
                     tippyProps={{
                         isTippyCustomized: true,
-                        tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
+                        tippyMessage:
+                            'Execute payloads to perform bulk configuration changes across multiple Devtron components.',
                         tippyRedirectLink: 'BULK_UPDATE',
                     }}
                 />
