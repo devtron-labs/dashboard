@@ -158,7 +158,6 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                             className="dc__transparent dc__no-shrink flexbox"
                             aria-label="close-modal"
                             onClick={handleClose}
-                            disabled={showLoadingState}
                         >
                             <Close className="icon-dim-24" />
                         </button>

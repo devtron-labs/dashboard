@@ -432,6 +432,7 @@ const GitInfoMaterial = ({
             ]}
             buttonProps={{
                 dataTestId: selectedMaterial.showAllCommits ? 'show-icon-filter' : 'show-icon-filter-applied',
+                disabled: selectedMaterial.isMaterialLoading,
                 ariaLabel: selectedMaterial.showAllCommits ? 'Show excluded commits' : 'Hide excluded commits',
                 icon: (
                     <Icon
