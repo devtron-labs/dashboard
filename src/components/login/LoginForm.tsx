@@ -43,7 +43,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
     const [loading, setLoading] = useState(false)
     const [form, setForm] = useState({
         username: 'admin',
-        password: '',
+        password: import.meta.env.VITE_ADMIN_PASSWORD ?? '',
     })
     const [errorMessage, setErrorMessage] = useState({
         username: {

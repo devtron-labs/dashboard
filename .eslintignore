@@ -4,6 +4,7 @@
 *.test.tsx
 .eslintrc.js
 vite.config.mts
+secrets.js
 
 # The following files have eslint errors/warnings
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
