@@ -99,9 +99,9 @@ export interface JobListPayload
 }
 
 export interface JobsMasterFilters {
-    status: SelectPickerOptionType[]
-    projects: SelectPickerOptionType[]
-    environments: SelectPickerOptionType[]
+    status: SelectPickerOptionType<JobListStatusDTO, JobListStatus>[]
+    projects: SelectPickerOptionType<string, string>[]
+    environments: SelectPickerOptionType<string, string>[]
 }
 
 export interface JobListFilterConfig
@@ -122,7 +122,7 @@ export interface JobListProps
     jobListCount: number
     openJobCreateModel: (event) => void
     setJobCount: React.Dispatch<React.SetStateAction<number>>
-    getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => React.ReactNode
+    getLabelFromValue: (filterKey: JobListUrlFilters, filterValue: string) => string
 }
 
 export interface JobListViewProps

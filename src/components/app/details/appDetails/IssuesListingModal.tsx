@@ -16,9 +16,15 @@
 
 import { useEffect, useRef } from 'react'
 
-import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Drawer,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-warning.svg'
 import { IssuesListingModalType } from './appDetails.type'
 
@@ -62,9 +68,16 @@ const IssuesListingModal = ({ errorsList, closeIssuesListingModal }: IssuesListi
                             {getErrorCountText()}
                         </div>
                     </div>
-                    <span className="cursor" onClick={closeIssuesListingModal} data-testid="issues-listing-modal-cross">
-                        <Close className="icon-dim-20" />
-                    </span>
+                    <Button
+                        dataTestId="issues-listing-modal-cross"
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.negativeGrey}
+                        size={ComponentSizeType.xxs}
+                        onClick={closeIssuesListingModal}
+                        ariaLabel="close-modal"
+                        showAriaLabelInTippy={false}
+                    />
                 </div>
                 <div className="issues-listing-modal__body" data-testid="issues-listing-modal-body">
                     <div className="issues-listing-modal__body__head-row">

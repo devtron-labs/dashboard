@@ -21,27 +21,27 @@ import { ClusterNamespacesDTO, GetClusterEnvironmentUpdatePayloadType } from './
 const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 
 export const getClusterEnvironmentUpdatePayload = ({
-    id,
     data,
-    clusterId,
+    envId,
     namespaceLabels,
     resourceVersion,
-    isVirtual = false,
+    isVirtualCluster,
 }: GetClusterEnvironmentUpdatePayloadType) =>
-    isVirtual
+    isVirtualCluster
         ? {
-              id,
-              environment_name: data.environmentName,
+              id: envId,
+              environment_name: data.envName,
               namespace: data.namespace || '',
               IsVirtualEnvironment: true,
-              cluster_id: +clusterId,
+              cluster_id: data.clusterId,
               description: data.description || '',
               ...(getCategoryPayload ? getCategoryPayload(data.category) : null),
+              isProd: data.isProduction,
           }
         : {
-              id,
-              environment_name: data.environmentName,
-              cluster_id: +clusterId,
+              id: envId,
+              environment_name: data.envName,
+              cluster_id: data.clusterId,
               namespace: data.namespace || '',
               active: true,
               default: data.isProduction,
