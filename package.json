@@ -49,6 +49,7 @@
         "lint": "tsc --noEmit && eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",
+        "dev": "node scripts/dev-with-secrets.js",
         "build": "NODE_OPTIONS=--max_old_space_size=8192 vite build",
         "serve": "vite preview",
         "build-light": "NODE_OPTIONS=--max_old_space_size=8192 GENERATE_SOURCEMAP=false vite build",
