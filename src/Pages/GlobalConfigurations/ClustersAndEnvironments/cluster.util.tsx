@@ -33,6 +33,7 @@ import {
     ClusterEnvFilterKeys,
     ClusterTerminalParamsType,
     emptyClusterTerminalParamsData,
+    Environment,
 } from './cluster.type'
 import { ADD_CLUSTER_FORM_LOCAL_STORAGE_KEY, ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
@@ -169,3 +170,13 @@ export const getBulletColorAccToStatus = (status: ClusterStatusType) => {
             return 'bcr-5'
     }
 }
+
+export const getNamespaceCount = ({
+    isVirtualCluster,
+    envList,
+    namespaceList,
+}: {
+    isVirtualCluster: boolean
+    envList: Environment[]
+    namespaceList: string[]
+}) => (isVirtualCluster ? (envList ?? []).filter(({ namespace }) => !!namespace).length : (namespaceList ?? []).length)

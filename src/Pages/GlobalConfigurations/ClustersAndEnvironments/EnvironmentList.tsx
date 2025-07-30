@@ -34,7 +34,7 @@ import {
     EnvListSortableKeys,
     EnvNamespaceRowType,
 } from './cluster.type'
-import { environmentNameComparator, getSelectParsedCategory } from './cluster.util'
+import { environmentNameComparator, getNamespaceCount, getSelectParsedCategory } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import { ClusterActions, ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
@@ -290,7 +290,18 @@ const ClustersEnvironmentsList = ({
                         <span className="dc__ellipsis-right">({environments.length} Environments)</span>
                     </div>
                 </Tooltip>
-                {showUnmappedEnvs ? <span>{(namespaceListResult?.result ?? []).length} Namespaces</span> : <span />}
+                {showUnmappedEnvs ? (
+                    <span>
+                        {getNamespaceCount({
+                            isVirtualCluster,
+                            envList: environments,
+                            namespaceList: namespaceListResult?.result,
+                        })}
+                        &nbsp;Namespaces
+                    </span>
+                ) : (
+                    <span />
+                )}
                 <span>{isProd ? 'Production' : 'Non Production'}</span>
                 {category?.label ? <span>{category.label}</span> : <span />}
                 <div className="flex right">
