@@ -92,8 +92,7 @@ export const Routes = {
 
     JOB_CI_DETAIL: 'job/ci-pipeline/list',
 
-    BULK_UPDATE_APIVERSION: 'batch/v1beta1',
-    BULK_UPDATE_KIND: 'application',
+    BULK_EDIT_V1_BASEPATH: 'batch/v1beta1/application',
 
     LINKED_CI_DOWNSTREAM: 'linked-ci/downstream',
 
