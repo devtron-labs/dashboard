@@ -526,7 +526,7 @@ const DeployImageContent = ({
                 )}
 
             <div
-                className={`flex-grow-1 dc__overflow-auto ${isPreOrPostCD && !isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col py-16 px-20'}`}
+                className={`flex-grow-1 dc__overflow-auto ${isPreOrPostCD && !isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1 h-100 py-16 px-20'}`}
             >
                 {renderSidebar()}
 

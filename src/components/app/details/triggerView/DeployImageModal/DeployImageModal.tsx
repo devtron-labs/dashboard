@@ -774,32 +774,34 @@ const DeployImageModal = ({
                     onClick={stopPropagation}
                 >
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        <DeployImageHeader
-                            handleClose={handleClose}
-                            envName={envName}
-                            stageType={stageType}
-                            isRollbackTrigger={isRollbackTrigger}
-                            isVirtualEnvironment={isVirtualEnvironment}
-                            handleNavigateToMaterialListView={showConfigDiffView ? handleNavigateToListView : null}
-                        >
-                            {showConfigDiffView && selectedMaterial && (
-                                <ArtifactInfo
-                                    {...getTriggerArtifactInfoProps({
-                                        material: selectedMaterial,
-                                        showApprovalInfoTippy:
-                                            (isCDNode || isRollbackTrigger) &&
-                                            isApprovalConfigured &&
-                                            ApprovalInfoTippy,
-                                        isRollbackTrigger,
-                                        appId,
-                                        pipelineId,
-                                        isExceptionUser,
-                                        reloadMaterials: reloadInitialData,
-                                        requestedUserId,
-                                    })}
-                                />
-                            )}
-                        </DeployImageHeader>
+                        {!deployViewState.showAppliedFilters && !deployViewState.showConfiguredFilters && (
+                            <DeployImageHeader
+                                handleClose={handleClose}
+                                envName={envName}
+                                stageType={stageType}
+                                isRollbackTrigger={isRollbackTrigger}
+                                isVirtualEnvironment={isVirtualEnvironment}
+                                handleNavigateToMaterialListView={showConfigDiffView ? handleNavigateToListView : null}
+                            >
+                                {showConfigDiffView && selectedMaterial && (
+                                    <ArtifactInfo
+                                        {...getTriggerArtifactInfoProps({
+                                            material: selectedMaterial,
+                                            showApprovalInfoTippy:
+                                                (isCDNode || isRollbackTrigger) &&
+                                                isApprovalConfigured &&
+                                                ApprovalInfoTippy,
+                                            isRollbackTrigger,
+                                            appId,
+                                            pipelineId,
+                                            isExceptionUser,
+                                            reloadMaterials: reloadInitialData,
+                                            requestedUserId,
+                                        })}
+                                    />
+                                )}
+                            </DeployImageHeader>
+                        )}
 
                         <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
                     </div>
