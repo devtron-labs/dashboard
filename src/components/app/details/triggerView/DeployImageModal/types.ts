@@ -24,7 +24,9 @@ import {
     RuntimeParamsErrorState,
 } from '../types'
 
-export interface DeployImageModalProps {
+export interface DeployViewStateType {}
+
+export type DeployImageModalProps = {
     appId: number
     envId: number
     appName: string

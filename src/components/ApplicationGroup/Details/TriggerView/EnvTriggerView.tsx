@@ -43,13 +43,11 @@ import {
     ServerErrors,
     showError,
     sortCallback,
-    stopPropagation,
     ToastManager,
     ToastVariantType,
     TriggerBlockType,
     triggerCDNode,
     usePrompt,
-    VisibleModal,
     WorkflowNodeType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -59,14 +57,12 @@ import { shouldRenderWebhookAddImageModal } from '@Components/app/details/trigge
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { URLS, ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import { CIMaterialRouterProps, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
@@ -101,6 +97,7 @@ import { RenderCDMaterialContentProps } from './types'
 import { getSelectedCDNode, getSelectedNodeAndAppId, getSelectedNodeAndMeta } from './utils'
 
 import './EnvTriggerView.scss'
+import { DeployImageModal } from '@Components/app/details/triggerView/DeployImageModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
@@ -143,6 +140,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const [filteredWorkflows, setFilteredWorkflows] = useState<WorkflowType[]>([])
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
+    // TODO: Not needed
     const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
     const [isSelectAll, setSelectAll] = useState(false)
@@ -479,14 +477,12 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             })
     }
 
-    const closeCDModal = (e: React.MouseEvent): void => {
-        e?.stopPropagation()
+    const closeCDModal = (): void => {
         abortControllerRef.current.abort()
         setCDLoading(false)
         history.push({
             search: '',
         })
-        getWorkflowStatusData(workflows)
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
@@ -1034,27 +1030,30 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             true,
         )
 
+        const cdMaterialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
+            ? MATERIAL_TYPE.inputMaterialList
+            : MATERIAL_TYPE.rollbackMaterialList
+
         return (
-            <CDMaterial
-                materialType={materialType}
+            <DeployImageModal
                 appId={appId}
                 envId={node?.environmentId}
-                pipelineId={+node.id}
+                appName={selectedAppName}
                 stageType={node.type as DeploymentNodeType}
                 envName={node?.environmentName}
-                closeCDModal={closeCDModal}
-                triggerType={node?.triggerType}
-                isVirtualEnvironment={isVirtualEnv}
-                parentEnvironmentName={node?.parentEnvironmentName}
-                // Wont need it and it might be isCDLoading
-                isLoading={isCILoading}
-                ciPipelineId={node?.connectingCiPipelineId}
+                pipelineId={+node.id}
+                materialType={cdMaterialType}
+                handleClose={closeCDModal}
+                handleSuccess={getWorkflowStatusData}
                 deploymentAppType={node?.deploymentAppType}
-                selectedAppName={selectedAppName}
+                isVirtualEnvironment={isVirtualEnv}
                 showPluginWarningBeforeTrigger={node?.showPluginWarning}
                 consequence={node?.pluginBlockState}
                 configurePluginURL={configurePluginURL}
                 isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
+                triggerType={node?.triggerType}
+                isRedirectedFromAppDetails={false}
+                parentEnvironmentName={node?.parentEnvironmentName}
             />
         )
     }
@@ -1064,51 +1063,23 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
             location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
         ) {
-
-            const { node, appId, workflowId, appName, selectedCINode } = getSelectedNodeAndMeta(filteredWorkflows, location.search)
+            const { node, appId, workflowId, appName, selectedCINode } = getSelectedNodeAndMeta(
+                filteredWorkflows,
+                location.search,
+            )
 
             if (!node?.id) {
                 return null
             }
 
-            const cdMaterialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
-                ? MATERIAL_TYPE.inputMaterialList
-                : MATERIAL_TYPE.rollbackMaterialList
-
-            const material = node[cdMaterialType] || []
-
-            return (
-                <VisibleModal parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                    <div
-                        className={`modal-body--cd-material h-100 contains-diff-view flexbox-col ${
-                            material.length > 0 ? '' : 'no-material'
-                        }`}
-                        onClick={stopPropagation}
-                    >
-                        {isCDLoading ? (
-                            <>
-                                <div className="trigger-modal__header flex right">
-                                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                                        <CloseIcon />
-                                    </button>
-                                </div>
-                                <div className="flex-grow-1">
-                                    <Progressing pageLoader size={32} />
-                                </div>
-                            </>
-                        ) : (
-                            renderCDMaterialContent({
-                                node,
-                                appId,
-                                selectedAppName: appName,
-                                workflowId,
-                                doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
-                                ciNodeId: selectedCINode?.id,
-                            })
-                        )}
-                    </div>
-                </VisibleModal>
-            )
+            return renderCDMaterialContent({
+                node,
+                appId,
+                selectedAppName: appName,
+                workflowId,
+                doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
+                ciNodeId: selectedCINode?.id,
+            })
         }
 
         return null
