@@ -27,6 +27,7 @@ import {
     MODAL_TYPE,
     ModuleNameMap,
     ModuleStatus,
+    noop,
     PipelineDeploymentStrategy,
     ServerErrors,
     showError,
@@ -53,13 +54,13 @@ import { CDButtonLabelMap } from '../config'
 import { CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { PipelineConfigDiff, usePipelineDeploymentConfig } from '../PipelineConfigDiff'
 import { PipelineConfigDiffStatusTile } from '../PipelineConfigDiff/PipelineConfigDiffStatusTile'
-import { FilterConditionViews, HandleRuntimeParamChange, MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
+import { FilterConditionViews, MATERIAL_TYPE } from '../types'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
 import MaterialListSkeleton from './MaterialListSkeleton'
 import RuntimeParamsSidebar from './RuntimeParamsSidebar'
 import { getMaterialResponseList } from './service'
-import { DeployImageContentProps, DeployImageModalProps, RuntimeParamsSidebarProps } from './types'
+import { DeployImageContentProps, DeployImageModalProps, DeployViewStateType } from './types'
 import {
     getAllowWarningWithTippyNodeTypeProp,
     getCDArtifactId,
@@ -142,24 +143,26 @@ const DeployImageModal = ({
         !!getDeploymentStrategies && !!pipelineId,
     )
 
-    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<RuntimeParamsErrorState>({
-        isValid: true,
-        cellError: {},
-    })
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyType | null>(null)
     const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
-    const [searchText, setSearchText] = useState<string>(searchImageTag)
-    const [filterView, setFilterView] = useState<FilterConditionViews>(FilterConditionViews.ALL)
-    const [showConfiguredFilters, setShowConfiguredFilters] = useState<boolean>(false)
-    const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
-    const [appliedFilterList, setAppliedFilterList] = useState<DeployImageContentProps['appliedFilterList']>([])
-    const [isLoadingOlderImages, setIsLoadingOlderImages] = useState<boolean>(false)
-    const [materialInEditModeMap, setMaterialInEditModeMap] = useState<
-        DeployImageContentProps['materialInEditModeMap']
-    >(new Map())
+
+    const [deployViewState, setDeployViewState] = useState<Omit<DeployViewStateType, 'appliedSearchText'>>({
+        searchText: searchImageTag,
+        filterView: FilterConditionViews.ALL,
+        showConfiguredFilters: false,
+        currentSidebarTab: CDMaterialSidebarType.IMAGE,
+        runtimeParamsErrorState: {
+            isValid: true,
+            cellError: {},
+        },
+        materialInEditModeMap: new Map(),
+        showAppliedFilters: false,
+        appliedFilterList: [],
+        isLoadingOlderImages: false,
+        showSearchBar: false,
+    })
 
     const isCDNode = stageType === DeploymentNodeType.CD
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
@@ -226,10 +229,6 @@ const DeployImageModal = ({
         wfrId,
     })
 
-    const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (e) => {
-        setCurrentSidebarTab(e.target.value as CDMaterialSidebarType)
-    }
-
     const handleClosePluginWarningOverlay = () => {
         setShowPluginWarningOverlay(false)
     }
@@ -264,32 +263,18 @@ const DeployImageModal = ({
         })
     }
 
-    const handleEnableFiltersView = () => {
-        setShowConfiguredFilters(true)
-    }
-
-    const handleDisableFiltersView = () => {
-        setShowConfiguredFilters(false)
-    }
-
-    const handleFilterTabsChange: DeployImageContentProps['handleFilterTabsChange'] = (selectedSegment) => {
-        const { value } = selectedSegment
-        setFilterView(value as FilterConditionViews)
-    }
-
-    const handleAllImagesView = () => {
-        setFilterView(FilterConditionViews.ALL)
-    }
-
     const loadOlderImages = async () => {
         // TODO: Move to util
         handleAnalyticsEvent(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
-        if (!isLoadingOlderImages) {
+        if (!deployViewState.isLoadingOlderImages) {
             // TODO: Move to util
             const isConsumedImageAvailable =
                 materialList.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
 
-            setIsLoadingOlderImages(true)
+            setDeployViewState((prevState) => ({
+                ...prevState,
+                isLoadingOlderImages: true,
+            }))
 
             try {
                 const newMaterialsResponse = await genericCDMaterialsService(
@@ -335,7 +320,7 @@ const DeployImageModal = ({
                             ? 'No new eligible images found.'
                             : `${eligibleImages} new eligible images found.`
 
-                    if (filterView === FilterConditionViews.ELIGIBLE) {
+                    if (deployViewState.filterView === FilterConditionViews.ELIGIBLE) {
                         ToastManager.showToast({
                             variant: ToastVariantType.info,
                             description: `${baseSuccessMessage} ${infoMessage}`,
@@ -355,31 +340,17 @@ const DeployImageModal = ({
             } catch (error) {
                 showError(error)
             } finally {
-                setIsLoadingOlderImages(false)
+                setDeployViewState((prevState) => ({
+                    ...prevState,
+                    isLoadingOlderImages: false,
+                }))
             }
         }
-    }
-
-    const handleImageSelection: DeployImageContentProps['handleImageSelection'] = (materialIndex) => {
-        const updatedMaterialList = materialList.map((material, index) => ({
-            ...material,
-            isSelected: index === materialIndex,
-        }))
-
-        setInitialData((prevData) => {
-            const updatedMaterialResponse = structuredClone(prevData[0])
-            updatedMaterialResponse.materials = updatedMaterialList
-            return [updatedMaterialResponse, prevData[1], prevData[2]]
-        })
     }
 
     const handleReviewConfigParams = () => onClickSetInitialParams(URL_PARAM_MODE_TYPE.REVIEW_CONFIG)
 
     const handleNavigateToListView = () => onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)
-
-    const onRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
-        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
-    }
 
     const isDeployButtonDisabled = () => {
         const selectedImage = materialList.find((artifact) => artifact.isSelected)
@@ -435,7 +406,10 @@ const DeployImageModal = ({
         computedWfrId?: number,
     ) => {
         const updatedRuntimeParamsErrorState = validateRuntimeParameters(runtimeParamsList)
-        onRuntimeParamsError(updatedRuntimeParamsErrorState)
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            runtimeParamsErrorState: updatedRuntimeParamsErrorState,
+        }))
         if (!updatedRuntimeParamsErrorState.isValid) {
             ToastManager.showToast({
                 variant: ToastVariantType.error,
@@ -554,16 +528,6 @@ const DeployImageModal = ({
         }
     }
 
-    const handleShowAppliedFilters: DeployImageContentProps['handleShowAppliedFilters'] = (materialData) => {
-        setAppliedFilterList(materialData?.appliedFilters ?? [])
-        setShowAppliedFilters(true)
-    }
-
-    const handleDisableAppliedFiltersView = () => {
-        setAppliedFilterList([])
-        setShowAppliedFilters(false)
-    }
-
     const getDeployButtonStyle = (
         userActionState: string,
         canDeployWithoutApproval: boolean,
@@ -578,76 +542,21 @@ const DeployImageModal = ({
         return ButtonStyleType.default
     }
 
-    const setTagsEditable: DeployImageContentProps['setTagsEditable'] = (tagsEditable) => {
-        const newMaterialResponse = structuredClone(materialResponse)
-        newMaterialResponse.tagsEditable = tagsEditable
-        setInitialData((prevData) => [newMaterialResponse, prevData[1], prevData[2]])
-    }
-
-    const setAppReleaseTagNames: DeployImageContentProps['setAppReleaseTagNames'] = (appReleaseTagNames) => {
-        const newMaterialResponse = structuredClone(materialResponse)
-        newMaterialResponse.appReleaseTagNames = appReleaseTagNames
-        setInitialData((prevData) => [newMaterialResponse, prevData[1], prevData[2]])
-    }
-
-    // TODO: This state can be in DeployImageContent ig
-    const toggleCardMode: DeployImageContentProps['toggleCardMode'] = (index: number) => {
-        setMaterialInEditModeMap((prevMap) => {
-            const newMap = new Map(prevMap)
-            newMap.set(index, !newMap.get(index))
-            return newMap
-        })
-    }
-
-    const updateCurrentAppMaterial: DeployImageContentProps['updateCurrentAppMaterial'] = (
-        matId,
-        imageReleaseTags,
-        imageComment,
-    ) => {
-        const updatedMaterialList = materialList.map((material) => {
-            if (+material.id === +matId) {
-                return {
-                    ...material,
-                    imageReleaseTags,
-                    imageComment,
-                }
-            }
-            return material
-        })
-        setInitialData((prevData) => {
-            const updatedMaterialResponse = structuredClone(prevData[0])
-            updatedMaterialResponse.materials = updatedMaterialList
-            return [updatedMaterialResponse, prevData[1], prevData[2]]
-        })
-    }
-
     const onSearchApply = (newSearchText: string) => {
-        setSearchText(newSearchText)
         const newParams = new URLSearchParams({
             ...searchParams,
             search: newSearchText,
         })
 
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            searchText: newSearchText,
+        }))
+
         history.push({
             pathname,
             search: newParams.toString(),
         })
-    }
-
-    const onSearchTextChange = (newSearchText: string) => {
-        setSearchText(newSearchText)
-    }
-
-    const handleRuntimeParamsChange: HandleRuntimeParamChange = (updatedRuntimeParamsList) => {
-        setInitialData((prevData) => {
-            const updatedMaterialResponse = structuredClone(prevData[0])
-            updatedMaterialResponse.runtimeParams = updatedRuntimeParamsList
-            return [updatedMaterialResponse, prevData[1], prevData[2]]
-        })
-    }
-
-    const handleRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
-        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
     }
 
     const uploadRuntimeParamsFile: DeployImageContentProps['uploadRuntimeParamsFile'] = ({
@@ -689,6 +598,13 @@ const DeployImageModal = ({
                 }
             />
         )
+    }
+
+    const setMaterialResponse: DeployImageContentProps['setMaterialResponse'] = (callback) => {
+        setInitialData((prevData) => {
+            const updatedMaterialResponse = callback(structuredClone(prevData[0]))
+            return [updatedMaterialResponse, prevData[1], prevData[2]]
+        })
     }
 
     const renderFooter = () => {
@@ -769,6 +685,11 @@ const DeployImageModal = ({
         )
     }
 
+    const deployViewStateProps: DeployImageContentProps['deployViewState'] = {
+        ...deployViewState,
+        appliedSearchText: searchImageTag,
+    }
+
     const renderContent = () => {
         if (isInitialDataLoading) {
             return (
@@ -778,9 +699,9 @@ const DeployImageModal = ({
                     {isPreOrPostCD && (
                         <RuntimeParamsSidebar
                             areTabsDisabled
-                            currentSidebarTab={currentSidebarTab}
-                            handleSidebarTabChange={handleSidebarTabChange}
-                            runtimeParamsErrorState={runtimeParamsErrorState}
+                            currentSidebarTab={deployViewState.currentSidebarTab}
+                            handleSidebarTabChange={noop}
+                            runtimeParamsErrorState={deployViewState.runtimeParamsErrorState}
                             appName={appName}
                         />
                     )}
@@ -826,43 +747,21 @@ const DeployImageModal = ({
                 pipelineId={pipelineId}
                 handleClose={handleClose}
                 isRedirectedFromAppDetails={isRedirectedFromAppDetails}
-                isSearchApplied={!!searchImageTag}
-                searchText={searchText}
+                deployViewState={deployViewStateProps}
                 onSearchApply={onSearchApply}
-                onSearchTextChange={onSearchTextChange}
-                filterView={filterView}
-                showConfiguredFilters={showConfiguredFilters}
                 stageType={stageType}
-                currentSidebarTab={currentSidebarTab}
-                handleRuntimeParamsChange={handleRuntimeParamsChange}
-                runtimeParamsErrorState={runtimeParamsErrorState}
-                handleRuntimeParamsError={handleRuntimeParamsError}
                 uploadRuntimeParamsFile={uploadRuntimeParamsFile}
-                handleSidebarTabChange={handleSidebarTabChange}
                 appName={appName}
                 isSecurityModuleInstalled={isSecurityModuleInstalled}
                 envName={envName}
-                handleShowAppliedFilters={handleShowAppliedFilters}
                 reloadMaterials={reloadInitialData}
                 parentEnvironmentName={parentEnvironmentName}
                 isVirtualEnvironment={isVirtualEnvironment}
-                handleImageSelection={handleImageSelection}
-                setAppReleaseTagNames={setAppReleaseTagNames}
-                materialInEditModeMap={materialInEditModeMap}
-                toggleCardMode={toggleCardMode}
-                setTagsEditable={setTagsEditable}
-                updateCurrentAppMaterial={updateCurrentAppMaterial}
-                handleEnableFiltersView={handleEnableFiltersView}
-                handleDisableFiltersView={handleDisableFiltersView}
-                handleFilterTabsChange={handleFilterTabsChange}
                 loadOlderImages={loadOlderImages}
-                isLoadingOlderImages={isLoadingOlderImages}
                 policyConsequences={policyConsequences}
-                handleAllImagesView={handleAllImagesView}
                 triggerType={triggerType}
-                handleDisableAppliedFiltersView={handleDisableAppliedFiltersView}
-                showAppliedFilters={showAppliedFilters}
-                appliedFilterList={appliedFilterList}
+                setMaterialResponse={setMaterialResponse}
+                setDeployViewState={setDeployViewState}
             />
         )
     }

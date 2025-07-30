@@ -1,11 +1,3 @@
-/**
- * Service layer requirements:
- * - We need to have filteredCIPipelines
- * - Will find the selected pipeline from filteredCIPipelines from which we will get envId [in case of job view]
- * - isLoading as prop for when workflows are loading
- * - If !isLoading and filteredCIPipelines does not contain the selected pipeline, we will show error
- */
-
 import { useEffect, useRef, useState } from 'react'
 import { Prompt, useHistory, useParams } from 'react-router-dom'
 

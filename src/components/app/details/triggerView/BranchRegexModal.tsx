@@ -72,7 +72,7 @@ const BranchRegexModal = ({
     const isRegexValueInvalid = (_cm): void => {
         const regExp = new RegExp(_cm.source.regex)
         const regVal = structuredClone(regexValue[_cm.gitMaterialId])
-        if (!regExp.test(regVal.value)) {
+        if (!regExp.test(regVal.value) || !regVal.value) {
             const _regexVal = {
                 ...regexValue,
                 [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },

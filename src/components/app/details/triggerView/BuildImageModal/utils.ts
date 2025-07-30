@@ -63,7 +63,7 @@ export const getTriggerBuildPayload = ({
 
         const history = material.history.filter((historyItem) => historyItem.isSelected)
         if (!history.length) {
-            history.push(material.history[0])
+            return
         }
 
         history.forEach((element) => {

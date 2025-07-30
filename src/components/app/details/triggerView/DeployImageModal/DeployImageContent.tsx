@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -25,6 +25,7 @@ import {
     MaterialInfo,
     Progressing,
     SearchBar,
+    SegmentedControlProps,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -32,11 +33,11 @@ import { importComponentFromFELibrary } from '@Components/common'
 
 import { TriggerViewContext } from '../config'
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
-import { TriggerViewContextType } from '../types'
+import { FilterConditionViews, HandleRuntimeParamChange, TriggerViewContextType } from '../types'
 import ImageSelectionCTA from './ImageSelectionCTA'
 import MaterialListEmptyState from './MaterialListEmptyState'
 import RuntimeParamsSidebar from './RuntimeParamsSidebar'
-import { DeployImageContentProps } from './types'
+import { DeployImageContentProps, ImageSelectionCTAProps, RuntimeParamsSidebarProps } from './types'
 import {
     getApprovedImageClass,
     getConsumedAndAvailableMaterialList,
@@ -71,50 +72,26 @@ const DeployImageContent = ({
     pipelineId,
     handleClose,
     isRedirectedFromAppDetails,
-    isSearchApplied,
-    searchText,
     onSearchApply,
-    onSearchTextChange,
-    filterView,
-    showConfiguredFilters,
     stageType,
-    currentSidebarTab,
-    handleRuntimeParamsChange,
-    runtimeParamsErrorState,
-    handleRuntimeParamsError,
     uploadRuntimeParamsFile,
-    handleSidebarTabChange,
     appName,
-    materialInEditModeMap,
     isSecurityModuleInstalled,
     envName,
-    handleShowAppliedFilters,
     reloadMaterials,
     parentEnvironmentName,
     isVirtualEnvironment,
-    handleImageSelection,
-    setAppReleaseTagNames,
-    toggleCardMode,
-    setTagsEditable,
-    updateCurrentAppMaterial,
-    handleEnableFiltersView,
-    handleFilterTabsChange,
     loadOlderImages,
-    isLoadingOlderImages,
     policyConsequences,
-    handleAllImagesView,
-    showAppliedFilters,
-    handleDisableFiltersView,
-    handleDisableAppliedFiltersView,
     triggerType,
-    appliedFilterList,
+    deployViewState,
+    setDeployViewState,
+    setMaterialResponse,
 }: DeployImageContentProps) => {
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
 
     const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
-
-    const [showSearchBar, setShowSearchBar] = useState<boolean>(false)
 
     const isExceptionUser = materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
     const requestedUserId = materialResponse?.requestedUserId
@@ -131,6 +108,22 @@ const DeployImageContent = ({
     const runtimeParamsList = materialResponse?.runtimeParams || []
     const isCDNode = stageType === DeploymentNodeType.CD
 
+    const {
+        searchText,
+        appliedSearchText,
+        filterView,
+        showConfiguredFilters,
+        currentSidebarTab,
+        runtimeParamsErrorState,
+        materialInEditModeMap,
+        showAppliedFilters,
+        appliedFilterList,
+        isLoadingOlderImages,
+        showSearchBar,
+    } = deployViewState
+
+    const isSearchApplied = !!appliedSearchText
+
     const { consumedImage, materialList, eligibleImagesCount } = getConsumedAndAvailableMaterialList({
         isApprovalConfigured,
         isExceptionUser,
@@ -144,6 +137,93 @@ const DeployImageContent = ({
     const showActionBar = FilterActionBar && !isSearchApplied && !!resourceFilters?.length && !showConfiguredFilters
     const areNoMoreImagesPresent = materials.length >= materialResponse?.totalCount
 
+    const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (e) => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            currentSidebarTab: e.target.value as CDMaterialSidebarType,
+        }))
+    }
+
+    const onSearchTextChange = (newSearchText: string) => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            searchText: newSearchText,
+        }))
+    }
+
+    const handleAllImagesView = () => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            filterView: FilterConditionViews.ALL,
+        }))
+    }
+
+    const handleFilterTabsChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        const { value } = selectedSegment
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            filterView: value as FilterConditionViews,
+        }))
+    }
+
+    const handleShowConfiguredFilters = () => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            showConfiguredFilters: true,
+        }))
+    }
+
+    const handleExitFiltersView = () => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            showConfiguredFilters: false,
+        }))
+    }
+
+    const handleDisableAppliedFiltersView = () => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            appliedFilterList: [],
+            showAppliedFilters: false,
+        }))
+    }
+
+    const getHandleShowAppliedFilters = (materialData: CDMaterialType) => () => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            appliedFilterList: materialData?.appliedFilters ?? [],
+            showAppliedFilters: true,
+        }))
+    }
+
+    const handleShowSearchBar = () => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            showSearchBar: true,
+        }))
+    }
+
+    const handleImageSelection: ImageSelectionCTAProps['handleImageSelection'] = (materialIndex) => {
+        const updatedMaterialList = materialList.map((material, index) => ({
+            ...material,
+            isSelected: index === materialIndex,
+        }))
+
+        setMaterialResponse((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData)
+            updatedMaterialResponse.materials = updatedMaterialList
+            return updatedMaterialResponse
+        })
+    }
+
+    const setAppReleaseTagNames: ImageTaggingContainerType['setAppReleaseTagNames'] = (appReleaseTagNames) => {
+        setMaterialResponse((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData)
+            updatedMaterialResponse.appReleaseTagNames = appReleaseTagNames
+            return updatedMaterialResponse
+        })
+    }
+
     const viewAllImages = () => {
         if (isRedirectedFromAppDetails) {
             history.push({
@@ -153,10 +233,6 @@ const DeployImageContent = ({
             handleClose()
             onClickApprovalNode(pipelineId)
         }
-    }
-
-    const handleShowSearchBar = () => {
-        setShowSearchBar(true)
     }
 
     const renderSearch = () => (
@@ -172,6 +248,63 @@ const DeployImageContent = ({
             dataTestId="cd-trigger-search-by-commit-hash"
         />
     )
+
+    const updateCurrentAppMaterial: ImageTaggingContainerType['updateCurrentAppMaterial'] = (
+        matId,
+        imageReleaseTags,
+        imageComment,
+    ) => {
+        const updatedMaterialList = materialList.map((material) => {
+            if (+material.id === +matId) {
+                return {
+                    ...material,
+                    imageReleaseTags,
+                    imageComment,
+                }
+            }
+            return material
+        })
+
+        setMaterialResponse((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData)
+            updatedMaterialResponse.materials = updatedMaterialList
+            return updatedMaterialResponse
+        })
+    }
+
+    const setTagsEditable: ImageTaggingContainerType['setTagsEditable'] = (tagsEditable) => {
+        setMaterialResponse((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData)
+            updatedMaterialResponse.tagsEditable = tagsEditable
+            return updatedMaterialResponse
+        })
+    }
+
+    const handleRuntimeParamsChange: HandleRuntimeParamChange = (updatedRuntimeParamsList) => {
+        setMaterialResponse((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData)
+            updatedMaterialResponse.runtimeParams = updatedRuntimeParamsList
+            return updatedMaterialResponse
+        })
+    }
+
+    const handleRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
+        setDeployViewState((prevState) => ({
+            ...prevState,
+            runtimeParamsErrorState: updatedRuntimeParamsErrorState,
+        }))
+    }
+
+    const toggleCardMode: ImageTaggingContainerType['toggleCardMode'] = (index: number) => {
+        setDeployViewState((prevState) => {
+            const newMaterialInEditModeMap = new Map(prevState.materialInEditModeMap)
+            newMaterialInEditModeMap.set(index, !newMaterialInEditModeMap.get(index))
+            return {
+                ...prevState,
+                materialInEditModeMap: newMaterialInEditModeMap,
+            }
+        })
+    }
 
     const getImageTagContainerProps = (mat: CDMaterialType): ImageTaggingContainerType => ({
         ciPipelineId: null,
@@ -229,7 +362,7 @@ const DeployImageContent = ({
                             appliedFiltersTimestamp={handleUTCTime(materialData.appliedFiltersTimestamp)}
                             envName={envName}
                             // Should not use Arrow function here but seems like no choice
-                            showConfiguredFilters={() => handleShowAppliedFilters(materialData)}
+                            showConfiguredFilters={getHandleShowAppliedFilters(materialData)}
                             filterState={materialData.appliedFiltersState}
                             dataSource={materialData.dataSource}
                             deploymentWindowArtifactMetadata={materialData.deploymentWindowArtifactMetadata}
@@ -361,7 +494,7 @@ const DeployImageContent = ({
                 isFromBulkCD={isBulkTrigger}
                 resourceFilters={showConfiguredFilters ? resourceFilters : appliedFilterList}
                 handleDisableFiltersView={
-                    showConfiguredFilters ? handleDisableFiltersView : handleDisableAppliedFiltersView
+                    showConfiguredFilters ? handleExitFiltersView : handleDisableAppliedFiltersView
                 }
                 envName={envName}
                 closeModal={handleClose}
@@ -411,7 +544,7 @@ const DeployImageContent = ({
                                             consumedImage.length,
                                         )}
                                         onChange={handleFilterTabsChange}
-                                        handleEnableFiltersView={handleEnableFiltersView}
+                                        handleEnableFiltersView={handleShowConfiguredFilters}
                                         initialTab={filterView}
                                     />
                                 ) : (
@@ -466,7 +599,7 @@ const DeployImageContent = ({
                                     loadOlderImages={loadOlderImages}
                                     onSearchApply={onSearchApply}
                                     eligibleImagesCount={eligibleImagesCount}
-                                    handleEnableFiltersView={handleEnableFiltersView}
+                                    handleEnableFiltersView={handleShowConfiguredFilters}
                                     handleAllImagesView={handleAllImagesView}
                                 />
                             ) : (

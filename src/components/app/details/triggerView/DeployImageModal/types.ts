@@ -7,24 +7,14 @@ import {
     DeploymentAppTypes,
     DeploymentNodeType,
     DeploymentWindowProfileMetaData,
-    ImageTaggingContainerType,
     PolicyConsequencesDTO,
-    SegmentedControlProps,
     ServerErrors,
     UploadFileDTO,
     UploadFileProps,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    FilterConditionViews,
-    HandleRuntimeParamChange,
-    HandleRuntimeParamErrorState,
-    MATERIAL_TYPE,
-    RuntimeParamsErrorState,
-} from '../types'
-
-export interface DeployViewStateType {}
+import { FilterConditionViews, MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
 
 export type DeployImageModalProps = {
     appId: number
@@ -89,6 +79,32 @@ export interface GetTriggerArtifactInfoPropsType
     reloadMaterials: () => void
 }
 
+export interface DeployViewStateType {
+    /**
+     * The search text for filtering images in the deploy view, need to be in state so as to persist the search text
+     */
+    searchText: string
+    appliedSearchText: string
+    /**
+     * The value of segment control to show whether we are showing eligible images or all images
+     */
+    filterView: FilterConditionViews
+    /**
+     * Show a modal to display configured image filters
+     */
+    showConfiguredFilters: boolean
+    currentSidebarTab: CDMaterialSidebarType
+    runtimeParamsErrorState: RuntimeParamsErrorState
+    materialInEditModeMap: Map<number, boolean>
+    /**
+     * Will show filters that blocked the auto trigger
+     */
+    showAppliedFilters: boolean
+    appliedFilterList: CDMaterialType['appliedFilters']
+    isLoadingOlderImages: boolean
+    showSearchBar: boolean
+}
+
 export type DeployImageContentProps = Pick<
     DeployImageModalProps,
     | 'handleClose'
@@ -104,42 +120,21 @@ export type DeployImageContentProps = Pick<
     | 'configurePluginURL'
     | 'triggerType'
 > &
-    Pick<RuntimeParamsSidebarProps, 'appName' | 'handleSidebarTabChange'> & {
+    Pick<RuntimeParamsSidebarProps, 'appName'> & {
         materialResponse: CDMaterialResponseType
         deploymentWindowMetadata: DeploymentWindowProfileMetaData
         policyConsequences: PolicyConsequencesDTO
         isRollbackTrigger: boolean
-        // The states for material list: Can move to object
-        isSearchApplied: boolean
-        searchText: string
-        filterView: FilterConditionViews
-        showConfiguredFilters: boolean
-        currentSidebarTab: CDMaterialSidebarType
-        runtimeParamsErrorState: RuntimeParamsErrorState
-        handleRuntimeParamsError: HandleRuntimeParamErrorState
-        materialInEditModeMap: Map<number, boolean>
-        onSearchTextChange: (searchText: string) => void
-        onSearchApply: (searchText: string) => void
-        showAppliedFilters: boolean
-        handleDisableFiltersView: () => void
-        handleDisableAppliedFiltersView: () => void
-        appliedFilterList: CDMaterialType['appliedFilters']
-
-        handleRuntimeParamsChange: HandleRuntimeParamChange
-        handleImageSelection: (materialIndex: number) => void
         uploadRuntimeParamsFile: (props: UploadFileProps) => Promise<UploadFileDTO>
         isSecurityModuleInstalled: boolean
-        handleShowAppliedFilters: (materialData: CDMaterialType) => void
         reloadMaterials: () => void
-        setAppReleaseTagNames: (appReleaseTagNames: string[]) => void
-        toggleCardMode: (index: number) => void
-        setTagsEditable: (tagsEditable: boolean) => void
-        updateCurrentAppMaterial: ImageTaggingContainerType['updateCurrentAppMaterial']
-        handleEnableFiltersView: () => void
-        handleFilterTabsChange: SegmentedControlProps['onChange']
+        setMaterialResponse: (
+            param: (previousMaterialResponse: CDMaterialResponseType) => CDMaterialResponseType,
+        ) => void
+        setDeployViewState: (param: (previousDeployViewState: DeployViewStateType) => DeployViewStateType) => void
+        deployViewState: DeployViewStateType
         loadOlderImages: () => void
-        isLoadingOlderImages: boolean
-        handleAllImagesView: () => void
+        onSearchApply: (searchText: string) => void
     } & (
         | {
               isBulkTrigger: true
@@ -149,8 +144,8 @@ export type DeployImageContentProps = Pick<
           }
     )
 
-export interface GetConsumedAndAvailableMaterialListProps
-    extends Pick<DeployImageContentProps, 'isSearchApplied' | 'filterView'> {
+export interface GetConsumedAndAvailableMaterialListProps extends Pick<DeployViewStateType, 'filterView'> {
+    isSearchApplied: boolean
     isExceptionUser: boolean
     isApprovalConfigured: boolean
     materials: CDMaterialType[]
@@ -180,7 +175,6 @@ export interface MaterialListEmptyStateProps
         | 'isRollbackTrigger'
         | 'stageType'
         | 'appId'
-        | 'isSearchApplied'
         | 'policyConsequences'
         | 'isTriggerBlockedDueToPlugin'
         | 'configurePluginURL'
@@ -189,7 +183,6 @@ export interface MaterialListEmptyStateProps
         | 'triggerType'
         | 'loadOlderImages'
         | 'onSearchApply'
-        | 'handleAllImagesView'
     > {
     isExceptionUser: boolean
     isConsumedImagePresent: boolean
@@ -197,4 +190,6 @@ export interface MaterialListEmptyStateProps
     viewAllImages: () => void
     eligibleImagesCount: number
     handleEnableFiltersView: () => void
+    isSearchApplied: boolean
+    handleAllImagesView: () => void
 }
