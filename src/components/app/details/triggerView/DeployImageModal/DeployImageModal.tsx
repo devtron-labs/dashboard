@@ -6,9 +6,7 @@ import {
     AnimatedDeployButton,
     API_STATUS_CODES,
     ArtifactInfo,
-    Button,
     ButtonStyleType,
-    ButtonVariantType,
     CDMaterialServiceEnum,
     CDMaterialSidebarType,
     ConditionalWrap,
@@ -65,7 +63,6 @@ import { DeployImageContentProps, DeployImageModalProps, RuntimeParamsSidebarPro
 import {
     getAllowWarningWithTippyNodeTypeProp,
     getCDArtifactId,
-    getCDModalHeaderText,
     getConfigToDeployValue,
     getDeployButtonIcon,
     getInitialSelectedConfigToDeploy,
@@ -145,7 +142,7 @@ const DeployImageModal = ({
         !!getDeploymentStrategies && !!pipelineId,
     )
 
-    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.PARAMETERS)
+    const [currentSidebarTab, setCurrentSidebarTab] = useState<CDMaterialSidebarType>(CDMaterialSidebarType.IMAGE)
     const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<RuntimeParamsErrorState>({
         isValid: true,
         cellError: {},
@@ -706,13 +703,13 @@ const DeployImageModal = ({
 
         return (
             <div
-                className={`trigger-modal__trigger dc__position-sticky dc__zi-10 ${
+                className={`w-100 ${
                     (!isRollbackTrigger && !isSelectImageTrigger) ||
                     showConfigDiffView ||
                     stageType === DeploymentNodeType.PRECD ||
                     stageType === DeploymentNodeType.POSTCD
                         ? 'flex right'
-                        : ''
+                        : 'flexbox dc__content-space'
                 }`}
             >
                 {!hideConfigDiffSelector &&
@@ -778,13 +775,15 @@ const DeployImageModal = ({
                 <div
                     className={`flexbox-col h-100 dc__overflow-auto ${isPreOrPostCD ? 'display-grid cd-material__container-with-sidebar' : ''}`}
                 >
-                    <RuntimeParamsSidebar
-                        areTabsDisabled
-                        currentSidebarTab={currentSidebarTab}
-                        handleSidebarTabChange={handleSidebarTabChange}
-                        runtimeParamsErrorState={runtimeParamsErrorState}
-                        appName={appName}
-                    />
+                    {isPreOrPostCD && (
+                        <RuntimeParamsSidebar
+                            areTabsDisabled
+                            currentSidebarTab={currentSidebarTab}
+                            handleSidebarTabChange={handleSidebarTabChange}
+                            runtimeParamsErrorState={runtimeParamsErrorState}
+                            appName={appName}
+                        />
+                    )}
 
                     <MaterialListSkeleton />
                 </div>
@@ -868,44 +867,6 @@ const DeployImageModal = ({
         )
     }
 
-    const renderPipelineConfigDiffHeader = () => (
-        <div className="flex dc__gap-16">
-            <Button
-                dataTestId="cd-trigger-back-button"
-                ariaLabel="Navigate to list view"
-                showAriaLabelInTippy={false}
-                variant={ButtonVariantType.borderLess}
-                style={ButtonStyleType.neutral}
-                icon={<Icon name="ic-arrow-right" rotateBy={180} color={null} />}
-                onClick={handleNavigateToListView}
-            />
-
-            <h2 className="modal__title">
-                {getCDModalHeaderText({
-                    isRollbackTrigger,
-                    stageType,
-                    envName,
-                    isVirtualEnvironment,
-                })}
-            </h2>
-            {selectedMaterial && (
-                <ArtifactInfo
-                    {...getTriggerArtifactInfoProps({
-                        material: selectedMaterial,
-                        showApprovalInfoTippy:
-                            (isCDNode || isRollbackTrigger) && isApprovalConfigured && ApprovalInfoTippy,
-                        isRollbackTrigger,
-                        appId,
-                        pipelineId,
-                        isExceptionUser,
-                        reloadMaterials: reloadInitialData,
-                        requestedUserId,
-                    })}
-                />
-            )}
-        </div>
-    )
-
     return (
         <>
             <Drawer position="right" width="1024px" onClose={handleClose} onEscape={handleClose}>
@@ -914,18 +875,34 @@ const DeployImageModal = ({
                     onClick={stopPropagation}
                 >
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        {showConfigDiffView ? (
-                            renderPipelineConfigDiffHeader()
-                        ) : (
-                            <DeployImageHeader
-                                handleClose={handleClose}
-                                envName={envName}
-                                stageType={stageType}
-                                isRollbackTrigger={isRollbackTrigger}
-                                isVirtualEnvironment={isVirtualEnvironment}
-                            />
-                        )}
-                        <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
+                        <DeployImageHeader
+                            handleClose={handleClose}
+                            envName={envName}
+                            stageType={stageType}
+                            isRollbackTrigger={isRollbackTrigger}
+                            isVirtualEnvironment={isVirtualEnvironment}
+                            handleNavigateToMaterialListView={showConfigDiffView ? handleNavigateToListView : null}
+                        >
+                            {showConfigDiffView && selectedMaterial && (
+                                <ArtifactInfo
+                                    {...getTriggerArtifactInfoProps({
+                                        material: selectedMaterial,
+                                        showApprovalInfoTippy:
+                                            (isCDNode || isRollbackTrigger) &&
+                                            isApprovalConfigured &&
+                                            ApprovalInfoTippy,
+                                        isRollbackTrigger,
+                                        appId,
+                                        pipelineId,
+                                        isExceptionUser,
+                                        reloadMaterials: reloadInitialData,
+                                        requestedUserId,
+                                    })}
+                                />
+                            )}
+                        </DeployImageHeader>
+
+                        <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
                     </div>
 
                     {initialDataError || isInitialDataLoading || materialList.length === 0 ? null : (

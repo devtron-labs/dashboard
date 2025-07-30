@@ -7,6 +7,7 @@ import {
     ButtonVariantType,
     CDMaterialSidebarType,
     CDMaterialType,
+    ComponentSizeType,
     ConditionalWrap,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
@@ -417,8 +418,8 @@ const DeployImageContent = ({
                                     <span className="flex dc__align-start">{titleText}</span>
                                 )}
 
-                                <span className="flexbox dc__align-items-center h-32 dc__gap-16">
-                                    {showSearchBar ? (
+                                <span className="flexbox dc__align-items-center h-32 dc__gap-4">
+                                    {showSearchBar || isSearchApplied ? (
                                         renderSearch()
                                     ) : (
                                         <Button
@@ -429,6 +430,7 @@ const DeployImageContent = ({
                                             icon={<Icon name="ic-magnifying-glass" color={null} />}
                                             ariaLabel="Show search bar"
                                             showAriaLabelInTippy={false}
+                                            size={ComponentSizeType.small}
                                         />
                                     )}
                                     <Button
@@ -439,6 +441,7 @@ const DeployImageContent = ({
                                         icon={<Icon name="ic-arrows-clockwise" color={null} />}
                                         ariaLabel="Refresh material list"
                                         showAriaLabelInTippy={false}
+                                        size={ComponentSizeType.small}
                                     />
                                 </span>
                             </div>

@@ -56,6 +56,8 @@ export type DeployImageHeaderProps = Pick<
 > & {
     envName: string
     isRollbackTrigger: boolean
+    handleNavigateToMaterialListView?: () => void
+    children?: React.ReactNode
 }
 
 export interface RuntimeParamsSidebarProps {

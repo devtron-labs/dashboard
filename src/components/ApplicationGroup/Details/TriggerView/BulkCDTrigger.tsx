@@ -64,7 +64,6 @@ import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMat
 import emptyPreDeploy from '../../../../assets/img/empty-pre-deploy.webp'
 import { ReactComponent as MechanicalOperation } from '../../../../assets/img/ic-mechanical-operation.svg'
 import notAuthorized from '../../../../assets/img/ic-not-authorized.svg'
-import CDMaterial from '../../../app/details/triggerView/cdMaterial'
 import { BulkSelectionEvents, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
 import { importComponentFromFELibrary } from '../../../common'
 import { BulkCDDetailType, BulkCDTriggerType } from '../../AppGroup.types'
@@ -856,7 +855,8 @@ const BulkCDTrigger = ({
                                         warningMessage={appDeploymentWindowMap[selectedApp.appId].warningMessage}
                                     />
                                 )}
-                            <CDMaterial
+                            {/* TODO: Replace with BulkDeployModal */}
+                            {/* <CDMaterial
                                 key={selectedApp.appId}
                                 materialType={MATERIAL_TYPE.inputMaterialList}
                                 appId={selectedApp.appId}
@@ -885,7 +885,8 @@ const BulkCDTrigger = ({
                                 bulkUploadFile={bulkUploadFile}
                                 bulkSidebarTab={currentSidebarTab}
                                 selectedAppName={selectedApp.name}
-                            />
+                            /> */}
+                            <div/>
                         </>
                     )}
                 </div>

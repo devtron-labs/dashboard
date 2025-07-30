@@ -161,7 +161,7 @@ export const getCDModalHeaderText = ({
         case STAGE_TYPE.CD:
             return (
                 <>
-                    Deploy to &nbsp;
+                    Deploy to&nbsp;
                     <span className="fw-6">{`${envName}${isVirtualEnvironment ? ' (Isolated)' : ''}`}</span>
                 </>
             )
@@ -170,7 +170,7 @@ export const getCDModalHeaderText = ({
         case STAGE_TYPE.ROLLBACK:
             return (
                 <>
-                    Rollback for <span className="fw-6">{envName}</span>
+                    Rollback for&nbsp;<span className="fw-6">{envName}</span>
                 </>
             )
         default:

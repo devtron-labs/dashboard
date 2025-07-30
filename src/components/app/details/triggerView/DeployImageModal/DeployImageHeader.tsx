@@ -15,16 +15,35 @@ const DeployImageHeader = ({
     stageType,
     isRollbackTrigger,
     isVirtualEnvironment,
+    handleNavigateToMaterialListView,
+    children,
 }: DeployImageHeaderProps) => (
     <div className="px-20 py-12 flexbox dc__content-space dc__align-items-center border__primary--bottom">
-        <h2 className="m-0 fs-16 fw-4 lh-24 cn-9 dc__truncate">
-            {getCDModalHeaderText({
-                isRollbackTrigger,
-                stageType,
-                envName,
-                isVirtualEnvironment,
-            })}
-        </h2>
+        <div className="flexbox dc__gap-8 dc__align-items-center flex-wrap">
+            {handleNavigateToMaterialListView && (
+                <Button
+                    dataTestId="cd-trigger-back-button"
+                    ariaLabel="Navigate to list view"
+                    showAriaLabelInTippy={false}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    icon={<Icon name="ic-arrow-right" rotateBy={180} color={null} />}
+                    onClick={handleNavigateToMaterialListView}
+                    size={ComponentSizeType.small}
+                />
+            )}
+
+            <h2 className="m-0 fs-16 fw-4 lh-24 cn-9 dc__truncate">
+                {getCDModalHeaderText({
+                    isRollbackTrigger,
+                    stageType,
+                    envName,
+                    isVirtualEnvironment,
+                })}
+            </h2>
+
+            {children}
+        </div>
 
         <Button
             dataTestId="header-close-button"
