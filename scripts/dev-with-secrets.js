@@ -2,25 +2,17 @@
 
 const { spawn } = require('child_process')
 const path = require('path')
-
-// Get namespace from command line arguments
-const namespace = process.argv[2]
-
-if (!namespace) {
-    console.error('Please provide a namespace as an argument.')
-    console.error('Usage: yarn dev:secrets <namespace>')
-    process.exit(1)
-}
-
-console.log(`🔄 Updating secrets for namespace: ${namespace}`)
+const { EXIT_CODES } = require('./constants')
 
 // Run update-secret.js first
-const updateSecrets = spawn('node', [path.join(__dirname, 'update-secret.js'), namespace], {
+const updateSecrets = spawn('node', [path.join(__dirname, 'update-secret.js'), ...process.argv.slice(2)], {
     stdio: 'inherit',
 })
 
 updateSecrets.on('close', (code) => {
-    if (code !== 0) {
+    if (code === EXIT_CODES.HELP) {
+        process.exit(0)
+    } else if (code !== EXIT_CODES.SUCCESS) {
         console.error('❌ Failed to update secrets')
         process.exit(code)
     }

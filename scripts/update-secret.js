@@ -1,4 +1,5 @@
 const fs = require('fs')
+const { EXIT_CODES } = require('./constants')
 
 // Configuration constants
 const ENV_FILE_PATH = '.env.secrets'
@@ -264,13 +265,13 @@ const main = async () => {
         logger.error('Please provide a namespace as an argument.')
         logger.info('Usage: node update-secret.js <namespace>')
         logger.info('For help: node update-secret.js --help')
-        process.exit(1)
+        process.exit(EXIT_CODES.HELP)
     }
 
     // Check if help is requested at the beginning of the script
     if (process.argv.includes('--help')) {
         showHelp()
-        process.exit(0)
+        process.exit(EXIT_CODES.HELP)
     }
 
     const userInputNamespace = process.argv[2]
@@ -282,7 +283,7 @@ const main = async () => {
     if (!token) {
         logger.error('DEV_STAGING_TOKEN not found in .env.secrets file')
         logger.info('Make sure to add DEV_STAGING_TOKEN=your_token to .env.secrets')
-        process.exit(1)
+        process.exit(EXIT_CODES.ERROR)
     }
 
     try {
@@ -296,7 +297,7 @@ const main = async () => {
         logger.success('All secrets updated successfully! 🎉')
     } catch (error) {
         logger.error(`Failed to update secrets: ${error.message}`)
-        process.exit(1)
+        process.exit(EXIT_CODES.ERROR)
     }
 }
 
@@ -304,7 +305,7 @@ const main = async () => {
 if (require.main === module) {
     main().catch((error) => {
         logger.error(`Unhandled error: ${error.message}`)
-        process.exit(1)
+        process.exit(EXIT_CODES.ERROR)
     })
 }
 
