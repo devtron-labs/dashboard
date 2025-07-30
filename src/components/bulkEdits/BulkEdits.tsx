@@ -73,7 +73,7 @@ const BULK_EDIT_VALIDATOR_SCHEMA = importComponentFromFELibrary('BULK_EDIT_VALID
 export const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
 
 class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
-    private editorAndOutputContainerRef = createRef<HTMLDivElement>()
+    private readonly editorAndOutputContainerRef = createRef<HTMLDivElement>()
 
     constructor(props: BulkEditsProps) {
         super(props)
