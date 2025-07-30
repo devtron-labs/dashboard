@@ -240,7 +240,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         isLoading={view === BulkEditViewType.LOADING_IMPACTED_OUTPUT}
                     />
                     <Button
-                        text="Run"
+                        text="Execute"
                         onClick={this.handleRunButton}
                         dataTestId="run-button"
                         startIcon={<Icon name="ic-play-outline" color={null} />}
