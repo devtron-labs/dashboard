@@ -1,7 +1,9 @@
 import {
     ACTION_STATE,
+    ApprovalRuntimeStateType,
     ArtifactInfoProps,
     CDMaterialType,
+    CommonNodeAttr,
     DeploymentNodeType,
     DeploymentWindowProfileMetaData,
     DeploymentWithConfigType,
@@ -10,6 +12,7 @@ import {
     getIsRequestAborted,
     Icon,
     PipelineStageBlockInfo,
+    SequentialCDCardTitleProps,
     ServerErrors,
     showError,
     STAGE_TYPE,
@@ -27,15 +30,18 @@ import {
     LATEST_TRIGGER_CONFIG_OPTION,
     SPECIFIC_TRIGGER_CONFIG_OPTION,
 } from '../TriggerView.utils'
-import { MATERIAL_TYPE } from '../types'
+import { FilterConditionViews, MATERIAL_TYPE } from '../types'
 import {
     DeployImageHeaderProps,
     DeployImageModalProps,
+    GetConsumedAndAvailableMaterialListProps,
+    GetSequentialCDCardTitlePropsType,
     GetTriggerArtifactInfoPropsType,
     HandleTriggerErrorMessageForHelmManifestPushProps,
 } from './types'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
+const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
 
 export const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
     userApprovalMetadata?.hasCurrentUserApproved
@@ -204,3 +210,121 @@ export const getTriggerArtifactInfoProps = ({
         />
     ) : null,
 })
+
+const processConsumedAndApprovedImages = (materials: CDMaterialType[]) => {
+    const consumedImage: CDMaterialType[] = []
+    const approvedImages: CDMaterialType[] = []
+    materials.forEach((mat) => {
+        if (
+            !mat.userApprovalMetadata ||
+            mat.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
+        ) {
+            // TODO: Check if this is needed
+            // mat.isSelected = false
+            consumedImage.push(mat)
+        } else {
+            approvedImages.push(mat)
+        }
+    })
+    return { consumedImage, approvedImages }
+}
+
+export const getConsumedAndAvailableMaterialList = ({
+    isApprovalConfigured,
+    isExceptionUser,
+    materials,
+    isSearchApplied,
+    filterView,
+    resourceFilters,
+}: GetConsumedAndAvailableMaterialListProps) => {
+    if (isExceptionUser) {
+        return {
+            consumedImage: [],
+            materialList: materials,
+            eligibleImagesCount: materials.filter((mat) => mat.filterState === FilterStates.ALLOWED).length,
+        }
+    }
+
+    let _consumedImage: CDMaterialType[] = []
+    let materialList: CDMaterialType[] = []
+
+    if (isApprovalConfigured) {
+        const { consumedImage, approvedImages } = processConsumedAndApprovedImages(materials)
+        _consumedImage = consumedImage
+        materialList = approvedImages
+    } else {
+        materialList = materials
+    }
+
+    const eligibleImagesCount = materialList.filter((mat) => mat.filterState === FilterStates.ALLOWED).length
+
+    if (!isSearchApplied && resourceFilters?.length && filterView === FilterConditionViews.ELIGIBLE) {
+        materialList = materialList.filter((mat) => mat.filterState === FilterStates.ALLOWED)
+    }
+
+    return {
+        consumedImage: _consumedImage,
+        materialList,
+        eligibleImagesCount,
+    }
+}
+
+export const getApprovedImageClass = (disableSelection: boolean, isApprovalConfigured: boolean) => {
+    const disabledClassPostfix = disableSelection ? '-disabled' : ''
+    return isApprovalConfigured ? `material-history__approved-image${disabledClassPostfix}` : ''
+}
+
+export const getSequentialCDCardTitleProps = ({
+    material,
+    envName,
+    parentEnvironmentName,
+    stageType,
+    isVirtualEnvironment,
+    isRollbackTrigger,
+    isSearchApplied,
+}: GetSequentialCDCardTitlePropsType): SequentialCDCardTitleProps => {
+    const { promotionApprovalMetadata } = material
+    const promotionApprovedBy = promotionApprovalMetadata?.approvedUsersData?.map((users) => users.userEmail)
+
+    return {
+        isLatest: material.latest,
+        isRunningOnParentCD: material.runningOnParentCd,
+        artifactStatus: material.artifactStatus,
+        environmentName: envName,
+        parentEnvironmentName,
+        stageType,
+        showLatestTag: +material.index === 0 && !isRollbackTrigger && !isSearchApplied,
+        isVirtualEnvironment,
+        targetPlatforms: material.targetPlatforms,
+        additionalInfo:
+            ImagePromotionInfoChip && promotionApprovalMetadata?.promotedFromType ? (
+                <ImagePromotionInfoChip
+                    promotedTo={envName}
+                    promotedFromType={promotionApprovalMetadata?.promotedFromType}
+                    promotedFrom={promotionApprovalMetadata?.promotedFrom}
+                    promotedBy={promotionApprovalMetadata?.requestedUserData?.userEmail}
+                    approvedBy={promotionApprovedBy}
+                    promotionPolicyName={promotionApprovalMetadata?.policy?.name}
+                    showBackgroundColor
+                />
+            ) : null,
+    }
+}
+
+export const getFilterActionBarTabs = (
+    materialLength: number,
+    filteredImagesCount: number,
+    consumedImageCount: number,
+) => [
+    {
+        label: `Eligible images ${filteredImagesCount}/${materialLength - consumedImageCount}`,
+        value: FilterConditionViews.ELIGIBLE,
+    },
+    {
+        label: `Latest ${materialLength - consumedImageCount} images`,
+        value: FilterConditionViews.ALL,
+    },
+]
+
+export const getAllowWarningWithTippyNodeTypeProp = (stageType: DeploymentNodeType): CommonNodeAttr['type'] =>
+    stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'

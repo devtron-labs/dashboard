@@ -1,4 +1,4 @@
-import { SyntheticEvent, useMemo, useState } from 'react'
+import { Dispatch, SetStateAction, SyntheticEvent, useMemo, useState } from 'react'
 import { Prompt, useHistory, useLocation } from 'react-router-dom'
 
 import {
@@ -9,8 +9,8 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    CDMaterialServiceEnum,
     CDMaterialSidebarType,
-    CommonNodeAttr,
     ConditionalWrap,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
@@ -22,18 +22,23 @@ import {
     EnvResourceType,
     ErrorScreenManager,
     FilterStates,
+    genericCDMaterialsService,
     getIsApprovalPolicyConfigured,
     handleAnalyticsEvent,
     Icon,
     MODAL_TYPE,
+    ModuleNameMap,
+    ModuleStatus,
     PipelineDeploymentStrategy,
     ServerErrors,
+    showError,
     SortingOrder,
     stopPropagation,
     ToastManager,
     ToastVariantType,
     Tooltip,
     triggerCDNode,
+    uploadCDPipelineFile,
     useAsync,
     useDownload,
     usePrompt,
@@ -42,20 +47,23 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
 
 import { getCanDeployWithoutApproval, getCanImageApproverDeploy, getWfrId } from '../cdMaterials.utils'
 import { CDButtonLabelMap } from '../config'
-import { TRIGGER_VIEW_GA_EVENTS } from '../Constants'
+import { CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { PipelineConfigDiff, usePipelineDeploymentConfig } from '../PipelineConfigDiff'
 import { PipelineConfigDiffStatusTile } from '../PipelineConfigDiff/PipelineConfigDiffStatusTile'
-import { MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
+import { FilterConditionViews, HandleRuntimeParamChange, MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
+import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
 import MaterialListSkeleton from './MaterialListSkeleton'
 import RuntimeParamsSidebar from './RuntimeParamsSidebar'
 import { getMaterialResponseList } from './service'
-import { DeployImageModalProps, RuntimeParamsSidebarProps } from './types'
+import { DeployImageContentProps, DeployImageModalProps, RuntimeParamsSidebarProps } from './types'
 import {
+    getAllowWarningWithTippyNodeTypeProp,
     getCDArtifactId,
     getCDModalHeaderText,
     getConfigToDeployValue,
@@ -100,21 +108,36 @@ const DeployImageModal = ({
     showPluginWarningBeforeTrigger: _showPluginWarningBeforeTrigger = false,
     consequence,
     configurePluginURL,
+    triggerType,
+    isRedirectedFromAppDetails,
+    isTriggerBlockedDueToPlugin,
+    parentEnvironmentName,
 }: DeployImageModalProps) => {
     const history = useHistory()
     const { pathname } = useLocation()
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
-    const [isInitialDataLoading, initialDataResponse, initialDataError, reloadInitialData] = useAsync(() =>
-        getMaterialResponseList({
-            stageType,
-            pipelineId,
-            appId,
-            envId,
-            materialType,
-            initialSearch: searchParams.search || '',
-        }),
-    )
+    const searchImageTag = searchParams.search || ''
+
+    const [isInitialDataLoading, initialDataResponse, initialDataError, reloadInitialData, unTypedSetInitialData] =
+        useAsync(
+            () =>
+                getMaterialResponseList({
+                    stageType,
+                    pipelineId,
+                    appId,
+                    envId,
+                    materialType,
+                    initialSearch: searchImageTag,
+                }),
+            [searchImageTag],
+        )
+
+    const [, moduleInfoRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY))
+
+    const isSecurityModuleInstalled = moduleInfoRes && moduleInfoRes?.result?.status === ModuleStatus.INSTALLED
+
+    const setInitialData: Dispatch<SetStateAction<typeof initialDataResponse>> = unTypedSetInitialData
 
     const [pipelineStrategiesLoading, pipelineStrategies, pipelineStrategiesError, reloadStrategies] = useAsync(
         () => getDeploymentStrategies([pipelineId]),
@@ -131,12 +154,22 @@ const DeployImageModal = ({
     const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyType | null>(null)
     const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
+    const [searchText, setSearchText] = useState<string>(searchImageTag)
+    const [filterView, setFilterView] = useState<FilterConditionViews>(FilterConditionViews.ALL)
+    const [showConfiguredFilters, setShowConfiguredFilters] = useState<boolean>(false)
+    const [showAppliedFilters, setShowAppliedFilters] = useState<boolean>(false)
+    const [appliedFilterList, setAppliedFilterList] = useState<DeployImageContentProps['appliedFilterList']>([])
+    const [isLoadingOlderImages, setIsLoadingOlderImages] = useState<boolean>(false)
+    const [materialInEditModeMap, setMaterialInEditModeMap] = useState<
+        DeployImageContentProps['materialInEditModeMap']
+    >(new Map())
 
     const isCDNode = stageType === DeploymentNodeType.CD
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
 
     const materialResponse = initialDataResponse?.[0] || null
     const deploymentWindowMetadata = initialDataResponse?.[1] ?? ({} as (typeof initialDataResponse)[1])
+    const policyConsequences = initialDataResponse?.[2] ?? ({} as (typeof initialDataResponse)[2])
     const materialList = materialResponse?.materials || []
     const selectedMaterial = materialList.find((material) => material.isSelected)
     const isRollbackTrigger = materialType === MATERIAL_TYPE.rollbackMaterialList
@@ -151,9 +184,7 @@ const DeployImageModal = ({
         materialList.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED).length > 0
     const selectedConfigToDeploy = getInitialSelectedConfigToDeploy(materialType, searchParams)
     const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
-    // This check assumes we have isPreOrPostCD as true
-    const allowWarningWithTippyNodeTypeProp: CommonNodeAttr['type'] =
-        stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+    const allowWarningWithTippyNodeTypeProp = getAllowWarningWithTippyNodeTypeProp(stageType)
     const runtimeParamsList = materialResponse?.runtimeParams || []
     const requestedUserId = materialResponse?.requestedUserId
 
@@ -233,6 +264,115 @@ const DeployImageModal = ({
                       `${pathname.replace(/\/+$/g, '')}/${URLS.APP_DIFF_VIEW}/${EnvResourceType.DeploymentTemplate}`
                     : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
             search: newParams.toString(),
+        })
+    }
+
+    const handleEnableFiltersView = () => {
+        setShowConfiguredFilters(true)
+    }
+
+    const handleDisableFiltersView = () => {
+        setShowConfiguredFilters(false)
+    }
+
+    const handleFilterTabsChange: DeployImageContentProps['handleFilterTabsChange'] = (selectedSegment) => {
+        const { value } = selectedSegment
+        setFilterView(value as FilterConditionViews)
+    }
+
+    const handleAllImagesView = () => {
+        setFilterView(FilterConditionViews.ALL)
+    }
+
+    const loadOlderImages = async () => {
+        // TODO: Move to util
+        handleAnalyticsEvent(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
+        if (!isLoadingOlderImages) {
+            // TODO: Move to util
+            const isConsumedImageAvailable =
+                materialList.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
+
+            setIsLoadingOlderImages(true)
+
+            try {
+                const newMaterialsResponse = await genericCDMaterialsService(
+                    isRollbackTrigger ? CDMaterialServiceEnum.ROLLBACK : CDMaterialServiceEnum.CD_MATERIALS,
+                    pipelineId,
+                    stageType,
+                    null,
+                    {
+                        offset: materialList.length - Number(isConsumedImageAvailable),
+                        size: 20,
+                        search: searchImageTag,
+                    },
+                )
+
+                // NOTE: Looping through _newResponse and removing elements that are already deployed and latest
+                // NOTE: This is done to avoid duplicate images
+                const filteredNewMaterialResponse = [...newMaterialsResponse.materials].filter(
+                    (materialItem) => !(materialItem.deployed && materialItem.latest),
+                )
+
+                // updating the index of materials to maintain consistency
+                const _newMaterialsResponse = filteredNewMaterialResponse.map((materialItem, index) => ({
+                    ...materialItem,
+                    index: materialList.length + index,
+                }))
+
+                const newMaterials = structuredClone(materialList).concat(_newMaterialsResponse)
+                // Made a change not updating whole response rather updating only materials
+                setInitialData((prevData) => {
+                    const updatedMaterialResponse = structuredClone(prevData[0])
+                    updatedMaterialResponse.materials = newMaterials
+                    return [updatedMaterialResponse, prevData[1], prevData[2]]
+                })
+
+                const baseSuccessMessage = `Fetched ${_newMaterialsResponse.length} images.`
+                if (materialResponse?.resourceFilters?.length && !searchImageTag) {
+                    const eligibleImages = _newMaterialsResponse.filter(
+                        (mat) => mat.filterState === FilterStates.ALLOWED,
+                    ).length
+
+                    const infoMessage =
+                        eligibleImages === 0
+                            ? 'No new eligible images found.'
+                            : `${eligibleImages} new eligible images found.`
+
+                    if (filterView === FilterConditionViews.ELIGIBLE) {
+                        ToastManager.showToast({
+                            variant: ToastVariantType.info,
+                            description: `${baseSuccessMessage} ${infoMessage}`,
+                        })
+                    } else {
+                        ToastManager.showToast({
+                            variant: ToastVariantType.success,
+                            description: `${baseSuccessMessage} ${infoMessage}`,
+                        })
+                    }
+                } else {
+                    ToastManager.showToast({
+                        variant: ToastVariantType.success,
+                        description: baseSuccessMessage,
+                    })
+                }
+            } catch (error) {
+                showError(error)
+            } finally {
+                setIsLoadingOlderImages(false)
+            }
+        }
+    }
+
+    const handleImageSelection: DeployImageContentProps['handleImageSelection'] = (materialIndex) => {
+        const updatedMaterialList = materialList.map((material, index) => ({
+            ...material,
+            isSelected: index === materialIndex,
+        }))
+
+        setInitialData((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData[0])
+            updatedMaterialResponse.materials = updatedMaterialList
+            return [updatedMaterialResponse, prevData[1], prevData[2]]
         })
     }
 
@@ -417,6 +557,16 @@ const DeployImageModal = ({
         }
     }
 
+    const handleShowAppliedFilters: DeployImageContentProps['handleShowAppliedFilters'] = (materialData) => {
+        setAppliedFilterList(materialData?.appliedFilters ?? [])
+        setShowAppliedFilters(true)
+    }
+
+    const handleDisableAppliedFiltersView = () => {
+        setAppliedFilterList([])
+        setShowAppliedFilters(false)
+    }
+
     const getDeployButtonStyle = (
         userActionState: string,
         canDeployWithoutApproval: boolean,
@@ -430,6 +580,84 @@ const DeployImageModal = ({
         }
         return ButtonStyleType.default
     }
+
+    const setTagsEditable: DeployImageContentProps['setTagsEditable'] = (tagsEditable) => {
+        const newMaterialResponse = structuredClone(materialResponse)
+        newMaterialResponse.tagsEditable = tagsEditable
+        setInitialData((prevData) => [newMaterialResponse, prevData[1], prevData[2]])
+    }
+
+    const setAppReleaseTagNames: DeployImageContentProps['setAppReleaseTagNames'] = (appReleaseTagNames) => {
+        const newMaterialResponse = structuredClone(materialResponse)
+        newMaterialResponse.appReleaseTagNames = appReleaseTagNames
+        setInitialData((prevData) => [newMaterialResponse, prevData[1], prevData[2]])
+    }
+
+    // TODO: This state can be in DeployImageContent ig
+    const toggleCardMode: DeployImageContentProps['toggleCardMode'] = (index: number) => {
+        setMaterialInEditModeMap((prevMap) => {
+            const newMap = new Map(prevMap)
+            newMap.set(index, !newMap.get(index))
+            return newMap
+        })
+    }
+
+    const updateCurrentAppMaterial: DeployImageContentProps['updateCurrentAppMaterial'] = (
+        matId,
+        imageReleaseTags,
+        imageComment,
+    ) => {
+        const updatedMaterialList = materialList.map((material) => {
+            if (+material.id === +matId) {
+                return {
+                    ...material,
+                    imageReleaseTags,
+                    imageComment,
+                }
+            }
+            return material
+        })
+        setInitialData((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData[0])
+            updatedMaterialResponse.materials = updatedMaterialList
+            return [updatedMaterialResponse, prevData[1], prevData[2]]
+        })
+    }
+
+    const onSearchApply = (newSearchText: string) => {
+        setSearchText(newSearchText)
+        const newParams = new URLSearchParams({
+            ...searchParams,
+            search: newSearchText,
+        })
+
+        history.push({
+            pathname,
+            search: newParams.toString(),
+        })
+    }
+
+    const onSearchTextChange = (newSearchText: string) => {
+        setSearchText(newSearchText)
+    }
+
+    const handleRuntimeParamsChange: HandleRuntimeParamChange = (updatedRuntimeParamsList) => {
+        setInitialData((prevData) => {
+            const updatedMaterialResponse = structuredClone(prevData[0])
+            updatedMaterialResponse.runtimeParams = updatedRuntimeParamsList
+            return [updatedMaterialResponse, prevData[1], prevData[2]]
+        })
+    }
+
+    const handleRuntimeParamsError = (updatedRuntimeParamsErrorState: typeof runtimeParamsErrorState) => {
+        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
+    }
+
+    const uploadRuntimeParamsFile: DeployImageContentProps['uploadRuntimeParamsFile'] = ({
+        file,
+        allowedExtensions,
+        maxUploadSize,
+    }) => uploadCDPipelineFile({ file, allowedExtensions, maxUploadSize, appId, envId })
 
     const renderTriggerDeployButton = (disableDeployButton: boolean) => {
         const { userActionState } = deploymentWindowMetadata
@@ -586,7 +814,58 @@ const DeployImageModal = ({
             )
         }
 
-        return <div />
+        return (
+            <DeployImageContent
+                appId={appId}
+                envId={envId}
+                materialResponse={materialResponse}
+                isRollbackTrigger={isRollbackTrigger}
+                isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
+                configurePluginURL={configurePluginURL}
+                isBulkTrigger={false}
+                deploymentWindowMetadata={deploymentWindowMetadata}
+                pipelineId={pipelineId}
+                handleClose={handleClose}
+                isRedirectedFromAppDetails={isRedirectedFromAppDetails}
+                isSearchApplied={!!searchImageTag}
+                searchText={searchText}
+                onSearchApply={onSearchApply}
+                onSearchTextChange={onSearchTextChange}
+                filterView={filterView}
+                showConfiguredFilters={showConfiguredFilters}
+                stageType={stageType}
+                currentSidebarTab={currentSidebarTab}
+                handleRuntimeParamsChange={handleRuntimeParamsChange}
+                runtimeParamsErrorState={runtimeParamsErrorState}
+                handleRuntimeParamsError={handleRuntimeParamsError}
+                uploadRuntimeParamsFile={uploadRuntimeParamsFile}
+                handleSidebarTabChange={handleSidebarTabChange}
+                appName={appName}
+                isSecurityModuleInstalled={isSecurityModuleInstalled}
+                envName={envName}
+                handleShowAppliedFilters={handleShowAppliedFilters}
+                reloadMaterials={reloadInitialData}
+                parentEnvironmentName={parentEnvironmentName}
+                isVirtualEnvironment={isVirtualEnvironment}
+                handleImageSelection={handleImageSelection}
+                setAppReleaseTagNames={setAppReleaseTagNames}
+                materialInEditModeMap={materialInEditModeMap}
+                toggleCardMode={toggleCardMode}
+                setTagsEditable={setTagsEditable}
+                updateCurrentAppMaterial={updateCurrentAppMaterial}
+                handleEnableFiltersView={handleEnableFiltersView}
+                handleDisableFiltersView={handleDisableFiltersView}
+                handleFilterTabsChange={handleFilterTabsChange}
+                loadOlderImages={loadOlderImages}
+                isLoadingOlderImages={isLoadingOlderImages}
+                policyConsequences={policyConsequences}
+                handleAllImagesView={handleAllImagesView}
+                triggerType={triggerType}
+                handleDisableAppliedFiltersView={handleDisableAppliedFiltersView}
+                showAppliedFilters={showAppliedFilters}
+                appliedFilterList={appliedFilterList}
+            />
+        )
     }
 
     const renderPipelineConfigDiffHeader = () => (
@@ -634,31 +913,26 @@ const DeployImageModal = ({
                     className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
                     onClick={stopPropagation}
                 >
-                    <div
-                        className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto"
-                        onClick={stopPropagation}
-                    >
-                        <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                            {showConfigDiffView ? (
-                                renderPipelineConfigDiffHeader()
-                            ) : (
-                                <DeployImageHeader
-                                    handleClose={handleClose}
-                                    envName={envName}
-                                    stageType={stageType}
-                                    isRollbackTrigger={isRollbackTrigger}
-                                    isVirtualEnvironment={isVirtualEnvironment}
-                                />
-                            )}
-                            <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
-                        </div>
-
-                        {initialDataError || isInitialDataLoading ? null : (
-                            <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
-                                {renderFooter()}
-                            </div>
+                    <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                        {showConfigDiffView ? (
+                            renderPipelineConfigDiffHeader()
+                        ) : (
+                            <DeployImageHeader
+                                handleClose={handleClose}
+                                envName={envName}
+                                stageType={stageType}
+                                isRollbackTrigger={isRollbackTrigger}
+                                isVirtualEnvironment={isVirtualEnvironment}
+                            />
                         )}
+                        <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
+
+                    {initialDataError || isInitialDataLoading || materialList.length === 0 ? null : (
+                        <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
+                            {renderFooter()}
+                        </div>
+                    )}
                 </div>
             </Drawer>
 
