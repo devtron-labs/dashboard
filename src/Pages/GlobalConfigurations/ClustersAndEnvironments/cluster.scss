@@ -65,12 +65,6 @@
     }
 }
 
-.cluster-list-row {
-    display: grid;
-    grid-template-columns: 24px minmax(278px, 346px) 120px 130px 190px minmax(80px, 90px);
-    grid-column-gap: 16px;
-}
-
 .saved-cluster-list-row {
     display: grid;
     grid-template-columns: 300px 100px 1fr;
@@ -87,5 +81,14 @@
 .cluster-form {
     .radio__button {
         margin-top: 2px;
+    }
+}
+
+.environment-row {
+    grid-template-columns: 24px 200px 200px 100px 1fr 60px;
+    grid-column-gap: 16px;
+
+    &.with-category {
+        grid-template-columns: 24px 200px 200px 100px 150px 1fr 60px;
     }
 }

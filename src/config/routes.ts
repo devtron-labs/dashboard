@@ -128,6 +128,7 @@ export const URLS = {
     CREATE_ENVIRONMENT: '/create/environment',
     POD_SPREAD: 'pod-spread',
     HIBERNATION_RULES: 'hibernation-rules',
+    DELETE_CLUSTER: 'delete-cluster',
 } as const
 
 export enum APP_COMPOSE_STAGE {
