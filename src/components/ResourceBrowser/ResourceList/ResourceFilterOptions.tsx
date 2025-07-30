@@ -22,7 +22,6 @@ import {
     ALL_NAMESPACE_OPTION,
     Checkbox,
     CHECKBOX_VALUE,
-    ComponentSizeType,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKOptionValueType,
@@ -205,12 +204,11 @@ const ResourceFilterOptions = ({
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="flexbox dc__gap-8">
+                <div className="flex dc__gap-8">
                     {isEventListing && (
                         <SegmentedControl
                             name="event-type-control"
                             value={eventType}
-                            size={ComponentSizeType.small}
                             segments={[
                                 {
                                     icon: 'ic-warning',

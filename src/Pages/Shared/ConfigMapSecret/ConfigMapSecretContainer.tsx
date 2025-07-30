@@ -328,15 +328,6 @@ export const ConfigMapSecretContainer = ({
         }
     }, [configMapSecretResLoading, configMapSecretRes])
 
-    // CONFIGMAP/SECRET DELETED
-    const configHasBeenDeleted = useMemo(
-        () =>
-            !configMapSecretResLoading && configMapSecretRes
-                ? !configMapSecretData && !inheritedConfigMapSecretData && !draftData
-                : null,
-        [configMapSecretResLoading, configMapSecretRes],
-    )
-
     // CONFIGMAP/SECRET ERROR
     const configMapSecretResErr = useMemo(
         () =>
@@ -346,6 +337,18 @@ export const ConfigMapSecretContainer = ({
                   getConfigMapSecretError(configMapSecretRes[2])
                 : null,
         [configMapSecretResLoading, configMapSecretRes],
+    )
+
+    // CONFIGMAP/SECRET DELETED
+    const configHasBeenDeleted = useMemo(
+        () =>
+            !configMapSecretResLoading &&
+            configMapSecretRes &&
+            !configMapSecretResErr &&
+            !configMapSecretData &&
+            !inheritedConfigMapSecretData &&
+            !draftData,
+        [configMapSecretResLoading, configMapSecretRes, configMapSecretResErr],
     )
 
     // ASYNC CALL - CONFIGMAP/SECRET RESOLVED DATA

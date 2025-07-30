@@ -312,10 +312,10 @@ export const getUserAccessClusterList = () =>
         payload: { entity: EntityTypes.CLUSTER },
     })
 
-export const getUserAccessAllWorkflows = ({ appIds, options }: GetUserAccessAllWorkflowsParams) =>
+export const getUserAccessAllWorkflows = ({ appNames, options }: GetUserAccessAllWorkflowsParams) =>
     getUserResourceOptions<AppIdWorkflowNamesMapping>({
-        kind: UserAccessResourceKind.JOBS,
-        payload: { entity: EntityTypes.JOB, appIds },
+        kind: UserAccessResourceKind.WORKFLOW,
+        payload: { entity: EntityTypes.JOB, appNames },
         options,
     })
 

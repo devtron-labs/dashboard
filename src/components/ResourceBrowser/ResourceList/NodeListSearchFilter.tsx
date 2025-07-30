@@ -14,316 +14,256 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, KeyboardEvent, RefCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { KeyboardEvent, useEffect, useMemo, useRef } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
 
-import { OptionType, SelectPicker, useAsync, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FilterChips,
+    GroupedFilterSelectPicker,
+    SearchBar,
+    useAsync,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICClear } from '@Icons/ic-error.svg'
-import { ReactComponent as ICSearch } from '@Icons/ic-search.svg'
 import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 
-import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
-import {
-    DEFAULT_NODE_K8S_VERSION,
-    NODE_K8S_VERSION_FILTER_KEY,
-    NODE_SEARCH_KEY_OPTIONS,
-    NODE_SEARCH_KEY_PLACEHOLDER,
-} from '../Constants'
+import { NODE_K8S_VERSION_FILTER_KEY } from '../Constants'
 import { ClusterDetailBaseParams, NODE_SEARCH_KEYS, NodeListSearchFilterType } from '../Types'
 import ColumnSelector from './ColumnSelector'
+import {
+    NODE_LIST_SEARCH_FILTER_OPTIONS,
+    NODE_SEARCH_KEY_PLACEHOLDER,
+    NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP,
+} from './constants'
+import { NodeSearchListOptionType } from './types'
+import { getNodeSearchKeysOptionsList } from './utils'
 
 const NodeListSearchFilter = ({
     visibleColumns,
     setVisibleColumns,
     searchParams,
     allColumns,
+    rows,
+    searchKey,
+    handleSearch,
 }: NodeListSearchFilterType) => {
+    // HOOKS
     const { clusterId } = useParams<ClusterDetailBaseParams>()
-
-    const selectedSearchTextType: NODE_SEARCH_KEYS | '' = Object.values(NODE_SEARCH_KEYS).reduce((type, key) => {
-        if (searchParams[key]) {
-            return key
-        }
-
-        return type
-    }, '')
-
-    const selectedK8sNodeVersion = searchParams[NODE_K8S_VERSION_FILTER_KEY] ?? ''
-
-    const [isSearchKeySelectorOpen, setIsSearchKeySelectorOpen] = useState(false)
-    const [searchTextType, setSearchTextType] = useState<NODE_SEARCH_KEYS | ''>(selectedSearchTextType)
-    const [searchInputText, setSearchInputText] = useState(
-        selectedSearchTextType ? searchParams[selectedSearchTextType] : '',
-    )
-
-    const searchInputRef = useRef<HTMLInputElement>(null)
-
-    const handleSearchInputMount: RefCallback<HTMLInputElement> = (node) => {
-        if (node) {
-            searchInputRef.current = node
-
-            node.focus()
-        }
-    }
-
-    const location = useLocation()
+    const { search } = useLocation()
     const { push } = useHistory()
 
+    // REFS
+    const searchInputRef = useRef<HTMLInputElement | null>(null)
+
+    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
+
+    useEffect(() => {
+        const handleSearchFocus = () => {
+            searchInputRef.current?.focus()
+        }
+
+        if (registerShortcut) {
+            registerShortcut({ keys: ['/'], callback: handleSearchFocus })
+        }
+
+        return () => {
+            unregisterShortcut(['/'])
+        }
+    }, [])
+
+    // CONSTANTS
+    const isNodeSearchFilterApplied =
+        searchParams[NODE_SEARCH_KEYS.LABEL] ||
+        searchParams[NODE_SEARCH_KEYS.NODE_GROUP] ||
+        searchParams[NODE_K8S_VERSION_FILTER_KEY]
+
+    // ASYNC CALLS
     const [nodeK8sVersionsLoading, nodeK8sVersionOptions, nodeK8sVersionsError, refetchNodeK8sVersions] =
         useAsync(async () => {
             const {
                 result: { nodeK8sVersions: versions },
             } = await getClusterCapacity(clusterId)
 
-            return [
-                DEFAULT_NODE_K8S_VERSION,
-                ...(versions?.map((version) => ({
-                    label: `K8s version: ${version}`,
-                    value: version,
-                })) || []),
-            ]
+            return (versions || []).map((version) => ({
+                label: version,
+                value: version,
+            }))
         }, [clusterId])
 
-    const selectedK8sVersionOption = useMemo(
-        () =>
-            nodeK8sVersionOptions?.find((option) => option.value === selectedK8sNodeVersion) ??
-            DEFAULT_NODE_K8S_VERSION,
-        [nodeK8sVersionOptions, selectedK8sNodeVersion],
-    )
+    // CONFIGS
+    const { nodeGroups, labels } = useMemo(() => getNodeSearchKeysOptionsList(rows), [JSON.stringify(rows)])
 
-    const handleFocusInput = () => {
-        setIsSearchKeySelectorOpen(true)
-        searchInputRef.current?.focus()
-    }
+    const appliedFilters = useMemo(() => {
+        const nodeGroupMap = new Set(((searchParams[NODE_SEARCH_KEYS.NODE_GROUP] as string) || '').split(','))
+        const labelMap = new Set(((searchParams[NODE_SEARCH_KEYS.LABEL] as string) || '').split(','))
+        const k8sNodeVersionMap = new Set(((searchParams[NODE_K8S_VERSION_FILTER_KEY] as string) || '').split(','))
 
-    const handleBlurInput = () => {
-        setIsSearchKeySelectorOpen(false)
-        searchInputRef.current?.blur()
-    }
-
-    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
-
-    useEffect(() => {
-        if (registerShortcut) {
-            registerShortcut({ keys: ['/'], callback: handleFocusInput })
-            registerShortcut({ keys: ['Escape'], callback: handleBlurInput })
+        return {
+            [NODE_SEARCH_KEYS.NODE_GROUP]: nodeGroups.filter(({ value }) => nodeGroupMap.has(value)),
+            [NODE_SEARCH_KEYS.LABEL]: labels.filter(({ value }) => labelMap.has(value)),
+            [NODE_K8S_VERSION_FILTER_KEY]: (nodeK8sVersionOptions || []).filter(({ value }) =>
+                k8sNodeVersionMap.has(value),
+            ),
         }
+    }, [searchParams])
 
-        return (): void => {
-            unregisterShortcut(['/'])
-            unregisterShortcut(['Escape'])
-        }
-    }, [])
-
+    // HANDLERS
     const handleQueryParamsUpdate = (callback: (queryObject: ParsedQuery) => ParsedQuery) => {
         if (!callback) {
             return
         }
 
-        const queryObject = parseQueryString(location.search)
-
+        const queryObject = parseQueryString(search)
         const finalQueryString = stringifyQueryString(callback(queryObject))
 
         push(`?${finalQueryString}`)
     }
 
-    const handleQueryParamsSearch = (searchString: string) => {
-        handleQueryParamsUpdate((queryObject) => {
-            const finalQueryObject = structuredClone(queryObject)
+    const handleSearchInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            searchInputRef.current?.blur()
+        }
+    }
 
-            Object.values(NODE_SEARCH_KEYS).forEach((key) => {
-                if (key === searchTextType) {
-                    finalQueryObject[key] = searchString
+    const handleSearchFilterChange =
+        (nodeSearchKey: NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY) =>
+        (filtersToApply: NodeSearchListOptionType[]) => {
+            handleQueryParamsUpdate((queryObject) => {
+                const updatedQueryObject = structuredClone(queryObject)
+
+                if (filtersToApply.length) {
+                    updatedQueryObject[nodeSearchKey] = filtersToApply.map(({ value }) => value).join(',')
                 } else {
-                    delete finalQueryObject[key]
+                    delete updatedQueryObject[nodeSearchKey]
+                }
+
+                return updatedQueryObject
+            })
+        }
+
+    const getOptionValue = ({ value, label, identifier }: NodeSearchListOptionType) => `${identifier}/${value}/${label}`
+
+    const handleRemoveFilter = (filterConfig: Partial<Record<NODE_SEARCH_KEYS, string[]>>) => {
+        handleQueryParamsUpdate((queryObject) => {
+            const updatedQueryObject = structuredClone(queryObject)
+
+            Object.keys(filterConfig).forEach((filterKey) => {
+                if (filterConfig[filterKey].length) {
+                    updatedQueryObject[filterKey] = filterConfig[filterKey].join(',')
+                } else {
+                    delete updatedQueryObject[filterKey]
                 }
             })
 
-            return finalQueryObject
+            return updatedQueryObject
         })
     }
 
-    const handleSearchTextChange = (event: ChangeEvent<HTMLInputElement>): void => {
-        setSearchInputText(event.target.value)
-    }
-
-    const handleClearTextFilters = (): void => {
-        setSearchInputText('')
-
-        setSearchTextType('')
-
+    const handleClearFilters = () => {
         handleQueryParamsUpdate((queryObject) => {
-            const finalQueryObject = structuredClone(queryObject)
+            const updatedQueryObject = structuredClone(queryObject)
 
-            Object.values(NODE_SEARCH_KEYS).forEach((key) => {
-                delete finalQueryObject[key]
+            Object.values(NODE_SEARCH_KEYS).forEach((keyValue) => {
+                delete updatedQueryObject[keyValue]
             })
 
-            return finalQueryObject
+            delete updatedQueryObject[NODE_K8S_VERSION_FILTER_KEY]
+
+            return updatedQueryObject
         })
     }
 
-    const handleKeyDownOnSearchInput = (event: KeyboardEvent<HTMLInputElement>): void => {
-        const { key } = event
-
-        if (key === 'Enter') {
-            handleQueryParamsSearch(searchInputText)
-
-            setIsSearchKeySelectorOpen(false)
-        }
-
-        if (key === 'Backspace' && searchInputText.length === 0 && searchTextType) {
-            setSearchTextType('')
-
-            setIsSearchKeySelectorOpen(false)
-        }
-
-        if (key === 'Escape') {
-            event.currentTarget.blur()
-        }
-    }
-
-    const handleToggleIsSearchKeySelectorOpen = () => {
-        setIsSearchKeySelectorOpen((prev) => !prev)
-    }
-
-    const getSelectSearchKeyTypeHandler = (key: NODE_SEARCH_KEYS) => () => {
-        setSearchTextType(key)
-        setSearchInputText('')
-        setIsSearchKeySelectorOpen(false)
-    }
-
-    const handleApplyNodeK8sVersion = (option: OptionType) => {
-        handleQueryParamsUpdate((queryObject) => {
-            const finalQueryObject = structuredClone(queryObject)
-
-            if (option.value === DEFAULT_NODE_K8S_VERSION.value) {
-                delete finalQueryObject[NODE_K8S_VERSION_FILTER_KEY]
-            } else {
-                finalQueryObject[NODE_K8S_VERSION_FILTER_KEY] = option.value
-            }
-
-            return finalQueryObject
-        })
-    }
-
-    const handleOpenSearchKeySelectorMenu = () => {
-        setIsSearchKeySelectorOpen(true)
-    }
-
-    const renderTextFilter = (): JSX.Element => {
-        const placeholderText = NODE_SEARCH_KEY_PLACEHOLDER[searchTextType]
-
-        return (
-            <div className="dc__position-rel bg__secondary">
-                <button
-                    type="button"
-                    className=" h-32 br-4 en-2 bw-1 w-100 fw-4 pt-6 pb-6 pr-10 flexbox flex-align-center dc__content-start dc__transparent"
-                    onClick={handleOpenSearchKeySelectorMenu}
-                    aria-label="Open search key selector popup"
-                >
-                    <ICSearch className="mr-5 ml-10 icon-dim-18" />
-
-                    {searchTextType ? (
-                        <>
-                            <span>
-                                {NODE_SEARCH_KEY_OPTIONS.find((option) => option.value === searchTextType).label}
-                                &nbsp;:
-                            </span>
-
-                            <input
-                                autoComplete="off"
-                                type="text"
-                                className="dc__transparent flex-1 dc__outline-none-imp"
-                                placeholder={placeholderText}
-                                onKeyDown={handleKeyDownOnSearchInput}
-                                onChange={handleSearchTextChange}
-                                value={searchInputText}
-                                ref={handleSearchInputMount}
-                            />
-                        </>
-                    ) : (
-                        <span className="cn-5">Search nodes by name, labels or node group</span>
-                    )}
-
-                    {!searchTextType && (
-                        <ShortcutKeyBadge shortcutKey="/" rootClassName="node-listing-search-container__shortcut-key" />
-                    )}
-                </button>
-
-                {isSearchKeySelectorOpen && (
-                    <>
-                        <button
-                            type="button"
-                            className="dc__transparent-div"
-                            onClick={handleToggleIsSearchKeySelectorOpen}
-                            aria-label="Close search popup"
-                        />
-
-                        {!searchTextType && (
-                            <div className="dc__zi-6 w-100 bg__primary dc__position-abs  br-4 en-2 bw-1">
-                                <div className="bg__tertiary pt-4 pb-4 pl-10 pr-10">Search by</div>
-
-                                {NODE_SEARCH_KEY_OPTIONS.map((option) => (
-                                    <button
-                                        type="button"
-                                        className="pt-8 pb-8 pl-10 pr-10 dc__hover-n50 pointer dc__transparent w-100 dc__align-left"
-                                        key={option.label}
-                                        onClick={getSelectSearchKeyTypeHandler(option.value)}
-                                        aria-label={`Set search key type to ${option.label}`}
-                                    >
-                                        {option.label}
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </>
-                )}
-
-                {(searchTextType || searchInputText) && (
-                    <button
-                        className="search__clear-button flex"
-                        type="button"
-                        onClick={handleClearTextFilters}
-                        aria-label="Clear applied text filters"
-                    >
-                        <ICClear className="icon-dim-18 icon-n4" />
-                    </button>
-                )}
-            </div>
-        )
-    }
+    const getFormattedFilterLabel = (filterKey: NODE_SEARCH_KEYS) => NODE_SEARCH_KEY_TO_LABEL_PREFIX_MAP[filterKey]
 
     return (
-        <div className="node-listing-search-container pt-16 pr-20 pb-12 pl-20 dc__zi-5">
-            {renderTextFilter()}
-
-            <SelectPicker
-                inputId="k8s-version-select"
-                optionListError={nodeK8sVersionsError}
-                reloadOptionList={refetchNodeK8sVersions}
-                isLoading={nodeK8sVersionsLoading}
-                options={nodeK8sVersionOptions ?? []}
-                onChange={handleApplyNodeK8sVersion}
-                value={selectedK8sVersionOption}
-            />
-
-            <div className="dc__border-left h-20 mt-6" />
-
-            {allColumns.length ? (
-                <ColumnSelector
-                    {...{
-                        setVisibleColumns,
-                        visibleColumns,
-                        allColumns,
+        <>
+            <div
+                className={`node-listing-search-container pt-16 px-20 dc__zi-5 ${!isNodeSearchFilterApplied ? 'pb-12' : ''}`}
+            >
+                <SearchBar
+                    initialSearchText={searchKey}
+                    handleSearchChange={handleSearch}
+                    keyboardShortcut="/"
+                    inputProps={{
+                        ref: searchInputRef,
+                        placeholder: 'Search Nodes',
+                        onKeyUp: handleSearchInputKeyUp,
                     }}
+                    containerClassName="w-250"
                 />
-            ) : (
-                <div className="shimmer h-32" />
-            )}
-        </div>
+
+                <GroupedFilterSelectPicker<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY>
+                    filterSelectPickerPropsMap={{
+                        [NODE_SEARCH_KEYS.NODE_GROUP]: {
+                            inputId: 'node-search-filter-node-groups',
+                            placeholder: NODE_SEARCH_KEY_PLACEHOLDER[NODE_SEARCH_KEYS.NODE_GROUP],
+                            options: [{ label: 'Node Groups', options: nodeGroups }],
+                            getOptionValue,
+                            appliedFilterOptions: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP],
+                            handleApplyFilter: handleSearchFilterChange(NODE_SEARCH_KEYS.NODE_GROUP),
+                            isDisabled: false,
+                            isLoading: false,
+                        },
+                        [NODE_SEARCH_KEYS.LABEL]: {
+                            inputId: 'node-search-filter-labels',
+                            placeholder: NODE_SEARCH_KEY_PLACEHOLDER[NODE_SEARCH_KEYS.LABEL],
+                            options: [{ label: 'Labels', options: labels }],
+                            getOptionValue,
+                            appliedFilterOptions: appliedFilters[NODE_SEARCH_KEYS.LABEL],
+                            handleApplyFilter: handleSearchFilterChange(NODE_SEARCH_KEYS.LABEL),
+                            isDisabled: false,
+                            isLoading: false,
+                        },
+                        [NODE_K8S_VERSION_FILTER_KEY]: {
+                            inputId: 'k8s-version-select',
+                            placeholder: NODE_SEARCH_KEY_PLACEHOLDER[NODE_K8S_VERSION_FILTER_KEY],
+                            options: [{ label: 'K8s version', options: nodeK8sVersionOptions || [] }],
+                            getOptionValue,
+                            appliedFilterOptions: appliedFilters[NODE_K8S_VERSION_FILTER_KEY],
+                            handleApplyFilter: handleSearchFilterChange(NODE_K8S_VERSION_FILTER_KEY),
+                            isDisabled: false,
+                            isLoading: nodeK8sVersionsLoading,
+                            optionListError: nodeK8sVersionsError,
+                            reloadOptionList: refetchNodeK8sVersions,
+                        },
+                    }}
+                    id="node-list-search-filter"
+                    options={NODE_LIST_SEARCH_FILTER_OPTIONS}
+                    isFilterApplied={isNodeSearchFilterApplied}
+                    width={150}
+                />
+
+                <div className="dc__border-left h-20 mt-6" />
+
+                {allColumns.length ? (
+                    <ColumnSelector
+                        {...{
+                            setVisibleColumns,
+                            visibleColumns,
+                            allColumns,
+                        }}
+                    />
+                ) : (
+                    <div className="shimmer h-32" />
+                )}
+            </div>
+            <FilterChips<Partial<Record<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY, string[]>>>
+                className="px-20 py-16"
+                filterConfig={{
+                    [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP]
+                        .filter(({ value }) => !!value)
+                        .map(({ value }) => value),
+                    [NODE_SEARCH_KEYS.LABEL]: appliedFilters[NODE_SEARCH_KEYS.LABEL].map(({ value }) => value),
+                    [NODE_K8S_VERSION_FILTER_KEY]: appliedFilters[NODE_K8S_VERSION_FILTER_KEY].map(
+                        ({ value }) => value,
+                    ),
+                }}
+                onRemoveFilter={handleRemoveFilter}
+                clearFilters={handleClearFilters}
+                getFormattedLabel={getFormattedFilterLabel}
+            />
+        </>
     )
 }
 

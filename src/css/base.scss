@@ -277,6 +277,10 @@ a:focus {
     white-space: normal;
 }
 
+.dc__white-space-nowrap {
+    white-space: nowrap;
+}
+
 .dc__white-space-pre {
     white-space: pre;
 }
@@ -328,6 +332,10 @@ a:focus {
 
 .dc__top-12 {
     top: 12px;
+}
+
+.dc__top-16 {
+    top: 16px;
 }
 
 .dc__top-20 {
@@ -404,6 +412,10 @@ a:focus {
 
 .dc__right-0 {
     right: 0;
+}
+
+.dc__right-2--neg {
+    right: -2px;
 }
 
 .dc__right-3--neg {
