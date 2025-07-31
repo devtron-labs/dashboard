@@ -219,6 +219,7 @@ const AppListFilters = ({
                     }}
                     handleEnter={handleSearch}
                     size={ComponentSizeType.medium}
+                    keyboardShortcut="/"
                 />
                 {window._env_.FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE && (
                     <div className="dc__position-rel">

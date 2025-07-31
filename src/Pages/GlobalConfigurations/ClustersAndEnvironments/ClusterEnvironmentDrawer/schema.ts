@@ -18,11 +18,7 @@ import { UseFormValidations } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EnvironmentFormType } from './types'
 
-export const clusterEnvironmentDrawerFormValidationSchema = ({
-    isNamespaceMandatory,
-}: {
-    isNamespaceMandatory: boolean
-}): UseFormValidations<EnvironmentFormType> => ({
+export const clusterEnvironmentDrawerFormValidationSchema = (): UseFormValidations<EnvironmentFormType> => ({
     clusterId: {
         required: true,
         pattern: [{ message: 'Please select a cluster', value: /^(?!0$)\d+$/ }],
@@ -36,19 +32,15 @@ export const clusterEnvironmentDrawerFormValidationSchema = ({
             { message: 'Minimum 1 and Maximum 16 characters required', value: /^.{1,16}$/ },
         ],
     },
-    ...(isNamespaceMandatory
-        ? {
-              namespace: {
-                  required: true,
-                  pattern: [
-                      { message: 'Namespace is required', value: /^.*$/ },
-                      { message: "Use only lowercase alphanumeric characters or '-'", value: /^[a-z0-9-]+$/ },
-                      { message: "Cannot start/end with '-'", value: /^(?![-]).*[^-]$/ },
-                      { message: 'Maximum 63 characters required', value: /^.{1,63}$/ },
-                  ],
-              },
-          }
-        : {}),
+    namespace: {
+        required: true,
+        pattern: [
+            { message: 'Namespace is required', value: /^.*$/ },
+            { message: "Use only lowercase alphanumeric characters or '-'", value: /^[a-z0-9-]+$/ },
+            { message: "Cannot start/end with '-'", value: /^(?![-]).*[^-]$/ },
+            { message: 'Maximum 63 characters required', value: /^.{1,63}$/ },
+        ],
+    },
     isProduction: {
         required: true,
         pattern: { message: 'token is required', value: /[^]+/ },
