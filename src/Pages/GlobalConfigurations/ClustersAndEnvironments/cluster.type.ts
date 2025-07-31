@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
-import { EnvListMinDTO, OptionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterEnvironmentCategoryType,
+    ClusterStatusType,
+    EnvListMinDTO,
+    FiltersTypeEnum,
+    OptionType,
+    SelectPickerOptionType,
+    TableProps,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export const POLLING_INTERVAL = 30000
 
@@ -107,18 +117,7 @@ export interface ClusterComponentType {
     status: ClusterComponentStatusType
 }
 
-export interface ClusterListProps {
-    clusterName: string
-    isVirtualCluster: boolean
-    environments: any[]
-    reload: () => void
-    isProd: boolean
-    serverURL: string
-    clusterId: number
-    category: SelectPickerOptionType
-}
-
-export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'> {
+export interface ClusterMetadataTypes {
     id: number
     cluster_name: string
     active: boolean
@@ -136,6 +135,7 @@ export interface ClusterMetadataTypes extends Pick<ClusterListProps, 'category'>
     sshTunnelConfig: any
     environments: EnvListMinDTO[]
     description: string
+    category: SelectPickerOptionType
 }
 
 export interface ClusterComponentModalProps {
@@ -199,7 +199,7 @@ export type EditClusterFormProps = {
     isTlsConnection: boolean
 }
 
-export type ClusterFormProps = { reload: () => void } & Pick<ClusterListProps, 'category'> &
+export type ClusterFormProps = { reload: () => void } & Pick<ClusterMetadataTypes, 'category'> &
     (
         | ({
               handleCloseCreateClusterForm?: never
@@ -220,18 +220,12 @@ export interface AddClusterFormPrefilledInfoType {
 export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
 }
-
-export interface ClusterEnvironmentListProps
-    extends Pick<ClusterListProps, 'reload' | 'isVirtualCluster' | 'clusterName'> {
+export interface DeleteClusterConfirmationModalProps extends Pick<Cluster, 'clusterName'> {
     clusterId: string
-    newEnvs: any[]
-}
-export interface DeleteClusterConfirmationModalProps
-    extends Pick<ClusterListProps, 'clusterName' | 'reload'>,
-        Pick<ClusterEnvironmentListProps, 'clusterId'> {
     handleClose: () => void
     installationId: string
     handleSuccess?: () => void
+    reload: () => void
 }
 
 export interface DeleteClusterPayload {
@@ -246,7 +240,7 @@ export interface UserNameDropDownListProps {
 
 export interface EditClusterDrawerContentProps
     extends Pick<
-        ClusterMetadataTypes,
+        Cluster,
         | 'sshTunnelConfig'
         | 'insecureSkipTlsVerify'
         | 'category'
@@ -254,11 +248,152 @@ export interface EditClusterDrawerContentProps
         | 'installationId'
         | 'toConnectWithSSHTunnel'
         | 'proxyUrl'
+        | 'prometheusUrl'
+        | 'serverUrl'
+        | 'clusterName'
+        | 'clusterId'
     > {
-    clusterId: ClusterMetadataTypes['id']
-    clusterName: ClusterMetadataTypes['cluster_name']
-    serverURL: ClusterMetadataTypes['server_url']
-    prometheusURL: ClusterMetadataTypes['prometheus_url']
     reload: () => void
     handleModalClose: () => void
+}
+
+export interface EnvironmentDTO {
+    id: number
+    environment_name: string
+    cluster_id: number
+    cluster_name: string
+    active: boolean
+    default: boolean
+    prometheus_endpoint: string
+    namespace: string
+    isClusterCdActive: boolean
+    description: string
+    isVirtualEnvironment: boolean
+    category: ClusterEnvironmentCategoryType
+}
+
+export interface Environment
+    extends Omit<
+        EnvironmentDTO,
+        'environment_name' | 'cluster_id' | 'prometheus_endpoint' | 'default' | 'cluster_name'
+    > {
+    environmentName: EnvironmentDTO['environment_name']
+    clusterId: EnvironmentDTO['cluster_id']
+    prometheusEndpoint: EnvironmentDTO['prometheus_endpoint']
+    isProd: EnvironmentDTO['default']
+    clusterName: EnvironmentDTO['cluster_name']
+}
+
+export interface ClusterDTO {
+    category: ClusterEnvironmentCategoryType
+    cluster_name: string
+    description: string
+    id: number
+    insecureSkipTlsVerify: boolean
+    installationId: number
+    isProd: boolean
+    isVirtualCluster: boolean
+    server_url: string
+    sshTunnelConfig: any
+    prometheus_url: string
+    proxyUrl: string
+    toConnectWithSSHTunnel: boolean
+    clusterStatus: ClusterStatusType
+}
+
+export interface Cluster
+    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category' | 'clusterStatus'> {
+    serverUrl: ClusterDTO['server_url']
+    clusterName: ClusterDTO['cluster_name']
+    prometheusUrl: ClusterDTO['prometheus_url']
+    clusterId: ClusterDTO['id']
+    category: SelectPickerOptionType
+    status: ClusterStatusType
+}
+
+export interface ClusterRowData
+    extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
+    envCount: number
+    clusterType: string
+    clusterCategory: string
+}
+
+export enum ClusterEnvTabs {
+    CLUSTERS = 'clusters',
+    ENVIRONMENTS = 'environments',
+}
+
+export enum EnvListSortableKeys {
+    ENV_NAME = 'envName',
+    ENV_CATEGORY = 'envCategory',
+    ENV_TYPE = 'envType',
+    ENV_NAMESPACE = 'namespace',
+}
+
+export enum ClusterEnvFilterKeys {
+    SELECTED_TAB = 'selectedTab',
+    CLUSTER_ID = 'clusterId',
+}
+
+export enum ClusterListFields {
+    ICON = 'icon',
+    CLUSTER_NAME = 'clusterName',
+    CLUSTER_TYPE = 'clusterType',
+    ENV_COUNT = 'envCount',
+    CLUSTER_CATEGORY = 'clusterCategory',
+    SERVER_URL = 'serverUrl',
+    ACTIONS = 'actions',
+}
+
+export type ClusterEnvFilterType = Record<ClusterEnvFilterKeys, string>
+
+export type ClusterTableProps = TableProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
+
+export type EnvNamespaceRowType = {
+    envId: number
+    clusterId: number
+    environmentName: string
+    namespace: string
+    envType: string
+    category: string
+    description: string
+    namespaceNotFound: boolean
+}
+
+export interface EnvironmentListProps {
+    isLoading: boolean
+    clusterList: Cluster[]
+    clusterIdVsEnvMap: Record<number, Environment[]>
+    showUnmappedEnvs: boolean
+    filterConfig: Pick<UseUrlFiltersReturnType<EnvListSortableKeys>, 'sortBy' | 'sortOrder' | 'searchKey'>
+    filterClusterId: string
+    handleSorting: UseUrlFiltersReturnType<EnvListSortableKeys>['handleSorting']
+    reloadEnvironments: () => void
+}
+
+export type DeleteEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'>
+
+export type EditEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'> & { isVirtualCluster: boolean }
+
+export interface ClusterEnvListProps extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs'> {
+    clusterDetails: Cluster
+    environments: Environment[]
+    setDeleteEnvConfig: Dispatch<SetStateAction<DeleteEnvConfigType>>
+    setEditEnvConfig: Dispatch<SetStateAction<EditEnvConfigType>>
+}
+
+export interface EditEnvProps {
+    environments: Environment[]
+    envId: number
+    reload: () => void
+    handleClose: () => void
+    isVirtualCluster: boolean
+}
+
+export interface DeleteEnvProps extends Omit<EditEnvProps, 'isVirtualCluster'> {}
+
+export interface EditDeleteClusterProps {
+    clusterList: Cluster[]
+    reloadClusterList: () => void
+    handleClose: () => void
 }

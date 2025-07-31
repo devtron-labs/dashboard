@@ -214,6 +214,7 @@ const ChartHeaderFilter = ({
                         autoFocus: true,
                     }}
                     dataTestId="chart-store-search-box"
+                    keyboardShortcut='/'
                 />
             </div>
             <div className="pl-12 pr-12 flexbox-col flex-grow-1 dc__overflow-auto">
