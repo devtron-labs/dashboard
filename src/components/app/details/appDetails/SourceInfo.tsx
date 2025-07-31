@@ -222,6 +222,7 @@ export const SourceInfo = ({
                         <div className="pl-8">
                             <ConfigSyncStatusButton
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                                appName={appDetails.appName}
                                 appId={appDetails.appId}
                                 envId={envId}
                             />
