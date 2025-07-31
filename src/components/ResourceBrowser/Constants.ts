@@ -311,8 +311,8 @@ export const NODE_LIST_HEADERS_TO_KEY_MAP: Record<(typeof NODE_LIST_HEADERS)[num
     'node group': 'nodeGroup',
     pods: 'podCount',
     taints: 'taintCount',
-    'cpu usage': 'cpu.usage',
-    'mem usage': 'memory.usage',
+    'cpu usage': 'cpu.usagePercentage',
+    'mem usage': 'memory.usagePercentage',
     age: 'age',
     unschedulable: 'unschedulable',
 } as const

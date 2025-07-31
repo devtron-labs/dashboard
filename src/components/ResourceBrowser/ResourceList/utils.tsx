@@ -223,11 +223,8 @@ const propertyComparatorMap = {
     errors: numberInStringComparator,
     'k8s version': versionComparatorBySortOrder,
     taints: numberInStringComparator,
-    'cpu usage (%)': numberInStringComparator,
-    'cpu allocatable': numberInStringComparator,
-    'mem usage (%)': numberInStringComparator,
-    'mem allocatable': numberInStringComparator,
-    'cpu usage (absolute)': numberInStringComparator,
+    'cpu usage': numberInStringComparator,
+    'mem usage': numberInStringComparator,
     restarts: numberInStringComparator,
 }
 

@@ -35,7 +35,7 @@ export const K8sResourceListTableUsageCell = ({
                 </div>
             }
         >
-            <div className="flexbox-col dc__content-center dc__gap-4 py-10 cursor">
+            <div className="flexbox-col dc__content-center dc__gap-4 py-10">
                 <div className="flex left dc__gap-8">
                     <p className="m-0 fs-13 lh-20 cn-9 flex-grow-1">{absoluteValue}</p>
                     <p className="m-0 fs-13 lh-20 cn-7">{percentage}</p>

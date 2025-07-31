@@ -210,7 +210,7 @@ const K8sResourceListTableCellComponent = ({
         lastSeen: resourceData[EVENT_LIST.dataKeys.lastSeen] as string,
     }
 
-    if (columnName === 'cpu.usage') {
+    if (columnName === 'cpu.usagePercentage') {
         return (
             <K8sResourceListTableUsageCell
                 percentage={resourceData['cpu.usagePercentage'] as string}
@@ -221,7 +221,7 @@ const K8sResourceListTableCellComponent = ({
         )
     }
 
-    if (columnName === 'memory.usage') {
+    if (columnName === 'memory.usagePercentage') {
         return (
             <K8sResourceListTableUsageCell
                 percentage={resourceData['memory.usagePercentage'] as string}
