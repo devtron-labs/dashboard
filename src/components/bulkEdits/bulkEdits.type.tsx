@@ -14,60 +14,20 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
-
-import { OptionType } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SERVER_MODE_TYPE } from '../../config'
 
-export interface CodeEditorScript {
-    apiVersion: string
-    kind: string
-    spec: {
-        include: {
-            names: string[]
-        }
-        exclude: {
-            names: string[]
-        }
-        envId: number[]
-        global: boolean
-        deploymentTemplate: {
-            spec: {
-                patchJson: any
-            }
-        }
-        configMap: {
-            spec: {
-                names: string[]
-                patchJson: any
-            }
-        }
-        secret: {
-            spec: {
-                names: string[]
-                patchJson: any
-            }
-        }
-    }
-}
-
-export interface BulkConfiguration {
-    operation: string
-    script: CodeEditorScript
-    readme: string
-}
-
-export interface DTImpactedObjects {
+interface BaseOperationResponseType {
     appId: number
     appName: string
     envId: number
+    envName?: string // Only received for v1beta2
 }
 
-export interface CMandSecretImpactedObjects {
-    appId: number
-    appName: string
-    envId: number
+export interface DTImpactedObjects extends BaseOperationResponseType {}
+
+export interface CMandSecretImpactedObjects extends BaseOperationResponseType {
     names: string[]
 }
 
@@ -77,19 +37,13 @@ export interface ImpactedObjects {
     secret: CMandSecretImpactedObjects[]
 }
 
-export interface DtOutputKeys {
-    appId: number
-    appName: string
-    envId: number
+export interface DtOutputKeys extends BaseOperationResponseType {
     message: string
 }
 
-export interface CMandSecretOutputKeys {
-    appId: number
-    appName: string
-    envId: number
-    message: string
+export interface CMandSecretOutputKeys extends BaseOperationResponseType {
     names: string[]
+    message: string
 }
 
 export interface DTBulkOutput {
@@ -110,20 +64,27 @@ export interface BulkOutput {
     secret: CMandSecretBulkOutput
 }
 
+export enum BulkEditViewType {
+    FORM = 'FORM',
+    LOADING_IMPACTED_OUTPUT = 'LOADING_IMPACTED_OUTPUT',
+    LOADING_OUTPUT = 'LOADING_OUTPUT',
+}
+
 export interface BulkEditsState {
-    view: string
+    view: BulkEditViewType
     statusCode: number
-    outputName: string
     isReadmeLoading: boolean
     impactedObjects: ImpactedObjects
-    updatedTemplate: OptionType[]
-    readmeResult: string[]
+    readmeVersionOptions: OptionType<BulkEditVersion>[]
+    readmeResult: {
+        [key in BulkEditVersion]: string
+    }
     outputResult: BulkOutput
     showExamples: boolean
-    showImpactedData: boolean
-    showOutputData: boolean
-    bulkConfig: BulkConfiguration[]
+    activeOutputTab: 'output' | 'impacted' | 'none'
     codeEditorPayload: string
+    selectedReadmeVersionOption: OptionType<BulkEditVersion>
+    schema: Record<string, any> | null
 }
 
 export interface OutputTabType {
@@ -133,7 +94,8 @@ export interface OutputTabType {
     name: string
 }
 
-export interface BulkEditsProps extends RouteComponentProps<{}> {
-    // close: (event) => void;
+export interface BulkEditsProps {
     serverMode: SERVER_MODE_TYPE
+    outputHeightMV: ReturnType<typeof useMotionValue<number>>
+    gridTemplateRows: ReturnType<typeof useMotionValue<string>>
 }

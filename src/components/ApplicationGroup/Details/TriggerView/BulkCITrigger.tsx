@@ -807,7 +807,7 @@ const BulkCITrigger = ({
 
     return (
         <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onClose={closeBulkCIModal} >
-            <div className="bg__primary bulk-ci-trigger-container">
+            <div className="bg__primary bulk-ci-trigger-container" onClick={stopPropagation}>
                 <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
                     {renderHeaderSection()}
                     {responseListLength ? (
