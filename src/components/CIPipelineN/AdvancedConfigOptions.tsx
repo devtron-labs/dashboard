@@ -20,12 +20,12 @@ import CIConfig from '../ciConfig/CIConfig'
 import DockerArgs from './DockerArgs'
 import CustomImageTags from './CustomImageTags'
 import TargetPlatformSelector from '../ciConfig/TargetPlatformSelector'
-import { ComponentStates } from '../../Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { AdvancedConfigOptionsProps, CIConfigParentState } from '../ciConfig/types'
 import { DockerConfigOverrideKeys } from '../ciPipeline/types'
 import { getTargetPlatformMap } from '../ciConfig/CIConfig.utils'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import '../ciConfig/CIConfig.scss'
+import { ComponentStates } from './types'
 
 export default function AdvancedConfigOptions({ ciPipeline, appId, isTemplateView }: AdvancedConfigOptionsProps) {
     const { formData, setFormData, loadingState, setLoadingState, formDataErrorObj, setFormDataErrorObj } =
