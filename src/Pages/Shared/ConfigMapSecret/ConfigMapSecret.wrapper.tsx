@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
-import {
-    abortPreviousRequests,
-    CMSecretComponentType,
-    ErrorScreenManager,
-    getIsRequestAborted,
-    Progressing,
-    showError,
-    useAsync,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { CMSecretComponentType, ErrorScreenManager, Progressing, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ComponentStates } from '@Pages/Shared/EnvironmentOverride/EnvironmentOverrides.types'
 import { getAppChartRefForAppAndEnv } from '@Services/service'
 
 import { ConfigMapSecretContainer } from './ConfigMapSecretContainer'
@@ -36,53 +26,37 @@ import { CMSecretWrapperProps } from './types'
 
 export const ConfigMapSecretWrapper = (props: CMSecretWrapperProps) => {
     // PROPS
-    const {
-        componentType = CMSecretComponentType.ConfigMap,
-        parentState,
-        setParentState,
-        onErrorRedirectURL,
-        isTemplateView,
-    } = props
+    const { componentType = CMSecretComponentType.ConfigMap, onErrorRedirectURL, isTemplateView } = props
 
     // HOOKS
     const { appId, envId, name } = useParams<{ appId: string; envId: string; name: string }>()
 
-    // REFS
-    const abortControllerRef = useRef<AbortController>(new AbortController())
+    const {
+        data: appChartRef,
+        isLoading,
+        isFetching,
+        error: appChartRefErr,
+        refetch,
+    } = useQuery({
+        queryFn: ({ signal }) => getAppChartRefForAppAndEnv(+appId, +envId, isTemplateView, signal),
+        queryKey: [componentType, appId, envId, isTemplateView],
+        select: ({ result }) => result,
+    })
 
-    // ASYNC CALLS
-    const [appChartRefLoading, appChartRefRes, appChartRefErr, reload] = useAsync(
-        () =>
-            abortPreviousRequests(() => getAppChartRefForAppAndEnv(+appId, +envId, isTemplateView), abortControllerRef),
-        [componentType],
-    )
+    const appChartRefLoading = isLoading || isFetching
 
-    useEffect(() => {
-        if (appChartRefRes) {
-            setParentState?.(ComponentStates.loaded)
-        }
-        if (appChartRefErr && !getIsRequestAborted(appChartRefErr)) {
-            setParentState?.(ComponentStates.failed)
-            showError(appChartRefErr)
-        }
-
-        return () => {
-            setParentState?.(ComponentStates.loading)
-        }
-    }, [appChartRefRes, appChartRefErr])
-
-    if (parentState === ComponentStates.loading || appChartRefLoading || getIsRequestAborted(appChartRefErr)) {
+    if (appChartRefLoading) {
         return <Progressing fullHeight pageLoader />
     }
 
     if (appChartRefErr) {
-        return <ErrorScreenManager code={appChartRefErr.code} redirectURL={onErrorRedirectURL} reload={reload} />
+        return <ErrorScreenManager code={appChartRefErr.code} redirectURL={onErrorRedirectURL} reload={refetch} />
     }
 
     return (
         <ConfigMapSecretContainer
             key={`${CM_SECRET_COMPONENT_NAME[componentType]}-${name}`}
-            appChartRef={appChartRefRes?.result}
+            appChartRef={appChartRef}
             {...props}
         />
     )
