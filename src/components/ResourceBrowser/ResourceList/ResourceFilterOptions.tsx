@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentProps, KeyboardEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { ComponentProps, useEffect, useMemo, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { SelectInstance } from 'react-select'
 
@@ -22,7 +22,6 @@ import {
     ALL_NAMESPACE_OPTION,
     Checkbox,
     CHECKBOX_VALUE,
-    ComponentSizeType,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKOptionValueType,
@@ -45,7 +44,6 @@ import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
 import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
-import { ShortcutKeyBadge } from '../../common/formFields/Widgets/Widgets'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
 import { namespaceListByClusterId } from '../ResourceBrowser.service'
 import { ResourceFilterOptionsProps } from '../Types'
@@ -80,7 +78,6 @@ const ResourceFilterOptions = ({
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const { clusterId } = useParams<K8sResourceListURLParams>()
     const [showFilterModal, setShowFilterModal] = useState(false)
-    const [isInputFocused, setIsInputFocused] = useState(false)
     const searchInputRef = useRef<HTMLInputElement>(null)
     const namespaceFilterRef = useRef<SelectInstance<SelectPickerOptionType>>(null)
 
@@ -88,7 +85,6 @@ const ResourceFilterOptions = ({
 
     const { gvkOptions, areGVKOptionsLoading, reloadGVKOptions, gvkOptionsError } = gvkFilterConfig || {}
 
-    const showShortcutKey = !isInputFocused && !searchText
     const isResourceRecommender = selectedResource?.gvk?.Kind === Nodes.ResourceRecommender
 
     const {
@@ -111,10 +107,6 @@ const ResourceFilterOptions = ({
         return NAMESPACE_NOT_APPLICABLE_OPTION
     }, [selectedNamespace, selectedResource?.namespaced, namespaceOptions])
 
-    const handleInputShortcut = () => {
-        searchInputRef.current?.focus()
-    }
-
     const handleShowFilterModal = () => {
         setShowFilterModal(true)
     }
@@ -130,22 +122,14 @@ const ResourceFilterOptions = ({
 
     useEffect(() => {
         if (registerShortcut) {
-            registerShortcut({ keys: ['/'], callback: handleInputShortcut })
             registerShortcut({ keys: ['F'], callback: handleShowFilterModal })
             registerShortcut({ keys: ['N'], callback: handleFocusNamespaceFilter })
         }
         return (): void => {
             unregisterShortcut(['F'])
-            unregisterShortcut(['/'])
             unregisterShortcut(['N'])
         }
     }, [])
-
-    const handleFilterKeyUp = (e: KeyboardEvent): void => {
-        if (e.key === 'Escape' || e.key === 'Esc') {
-            searchInputRef.current?.blur()
-        }
-    }
 
     const handleOnChangeSearchText: ComponentProps<typeof SearchBar>['handleSearchChange'] = (text) => {
         setSearchText(text)
@@ -164,10 +148,6 @@ const ResourceFilterOptions = ({
             { redirectionMethod: 'replace' },
         )
     }
-
-    const handleInputBlur = () => setIsInputFocused(false)
-
-    const handleInputFocus = () => setIsInputFocused(true)
 
     const handleOnEventTypeChange: SegmentedControlProps['onChange'] = ({ value }) => {
         updateSearchParams({ eventType: value === 'normal' ? value : null })
@@ -205,12 +185,11 @@ const ResourceFilterOptions = ({
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
             <div className="resource-filter-options-container flexbox dc__content-space pt-16 pr-20 pb-12 pl-20 w-100">
-                <div className="flexbox dc__gap-8">
+                <div className="flex dc__gap-8">
                     {isEventListing && (
                         <SegmentedControl
                             name="event-type-control"
                             value={eventType}
-                            size={ComponentSizeType.small}
                             segments={[
                                 {
                                     icon: 'ic-warning',
@@ -233,21 +212,12 @@ const ResourceFilterOptions = ({
                             inputProps={{
                                 placeholder: searchPlaceholder || `Search ${selectedResource?.gvk?.Kind || ''}`,
                                 disabled: isSearchInputDisabled,
-                                onBlur: handleInputBlur,
-                                onFocus: handleInputFocus,
                                 ref: searchInputRef,
-                                onKeyUp: handleFilterKeyUp,
                             }}
                             handleSearchChange={handleOnChangeSearchText}
                             initialSearchText={searchText}
+                            keyboardShortcut="/"
                         />
-                        {showShortcutKey && (
-                            <ShortcutKeyBadge
-                                shortcutKey="/"
-                                rootClassName="resource-search-shortcut-key"
-                                onClick={handleInputShortcut}
-                            />
-                        )}
                     </div>
                 </div>
 
@@ -314,6 +284,7 @@ const ResourceFilterOptions = ({
                             icon={<NamespaceIcon className="fcn-6" />}
                             disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
                             shouldMenuAlignRight
+                            keyboardShortcut="N"
                         />
                     </div>
 

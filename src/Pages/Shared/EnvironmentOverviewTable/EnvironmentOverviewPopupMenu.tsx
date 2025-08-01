@@ -25,7 +25,7 @@ export const EnvironmentOverviewPopupMenu = ({
                 showAriaLabelInTippy={false}
             />
         </PopupMenu.Button>
-        <PopupMenu.Body rootClassName="dc__border py-4 w-180">
+        <PopupMenu.Body noBackDrop rootClassName="dc__border py-4 w-180">
             {popUpMenuItems.map((popUpMenuItem) => {
                 if ('label' in popUpMenuItem) {
                     const { label, onClick, disabled, iconName } = popUpMenuItem

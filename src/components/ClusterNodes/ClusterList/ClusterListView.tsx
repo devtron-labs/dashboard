@@ -108,6 +108,7 @@ const ClusterListView = (props: ClusterViewType) => {
                             autoFocus: true,
                             disabled: initialLoading,
                         }}
+                        keyboardShortcut="/"
                     />
                     {ClusterFilters && (
                         <ClusterFilters clusterFilter={clusterFilter} setClusterFilter={setClusterFilter} />

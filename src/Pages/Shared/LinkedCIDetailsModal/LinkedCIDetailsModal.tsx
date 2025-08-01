@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 
 import {
@@ -36,7 +36,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
-import { preventBodyScroll } from '../../../components/common'
 import { API_STATUS_CODES, SELECT_ALL_VALUE } from '../../../config'
 import { ALL_ENVIRONMENT_OPTION, SortableKeys } from './constants'
 import LinkedCIAppList from './LinkedCIAppList'
@@ -113,14 +112,6 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
 
     const selectedOption = selectOptions.find((option) => option.value === environment) ?? ALL_ENVIRONMENT_OPTION
 
-    useEffect(() => {
-        preventBodyScroll(true)
-
-        return () => {
-            preventBodyScroll(false)
-        }
-    }, [])
-
     const showLoadingState = loading || getIsRequestAborted(error)
 
     if (!showLoadingState) {
@@ -167,7 +158,6 @@ const LinkedCIDetailsModal = ({ handleClose, workflows }: LinkedCIDetailModalPro
                             className="dc__transparent dc__no-shrink flexbox"
                             aria-label="close-modal"
                             onClick={handleClose}
-                            disabled={showLoadingState}
                         >
                             <Close className="icon-dim-24" />
                         </button>

@@ -14,15 +14,75 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    get,
+    getUrlWithSearchParams,
+    post,
+    put,
+    stringComparatorBySortOrder,
+    trash,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { Routes } from '@Config/constants'
 
-import { DeleteClusterPayload } from './cluster.type'
+import { Cluster, ClusterDTO, DeleteClusterPayload, Environment, EnvironmentDTO } from './cluster.type'
 
-export function getClusterList(): Promise<any> {
-    const URL = `${Routes.CLUSTER}`
-    return get(URL)
+export const getEnvironmentList = async (): Promise<Environment[]> => {
+    const { result } = await get<EnvironmentDTO[]>(Routes.ENVIRONMENT)
+
+    return (result ?? []).map(
+        // eslint-disable-next-line camelcase
+        ({
+            environment_name: environmentName,
+            cluster_id: clusterId,
+            cluster_name: clusterName,
+            prometheus_endpoint: prometheusEndpoint,
+            default: isProd,
+            namespace,
+            ...res
+        }) => ({
+            ...res,
+            environmentName,
+            clusterId,
+            clusterName,
+            prometheusEndpoint: prometheusEndpoint ?? '',
+            isProd,
+            namespace: namespace ?? '',
+        }),
+    )
+}
+
+export const getClusterList = async (clusterIds?: number[]): Promise<Cluster[]> => {
+    const url = getUrlWithSearchParams(Routes.CLUSTER, { clusterId: clusterIds?.join() })
+    const { result } = await get<ClusterDTO[]>(url)
+
+    // eslint-disable-next-line camelcase
+    return (result ?? [])
+        .map(
+            ({
+                id,
+                server_url: serverUrl,
+                cluster_name: clusterName,
+                prometheus_url: prometheusUrl,
+                category,
+                clusterStatus,
+                ...res
+            }) => ({
+                ...res,
+                clusterId: id,
+                serverUrl,
+                clusterName,
+                prometheusUrl,
+                category: category?.name
+                    ? {
+                          label: category.name,
+                          value: category.id,
+                      }
+                    : null,
+                status: clusterStatus,
+            }),
+        )
+        .sort((a, b) => stringComparatorBySortOrder(a.clusterName, b.clusterName))
 }
 
 export function getCluster(id: number) {
@@ -55,20 +115,9 @@ export const getEnvironment = (id: number): Promise<any> => {
     return get(URL)
 }
 
-export const saveEnvironment = (request): Promise<any> => {
-    const URL = `${Routes.ENVIRONMENT}`
-    return post(URL, request)
-}
+export const saveEnvironment = (request): Promise<any> => post(Routes.ENVIRONMENT, request)
 
-export const updateEnvironment = (request): Promise<any> => {
-    const URL = `${Routes.ENVIRONMENT}`
-    return put(URL, request)
-}
-
-export const getEnvironmentList = (): Promise<any> => {
-    const URL = `${Routes.ENVIRONMENT}`
-    return get(URL).then((response) => response)
-}
+export const updateEnvironment = (request): Promise<any> => put(Routes.ENVIRONMENT, request)
 
 export function deleteCluster(payload: DeleteClusterPayload): Promise<any> {
     return trash(Routes.CLUSTER, { ...payload })

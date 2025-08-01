@@ -36,7 +36,6 @@ import {
     HeaderWithCreateButton,
     ModuleNameMap,
     Progressing,
-    stopPropagation,
     TabGroup,
     TabProps,
     useAsync,
@@ -404,8 +403,7 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
         )
     }
 
-    const closeDevtronAppCreateModal = (e) => {
-        stopPropagation(e)
+    const closeDevtronAppCreateModal = () => {
         history.push(`${url}${location.search}`)
     }
 

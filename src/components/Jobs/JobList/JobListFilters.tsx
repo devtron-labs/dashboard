@@ -72,6 +72,7 @@ const JobListFilters = ({
                     autoFocus: true,
                 }}
                 dataTestId="Search-by-job-name"
+                keyboardShortcut="/"
             />
             <div className="flexbox dc__gap-8 dc__align-items-center dc__zi-4">
                 <FilterSelectPicker
