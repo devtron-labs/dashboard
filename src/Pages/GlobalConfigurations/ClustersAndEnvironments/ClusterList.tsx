@@ -69,6 +69,7 @@ import {
 import { parseClusterEnvSearchParams } from './cluster.util'
 import {
     AddEnvironment,
+    AddEnvironmentFromClusterName,
     ClusterEnvLoader,
     ClusterListCellComponent,
     DeleteCluster,
@@ -453,6 +454,16 @@ const ClusterList = () => {
                 <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId?`}>
                     <AddEnvironment reloadEnvironments={reloadEnvironments} handleClose={handleRedirectToClusterList} />
                 </Route>
+                {/* Below route is to maintain backward compatibility and redirection from various places in dashboard */}
+                {clusterListResult && (
+                    <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}>
+                        <AddEnvironmentFromClusterName
+                            clusterList={clusterListResult ?? []}
+                            reloadEnvironments={reloadEnvironments}
+                            handleClose={handleRedirectToClusterList}
+                        />
+                    </Route>
+                )}
                 {PodSpreadModal && (
                     <Route
                         path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`}
