@@ -54,3 +54,4 @@ yalc.lock
 .pnp.*
 
 .env.secrets
+scripts/
