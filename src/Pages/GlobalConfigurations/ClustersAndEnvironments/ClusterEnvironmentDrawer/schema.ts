@@ -16,14 +16,14 @@
 
 import { UseFormValidations } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ClusterEnvironmentDrawerFormProps } from './types'
+import { EnvironmentFormType } from './types'
 
-export const clusterEnvironmentDrawerFormValidationSchema = ({
-    isNamespaceMandatory,
-}: {
-    isNamespaceMandatory: boolean
-}): UseFormValidations<ClusterEnvironmentDrawerFormProps> => ({
-    environmentName: {
+export const clusterEnvironmentDrawerFormValidationSchema = (): UseFormValidations<EnvironmentFormType> => ({
+    clusterId: {
+        required: true,
+        pattern: [{ message: 'Please select a cluster', value: /^(?!0$)\d+$/ }],
+    },
+    envName: {
         required: true,
         pattern: [
             { message: 'Environment name is required', value: /^.*$/ },
@@ -33,7 +33,7 @@ export const clusterEnvironmentDrawerFormValidationSchema = ({
         ],
     },
     namespace: {
-        required: isNamespaceMandatory,
+        required: true,
         pattern: [
             { message: 'Namespace is required', value: /^.*$/ },
             { message: "Use only lowercase alphanumeric characters or '-'", value: /^[a-z0-9-]+$/ },

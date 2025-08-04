@@ -14,31 +14,41 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+/* eslint-disable react/prop-types */
+
+import { Component, createRef } from 'react'
+import Draggable, { DraggableEventHandler } from 'react-draggable'
 import yamlJsParser from 'yaml'
+
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    PageHeader,
+    BulkEditConfigV2Type,
+    BulkEditVersion,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CodeEditor,
+    ComponentSizeType,
+    GenericSectionErrorState,
+    Icon,
+    MarkDown,
+    MODES,
+    motion,
+    noop,
+    PageHeader,
+    Progressing,
+    ResponseType,
     SelectPicker,
     SelectPickerVariantType,
-    ComponentSizeType,
+    showError,
     ToastManager,
     ToastVariantType,
-    MarkDown,
-    Button,
-    ButtonVariantType,
-    ButtonStyleType,
-    MODES,
+    useMotionTemplate,
+    useMotionValue,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SERVER_MODE, ViewType } from '../../config'
-import { BulkEditsProps, BulkEditsState } from './bulkEdits.type'
-import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
-import { ReactComponent as PlayButton } from '../../assets/icons/ic-play.svg'
-import { updateBulkList, getSeeExample, updateImpactedObjectsList } from './bulkedits.service'
-import './bulkEdit.scss'
+
+import { importComponentFromFELibrary } from '@Components/common'
+
+import { SERVER_MODE } from '../../config'
 import {
     OutputTabs,
     renderCMAndSecretImpObj,
@@ -46,88 +56,97 @@ import {
     renderDeploymentTemplateOutput,
     renderSecretOutput,
 } from './bulkedit.utils'
-import { OutputDivider, OutputObjectTabs, STATUS } from './constants'
+import { getSeeExample, updateBulkList, updateImpactedObjectsList } from './bulkedits.service'
+import { BulkEditsProps, BulkEditsState, BulkEditViewType } from './bulkEdits.type'
+import {
+    BULK_EDIT_RESIZE_HANDLE_CLASS,
+    INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE,
+    OutputDivider,
+    OutputObjectTabs,
+    ReadmeVersionOptions,
+    STATUS,
+} from './constants'
 
-export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
-    constructor(props) {
+import './bulkEdit.scss'
+
+const BULK_EDIT_VALIDATOR_SCHEMA = importComponentFromFELibrary('BULK_EDIT_VALIDATOR_SCHEMA', null, 'function')
+export const getBulkEditConfig = importComponentFromFELibrary('getBulkEditConfig', null, 'function')
+
+class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
+    private readonly editorAndOutputContainerRef = createRef<HTMLDivElement>()
+
+    constructor(props: BulkEditsProps) {
         super(props)
 
         this.state = {
-            view: ViewType.LOADING,
+            view: BulkEditViewType.FORM,
             statusCode: 0,
             outputResult: undefined,
             impactedObjects: undefined,
             isReadmeLoading: true,
-            outputName: 'output',
-            bulkConfig: [],
-            updatedTemplate: [],
-            readmeResult: [],
+            readmeVersionOptions: ReadmeVersionOptions,
+            selectedReadmeVersionOption: ReadmeVersionOptions[0],
+            readmeResult: {
+                [BulkEditVersion.v1]: null,
+                [BulkEditVersion.v2]: null,
+            },
             showExamples: true,
-            showOutputData: true,
-            showImpactedData: false,
+            activeOutputTab: 'none',
             codeEditorPayload: undefined,
+            schema: null,
         }
     }
 
     componentDidMount() {
-        if (this.props.serverMode == SERVER_MODE.FULL) {
-            this.setState({
-                view: ViewType.LOADING,
-            })
+        // eslint-disable-next-line react/prop-types
+        const { serverMode } = this.props
+
+        if (serverMode === SERVER_MODE.FULL) {
             this.getInitialized()
         }
     }
 
     getInitialized() {
-        getSeeExample()
-            .then((res) => {
-                this.setState({ view: ViewType.LOADING })
-                const bulkConfig = res.result
-                let kind = bulkConfig.map((elm) => elm.script.kind)
-                kind = kind.toString().toLocaleLowerCase()
-                let apiVersion = bulkConfig.map((elm) => elm.script.apiVersion)
-                apiVersion = apiVersion.toString()
-                const readmeResult = bulkConfig.map((elm) => elm.readme)
-                const updatedTemplate = bulkConfig.map((elm) => {
-                    return {
-                        value: elm.operation,
-                        label: elm.operation,
-                    }
-                })
+        Promise.allSettled([
+            (getBulkEditConfig?.() as Promise<ResponseType<BulkEditConfigV2Type>>)?.then(
+                ({ result: { readme, schema } }) => {
+                    this.setState({ schema })
+
+                    return readme
+                },
+            ),
+            getSeeExample().then(({ result }) => result[0].readme),
+        ])
+            .then(([v2ReadmeResult, v1ReadmeResult]) => {
+                const v2Readme = v2ReadmeResult.status === 'fulfilled' ? v2ReadmeResult.value : null
+                const v1Readme = v1ReadmeResult.status === 'fulfilled' ? v1ReadmeResult.value : null
 
                 this.setState({
-                    view: ViewType.FORM,
                     isReadmeLoading: false,
-                    bulkConfig,
-                    updatedTemplate,
-                    readmeResult,
+                    view: BulkEditViewType.FORM,
+                    readmeResult: { [BulkEditVersion.v1]: v1Readme, [BulkEditVersion.v2]: v2Readme },
                 })
             })
-            .catch((error) => {
-                showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code })
-            })
+            .catch(noop)
     }
 
-    handleRunButton = (e) => {
-        const outputDiv = document.querySelector('.code-editor-body')
-        outputDiv.scrollTop = outputDiv.scrollHeight
+    handleRunButton = () => {
+        const { codeEditorPayload } = this.state
 
         this.setState({
-            view: ViewType.LOADING,
-            outputName: 'output',
+            view: BulkEditViewType.LOADING_OUTPUT,
         })
 
         let configJson: any = {}
         try {
-            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
-        } catch (error) {
+            configJson = yamlJsParser.parse(codeEditorPayload)
+        } catch {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Invalid Yaml',
             })
-            this.setState({ view: ViewType.FORM })
+            this.setState({ view: BulkEditViewType.FORM })
             return
         }
         const errorMessage = []
@@ -140,39 +159,35 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 const outputResult = response.result
                 this.setState({
                     statusCode: 0,
-                    view: ViewType.FORM,
-                    showOutputData: true,
-                    outputName: 'output',
+                    view: BulkEditViewType.FORM,
+                    activeOutputTab: 'output',
                     outputResult,
-                    showImpactedData: false,
                     impactedObjects: undefined,
                 })
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'output' })
+                this.setState({ view: BulkEditViewType.FORM, statusCode: error.code })
             })
     }
 
     handleShowImpactedObjectButton = () => {
-        const outputDiv = document.querySelector('.code-editor-body')
-        outputDiv.scrollTop = outputDiv.scrollHeight
+        const { codeEditorPayload } = this.state
 
         this.setState({
-            view: ViewType.LOADING,
-            outputName: 'impacted',
+            view: BulkEditViewType.LOADING_IMPACTED_OUTPUT,
         })
 
         let configJson: any = {}
         try {
-            configJson = yamlJsParser.parse(this.state.codeEditorPayload)
-        } catch (error) {
+            configJson = yamlJsParser.parse(codeEditorPayload)
+        } catch {
             // Invalid YAML, couldn't be parsed to JSON. Show error toast
             ToastManager.showToast({
                 variant: ToastVariantType.error,
                 description: 'Invalid Yaml',
             })
-            this.setState({ view: ViewType.FORM })
+            this.setState({ view: BulkEditViewType.FORM })
             return
         }
 
@@ -183,44 +198,56 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                 const impactedObjects = response.result
                 this.setState({
                     statusCode: 0,
-                    view: ViewType.FORM,
+                    view: BulkEditViewType.FORM,
                     impactedObjects,
                     outputResult: undefined,
-                    outputName: 'impacted',
-                    showImpactedData: true,
+                    activeOutputTab: 'impacted',
                 })
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ view: ViewType.FORM, statusCode: error.code, outputName: 'impacted' })
+                this.setState({ view: BulkEditViewType.FORM, statusCode: error.code })
             })
     }
 
+    handleReferSampleScriptClick = () => this.setState({ showExamples: true })
+
     renderCodeEditorHeader = () => {
+        const { showExamples, view } = this.state
+
         return (
-            <div className="flex bg__primary px-20 py-8 dc__border-bottom dc__content-space">
+            <div className="flex bg__primary px-16 py-8 border__secondary--bottom dc__content-space">
                 <div className="flexbox dc__gap-12">
-                    <Button
-                        text="Run"
-                        onClick={this.handleRunButton}
-                        dataTestId="run-button"
-                        startIcon={<PlayButton />}
-                        size={ComponentSizeType.medium}
-                    ></Button>
+                    <h1 className="m-0 fs-13 cn-9 fw-6 lh-20 dc__open-sans">Payload</h1>
+                    {!showExamples && (
+                        <Button
+                            dataTestId="refer-sample-script-button"
+                            text="Refer Sample Payload"
+                            variant={ButtonVariantType.text}
+                            size={ComponentSizeType.medium}
+                            onClick={this.handleReferSampleScriptClick}
+                        />
+                    )}
+                </div>
+
+                <div className="flexbox dc__gap-12">
                     <Button
                         text="Show Impacted Objects"
                         onClick={this.handleShowImpactedObjectButton}
                         dataTestId="show-impacted-objects-button"
-                        size={ComponentSizeType.medium}
+                        size={ComponentSizeType.small}
                         variant={ButtonVariantType.secondary}
-                    ></Button>
+                        isLoading={view === BulkEditViewType.LOADING_IMPACTED_OUTPUT}
+                    />
+                    <Button
+                        text="Execute"
+                        onClick={this.handleRunButton}
+                        dataTestId="run-button"
+                        startIcon={<Icon name="ic-play-outline" color={null} />}
+                        size={ComponentSizeType.small}
+                        isLoading={view === BulkEditViewType.LOADING_OUTPUT}
+                    />
                 </div>
-
-                {!this.state.showExamples ? (
-                    <div className="cb-5 fw-6 fs-13 pointer" onClick={() => this.setState({ showExamples: true })}>
-                        See Samples
-                    </div>
-                ) : null}
             </div>
         )
     }
@@ -231,104 +258,149 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         })
     }
 
-    handleOutputTab = (e, key: string) => {
-        if (key == 'output') {
-            this.setState({
-                outputName: 'output',
-                showOutputData: true,
-                showImpactedData: false,
-            })
+    handleOutputTab = (key: BulkEditsState['activeOutputTab']) => {
+        this.setState({
+            activeOutputTab: key,
+        })
+    }
+
+    renderOutputContent = () => {
+        const { statusCode, activeOutputTab } = this.state
+
+        if (statusCode === 404) {
+            return STATUS.ERROR
         }
-        if (key == 'impacted') {
-            this.setState({
-                outputName: 'impacted',
-                showImpactedData: true,
-                showOutputData: false,
-            })
-        }
+
+        return activeOutputTab === 'output' ? this.renderOutputs() : this.renderImpactedObjects()
+    }
+
+    handleDrag: DraggableEventHandler = (_, data) => {
+        const { outputHeightMV } = this.props
+        const newHeight =
+            outputHeightMV.get() - (data.deltaY / this.editorAndOutputContainerRef.current.clientHeight) * 100
+        // Clamp the height between 10% and 90%
+        const clamped = Math.min(90, Math.max(10, newHeight))
+        outputHeightMV.set(clamped)
     }
 
     renderCodeEditorBody = () => {
+        const { codeEditorPayload, schema, activeOutputTab } = this.state
+        const { gridTemplateRows } = this.props
+
+        const isV2Schema = (codeEditorPayload ?? '').match('apiVersion:\\s*batch/v1beta2')?.length
+
+        const validatorSchema = isV2Schema ? schema : BULK_EDIT_VALIDATOR_SCHEMA
+
+        if (activeOutputTab === 'none') {
+            return (
+                <div className="dc__overflow-hidden flex-grow-1">
+                    <CodeEditor
+                        key={isV2Schema}
+                        mode={MODES.YAML}
+                        height="100%"
+                        value={codeEditorPayload}
+                        onChange={this.handleConfigChange}
+                        validatorSchema={validatorSchema}
+                    />
+                </div>
+            )
+        }
+
         return (
-            <div className="code-editor-body dc__grid-half flexbox-col flex-grow-1 mh-0">
-                <CodeEditor
-                    mode={MODES.YAML}
-                    height="fitToParent"
-                    value={this.state.codeEditorPayload}
-                    onChange={this.handleConfigChange}
-                />
-                <div className="bulk-output-drawer bg__primary flexbox-col flex-grow-1 mh-0">
-                    <div className="bulk-output-header flex left pl-20 pr-20 pt-6 dc__border-top dc__border-bottom bg__primary">
+            <motion.div
+                className="dc__grid flex-grow-1 dc__overflow-hidden"
+                ref={this.editorAndOutputContainerRef}
+                style={{ gridTemplateRows }}
+            >
+                <motion.div className="dc__overflow-hidden flex-grow-1">
+                    <CodeEditor
+                        key={isV2Schema}
+                        mode={MODES.YAML}
+                        height="100%"
+                        value={codeEditorPayload}
+                        onChange={this.handleConfigChange}
+                        validatorSchema={validatorSchema}
+                    />
+                </motion.div>
+
+                <Draggable
+                    handle={`.${BULK_EDIT_RESIZE_HANDLE_CLASS}`}
+                    defaultClassNameDragging={`${BULK_EDIT_RESIZE_HANDLE_CLASS}--dragging`}
+                    axis="none"
+                    position={{ x: 0, y: 0 }}
+                    bounds={{ left: 0, right: 0 }}
+                    onDrag={this.handleDrag}
+                >
+                    <div className={`${BULK_EDIT_RESIZE_HANDLE_CLASS} border__primary--bottom flex dc__zi-10`}>
+                        <Icon name="ic-resize-handle" size={16} color={null} />
+                    </div>
+                </Draggable>
+
+                <motion.div className="bulk-output-drawer bg__primary flexbox-col dc__overflow-auto">
+                    <div className="bulk-output-header flex left px-16 pt-6 border__secondary--bottom bg__primary">
                         <OutputTabs
-                            handleOutputTabs={(e) => this.handleOutputTab(e, 'output')}
-                            outputName={this.state.outputName}
+                            handleOutputTabs={() => this.handleOutputTab('output')}
+                            outputName={activeOutputTab}
                             value="output"
                             name={OutputObjectTabs.OUTPUT}
                         />
                         <OutputTabs
-                            handleOutputTabs={(e) => this.handleOutputTab(e, 'impacted')}
-                            outputName={this.state.outputName}
+                            handleOutputTabs={() => this.handleOutputTab('impacted')}
+                            outputName={activeOutputTab}
                             value="impacted"
                             name={OutputObjectTabs.IMPACTED_OBJECTS}
                         />
                     </div>
                     <div
-                        className="bulk-output-body cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1 mh-0"
+                        className="cn-9 fs-13 p-20 dc__overflow-auto flexbox-col flex-grow-1"
                         data-testid="output-message"
                     >
-                        {this.state.showOutputData ? (
-                            this.state.statusCode === 404 ? (
-                                <>{STATUS.ERROR}</>
-                            ) : (
-                                this.renderOutputs()
-                            )
-                        ) : null}
-                        {this.state.showImpactedData ? (
-                            this.state.statusCode === 404 ? (
-                                <>{STATUS.ERROR}</>
-                            ) : (
-                                this.renderImpactedObjects()
-                            )
-                        ) : null}
+                        {this.renderOutputContent()}
                     </div>
-                </div>
-            </div>
+                </motion.div>
+            </motion.div>
         )
     }
 
     renderOutputs = () => {
-        const payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
-        const deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
-        const configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
-        const secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
-        return this.state.view === ViewType.LOADING ? (
-            <Progressing pageLoader />
-        ) : this.state.outputResult == undefined ? (
-            ''
-        ) : (
-            <div>
-                {configMapInPayload ? renderConfigMapOutput(this.state.outputResult.configMap) : null}
-                {deploymentTemplateInPayload
-                    ? renderDeploymentTemplateOutput(this.state.outputResult.deploymentTemplate)
-                    : null}
-                {secretInPayload ? renderSecretOutput(this.state.outputResult.secret) : null}
+        const { view, outputResult } = this.state
+
+        if (view === BulkEditViewType.LOADING_OUTPUT) {
+            return <Progressing size={32} />
+        }
+
+        if (!outputResult) {
+            return (
+                <GenericSectionErrorState
+                    useInfoIcon
+                    title="Nothing to show yet"
+                    subTitle="Enter a valid payload and click Run to see the operation result."
+                    description=""
+                    rootClassName="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <div className="bulk-output-body">
+                {renderConfigMapOutput(outputResult.configMap)}
+                {renderDeploymentTemplateOutput(outputResult.deploymentTemplate)}
+                {renderSecretOutput(outputResult.secret)}
             </div>
         )
     }
 
     renderConfigMapImpObj = () => {
+        const { impactedObjects } = this.state
+
         return (
             <div>
                 <div>
                     *CONFIGMAPS: <br /> <br />
-                    {!this.state.impactedObjects?.configMap?.length ? (
+                    {!impactedObjects.configMap?.length ? (
                         <>No Result Found </>
                     ) : (
-                        <>
-                            {this.state.impactedObjects.configMap.map((elm) => {
-                                return renderCMAndSecretImpObj(elm)
-                            })}
-                        </>
+                        <>{impactedObjects.configMap.map((elm) => renderCMAndSecretImpObj(elm))}</>
                     )}
                 </div>
                 {OutputDivider}
@@ -337,24 +409,41 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderDeploymentTemplateImpObj = () => {
+        const { impactedObjects } = this.state
+
         return (
             <div>
                 <div>
                     *DEPLOYMENT TEMPLATE: <br /> <br />
-                    {!this.state.impactedObjects.deploymentTemplate?.length ? (
+                    {!impactedObjects.deploymentTemplate?.length ? (
                         <>No Result Found</>
                     ) : (
                         <>
-                            {this.state.impactedObjects.deploymentTemplate.map((elm) => {
-                                return (
-                                    <div>
-                                        App Id: {elm.appId} <br />
-                                        App Name: {elm.appName} <br />
-                                        Environment Id: {elm.envId} <br />
-                                        <br />
-                                    </div>
-                                )
-                            })}
+                            {impactedObjects.deploymentTemplate.map((elm) => (
+                                <div>
+                                    {elm.appId && (
+                                        <>
+                                            App Id: {elm.appId} <br />
+                                        </>
+                                    )}
+                                    {elm.appName && (
+                                        <>
+                                            App Name: {elm.appName} <br />
+                                        </>
+                                    )}
+                                    {elm.envId && (
+                                        <>
+                                            Environment Id: {elm.envId} <br />
+                                        </>
+                                    )}
+                                    {elm.envName && (
+                                        <>
+                                            Environment Name: {elm.envName} <br />
+                                        </>
+                                    )}
+                                    <br />
+                                </div>
+                            ))}
                         </>
                     )}
                 </div>
@@ -364,18 +453,16 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSecretImpObj = () => {
+        const { impactedObjects } = this.state
+
         return (
             <div>
                 <div>
                     *SECRETS: <br /> <br />
-                    {!this.state.impactedObjects.secret?.length ? (
+                    {!impactedObjects.secret?.length ? (
                         <>No Result Found</>
                     ) : (
-                        <>
-                            {this.state.impactedObjects.secret.map((elm) => {
-                                return renderCMAndSecretImpObj(elm)
-                            })}
-                        </>
+                        <>{impactedObjects.secret.map((elm) => renderCMAndSecretImpObj(elm))}</>
                     )}
                 </div>
                 {OutputDivider}
@@ -384,37 +471,35 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderImpactedObjects = () => {
-        const payloadStringWithoutSpaces = this.state.codeEditorPayload?.split(' ').join('')
-        const deploymentTemplateInPayload = payloadStringWithoutSpaces?.includes('deploymentTemplate:\nspec:')
-        const configMapInPayload = payloadStringWithoutSpaces?.includes('configMap:\nspec:')
-        const secretInPayload = payloadStringWithoutSpaces?.includes('secret:\nspec:')
-        return this.state.view === ViewType.LOADING ? (
-            <Progressing pageLoader />
-        ) : this.state.impactedObjects == undefined ? (
-            ''
-        ) : (
-            <div>
-                {configMapInPayload ? this.renderConfigMapImpObj() : null}
-                {deploymentTemplateInPayload ? this.renderDeploymentTemplateImpObj() : null}
-                {secretInPayload ? this.renderSecretImpObj() : null}
+        const { view, impactedObjects } = this.state
+
+        if (view === BulkEditViewType.LOADING_IMPACTED_OUTPUT) {
+            return <Progressing size={32} />
+        }
+
+        if (!impactedObjects) {
+            return (
+                <GenericSectionErrorState
+                    useInfoIcon
+                    title="Nothing to show yet"
+                    subTitle="Enter a valid payload and click Show Impacted Objects to see which applications will be affected."
+                    description=""
+                    rootClassName="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <div className="bulk-output-body">
+                {this.renderConfigMapImpObj()}
+                {this.renderDeploymentTemplateImpObj()}
+                {this.renderSecretImpObj()}
             </div>
         )
     }
 
-    handleUpdateTemplate = () => {
-        this.setState({ isReadmeLoading: true })
-        getSeeExample()
-            .then((res) => {
-                const readmeResult = res.result.map((elm) => elm.readme)
-                this.setState({
-                    isReadmeLoading: false,
-                    readmeResult,
-                })
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState({ isReadmeLoading: false, statusCode: error.code })
-            })
+    handleUpdateTemplate = (option: BulkEditsState['selectedReadmeVersionOption']) => {
+        this.setState({ selectedReadmeVersionOption: option })
     }
 
     onClickHideExamples = () => {
@@ -422,8 +507,10 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
     }
 
     renderSampleTemplateHeader = () => {
+        const { selectedReadmeVersionOption, readmeVersionOptions } = this.state
+
         return (
-            <div className="dc__border-bottom bg__primary py-8 px-20 flex  h-48 dc__content-space">
+            <div className="border__secondary--bottom bg__primary py-10 px-16 flex dc__content-space">
                 <div className="flex left dc__gap-16">
                     <div className="fw-6 cn-9" data-testid="sample-application">
                         Sample:
@@ -432,99 +519,83 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
                         inputId="sample-application"
                         name="sample-application"
                         classNamePrefix="sample-application-select"
-                        value={this.state.updatedTemplate[0]}
+                        value={selectedReadmeVersionOption}
                         placeholder="Update Deployment Template"
-                        options={this.state.updatedTemplate}
-                        onChange={() => this.handleUpdateTemplate()}
+                        options={readmeVersionOptions}
+                        onChange={this.handleUpdateTemplate}
                         variant={SelectPickerVariantType.COMPACT}
                         size={ComponentSizeType.medium}
                         menuSize={ComponentSizeType.medium}
                     />
                 </div>
                 <Button
-                    icon={<Close />}
+                    icon={<Icon name="ic-close-large" color={null} />}
                     onClick={this.onClickHideExamples}
                     dataTestId="hide-examples-button"
                     variant={ButtonVariantType.borderLess}
                     style={ButtonStyleType.negativeGrey}
                     ariaLabel="Hide Sample"
-                    size={ComponentSizeType.small}
+                    showAriaLabelInTippy={false}
+                    size={ComponentSizeType.xs}
                 />
             </div>
         )
     }
 
     renderSampleTemplateBody = () => {
-        const readmeJson = this.state.readmeResult.toString()
-        return this.state.isReadmeLoading ? (
-            <Progressing pageLoader />
-        ) : (
-            <div className="deploy-chart__readme-column flexbox-col flex-grow-1 mh-0 dc__overflow-auto">
-                <MarkDown markdown={readmeJson} className="flexbox-col flex-grow-1 mh-0" />
+        const { readmeResult, selectedReadmeVersionOption, isReadmeLoading } = this.state
+        const readmeJson = readmeResult[selectedReadmeVersionOption.value]
+
+        if (isReadmeLoading) {
+            return <Progressing size={32} />
+        }
+
+        if (!readmeJson) {
+            return <GenericSectionErrorState rootClassName="flex-grow-1" />
+        }
+
+        return (
+            <div className="deploy-chart__readme-column flexbox-col flex-grow-1 dc__overflow-auto">
+                <MarkDown markdown={readmeJson} className="flexbox-col flex-grow-1" />
             </div>
         )
     }
 
-    renderBulkCodeEditor = () => {
-        return (
-            <div className="dc__border-right flexbox-col flex-grow-1 mh-0">
-                {this.renderCodeEditorHeader()}
-                {this.renderCodeEditorBody()}
-            </div>
-        )
-    }
+    renderBulkCodeEditor = () => (
+        <div className="bulk-container flexbox-col flex-grow-1 dc__overflow-hidden">
+            {this.renderCodeEditorHeader()}
+            {this.renderCodeEditorBody()}
+        </div>
+    )
 
-    renderReadmeSection = () => {
-        return (
-            <div className="flexbox-col flex-grow-1 mh-0 dc__overflow-hidden">
-                {this.renderSampleTemplateHeader()}
-                {this.renderSampleTemplateBody()}
-            </div>
-        )
-    }
+    renderReadmeSection = () => (
+        <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
+            {this.renderSampleTemplateHeader()}
+            {this.renderSampleTemplateBody()}
+        </div>
+    )
 
-    renderCodeEditorAndReadme = () => {
-        return (
-            <div className="bulk-container vertical-divider flex-grow-1 mh-0 dc__grid-half">
-                {this.renderBulkCodeEditor()}
-                {this.renderReadmeSection()}
-            </div>
-        )
-    }
-
-    renderReadmeAndCodeEditor = () => {
-        return (
-            <div className={`${this.state.showExamples ? 'code-editor-readme' : null}`}>
-                <div>{this.renderBulkCodeEditor()}</div>
-                {this.state.showExamples ? (
-                    <div className="flex end" style={{ transition: 'all .2s ease-out' }}>
-                        {this.renderReadmeSection()}
-                    </div>
-                ) : null}
-            </div>
-        )
-    }
+    renderCodeEditorAndReadme = () => (
+        <div className="bulk-container vertical-divider flex-grow-1 dc__grid-half dc__overflow-hidden">
+            {this.renderBulkCodeEditor()}
+            {this.renderReadmeSection()}
+        </div>
+    )
 
     renderBulkEditBody = () => {
-        return !this.state.showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()
+        const { showExamples } = this.state
+        return !showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()
     }
 
     render() {
-        if (this.state.view === ViewType.ERROR) {
-            return (
-                <div className="dc__align-reload-center">
-                    <ErrorScreenManager code={this.state.statusCode} />
-                </div>
-            )
-        }
-
         return (
             <div className="fs-13 flexbox-col flex-grow-1 h-100 dc__overflow-hidden">
                 <PageHeader
                     headerName="Bulk Edit"
                     tippyProps={{
                         isTippyCustomized: true,
-                        tippyMessage: 'Run scripts to bulk edit configurations for multiple devtron components.',
+                        tippyMessage:
+                            'Execute payloads to perform bulk configuration changes across multiple Devtron components.',
                         tippyRedirectLink: 'BULK_UPDATE',
                     }}
                 />
@@ -533,3 +604,12 @@ export default class BulkEdits extends Component<BulkEditsProps, BulkEditsState>
         )
     }
 }
+
+const BulkEditsWithUseResizable = (props: Pick<BulkEditsProps, 'serverMode'>) => {
+    const outputHeightMV = useMotionValue(INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE)
+    const gridTemplateRows = useMotionTemplate`1fr 1px ${outputHeightMV}%`
+
+    return <BulkEdits {...{ ...props, outputHeightMV, gridTemplateRows }} />
+}
+
+export default BulkEditsWithUseResizable
