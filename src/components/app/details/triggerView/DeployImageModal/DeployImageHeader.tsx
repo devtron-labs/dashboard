@@ -17,6 +17,7 @@ const DeployImageHeader = ({
     isVirtualEnvironment,
     handleNavigateToMaterialListView,
     children,
+    title,
 }: DeployImageHeaderProps) => (
     <div className="px-20 py-12 flexbox dc__content-space dc__align-items-center border__primary--bottom">
         <div className="flexbox dc__gap-8 dc__align-items-center flex-wrap">
@@ -34,12 +35,13 @@ const DeployImageHeader = ({
             )}
 
             <h2 className="m-0 fs-16 fw-4 lh-24 cn-9 dc__truncate">
-                {getCDModalHeaderText({
-                    isRollbackTrigger,
-                    stageType,
-                    envName,
-                    isVirtualEnvironment,
-                })}
+                {title ||
+                    getCDModalHeaderText({
+                        isRollbackTrigger,
+                        stageType,
+                        envName,
+                        isVirtualEnvironment,
+                    })}
             </h2>
 
             {children}

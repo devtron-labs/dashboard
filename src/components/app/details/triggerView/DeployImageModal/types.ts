@@ -8,11 +8,15 @@ import {
     DeploymentNodeType,
     DeploymentWindowProfileMetaData,
     PolicyConsequencesDTO,
+    SelectPickerOptionType,
     ServerErrors,
     UploadFileDTO,
     UploadFileProps,
     useSearchString,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
 
 import { FilterConditionViews, MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
 
@@ -48,6 +52,7 @@ export type DeployImageHeaderProps = Pick<
     isRollbackTrigger: boolean
     handleNavigateToMaterialListView?: () => void
     children?: React.ReactNode
+    title?: string
 }
 
 export interface RuntimeParamsSidebarProps {
@@ -123,7 +128,6 @@ export type DeployImageContentProps = Pick<
     Pick<RuntimeParamsSidebarProps, 'appName'> & {
         materialResponse: CDMaterialResponseType
         deploymentWindowMetadata: DeploymentWindowProfileMetaData
-        policyConsequences: PolicyConsequencesDTO
         isRollbackTrigger: boolean
         uploadRuntimeParamsFile: (props: UploadFileProps) => Promise<UploadFileDTO>
         isSecurityModuleInstalled: boolean
@@ -138,9 +142,19 @@ export type DeployImageContentProps = Pick<
     } & (
         | {
               isBulkTrigger: true
+              appInfoMap: Record<number, BulkCDDetailType>
+              selectedTagName: string
+              handleTagChange: (tagOption: SelectPickerOptionType<string>) => void
+              changeApp: (appId: number) => void
+              policyConsequences?: never
           }
         | {
               isBulkTrigger?: false
+              selectedTagName?: never
+              appInfoMap?: never
+              handleTagChange?: never
+              policyConsequences: PolicyConsequencesDTO
+              changeApp?: never
           }
     )
 
@@ -193,3 +207,21 @@ export interface MaterialListEmptyStateProps
     isSearchApplied: boolean
     handleAllImagesView: () => void
 }
+
+export interface BuildDeployModalProps {
+    handleClose: () => void
+    stageType: DeploymentNodeType
+    workflows: WorkflowType[]
+    isVirtualEnvironment: boolean
+    envId: number
+}
+
+export type GetInitialAppListProps =
+    | {
+          appIdToReload: number
+          searchText: string
+      }
+    | {
+          appIdToReload?: never
+          searchText?: never
+      }

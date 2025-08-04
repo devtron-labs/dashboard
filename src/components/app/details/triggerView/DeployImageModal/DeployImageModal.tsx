@@ -147,7 +147,7 @@ const DeployImageModal = ({
     const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyType | null>(null)
     const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
-
+    // TODO: Handle reload states
     const [deployViewState, setDeployViewState] = useState<Omit<DeployViewStateType, 'appliedSearchText'>>({
         searchText: searchImageTag,
         filterView: FilterConditionViews.ALL,

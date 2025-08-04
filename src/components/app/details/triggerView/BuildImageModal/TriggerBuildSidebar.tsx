@@ -113,7 +113,7 @@ const TriggerBuildSidebar = ({
                     {appDetails.warningMessage}
                 </span>
             )}
-            {!!getErrorMessageFromAppDetails(appDetails)}
+            {getErrorMessageFromAppDetails(appDetails)}
             {appDetails.node?.pluginBlockState &&
                 appDetails.node.pluginBlockState.action !== ConsequenceAction.ALLOW_FOREVER &&
                 PolicyEnforcementMessage && (

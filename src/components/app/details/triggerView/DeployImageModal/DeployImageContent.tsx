@@ -1,16 +1,21 @@
-import { useContext } from 'react'
+import { SyntheticEvent, useContext, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    CD_MATERIAL_SIDEBAR_TABS,
     CDMaterialSidebarType,
     CDMaterialType,
+    CommonNodeAttr,
     ComponentSizeType,
     ConditionalWrap,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
+    ErrorScreenManager,
+    GenericEmptyState,
     getGitCommitInfo,
     getIsApprovalPolicyConfigured,
     getIsMaterialInfoAvailable,
@@ -26,16 +31,27 @@ import {
     Progressing,
     SearchBar,
     SegmentedControlProps,
+    SelectPicker,
+    SelectPickerOptionType,
+    stopPropagation,
+    stringComparatorBySortOrder,
+    Tooltip,
+    TriggerBlockType,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import emptyPreDeploy from '@Images/empty-pre-deploy.webp'
+import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
+import { BULK_CD_MESSAGING } from '@Components/ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
+import { getIsMaterialApproved } from '../cdMaterials.utils'
 import { TriggerViewContext } from '../config'
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
 import { FilterConditionViews, HandleRuntimeParamChange, TriggerViewContextType } from '../types'
 import ImageSelectionCTA from './ImageSelectionCTA'
 import MaterialListEmptyState from './MaterialListEmptyState'
+import MaterialListSkeleton from './MaterialListSkeleton'
 import RuntimeParamsSidebar from './RuntimeParamsSidebar'
 import { DeployImageContentProps, ImageSelectionCTAProps, RuntimeParamsSidebarProps } from './types'
 import {
@@ -55,6 +71,11 @@ const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
+const RuntimeParamTabs = importComponentFromFELibrary('RuntimeParamTabs', null, 'function')
+const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
+const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
+const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
+const TriggerBlockedError = importComponentFromFELibrary('TriggerBlockedError', null, 'function')
 
 const renderMaterialListBodyWrapper = (children: JSX.Element) => (
     <div className="flexbox-col py-16 px-20 dc__overflow-auto">{children}</div>
@@ -87,11 +108,16 @@ const DeployImageContent = ({
     deployViewState,
     setDeployViewState,
     setMaterialResponse,
+    appInfoMap,
+    selectedTagName,
+    handleTagChange,
+    changeApp,
 }: DeployImageContentProps) => {
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
-
     const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
+
+    const { triggerBlockedInfo, warningMessage, materialError } = appInfoMap[appId] || {}
 
     const isExceptionUser = materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
     const requestedUserId = materialResponse?.requestedUserId
@@ -107,6 +133,33 @@ const DeployImageContent = ({
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     const runtimeParamsList = materialResponse?.runtimeParams || []
     const isCDNode = stageType === DeploymentNodeType.CD
+
+    const tagOptions: SelectPickerOptionType<string>[] = useMemo(() => {
+        const tagNames = new Set<string>()
+        Object.values(appInfoMap).forEach((app) => {
+            app.materialResponse?.appReleaseTagNames?.forEach((tag) => tagNames.add(tag))
+        })
+
+        return Array.from(tagNames)
+            .sort(stringComparatorBySortOrder)
+            .map((tag) => ({ label: tag, value: tag }))
+    }, [appInfoMap])
+
+    const selectedTagOption = useMemo(() => {
+        const selectedTag = tagOptions.find((option) => option.value === selectedTagName)
+        return selectedTag || { label: 'Multiple Tags', value: '' }
+    }, [selectedTagName, tagOptions])
+
+    const showRuntimeParams = !!(isBulkTrigger && RuntimeParamTabs && isPreOrPostCD)
+
+    const getHandleAppChange = (newAppId: number) => (e: SyntheticEvent) => {
+        stopPropagation(e)
+        if ('key' in e && e.key !== 'Enter' && e.key !== ' ') {
+            return
+        }
+
+        changeApp(newAppId)
+    }
 
     const {
         searchText,
@@ -136,6 +189,11 @@ const DeployImageContent = ({
     const titleText = isApprovalConfigured && !isExceptionUser ? 'Approved images' : selectImageTitle
     const showActionBar = FilterActionBar && !isSearchApplied && !!resourceFilters?.length && !showConfiguredFilters
     const areNoMoreImagesPresent = materials.length >= materialResponse?.totalCount
+
+    const sortedAppValues = useMemo(
+        () => Object.values(appInfoMap || {}).sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName)),
+        [appInfoMap],
+    )
 
     const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (e) => {
         setDeployViewState((prevState) => ({
@@ -322,16 +380,148 @@ const DeployImageContent = ({
         isSuperAdmin,
     })
 
+    const renderDeploymentWithoutApprovalWarning = (app: BulkCDDetailType) => {
+        if (!isExceptionUser) {
+            return null
+        }
+
+        const selectedMaterial: CDMaterialType = app.materialResponse?.materials?.find(
+            (mat: CDMaterialType) => mat.isSelected,
+        )
+
+        if (!selectedMaterial || getIsMaterialApproved(selectedMaterial?.userApprovalMetadata)) {
+            return null
+        }
+
+        return (
+            <div className="flex left dc__gap-4 mb-4">
+                <Icon name="ic-warning" color={null} size={14} />
+                <p className="m-0 fs-12 lh-16 fw-4 cy-7">Non-approved image selected</p>
+            </div>
+        )
+    }
+
+    const renderAppWarningAndErrors = (app: BulkCDDetailType) => {
+        const isAppSelected = app.appId === appId
+        // We don't support cd for mandatory plugins
+        const blockedPluginNodeType: CommonNodeAttr['type'] =
+            stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+        if (app.materialError?.code === API_STATUS_CODES.UNAUTHORIZED) {
+            return (
+                <div className="flex left dc__gap-4">
+                    <Icon name="ic-locked" color="Y500" size={12} />
+                    <span className="cy-7 fw-4 fs-12 dc__truncate">{BULK_CD_MESSAGING.unauthorized.title}</span>
+                </div>
+            )
+        }
+
+        if (app.isTriggerBlockedDueToPlugin) {
+            return (
+                <PolicyEnforcementMessage
+                    consequence={app.consequence}
+                    configurePluginURL={app.configurePluginURL}
+                    nodeType={blockedPluginNodeType}
+                    shouldRenderAdditionalInfo={isAppSelected}
+                />
+            )
+        }
+
+        if (app.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockedError stageType={stageType} />
+        }
+
+        if (!!warningMessage && !app.showPluginWarning) {
+            return (
+                <div className="flex left top dc__gap-4">
+                    <Icon name="ic-warning" color={null} size={14} />
+                    <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
+                </div>
+            )
+        }
+
+        if (app.showPluginWarning) {
+            return (
+                <PolicyEnforcementMessage
+                    consequence={app.consequence}
+                    configurePluginURL={app.configurePluginURL}
+                    nodeType={blockedPluginNodeType}
+                    shouldRenderAdditionalInfo={isAppSelected}
+                />
+            )
+        }
+
+        return null
+    }
+
     const renderSidebar = () => {
         if (isBulkTrigger) {
-            // TODO: Implement bulk trigger sidebar
-            return null
+            return (
+                <div className="flexbox-col h-100 dc__overflow-auto">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bg__primary">
+                        {showRuntimeParams && (
+                            <div className="px-16 pb-8">
+                                <RuntimeParamTabs
+                                    tabs={CD_MATERIAL_SIDEBAR_TABS}
+                                    initialTab={currentSidebarTab}
+                                    onChange={handleSidebarTabChange}
+                                    hasError={{
+                                        [CDMaterialSidebarType.PARAMETERS]:
+                                            appInfoMap[+appId]?.deployViewState?.runtimeParamsErrorState &&
+                                            !appInfoMap[+appId].deployViewState.runtimeParamsErrorState.isValid,
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        {currentSidebarTab === CDMaterialSidebarType.IMAGE && (
+                            <>
+                                <span className="px-16">Select image by release tag</span>
+                                <div className="tag-selection-dropdown px-16 pt-6 pb-12 dc__zi-1">
+                                    <SelectPicker
+                                        name="bulk-cd-trigger__select-tag"
+                                        inputId="bulk-cd-trigger__select-tag"
+                                        isSearchable
+                                        options={tagOptions}
+                                        value={selectedTagOption}
+                                        icon={<Icon name="ic-tag" size={16} color={null} />}
+                                        onChange={handleTagChange}
+                                        isDisabled={false}
+                                        // Not changing it for backward compatibility for automation
+                                        classNamePrefix="build-config__select-repository-containing-code"
+                                        autoFocus
+                                    />
+                                </div>
+                            </>
+                        )}
+                        <span className="dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16">APPLICATIONS</span>
+                    </div>
+
+                    {sortedAppValues.map((appDetails) => (
+                        <div
+                            key={`app-${appDetails.appId}`}
+                            className={`p-16 dc__border-bottom-n1 cursor w-100 dc__tab-focus ${
+                                appDetails.appId === appId ? 'bg__tertiary' : ''
+                            }`}
+                            role="button"
+                            tabIndex={0}
+                            onClick={getHandleAppChange(appDetails.appId)}
+                        >
+                            <Tooltip content={appDetails.appName}>
+                                <span className="lh-20 cn-9 fw-6 fs-13 dc__truncate">{appDetails.appName}</span>
+                            </Tooltip>
+                            {renderDeploymentWithoutApprovalWarning(appDetails)}
+                            {renderAppWarningAndErrors(appDetails)}
+                        </div>
+                    ))}
+                </div>
+            )
         }
 
         if (isPreOrPostCD) {
             return (
                 <RuntimeParamsSidebar
-                    areTabsDisabled
+                    areTabsDisabled={false}
                     currentSidebarTab={currentSidebarTab}
                     handleSidebarTabChange={handleSidebarTabChange}
                     runtimeParamsErrorState={runtimeParamsErrorState}
@@ -488,6 +678,162 @@ const DeployImageContent = ({
             )
         })
 
+    const renderEmptyView = (): JSX.Element => {
+        const selectedApp = appInfoMap[+appId]
+
+        if (triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+            return <TriggerBlockEmptyState stageType={stageType} appId={appId} />
+        }
+
+        if (isTriggerBlockedDueToPlugin) {
+            // It can't be CD
+            const commonNodeAttrType: CommonNodeAttr['type'] =
+                stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+            return (
+                <MissingPluginBlockState
+                    configurePluginURL={selectedApp?.configurePluginURL}
+                    nodeType={commonNodeAttrType}
+                />
+            )
+        }
+
+        if (materialError) {
+            return <ErrorScreenManager code={materialError.code} reload={reloadMaterials} on404Redirect={handleClose} />
+        }
+
+        return (
+            <GenericEmptyState
+                image={emptyPreDeploy}
+                title={`${selectedApp?.appName} ${BULK_CD_MESSAGING[stageType].title}`}
+                subTitle={BULK_CD_MESSAGING[stageType].subTitle}
+            />
+        )
+    }
+
+    const renderContent = () => {
+        if (isBulkTrigger) {
+            const { areMaterialsLoading } = appInfoMap[+appId] || {}
+            if (currentSidebarTab === CDMaterialSidebarType.IMAGE && areMaterialsLoading) {
+                return <MaterialListSkeleton />
+            }
+
+            const selectedApp = appInfoMap[+appId]
+
+            if (
+                triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG ||
+                isTriggerBlockedDueToPlugin ||
+                materialError ||
+                selectedApp?.stageNotAvailable
+            ) {
+                return renderEmptyView()
+            }
+        }
+
+        if (currentSidebarTab === CDMaterialSidebarType.IMAGE || !RuntimeParameters) {
+            return (
+                <>
+                    {isApprovalConfigured && renderMaterialList(consumedImage, true)}
+
+                    <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
+                        {showActionBar ? (
+                            <FilterActionBar
+                                tabs={getFilterActionBarTabs(
+                                    materials.length,
+                                    eligibleImagesCount,
+                                    consumedImage.length,
+                                )}
+                                onChange={handleFilterTabsChange}
+                                handleEnableFiltersView={handleShowConfiguredFilters}
+                                initialTab={filterView}
+                            />
+                        ) : (
+                            <span className="flex dc__align-start">{titleText}</span>
+                        )}
+
+                        <span className="flexbox dc__align-items-center h-32 dc__gap-4">
+                            {showSearchBar || isSearchApplied ? (
+                                renderSearch()
+                            ) : (
+                                <Button
+                                    dataTestId="deploy-image-show-search-button"
+                                    variant={ButtonVariantType.borderLess}
+                                    style={ButtonStyleType.neutral}
+                                    onClick={handleShowSearchBar}
+                                    icon={<Icon name="ic-magnifying-glass" color={null} />}
+                                    ariaLabel="Show search bar"
+                                    showAriaLabelInTippy={false}
+                                    size={ComponentSizeType.small}
+                                />
+                            )}
+                            <Button
+                                dataTestId="refresh-materials-button"
+                                variant={ButtonVariantType.borderLess}
+                                style={ButtonStyleType.neutral}
+                                onClick={reloadMaterials}
+                                icon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                ariaLabel="Refresh material list"
+                                showAriaLabelInTippy={false}
+                                size={ComponentSizeType.small}
+                            />
+                        </span>
+                    </div>
+
+                    {materialList.length === 0 ? (
+                        <MaterialListEmptyState
+                            isRollbackTrigger={isRollbackTrigger}
+                            stageType={stageType}
+                            appId={appId}
+                            isSearchApplied={isSearchApplied}
+                            policyConsequences={policyConsequences}
+                            isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
+                            configurePluginURL={configurePluginURL}
+                            isConsumedImagePresent={consumedImage.length > 0}
+                            envName={envName}
+                            materialResponse={materialResponse}
+                            // TODO: Move to util and remove prop
+                            isExceptionUser={isExceptionUser}
+                            isLoadingMore={isLoadingOlderImages}
+                            viewAllImages={viewAllImages}
+                            triggerType={triggerType}
+                            loadOlderImages={loadOlderImages}
+                            onSearchApply={onSearchApply}
+                            eligibleImagesCount={eligibleImagesCount}
+                            handleEnableFiltersView={handleShowConfiguredFilters}
+                            handleAllImagesView={handleAllImagesView}
+                        />
+                    ) : (
+                        renderMaterialList(materialList, false)
+                    )}
+
+                    {!areNoMoreImagesPresent && !!materialList?.length && (
+                        <button
+                            className="show-older-images-cta cta ghosted flex h-32"
+                            onClick={loadOlderImages}
+                            type="button"
+                        >
+                            {isLoadingOlderImages ? <Progressing styles={{ height: '32px' }} /> : 'Fetch more images'}
+                        </button>
+                    )}
+                </>
+            )
+        }
+
+        return (
+            <div className="bg__tertiary dc__overflow-auto flex-grow-1">
+                <RuntimeParameters
+                    appId={appId}
+                    parameters={runtimeParamsList}
+                    handleChange={handleRuntimeParamsChange}
+                    errorState={runtimeParamsErrorState}
+                    handleError={handleRuntimeParamsError}
+                    uploadFile={uploadRuntimeParamsFile}
+                    isCD
+                />
+            </div>
+        )
+    }
+
     if (ConfiguredFilters && (showConfiguredFilters || showAppliedFilters)) {
         return (
             <ConfiguredFilters
@@ -526,113 +872,12 @@ const DeployImageContent = ({
                 )}
 
             <div
-                className={`flex-grow-1 dc__overflow-auto ${isPreOrPostCD && !isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1 h-100 py-16 px-20'}`}
+                className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD && !isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1 py-16 px-20'}`}
             >
                 {renderSidebar()}
 
                 <ConditionalWrap condition={isPreOrPostCD && !isBulkTrigger} wrap={renderMaterialListBodyWrapper}>
-                    {currentSidebarTab === CDMaterialSidebarType.IMAGE || !RuntimeParameters ? (
-                        <>
-                            {isApprovalConfigured && renderMaterialList(consumedImage, true)}
-
-                            <div className="material-list__title pb-16 flex dc__align-center dc__content-space">
-                                {showActionBar ? (
-                                    <FilterActionBar
-                                        tabs={getFilterActionBarTabs(
-                                            materials.length,
-                                            eligibleImagesCount,
-                                            consumedImage.length,
-                                        )}
-                                        onChange={handleFilterTabsChange}
-                                        handleEnableFiltersView={handleShowConfiguredFilters}
-                                        initialTab={filterView}
-                                    />
-                                ) : (
-                                    <span className="flex dc__align-start">{titleText}</span>
-                                )}
-
-                                <span className="flexbox dc__align-items-center h-32 dc__gap-4">
-                                    {showSearchBar || isSearchApplied ? (
-                                        renderSearch()
-                                    ) : (
-                                        <Button
-                                            dataTestId="deploy-image-show-search-button"
-                                            variant={ButtonVariantType.borderLess}
-                                            style={ButtonStyleType.neutral}
-                                            onClick={handleShowSearchBar}
-                                            icon={<Icon name="ic-magnifying-glass" color={null} />}
-                                            ariaLabel="Show search bar"
-                                            showAriaLabelInTippy={false}
-                                            size={ComponentSizeType.small}
-                                        />
-                                    )}
-                                    <Button
-                                        dataTestId="refresh-materials-button"
-                                        variant={ButtonVariantType.borderLess}
-                                        style={ButtonStyleType.neutral}
-                                        onClick={reloadMaterials}
-                                        icon={<Icon name="ic-arrows-clockwise" color={null} />}
-                                        ariaLabel="Refresh material list"
-                                        showAriaLabelInTippy={false}
-                                        size={ComponentSizeType.small}
-                                    />
-                                </span>
-                            </div>
-
-                            {materialList.length === 0 ? (
-                                <MaterialListEmptyState
-                                    isRollbackTrigger={isRollbackTrigger}
-                                    stageType={stageType}
-                                    appId={appId}
-                                    isSearchApplied={isSearchApplied}
-                                    policyConsequences={policyConsequences}
-                                    isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
-                                    configurePluginURL={configurePluginURL}
-                                    isConsumedImagePresent={consumedImage.length > 0}
-                                    envName={envName}
-                                    materialResponse={materialResponse}
-                                    // TODO: Move to util and remove prop
-                                    isExceptionUser={isExceptionUser}
-                                    isLoadingMore={isLoadingOlderImages}
-                                    viewAllImages={viewAllImages}
-                                    triggerType={triggerType}
-                                    loadOlderImages={loadOlderImages}
-                                    onSearchApply={onSearchApply}
-                                    eligibleImagesCount={eligibleImagesCount}
-                                    handleEnableFiltersView={handleShowConfiguredFilters}
-                                    handleAllImagesView={handleAllImagesView}
-                                />
-                            ) : (
-                                renderMaterialList(materialList, false)
-                            )}
-
-                            {!areNoMoreImagesPresent && !!materialList?.length && (
-                                <button
-                                    className="show-older-images-cta cta ghosted flex h-32"
-                                    onClick={loadOlderImages}
-                                    type="button"
-                                >
-                                    {isLoadingOlderImages ? (
-                                        <Progressing styles={{ height: '32px' }} />
-                                    ) : (
-                                        'Fetch more images'
-                                    )}
-                                </button>
-                            )}
-                        </>
-                    ) : (
-                        <div className="bg__tertiary dc__overflow-auto flex-grow-1">
-                            <RuntimeParameters
-                                appId={appId}
-                                parameters={runtimeParamsList}
-                                handleChange={handleRuntimeParamsChange}
-                                errorState={runtimeParamsErrorState}
-                                handleError={handleRuntimeParamsError}
-                                uploadFile={uploadRuntimeParamsFile}
-                                isCD
-                            />
-                        </div>
-                    )}
+                    {renderContent()}
                 </ConditionalWrap>
             </div>
         </>
