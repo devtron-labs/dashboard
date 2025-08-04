@@ -118,16 +118,18 @@ export const ChartDetailsAbout = ({ chartDetails, isLoading }: ChartDetailsAbout
     return (
         <div className="flexbox-col dc__gap-20 mw-none">
             <div className="flexbox-col dc__gap-12">
-                <ImageWithFallback
-                    imageProps={{
-                        src: icon,
-                        alt: 'chart-icon',
-                        className: 'br-6',
-                        height: 48,
-                        width: 48,
-                    }}
-                    fallbackImage={<Icon name="ic-helm" color="N700" size={48} />}
-                />
+                <div className="h-48 dc__mxw-200">
+                    <ImageWithFallback
+                        imageProps={{
+                            src: icon,
+                            alt: 'chart-icon',
+                            className: 'br-6',
+                            height: '100%',
+                            width: 'auto',
+                        }}
+                        fallbackImage={<Icon name="ic-helm" color="N700" size={48} />}
+                    />
+                </div>
                 <h2 className="m-0 fs-16 lh-24 fw-6 cn-9">{name}</h2>
                 <p className="m-0 fs-13 lh-20 cn-9">{description}</p>
             </div>
