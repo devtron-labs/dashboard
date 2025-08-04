@@ -276,7 +276,7 @@ const ClustersEnvironmentsList = ({
         <>
             {/* Cluster metadata */}
             <div
-                className="px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
+                className="dc__zi-1 px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
                 style={{ top: '37px' }}
             >
                 <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
@@ -394,7 +394,7 @@ const EnvironmentList = ({
     return (
         <>
             <div
-                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
+                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row dc__zi-1 ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
             >
                 {/* Empty div for icon */}
                 <div />

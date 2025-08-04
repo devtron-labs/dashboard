@@ -26,6 +26,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import {
+    Cluster,
     ClusterEnvTabs,
     ClusterListFields,
     ClusterRowData,
@@ -257,7 +258,7 @@ export const AddEnvironment = ({
     handleClose,
 }: {
     reloadEnvironments: () => void
-    handleClose
+    handleClose: () => void
 }) => {
     const { clusterId } = useParams<{ clusterId?: string }>()
 
@@ -270,6 +271,31 @@ export const AddEnvironment = ({
         />
     )
 }
+
+export const AddEnvironmentFromClusterName = ({
+    reloadEnvironments,
+    handleClose,
+    clusterList,
+}: {
+    clusterList: Cluster[]
+    reloadEnvironments: () => void
+    handleClose: () => void
+}) => {
+    const { clusterName } = useParams<{ clusterName?: string }>()
+
+    const clusterId = clusterList.find((c) => c.clusterName === clusterName)?.clusterId
+
+    return (
+        <ClusterEnvironmentDrawer
+            drawerType="addEnv"
+            reload={reloadEnvironments}
+            clusterId={clusterId}
+            hideClusterDrawer={handleClose}
+        />
+    )
+}
+
+
 
 export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: EditDeleteClusterProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()
