@@ -295,8 +295,6 @@ export const AddEnvironmentFromClusterName = ({
     )
 }
 
-
-
 export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: EditDeleteClusterProps) => {
     const { clusterId } = useParams<{ clusterId: string }>()
     const cluster = clusterList.find((c) => c.clusterId === +clusterId)
