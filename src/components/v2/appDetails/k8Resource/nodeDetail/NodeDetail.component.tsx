@@ -370,6 +370,11 @@ const NodeDetailComponent = ({
         setManifestCodeEditorMode(ManifestCodeEditorMode.EDIT)
     }
 
+    const handleManifestReview = () => {
+        setManifestFormConfigurationType(ConfigurationType.YAML)
+        setManifestCodeEditorMode(ManifestCodeEditorMode.REVIEW)
+    }
+
     const handleManifestCompareWithDesired = () => setShowManifestCompareView(true)
 
     const renderPodTerminal = (): JSX.Element => {
@@ -425,7 +430,7 @@ const NodeDetailComponent = ({
             {isManifestEditable && manifestCodeEditorMode && !showManifestCompareView && !isResourceMissing && (
                 <>
                     <div className="ml-12 mr-12 tab-cell-border" />
-                    {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ? (
+                    {manifestCodeEditorMode === ManifestCodeEditorMode.EDIT && (
                         <div className="flex dc__gap-12">
                             {ToggleManifestConfigurationMode && isManifestEditable && (
                                 <ToggleManifestConfigurationMode
@@ -435,6 +440,25 @@ const NodeDetailComponent = ({
                                 />
                             )}
 
+                            <button
+                                type="button"
+                                className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
+                                onClick={handleManifestReview}
+                                disabled={doesManifestGUIContainsError}
+                            >
+                                <span>Review and save changes</span>
+                            </button>
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles fs-12 lh-1-5 fw-6 flex cn-6"
+                                onClick={handleManifestCancel}
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    )}
+                    {manifestCodeEditorMode === ManifestCodeEditorMode.REVIEW && (
+                        <div className="flex dc__gap-12">
                             <button
                                 type="button"
                                 className={`dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4 ${doesManifestGUIContainsError ? 'dc__disabled' : ''}`}
@@ -452,16 +476,18 @@ const NodeDetailComponent = ({
                                 Cancel
                             </button>
                         </div>
-                    ) : (
-                        <button
-                            type="button"
-                            className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
-                            onClick={handleManifestEdit}
-                        >
-                            <ICPencil className="icon-dim-16 scb-5" />
-                            <span>Edit live manifest</span>
-                        </button>
                     )}
+                    {manifestCodeEditorMode !== ManifestCodeEditorMode.EDIT &&
+                        manifestCodeEditorMode !== ManifestCodeEditorMode.REVIEW && (
+                            <button
+                                type="button"
+                                className="dc__unset-button-styles cb-5 fs-12 lh-1-5 fw-6 flex dc__gap-4"
+                                onClick={handleManifestEdit}
+                            >
+                                <ICPencil className="icon-dim-16 scb-5" />
+                                <span>Edit live manifest</span>
+                            </button>
+                        )}
                 </>
             )}
             {manifestCodeEditorMode === ManifestCodeEditorMode.READ &&

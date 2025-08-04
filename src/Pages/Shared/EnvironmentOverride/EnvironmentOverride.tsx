@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { generatePath, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
     CMSecretComponentType,
     getIsApprovalPolicyConfigured,
-    Reload,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ErrorBoundary, mapByKey, useAppContext } from '@Components/common'
@@ -29,7 +28,7 @@ import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
 
-import { ComponentStates, EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
+import { EnvironmentOverrideComponentProps } from './EnvironmentOverrides.types'
 
 import './environmentOverride.scss'
 
@@ -48,7 +47,6 @@ const EnvironmentOverride = ({
 }: EnvironmentOverrideComponentProps) => {
     const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
-    const [viewState, setViewState] = useState<ComponentStates>(null)
     const { path, url } = useRouteMatch()
     const { push } = useHistory()
     const location = useLocation()
@@ -79,23 +77,8 @@ const EnvironmentOverride = ({
         }
     }, [])
 
-    useEffect(() => {
-        if (viewState === ComponentStates.reloading) {
-            reloadEnvironments()
-        }
-    }, [viewState])
-
     if (!params.envId) {
         return null
-    }
-    if (viewState === ComponentStates.failed) {
-        return (
-            <Reload
-                reload={() => {
-                    setViewState(ComponentStates.reloading)
-                }}
-            />
-        )
     }
 
     if (params.envId && !environmentsMap.has(+params.envId) && environments.length) {
@@ -164,9 +147,7 @@ const EnvironmentOverride = ({
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                                 approvalConfigMap?.[ApprovalConfigDataKindType.configMap],
                             )}
-                            parentState={viewState}
                             parentName={getParentName()}
-                            setParentState={setViewState}
                             clusterId={clusterId}
                             envConfig={envConfig}
                             fetchEnvConfig={fetchEnvConfig}
@@ -185,9 +166,7 @@ const EnvironmentOverride = ({
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
                                 approvalConfigMap?.[ApprovalConfigDataKindType.configSecret],
                             )}
-                            parentState={viewState}
                             parentName={getParentName()}
-                            setParentState={setViewState}
                             clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
                             componentType={CMSecretComponentType.Secret}
                             envConfig={envConfig}

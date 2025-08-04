@@ -29,6 +29,7 @@ import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurati
 import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
+import { K8sResourceListTableUsageCell } from './K8sResourceListTableUsageCell'
 import NodeActionsMenu from './NodeActionsMenu'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { K8sResourceListTableCellComponentProps } from './types'
@@ -207,6 +208,28 @@ const K8sResourceListTableCellComponent = ({
         count: resourceData.count as number,
         age: resourceData.age as string,
         lastSeen: resourceData[EVENT_LIST.dataKeys.lastSeen] as string,
+    }
+
+    if (columnName === 'cpu.usagePercentage') {
+        return (
+            <K8sResourceListTableUsageCell
+                percentage={resourceData['cpu.usagePercentage'] as string}
+                absoluteValue={resourceData['cpu.usage'] as string}
+                totalValue={resourceData['cpu.allocatable'] as string}
+                color="var(--B300)"
+            />
+        )
+    }
+
+    if (columnName === 'memory.usagePercentage') {
+        return (
+            <K8sResourceListTableUsageCell
+                percentage={resourceData['memory.usagePercentage'] as string}
+                absoluteValue={resourceData['memory.usage'] as string}
+                totalValue={resourceData['memory.allocatable'] as string}
+                color="var(--V300)"
+            />
+        )
     }
 
     return (
