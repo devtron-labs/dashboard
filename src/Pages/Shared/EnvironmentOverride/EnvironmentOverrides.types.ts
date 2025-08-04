@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react'
-
 import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
@@ -24,14 +22,6 @@ import {
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
 import { ConfigAppList } from '../../../components/ApplicationGroup/AppGroup.types'
-
-export enum ComponentStates {
-    loading = 'loading',
-    loaded = 'loaded',
-    success = 'success',
-    failed = 'failed',
-    reloading = 'reloading',
-}
 
 export interface EnvironmentOverrideComponentProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appList?: ConfigAppList[]
@@ -44,12 +34,6 @@ export interface EnvironmentOverrideComponentProps extends Required<Pick<AppConf
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
-}
-
-export interface CommonEnvironmentOverridesProps {
-    parentState: ComponentStates
-    setParentState: React.Dispatch<React.SetStateAction<ComponentStates>>
-    isJobView?: boolean
 }
 
 export interface ListComponentType {
