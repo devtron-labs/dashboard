@@ -35,6 +35,9 @@ export type DeployImageModalProps = {
     handleSuccess?: () => void
     deploymentAppType: DeploymentAppTypes
     isVirtualEnvironment: boolean
+    /**
+     * If opening pre/post cd make sure BE sends plugin details as well, otherwise those props will be undefined
+     */
     isRedirectedFromAppDetails: boolean
     parentEnvironmentName: string
     triggerType: CommonNodeAttr['triggerType']
@@ -77,7 +80,7 @@ export interface GetMaterialResponseListProps
     initialSearch: string
 }
 
-export interface HandleTriggerErrorMessageForHelmManifestPushProps {
+export interface HelmManifestErrorHandlerProps {
     serverError: ServerErrors
     searchParams: ReturnType<typeof useSearchString>['searchParams']
     redirectToDeploymentStepsPage: () => void

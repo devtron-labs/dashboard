@@ -104,7 +104,7 @@ const DeployImageContent = ({
     deployViewState,
     setDeployViewState,
     setMaterialResponse,
-    appInfoMap,
+    appInfoMap = {},
     selectedTagName,
     handleTagChange,
     changeApp,
@@ -784,28 +784,30 @@ const DeployImageContent = ({
                     </div>
 
                     {materialList.length === 0 ? (
-                        <MaterialListEmptyState
-                            isRollbackTrigger={isRollbackTrigger}
-                            stageType={stageType}
-                            appId={appId}
-                            isSearchApplied={isSearchApplied}
-                            policyConsequences={policyConsequences}
-                            isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
-                            configurePluginURL={configurePluginURL}
-                            isConsumedImagePresent={consumedImage.length > 0}
-                            envName={envName}
-                            materialResponse={materialResponse}
-                            // TODO: Move to util and remove prop
-                            isExceptionUser={isExceptionUser}
-                            isLoadingMore={isLoadingOlderImages}
-                            viewAllImages={viewAllImages}
-                            triggerType={triggerType}
-                            loadOlderImages={loadOlderImages}
-                            onSearchApply={onSearchApply}
-                            eligibleImagesCount={eligibleImagesCount}
-                            handleEnableFiltersView={handleShowConfiguredFilters}
-                            handleAllImagesView={handleAllImagesView}
-                        />
+                        <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100">
+                            <MaterialListEmptyState
+                                isRollbackTrigger={isRollbackTrigger}
+                                stageType={stageType}
+                                appId={appId}
+                                isSearchApplied={isSearchApplied}
+                                policyConsequences={policyConsequences}
+                                isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
+                                configurePluginURL={configurePluginURL}
+                                isConsumedImagePresent={consumedImage.length > 0}
+                                envName={envName}
+                                materialResponse={materialResponse}
+                                // TODO: Move to util and remove prop
+                                isExceptionUser={isExceptionUser}
+                                isLoadingMore={isLoadingOlderImages}
+                                viewAllImages={viewAllImages}
+                                triggerType={triggerType}
+                                loadOlderImages={loadOlderImages}
+                                onSearchApply={onSearchApply}
+                                eligibleImagesCount={eligibleImagesCount}
+                                handleEnableFiltersView={handleShowConfiguredFilters}
+                                handleAllImagesView={handleAllImagesView}
+                            />
+                        </div>
                     ) : (
                         renderMaterialList(materialList, false)
                     )}
@@ -876,10 +878,10 @@ const DeployImageContent = ({
                 )}
 
             <div
-                className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD || isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1 py-16 px-20'}`}
+                className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD || isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1'}`}
             >
                 {renderSidebar()}
-                <div className="flexbox-col py-16 px-20 dc__overflow-auto">{renderContent()}</div>
+                <div className="flexbox-col py-16 px-20 dc__overflow-auto flex-grow-1">{renderContent()}</div>
             </div>
         </>
     )

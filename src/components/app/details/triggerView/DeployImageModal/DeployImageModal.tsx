@@ -98,7 +98,7 @@ const DeployImageModal = ({
     stageType,
     pipelineId,
     materialType,
-    handleClose,
+    handleClose: handleCloseProp,
     handleSuccess,
     deploymentAppType,
     isVirtualEnvironment,
@@ -261,6 +261,11 @@ const DeployImageModal = ({
                     : `${pathname.split(`/${URLS.APP_DIFF_VIEW}`)[0]}`,
             search: newParams.toString(),
         })
+    }
+
+    const handleClose = () => {
+        onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)
+        handleCloseProp?.()
     }
 
     const loadOlderImages = async () => {

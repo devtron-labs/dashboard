@@ -37,7 +37,7 @@ import {
     GetConsumedAndAvailableMaterialListProps,
     GetSequentialCDCardTitlePropsType,
     GetTriggerArtifactInfoPropsType,
-    HandleTriggerErrorMessageForHelmManifestPushProps,
+    HelmManifestErrorHandlerProps,
 } from './types'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
@@ -104,7 +104,7 @@ export const handleTriggerErrorMessageForHelmManifestPush = ({
     serverError,
     searchParams,
     redirectToDeploymentStepsPage,
-}: HandleTriggerErrorMessageForHelmManifestPushProps) => {
+}: HelmManifestErrorHandlerProps) => {
     if (
         serverError instanceof ServerErrors &&
         Array.isArray(serverError.errors) &&

@@ -53,7 +53,7 @@ export const getMaterialResponseList = async ({
         getPolicyConsequences ? getPolicyConsequences({ appId, envId }) : null,
     ])
 
-    if (getPolicyConsequences && getIsCDTriggerBlockedThroughConsequences(response[2].cd, stageType)) {
+    if (getPolicyConsequences && getIsCDTriggerBlockedThroughConsequences(response[2]?.cd, stageType)) {
         return [null, null, response[2]]
     }
     return response
