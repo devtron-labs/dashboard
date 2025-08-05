@@ -21,12 +21,11 @@ import { ReactComponent as Error } from '@Icons/ic-error-exclamation.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 
-import { ClusterMapInitialStatus } from '../ClusterMapInitialStatus'
 import { CLUSTER_PROD_TYPE } from '../constants'
+import { ClusterStatus } from './ClusterStatus'
 import { ClusterListRowTypes } from './types'
 
 const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton', null, 'function')
-const ClusterStatusCell = importComponentFromFELibrary('ClusterStatus', null, 'function')
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const KubeConfigRowCheckbox = importComponentFromFELibrary('KubeConfigRowCheckbox', null, 'function')
 
@@ -49,15 +48,11 @@ const ClusterListRow = ({
     }
 
     const renderClusterStatus = ({ errorInNodeListing, status }: ClusterDetail) => {
-        if (!status && !errorInNodeListing) {
+        if (!status) {
             return null
         }
 
-        if (ClusterStatusCell && status) {
-            return <ClusterStatusCell status={status} errorInNodeListing={errorInNodeListing} />
-        }
-
-        return <ClusterMapInitialStatus errorInNodeListing={errorInNodeListing} />
+        return <ClusterStatus status={status} errorInNodeListing={errorInNodeListing} />
     }
 
     const isIdentifierSelected = !!bulkSelectionState[clusterData.name]
