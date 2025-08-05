@@ -81,11 +81,11 @@ export const getIsCDTriggerBlockedThroughConsequences = (
 ) => {
     switch (stageType) {
         case DeploymentNodeType.PRECD:
-            return cdPolicyConsequences.pre.isBlocked
+            return cdPolicyConsequences?.pre?.isBlocked
         case DeploymentNodeType.POSTCD:
-            return cdPolicyConsequences.post.isBlocked
+            return cdPolicyConsequences?.post?.isBlocked
         case DeploymentNodeType.CD:
-            return cdPolicyConsequences.node.isBlocked
+            return cdPolicyConsequences?.node?.isBlocked
         default:
             return false
     }

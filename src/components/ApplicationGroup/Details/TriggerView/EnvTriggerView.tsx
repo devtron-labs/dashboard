@@ -475,6 +475,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
     const onShowBulkCDModal = (e) => {
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
+        setShowBulkCDModal(true)
     }
 
     const hideBulkCIModal = () => {

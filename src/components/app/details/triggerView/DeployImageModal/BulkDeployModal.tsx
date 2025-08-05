@@ -357,7 +357,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
 
                 const updatedWarningMessage =
                     baseBulkCDDetailMap[appId].warningMessage ||
-                    deploymentWindowMap[appId].warningMessage ||
+                    deploymentWindowMap[appId]?.warningMessage ||
                     parsedTagsWarning
 
                 // In case of search and reload even though method gives whole state, will only update deploymentWindowMetadata, warningMessage and materialResponse
@@ -409,7 +409,8 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
         return bulkCDDetailsMap
     }
 
-    const [isLoadingAppInfoMap, appInfoMap, , , unTypedSetAppInfoMap] = useAsync(() => getInitialAppList({}))
+    const [isLoadingAppInfoMap, _appInfoMap, , , unTypedSetAppInfoMap] = useAsync(() => getInitialAppList({}))
+    const appInfoMap: typeof _appInfoMap = _appInfoMap || {}
     const setAppInfoMap: Dispatch<SetStateAction<typeof appInfoMap>> = unTypedSetAppInfoMap
 
     const reloadOrSearchSelectedApp = async (searchText?: string) => {
@@ -1064,11 +1065,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                     <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
                 </div>
 
-                {isLoadingAppInfoMap || showStrategyFeasibilityPage ? null : (
-                    <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
-                        {renderFooter()}
-                    </div>
-                )}
+                {isLoadingAppInfoMap || showStrategyFeasibilityPage ? null : renderFooter()}
             </div>
 
             {showResistanceBox && (

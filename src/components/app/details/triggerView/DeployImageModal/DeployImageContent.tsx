@@ -11,7 +11,6 @@ import {
     CDMaterialType,
     CommonNodeAttr,
     ComponentSizeType,
-    ConditionalWrap,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
     ErrorScreenManager,
@@ -49,6 +48,7 @@ import { getIsMaterialApproved } from '../cdMaterials.utils'
 import { TriggerViewContext } from '../config'
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
 import { FilterConditionViews, HandleRuntimeParamChange, TriggerViewContextType } from '../types'
+import { BULK_DEPLOY_ACTIVE_IMAGE_TAG, BULK_DEPLOY_LATEST_IMAGE_TAG } from './constants'
 import ImageSelectionCTA from './ImageSelectionCTA'
 import MaterialListEmptyState from './MaterialListEmptyState'
 import MaterialListSkeleton from './MaterialListSkeleton'
@@ -76,10 +76,6 @@ const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptySt
 const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 const PolicyEnforcementMessage = importComponentFromFELibrary('PolicyEnforcementMessage')
 const TriggerBlockedError = importComponentFromFELibrary('TriggerBlockedError', null, 'function')
-
-const renderMaterialListBodyWrapper = (children: JSX.Element) => (
-    <div className="flexbox-col py-16 px-20 dc__overflow-auto">{children}</div>
-)
 
 const DeployImageContent = ({
     appId,
@@ -117,8 +113,6 @@ const DeployImageContent = ({
     const { isSuperAdmin } = useMainContext()
     const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
 
-    const { triggerBlockedInfo, warningMessage, materialError } = appInfoMap[appId] || {}
-
     const isExceptionUser = materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
     const requestedUserId = materialResponse?.requestedUserId
     const isApprovalConfigured = getIsApprovalPolicyConfigured(
@@ -140,9 +134,11 @@ const DeployImageContent = ({
             app.materialResponse?.appReleaseTagNames?.forEach((tag) => tagNames.add(tag))
         })
 
-        return Array.from(tagNames)
-            .sort(stringComparatorBySortOrder)
-            .map((tag) => ({ label: tag, value: tag }))
+        return [BULK_DEPLOY_LATEST_IMAGE_TAG, BULK_DEPLOY_ACTIVE_IMAGE_TAG].concat(
+            Array.from(tagNames)
+                .sort(stringComparatorBySortOrder)
+                .map((tag) => ({ label: tag, value: tag })),
+        )
     }, [appInfoMap])
 
     const selectedTagOption = useMemo(() => {
@@ -431,11 +427,11 @@ const DeployImageContent = ({
             return <TriggerBlockedError stageType={stageType} />
         }
 
-        if (!!warningMessage && !app.showPluginWarning) {
+        if (!!app.warningMessage && !app.showPluginWarning) {
             return (
                 <div className="flex left top dc__gap-4">
                     <Icon name="ic-warning" color={null} size={14} />
-                    <span className="fw-4 fs-12 cy-7 dc__truncate">{warningMessage}</span>
+                    <span className="fw-4 fs-12 cy-7 dc__truncate">{app.warningMessage}</span>
                 </div>
             )
         }
@@ -457,8 +453,8 @@ const DeployImageContent = ({
     const renderSidebar = () => {
         if (isBulkTrigger) {
             return (
-                <div className="flexbox-col h-100 dc__overflow-auto">
-                    <div className="dc__position-sticky dc__top-0 pt-12 bg__primary">
+                <div className="flexbox-col h-100 dc__overflow-auto bg__primary">
+                    <div className="dc__position-sticky dc__top-0 pt-12 bg__primary dc__zi-1">
                         {showRuntimeParams && (
                             <div className="px-16 pb-8">
                                 <RuntimeParamTabs
@@ -477,7 +473,7 @@ const DeployImageContent = ({
                         {currentSidebarTab === CDMaterialSidebarType.IMAGE && (
                             <>
                                 <span className="px-16">Select image by release tag</span>
-                                <div className="tag-selection-dropdown px-16 pt-6 pb-12 dc__zi-1">
+                                <div className="tag-selection-dropdown px-16 pt-6 pb-12">
                                     <SelectPicker
                                         name="bulk-cd-trigger__select-tag"
                                         inputId="bulk-cd-trigger__select-tag"
@@ -494,7 +490,9 @@ const DeployImageContent = ({
                                 </div>
                             </>
                         )}
-                        <span className="dc__border-bottom fw-6 fs-13 cn-7 py-8 px-16">APPLICATIONS</span>
+                        <div className="dc__border-bottom py-8 px-16 w-100">
+                            <span className="fw-6 fs-13 cn-7">APPLICATIONS</span>
+                        </div>
                     </div>
 
                     {sortedAppValues.map((appDetails) => (
@@ -681,7 +679,7 @@ const DeployImageContent = ({
     const renderEmptyView = (): JSX.Element => {
         const selectedApp = appInfoMap[+appId]
 
-        if (triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
+        if (selectedApp.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
             return <TriggerBlockEmptyState stageType={stageType} appId={appId} />
         }
 
@@ -698,8 +696,14 @@ const DeployImageContent = ({
             )
         }
 
-        if (materialError) {
-            return <ErrorScreenManager code={materialError.code} reload={reloadMaterials} on404Redirect={handleClose} />
+        if (selectedApp.materialError) {
+            return (
+                <ErrorScreenManager
+                    code={selectedApp.materialError.code}
+                    reload={reloadMaterials}
+                    on404Redirect={handleClose}
+                />
+            )
         }
 
         return (
@@ -713,7 +717,7 @@ const DeployImageContent = ({
 
     const renderContent = () => {
         if (isBulkTrigger) {
-            const { areMaterialsLoading } = appInfoMap[+appId] || {}
+            const { areMaterialsLoading, triggerBlockedInfo, materialError } = appInfoMap[+appId] || {}
             if (currentSidebarTab === CDMaterialSidebarType.IMAGE && areMaterialsLoading) {
                 return <MaterialListSkeleton />
             }
@@ -872,13 +876,10 @@ const DeployImageContent = ({
                 )}
 
             <div
-                className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD && !isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1 py-16 px-20'}`}
+                className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD || isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1 py-16 px-20'}`}
             >
                 {renderSidebar()}
-
-                <ConditionalWrap condition={isPreOrPostCD && !isBulkTrigger} wrap={renderMaterialListBodyWrapper}>
-                    {renderContent()}
-                </ConditionalWrap>
+                <div className="flexbox-col py-16 px-20 dc__overflow-auto">{renderContent()}</div>
             </div>
         </>
     )
