@@ -19,7 +19,6 @@ import {
     genericCDMaterialsService,
     GenericEmptyState,
     getStageTitle,
-    handleAnalyticsEvent,
     Icon,
     MODAL_TYPE,
     ModuleNameMap,
@@ -64,11 +63,11 @@ import { getCDPipelineURL, importComponentFromFELibrary, useAppContext } from '@
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 import { getIsMaterialApproved } from '../cdMaterials.utils'
-import { CD_MATERIAL_GA_EVENT } from '../Constants'
 import { FilterConditionViews } from '../types'
 import { BULK_DEPLOY_ACTIVE_IMAGE_TAG, BULK_DEPLOY_LATEST_IMAGE_TAG } from './constants'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
+import { loadOlderImages } from './service'
 import { BuildDeployModalProps, DeployImageContentProps, GetInitialAppListProps } from './types'
 
 const BulkCDStrategy = importComponentFromFELibrary('BulkCDStrategy', null, 'function')
@@ -460,55 +459,34 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
         }))
     }
 
-    const loadOlderImages = async () => {
-        handleAnalyticsEvent(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
-        // Even if user changes selectedAppId this will persist since a state closure
-        const selectedApp = appInfoMap[selectedAppId]
-
-        setAppInfoMap((prev) => ({
-            ...prev,
-            [selectedAppId]: {
-                ...prev[selectedAppId],
-                deployViewState: {
-                    ...prev[selectedAppId].deployViewState,
-                    isLoadingOlderImages: true,
-                },
-            },
-        }))
-
-        const materialList = selectedApp.materialResponse?.materials || []
-        const appDetails = appInfoMap[selectedAppId]
-        const isConsumedImageAvailable =
-            materialList.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
-
-        // TODO: Common
+    const handleLoadOlderImages = async () => {
         try {
-            const newMaterialsResponse = await genericCDMaterialsService(
-                CDMaterialServiceEnum.CD_MATERIALS,
-                appDetails.pipelineId,
-                stageType,
-                null,
-                {
-                    offset: materialList.length - Number(isConsumedImageAvailable),
-                    size: 20,
-                    search: appDetails.deployViewState.appliedSearchText || '',
+            // Even if user changes selectedAppId this will persist since a state closure
+            const selectedApp = appInfoMap[selectedAppId]
+
+            setAppInfoMap((prev) => ({
+                ...prev,
+                [selectedAppId]: {
+                    ...prev[selectedAppId],
+                    deployViewState: {
+                        ...prev[selectedAppId].deployViewState,
+                        isLoadingOlderImages: true,
+                    },
                 },
-            )
-
-            // NOTE: Looping through _newResponse and removing elements that are already deployed and latest
-            // NOTE: This is done to avoid duplicate images
-            const filteredNewMaterialResponse = [...newMaterialsResponse.materials].filter(
-                (materialItem) => !(materialItem.deployed && materialItem.latest),
-            )
-
-            // updating the index of materials to maintain consistency
-            const _newMaterialsResponse = filteredNewMaterialResponse.map((materialItem, index) => ({
-                ...materialItem,
-                index: materialList.length + index,
             }))
 
-            const newMaterials = structuredClone(materialList).concat(_newMaterialsResponse)
+            const materialList = selectedApp.materialResponse?.materials || []
+            const appDetails = appInfoMap[selectedAppId]
             const { materialResponse, deployViewState } = appDetails
+            const newMaterials = await loadOlderImages({
+                materialList,
+                resourceFilters: materialResponse?.resourceFilters,
+                filterView: deployViewState.filterView,
+                appliedSearchText: appDetails.deployViewState.appliedSearchText || '',
+                stageType,
+                isRollbackTrigger: false,
+                pipelineId: appDetails.pipelineId,
+            })
 
             setAppInfoMap((prev) => ({
                 ...prev,
@@ -524,36 +502,6 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                     },
                 },
             }))
-
-            const baseSuccessMessage = `Fetched ${_newMaterialsResponse.length} images.`
-
-            if (materialResponse?.resourceFilters?.length && !deployViewState.appliedSearchText) {
-                const eligibleImages = _newMaterialsResponse.filter(
-                    (mat) => mat.filterState === FilterStates.ALLOWED,
-                ).length
-
-                const infoMessage =
-                    eligibleImages === 0
-                        ? 'No new eligible images found.'
-                        : `${eligibleImages} new eligible images found.`
-
-                if (deployViewState.filterView === FilterConditionViews.ELIGIBLE) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.info,
-                        description: `${baseSuccessMessage} ${infoMessage}`,
-                    })
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: `${baseSuccessMessage} ${infoMessage}`,
-                    })
-                }
-            } else {
-                ToastManager.showToast({
-                    variant: ToastVariantType.success,
-                    description: baseSuccessMessage,
-                })
-            }
         } catch (error) {
             showError(error)
         } finally {
@@ -968,7 +916,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                 reloadMaterials={reloadOrSearchSelectedApp}
                 parentEnvironmentName={parentEnvironmentName}
                 isVirtualEnvironment={isVirtualEnvironment}
-                loadOlderImages={loadOlderImages}
+                loadOlderImages={handleLoadOlderImages}
                 triggerType={triggerType}
                 deployViewState={deployViewState}
                 setDeployViewState={setDeployViewState}

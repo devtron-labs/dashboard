@@ -7,7 +7,6 @@ import {
     API_STATUS_CODES,
     ArtifactInfo,
     ButtonStyleType,
-    CDMaterialServiceEnum,
     CDMaterialSidebarType,
     ConditionalWrap,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
@@ -20,7 +19,6 @@ import {
     EnvResourceType,
     ErrorScreenManager,
     FilterStates,
-    genericCDMaterialsService,
     getIsApprovalPolicyConfigured,
     handleAnalyticsEvent,
     Icon,
@@ -51,7 +49,7 @@ import { URLS } from '@Config/routes'
 
 import { getCanDeployWithoutApproval, getCanImageApproverDeploy, getWfrId } from '../cdMaterials.utils'
 import { CDButtonLabelMap } from '../config'
-import { CD_MATERIAL_GA_EVENT, TRIGGER_VIEW_GA_EVENTS } from '../Constants'
+import { TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { PipelineConfigDiff, usePipelineDeploymentConfig } from '../PipelineConfigDiff'
 import { PipelineConfigDiffStatusTile } from '../PipelineConfigDiff/PipelineConfigDiffStatusTile'
 import { FilterConditionViews, MATERIAL_TYPE } from '../types'
@@ -59,7 +57,7 @@ import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
 import MaterialListSkeleton from './MaterialListSkeleton'
 import RuntimeParamsSidebar from './RuntimeParamsSidebar'
-import { getMaterialResponseList } from './service'
+import { getMaterialResponseList, loadOlderImages } from './service'
 import { DeployImageContentProps, DeployImageModalProps, DeployViewStateType } from './types'
 import {
     getAllowWarningWithTippyNodeTypeProp,
@@ -67,6 +65,7 @@ import {
     getConfigToDeployValue,
     getDeployButtonIcon,
     getInitialSelectedConfigToDeploy,
+    getIsExceptionUser,
     getIsImageApprover,
     getTriggerArtifactInfoProps,
     handleTriggerErrorMessageForHelmManifestPush,
@@ -116,6 +115,7 @@ const DeployImageModal = ({
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
     const searchImageTag = searchParams.search || ''
+    const isCDNode = stageType === DeploymentNodeType.CD
 
     const [isInitialDataLoading, initialDataResponse, initialDataError, reloadInitialData, unTypedSetInitialData] =
         useAsync(
@@ -133,21 +133,20 @@ const DeployImageModal = ({
 
     const [, moduleInfoRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY))
 
-    const isSecurityModuleInstalled = moduleInfoRes && moduleInfoRes?.result?.status === ModuleStatus.INSTALLED
+    const isSecurityModuleInstalled = moduleInfoRes?.result?.status === ModuleStatus.INSTALLED
 
     const setInitialData: Dispatch<SetStateAction<typeof initialDataResponse>> = unTypedSetInitialData
 
     const [pipelineStrategiesLoading, pipelineStrategies, pipelineStrategiesError, reloadStrategies] = useAsync(
         () => getDeploymentStrategies([pipelineId]),
         [pipelineId],
-        !!getDeploymentStrategies && !!pipelineId,
+        !!getDeploymentStrategies && !!pipelineId && isCDNode,
     )
 
     const [isDeploymentLoading, setIsDeploymentLoading] = useState<boolean>(false)
     const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyType | null>(null)
     const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
-    // TODO: Handle reload states
     const [deployViewState, setDeployViewState] = useState<Omit<DeployViewStateType, 'appliedSearchText'>>({
         searchText: searchImageTag,
         filterView: FilterConditionViews.ALL,
@@ -164,24 +163,23 @@ const DeployImageModal = ({
         showSearchBar: false,
     })
 
-    const isCDNode = stageType === DeploymentNodeType.CD
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
-
     const materialResponse = initialDataResponse?.[0] || null
     const deploymentWindowMetadata = initialDataResponse?.[1] ?? ({} as (typeof initialDataResponse)[1])
     const policyConsequences = initialDataResponse?.[2] ?? ({} as (typeof initialDataResponse)[2])
     const materialList = materialResponse?.materials || []
     const selectedMaterial = materialList.find((material) => material.isSelected)
     const isRollbackTrigger = materialType === MATERIAL_TYPE.rollbackMaterialList
-    const isExceptionUser = materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
+    const isExceptionUser = getIsExceptionUser(materialResponse)
     const isApprovalConfigured = getIsApprovalPolicyConfigured(
         materialResponse?.deploymentApprovalInfo?.approvalConfigData,
     )
     const canApproverDeploy = materialResponse?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG && searchParams.deploy
     const isSelectImageTrigger = materialType === MATERIAL_TYPE.inputMaterialList
-    const areMaterialsPassingFilters =
-        materialList.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED).length > 0
+    const areSomeMaterialsPassingFilters = materialList.some(
+        (materialDetails) => materialDetails.filterState === FilterStates.ALLOWED,
+    )
     const selectedConfigToDeploy = getInitialSelectedConfigToDeploy(materialType, searchParams)
     const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
     const allowWarningWithTippyNodeTypeProp = getAllowWarningWithTippyNodeTypeProp(stageType)
@@ -227,7 +225,20 @@ const DeployImageModal = ({
         isRollbackTriggerSelected: isRollbackTrigger,
         pipelineId,
         wfrId,
+        isCDNode,
     })
+
+    const handleReload = () => {
+        reloadInitialData()
+        setDeployViewState((prev) => ({
+            ...prev,
+            runtimeParamsErrorState: {
+                isValid: true,
+                cellError: {},
+            },
+            materialInEditModeMap: new Map(),
+        }))
+    }
 
     const handleClosePluginWarningOverlay = () => {
         setShowPluginWarningOverlay(false)
@@ -268,80 +279,30 @@ const DeployImageModal = ({
         handleCloseProp?.()
     }
 
-    const loadOlderImages = async () => {
-        // TODO: Move to util
-        handleAnalyticsEvent(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
+    const handleLoadOlderImages = async () => {
         if (!deployViewState.isLoadingOlderImages) {
-            // TODO: Move to util
-            const isConsumedImageAvailable =
-                materialList.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
-
-            setDeployViewState((prevState) => ({
-                ...prevState,
-                isLoadingOlderImages: true,
-            }))
-
             try {
-                const newMaterialsResponse = await genericCDMaterialsService(
-                    isRollbackTrigger ? CDMaterialServiceEnum.ROLLBACK : CDMaterialServiceEnum.CD_MATERIALS,
-                    pipelineId,
-                    stageType,
-                    null,
-                    {
-                        offset: materialList.length - Number(isConsumedImageAvailable),
-                        size: 20,
-                        search: searchImageTag,
-                    },
-                )
-
-                // NOTE: Looping through _newResponse and removing elements that are already deployed and latest
-                // NOTE: This is done to avoid duplicate images
-                const filteredNewMaterialResponse = [...newMaterialsResponse.materials].filter(
-                    (materialItem) => !(materialItem.deployed && materialItem.latest),
-                )
-
-                // updating the index of materials to maintain consistency
-                const _newMaterialsResponse = filteredNewMaterialResponse.map((materialItem, index) => ({
-                    ...materialItem,
-                    index: materialList.length + index,
+                setDeployViewState((prevState) => ({
+                    ...prevState,
+                    isLoadingOlderImages: true,
                 }))
 
-                const newMaterials = structuredClone(materialList).concat(_newMaterialsResponse)
+                const newMaterials = await loadOlderImages({
+                    materialList,
+                    resourceFilters: materialResponse?.resourceFilters,
+                    filterView: deployViewState.filterView,
+                    appliedSearchText: searchImageTag,
+                    stageType,
+                    isRollbackTrigger,
+                    pipelineId,
+                })
+
                 // Made a change not updating whole response rather updating only materials
                 setInitialData((prevData) => {
                     const updatedMaterialResponse = structuredClone(prevData[0])
                     updatedMaterialResponse.materials = newMaterials
                     return [updatedMaterialResponse, prevData[1], prevData[2]]
                 })
-
-                const baseSuccessMessage = `Fetched ${_newMaterialsResponse.length} images.`
-                if (materialResponse?.resourceFilters?.length && !searchImageTag) {
-                    const eligibleImages = _newMaterialsResponse.filter(
-                        (mat) => mat.filterState === FilterStates.ALLOWED,
-                    ).length
-
-                    const infoMessage =
-                        eligibleImages === 0
-                            ? 'No new eligible images found.'
-                            : `${eligibleImages} new eligible images found.`
-
-                    if (deployViewState.filterView === FilterConditionViews.ELIGIBLE) {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.info,
-                            description: `${baseSuccessMessage} ${infoMessage}`,
-                        })
-                    } else {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.success,
-                            description: `${baseSuccessMessage} ${infoMessage}`,
-                        })
-                    }
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.success,
-                        description: baseSuccessMessage,
-                    })
-                }
             } catch (error) {
                 showError(error)
             } finally {
@@ -362,14 +323,14 @@ const DeployImageModal = ({
 
         return (
             !selectedImage ||
-            !areMaterialsPassingFilters ||
+            !areSomeMaterialsPassingFilters ||
             (isRollbackTrigger && (pipelineDeploymentConfigLoading || !canDeployWithConfig())) ||
             (selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && noLastDeploymentConfig)
         )
     }
 
     const renderDeployCTATippyContent = () => {
-        if (!areMaterialsPassingFilters) {
+        if (!areSomeMaterialsPassingFilters) {
             return (
                 <>
                     <h2 className="fs-12 fw-6 lh-18 m-0">No eligible images found!</h2>
@@ -718,11 +679,7 @@ const DeployImageModal = ({
 
         if (initialDataError) {
             return (
-                <ErrorScreenManager
-                    code={initialDataError?.code}
-                    reload={reloadInitialData}
-                    on404Redirect={handleClose}
-                />
+                <ErrorScreenManager code={initialDataError?.code} reload={handleReload} on404Redirect={handleClose} />
             )
         }
 
@@ -759,10 +716,10 @@ const DeployImageModal = ({
                 appName={appName}
                 isSecurityModuleInstalled={isSecurityModuleInstalled}
                 envName={envName}
-                reloadMaterials={reloadInitialData}
+                reloadMaterials={handleReload}
                 parentEnvironmentName={parentEnvironmentName}
                 isVirtualEnvironment={isVirtualEnvironment}
-                loadOlderImages={loadOlderImages}
+                loadOlderImages={handleLoadOlderImages}
                 policyConsequences={policyConsequences}
                 triggerType={triggerType}
                 setMaterialResponse={setMaterialResponse}
@@ -800,7 +757,7 @@ const DeployImageModal = ({
                                             appId,
                                             pipelineId,
                                             isExceptionUser,
-                                            reloadMaterials: reloadInitialData,
+                                            reloadMaterials: handleReload,
                                             requestedUserId,
                                         })}
                                     />

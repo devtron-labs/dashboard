@@ -237,3 +237,16 @@ export type GetInitialAppListProps =
           appIdToReload?: never
           searchText?: never
       }
+
+export interface LoadOlderImagesProps {
+    materialList: CDMaterialType[]
+    resourceFilters: CDMaterialResponseType['resourceFilters']
+    filterView: FilterConditionViews
+    stageType: DeploymentNodeType
+    pipelineId: number
+    /**
+     * @default false
+     */
+    isRollbackTrigger?: boolean
+    appliedSearchText?: string
+}

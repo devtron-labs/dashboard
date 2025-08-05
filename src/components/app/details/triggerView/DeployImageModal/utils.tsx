@@ -2,6 +2,7 @@ import {
     ACTION_STATE,
     ApprovalRuntimeStateType,
     ArtifactInfoProps,
+    CDMaterialResponseType,
     CDMaterialType,
     CommonNodeAttr,
     DeploymentNodeType,
@@ -328,3 +329,6 @@ export const getFilterActionBarTabs = (
 
 export const getAllowWarningWithTippyNodeTypeProp = (stageType: DeploymentNodeType): CommonNodeAttr['type'] =>
     stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
+
+export const getIsExceptionUser = (materialResponse: CDMaterialResponseType): boolean =>
+    materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
