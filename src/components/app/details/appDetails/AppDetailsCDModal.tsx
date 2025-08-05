@@ -85,11 +85,6 @@ const AppDetailsCDModal = ({
                 isRedirectedFromAppDetails
                 handleSuccess={handleSuccess}
                 appName={appName}
-                // TODO: Not needed since not pre-post cd here
-                showPluginWarningBeforeTrigger={null}
-                consequence={null}
-                configurePluginURL={null}
-                isTriggerBlockedDueToPlugin={null}
             />
         )
 

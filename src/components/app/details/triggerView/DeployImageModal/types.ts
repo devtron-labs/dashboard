@@ -29,9 +29,6 @@ export type DeployImageModalProps = {
     materialType: (typeof MATERIAL_TYPE)[keyof typeof MATERIAL_TYPE]
     handleClose: () => void
     envName: string
-    showPluginWarningBeforeTrigger: boolean
-    consequence: ConsequenceType
-    configurePluginURL: string
     /**
      * In case of appDetails trigger re-fetch of app details
      */
@@ -40,9 +37,21 @@ export type DeployImageModalProps = {
     isVirtualEnvironment: boolean
     isRedirectedFromAppDetails: boolean
     parentEnvironmentName: string
-    isTriggerBlockedDueToPlugin: boolean
     triggerType: CommonNodeAttr['triggerType']
-}
+} & (
+    | {
+          showPluginWarningBeforeTrigger: boolean
+          consequence: ConsequenceType
+          configurePluginURL: string
+          isTriggerBlockedDueToPlugin: boolean
+      }
+    | {
+          showPluginWarningBeforeTrigger?: never
+          consequence?: never
+          configurePluginURL?: never
+          isTriggerBlockedDueToPlugin?: never
+      }
+)
 
 export type DeployImageHeaderProps = Pick<
     DeployImageModalProps,

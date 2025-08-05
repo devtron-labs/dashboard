@@ -91,7 +91,6 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
 const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
 const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 
-// FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
 const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) => {
     const { envId } = useParams<{ envId: string }>()
@@ -100,11 +99,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const match = useRouteMatch<CIMaterialRouterProps>()
     const { url } = useRouteMatch()
 
-    const abortControllerRef = useRef(new AbortController())
-
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
-    const [isCILoading, setCILoading] = useState(false)
-    const [isCDLoading, setCDLoading] = useState(false)
     const [isBranchChangeLoading, setIsBranchChangeLoading] = useState(false)
     const [showPreDeployment, setShowPreDeployment] = useState(false)
     const [showPostDeployment, setShowPostDeployment] = useState(false)
@@ -417,8 +412,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         if (!appIds.length) {
             updateResponseListData(skippedResources)
             setIsBranchChangeLoading(false)
-            setCDLoading(false)
-            setCILoading(false)
             return
         }
 
@@ -436,8 +429,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     })
                 })
                 updateResponseListData([..._responseList, ...skippedResources])
-                setCDLoading(false)
-                setCILoading(false)
             })
             .catch((error) => {
                 showError(error)
@@ -448,8 +439,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const closeCDModal = (): void => {
-        abortControllerRef.current.abort()
-        setCDLoading(false)
         history.push({
             search: '',
         })
@@ -464,7 +453,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const hideBulkCDModal = () => {
-        setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
 
@@ -479,16 +467,12 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const hideBulkCIModal = () => {
-        setCILoading(false)
         setShowBulkCIModal(false)
         setResponseList([])
     }
 
     const onShowBulkCIModal = () => {
-        setCILoading(true)
-        setTimeout(() => {
-            setShowBulkCIModal(true)
-        }, 100)
+        setShowBulkCIModal(true)
     }
 
     const hideChangeSourceModal = () => {
@@ -666,7 +650,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
             return (
                 <ApprovalMaterialModal
-                    isLoading={isCDLoading}
+                    isLoading={false}
                     node={node ?? ({} as CommonNodeAttr)}
                     materialType={MATERIAL_TYPE.inputMaterialList}
                     stageType={DeploymentNodeType.CD}
@@ -751,23 +735,16 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     text="Build image"
                     onClick={onShowBulkCIModal}
                     size={ComponentSizeType.medium}
-                    isLoading={isCILoading}
                 />
                 <div className="flex">
                     <button
-                        className={`cta flex h-32 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
+                        className={`cta flex h-32 dc__gap-8 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                         data-trigger-type="CD"
                         data-testid="bulk-deploy-button"
                         onClick={onShowBulkCDModal}
                     >
-                        {isCDLoading ? (
-                            <Progressing />
-                        ) : (
-                            <>
-                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                                Deploy
-                            </>
-                        )}
+                        <DeployIcon className="icon-dim-16 dc__no-svg-fill" />
+                        Deploy
                     </button>
                     {_showPopupMenu && renderDeployPopupMenu()}
                 </div>
