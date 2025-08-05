@@ -48,6 +48,7 @@ const ClustersEnvironmentsList = ({
     clusterDetails,
     environments,
     filterConfig: { sortBy, searchKey, sortOrder },
+    filterClusterId,
     showUnmappedEnvs,
     setDeleteEnvConfig: setDeleteEnvId,
     setEditEnvConfig: setEditEnvId,
@@ -135,6 +136,26 @@ const ClustersEnvironmentsList = ({
         })
     }
 
+    const sortedFilteredList = namespaceEnvList
+        .filter((env) => env.environmentName.includes(searchKey))
+        .sort((a, b) => {
+            switch (sortBy) {
+                case EnvListSortableKeys.ENV_CATEGORY:
+                    return stringComparatorBySortOrder(a.category, b.category, sortOrder)
+                case EnvListSortableKeys.ENV_NAMESPACE:
+                    return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
+                case EnvListSortableKeys.ENV_TYPE:
+                    return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
+                case EnvListSortableKeys.ENV_NAME:
+                default:
+                    return environmentNameComparator(
+                        a.environmentName,
+                        b.environmentName,
+                        sortOrder || SortingOrder.ASC,
+                    )
+            }
+        })
+
     const renderNamespaceEnvList = () => {
         if (namespaceListLoading) {
             return <ClusterEnvLoader />
@@ -144,26 +165,7 @@ const ClustersEnvironmentsList = ({
             return <GenericSectionErrorState reload={reloadNamespaces} />
         }
 
-        const sortedFilteredList = namespaceEnvList
-            .filter((env) => env.environmentName.includes(searchKey))
-            .sort((a, b) => {
-                switch (sortBy) {
-                    case EnvListSortableKeys.ENV_CATEGORY:
-                        return stringComparatorBySortOrder(a.category, b.category, sortOrder)
-                    case EnvListSortableKeys.ENV_NAMESPACE:
-                        return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
-                    case EnvListSortableKeys.ENV_TYPE:
-                        return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
-                    case EnvListSortableKeys.ENV_NAME:
-                    default:
-                        return environmentNameComparator(
-                            a.environmentName,
-                            b.environmentName,
-                            sortOrder || SortingOrder.ASC,
-                        )
-                }
-            })
-
+        // Empty state when a particular cluster is selected
         if (searchKey && !sortedFilteredList.length) {
             return (
                 <div className="p-16">
@@ -270,6 +272,11 @@ const ClustersEnvironmentsList = ({
                 </div>
             ),
         )
+    }
+
+    // If no cluster is selected and no environments are found, return null
+    if (!filterClusterId && !sortedFilteredList.length) {
+        return null
     }
 
     return (
@@ -449,6 +456,7 @@ const EnvironmentList = ({
                         showUnmappedEnvs={showUnmappedEnvs}
                         setDeleteEnvConfig={setDeleteEnvConfig}
                         setEditEnvConfig={setEditEnvConfig}
+                        filterClusterId={filterClusterId}
                     />
                 ))}
             {deleteEnvConfig && (

@@ -1,4 +1,4 @@
-import { FunctionComponent } from 'react'
+import { FunctionComponent, useEffect, useRef } from 'react'
 import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -18,6 +18,7 @@ import {
     noop,
     stopPropagation,
     TableCellComponentProps,
+    TableSignalEnum,
     Tooltip,
     URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -200,7 +201,26 @@ export const ClusterListCellComponent: FunctionComponent<
         data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
     },
     isRowActive,
+    signals,
 }: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
+    const linkRef = useRef<HTMLAnchorElement>(null)
+
+    useEffect(() => {
+        const handleEnter = ({ detail: { activeRowData } }) => {
+            if (activeRowData.data.clusterId === clusterId) {
+                linkRef.current?.click()
+            }
+        }
+
+        if (isRowActive) {
+            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, handleEnter)
+        }
+
+        return () => {
+            signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, handleEnter)
+        }
+    }, [isRowActive])
+
     switch (field) {
         case ClusterListFields.ICON:
             return (
@@ -211,6 +231,7 @@ export const ClusterListCellComponent: FunctionComponent<
         case ClusterListFields.CLUSTER_NAME:
             return (
                 <Link
+                    ref={linkRef}
                     to={getUrlWithSearchParams(URLS.GLOBAL_CONFIG_CLUSTER, {
                         selectedTab: ClusterEnvTabs.ENVIRONMENTS,
                         clusterId,
