@@ -520,7 +520,7 @@ export const getBulkCDDetailsMapFromResponse: GetBulkCDDetailsMapFromResponseTyp
     cdMaterialResponseList.forEach((materialResponse, index) => {
         const { appId } = validWorkflows[index]
 
-        if (materialResponse.status === PromiseAllStatusType.FULFILLED) {
+        if (materialResponse.status === PromiseAllStatusType.FULFILLED && materialResponse.value) {
             const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
                 selectedTagName,
                 materialResponse.value.materials,
@@ -552,7 +552,8 @@ export const getBulkCDDetailsMapFromResponse: GetBulkCDDetailsMapFromResponseTyp
                 materialResponse: {} as CDMaterialResponseType,
                 deploymentWindowMetadata: {} as DeploymentWindowProfileMetaData,
                 deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
-                materialError: materialResponse.reason,
+                materialError:
+                    materialResponse.status === PromiseAllStatusType.REJECTED ? materialResponse.reason : null,
                 areMaterialsLoading: false,
             }
         }

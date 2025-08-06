@@ -42,7 +42,7 @@ const MaterialListEmptyState = ({
     const isApprovalConfigured = getIsApprovalPolicyConfigured(
         materialResponse?.deploymentApprovalInfo?.approvalConfigData,
     )
-    const areNoMoreImagesPresent = materialResponse && materialResponse.materials.length >= materialResponse.totalCount
+    const areNoMoreImagesPresent = materialResponse && material.length >= materialResponse.totalCount
     const resourceFilters = materialResponse?.resourceFilters ?? []
 
     const clearSearch = () => {
