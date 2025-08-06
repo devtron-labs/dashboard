@@ -10,7 +10,6 @@ import {
     ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
-    CDMaterialSidebarType,
     CDMaterialType,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
@@ -65,7 +64,7 @@ import { getCDPipelineURL, importComponentFromFELibrary, useAppContext } from '@
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 import { getIsMaterialApproved } from '../cdMaterials.utils'
-import { FilterConditionViews } from '../types'
+import { INITIAL_DEPLOY_VIEW_STATE } from './constants'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
 import { loadOlderImages } from './service'
@@ -369,31 +368,16 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                     },
                     deploymentWindowMetadata: deploymentWindowMap[appId],
                     areMaterialsLoading: false,
-                    deployViewState: {
-                        searchText: '',
-                        appliedSearchText: '',
-                        filterView: FilterConditionViews.ALL,
-                        showConfiguredFilters: false,
-                        currentSidebarTab: CDMaterialSidebarType.IMAGE,
-                        runtimeParamsErrorState: {
-                            isValid: true,
-                            cellError: {},
-                        },
-                        materialInEditModeMap: new Map(),
-                        showAppliedFilters: false,
-                        appliedFilterList: [],
-                        isLoadingOlderImages: false,
-                        showSearchBar: true,
-                    },
+                    deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
                     warningMessage: updatedWarningMessage,
                     materialError: null,
                 }
             } else {
                 bulkCDDetailsMap[appId] = {
                     ...baseBulkCDDetailMap[appId],
-                    materialResponse: null,
-                    deploymentWindowMetadata: null,
-                    deployViewState: null,
+                    materialResponse: {} as CDMaterialResponseType,
+                    deploymentWindowMetadata: {} as DeploymentWindowProfileMetaData,
+                    deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
                     materialError: materialResponse.reason,
                     areMaterialsLoading: false,
                 }

@@ -144,11 +144,13 @@ const BulkTriggerSidebar = ({
             return <TriggerBlockedError stageType={stageType} />
         }
 
-        if (!!app.warningMessage && !app.showPluginWarning) {
+        if ((!!app.warningMessage && !app.showPluginWarning) || app.materialError?.errors?.length) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Icon name="ic-warning" color={null} size={14} />
-                    <span className="fw-4 fs-12 cy-7 dc__truncate">{app.warningMessage}</span>
+                    <Icon name="ic-warning-fill" color="R500" size={14} />
+                    <span className="fw-4 fs-12 cr-5 dc__truncate--clamp-2">
+                        {app.warningMessage || app.materialError?.errors?.[0]?.userMessage}
+                    </span>
                 </div>
             )
         }
@@ -195,7 +197,7 @@ const BulkTriggerSidebar = ({
                                 isSearchable
                                 options={tagOptions}
                                 value={selectedTagOption}
-                                icon={<Icon name="ic-tag" size={16} color={null} />}
+                                icon={<Icon name="ic-tag" color={null} />}
                                 onChange={handleTagChange}
                                 isDisabled={false}
                                 // Not changing it for backward compatibility for automation

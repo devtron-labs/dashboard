@@ -7,12 +7,9 @@ import {
     ButtonVariantType,
     CDMaterialSidebarType,
     CDMaterialType,
-    CommonNodeAttr,
     ComponentSizeType,
     DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
-    ErrorScreenManager,
-    GenericEmptyState,
     getGitCommitInfo,
     getIsApprovalPolicyConfigured,
     getIsMaterialInfoAvailable,
@@ -32,13 +29,12 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import emptyPreDeploy from '@Images/empty-pre-deploy.webp'
-import { BULK_CD_MESSAGING } from '@Components/ApplicationGroup/Constants'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { TriggerViewContext } from '../config'
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
 import { FilterConditionViews, HandleRuntimeParamChange, TriggerViewContextType } from '../types'
+import BulkDeployEmptyState from './BulkDeployEmptyState'
 import BulkTriggerSidebar from './BulkTriggerSidebar'
 import ImageSelectionCTA from './ImageSelectionCTA'
 import MaterialListEmptyState from './MaterialListEmptyState'
@@ -64,8 +60,6 @@ const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
-const TriggerBlockEmptyState = importComponentFromFELibrary('TriggerBlockEmptyState', null, 'function')
-const MissingPluginBlockState = importComponentFromFELibrary('MissingPluginBlockState', null, 'function')
 
 const DeployImageContent = ({
     appId,
@@ -99,6 +93,7 @@ const DeployImageContent = ({
     handleTagChange,
     changeApp,
 }: DeployImageContentProps) => {
+    // WARNING: Pls try not to create a useState in this component, it is supposed to be a dumb component.
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
     const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
@@ -144,8 +139,10 @@ const DeployImageContent = ({
     })
     const selectImageTitle = isRollbackTrigger ? 'Select from previously deployed images' : 'Select Image'
     const titleText = isApprovalConfigured && !isExceptionUser ? 'Approved images' : selectImageTitle
-    const showActionBar = FilterActionBar && !isSearchApplied && !!resourceFilters?.length && !showConfiguredFilters
+    const showActionBar = !!FilterActionBar && !isSearchApplied && !!resourceFilters?.length && !showConfiguredFilters
     const areNoMoreImagesPresent = materials.length >= materialResponse?.totalCount
+
+    const showFiltersView = !!(ConfiguredFilters && (showConfiguredFilters || showAppliedFilters))
 
     const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (e) => {
         setDeployViewState((prevState) => ({
@@ -348,7 +345,7 @@ const DeployImageContent = ({
             )
         }
 
-        if (isPreOrPostCD) {
+        if (isPreOrPostCD && !showFiltersView) {
             return (
                 <RuntimeParamsSidebar
                     areTabsDisabled={false}
@@ -363,16 +360,26 @@ const DeployImageContent = ({
         return null
     }
 
+    const renderConfiguredFilters = () => (
+        <ConfiguredFilters
+            isFromBulkCD={isBulkTrigger}
+            resourceFilters={showConfiguredFilters ? resourceFilters : appliedFilterList}
+            handleDisableFiltersView={showConfiguredFilters ? handleExitFiltersView : handleDisableAppliedFiltersView}
+            envName={envName}
+            closeModal={handleClose}
+        />
+    )
+
     const renderGitMaterialInfo = (materialData: CDMaterialType) => (
         <>
             {materialData.materialInfo.map((mat: MaterialInfo, index) => {
                 const _gitCommit = getGitCommitInfo(mat)
 
                 if (
+                    CDMaterialInfo &&
                     (materialData.appliedFilters?.length > 0 ||
                         materialData.deploymentBlockedState?.isBlocked ||
-                        materialData.deploymentWindowArtifactMetadata?.type) &&
-                    CDMaterialInfo
+                        materialData.deploymentWindowArtifactMetadata?.type)
                 ) {
                     return (
                         <CDMaterialInfo
@@ -508,47 +515,12 @@ const DeployImageContent = ({
             )
         })
 
-    const renderEmptyView = (): JSX.Element => {
-        const selectedApp = appInfoMap[+appId]
-
-        if (selectedApp.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG) {
-            return <TriggerBlockEmptyState stageType={stageType} appId={appId} />
-        }
-
-        if (isTriggerBlockedDueToPlugin) {
-            // It can't be CD
-            const commonNodeAttrType: CommonNodeAttr['type'] =
-                stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
-
-            return (
-                <MissingPluginBlockState
-                    configurePluginURL={selectedApp?.configurePluginURL}
-                    nodeType={commonNodeAttrType}
-                />
-            )
-        }
-
-        if (selectedApp.materialError) {
-            return (
-                <ErrorScreenManager
-                    code={selectedApp.materialError.code}
-                    reload={reloadMaterials}
-                    on404Redirect={handleClose}
-                />
-            )
-        }
-
-        return (
-            <GenericEmptyState
-                image={emptyPreDeploy}
-                title={`${selectedApp?.appName} ${BULK_CD_MESSAGING[stageType].title}`}
-                subTitle={BULK_CD_MESSAGING[stageType].subTitle}
-            />
-        )
-    }
-
     const renderContent = () => {
         if (isBulkTrigger) {
+            if (showFiltersView) {
+                return renderConfiguredFilters()
+            }
+
             const { areMaterialsLoading, triggerBlockedInfo, materialError } = appInfoMap[+appId] || {}
             if (currentSidebarTab === CDMaterialSidebarType.IMAGE && areMaterialsLoading) {
                 return <MaterialListSkeleton />
@@ -562,7 +534,16 @@ const DeployImageContent = ({
                 materialError ||
                 selectedApp?.stageNotAvailable
             ) {
-                return renderEmptyView()
+                return (
+                    <BulkDeployEmptyState
+                        selectedApp={selectedApp}
+                        stageType={stageType}
+                        appId={appId}
+                        isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
+                        handleClose={handleClose}
+                        reloadMaterials={reloadMaterials}
+                    />
+                )
             }
         }
 
@@ -587,7 +568,7 @@ const DeployImageContent = ({
                             <span className="flex dc__align-start">{titleText}</span>
                         )}
 
-                        <span className="flexbox dc__align-items-center h-32 dc__gap-4">
+                        <div className="flexbox dc__align-items-center h-32 dc__gap-4">
                             {showSearchBar || isSearchApplied ? (
                                 renderSearch()
                             ) : (
@@ -612,7 +593,7 @@ const DeployImageContent = ({
                                 showAriaLabelInTippy={false}
                                 size={ComponentSizeType.small}
                             />
-                        </span>
+                        </div>
                     </div>
 
                     {materialList.length === 0 ? (
@@ -628,7 +609,6 @@ const DeployImageContent = ({
                                 isConsumedImagePresent={consumedImage.length > 0}
                                 envName={envName}
                                 materialResponse={materialResponse}
-                                // TODO: Move to util and remove prop
                                 isExceptionUser={isExceptionUser}
                                 isLoadingMore={isLoadingOlderImages}
                                 viewAllImages={viewAllImages}
@@ -672,34 +652,25 @@ const DeployImageContent = ({
         )
     }
 
-    if (ConfiguredFilters && (showConfiguredFilters || showAppliedFilters)) {
-        return (
-            <ConfiguredFilters
-                isFromBulkCD={isBulkTrigger}
-                resourceFilters={showConfiguredFilters ? resourceFilters : appliedFilterList}
-                handleDisableFiltersView={
-                    showConfiguredFilters ? handleExitFiltersView : handleDisableAppliedFiltersView
-                }
-                envName={envName}
-                closeModal={handleClose}
-            />
-        )
+    if (showFiltersView && !isBulkTrigger) {
+        return renderConfiguredFilters()
     }
 
     return (
         <>
-            {isApprovalConfigured &&
+            {!showFiltersView &&
+                isApprovalConfigured &&
                 !isExceptionUser &&
                 ApprovedImagesMessage &&
                 (isRollbackTrigger || materials.length - Number(isConsumedImageAvailable) > 0) && (
                     <InfoBlock
                         borderConfig={{ top: false }}
                         borderRadiusConfig={{ top: false, bottom: false, left: false, right: false }}
-                        // TODO: Look if need to show this in bulk?
                         description={<ApprovedImagesMessage viewAllImages={viewAllImages} />}
                     />
                 )}
-            {!isBulkTrigger &&
+            {!showFiltersView &&
+                !isBulkTrigger &&
                 MaintenanceWindowInfoBar &&
                 deploymentWindowMetadata.type === DEPLOYMENT_WINDOW_TYPE.MAINTENANCE &&
                 deploymentWindowMetadata.isActive && (

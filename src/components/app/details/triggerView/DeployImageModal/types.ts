@@ -138,7 +138,7 @@ export type DeployImageContentProps = Pick<
     | 'triggerType'
 > &
     Pick<RuntimeParamsSidebarProps, 'appName'> & {
-        materialResponse: CDMaterialResponseType
+        materialResponse: CDMaterialResponseType | null
         deploymentWindowMetadata: DeploymentWindowProfileMetaData
         isRollbackTrigger: boolean
         uploadRuntimeParamsFile: (props: UploadFileProps) => Promise<UploadFileDTO>
@@ -266,4 +266,12 @@ export interface BulkTriggerSidebarProps
         >,
         Pick<DeployViewStateType, 'currentSidebarTab'> {
     handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange']
+}
+
+export interface BulkDeployEmptyStateProps
+    extends Pick<
+        DeployImageContentProps,
+        'stageType' | 'appId' | 'isTriggerBlockedDueToPlugin' | 'handleClose' | 'reloadMaterials'
+    > {
+    selectedApp: BulkCDDetailType
 }
