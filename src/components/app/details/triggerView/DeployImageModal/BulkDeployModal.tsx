@@ -594,7 +594,6 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                 deploymentWindowMetadata={deploymentWindowMetadata}
                 pipelineId={pipelineId}
                 handleClose={handleClose}
-                isRedirectedFromAppDetails={false}
                 onSearchApply={reloadOrSearchSelectedApp}
                 stageType={stageType}
                 uploadRuntimeParamsFile={uploadRuntimeParamsFile}

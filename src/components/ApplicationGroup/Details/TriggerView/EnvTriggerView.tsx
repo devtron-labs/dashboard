@@ -54,7 +54,6 @@ import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg
 import { URLS, ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
@@ -600,8 +599,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 configurePluginURL={configurePluginURL}
                 isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
                 triggerType={node?.triggerType}
-                isRedirectedFromAppDetails={false}
                 parentEnvironmentName={node?.parentEnvironmentName}
+                onClickApprovalNode={onClickApprovalNode}
             />
         )
     }
@@ -824,6 +823,10 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     index={index}
                     handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                     openCIMaterialModal={openCIMaterialModal}
+                    onClickApprovalNode={onClickApprovalNode}
+                    onClickCDMaterial={onClickCDMaterial}
+                    onClickRollbackMaterial={onClickRollbackMaterial}
+                    reloadTriggerView={reloadTriggerView}
                 />
             ))}
             <LinkedCIDetail workflows={filteredWorkflows} handleClose={revertToPreviousURL} />
@@ -848,14 +851,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
                 <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
 
-                <TriggerViewContext.Provider
-                    value={{
-                        onClickCDMaterial,
-                        onClickRollbackMaterial,
-                        reloadTriggerView,
-                        onClickApprovalNode,
-                    }}
-                >
+                <>
                     {renderWorkflow()}
 
                     <Switch>
@@ -876,7 +872,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     {renderBulkCIMaterial()}
                     {renderApprovalMaterial()}
                     {renderBulkSourceChange()}
-                </TriggerViewContext.Provider>
+                </>
                 <div />
             </div>
             {!!selectedAppList.length && (

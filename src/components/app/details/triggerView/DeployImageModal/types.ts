@@ -43,23 +43,32 @@ export type DeployImageModalProps = {
     /**
      * If opening pre/post cd make sure BE sends plugin details as well, otherwise those props will be undefined
      */
-    isRedirectedFromAppDetails: boolean
     parentEnvironmentName: string
     triggerType: CommonNodeAttr['triggerType']
 } & (
     | {
-          showPluginWarningBeforeTrigger: boolean
-          consequence: ConsequenceType
-          configurePluginURL: string
-          isTriggerBlockedDueToPlugin: boolean
+          isRedirectedFromAppDetails: true
+          onClickApprovalNode?: never
       }
     | {
-          showPluginWarningBeforeTrigger?: never
-          consequence?: never
-          configurePluginURL?: never
-          isTriggerBlockedDueToPlugin?: never
+          isRedirectedFromAppDetails?: never
+          onClickApprovalNode: (cdNodeId: number) => void
       }
-)
+) &
+    (
+        | {
+              showPluginWarningBeforeTrigger: boolean
+              consequence: ConsequenceType
+              configurePluginURL: string
+              isTriggerBlockedDueToPlugin: boolean
+          }
+        | {
+              showPluginWarningBeforeTrigger?: never
+              consequence?: never
+              configurePluginURL?: never
+              isTriggerBlockedDueToPlugin?: never
+          }
+    )
 
 export type DeployImageHeaderProps = Pick<
     DeployImageModalProps,
@@ -141,6 +150,7 @@ export type DeployImageContentProps = Pick<
     | 'isTriggerBlockedDueToPlugin'
     | 'configurePluginURL'
     | 'triggerType'
+    | 'onClickApprovalNode'
 > &
     Pick<RuntimeParamsSidebarProps, 'appName'> & {
         materialResponse: CDMaterialResponseType | null

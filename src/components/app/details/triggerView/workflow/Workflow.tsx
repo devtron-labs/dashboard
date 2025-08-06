@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     Checkbox,
     CHECKBOX_VALUE,
-    DeploymentNodeType,
     noop,
     WorkflowNodeType,
     PipelineType,
@@ -31,19 +30,15 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, TriggerViewContextType } from '../types'
+import { WorkflowProps } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { TriggerViewContext } from '../config'
-import { TRIGGER_VIEW_PARAMS } from '../Constants'
-
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
 const BulkDeployLink = importComponentFromFELibrary('BulkDeployLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
-    static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
 
     goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
@@ -270,6 +265,9 @@ export class Workflow extends Component<WorkflowProps> {
                 appId={this.props.appId}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 isTriggerBlocked={node.isTriggerBlocked}
+                onClickCDMaterial={this.props.onClickCDMaterial}
+                onClickRollbackMaterial={this.props.onClickRollbackMaterial}
+                reloadTriggerView={this.props.reloadTriggerView}
             />
         )
     }
@@ -303,6 +301,8 @@ export class Workflow extends Component<WorkflowProps> {
                 appId={this.props.appId}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 isTriggerBlocked={node.isTriggerBlocked}
+                onClickCDMaterial={this.props.onClickCDMaterial}
+                reloadTriggerView={this.props.reloadTriggerView}
             />
         )
     }
@@ -320,13 +320,6 @@ export class Workflow extends Component<WorkflowProps> {
         }, [])
     }
 
-    onClickNodeEdge = (nodeId: number) => {
-        this.context.onClickApprovalModal(nodeId)
-        this.props.history.push({
-            search: `${TRIGGER_VIEW_PARAMS.APPROVAL_NODE}=${nodeId}`,
-        })
-    }
-
     renderEdgeList() {
         const edges = this.getEdges()
         // In the SVG, the bottom elements are rendered on top.
@@ -339,7 +332,7 @@ export class Workflow extends Component<WorkflowProps> {
                         key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
-                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        onClickEdge={() => this.props.onClickApprovalNode(edgeNode.endNode.id)}
                         edges={edges}
                     />
                 )
