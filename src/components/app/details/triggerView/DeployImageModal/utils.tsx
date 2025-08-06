@@ -2,6 +2,7 @@ import {
     ACTION_STATE,
     ApprovalRuntimeStateType,
     ArtifactInfoProps,
+    ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialType,
     CommonNodeAttr,
@@ -332,3 +333,24 @@ export const getAllowWarningWithTippyNodeTypeProp = (stageType: DeploymentNodeTy
 
 export const getIsExceptionUser = (materialResponse: CDMaterialResponseType): boolean =>
     materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
+
+export const renderDeployCTATippyData = (title: string, description: string) => (
+    <>
+        <h2 className="fs-12 fw-6 lh-18 m-0">{title}</h2>
+        <p className="fs-12 fw-4 lh-18 m-0">{description}</p>
+    </>
+)
+
+export const getDeployButtonStyle = (
+    userActionState: string,
+    canDeployWithoutApproval: boolean,
+    canImageApproverDeploy: boolean,
+): ButtonStyleType => {
+    if (userActionState === ACTION_STATE.BLOCKED) {
+        return ButtonStyleType.negative
+    }
+    if (userActionState === ACTION_STATE.PARTIAL || canDeployWithoutApproval || canImageApproverDeploy) {
+        return ButtonStyleType.warning
+    }
+    return ButtonStyleType.default
+}

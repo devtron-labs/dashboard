@@ -6,7 +6,6 @@ import {
     AnimatedDeployButton,
     API_STATUS_CODES,
     ArtifactInfo,
-    ButtonStyleType,
     CDMaterialSidebarType,
     ConditionalWrap,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
@@ -58,17 +57,19 @@ import DeployImageHeader from './DeployImageHeader'
 import MaterialListSkeleton from './MaterialListSkeleton'
 import RuntimeParamsSidebar from './RuntimeParamsSidebar'
 import { getMaterialResponseList, loadOlderImages } from './service'
-import { DeployImageContentProps, DeployImageModalProps, DeployViewStateType } from './types'
+import { DeployImageContentProps, DeployImageModalProps, DeployViewStateType, HandleDeploymentProps } from './types'
 import {
     getAllowWarningWithTippyNodeTypeProp,
     getCDArtifactId,
     getConfigToDeployValue,
     getDeployButtonIcon,
+    getDeployButtonStyle,
     getInitialSelectedConfigToDeploy,
     getIsExceptionUser,
     getIsImageApprover,
     getTriggerArtifactInfoProps,
     handleTriggerErrorMessageForHelmManifestPush,
+    renderDeployCTATippyData,
     showErrorIfNotAborted,
 } from './utils'
 
@@ -177,8 +178,8 @@ const DeployImageModal = ({
     const canApproverDeploy = materialResponse?.canApproverDeploy ?? false
     const showConfigDiffView = searchParams.mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG && searchParams.deploy
     const isSelectImageTrigger = materialType === MATERIAL_TYPE.inputMaterialList
-    const areSomeMaterialsPassingFilters = materialList.some(
-        (materialDetails) => materialDetails.filterState === FilterStates.ALLOWED,
+    const areAllImagesExcluded = materialList.every(
+        (materialDetails) => materialDetails.filterState !== FilterStates.ALLOWED,
     )
     const selectedConfigToDeploy = getInitialSelectedConfigToDeploy(materialType, searchParams)
     const showPluginWarningBeforeTrigger = _showPluginWarningBeforeTrigger && isPreOrPostCD
@@ -275,7 +276,9 @@ const DeployImageModal = ({
     }
 
     const handleClose = () => {
-        onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)
+        if (isRedirectedFromAppDetails && showConfigDiffView) {
+            onClickSetInitialParams(URL_PARAM_MODE_TYPE.LIST)
+        }
         handleCloseProp?.()
     }
 
@@ -323,34 +326,32 @@ const DeployImageModal = ({
 
         return (
             !selectedImage ||
-            !areSomeMaterialsPassingFilters ||
+            areAllImagesExcluded ||
             (isRollbackTrigger && (pipelineDeploymentConfigLoading || !canDeployWithConfig())) ||
             (selectedConfigToDeploy.value === DeploymentWithConfigType.LATEST_TRIGGER_CONFIG && noLastDeploymentConfig)
         )
     }
 
     const renderDeployCTATippyContent = () => {
-        if (!areSomeMaterialsPassingFilters) {
-            return (
-                <>
-                    <h2 className="fs-12 fw-6 lh-18 m-0">No eligible images found!</h2>
-                    <p className="fs-12 fw-4 lh-18 m-0">
-                        Please select an image that passes the configured filters to deploy
-                    </p>
-                </>
+        const isSelectedImagePresent = materialList.some((artifact) => artifact.isSelected)
+
+        if (areAllImagesExcluded) {
+            return renderDeployCTATippyData(
+                'No eligible images found!',
+                'Please select an image that passes the configured filters to deploy',
             )
         }
 
-        return (
-            <>
-                <h2 className="fs-12 fw-6 lh-18 m-0">Selected Config not available!</h2>
-                <p className="fs-12 fw-4 lh-18 m-0">
-                    {selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
-                    noSpecificDeploymentConfig
-                        ? 'Please select a different image or configuration to deploy'
-                        : 'Please select a different configuration to deploy'}
-                </p>
-            </>
+        if (!isSelectedImagePresent) {
+            return renderDeployCTATippyData('No image selected!', 'Please select an image to deploy')
+        }
+
+        return renderDeployCTATippyData(
+            'Selected Config not available!',
+            selectedConfigToDeploy.value === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG &&
+                noSpecificDeploymentConfig
+                ? 'Please select a different image or configuration to deploy'
+                : 'Please select a different configuration to deploy',
         )
     }
 
@@ -361,16 +362,10 @@ const DeployImageModal = ({
     )
 
     const redirectToDeploymentStepsPage = () => {
-        history.push(`/app/${appId}/cd-details/${envId}/${pipelineId}`)
+        history.push(`${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`)
     }
 
-    const handleDeployment = (
-        nodeType: DeploymentNodeType,
-        _appId: number,
-        ciArtifactId: number,
-        deploymentWithConfig?: string,
-        computedWfrId?: number,
-    ) => {
+    const handleDeployment = ({ ciArtifactId, deploymentWithConfig, computedWfrId }: HandleDeploymentProps) => {
         const updatedRuntimeParamsErrorState = validateRuntimeParameters(runtimeParamsList)
         setDeployViewState((prevState) => ({
             ...prevState,
@@ -384,15 +379,15 @@ const DeployImageModal = ({
             return
         }
 
-        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.CDTriggered(nodeType))
+        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.CDTriggered(stageType))
         setIsDeploymentLoading(true)
 
-        if (_appId && pipelineId && ciArtifactId) {
+        if (appId && pipelineId && ciArtifactId) {
             triggerCDNode({
                 pipelineId: Number(pipelineId),
                 ciArtifactId: Number(ciArtifactId),
-                appId: Number(_appId),
-                stageType: nodeType,
+                appId: Number(appId),
+                stageType,
                 deploymentWithConfig,
                 wfrId: computedWfrId,
                 abortControllerRef: null,
@@ -408,10 +403,10 @@ const DeployImageModal = ({
                         if (isVirtualEnvironment && deploymentAppType === DeploymentAppTypes.MANIFEST_DOWNLOAD) {
                             const { helmPackageName } = response.result
                             downloadManifestForVirtualEnvironment?.({
-                                appId: _appId,
+                                appId,
                                 envId,
                                 helmPackageName,
-                                cdWorkflowType: nodeType,
+                                cdWorkflowType: stageType,
                                 handleDownload,
                             })
                         }
@@ -444,7 +439,7 @@ const DeployImageModal = ({
                     setIsDeploymentLoading(false)
                 })
         } else {
-            let message = _appId ? '' : 'app id missing '
+            let message = appId ? '' : 'app id missing '
             message += pipelineId ? '' : 'pipeline id missing '
             message += ciArtifactId ? '' : 'Artifact id missing '
             ToastManager.showToast({
@@ -456,7 +451,7 @@ const DeployImageModal = ({
     }
 
     const deployTrigger = (e: SyntheticEvent) => {
-        e.stopPropagation()
+        stopPropagation(e)
         handleConfirmationClose(e)
         // Blocking the deploy action if already deploying or config is not available
         if (isDeployButtonDisabled()) {
@@ -467,15 +462,21 @@ const DeployImageModal = ({
 
         if (isRollbackTrigger || isSelectImageTrigger) {
             const computedWfrId = isRollbackTrigger ? wfrId : lastDeploymentWfrId
-            handleDeployment(stageType, appId, artifactId, selectedConfigToDeploy.value, computedWfrId)
+            handleDeployment({
+                ciArtifactId: artifactId,
+                deploymentWithConfig: selectedConfigToDeploy.value,
+                computedWfrId,
+            })
             return
         }
 
-        handleDeployment(stageType, appId, artifactId)
+        // Not sure when this call will come into play, but keeping it for now for backward compatibility
+        handleDeployment({ ciArtifactId: artifactId })
     }
 
-    const onClickDeploy = (e, disableDeployButton: boolean) => {
-        e.stopPropagation()
+    const onClickDeploy = (e: SyntheticEvent, disableDeployButton: boolean) => {
+        stopPropagation(e)
+
         if (!disableDeployButton) {
             if (!showPluginWarningOverlay && showPluginWarningBeforeTrigger) {
                 setShowPluginWarningOverlay(true)
@@ -494,19 +495,8 @@ const DeployImageModal = ({
         }
     }
 
-    const getDeployButtonStyle = (
-        userActionState: string,
-        canDeployWithoutApproval: boolean,
-        canImageApproverDeploy: boolean,
-    ): ButtonStyleType => {
-        if (userActionState === ACTION_STATE.BLOCKED) {
-            return ButtonStyleType.negative
-        }
-        if (userActionState === ACTION_STATE.PARTIAL || canDeployWithoutApproval || canImageApproverDeploy) {
-            return ButtonStyleType.warning
-        }
-        return ButtonStyleType.default
-    }
+    const getOnClickDeploy = (disableDeployButton: boolean) => (e: SyntheticEvent) =>
+        onClickDeploy(e, disableDeployButton)
 
     const onSearchApply = (newSearchText: string) => {
         const newParams = new URLSearchParams({
@@ -540,7 +530,7 @@ const DeployImageModal = ({
             <AnimatedDeployButton
                 dataTestId="cd-trigger-deploy-button"
                 isLoading={isDeploymentLoading}
-                onButtonClick={(e) => onClickDeploy(e, disableDeployButton)}
+                onButtonClick={getOnClickDeploy(disableDeployButton)}
                 startIcon={getDeployButtonIcon(deploymentWindowMetadata, stageType)}
                 text={
                     canDeployWithoutApproval
@@ -635,7 +625,7 @@ const DeployImageModal = ({
                                 consequence={consequence}
                                 configurePluginURL={configurePluginURL}
                                 showTriggerButton
-                                onTrigger={(e) => onClickDeploy(e, disableDeployButton)}
+                                onTrigger={getOnClickDeploy(disableDeployButton)}
                                 nodeType={allowWarningWithTippyNodeTypeProp}
                                 visible={showPluginWarningOverlay}
                                 onClose={handleClosePluginWarningOverlay}

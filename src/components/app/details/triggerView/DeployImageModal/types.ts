@@ -250,3 +250,9 @@ export interface LoadOlderImagesProps {
     isRollbackTrigger?: boolean
     appliedSearchText?: string
 }
+
+export interface HandleDeploymentProps {
+    ciArtifactId: number
+    deploymentWithConfig?: string
+    computedWfrId?: number
+}

@@ -438,12 +438,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             })
     }
 
-    const closeCDModal = (): void => {
-        history.push({
-            search: '',
-        })
-    }
-
     const closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
         history.push({
@@ -597,7 +591,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 envName={node?.environmentName}
                 pipelineId={+node.id}
                 materialType={cdMaterialType}
-                handleClose={closeCDModal}
+                handleClose={revertToPreviousURL}
                 handleSuccess={getWorkflowStatusData}
                 deploymentAppType={node?.deploymentAppType}
                 isVirtualEnvironment={isVirtualEnv}
