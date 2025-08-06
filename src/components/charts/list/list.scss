@@ -23,7 +23,6 @@
     padding: 16px 20px;
 }
 
-
 .selected-widgets-container {
     overflow: auto;
 
@@ -65,7 +64,6 @@
         width: 40px;
         background-size: contain;
     }
-
 
     .popup-button {
         border: unset;
@@ -390,8 +388,13 @@
     }
 
     .chart-list__row .list {
+        background: transparent;
         height: 36px;
         cursor: auto;
+
+        &:hover {
+            background: var(--bg-hover);
+        }
     }
 }
 

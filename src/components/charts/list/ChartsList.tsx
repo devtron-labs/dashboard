@@ -37,6 +37,7 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
     // HOOKS
     const { open, overlayProps, popoverProps, scrollableRef, triggerProps, closePopover } = usePopover({
         id: 'chart-list-popover',
+        variant: 'overlay',
         alignment: 'middle',
         width: 400,
     })
@@ -132,6 +133,7 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
                     dataTestId="chart-store-search-box"
                     initialSearchText={searchText}
                     containerClassName="p-12"
+                    size={ComponentSizeType.large}
                     handleEnter={handleSearchEnter}
                     inputProps={{
                         placeholder: 'Search by repository or registry',
@@ -202,14 +204,14 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
             }}
         >
             <div className="charts-list flexbox-col mh-400">
-                <div className="flex dc__content-space px-16 pt-12 pb-11 border__primary--bottom">
-                    <h4 className="m-0 fs-14 lh-1-5 fw-6">Helm chart sources</h4>
+                <div className="flex dc__content-space px-16 pt-10 pb-9 border__primary--bottom">
+                    <h4 className="m-0 fs-14 lh-1-5 fw-6 cn-9">Helm chart sources</h4>
                     <div className="flex dc__gap-12">
                         <AddChartSource text="Add" />
                         <Button
                             isLoading={isFetching}
                             icon={<Icon name="ic-arrows-clockwise" color={null} />}
-                            size={ComponentSizeType.xxs}
+                            size={ComponentSizeType.small}
                             variant={ButtonVariantType.borderLess}
                             dataTestId="chart-store-refetch-button"
                             ariaLabel="Refetch charts"
@@ -219,7 +221,7 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
                         <Button
                             icon={<Icon name="ic-close-large" size={16} color={null} />}
                             onClick={closePopover}
-                            size={ComponentSizeType.xxs}
+                            size={ComponentSizeType.small}
                             variant={ButtonVariantType.borderLess}
                             dataTestId="chart-store-close-button"
                             showAriaLabelInTippy={false}

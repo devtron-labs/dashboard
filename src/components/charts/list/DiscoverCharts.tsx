@@ -677,8 +677,10 @@ const ChartListHeader = ({ charts }) => (
         <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
             {charts.length === 0 ? 'All Charts' : 'Select Charts'}
         </h3>
-        <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
-            Select chart to deploy. &nbsp;
+        <div className="flex left dc__gap-4 mt-4 pl-20">
+            <p className="m-0" data-testid="chart-store-list-subheading">
+                Select chart to deploy.
+            </p>
             <DocLink
                 dataTestId="chart-group-link"
                 docLinkKey="CHART_LIST"
@@ -686,7 +688,7 @@ const ChartListHeader = ({ charts }) => (
                 fontWeight="normal"
                 size={ComponentSizeType.small}
             />
-        </p>
+        </div>
     </div>
 )
 
