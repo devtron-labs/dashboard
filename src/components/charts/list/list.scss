@@ -379,29 +379,7 @@
     border-right: 1px solid var(--N200);
 }
 
-.chart-store__list {
-    position: fixed;
-    left: 66px;
-    top: 60px;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-    max-height: 500px;
-    min-height: 500px;
-
-    .chart-list__add {
-        position: fixed;
-        left: 250px;
-        top: 100px;
-        display: grid;
-        grid-template-rows: 36px 36px;
-        z-index: 2;
-        box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
-    }
-
-    .empty-state img {
-        width: 200px;
-        height: auto;
-    }
-
+.charts-list {
     .list {
         height: 32px;
         grid-template-columns: 12px 1fr 16px 24px;
@@ -415,15 +393,6 @@
         height: 36px;
         cursor: auto;
     }
-}
-
-.chart-list__add {
-    position: absolute;
-    left: 74px;
-    display: grid;
-    grid-template-rows: 36px 36px;
-    z-index: 2;
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.2);
 }
 
 .add-repo-row:hover,
