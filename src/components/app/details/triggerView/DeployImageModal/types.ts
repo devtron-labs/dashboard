@@ -256,3 +256,14 @@ export interface HandleDeploymentProps {
     deploymentWithConfig?: string
     computedWfrId?: number
 }
+
+export interface BulkTriggerSidebarProps
+    extends Required<
+            Pick<
+                DeployImageContentProps,
+                'appId' | 'stageType' | 'appInfoMap' | 'selectedTagName' | 'handleTagChange' | 'changeApp'
+            >
+        >,
+        Pick<DeployViewStateType, 'currentSidebarTab'> {
+    handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange']
+}
