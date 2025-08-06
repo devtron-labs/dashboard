@@ -120,7 +120,7 @@ const BulkTriggerSidebar = ({
         const blockedPluginNodeType: CommonNodeAttr['type'] =
             stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 
-        if (app.materialError?.code === API_STATUS_CODES.UNAUTHORIZED) {
+        if (app.materialError?.code === API_STATUS_CODES.PERMISSION_DENIED) {
             return (
                 <div className="flex left dc__gap-4">
                     <Icon name="ic-locked" color="Y500" size={12} />

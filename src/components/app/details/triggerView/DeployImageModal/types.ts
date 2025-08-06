@@ -1,4 +1,5 @@
 import {
+    ApiQueuingWithBatchResponseItem,
     CDMaterialResponseType,
     CDMaterialSidebarType,
     CDMaterialType,
@@ -6,8 +7,11 @@ import {
     ConsequenceType,
     DeploymentAppTypes,
     DeploymentNodeType,
+    DeploymentStrategyTypeWithDefault,
     DeploymentWindowProfileMetaData,
+    PipelineIdsVsDeploymentStrategyMap,
     PolicyConsequencesDTO,
+    ResponseType,
     SelectPickerOptionType,
     ServerErrors,
     UploadFileDTO,
@@ -19,6 +23,7 @@ import {
 import { BulkCDDetailType } from '@Components/ApplicationGroup/AppGroup.types'
 
 import { FilterConditionViews, MATERIAL_TYPE, RuntimeParamsErrorState } from '../types'
+import { getBaseBulkCDDetailsMap } from './utils'
 
 export type DeployImageModalProps = {
     appId: number
@@ -274,4 +279,45 @@ export interface BulkDeployEmptyStateProps
         'stageType' | 'appId' | 'isTriggerBlockedDueToPlugin' | 'handleClose' | 'reloadMaterials'
     > {
     selectedApp: BulkCDDetailType
+}
+
+export interface GetAppGroupDeploymentWindowMapReturnType {
+    deploymentWindowMap: Record<number, DeploymentWindowProfileMetaData>
+    isPartialActionAllowed: boolean
+}
+
+export interface GetBulkCDDetailsMapFromResponseProps {
+    searchText: string
+    validWorkflows: WorkflowType[]
+    cdMaterialResponseList: ApiQueuingWithBatchResponseItem<CDMaterialResponseType>[]
+    selectedTagName: string
+    deploymentWindowMap: GetAppGroupDeploymentWindowMapReturnType['deploymentWindowMap']
+    baseBulkCDDetailMap: ReturnType<typeof getBaseBulkCDDetailsMap>
+}
+
+export type GetBulkCDDetailsMapFromResponseType = (
+    params: GetBulkCDDetailsMapFromResponseProps,
+) => DeployImageContentProps['appInfoMap']
+
+export interface GetTriggerCDPromiseMethodsProps {
+    appInfoMap: DeployImageContentProps['appInfoMap']
+    appsToRetry?: Record<string, boolean>
+    skipHibernatedApps: boolean
+    pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap
+    stageType: DeploymentNodeType
+    bulkDeploymentStrategy: DeploymentStrategyTypeWithDefault
+}
+
+export type GetTriggerCDPromiseMethodsType = (params: GetTriggerCDPromiseMethodsProps) => {
+    cdTriggerPromiseFunctions: (() => Promise<ResponseType>)[]
+    triggeredAppIds: number[]
+}
+
+export interface GetResponseRowFromTriggerCDResponseProps {
+    apiResponse: ApiQueuingWithBatchResponseItem<ResponseType<any>>[]
+    appInfoMap: DeployImageContentProps['appInfoMap']
+    triggeredAppIds: number[]
+    envId: number
+    isVirtualEnvironment: boolean
+    stageType: DeploymentNodeType
 }

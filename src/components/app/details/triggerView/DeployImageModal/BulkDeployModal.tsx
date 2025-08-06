@@ -1,31 +1,22 @@
-import { Dispatch, SetStateAction, SyntheticEvent, useMemo, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react'
 
 import {
-    ACTION_STATE,
     AnimatedDeployButton,
-    API_STATUS_CODES,
     ApiQueuingWithBatch,
-    BULK_DEPLOY_ACTIVE_IMAGE_TAG,
     BULK_DEPLOY_LATEST_IMAGE_TAG,
     ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
-    CDMaterialType,
-    DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
     DeploymentStrategyTypeWithDefault,
-    DeploymentWindowProfileMetaData,
     Drawer,
-    FilterStates,
     genericCDMaterialsService,
     GenericEmptyState,
-    getStageTitle,
     Icon,
     MODAL_TYPE,
     ModuleNameMap,
     ModuleStatus,
     PipelineIdsVsDeploymentStrategyMap,
-    PromiseAllStatusType,
     ResponseType,
     SelectPickerOptionType,
     showError,
@@ -33,63 +24,48 @@ import {
     stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
-    TriggerBlockType,
-    triggerCDNode,
     uploadCDPipelineFile,
     useAsync,
     useMainContext,
-    WorkflowNodeType,
-    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
-import {
-    BulkCDDetailDerivedFromNode,
-    ResponseRowType,
-    TriggerVirtualEnvResponseRowType,
-} from '@Components/ApplicationGroup/AppGroup.types'
+import { ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BULK_CD_DEPLOYMENT_STATUS,
     BULK_CD_MATERIAL_STATUS,
-    BULK_CD_RESPONSE_STATUS_TEXT,
-    BULK_VIRTUAL_RESPONSE_STATUS,
-    BulkResponseStatus,
     BUTTON_TITLE,
 } from '@Components/ApplicationGroup/Constants'
 import TriggerResponseModalBody, {
     TriggerResponseModalFooter,
 } from '@Components/ApplicationGroup/Details/TriggerView/TriggerResponseModal'
 import { getSelectedAppListForBulkStrategy } from '@Components/ApplicationGroup/Details/TriggerView/utils'
-import { getCDPipelineURL, importComponentFromFELibrary, useAppContext } from '@Components/common'
+import { importComponentFromFELibrary, useAppContext } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 
 import { getIsMaterialApproved } from '../cdMaterials.utils'
-import { INITIAL_DEPLOY_VIEW_STATE } from './constants'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
-import { loadOlderImages } from './service'
+import { getAppGroupDeploymentWindowMap, loadOlderImages } from './service'
 import { BuildDeployModalProps, DeployImageContentProps, GetInitialAppListProps } from './types'
+import {
+    getBaseBulkCDDetailsMap,
+    getBulkCDDetailsMapFromResponse,
+    getIsExceptionUser,
+    getResponseRowFromTriggerCDResponse,
+    getTriggerCDPromiseMethods,
+    getUpdatedMaterialsForTagSelection,
+} from './utils'
 
 const BulkCDStrategy = importComponentFromFELibrary('BulkCDStrategy', null, 'function')
 const SkipHibernatedCheckbox = importComponentFromFELibrary('SkipHibernatedCheckbox', null, 'function')
 const SelectDeploymentStrategy = importComponentFromFELibrary('SelectDeploymentStrategy', null, 'function')
-const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
-    'getDeploymentWindowStateAppGroup',
-    null,
-    'function',
-)
-const processDeploymentWindowMetadata = importComponentFromFELibrary(
-    'processDeploymentWindowMetadata',
-    null,
-    'function',
-)
 const BulkDeployResistanceTippy = importComponentFromFELibrary('BulkDeployResistanceTippy')
 const validateRuntimeParameters = importComponentFromFELibrary(
     'validateRuntimeParameters',
     () => ({ isValid: true, cellError: {} }),
     'function',
 )
-const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironment, envId }: BuildDeployModalProps) => {
     const { currentEnvironmentName: envName } = useAppContext()
@@ -115,6 +91,10 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
     const isSecurityModuleInstalled = moduleInfoRes && moduleInfoRes?.result?.status === ModuleStatus.INSTALLED
     const isCDStage = stageType === DeploymentNodeType.CD
 
+    useEffect(() => () => {
+        initialDataAbortControllerRef.current.abort()
+    })
+
     const handleNavigateToListView = () => {
         setShowStrategyFeasibilityPage(false)
         setPipelineIdVsStrategyMap({})
@@ -122,90 +102,6 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
 
     const hideResistanceBox = (): void => {
         setShowResistanceBox(false)
-    }
-
-    const getDeploymentWindowResponse = async (appEnvList: (Pick<WorkflowType, 'appId'> & { envId: number })[]) => {
-        if (!getDeploymentWindowStateAppGroup) {
-            return {}
-        }
-
-        try {
-            const response = await getDeploymentWindowStateAppGroup(appEnvList)
-            return response
-        } catch (error) {
-            showError(error)
-            return {}
-        }
-    }
-
-    const getTagsRelatedToMaterial = (updatedMaterials: CDMaterialType[]): string => {
-        const selectedImage = updatedMaterials.find((material) => material.isSelected)
-
-        const selectedTagParsedName =
-            selectedImageTagOption.value.length > 15
-                ? `${selectedImageTagOption.value.slice(0, 15)}...`
-                : selectedImageTagOption.value
-
-        const isNoImageSelected = !updatedMaterials.some((material) => material.isSelected)
-        const noImageWarning = isNoImageSelected ? `Tag ${selectedTagParsedName} is not present` : ''
-
-        const isSelectedImageVulnerable = selectedImage?.vulnerable ?? false
-        const securityWarning = isSelectedImageVulnerable ? `Tag ${selectedTagParsedName} has vulnerabilities` : ''
-
-        const isSelectedImageInEligible = selectedImage?.filterState !== FilterStates.ALLOWED
-        const inEligibleFilterWarning = isSelectedImageInEligible
-            ? `Tag ${selectedTagParsedName} is not eligible for deployment`
-            : ''
-
-        return noImageWarning || securityWarning || inEligibleFilterWarning
-    }
-
-    // If tag is not present, and image is selected we will show mixed tag
-    const getUpdatedMaterialsForTagSelection = (tagName: string, materials: CDMaterialType[]) => {
-        const sourceMaterials = structuredClone(materials)
-
-        const updatedMaterials = sourceMaterials.map((material, materialIndex) => {
-            if (tagName === BULK_DEPLOY_LATEST_IMAGE_TAG.value && materialIndex === 0) {
-                return {
-                    ...material,
-                    isSelected: true,
-                }
-            }
-
-            if (tagName === BULK_DEPLOY_ACTIVE_IMAGE_TAG.value && material.deployed && material.latest) {
-                return {
-                    ...material,
-                    isSelected: true,
-                }
-            }
-
-            const isTagPresent = material.imageReleaseTags?.some((tag) => tag.tagName === tagName)
-
-            if (isTagPresent) {
-                return {
-                    ...material,
-                    isSelected: true,
-                }
-            }
-
-            return {
-                ...material,
-                isSelected: false,
-            }
-        })
-
-        const selectedImage = updatedMaterials.find((material) => material.isSelected)
-
-        const tagsWarning = getTagsRelatedToMaterial(updatedMaterials)
-
-        if (selectedImage && tagsWarning) {
-            selectedImage.isSelected = false
-        }
-
-        return {
-            tagsWarning,
-            updatedMaterials,
-        }
     }
 
     /**
@@ -227,64 +123,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
             return {}
         }
 
-        const baseBulkCDDetailMap = validWorkflows.reduce<Record<number, BulkCDDetailDerivedFromNode>>(
-            (acc, workflow) => {
-                const selectedCINode = workflow.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                )
-                const doesWorkflowContainsWebhook = selectedCINode?.type === WorkflowNodeType.WEBHOOK
-
-                // Will not be undefined since we are filtering workflows with CD node
-                const cdNode = workflow.nodes.find(
-                    (node) => node.type === DeploymentNodeType.CD && +node.environmentId === +envId,
-                )
-
-                // Could be undefined
-                const currentStageNode = workflow.nodes.find(
-                    (node) => node.type === stageType && +node.environmentId === +envId,
-                )
-
-                const isTriggerBlockedDueToPlugin =
-                    currentStageNode?.isTriggerBlocked && currentStageNode?.showPluginWarning
-
-                const isTriggerBlockedDueToMandatoryTags =
-                    currentStageNode.isTriggerBlocked &&
-                    currentStageNode.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG
-
-                const stageText = getStageTitle(stageType)
-
-                const blockedStageWarning =
-                    isTriggerBlockedDueToPlugin || isTriggerBlockedDueToMandatoryTags ? `${stageText} is blocked` : ''
-
-                const noStageWarning = !currentStageNode ? `No ${stageText} stage` : ''
-
-                acc[workflow.appId] = {
-                    appId: workflow.appId,
-                    appName: workflow.name,
-                    pipelineId: +cdNode.id,
-                    parentEnvironmentName: currentStageNode?.parentEnvironmentName,
-                    isTriggerBlockedDueToPlugin,
-                    configurePluginURL: getCDPipelineURL(
-                        String(workflow.appId),
-                        workflow.id,
-                        doesWorkflowContainsWebhook ? '0' : selectedCINode.id,
-                        doesWorkflowContainsWebhook,
-                        cdNode.id,
-                        true,
-                    ),
-                    // TODO: Test this since earlier it was using cdNode.triggerType
-                    triggerType: currentStageNode?.triggerType,
-                    warningMessage: noStageWarning || blockedStageWarning || '',
-                    triggerBlockedInfo: currentStageNode?.triggerBlockedInfo,
-                    stageNotAvailable: !currentStageNode,
-                    showPluginWarning: currentStageNode?.showPluginWarning,
-                    consequence: currentStageNode?.pluginBlockState,
-                }
-
-                return acc
-            },
-            {},
-        )
+        const baseBulkCDDetailMap = getBaseBulkCDDetailsMap(validWorkflows, stageType, envId)
 
         const cdMaterialPromiseList = validWorkflows.map<() => Promise<CDMaterialResponseType>>((workflow) => {
             const currentStageNode = workflow.nodes.find(
@@ -325,63 +164,16 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                 envId: +envId,
             }))
 
-        const deploymentWindowResponse = await getDeploymentWindowResponse(appEnvList)
+        const { deploymentWindowMap, isPartialActionAllowed: _isPartialActionAllowed } =
+            await getAppGroupDeploymentWindowMap(appEnvList, envId)
 
-        const deploymentWindowMap: Record<number, DeploymentWindowProfileMetaData> = {}
-        let _isPartialActionAllowed = false
-
-        deploymentWindowResponse?.result?.appData?.forEach((data) => {
-            deploymentWindowMap[data.appId] = processDeploymentWindowMetadata(data.deploymentProfileList, envId)
-            if (!_isPartialActionAllowed) {
-                _isPartialActionAllowed =
-                    deploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
-                    !deploymentWindowMap[data.appId].isActive
-                        ? deploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
-                        : false
-            }
-        })
-
-        const bulkCDDetailsMap: DeployImageContentProps['appInfoMap'] = {}
-
-        cdMaterialResponseList.forEach((materialResponse, index) => {
-            const { appId } = validWorkflows[index]
-
-            if (materialResponse.status === PromiseAllStatusType.FULFILLED) {
-                const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
-                    selectedImageTagOption.value,
-                    materialResponse.value.materials,
-                )
-
-                const parsedTagsWarning = searchText ? '' : tagsWarning
-
-                const updatedWarningMessage =
-                    baseBulkCDDetailMap[appId].warningMessage ||
-                    deploymentWindowMap[appId]?.warningMessage ||
-                    parsedTagsWarning
-
-                // In case of search and reload even though method gives whole state, will only update deploymentWindowMetadata, warningMessage and materialResponse
-                bulkCDDetailsMap[appId] = {
-                    ...baseBulkCDDetailMap[appId],
-                    materialResponse: {
-                        ...materialResponse.value,
-                        materials: searchText ? materialResponse.value.materials : updatedMaterials,
-                    },
-                    deploymentWindowMetadata: deploymentWindowMap[appId],
-                    areMaterialsLoading: false,
-                    deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
-                    warningMessage: updatedWarningMessage,
-                    materialError: null,
-                }
-            } else {
-                bulkCDDetailsMap[appId] = {
-                    ...baseBulkCDDetailMap[appId],
-                    materialResponse: {} as CDMaterialResponseType,
-                    deploymentWindowMetadata: {} as DeploymentWindowProfileMetaData,
-                    deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
-                    materialError: materialResponse.reason,
-                    areMaterialsLoading: false,
-                }
-            }
+        const bulkCDDetailsMap = getBulkCDDetailsMapFromResponse({
+            searchText,
+            validWorkflows,
+            cdMaterialResponseList,
+            selectedTagName: selectedImageTagOption.value,
+            baseBulkCDDetailMap,
+            deploymentWindowMap,
         })
 
         if (!appIdToReload) {
@@ -414,32 +206,44 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
             searchText: searchText || appInfoMap[selectedAppId]?.deployViewState?.appliedSearchText || '',
         })
 
-        const { deploymentWindowMetadata, materialResponse, materialError, warningMessage } =
-            response[selectedAppId] || {}
+        setAppInfoMap((prev) => ({
+            ...prev,
+            [selectedAppId]: {
+                ...prev[selectedAppId],
+                areMaterialsLoading: false,
+            },
+        }))
+
+        const { deploymentWindowMetadata, materialError, warningMessage } = response[selectedAppId] || {}
 
         if (materialError) {
             showError(materialError)
-        } else {
+            return
+        }
+
+        if (!appInfoMap[selectedAppId]) {
             setAppInfoMap((prev) => ({
                 ...prev,
-                [selectedAppId]: {
-                    ...prev[selectedAppId],
-                    warningMessage,
-                    materialResponse: {
-                        ...prev[selectedAppId].materialResponse,
-                        materials: materialResponse?.materials || [],
-                    },
-                    materialError,
-                    deploymentWindowMetadata,
-                },
+                ...response[selectedAppId],
             }))
+            return
         }
 
         setAppInfoMap((prev) => ({
             ...prev,
             [selectedAppId]: {
                 ...prev[selectedAppId],
-                areMaterialsLoading: false,
+                warningMessage,
+                materialError,
+                deploymentWindowMetadata,
+                deployViewState: {
+                    ...prev[selectedAppId].deployViewState,
+                    materialInEditModeMap: new Map(),
+                    runtimeParamsErrorState: {
+                        isValid: true,
+                        cellError: {},
+                    },
+                },
             },
         }))
     }
@@ -519,20 +323,24 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
         })
     }
 
-    const sortedAppList = Object.values(appInfoMap || {}).sort((a, b) =>
-        stringComparatorBySortOrder(a.appName, b.appName),
-    )
+    const { appIds, cdPipelineIds } = useMemo(() => {
+        const sortedAppList = Object.values(appInfoMap).sort((a, b) =>
+            stringComparatorBySortOrder(a.appName, b.appName),
+        )
 
-    const appIds = sortedAppList.map((app) => app.appId)
-    const cdPipelineIds = sortedAppList.map((app) => +app.pipelineId)
+        return {
+            appIds: sortedAppList.map((app) => app.appId),
+            cdPipelineIds: sortedAppList.map((app) => +app.pipelineId),
+        }
+    }, [appInfoMap])
 
     const validateBulkRuntimeParams = (): boolean => {
         let isRuntimeParamErrorPresent = false
 
         const updatedAppInfoRes = Object.values(appInfoMap).reduce<typeof appInfoMap>((acc, appDetails) => {
-            const runtimeParams = appDetails.materialResponse?.runtimeParams || {}
+            const runtimeParams = appDetails.materialResponse?.runtimeParams || []
             const validationState = validateRuntimeParameters(runtimeParams)
-            isRuntimeParamErrorPresent = !isRuntimeParamErrorPresent && !validationState.isValid
+            isRuntimeParamErrorPresent = isRuntimeParamErrorPresent || !validationState.isValid
 
             acc[appDetails.appId] = {
                 ...appDetails,
@@ -558,7 +366,6 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
         return true
     }
 
-    // Disable for any areMaterialsLoading
     const onClickTriggerBulkCD = async (appsToRetry?: Record<string, boolean>) => {
         if (!validateBulkRuntimeParams()) {
             return
@@ -566,54 +373,14 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
 
         setIsDeploymentLoading(true)
 
-        const { cdTriggerPromiseFunctions, triggeredAppIds } = Object.values(appInfoMap).reduce<{
-            cdTriggerPromiseFunctions: (() => Promise<ResponseType>)[]
-            triggeredAppIds: number[]
-        }>(
-            (acc, appDetails) => {
-                if (appsToRetry && !appsToRetry[appDetails.appId.toString()]) {
-                    return acc
-                }
-
-                const selectedImage = appDetails.materialResponse?.materials.find((material) => material.isSelected)
-
-                if (!selectedImage) {
-                    return acc
-                }
-
-                const pipelineId = +appDetails.pipelineId
-                const strategy = pipelineIdVsStrategyMap[pipelineId]
-
-                if (bulkDeploymentStrategy === 'DEFAULT' || !!strategy) {
-                    acc.cdTriggerPromiseFunctions.push(() =>
-                        triggerCDNode({
-                            pipelineId,
-                            ciArtifactId: +selectedImage.id,
-                            appId: +appDetails.appId,
-                            stageType,
-                            ...(getRuntimeParamsPayload
-                                ? {
-                                      runtimeParamsPayload: getRuntimeParamsPayload(
-                                          appDetails.materialResponse.runtimeParams ?? [],
-                                      ),
-                                  }
-                                : {}),
-                            skipIfHibernated: skipHibernatedApps,
-                            // strategy DEFAULT means custom chart
-                            ...(strategy && strategy !== 'DEFAULT' ? { strategy } : {}),
-                        }),
-                    )
-
-                    acc.triggeredAppIds.push(+appDetails.appId)
-                }
-
-                return acc
-            },
-            {
-                cdTriggerPromiseFunctions: [],
-                triggeredAppIds: [],
-            },
-        )
+        const { cdTriggerPromiseFunctions, triggeredAppIds } = getTriggerCDPromiseMethods({
+            appInfoMap,
+            appsToRetry,
+            skipHibernatedApps,
+            pipelineIdVsStrategyMap,
+            stageType,
+            bulkDeploymentStrategy,
+        })
 
         if (!triggeredAppIds.length) {
             setIsDeploymentLoading(false)
@@ -625,74 +392,14 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
         }
 
         setResponseList([])
-        const newResponseList: typeof responseList = []
         const apiResponse = await ApiQueuingWithBatch<ResponseType>(cdTriggerPromiseFunctions)
-        apiResponse.forEach((response, index) => {
-            const appDetails = appInfoMap[triggeredAppIds[index]]
-
-            // TODO: Common: extract statusType from code
-            if (response.status === PromiseAllStatusType.FULFILLED) {
-                const statusType = isVirtualEnvironment
-                    ? BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.PASS]
-                    : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS]
-
-                const virtualEnvResponseRowType: TriggerVirtualEnvResponseRowType = isVirtualEnvironment
-                    ? {
-                          isVirtual: true,
-                          helmPackageName: response.value?.result?.helmPackageName,
-                          cdWorkflowType: stageType,
-                      }
-                    : {}
-
-                newResponseList.push({
-                    appId: appDetails.appId,
-                    appName: appDetails.appName,
-                    statusText: statusType,
-                    status: BulkResponseStatus.PASS,
-                    envId: +envId,
-                    message: '',
-                    ...virtualEnvResponseRowType,
-                })
-            } else {
-                const errorReason = response.reason
-                if (errorReason.code === API_STATUS_CODES.EXPECTATION_FAILED) {
-                    const statusType = isVirtualEnvironment
-                        ? BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.SKIP]
-                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP]
-
-                    newResponseList.push({
-                        appId: appDetails.appId,
-                        appName: appDetails.appName,
-                        statusText: statusType,
-                        status: BulkResponseStatus.SKIP,
-                        message: errorReason.errors[0].userMessage,
-                    })
-                } else if (errorReason.code === 403 || errorReason.code === 422) {
-                    const statusType = isVirtualEnvironment
-                        ? BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.UNAUTHORIZE]
-                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE]
-
-                    newResponseList.push({
-                        appId: appDetails.appId,
-                        appName: appDetails.appName,
-                        statusText: statusType,
-                        status: BulkResponseStatus.UNAUTHORIZE,
-                        message: errorReason.errors[0].userMessage,
-                    })
-                } else {
-                    const statusType = isVirtualEnvironment
-                        ? BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL]
-                        : BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL]
-
-                    newResponseList.push({
-                        appId: appDetails.appId,
-                        appName: appDetails.appName,
-                        statusText: statusType,
-                        status: BulkResponseStatus.FAIL,
-                        message: errorReason.errors[0].userMessage,
-                    })
-                }
-            }
+        const newResponseList = getResponseRowFromTriggerCDResponse({
+            apiResponse,
+            appInfoMap,
+            triggeredAppIds,
+            envId,
+            isVirtualEnvironment,
+            stageType,
         })
 
         setResponseList(newResponseList)
@@ -784,9 +491,8 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
             isDeploymentLoading ||
             isLoadingAppInfoMap ||
             Object.values(appInfoMap).some((appDetails) => {
-                const { materialResponse, deployViewState } = appDetails
-                const isMaterialsLoading = appDetails.areMaterialsLoading
-                return isMaterialsLoading || !materialResponse || !deployViewState
+                const { materialResponse, deployViewState, areMaterialsLoading } = appDetails
+                return areMaterialsLoading || !materialResponse || !deployViewState
             }),
         [appInfoMap, isDeploymentLoading, isLoadingAppInfoMap],
     )
@@ -794,10 +500,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
     const canDeployWithoutApproval = useMemo(
         () =>
             Object.values(appInfoMap).some((appDetails) => {
-                const isExceptionUser =
-                    appDetails.materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
-
-                if (!isExceptionUser) {
+                if (!getIsExceptionUser(appDetails.materialResponse)) {
                     return false
                 }
 
@@ -811,10 +514,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
     const canImageApproverDeploy = useMemo(
         () =>
             Object.values(appInfoMap).some((appDetails) => {
-                const isExceptionUser =
-                    appDetails.materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
-
-                if (!isExceptionUser) {
+                if (!getIsExceptionUser(appDetails.materialResponse)) {
                     return false
                 }
 

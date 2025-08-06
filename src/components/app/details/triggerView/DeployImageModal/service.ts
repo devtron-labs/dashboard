@@ -1,7 +1,9 @@
 import {
+    ACTION_STATE,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
     CDMaterialType,
+    DEPLOYMENT_WINDOW_TYPE,
     DeploymentNodeType,
     DeploymentWindowProfileMetaData,
     FilterStates,
@@ -9,22 +11,36 @@ import {
     GetPolicyConsequencesProps,
     handleAnalyticsEvent,
     PolicyConsequencesDTO,
+    showError,
     ToastManager,
     ToastVariantType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { CD_MATERIAL_GA_EVENT } from '../Constants'
 import { FilterConditionViews, MATERIAL_TYPE } from '../types'
-import { GetMaterialResponseListProps, LoadOlderImagesProps } from './types'
+import { GetAppGroupDeploymentWindowMapReturnType, GetMaterialResponseListProps, LoadOlderImagesProps } from './types'
 import { getIsCDTriggerBlockedThroughConsequences, getIsConsumedImageAvailable } from './utils'
 
 const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
     importComponentFromFELibrary('getPolicyConsequences', null, 'function')
 
+const getDeploymentWindowStateAppGroup = importComponentFromFELibrary(
+    'getDeploymentWindowStateAppGroup',
+    null,
+    'function',
+)
+
 const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
     'getDeploymentWindowProfileMetaData',
+    null,
+    'function',
+)
+
+const processDeploymentWindowMetadata = importComponentFromFELibrary(
+    'processDeploymentWindowMetadata',
     null,
     'function',
 )
@@ -128,4 +144,44 @@ export const loadOlderImages = async ({
     }
 
     return newMaterials
+}
+
+export const getAppGroupDeploymentWindowMap = async (
+    appEnvList: (Pick<WorkflowType, 'appId'> & { envId: number })[],
+    envId: number,
+): Promise<GetAppGroupDeploymentWindowMapReturnType> => {
+    if (!getDeploymentWindowStateAppGroup || !processDeploymentWindowMetadata) {
+        return {
+            deploymentWindowMap: {},
+            isPartialActionAllowed: false,
+        }
+    }
+
+    try {
+        const deploymentWindowResponse = await getDeploymentWindowStateAppGroup(appEnvList)
+        const deploymentWindowMap: Record<number, DeploymentWindowProfileMetaData> = {}
+        let isPartialActionAllowed = false
+
+        deploymentWindowResponse?.result?.appData?.forEach((data) => {
+            deploymentWindowMap[data.appId] = processDeploymentWindowMetadata(data.deploymentProfileList, envId)
+            if (!isPartialActionAllowed) {
+                isPartialActionAllowed =
+                    deploymentWindowMap[data.appId].type === DEPLOYMENT_WINDOW_TYPE.BLACKOUT ||
+                    !deploymentWindowMap[data.appId].isActive
+                        ? deploymentWindowMap[data.appId].userActionState === ACTION_STATE.PARTIAL
+                        : false
+            }
+        })
+
+        return {
+            deploymentWindowMap,
+            isPartialActionAllowed,
+        }
+    } catch (error) {
+        showError(error)
+        return {
+            deploymentWindowMap: {},
+            isPartialActionAllowed: false,
+        }
+    }
 }

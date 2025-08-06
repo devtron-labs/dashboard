@@ -14,30 +14,9 @@
  * limitations under the License.
  */
 
-import { ApprovalRuntimeStateType, CDMaterialType, FilterStates } from '@devtron-labs/devtron-fe-common-lib'
+import { ApprovalRuntimeStateType, CDMaterialType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { LAST_SAVED_CONFIG_OPTION, SPECIFIC_TRIGGER_CONFIG_OPTION } from './TriggerView.utils'
-import { FilterConditionViews, MATERIAL_TYPE, RegexValueType } from './types'
-
-export const getInitialState = (materialType: string, material: CDMaterialType[], searchImageTag: string) => () => ({
-    isSecurityModuleInstalled: false,
-    loadingMore: false,
-    showOlderImages: true,
-    selectedConfigToDeploy:
-        materialType === MATERIAL_TYPE.rollbackMaterialList ? SPECIFIC_TRIGGER_CONFIG_OPTION : LAST_SAVED_CONFIG_OPTION,
-    selectedMaterial: material.find((_mat) => _mat.isSelected),
-    isRollbackTrigger: materialType === MATERIAL_TYPE.rollbackMaterialList,
-    isSelectImageTrigger: materialType === MATERIAL_TYPE.inputMaterialList,
-    materialInEditModeMap: new Map<number, boolean>(),
-    showSearch: !!searchImageTag,
-    areMaterialsPassingFilters:
-        material.filter((materialDetails) => materialDetails.filterState === FilterStates.ALLOWED).length > 0,
-    searchApplied: !!searchImageTag,
-    searchText: searchImageTag ?? '',
-    showConfiguredFilters: false,
-    filterView: FilterConditionViews.ELIGIBLE,
-    resourceFilters: [],
-})
+import { RegexValueType } from './types'
 
 export const getWfrId = (selectedMaterial: CDMaterialType, material: CDMaterialType[]) =>
     selectedMaterial ? selectedMaterial.wfrId : material?.find((_mat) => _mat.isSelected)?.wfrId

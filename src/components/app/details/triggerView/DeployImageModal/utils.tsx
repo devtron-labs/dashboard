@@ -1,7 +1,10 @@
 import {
     ACTION_STATE,
+    API_STATUS_CODES,
     ApprovalRuntimeStateType,
     ArtifactInfoProps,
+    BULK_DEPLOY_ACTIVE_IMAGE_TAG,
+    BULK_DEPLOY_LATEST_IMAGE_TAG,
     ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialType,
@@ -12,19 +15,35 @@ import {
     ExcludedImageNode,
     FilterStates,
     getIsRequestAborted,
+    getStageTitle,
     Icon,
     PipelineStageBlockInfo,
+    PromiseAllStatusType,
     SequentialCDCardTitleProps,
     ServerErrors,
     showError,
     STAGE_TYPE,
     ToastManager,
     ToastVariantType,
+    TriggerBlockType,
+    triggerCDNode,
     UserApprovalMetadataType,
     useSearchString,
+    WorkflowNodeType,
+    WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
+import {
+    BulkCDDetailDerivedFromNode,
+    ResponseRowType,
+    TriggerVirtualEnvResponseRowType,
+} from '@Components/ApplicationGroup/AppGroup.types'
+import {
+    BULK_CD_RESPONSE_STATUS_TEXT,
+    BULK_VIRTUAL_RESPONSE_STATUS,
+    BulkResponseStatus,
+} from '@Components/ApplicationGroup/Constants'
+import { getCDPipelineURL, importComponentFromFELibrary } from '@Components/common'
 import { TOAST_BUTTON_TEXT_VIEW_DETAILS } from '@Config/constantMessaging'
 
 import {
@@ -33,17 +52,23 @@ import {
     SPECIFIC_TRIGGER_CONFIG_OPTION,
 } from '../TriggerView.utils'
 import { FilterConditionViews, MATERIAL_TYPE } from '../types'
+import { INITIAL_DEPLOY_VIEW_STATE } from './constants'
 import {
+    DeployImageContentProps,
     DeployImageHeaderProps,
     DeployImageModalProps,
+    GetBulkCDDetailsMapFromResponseType,
     GetConsumedAndAvailableMaterialListProps,
+    GetResponseRowFromTriggerCDResponseProps,
     GetSequentialCDCardTitlePropsType,
     GetTriggerArtifactInfoPropsType,
+    GetTriggerCDPromiseMethodsType,
     HelmManifestErrorHandlerProps,
 } from './types'
 
 const ApprovalInfoTippy = importComponentFromFELibrary('ApprovalInfoTippy')
 const ImagePromotionInfoChip = importComponentFromFELibrary('ImagePromotionInfoChip', null, 'function')
+const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
 
 export const getIsImageApprover = (userApprovalMetadata?: UserApprovalMetadataType): boolean =>
     userApprovalMetadata?.hasCurrentUserApproved
@@ -357,3 +382,306 @@ export const getDeployButtonStyle = (
 
 export const getIsConsumedImageAvailable = (materials: CDMaterialType[]) =>
     materials.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
+
+const getTagWarningRelatedToMaterial = (updatedMaterials: CDMaterialType[], selectedImageTagName: string): string => {
+    const selectedImage = updatedMaterials.find((material) => material.isSelected)
+
+    const selectedTagParsedName =
+        selectedImageTagName.length > 15 ? `${selectedImageTagName.slice(0, 15)}...` : selectedImageTagName
+
+    if (!selectedImage) {
+        return `Tag ${selectedTagParsedName} is not present`
+    }
+
+    if (selectedImage.vulnerable) {
+        return `Tag ${selectedTagParsedName} has vulnerabilities`
+    }
+
+    if (selectedImage.filterState !== FilterStates.ALLOWED) {
+        return `Tag ${selectedTagParsedName} is not eligible for deployment`
+    }
+
+    return ''
+}
+
+// If tag is not present, and image is selected we will show mixed tag
+export const getUpdatedMaterialsForTagSelection = (tagName: string, materials: CDMaterialType[]) => {
+    const sourceMaterials = structuredClone(materials)
+
+    const updatedMaterials = sourceMaterials.map((material, materialIndex) => {
+        if (tagName === BULK_DEPLOY_LATEST_IMAGE_TAG.value && materialIndex === 0) {
+            return {
+                ...material,
+                isSelected: true,
+            }
+        }
+
+        if (tagName === BULK_DEPLOY_ACTIVE_IMAGE_TAG.value && material.deployed && material.latest) {
+            return {
+                ...material,
+                isSelected: true,
+            }
+        }
+
+        const isTagPresent = material.imageReleaseTags?.some((tag) => tag.tagName === tagName)
+
+        if (isTagPresent) {
+            return {
+                ...material,
+                isSelected: true,
+            }
+        }
+
+        return {
+            ...material,
+            isSelected: false,
+        }
+    })
+
+    const selectedImage = updatedMaterials.find((material) => material.isSelected)
+
+    const tagsWarning = getTagWarningRelatedToMaterial(updatedMaterials, tagName)
+
+    if (selectedImage && tagsWarning) {
+        selectedImage.isSelected = false
+    }
+
+    return {
+        tagsWarning,
+        updatedMaterials,
+    }
+}
+
+export const getBaseBulkCDDetailsMap = (validWorkflows: WorkflowType[], stageType: DeploymentNodeType, envId: number) =>
+    validWorkflows.reduce<Record<number, BulkCDDetailDerivedFromNode>>((acc, workflow) => {
+        const selectedCINode = workflow.nodes.find(
+            (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
+        )
+        const doesWorkflowContainsWebhook = selectedCINode?.type === WorkflowNodeType.WEBHOOK
+
+        // Will not be undefined since we are filtering workflows with CD node
+        const cdNode = workflow.nodes.find(
+            (node) => node.type === DeploymentNodeType.CD && +node.environmentId === +envId,
+        )
+
+        // Could be undefined
+        const currentStageNode = workflow.nodes.find(
+            (node) => node.type === stageType && +node.environmentId === +envId,
+        )
+
+        const isTriggerBlockedDueToPlugin = currentStageNode?.isTriggerBlocked && currentStageNode?.showPluginWarning
+
+        const isTriggerBlockedDueToMandatoryTags =
+            currentStageNode?.isTriggerBlocked &&
+            currentStageNode?.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG
+
+        const stageText = getStageTitle(stageType)
+
+        const blockedStageWarning =
+            isTriggerBlockedDueToPlugin || isTriggerBlockedDueToMandatoryTags ? `${stageText} is blocked` : ''
+
+        const noStageWarning = !currentStageNode ? `No ${stageText} stage` : ''
+
+        acc[workflow.appId] = {
+            appId: workflow.appId,
+            appName: workflow.name,
+            pipelineId: +cdNode.id,
+            parentEnvironmentName: currentStageNode?.parentEnvironmentName,
+            isTriggerBlockedDueToPlugin,
+            configurePluginURL: getCDPipelineURL(
+                String(workflow.appId),
+                workflow.id,
+                doesWorkflowContainsWebhook ? '0' : selectedCINode.id,
+                doesWorkflowContainsWebhook,
+                cdNode.id,
+                true,
+            ),
+            triggerType: currentStageNode?.triggerType,
+            warningMessage: noStageWarning || blockedStageWarning || '',
+            triggerBlockedInfo: currentStageNode?.triggerBlockedInfo,
+            stageNotAvailable: !currentStageNode,
+            showPluginWarning: currentStageNode?.showPluginWarning,
+            consequence: currentStageNode?.pluginBlockState,
+        }
+
+        return acc
+    }, {})
+
+export const getBulkCDDetailsMapFromResponse: GetBulkCDDetailsMapFromResponseType = ({
+    searchText,
+    validWorkflows,
+    cdMaterialResponseList,
+    selectedTagName,
+    baseBulkCDDetailMap,
+    deploymentWindowMap,
+}) => {
+    const bulkCDDetailsMap: DeployImageContentProps['appInfoMap'] = {}
+
+    cdMaterialResponseList.forEach((materialResponse, index) => {
+        const { appId } = validWorkflows[index]
+
+        if (materialResponse.status === PromiseAllStatusType.FULFILLED) {
+            const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
+                selectedTagName,
+                materialResponse.value.materials,
+            )
+
+            const parsedTagsWarning = searchText ? '' : tagsWarning
+
+            const updatedWarningMessage =
+                baseBulkCDDetailMap[appId].warningMessage ||
+                deploymentWindowMap[appId]?.warningMessage ||
+                parsedTagsWarning
+
+            // In case of search and reload even though method gives whole state, will only update deploymentWindowMetadata, warningMessage and materialResponse
+            bulkCDDetailsMap[appId] = {
+                ...baseBulkCDDetailMap[appId],
+                materialResponse: {
+                    ...materialResponse.value,
+                    materials: searchText ? materialResponse.value.materials : updatedMaterials,
+                },
+                deploymentWindowMetadata: deploymentWindowMap[appId],
+                areMaterialsLoading: false,
+                deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
+                warningMessage: updatedWarningMessage,
+                materialError: null,
+            }
+        } else {
+            bulkCDDetailsMap[appId] = {
+                ...baseBulkCDDetailMap[appId],
+                materialResponse: {} as CDMaterialResponseType,
+                deploymentWindowMetadata: {} as DeploymentWindowProfileMetaData,
+                deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
+                materialError: materialResponse.reason,
+                areMaterialsLoading: false,
+            }
+        }
+    })
+
+    return bulkCDDetailsMap
+}
+
+export const getTriggerCDPromiseMethods: GetTriggerCDPromiseMethodsType = ({
+    appInfoMap,
+    appsToRetry,
+    skipHibernatedApps,
+    pipelineIdVsStrategyMap,
+    stageType,
+    bulkDeploymentStrategy,
+}) =>
+    Object.values(appInfoMap).reduce<ReturnType<GetTriggerCDPromiseMethodsType>>(
+        (acc, appDetails) => {
+            if (appsToRetry && !appsToRetry[appDetails.appId.toString()]) {
+                return acc
+            }
+
+            const selectedImage = appDetails.materialResponse?.materials.find((material) => material.isSelected)
+
+            if (!selectedImage) {
+                return acc
+            }
+
+            const pipelineId = +appDetails.pipelineId
+            const strategy = pipelineIdVsStrategyMap[pipelineId]
+
+            if (bulkDeploymentStrategy === 'DEFAULT' || !!strategy) {
+                acc.cdTriggerPromiseFunctions.push(() =>
+                    triggerCDNode({
+                        pipelineId,
+                        ciArtifactId: +selectedImage.id,
+                        appId: +appDetails.appId,
+                        stageType,
+                        ...(getRuntimeParamsPayload
+                            ? {
+                                  runtimeParamsPayload: getRuntimeParamsPayload(
+                                      appDetails.materialResponse.runtimeParams ?? [],
+                                  ),
+                              }
+                            : {}),
+                        skipIfHibernated: skipHibernatedApps,
+                        // strategy DEFAULT means custom chart
+                        ...(strategy && strategy !== 'DEFAULT' ? { strategy } : {}),
+                    }),
+                )
+
+                acc.triggeredAppIds.push(+appDetails.appId)
+            }
+
+            return acc
+        },
+        {
+            cdTriggerPromiseFunctions: [],
+            triggeredAppIds: [],
+        },
+    )
+
+const getStatusTypeFromTriggerCDResponse = (
+    response: GetResponseRowFromTriggerCDResponseProps['apiResponse'][number],
+): BulkResponseStatus => {
+    if (response.status === PromiseAllStatusType.FULFILLED) {
+        return BulkResponseStatus.PASS
+    }
+
+    const errorReason = response.reason
+    if (errorReason.code === API_STATUS_CODES.EXPECTATION_FAILED) {
+        return BulkResponseStatus.SKIP
+    }
+
+    if (
+        errorReason.code === API_STATUS_CODES.PERMISSION_DENIED ||
+        errorReason.code === API_STATUS_CODES.UNPROCESSABLE_ENTITY
+    ) {
+        return BulkResponseStatus.UNAUTHORIZE
+    }
+
+    return BulkResponseStatus.FAIL
+}
+
+export const getResponseRowFromTriggerCDResponse = ({
+    apiResponse,
+    appInfoMap,
+    triggeredAppIds,
+    envId,
+    isVirtualEnvironment,
+    stageType,
+}: GetResponseRowFromTriggerCDResponseProps): ResponseRowType[] => {
+    const newResponseList: ResponseRowType[] = []
+    apiResponse.forEach((response, index) => {
+        const appDetails = appInfoMap[triggeredAppIds[index]]
+        const status = getStatusTypeFromTriggerCDResponse(response)
+        const statusType = isVirtualEnvironment
+            ? BULK_VIRTUAL_RESPONSE_STATUS[status]
+            : BULK_CD_RESPONSE_STATUS_TEXT[status]
+
+        const baseMessage: Pick<ResponseRowType, 'appId' | 'appName' | 'statusText' | 'status' | 'envId'> = {
+            appId: appDetails.appId,
+            appName: appDetails.appName,
+            statusText: statusType,
+            status,
+            envId: +envId,
+        }
+
+        if (response.status === PromiseAllStatusType.FULFILLED) {
+            const virtualEnvResponseRowType: TriggerVirtualEnvResponseRowType = isVirtualEnvironment
+                ? {
+                      isVirtual: true,
+                      helmPackageName: response.value?.result?.helmPackageName,
+                      cdWorkflowType: stageType,
+                  }
+                : {}
+
+            newResponseList.push({
+                message: '',
+                ...baseMessage,
+                ...virtualEnvResponseRowType,
+            })
+        } else {
+            newResponseList.push({
+                ...baseMessage,
+                message: response.reason?.errors?.[0]?.userMessage,
+            })
+        }
+    })
+
+    return newResponseList
+}
