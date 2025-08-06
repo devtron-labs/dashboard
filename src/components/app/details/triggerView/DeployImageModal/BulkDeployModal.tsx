@@ -91,9 +91,12 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
     const isSecurityModuleInstalled = moduleInfoRes && moduleInfoRes?.result?.status === ModuleStatus.INSTALLED
     const isCDStage = stageType === DeploymentNodeType.CD
 
-    useEffect(() => () => {
-        initialDataAbortControllerRef.current.abort()
-    })
+    useEffect(
+        () => () => {
+            initialDataAbortControllerRef.current.abort()
+        },
+        [],
+    )
 
     const handleNavigateToListView = () => {
         setShowStrategyFeasibilityPage(false)
