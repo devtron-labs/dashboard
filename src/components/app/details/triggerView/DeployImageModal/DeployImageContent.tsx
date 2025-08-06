@@ -3,6 +3,8 @@ import { useHistory } from 'react-router-dom'
 
 import {
     API_STATUS_CODES,
+    BULK_DEPLOY_ACTIVE_IMAGE_TAG,
+    BULK_DEPLOY_LATEST_IMAGE_TAG,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -48,7 +50,6 @@ import { getIsMaterialApproved } from '../cdMaterials.utils'
 import { TriggerViewContext } from '../config'
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
 import { FilterConditionViews, HandleRuntimeParamChange, TriggerViewContextType } from '../types'
-import { BULK_DEPLOY_ACTIVE_IMAGE_TAG, BULK_DEPLOY_LATEST_IMAGE_TAG } from './constants'
 import ImageSelectionCTA from './ImageSelectionCTA'
 import MaterialListEmptyState from './MaterialListEmptyState'
 import MaterialListSkeleton from './MaterialListSkeleton'
@@ -58,6 +59,8 @@ import {
     getApprovedImageClass,
     getConsumedAndAvailableMaterialList,
     getFilterActionBarTabs,
+    getIsConsumedImageAvailable,
+    getIsExceptionUser,
     getIsImageApprover,
     getSequentialCDCardTitleProps,
     getTriggerArtifactInfoProps,
@@ -113,7 +116,8 @@ const DeployImageContent = ({
     const { isSuperAdmin } = useMainContext()
     const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
 
-    const isExceptionUser = materialResponse?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
+    // Assumption: isExceptionUser is a global trait
+    const isExceptionUser = getIsExceptionUser(materialResponse)
     const requestedUserId = materialResponse?.requestedUserId
     const isApprovalConfigured = getIsApprovalPolicyConfigured(
         materialResponse?.deploymentApprovalInfo?.approvalConfigData,
@@ -122,10 +126,9 @@ const DeployImageContent = ({
     const canApproverDeploy = materialResponse?.canApproverDeploy ?? false
     const resourceFilters = materialResponse?.resourceFilters ?? []
     const hideImageTaggingHardDelete = materialResponse?.hideImageTaggingHardDelete ?? false
-    const isConsumedImageAvailable =
-        materials.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
-    const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     const runtimeParamsList = materialResponse?.runtimeParams || []
+    const isConsumedImageAvailable = getIsConsumedImageAvailable(materials)
+    const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     const isCDNode = stageType === DeploymentNodeType.CD
 
     const tagOptions: SelectPickerOptionType<string>[] = useMemo(() => {
@@ -143,13 +146,33 @@ const DeployImageContent = ({
 
     const selectedTagOption = useMemo(() => {
         const selectedTag = tagOptions.find((option) => option.value === selectedTagName)
-        return selectedTag || { label: 'Multiple Tags', value: '' }
-    }, [selectedTagName, tagOptions])
+        const areMultipleTagsPresent = Object.values(appInfoMap).some((appDetails) => {
+            const selectedImage = appDetails.materialResponse?.materials?.find(
+                (material: CDMaterialType) => material.isSelected,
+            )
 
-    const showRuntimeParams = !!(isBulkTrigger && RuntimeParamTabs && isPreOrPostCD)
+            if (!selectedImage) {
+                return false
+            }
+
+            return !selectedImage.imageReleaseTags?.some((tagDetails) => tagDetails.tagName === selectedTagName)
+        })
+
+        if (areMultipleTagsPresent || !selectedTag) {
+            return { label: 'Multiple Tags', value: '' }
+        }
+
+        return selectedTag
+    }, [selectedTagName, tagOptions, appInfoMap])
+
+    const sortedAppValues = useMemo(
+        () => Object.values(appInfoMap).sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName)),
+        [appInfoMap],
+    )
 
     const getHandleAppChange = (newAppId: number) => (e: SyntheticEvent) => {
         stopPropagation(e)
+
         if ('key' in e && e.key !== 'Enter' && e.key !== ' ') {
             return
         }
@@ -185,11 +208,6 @@ const DeployImageContent = ({
     const titleText = isApprovalConfigured && !isExceptionUser ? 'Approved images' : selectImageTitle
     const showActionBar = FilterActionBar && !isSearchApplied && !!resourceFilters?.length && !showConfiguredFilters
     const areNoMoreImagesPresent = materials.length >= materialResponse?.totalCount
-
-    const sortedAppValues = useMemo(
-        () => Object.values(appInfoMap || {}).sort((a, b) => stringComparatorBySortOrder(a.appName, b.appName)),
-        [appInfoMap],
-    )
 
     const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (e) => {
         setDeployViewState((prevState) => ({
@@ -258,15 +276,15 @@ const DeployImageContent = ({
     }
 
     const handleImageSelection: ImageSelectionCTAProps['handleImageSelection'] = (materialIndex) => {
-        const updatedMaterialList = materialList.map((material, index) => ({
-            ...material,
-            isSelected: index === materialIndex,
-        }))
-
         setMaterialResponse((prevData) => {
             const updatedMaterialResponse = structuredClone(prevData)
-            updatedMaterialResponse.materials = updatedMaterialList
-            return updatedMaterialResponse
+            return {
+                ...updatedMaterialResponse,
+                materials: updatedMaterialResponse.materials.map((material, index) => ({
+                    ...material,
+                    isSelected: index === materialIndex,
+                })),
+            }
         })
     }
 
@@ -299,7 +317,7 @@ const DeployImageContent = ({
                 placeholder: 'Search by image tag',
                 autoFocus: true,
             }}
-            dataTestId="cd-trigger-search-by-commit-hash"
+            dataTestId="cd-trigger-search-by-image-tag"
         />
     )
 
@@ -308,21 +326,21 @@ const DeployImageContent = ({
         imageReleaseTags,
         imageComment,
     ) => {
-        const updatedMaterialList = materialList.map((material) => {
-            if (+material.id === +matId) {
-                return {
-                    ...material,
-                    imageReleaseTags,
-                    imageComment,
-                }
-            }
-            return material
-        })
-
         setMaterialResponse((prevData) => {
             const updatedMaterialResponse = structuredClone(prevData)
-            updatedMaterialResponse.materials = updatedMaterialList
-            return updatedMaterialResponse
+            return {
+                ...updatedMaterialResponse,
+                materials: updatedMaterialResponse.materials.map((material) => {
+                    if (+material.id === +matId) {
+                        return {
+                            ...material,
+                            imageReleaseTags,
+                            imageComment,
+                        }
+                    }
+                    return material
+                }),
+            }
         })
     }
 
@@ -455,7 +473,7 @@ const DeployImageContent = ({
             return (
                 <div className="flexbox-col h-100 dc__overflow-auto bg__primary">
                     <div className="dc__position-sticky dc__top-0 pt-12 bg__primary dc__zi-1">
-                        {showRuntimeParams && (
+                        {!!(RuntimeParamTabs && isPreOrPostCD) && (
                             <div className="px-16 pb-8">
                                 <RuntimeParamTabs
                                     tabs={CD_MATERIAL_SIDEBAR_TABS}
@@ -504,6 +522,7 @@ const DeployImageContent = ({
                             role="button"
                             tabIndex={0}
                             onClick={getHandleAppChange(appDetails.appId)}
+                            onKeyDown={getHandleAppChange(appDetails.appId)}
                         >
                             <Tooltip content={appDetails.appName}>
                                 <span className="lh-20 cn-9 fw-6 fs-13 dc__truncate">{appDetails.appName}</span>

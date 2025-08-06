@@ -18,7 +18,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { CD_MATERIAL_GA_EVENT } from '../Constants'
 import { FilterConditionViews, MATERIAL_TYPE } from '../types'
 import { GetMaterialResponseListProps, LoadOlderImagesProps } from './types'
-import { getIsCDTriggerBlockedThroughConsequences } from './utils'
+import { getIsCDTriggerBlockedThroughConsequences, getIsConsumedImageAvailable } from './utils'
 
 const getPolicyConsequences: ({ appId, envId }: GetPolicyConsequencesProps) => Promise<PolicyConsequencesDTO> =
     importComponentFromFELibrary('getPolicyConsequences', null, 'function')
@@ -76,8 +76,7 @@ export const loadOlderImages = async ({
 }: LoadOlderImagesProps) => {
     handleAnalyticsEvent(CD_MATERIAL_GA_EVENT.FetchMoreImagesClicked)
 
-    const isConsumedImageAvailable =
-        materialList.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
+    const isConsumedImageAvailable = getIsConsumedImageAvailable(materialList)
 
     const newMaterialsResponse = await genericCDMaterialsService(
         isRollbackTrigger ? CDMaterialServiceEnum.ROLLBACK : CDMaterialServiceEnum.CD_MATERIALS,

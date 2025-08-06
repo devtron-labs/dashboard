@@ -354,3 +354,6 @@ export const getDeployButtonStyle = (
     }
     return ButtonStyleType.default
 }
+
+export const getIsConsumedImageAvailable = (materials: CDMaterialType[]) =>
+    materials.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false

@@ -5,6 +5,8 @@ import {
     AnimatedDeployButton,
     API_STATUS_CODES,
     ApiQueuingWithBatch,
+    BULK_DEPLOY_ACTIVE_IMAGE_TAG,
+    BULK_DEPLOY_LATEST_IMAGE_TAG,
     ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
@@ -64,7 +66,6 @@ import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackMa
 
 import { getIsMaterialApproved } from '../cdMaterials.utils'
 import { FilterConditionViews } from '../types'
-import { BULK_DEPLOY_ACTIVE_IMAGE_TAG, BULK_DEPLOY_LATEST_IMAGE_TAG } from './constants'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
 import { loadOlderImages } from './service'
