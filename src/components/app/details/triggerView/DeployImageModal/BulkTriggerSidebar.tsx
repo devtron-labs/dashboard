@@ -66,6 +66,14 @@ const BulkTriggerSidebar = ({
                 return false
             }
 
+            if (selectedTagName === BULK_DEPLOY_ACTIVE_IMAGE_TAG.value) {
+                return !(selectedImage.deployed && selectedImage.latest)
+            }
+
+            if (selectedTagName === BULK_DEPLOY_LATEST_IMAGE_TAG.value) {
+                return selectedImage.index !== 0
+            }
+
             return !selectedImage.imageReleaseTags?.some((tagDetails) => tagDetails.tagName === selectedTagName)
         })
 

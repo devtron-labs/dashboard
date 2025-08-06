@@ -690,7 +690,11 @@ const DeployImageContent = ({
                 className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD || isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1'}`}
             >
                 {renderSidebar()}
-                <div className="flexbox-col py-16 px-20 dc__overflow-auto flex-grow-1">{renderContent()}</div>
+                <div
+                    className={`flexbox-col dc__overflow-auto flex-grow-1 ${isBulkTrigger && showFiltersView ? '' : 'py-16 px-20 '}`}
+                >
+                    {renderContent()}
+                </div>
             </div>
         </>
     )
