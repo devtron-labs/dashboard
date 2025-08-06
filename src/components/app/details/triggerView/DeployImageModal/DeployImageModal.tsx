@@ -6,7 +6,6 @@ import {
     AnimatedDeployButton,
     API_STATUS_CODES,
     ArtifactInfo,
-    CDMaterialSidebarType,
     ConditionalWrap,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
@@ -51,7 +50,8 @@ import { CDButtonLabelMap } from '../config'
 import { TRIGGER_VIEW_GA_EVENTS } from '../Constants'
 import { PipelineConfigDiff, usePipelineDeploymentConfig } from '../PipelineConfigDiff'
 import { PipelineConfigDiffStatusTile } from '../PipelineConfigDiff/PipelineConfigDiffStatusTile'
-import { FilterConditionViews, MATERIAL_TYPE } from '../types'
+import { MATERIAL_TYPE } from '../types'
+import { INITIAL_DEPLOY_VIEW_STATE } from './constants'
 import DeployImageContent from './DeployImageContent'
 import DeployImageHeader from './DeployImageHeader'
 import MaterialListSkeleton from './MaterialListSkeleton'
@@ -148,21 +148,9 @@ const DeployImageModal = ({
     const [deploymentStrategy, setDeploymentStrategy] = useState<DeploymentStrategyType | null>(null)
     const [showPluginWarningOverlay, setShowPluginWarningOverlay] = useState<boolean>(false)
     const [showDeploymentWindowConfirmation, setShowDeploymentWindowConfirmation] = useState(false)
-    const [deployViewState, setDeployViewState] = useState<Omit<DeployViewStateType, 'appliedSearchText'>>({
-        searchText: searchImageTag,
-        filterView: FilterConditionViews.ALL,
-        showConfiguredFilters: false,
-        currentSidebarTab: CDMaterialSidebarType.IMAGE,
-        runtimeParamsErrorState: {
-            isValid: true,
-            cellError: {},
-        },
-        materialInEditModeMap: new Map(),
-        showAppliedFilters: false,
-        appliedFilterList: [],
-        isLoadingOlderImages: false,
-        showSearchBar: false,
-    })
+    const [deployViewState, setDeployViewState] = useState<Omit<DeployViewStateType, 'appliedSearchText'>>(
+        structuredClone(INITIAL_DEPLOY_VIEW_STATE),
+    )
 
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     const materialResponse = initialDataResponse?.[0] || null

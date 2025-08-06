@@ -25,7 +25,7 @@ const ImageSelectionCTA = ({
     pipelineId,
     canApproverDeploy,
     isExceptionUser,
-    handleImageSelection,
+    handleImageSelection: handleImageSelectionProp,
 }: ImageSelectionCTAProps) => {
     const isApprovalRequester =
         material.userApprovalMetadata?.requestedUserData &&
@@ -40,16 +40,14 @@ const ImageSelectionCTA = ({
         isMaterialApproved &&
         material.userApprovalMetadata?.canCurrentUserApprove
 
+    const handleImageSelection = () => {
+        handleImageSelectionProp(material.index)
+    }
+
     const renderMaterialCTA = () => {
         if (material.filterState !== FilterStates.ALLOWED) {
             return (
-                <Tooltip
-                    alwaysShowTippyOnHover
-                    className="default-tt w-200"
-                    arrow={false}
-                    placement="top"
-                    content={EXCLUDED_IMAGE_TOOLTIP}
-                >
+                <Tooltip alwaysShowTippyOnHover placement="top" content={EXCLUDED_IMAGE_TOOLTIP}>
                     <i className="cr-5 fs-13 fw-4 lh-24 m-0 cursor-not-allowed">Excluded</i>
                 </Tooltip>
             )
@@ -92,7 +90,7 @@ const ImageSelectionCTA = ({
         return (
             <Button
                 dataTestId={`cd-artifact-select-${material.index}`}
-                onClick={() => handleImageSelection(material.index)}
+                onClick={handleImageSelection}
                 text="SELECT"
                 size={ComponentSizeType.medium}
                 variant={ButtonVariantType.text}
