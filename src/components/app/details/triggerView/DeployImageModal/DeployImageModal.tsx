@@ -130,6 +130,7 @@ const DeployImageModal = ({
                     initialSearch: searchImageTag,
                 }),
             [searchImageTag],
+            !isTriggerBlockedDueToPlugin,
         )
 
     const [, moduleInfoRes] = useAsync(() => getModuleInfo(ModuleNameMap.SECURITY))

@@ -515,6 +515,32 @@ const DeployImageContent = ({
             )
         })
 
+    const renderMaterialListEmptyState = () => (
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100">
+            <MaterialListEmptyState
+                isRollbackTrigger={isRollbackTrigger}
+                stageType={stageType}
+                appId={appId}
+                isSearchApplied={isSearchApplied}
+                policyConsequences={policyConsequences}
+                isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
+                configurePluginURL={configurePluginURL}
+                isConsumedImagePresent={consumedImage.length > 0}
+                envName={envName}
+                materialResponse={materialResponse}
+                isExceptionUser={isExceptionUser}
+                isLoadingMore={isLoadingOlderImages}
+                viewAllImages={viewAllImages}
+                triggerType={triggerType}
+                loadOlderImages={loadOlderImages}
+                onSearchApply={onSearchApply}
+                eligibleImagesCount={eligibleImagesCount}
+                handleEnableFiltersView={handleShowConfiguredFilters}
+                handleAllImagesView={handleAllImagesView}
+            />
+        </div>
+    )
+
     const renderContent = () => {
         if (isBulkTrigger) {
             if (showFiltersView) {
@@ -596,33 +622,9 @@ const DeployImageContent = ({
                         </div>
                     </div>
 
-                    {materialList.length === 0 ? (
-                        <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100">
-                            <MaterialListEmptyState
-                                isRollbackTrigger={isRollbackTrigger}
-                                stageType={stageType}
-                                appId={appId}
-                                isSearchApplied={isSearchApplied}
-                                policyConsequences={policyConsequences}
-                                isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
-                                configurePluginURL={configurePluginURL}
-                                isConsumedImagePresent={consumedImage.length > 0}
-                                envName={envName}
-                                materialResponse={materialResponse}
-                                isExceptionUser={isExceptionUser}
-                                isLoadingMore={isLoadingOlderImages}
-                                viewAllImages={viewAllImages}
-                                triggerType={triggerType}
-                                loadOlderImages={loadOlderImages}
-                                onSearchApply={onSearchApply}
-                                eligibleImagesCount={eligibleImagesCount}
-                                handleEnableFiltersView={handleShowConfiguredFilters}
-                                handleAllImagesView={handleAllImagesView}
-                            />
-                        </div>
-                    ) : (
-                        renderMaterialList(materialList, false)
-                    )}
+                    {materialList.length === 0
+                        ? renderMaterialListEmptyState()
+                        : renderMaterialList(materialList, false)}
 
                     {!areNoMoreImagesPresent && !!materialList?.length && (
                         <button
@@ -654,6 +656,10 @@ const DeployImageContent = ({
 
     if (showFiltersView && !isBulkTrigger) {
         return renderConfiguredFilters()
+    }
+
+    if (materials.length === 0 && !isBulkTrigger) {
+        return renderMaterialListEmptyState()
     }
 
     return (
