@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonVariantType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.svg'
 import NoEligibleCommit from '../../../../assets/gif/ic-no-eligible-commit.svg'
@@ -23,7 +23,6 @@ import { ReactComponent as NextIcon } from '../../../../assets/icons/ic-arrow-ri
 import { EmptyStateCIMaterialProps } from './types'
 import { CI_MATERIAL_EMPTY_STATE_MESSAGING } from './Constants'
 import { DOCKER_FILE_ERROR_MESSAGE, SOURCE_NOT_CONFIGURED_MESSAGE } from '../../../../config'
-import { ReceivedWebhookRedirectButton } from '@Components/common/helpers/GitInfoMaterialCard/ReceivedWebhookRedirectButton'
 
 export default function EmptyStateCIMaterial({
     isRepoError,
@@ -43,6 +42,7 @@ export default function EmptyStateCIMaterial({
     handleGoToWorkFlowEditor,
     showAllCommits,
     toggleExclude,
+    handleDisplayWebhookModal,
 }: EmptyStateCIMaterialProps) {
     const getData = () => {
         if (isRepoError) {
@@ -107,7 +107,7 @@ export default function EmptyStateCIMaterial({
                 link: null,
             }
         }
-        if (!anyCommit && !showAllCommits) {
+        if (!anyCommit && !showAllCommits && !window._env_.HIDE_EXCLUDE_INCLUDE_GIT_COMMITS) {
             return {
                 img: NoEligibleCommit,
                 title: <h1 className="dc__empty-title">{CI_MATERIAL_EMPTY_STATE_MESSAGING.NoCommitEligibleCommit}</h1>,
@@ -146,13 +146,26 @@ export default function EmptyStateCIMaterial({
         }
     }
 
-    const handleMaterialLoadingButton = () => {
+    const handleMaterialLoadingButton = () => (
+        <Button
+            dataTestId="webhook-modal-cta"
+            variant={ButtonVariantType.text}
+            text={CI_MATERIAL_EMPTY_STATE_MESSAGING.ReceivedWebhookRedirectText}
+            onClick={handleDisplayWebhookModal}
+        />
+    )
+
+    const { title, subtitle, img, link, cta } = getData()
+
+    const renderCTA = (): JSX.Element => {
+        if (isWebHook) {
+            return handleMaterialLoadingButton()
+        }
+
         return (
-            <ReceivedWebhookRedirectButton />
+            cta as JSX.Element
         )
     }
-
-    const { title, subtitle, img, cta, link } = getData()
     return isMaterialLoading ? (
         <GenericEmptyState image={EmptyStateImage} title={CI_MATERIAL_EMPTY_STATE_MESSAGING.Loading} />
     ) : (
@@ -165,8 +178,8 @@ export default function EmptyStateCIMaterial({
                     {link}
                 </>
             }
-            isButtonAvailable={isWebHook}
-            renderButton={handleMaterialLoadingButton}
+            isButtonAvailable={isWebHook || !!cta}
+            renderButton={renderCTA}
         />
     )
 }
