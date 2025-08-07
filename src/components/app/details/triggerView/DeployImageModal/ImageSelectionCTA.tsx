@@ -112,7 +112,7 @@ const ImageSelectionCTA = ({
 
                     {material.filterState !== FilterStates.ALLOWED && (
                         <div className="flex dc__gap-12 mr-12">
-                            <div className="h-12 dc__border-left" />
+                            <div className="dc__divider h12" />
                         </div>
                     )}
                 </>

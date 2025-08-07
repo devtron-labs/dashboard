@@ -29,7 +29,6 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
 import { ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BULK_CD_DEPLOYMENT_STATUS,
@@ -569,7 +568,7 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
 
             return (
                 <GenericEmptyState
-                    SvgImage={MechanicalOperation}
+                    imgName="img-mechanical-operation"
                     title={message.title}
                     subTitle={message.subTitle}
                     contentClassName="text-center"
