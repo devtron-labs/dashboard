@@ -44,11 +44,9 @@ import {
 import { getTriggerWorkflows } from './workflow.service'
 import { Workflow } from './workflow/Workflow'
 import { MATERIAL_TYPE, TriggerViewProps, TriggerViewState } from './types'
-import CDMaterial from './cdMaterial'
 import { URLS, ViewType } from '../../../../config'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { getHostURLConfiguration } from '../../../../services/service'
-import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { TriggerViewContext } from './config'
 import { TRIGGER_VIEW_PARAMS, TRIGGER_VIEW_GA_EVENTS } from './Constants'
 import { APP_DETAILS } from '../../../../config/constantMessaging'
@@ -58,6 +56,7 @@ import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 import { getSelectedNodeFromWorkflows, shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 import { BuildImageModal } from './BuildImageModal'
+import { DeployImageModal } from './DeployImageModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const WorkflowActionRouter = importComponentFromFELibrary('WorkflowActionRouter', null, 'function')
@@ -283,43 +282,6 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
         this.setState({ selectedWebhookNodeId: null })
     }
 
-    renderCDMaterialContent = (cdNode: CommonNodeAttr, materialType: string) => {
-        const selectedWorkflow = this.state.workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
-        const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
-        const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
-        const configurePluginURL = getCDPipelineURL(
-            this.props.match.params.appId,
-            selectedWorkflow.id,
-            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
-            doesWorkflowContainsWebhook,
-            cdNode.id,
-            true,
-        )
-
-        return (
-            <CDMaterial
-                materialType={materialType}
-                appId={Number(this.props.match.params.appId)}
-                pipelineId={Number(cdNode.id)}
-                stageType={cdNode.type as DeploymentNodeType}
-                envName={cdNode?.environmentName}
-                envId={cdNode?.environmentId}
-                closeCDModal={this.closeCDModal}
-                triggerType={cdNode.triggerType}
-                isVirtualEnvironment={cdNode.isVirtualEnvironment}
-                parentEnvironmentName={cdNode.parentEnvironmentName}
-                isLoading={this.state.isLoading}
-                ciPipelineId={cdNode.connectingCiPipelineId}
-                isSaveLoading={this.state.isSaveLoading}
-                deploymentAppType={cdNode?.deploymentAppType}
-                showPluginWarningBeforeTrigger={cdNode?.showPluginWarning}
-                consequence={cdNode?.pluginBlockState}
-                configurePluginURL={configurePluginURL}
-                isTriggerBlockedDueToPlugin={cdNode?.showPluginWarning && cdNode?.isTriggerBlocked}
-            />
-        )
-    }
-
     renderCDMaterial() {
         if (
             this.props.location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
@@ -336,32 +298,39 @@ class TriggerView extends Component<TriggerViewProps, TriggerViewState> {
                 ? MATERIAL_TYPE.inputMaterialList
                 : MATERIAL_TYPE.rollbackMaterialList
 
-            const material = cdNode[materialType] || []
+            const selectedWorkflow = this.state.workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
+            const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
+            const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
+            const configurePluginURL = getCDPipelineURL(
+                this.props.match.params.appId,
+                selectedWorkflow.id,
+                doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
+                doesWorkflowContainsWebhook,
+                cdNode.id,
+                true,
+            )
 
             return (
-                <VisibleModal parentClassName="dc__overflow-hidden" close={this.closeCDModal}>
-                    <div
-                        className={`modal-body--cd-material h-100 flexbox-col contains-diff-view ${
-                            material.length > 0 ? '' : 'no-material'
-                        }`}
-                        onClick={stopPropagation}
-                    >
-                        {this.state.isLoading ? (
-                            <>
-                                <div className="trigger-modal__header flexbox dc__content-space">
-                                    <button type="button" className="dc__transparent" onClick={this.closeCDModal}>
-                                        <CloseIcon />
-                                    </button>
-                                </div>
-                                <div className="flex-grow-1">
-                                    <Progressing pageLoader size={32} />
-                                </div>
-                            </>
-                        ) : (
-                            this.renderCDMaterialContent(cdNode, materialType)
-                        )}
-                    </div>
-                </VisibleModal>
+                <DeployImageModal
+                    materialType={materialType}
+                    appId={Number(this.props.match.params.appId)}
+                    envId={cdNode?.environmentId}
+                    appName={this.props.appContext.currentAppName}
+                    stageType={cdNode.type as DeploymentNodeType}
+                    envName={cdNode?.environmentName}
+                    pipelineId={Number(cdNode.id)}
+                    handleClose={this.closeCDModal}
+                    handleSuccess={this.getWorkflowStatus}
+                    deploymentAppType={cdNode?.deploymentAppType}
+                    isVirtualEnvironment={cdNode.isVirtualEnvironment}
+                    showPluginWarningBeforeTrigger={cdNode?.showPluginWarning}
+                    consequence={cdNode?.pluginBlockState}
+                    configurePluginURL={configurePluginURL}
+                    isTriggerBlockedDueToPlugin={cdNode?.showPluginWarning && cdNode?.isTriggerBlocked}
+                    triggerType={cdNode.triggerType}
+                    isRedirectedFromAppDetails={false}
+                    parentEnvironmentName={cdNode.parentEnvironmentName}
+                />
             )
         }
 

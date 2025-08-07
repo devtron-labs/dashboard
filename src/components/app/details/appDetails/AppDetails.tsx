@@ -78,7 +78,7 @@ import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/Rotate
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
-import { AggregatedNodes } from '../../types'
+import { AggregatedNodes, AppDetailsCDModalType } from '../../types'
 import { renderCIListHeader } from '../cdDetails/utils'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import AppEnvSelector from './AppDetails.components'
@@ -235,7 +235,7 @@ const Details: React.FC<DetailsType> = ({
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
-    const [CDModalMaterialType, setCDModalMaterialType] = useState<string | null>(null)
+    const [CDModalMaterialType, setCDModalMaterialType] = useState<AppDetailsCDModalType['materialType']>(null)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
 
     const [hibernationPatchChartName, setHibernationPatchChartName] = useState<string>('')
