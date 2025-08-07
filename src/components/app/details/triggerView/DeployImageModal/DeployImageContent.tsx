@@ -1,4 +1,3 @@
-import { useContext } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -31,9 +30,9 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { TriggerViewContext } from '../config'
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
-import { FilterConditionViews, HandleRuntimeParamChange, TriggerViewContextType } from '../types'
+import { getCDNodeActionSearch } from '../TriggerView.utils'
+import { CDNodeActions, FilterConditionViews, HandleRuntimeParamChange } from '../types'
 import BulkDeployEmptyState from './BulkDeployEmptyState'
 import BulkTriggerSidebar from './BulkTriggerSidebar'
 import ImageSelectionCTA from './ImageSelectionCTA'
@@ -96,7 +95,6 @@ const DeployImageContent = ({
     // WARNING: Pls try not to create a useState in this component, it is supposed to be a dumb component.
     const history = useHistory()
     const { isSuperAdmin } = useMainContext()
-    const { onClickApprovalNode } = useContext<TriggerViewContextType>(TriggerViewContext)
 
     // Assumption: isExceptionUser is a global trait
     const isExceptionUser = getIsExceptionUser(materialResponse)
@@ -238,7 +236,12 @@ const DeployImageContent = ({
             })
         } else {
             handleClose()
-            onClickApprovalNode(pipelineId)
+            const search = getCDNodeActionSearch({
+                actionType: CDNodeActions.APPROVAL,
+                cdNodeId: pipelineId,
+                fromAppGroup: isBulkTrigger,
+            })
+            history.push({ search })
         }
     }
 

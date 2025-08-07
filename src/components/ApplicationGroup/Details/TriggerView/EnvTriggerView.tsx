@@ -54,7 +54,6 @@ import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg
 import { URLS, ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
@@ -337,38 +336,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
-    const onClickApprovalNode = (cdNodeId: number) => {
-        handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked)
-
-        const newParams = new URLSearchParams([
-            [TRIGGER_VIEW_PARAMS.APPROVAL_NODE, cdNodeId.toString()],
-            [TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL],
-        ])
-        history.push({ search: newParams.toString() })
-    }
-
-    const onClickCDMaterial = (cdNodeId: number, nodeType: DeploymentNodeType) => {
-        handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-
-        const newParams = new URLSearchParams([
-            [TRIGGER_VIEW_PARAMS.CD_NODE, cdNodeId.toString()],
-            [TRIGGER_VIEW_PARAMS.NODE_TYPE, nodeType],
-        ])
-        history.push({
-            search: newParams.toString(),
-        })
-    }
-
-    // Assuming that rollback has only CD as nodeType
-    const onClickRollbackMaterial = (cdNodeId: number) => {
-        handleAnalyticsEvent(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
-
-        const newParams = new URLSearchParams([[TRIGGER_VIEW_PARAMS.ROLLBACK_NODE, cdNodeId.toString()]])
-        history.push({
-            search: newParams.toString(),
-        })
-    }
-
     const isBuildAndBranchTriggerAllowed = (node: CommonNodeAttr): boolean =>
         !node.isLinkedCI && !node.isLinkedCD && node.type !== WorkflowNodeType.WEBHOOK
 
@@ -525,6 +492,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 workflows={filteredWorkflows}
                 isVirtualEnvironment={isVirtualEnv}
                 envId={+envId}
+                handleSuccess={reloadTriggerView}
             />
         )
     }
@@ -600,7 +568,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 configurePluginURL={configurePluginURL}
                 isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
                 triggerType={node?.triggerType}
-                isRedirectedFromAppDetails={false}
                 parentEnvironmentName={node?.parentEnvironmentName}
             />
         )
@@ -824,6 +791,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     index={index}
                     handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                     openCIMaterialModal={openCIMaterialModal}
+                    reloadTriggerView={reloadTriggerView}
                 />
             ))}
             <LinkedCIDetail workflows={filteredWorkflows} handleClose={revertToPreviousURL} />
@@ -848,35 +816,26 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
                 <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
 
-                <TriggerViewContext.Provider
-                    value={{
-                        onClickCDMaterial,
-                        onClickRollbackMaterial,
-                        reloadTriggerView,
-                        onClickApprovalNode,
-                    }}
-                >
-                    {renderWorkflow()}
+                {renderWorkflow()}
 
-                    <Switch>
-                        <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
-                            <BuildImageModal
-                                handleClose={revertToPreviousURL}
-                                isJobView={false}
-                                filteredCIPipelineMap={filteredCIPipelines}
-                                workflows={workflows}
-                                reloadWorkflows={getWorkflowsData}
-                                reloadWorkflowStatus={getWorkflowStatusData}
-                                environmentLists={[]}
-                            />
-                        </Route>
-                    </Switch>
-                    {renderCDMaterial()}
-                    {renderBulkCDMaterial()}
-                    {renderBulkCIMaterial()}
-                    {renderApprovalMaterial()}
-                    {renderBulkSourceChange()}
-                </TriggerViewContext.Provider>
+                <Switch>
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
+                        <BuildImageModal
+                            handleClose={revertToPreviousURL}
+                            isJobView={false}
+                            filteredCIPipelineMap={filteredCIPipelines}
+                            workflows={workflows}
+                            reloadWorkflows={getWorkflowsData}
+                            reloadWorkflowStatus={getWorkflowStatusData}
+                            environmentLists={[]}
+                        />
+                    </Route>
+                </Switch>
+                {renderCDMaterial()}
+                {renderBulkCDMaterial()}
+                {renderBulkCIMaterial()}
+                {renderApprovalMaterial()}
+                {renderBulkSourceChange()}
                 <div />
             </div>
             {!!selectedAppList.length && (

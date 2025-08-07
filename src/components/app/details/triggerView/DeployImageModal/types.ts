@@ -43,9 +43,9 @@ export type DeployImageModalProps = {
     /**
      * If opening pre/post cd make sure BE sends plugin details as well, otherwise those props will be undefined
      */
-    isRedirectedFromAppDetails: boolean
     parentEnvironmentName: string
     triggerType: CommonNodeAttr['triggerType']
+    isRedirectedFromAppDetails?: boolean
 } & (
     | {
           showPluginWarningBeforeTrigger: boolean
@@ -231,6 +231,7 @@ export interface BuildDeployModalProps {
     workflows: WorkflowType[]
     isVirtualEnvironment: boolean
     envId: number
+    handleSuccess: () => void
 }
 
 export type GetInitialAppListProps =

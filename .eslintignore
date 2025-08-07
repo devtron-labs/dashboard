@@ -102,7 +102,6 @@ src/components/app/details/testViewer/TestRunDetails.tsx
 src/components/app/details/testViewer/TestRunList.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
-src/components/app/details/triggerView/TriggerView.tsx
 src/components/app/details/triggerView/__tests__/triggerview.test.tsx
 src/components/app/details/triggerView/cdMaterial.tsx
 src/components/app/details/triggerView/ciMaterial.tsx

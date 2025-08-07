@@ -66,7 +66,14 @@ const validateRuntimeParameters = importComponentFromFELibrary(
     'function',
 )
 
-const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironment, envId }: BuildDeployModalProps) => {
+const BulkDeployModal = ({
+    handleClose: handleCloseProp,
+    handleSuccess,
+    stageType,
+    workflows,
+    isVirtualEnvironment,
+    envId,
+}: BuildDeployModalProps) => {
     const { currentEnvironmentName: envName } = useAppContext()
     const { canFetchHelmAppStatus } = useMainContext()
 
@@ -537,6 +544,13 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
         [appInfoMap],
     )
 
+    const handleClose = () => {
+        handleCloseProp()
+        if (responseList.length) {
+            handleSuccess()
+        }
+    }
+
     const renderContent = () => {
         if (BulkCDStrategy && showStrategyFeasibilityPage) {
             return (
@@ -600,7 +614,6 @@ const BulkDeployModal = ({ handleClose, stageType, workflows, isVirtualEnvironme
                 deploymentWindowMetadata={deploymentWindowMetadata}
                 pipelineId={pipelineId}
                 handleClose={handleClose}
-                isRedirectedFromAppDetails={false}
                 onSearchApply={reloadOrSearchSelectedApp}
                 stageType={stageType}
                 uploadRuntimeParamsFile={uploadRuntimeParamsFile}
