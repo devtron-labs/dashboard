@@ -243,6 +243,7 @@ const BulkDeployModal = ({
             ...prev,
             [selectedAppId]: {
                 ...prev[selectedAppId],
+                materialResponse: response[selectedAppId]?.materialResponse,
                 warningMessage,
                 materialError,
                 deploymentWindowMetadata,
@@ -256,6 +257,10 @@ const BulkDeployModal = ({
                 },
             },
         }))
+    }
+
+    const reloadMaterials = async () => {
+        await reloadOrSearchSelectedApp()
     }
 
     const handleLoadOlderImages = async () => {
@@ -459,29 +464,31 @@ const BulkDeployModal = ({
     const handleTagChange: DeployImageContentProps['handleTagChange'] = (tagOption) => {
         setSelectedImageTagOption(tagOption)
 
-        const selectedApp = appInfoMap[selectedAppId]
-        const updatedMaterials = getUpdatedMaterialsForTagSelection(
-            tagOption.value,
-            selectedApp.materialResponse?.materials || [],
-        )
-        const { tagsWarning, updatedMaterials: newMaterials } = updatedMaterials
+        setAppInfoMap((prev) => {
+            const updatedAppInfoMap = structuredClone(prev)
+            Object.values(updatedAppInfoMap).forEach((appDetails) => {
+                const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
+                    tagOption.value,
+                    appDetails.materialResponse?.materials || [],
+                )
 
-        const { tagsWarning: previousTagWarning } = getUpdatedMaterialsForTagSelection(
-            selectedImageTagOption.value,
-            selectedApp.materialResponse?.materials || [],
-        )
+                const { tagsWarning: previousTagWarning } = getUpdatedMaterialsForTagSelection(
+                    selectedImageTagOption.value,
+                    appDetails.materialResponse?.materials || [],
+                )
 
-        setAppInfoMap((prev) => ({
-            ...prev,
-            [selectedAppId]: {
-                ...prev[selectedAppId],
-                materialResponse: {
-                    ...prev[selectedAppId].materialResponse,
-                    materials: newMaterials,
-                },
-                warningMessage: previousTagWarning ? tagsWarning : prev[selectedAppId].warningMessage,
-            },
-        }))
+                updatedAppInfoMap[appDetails.appId] = {
+                    ...appDetails,
+                    materialResponse: {
+                        ...appDetails.materialResponse,
+                        materials: updatedMaterials,
+                    },
+                    warningMessage:
+                        previousTagWarning || !appDetails.warningMessage ? tagsWarning : appDetails.warningMessage,
+                }
+            })
+            return updatedAppInfoMap
+        })
     }
 
     const changeApp: DeployImageContentProps['changeApp'] = (appId) => {
@@ -614,7 +621,7 @@ const BulkDeployModal = ({
                 appName={appName}
                 isSecurityModuleInstalled={isSecurityModuleInstalled}
                 envName={envName}
-                reloadMaterials={reloadOrSearchSelectedApp}
+                reloadMaterials={reloadMaterials}
                 parentEnvironmentName={parentEnvironmentName}
                 isVirtualEnvironment={isVirtualEnvironment}
                 loadOlderImages={handleLoadOlderImages}

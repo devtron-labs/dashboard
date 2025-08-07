@@ -518,6 +518,32 @@ const DeployImageContent = ({
             )
         })
 
+    const renderMaterialListEmptyState = () => (
+        <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100">
+            <MaterialListEmptyState
+                isRollbackTrigger={isRollbackTrigger}
+                stageType={stageType}
+                appId={appId}
+                isSearchApplied={isSearchApplied}
+                policyConsequences={policyConsequences}
+                isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
+                configurePluginURL={configurePluginURL}
+                isConsumedImagePresent={consumedImage.length > 0}
+                envName={envName}
+                materialResponse={materialResponse}
+                isExceptionUser={isExceptionUser}
+                isLoadingMore={isLoadingOlderImages}
+                viewAllImages={viewAllImages}
+                triggerType={triggerType}
+                loadOlderImages={loadOlderImages}
+                onSearchApply={onSearchApply}
+                eligibleImagesCount={eligibleImagesCount}
+                handleEnableFiltersView={handleShowConfiguredFilters}
+                handleAllImagesView={handleAllImagesView}
+            />
+        </div>
+    )
+
     const renderContent = () => {
         if (isBulkTrigger) {
             if (showFiltersView) {
@@ -599,33 +625,9 @@ const DeployImageContent = ({
                         </div>
                     </div>
 
-                    {materialList.length === 0 ? (
-                        <div className="flexbox-col flex-grow-1 dc__overflow-auto h-100">
-                            <MaterialListEmptyState
-                                isRollbackTrigger={isRollbackTrigger}
-                                stageType={stageType}
-                                appId={appId}
-                                isSearchApplied={isSearchApplied}
-                                policyConsequences={policyConsequences}
-                                isTriggerBlockedDueToPlugin={isTriggerBlockedDueToPlugin}
-                                configurePluginURL={configurePluginURL}
-                                isConsumedImagePresent={consumedImage.length > 0}
-                                envName={envName}
-                                materialResponse={materialResponse}
-                                isExceptionUser={isExceptionUser}
-                                isLoadingMore={isLoadingOlderImages}
-                                viewAllImages={viewAllImages}
-                                triggerType={triggerType}
-                                loadOlderImages={loadOlderImages}
-                                onSearchApply={onSearchApply}
-                                eligibleImagesCount={eligibleImagesCount}
-                                handleEnableFiltersView={handleShowConfiguredFilters}
-                                handleAllImagesView={handleAllImagesView}
-                            />
-                        </div>
-                    ) : (
-                        renderMaterialList(materialList, false)
-                    )}
+                    {materialList.length === 0
+                        ? renderMaterialListEmptyState()
+                        : renderMaterialList(materialList, false)}
 
                     {!areNoMoreImagesPresent && !!materialList?.length && (
                         <button
@@ -659,6 +661,10 @@ const DeployImageContent = ({
         return renderConfiguredFilters()
     }
 
+    if (materials.length === 0 && !isBulkTrigger) {
+        return renderMaterialListEmptyState()
+    }
+
     return (
         <>
             {!showFiltersView &&
@@ -687,7 +693,11 @@ const DeployImageContent = ({
                 className={`flex-grow-1 dc__overflow-auto h-100 ${isPreOrPostCD || isBulkTrigger ? 'display-grid cd-material__container-with-sidebar' : 'flexbox-col flex-grow-1'}`}
             >
                 {renderSidebar()}
-                <div className="flexbox-col py-16 px-20 dc__overflow-auto flex-grow-1">{renderContent()}</div>
+                <div
+                    className={`flexbox-col dc__overflow-auto flex-grow-1 ${isBulkTrigger && showFiltersView ? '' : 'py-16 px-20 '}`}
+                >
+                    {renderContent()}
+                </div>
             </div>
         </>
     )
