@@ -15,7 +15,7 @@ const PROGRESSING_POLLING_INTERVAL = 10000
 
 export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: UseTriggerViewServicesParams) => {
     const queryClient = useQueryClient()
-    const refetchIntervalRef = useRef<number>(30000)
+    const refetchIntervalRef = useRef<number>(DEFAULT_POLLING_INTERVAL)
 
     const { data: hostUrlConfig } = useQuery({
         queryKey: ['hostUrlConfig'],
