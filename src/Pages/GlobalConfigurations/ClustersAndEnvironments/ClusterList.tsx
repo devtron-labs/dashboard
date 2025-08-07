@@ -69,6 +69,7 @@ import {
 import { parseClusterEnvSearchParams } from './cluster.util'
 import {
     AddEnvironment,
+    AddEnvironmentFromClusterName,
     ClusterEnvLoader,
     ClusterListCellComponent,
     DeleteCluster,
@@ -102,6 +103,10 @@ const ClusterList = () => {
         parseSearchParams: parseClusterEnvSearchParams,
         initialSortKey: EnvListSortableKeys.ENV_NAME,
     })
+
+    const clearSearch = () => {
+        handleSearch('')
+    }
 
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
         getClusterList,
@@ -262,7 +267,7 @@ const ClusterList = () => {
     const handleChangeTab = (selectedSegment: OptionType<ClusterEnvTabs>) => {
         updateSearchParams({ selectedTab: selectedSegment.value, clusterId: null })
         if (searchKey) {
-            handleSearch('')
+            clearSearch()
         }
         if (showUnmappedEnvs) {
             setShowUnmappedEnvs(false)
@@ -287,6 +292,13 @@ const ClusterList = () => {
         }
 
         if (isEnvironmentsView) {
+            const allEnvsList = Object.values(clusterIdVsEnvMap).flat()
+
+            // In case no cluster is selected on env list page and no env is found, show global empty state
+            if (!filterClusterId && allEnvsList.filter((env) => env.environmentName.includes(searchKey)).length === 0) {
+                return <GenericFilterEmptyState handleClearFilters={clearSearch} />
+            }
+
             return (
                 <EnvironmentList
                     clusterIdVsEnvMap={clusterIdVsEnvMap}
@@ -302,24 +314,26 @@ const ClusterList = () => {
         }
 
         if (searchKey && !filteredClusterList.length) {
-            return <GenericFilterEmptyState handleClearFilters={() => handleSearch('')} />
+            return <GenericFilterEmptyState handleClearFilters={clearSearch} />
         }
 
         return (
             <>
                 <ClusterMap isLoading={isClusterEnvListLoading} filteredList={filteredClusterList} />
-                <Table<ClusterRowData, FiltersTypeEnum.STATE, {}>
-                    id="table__cluster-list"
-                    columns={tableColumns}
-                    rows={tableRows}
-                    filtersVariant={FiltersTypeEnum.STATE}
-                    paginationVariant={PaginationEnum.NOT_PAGINATED}
-                    emptyStateConfig={null}
-                    filter={() => true}
-                    additionalFilterProps={{
-                        initialSortKey: 'clusterName',
-                    }}
-                />
+                <div className="cluster-table-wrapper">
+                    <Table<ClusterRowData, FiltersTypeEnum.STATE, {}>
+                        id="table__cluster-list"
+                        columns={tableColumns}
+                        rows={tableRows}
+                        filtersVariant={FiltersTypeEnum.STATE}
+                        paginationVariant={PaginationEnum.NOT_PAGINATED}
+                        emptyStateConfig={null}
+                        filter={() => true}
+                        additionalFilterProps={{
+                            initialSortKey: 'clusterName',
+                        }}
+                    />
+                </div>
             </>
         )
     }
@@ -377,6 +391,7 @@ const ClusterList = () => {
                             }}
                             handleEnter={handleSearch}
                             size={ComponentSizeType.medium}
+                            keyboardShortcut="/"
                         />
                         {ManageCategoryButton && <ManageCategoryButton search={search} />}
                         <Button
@@ -453,6 +468,16 @@ const ClusterList = () => {
                 <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}/:clusterId?`}>
                     <AddEnvironment reloadEnvironments={reloadEnvironments} handleClose={handleRedirectToClusterList} />
                 </Route>
+                {/* Below route is to maintain backward compatibility and redirection from various places in dashboard */}
+                {clusterListResult && (
+                    <Route path={`${URLS.GLOBAL_CONFIG_CLUSTER}/:clusterName${URLS.CREATE_ENVIRONMENT}`}>
+                        <AddEnvironmentFromClusterName
+                            clusterList={clusterListResult ?? []}
+                            reloadEnvironments={reloadEnvironments}
+                            handleClose={handleRedirectToClusterList}
+                        />
+                    </Route>
+                )}
                 {PodSpreadModal && (
                     <Route
                         path={`${URLS.GLOBAL_CONFIG_CLUSTER}/${URLS.POD_SPREAD}/:clusterId`}

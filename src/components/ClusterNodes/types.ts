@@ -279,10 +279,6 @@ export interface ClusterOverviewProps {
     addTab: UseTabsReturnType['addTab']
 }
 
-export interface ClusterMapInitialStatusType {
-    errorInNodeListing: string
-}
-
 export enum TaintsTableHeaderKeys {
     KEY = 'key',
     VALUE = 'value',

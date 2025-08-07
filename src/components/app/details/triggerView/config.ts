@@ -22,19 +22,8 @@ import { importComponentFromFELibrary } from '@Components/common'
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
 
 export const TriggerViewContext = createContext<TriggerViewContextType>({
-    invalidateCache: false,
-    refreshMaterial: (ciNodeId: number, materialId: number) => {},
-    onClickTriggerCINode: () => {},
-    onClickCIMaterial: (ciNodeId: string, ciPipelineName: string, preserveMaterialSelection?: boolean) => {},
     onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag?: string) => {},
     onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
-    closeCIModal: () => {},
-    selectCommit: (materialId: string, hash: string, ciPipelineId?: string) => {},
-    selectMaterial: (materialId, pipelineId?: number) => {},
-    toggleChanges: (materialId: string, hash: string) => {},
-    toggleInvalidateCache: () => {},
-    getMaterialByCommit: (ciNodeId: number, materialId: number, gitMaterialId: number, commitHash: string) => {},
-    getFilteredMaterial: (ciNodeId: number, gitMaterialId: number, showExcluded: boolean) => {},
     reloadTriggerView: () => {},
 })
 
