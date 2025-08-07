@@ -45,30 +45,21 @@ export type DeployImageModalProps = {
      */
     parentEnvironmentName: string
     triggerType: CommonNodeAttr['triggerType']
+    isRedirectedFromAppDetails?: boolean
 } & (
     | {
-          isRedirectedFromAppDetails: true
-          onClickApprovalNode?: never
+          showPluginWarningBeforeTrigger: boolean
+          consequence: ConsequenceType
+          configurePluginURL: string
+          isTriggerBlockedDueToPlugin: boolean
       }
     | {
-          isRedirectedFromAppDetails?: never
-          onClickApprovalNode: (cdNodeId: number) => void
+          showPluginWarningBeforeTrigger?: never
+          consequence?: never
+          configurePluginURL?: never
+          isTriggerBlockedDueToPlugin?: never
       }
-) &
-    (
-        | {
-              showPluginWarningBeforeTrigger: boolean
-              consequence: ConsequenceType
-              configurePluginURL: string
-              isTriggerBlockedDueToPlugin: boolean
-          }
-        | {
-              showPluginWarningBeforeTrigger?: never
-              consequence?: never
-              configurePluginURL?: never
-              isTriggerBlockedDueToPlugin?: never
-          }
-    )
+)
 
 export type DeployImageHeaderProps = Pick<
     DeployImageModalProps,
@@ -150,7 +141,6 @@ export type DeployImageContentProps = Pick<
     | 'isTriggerBlockedDueToPlugin'
     | 'configurePluginURL'
     | 'triggerType'
-    | 'onClickApprovalNode'
 > &
     Pick<RuntimeParamsSidebarProps, 'appName'> & {
         materialResponse: CDMaterialResponseType | null
@@ -241,6 +231,7 @@ export interface BuildDeployModalProps {
     workflows: WorkflowType[]
     isVirtualEnvironment: boolean
     envId: number
+    handleSuccess: () => void
 }
 
 export type GetInitialAppListProps =

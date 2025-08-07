@@ -22,6 +22,7 @@ import {
     WorkflowNodeType,
     PipelineType,
     CommonNodeAttr,
+    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { StaticNode } from './nodes/staticNode'
 import { TriggerCINode } from './nodes/triggerCINode'
@@ -30,16 +31,16 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps } from '../types'
+import { CDNodeActions, WorkflowProps } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
+import { getCDNodeActionSearch } from '../TriggerView.utils'
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
 const BulkDeployLink = importComponentFromFELibrary('BulkDeployLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
-
     goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
@@ -61,6 +62,34 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.history.push(ciPipelineURL)
             }
         }
+    }
+
+    onClickCDMaterial = (cdNodeId: number, nodeType: DeploymentNodeType) => {
+        const search = getCDNodeActionSearch({
+            actionType: CDNodeActions.CD_MATERIAL,
+            cdNodeId,
+            nodeType,
+            fromAppGroup: this.props.fromAppGrouping,
+        })
+        this.props.history.push({ search })
+    }
+
+    onClickRollbackMaterial = (cdNodeId: number) => {
+        const search = getCDNodeActionSearch({
+            actionType: CDNodeActions.ROLLBACK_MATERIAL,
+            cdNodeId,
+            fromAppGroup: this.props.fromAppGrouping,
+        })
+        this.props.history.push({ search })
+    }
+
+    onClickApprovalNode = (cdNodeId: number) => {
+        const search = getCDNodeActionSearch({
+            actionType: CDNodeActions.APPROVAL,
+            cdNodeId,
+            fromAppGroup: this.props.fromAppGrouping,
+        })
+        this.props.history.push({ search })
     }
 
     renderNodes() {
@@ -265,8 +294,8 @@ export class Workflow extends Component<WorkflowProps> {
                 appId={this.props.appId}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 isTriggerBlocked={node.isTriggerBlocked}
-                onClickCDMaterial={this.props.onClickCDMaterial}
-                onClickRollbackMaterial={this.props.onClickRollbackMaterial}
+                onClickCDMaterial={this.onClickCDMaterial}
+                onClickRollbackMaterial={this.onClickRollbackMaterial}
                 reloadTriggerView={this.props.reloadTriggerView}
             />
         )
@@ -301,7 +330,7 @@ export class Workflow extends Component<WorkflowProps> {
                 appId={this.props.appId}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 isTriggerBlocked={node.isTriggerBlocked}
-                onClickCDMaterial={this.props.onClickCDMaterial}
+                onClickCDMaterial={this.onClickCDMaterial}
                 reloadTriggerView={this.props.reloadTriggerView}
             />
         )
@@ -332,7 +361,7 @@ export class Workflow extends Component<WorkflowProps> {
                         key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
-                        onClickEdge={() => this.props.onClickApprovalNode(edgeNode.endNode.id)}
+                        onClickEdge={() => this.onClickApprovalNode(edgeNode.endNode.id)}
                         edges={edges}
                     />
                 )

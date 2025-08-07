@@ -31,7 +31,8 @@ import {
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { TRIGGER_VIEW_PARAMS } from '../Constants'
-import { FilterConditionViews, HandleRuntimeParamChange } from '../types'
+import { getCDNodeActionSearch } from '../TriggerView.utils'
+import { CDNodeActions, FilterConditionViews, HandleRuntimeParamChange } from '../types'
 import BulkDeployEmptyState from './BulkDeployEmptyState'
 import BulkTriggerSidebar from './BulkTriggerSidebar'
 import ImageSelectionCTA from './ImageSelectionCTA'
@@ -90,7 +91,6 @@ const DeployImageContent = ({
     selectedTagName,
     handleTagChange,
     changeApp,
-    onClickApprovalNode,
 }: DeployImageContentProps) => {
     // WARNING: Pls try not to create a useState in this component, it is supposed to be a dumb component.
     const history = useHistory()
@@ -236,7 +236,12 @@ const DeployImageContent = ({
             })
         } else {
             handleClose()
-            onClickApprovalNode(pipelineId)
+            const search = getCDNodeActionSearch({
+                actionType: CDNodeActions.APPROVAL,
+                cdNodeId: pipelineId,
+                fromAppGroup: isBulkTrigger,
+            })
+            history.push({ search })
         }
     }
 

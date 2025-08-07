@@ -21,15 +21,17 @@ import {
     DeploymentHistoryDetail,
     DeploymentNodeType,
     DeploymentWithConfigType,
+    handleAnalyticsEvent,
     showError,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ENV_TRIGGER_VIEW_GA_EVENTS } from '@Components/ApplicationGroup/Constants'
 import { URLS } from '@Config/routes'
 
 import { deepEqual } from '../../../common'
-import { TRIGGER_VIEW_PARAMS } from './Constants'
-import { TriggerViewDeploymentConfigType } from './types'
+import { TRIGGER_VIEW_GA_EVENTS, TRIGGER_VIEW_PARAMS } from './Constants'
+import { CDNodeActions, GetCDNodeSearchParams, TriggerViewDeploymentConfigType } from './types'
 
 export const DEPLOYMENT_CONFIGURATION_NAV_MAP = {
     DEPLOYMENT_TEMPLATE: {
@@ -228,4 +230,40 @@ export const getSelectedNodeFromWorkflows = (workflows: WorkflowType[], search: 
 
     showError('Invalid node id')
     return {} as CommonNodeAttr
+}
+
+export const getCDNodeActionSearch = ({
+    actionType,
+    cdNodeId,
+    nodeType = DeploymentNodeType.CD,
+    fromAppGroup,
+}: GetCDNodeSearchParams) => {
+    switch (actionType) {
+        case CDNodeActions.APPROVAL:
+            handleAnalyticsEvent(
+                fromAppGroup
+                    ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked
+                    : TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked,
+            )
+            return new URLSearchParams([
+                [TRIGGER_VIEW_PARAMS.APPROVAL_NODE, cdNodeId.toString()],
+                [TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL],
+            ]).toString()
+
+        case CDNodeActions.ROLLBACK_MATERIAL:
+            handleAnalyticsEvent(
+                fromAppGroup ? ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked : TRIGGER_VIEW_GA_EVENTS.RollbackClicked,
+            )
+            return new URLSearchParams([[TRIGGER_VIEW_PARAMS.ROLLBACK_NODE, cdNodeId.toString()]]).toString()
+
+        case CDNodeActions.CD_MATERIAL:
+        default:
+            handleAnalyticsEvent(
+                fromAppGroup ? ENV_TRIGGER_VIEW_GA_EVENTS.MaterialClicked : TRIGGER_VIEW_GA_EVENTS.ImageClicked,
+            )
+            return new URLSearchParams([
+                [TRIGGER_VIEW_PARAMS.CD_NODE, cdNodeId.toString()],
+                [TRIGGER_VIEW_PARAMS.NODE_TYPE, nodeType],
+            ]).toString()
+    }
 }

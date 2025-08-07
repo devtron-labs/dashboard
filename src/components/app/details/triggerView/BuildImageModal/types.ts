@@ -80,8 +80,9 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'isJobView'> & {
     )
 
 export interface BulkBuildImageModalProps
-    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflows' | 'reloadWorkflowStatus'> {
+    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflowStatus'> {
     filteredCIPipelineMap: FilteredCIPipelineMapType
+    reloadWorkflows: () => Promise<WorkflowType[]>
 }
 
 export interface BuildImageHeaderProps {

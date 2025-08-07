@@ -10,6 +10,9 @@ import { getHostURLConfiguration } from '@Services/service'
 import { UseTriggerViewServicesParams } from './types'
 import { getTriggerWorkflows } from './workflow.service'
 
+const DEFAULT_POLLING_INTERVAL = 30000
+const PROGRESSING_POLLING_INTERVAL = 10000
+
 export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: UseTriggerViewServicesParams) => {
     const queryClient = useQueryClient()
     const refetchIntervalRef = useRef<number>(30000)
@@ -82,7 +85,10 @@ export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: Use
                 response.result?.cdWorkflowStatus ?? [],
                 workflows,
             )
-            refetchIntervalRef.current = processedWorkflowsData.cicdInProgress ? 10000 : 30000
+            refetchIntervalRef.current = processedWorkflowsData.cicdInProgress
+                ? PROGRESSING_POLLING_INTERVAL
+                : DEFAULT_POLLING_INTERVAL
+
             return processedWorkflowsData.workflows || []
         },
         refetchInterval: refetchIntervalRef.current,

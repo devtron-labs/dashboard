@@ -164,7 +164,7 @@ const BulkBuildImageModal = ({
     const handleReloadSelectedMaterialWithWorkflows = async () => {
         try {
             const newWorkflows = await reloadWorkflows()
-            await reloadSelectedAppMaterialList(newWorkflows as WorkflowType[])
+            await reloadSelectedAppMaterialList(newWorkflows)
         } catch (error) {
             showError(error)
         }

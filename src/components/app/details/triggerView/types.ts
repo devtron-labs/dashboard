@@ -240,7 +240,7 @@ interface InputMaterials {
 export interface TriggerCDNodeProps
     extends RouteComponentProps<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
-        Pick<WorkflowProps, 'onClickCDMaterial' | 'onClickRollbackMaterial' | 'reloadTriggerView'> {
+        Pick<WorkflowProps, 'reloadTriggerView'> {
     x: number
     y: number
     height: number
@@ -268,6 +268,8 @@ export interface TriggerCDNodeProps
     deploymentAppType: DeploymentAppTypes
     appId: number
     isDeploymentBlocked?: boolean
+    onClickCDMaterial: (cdNodeId: number, nodeType: DeploymentNodeType) => void
+    onClickRollbackMaterial: (cdNodeId: number) => void
 }
 
 export interface TriggerCDNodeState {
@@ -280,7 +282,7 @@ export interface TriggerCDNodeState {
 export interface TriggerPrePostCDNodeProps
     extends RouteComponentProps<{ appId: string; envId: string }>,
         Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
-        Pick<WorkflowProps, 'onClickCDMaterial' | 'reloadTriggerView'> {
+        Pick<TriggerCDNodeProps, 'reloadTriggerView' | 'onClickCDMaterial'> {
     x: number
     y: number
     height: number
@@ -333,9 +335,6 @@ export interface WorkflowProps
     filteredCIPipelines?: any[]
     handleWebhookAddImageClick?: (webhookId: number) => void
     openCIMaterialModal: (ciNodeId: string) => void
-    onClickApprovalNode: (cdNodeId: number) => void
-    onClickCDMaterial: (cdNodeId: number, nodeType: DeploymentNodeType) => void
-    onClickRollbackMaterial: (cdNodeId: number) => void
     reloadTriggerView: () => Promise<void> | void
 }
 
@@ -687,4 +686,17 @@ export interface UseTriggerViewServicesParams {
     appId: string
     isJobView: boolean
     filteredEnvIds: string
+}
+
+export enum CDNodeActions {
+    APPROVAL = 'approval',
+    CD_MATERIAL = 'cdMaterial',
+    ROLLBACK_MATERIAL = 'rollbackMaterial',
+}
+
+export interface GetCDNodeSearchParams {
+    actionType: CDNodeActions
+    cdNodeId: number
+    nodeType?: DeploymentNodeType
+    fromAppGroup?: boolean
 }

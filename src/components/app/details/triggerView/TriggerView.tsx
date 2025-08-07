@@ -22,7 +22,6 @@ import {
     DeploymentNodeType,
     DocLink,
     ErrorScreenManager,
-    handleAnalyticsEvent,
     Progressing,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -41,7 +40,7 @@ import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManag
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { Workflow } from './workflow/Workflow'
 import { BuildImageModal } from './BuildImageModal'
-import { TRIGGER_VIEW_GA_EVENTS, TRIGGER_VIEW_PARAMS } from './Constants'
+import { TRIGGER_VIEW_PARAMS } from './Constants'
 import { DeployImageModal } from './DeployImageModal'
 import { useTriggerViewServices } from './TriggerView.service'
 import { getSelectedNodeFromWorkflows, shouldRenderWebhookAddImageModal } from './TriggerView.utils'
@@ -86,37 +85,6 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
 
     const openCIMaterialModal = (ciNodeId: string) => {
         history.push(`${match.url}${URLS.BUILD}/${ciNodeId}`)
-    }
-
-    const onClickApprovalNode = (cdNodeId: number) => {
-        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked)
-
-        const newParams = new URLSearchParams([
-            [TRIGGER_VIEW_PARAMS.APPROVAL_NODE, cdNodeId.toString()],
-            [TRIGGER_VIEW_PARAMS.APPROVAL_STATE, TRIGGER_VIEW_PARAMS.APPROVAL],
-        ])
-        history.push({ search: newParams.toString() })
-    }
-
-    const onClickCDMaterial = (cdNodeId: number, nodeType: DeploymentNodeType) => {
-        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.ImageClicked)
-
-        const newParams = new URLSearchParams([
-            [TRIGGER_VIEW_PARAMS.CD_NODE, cdNodeId.toString()],
-            [TRIGGER_VIEW_PARAMS.NODE_TYPE, nodeType],
-        ])
-        history.push({
-            search: newParams.toString(),
-        })
-    }
-
-    const onClickRollbackMaterial = (cdNodeId: number) => {
-        handleAnalyticsEvent(TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
-
-        const newParams = new URLSearchParams([[TRIGGER_VIEW_PARAMS.ROLLBACK_NODE, cdNodeId.toString()]])
-        history.push({
-            search: newParams.toString(),
-        })
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
@@ -186,7 +154,6 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     isTriggerBlockedDueToPlugin={cdNode?.showPluginWarning && cdNode?.isTriggerBlocked}
                     triggerType={cdNode.triggerType}
                     parentEnvironmentName={cdNode.parentEnvironmentName}
-                    onClickApprovalNode={onClickApprovalNode}
                 />
             )
         }
@@ -254,9 +221,6 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     appId={+appId}
                     handleWebhookAddImageClick={handleWebhookAddImageClick}
                     openCIMaterialModal={openCIMaterialModal}
-                    onClickApprovalNode={onClickApprovalNode}
-                    onClickCDMaterial={onClickCDMaterial}
-                    onClickRollbackMaterial={onClickRollbackMaterial}
                     reloadTriggerView={reloadWorkflows}
                 />
             ))}
@@ -282,7 +246,7 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
     }
 
     if (workflowsError) {
-        return <ErrorScreenManager code={workflowsError.code} />
+        return <ErrorScreenManager code={workflowsError.code} reload={reloadWorkflows} />
     }
 
     if (!workflows.length) {
