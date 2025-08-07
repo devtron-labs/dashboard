@@ -22,10 +22,8 @@ import { ReactComponent as LinkIcon } from '../../assets/icons/ic-link.svg'
 import { URLS } from '../../config'
 import {
     AppLevelExternalLinksType,
-    ExpandedExternalLink,
     ExternalLink,
     ExternalLinkChipProps,
-    ExternalLinkFallbackImageProps,
     NodeLevelExternalLinksType,
     NoExternalLinkViewProps,
     OptionTypeWithIcon,
@@ -42,27 +40,20 @@ import {
     SelectPickerVariantType,
     getHandleOpenURL,
     EMPTY_STATE_STATUS,
-    VisibleModal2,
-    stopPropagation,
-    Button,
-    ButtonVariantType,
-    ComponentSizeType,
-    ButtonComponentType,
-    ButtonStyleType,
-    ImageWithFallback,
     InfoBlock,
     DocLink,
+    useMainContext,
+    ImageWithFallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './externalLinks.component.scss'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 import { ReactComponent as ICArrowOut } from '@Icons/ic-arrow-square-out.svg'
-import { ReactComponent as ICClose } from '@Icons/ic-close.svg'
 import ICWebpage from '@Icons/tools/ic-link-webpage.png'
 import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
-    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight='normal' />
+    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight="normal" />
 }
 
 export const NoExternalLinksView = ({
@@ -133,73 +124,6 @@ export const NoMatchingResults = (): JSX.Element => {
     return <GenericFilterEmptyState />
 }
 
-const ExternalLinkFallbackImage = ({ dimension, src, alt }: ExternalLinkFallbackImageProps) => (
-    <ImageWithFallback
-        imageProps={{
-            className: `dc__no-shrink icon-dim-${dimension}`,
-            height: dimension,
-            width: dimension,
-            src: src,
-            alt: alt,
-        }}
-        fallbackImage={ICWebpage}
-    />
-)
-
-const ExternalLinkIframeModal = ({ selectedExternalLink, handleCloseModal }) => (
-    <VisibleModal2 close={handleCloseModal}>
-        <div
-            className="flexbox-col dc__position-abs br-8 dc__top-12 dc__bottom-12 dc__right-12 dc__left-12 bg__primary"
-            onClick={stopPropagation}
-        >
-            <div className="flexbox dc__content-space px-20 py-12 dc__align-items-center dc__border-bottom">
-                <div className="flexbox dc__gap-8 dc__align-items-center">
-                    <ExternalLinkFallbackImage
-                        dimension={20}
-                        src={selectedExternalLink.icon}
-                        alt={selectedExternalLink.label}
-                    />
-                    <h2 className="cn-9 fs-16 fw-6 lh-24 dc__truncate m-0-imp">{selectedExternalLink.label}</h2>
-                </div>
-                <div className="flexbox dc__gap-8">
-                    <Button
-                        ariaLabel="external-link-open"
-                        dataTestId="external-link-open"
-                        icon={<ICArrowOut />}
-                        variant={ButtonVariantType.borderLess}
-                        size={ComponentSizeType.xs}
-                        component={ButtonComponentType.anchor}
-                        style={ButtonStyleType.neutral}
-                        anchorProps={{
-                            href: selectedExternalLink.externalLinkURL,
-                        }}
-                        showAriaLabelInTippy={false}
-                    />
-                    <Button
-                        ariaLabel="external-link-modal-close"
-                        dataTestId="external-link-modal-close"
-                        icon={<ICClose />}
-                        variant={ButtonVariantType.borderLess}
-                        size={ComponentSizeType.xs}
-                        component={ButtonComponentType.button}
-                        style={ButtonStyleType.negativeGrey}
-                        onClick={handleCloseModal}
-                        showAriaLabelInTippy={false}
-                    />
-                </div>
-            </div>
-            <iframe
-                className="flex-grow-1 dc__no-border dc__bottom-radius-8"
-                src={selectedExternalLink.externalLinkURL}
-                height="100%"
-                width="100%"
-                sandbox="allow-same-origin allow-scripts"
-                referrerPolicy="no-referrer"
-            />
-        </div>
-    </VisibleModal2>
-)
-
 const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOverviewPage }: ExternalLinkChipProps) => {
     const externalLinkURL = getParsedURL(true, linkOption.value.toString(), details)
     const handleTextClick = () => handleOpenModal(linkOption, externalLinkURL)
@@ -231,7 +155,16 @@ const ExternalLinkChip = ({ linkOption, idx, handleOpenModal, details, isOvervie
                     type="button"
                     onClick={linkOption.openInNewTab ? getHandleOpenURL(externalLinkURL) : handleTextClick}
                 >
-                    <ExternalLinkFallbackImage dimension={16} src={linkOption.icon} alt={linkOption.label} />
+                    <ImageWithFallback
+                        imageProps={{
+                            className: 'dc__no-shrink icon-dim-16',
+                            height: 16,
+                            width: 16,
+                            src: linkOption.icon,
+                            alt: linkOption.label,
+                        }}
+                        fallbackImage={ICWebpage}
+                    />
                     <span
                         className="fs-12 lh-20 fw-4 dc-9 dc__ellipsis-right dc__mxw-200"
                         data-testid="overview_external_link_value"
@@ -263,15 +196,18 @@ export const AppLevelExternalLinks = ({
     isOverviewPage,
 }: AppLevelExternalLinksType): JSX.Element | null => {
     const [appLevelExternalLinks, setAppLevelExternalLinks] = useState<OptionTypeWithIcon[]>([])
-    const [expandedExternalLink, setExpandedExternalLink] = useState<ExpandedExternalLink>(null)
     const details = appDetails || helmAppDetails
 
-    const handleOpenModal = (linkOption: OptionTypeWithIcon, externalLinkURL: string) => {
-        setExpandedExternalLink({ ...linkOption, externalLinkURL })
-    }
+    const { setTempAppWindowConfig } = useMainContext()
 
-    const handleCloseModal = () => {
-        setExpandedExternalLink(null)
+    const handleOpenModal = (linkOption: OptionTypeWithIcon, externalLinkURL: string) => {
+        setTempAppWindowConfig({
+            open: true,
+            title: linkOption.label,
+            url: externalLinkURL,
+            showOpenInNewTab: true,
+            image: linkOption.icon,
+        })
     }
 
     const filterAppLevelExternalLinks = (link: ExternalLink) => {
@@ -341,12 +277,6 @@ export const AppLevelExternalLinks = ({
                         ))}
                     </div>
                 </div>
-            )}
-            {expandedExternalLink && (
-                <ExternalLinkIframeModal
-                    selectedExternalLink={expandedExternalLink}
-                    handleCloseModal={handleCloseModal}
-                />
             )}
         </>
     )

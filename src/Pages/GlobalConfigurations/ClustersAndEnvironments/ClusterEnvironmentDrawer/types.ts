@@ -14,36 +14,39 @@
  * limitations under the License.
  */
 
-import { DeleteConfirmationModalProps, SelectPickerOptionType, TagType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeleteConfirmationModalProps,
+    Never,
+    SelectPickerOptionType,
+    TagType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-export interface ClusterEnvironmentDrawerFormProps {
-    environmentName: string
+export interface EnvDetails {
+    envId: number
+    envName: string
     namespace: string
     isProduction: boolean
     description: string
+    isVirtualCluster: boolean
     category: SelectPickerOptionType
 }
 
-export interface ClusterEnvironmentDrawerProps extends ClusterEnvironmentDrawerFormProps {
-    id: string
+export type EnvDrawerProps = { reload: () => void; hideClusterDrawer: () => void } & (
+    | ({ drawerType: 'addEnv'; clusterId?: number; clusterName?: never } & Never<Partial<EnvDetails>>)
+    | ({ drawerType: 'editEnv'; clusterId: number; clusterName: string } & EnvDetails)
+)
+
+export type EnvironmentFormType = Omit<EnvDetails, 'envId'> & {
     clusterId: number
-    reload: () => void
-    hideClusterDrawer: () => void
-    isVirtual: boolean
-    clusterName: string
 }
 
-export type GetClusterEnvironmentUpdatePayloadType = Pick<
-    ClusterEnvironmentDrawerProps,
-    'clusterId' | 'id' | 'isVirtual'
-> &
-    Partial<Pick<ClusterNamespacesDTO, 'resourceVersion'>> & {
-        data: ClusterEnvironmentDrawerFormProps
-        namespaceLabels?: TagType[]
-        selectedCategory?: SelectPickerOptionType
-    }
+export type GetClusterEnvironmentUpdatePayloadType = Partial<Pick<ClusterNamespacesDTO, 'resourceVersion'>> & {
+    data: EnvironmentFormType
+    envId: number
+    namespaceLabels?: TagType[]
+}
 
-export interface ClusterNamespacesLabel {
+interface ClusterNamespacesLabel {
     key: string
     value: string
 }

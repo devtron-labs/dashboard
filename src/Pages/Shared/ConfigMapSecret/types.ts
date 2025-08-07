@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Dispatch, MutableRefObject, SetStateAction } from 'react'
+import { MutableRefObject } from 'react'
 
 import {
     AppConfigProps,
@@ -36,7 +36,7 @@ import {
 
 import { ConfigToolbarProps } from '@Pages/Applications'
 
-import { ComponentStates, EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
+import { EnvironmentOverrideComponentProps } from '../EnvironmentOverride/EnvironmentOverrides.types'
 
 // PAYLOAD PROPS
 export interface CMSecretDraftPayloadType {
@@ -74,8 +74,6 @@ export interface CMSecretWrapperProps
     > {
     componentType?: CMSecretComponentType
     parentName?: string
-    parentState?: ComponentStates
-    setParentState?: Dispatch<SetStateAction<ComponentStates>>
     clusterId?: string
     isApprovalPolicyConfigured?: boolean
     envName: string

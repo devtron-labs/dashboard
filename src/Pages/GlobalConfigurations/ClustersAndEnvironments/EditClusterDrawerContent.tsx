@@ -1,4 +1,30 @@
-import { APIResponseHandler, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import {
+    APIResponseHandler,
+    Button,
+    ButtonComponentType,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    noop,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
@@ -17,9 +43,9 @@ const EditClusterDrawerContent = ({
     sshTunnelConfig,
     clusterId,
     clusterName,
-    serverURL,
+    serverUrl,
     reload,
-    prometheusURL,
+    prometheusUrl,
     proxyUrl,
     toConnectWithSSHTunnel,
     isProd,
@@ -34,26 +60,43 @@ const EditClusterDrawerContent = ({
     )
 
     return (
-        <APIResponseHandler
-            isLoading={isPrometheusAuthLoading}
-            progressingProps={{
-                pageLoader: true,
-            }}
-            error={prometheusAuthError?.code}
-            errorScreenManagerProps={{
-                redirectURL: URLS.GLOBAL_CONFIG_CLUSTER,
-                reload: reloadPrometheusAuth,
-            }}
-        >
-            {prometheusAuthResult?.result && (
+        <div className="h-100 cluster-form bg__primary flexbox-col">
+            <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
+                <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                    <span className="fw-6 fs-16 cn-9">Edit Cluster</span>
+                </h2>
+
+                <Button
+                    icon={<Icon name="ic-close-large" color={null} />}
+                    dataTestId="header_close_icon"
+                    component={ButtonComponentType.button}
+                    style={ButtonStyleType.negativeGrey}
+                    size={ComponentSizeType.xs}
+                    variant={ButtonVariantType.borderLess}
+                    ariaLabel="Close edit cluster drawer"
+                    onClick={handleModalClose}
+                    showAriaLabelInTippy={false}
+                />
+            </div>
+            <APIResponseHandler
+                isLoading={isPrometheusAuthLoading}
+                progressingProps={{
+                    pageLoader: true,
+                }}
+                error={prometheusAuthError?.code}
+                errorScreenManagerProps={{
+                    redirectURL: URLS.GLOBAL_CONFIG_CLUSTER,
+                    reload: reloadPrometheusAuth,
+                }}
+            >
                 <ClusterForm
                     {...getSSHConfig(sshTunnelConfig)}
                     id={+clusterId}
                     clusterName={clusterName}
-                    serverUrl={serverURL}
+                    serverUrl={serverUrl}
                     reload={reload}
-                    prometheusUrl={prometheusURL}
-                    prometheusAuth={prometheusAuthResult.result.prometheusAuth}
+                    prometheusUrl={prometheusUrl}
+                    prometheusAuth={prometheusAuthResult?.result.prometheusAuth}
                     proxyUrl={proxyUrl}
                     isConnectedViaSSHTunnel={toConnectWithSSHTunnel}
                     hideEditModal={handleModalClose}
@@ -62,8 +105,8 @@ const EditClusterDrawerContent = ({
                     installationId={installationId}
                     category={category}
                 />
-            )}
-        </APIResponseHandler>
+            </APIResponseHandler>
+        </div>
     )
 }
 

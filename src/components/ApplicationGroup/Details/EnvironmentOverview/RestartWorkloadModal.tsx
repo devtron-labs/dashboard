@@ -20,12 +20,16 @@ import { Prompt, useHistory, useLocation } from 'react-router-dom'
 import {
     ApiQueuingWithBatch,
     Button,
+    ButtonStyleType,
+    ButtonVariantType,
     Checkbox,
     CHECKBOX_VALUE,
+    ComponentSizeType,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     Drawer,
     ErrorScreenManager,
     GenericEmptyState,
+    Icon,
     InfoBlock,
     MODAL_TYPE,
     stopPropagation,
@@ -36,7 +40,6 @@ import {
 import { ReactComponent as Retry } from '../../../../assets/icons/ic-arrow-clockwise.svg'
 import { ReactComponent as DropdownIcon } from '../../../../assets/icons/ic-arrow-left.svg'
 import { ReactComponent as RotateIcon } from '../../../../assets/icons/ic-arrows_clockwise.svg'
-import { ReactComponent as Close } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as MechanicalIcon } from '../../../../assets/img/ic-mechanical-operation.svg'
 import { importComponentFromFELibrary } from '../../../common'
 import {
@@ -205,7 +208,16 @@ export const RestartWorkloadModal = ({
     const renderHeaderSection = (): JSX.Element => (
         <div className="flex dc__content-space dc__border-bottom pt-12 pr-20 pb-12 pl-20">
             <div className="fs-16 fw-6 lh-1-5">{` Restart workloads on '${envName}'`}</div>
-            <Close className="icon-dim-24 cursor" onClick={closeDrawer} />
+            <Button
+                dataTestId="close-bulk-restart"
+                icon={<Icon name="ic-close-large" color={null} />}
+                size={ComponentSizeType.xs}
+                onClick={closeDrawer}
+                ariaLabel="close bulk restart drawer"
+                showAriaLabelInTippy={false}
+                style={ButtonStyleType.negativeGrey}
+                variant={ButtonVariantType.borderLess}
+            />
         </div>
     )
 
