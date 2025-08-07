@@ -43,7 +43,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
     const [loading, setLoading] = useState(false)
     const [form, setForm] = useState({
         username: 'admin',
-        password: '',
+        password: import.meta.env.VITE_ADMIN_PASSWORD ?? '',
     })
     const [errorMessage, setErrorMessage] = useState({
         username: {
@@ -152,7 +152,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
                     </div>
                 </div>
             </div>
-            <div className="flexbox-col dc__gap-12">
+            <div className="flexbox-col dc__align-items-center dc__gap-12">
                 <Button
                     disabled={loading || !form.password}
                     isLoading={loading}

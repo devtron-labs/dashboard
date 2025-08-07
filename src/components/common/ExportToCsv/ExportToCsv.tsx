@@ -19,6 +19,7 @@ import { CSVLink } from 'react-csv'
 import moment from 'moment'
 
 import {
+    ALLOW_ACTION_OUTSIDE_FOCUS_TRAP,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -271,6 +272,7 @@ const ExportToCsv = <ConfigValueType extends string = string>({
                 filename={`${fileName}_${moment().format(Moment12HourExportFormat)}.csv`}
                 headers={CSV_HEADERS[fileName] || []}
                 data={dataToExport || []}
+                className={ALLOW_ACTION_OUTSIDE_FOCUS_TRAP}
             />
             {!hideExportResultModal && (showExportingModal || isConfigurationAvailable) && (
                 <VisibleModal className="export-to-csv-modal" data-testid="export-to-csv-modal">
