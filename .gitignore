@@ -52,3 +52,6 @@ yalc.lock
 !.yarn/sdks
 !.yarn/versions
 .pnp.*
+
+.env.secrets
+scripts/

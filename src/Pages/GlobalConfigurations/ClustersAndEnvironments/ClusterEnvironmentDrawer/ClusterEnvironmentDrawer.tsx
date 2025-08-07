@@ -105,9 +105,6 @@ export const ClusterEnvironmentDrawer = ({
         error: ServerErrors
     }>(INITIAL_NAMESPACES)
 
-    // Need different state since validations change on basis of this state
-    const [isSelectedClusterVirtual, setIsSelectedClusterVirtual] = useState(isVirtualCluster ?? false)
-
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
         () => getClusterListing(true),
         [],
@@ -123,8 +120,9 @@ export const ClusterEnvironmentDrawer = ({
             isProduction: !!isProduction,
             category: category ?? null,
             description: description ?? '',
+            isVirtualCluster,
         },
-        validations: clusterEnvironmentDrawerFormValidationSchema({ isNamespaceMandatory: !isSelectedClusterVirtual }),
+        validations: clusterEnvironmentDrawerFormValidationSchema(),
     })
 
     const [, clusterDetails] = useAsync(
@@ -135,10 +133,10 @@ export const ClusterEnvironmentDrawer = ({
 
     useEffect(() => {
         if (clusterDetails) {
-            setIsSelectedClusterVirtual(clusterDetails[0].isVirtualCluster)
             setClusterNamespaces(INITIAL_NAMESPACES)
             setNamespaceLabels(INITIAL_NAMESPACE_LABELS)
-            reset(data, { keepErrors: false })
+            const updatedData = { ...data, isVirtualCluster: clusterDetails[0]?.isVirtualCluster ?? false }
+            reset(updatedData, { keepErrors: false })
         }
     }, [clusterDetails])
 
@@ -209,11 +207,10 @@ export const ClusterEnvironmentDrawer = ({
                 envId,
                 namespaceLabels: namespaceLabels.labels,
                 resourceVersion: namespaceLabels.resourceVersion,
-                isVirtualCluster: isSelectedClusterVirtual,
             })
 
             let api
-            if (isSelectedClusterVirtual) {
+            if (data.isVirtualCluster) {
                 api = getVirtualClusterSaveUpdate(envId)
             } else {
                 api = envId ? updateEnvironment : saveEnvironment
@@ -284,7 +281,6 @@ export const ClusterEnvironmentDrawer = ({
     const onDelete = async () => {
         const payload = getClusterEnvironmentUpdatePayload({
             data,
-            isVirtualCluster: isSelectedClusterVirtual,
             envId,
         })
         await deleteEnvironment(payload)
@@ -369,7 +365,7 @@ export const ClusterEnvironmentDrawer = ({
                             {...register('namespace')}
                             label="Namespace"
                             shouldTrim={false}
-                            required={!isSelectedClusterVirtual}
+                            required
                         />
 
                         <CustomInput
@@ -423,7 +419,7 @@ export const ClusterEnvironmentDrawer = ({
                             </div>
                         )}
 
-                        {EnvironmentLabels && !isSelectedClusterVirtual && (
+                        {EnvironmentLabels && !data.isVirtualCluster && (
                             <div className="dc__border-top-n1 pt-16">
                                 <EnvironmentLabels
                                     tags={namespaceLabels.labels}

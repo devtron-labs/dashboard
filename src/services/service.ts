@@ -430,6 +430,7 @@ export function getChartReferencesForAppAndEnv(
     appId: number,
     envId: number | null,
     isTemplateView: AppConfigProps['isTemplateView'],
+    signal?: AbortSignal,
 ): Promise<ResponseType<MinChartRefDTO>> {
     const url = isTemplateView
         ? getTemplateAPIRoute({
@@ -440,15 +441,16 @@ export function getChartReferencesForAppAndEnv(
               },
           })
         : `${Routes.CHART_REFERENCES_MIN}/${appId}${envId ? `/${envId}` : ''}`
-    return get(url)
+    return get(url, { signal })
 }
 
 export function getAppChartRefForAppAndEnv(
     appId: number,
     envId: number | null,
     isTemplateView: AppConfigProps['isTemplateView'],
+    signal?: AbortSignal
 ): Promise<ResponseType> {
-    return getChartReferencesForAppAndEnv(appId, envId, isTemplateView).then((response) => {
+    return getChartReferencesForAppAndEnv(appId, envId, isTemplateView, signal).then((response) => {
         const {
             result: { chartRefs, latestEnvChartRef, latestAppChartRef },
         } = response
@@ -555,4 +557,3 @@ export const validateContainerConfiguration = (request: any): Promise<any> => {
 
 export const getTemplateOptions = (appId: number, envId: number): Promise<ResponseType<TemplateListDTO[]>> =>
     get(getUrlWithSearchParams(Routes.DEPLOYMENT_OPTIONS, { appId, envId }))
-

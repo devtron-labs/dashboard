@@ -92,3 +92,18 @@
         grid-template-columns: 24px 200px 200px 100px 150px 1fr 60px;
     }
 }
+
+.cluster-metadata-header {
+    grid-template-columns: 24px 200px 200px 100px 100px 1fr;
+    grid-column-gap: 16px;
+}
+
+.cluster-table-wrapper {
+    // Apply to every first child up to 4 levels deep
+    > :first-child,
+    > :first-child > :first-child,
+    > :first-child > :first-child > :first-child,
+    > :first-child > :first-child > :first-child > :first-child {
+        overflow: visible !important;
+    }
+}

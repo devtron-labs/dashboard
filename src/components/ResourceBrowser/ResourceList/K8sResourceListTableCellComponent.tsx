@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { generatePath, useHistory, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
@@ -29,6 +45,7 @@ import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurati
 import { AI_BUTTON_CONFIG_MAP, EVENT_LIST, K8S_EMPTY_GROUP, NODE_LIST_HEADERS_TO_KEY_MAP } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import { getRenderInvolvedObjectButton, getRenderNodeButton, renderResourceValue } from '../Utils'
+import { K8sResourceListTableUsageCell } from './K8sResourceListTableUsageCell'
 import NodeActionsMenu from './NodeActionsMenu'
 import ResourceBrowserActionMenu from './ResourceBrowserActionMenu'
 import { K8sResourceListTableCellComponentProps } from './types'
@@ -207,6 +224,28 @@ const K8sResourceListTableCellComponent = ({
         count: resourceData.count as number,
         age: resourceData.age as string,
         lastSeen: resourceData[EVENT_LIST.dataKeys.lastSeen] as string,
+    }
+
+    if (columnName === 'cpu.usagePercentage') {
+        return (
+            <K8sResourceListTableUsageCell
+                percentage={resourceData['cpu.usagePercentage'] as string}
+                absoluteValue={resourceData['cpu.usage'] as string}
+                totalValue={resourceData['cpu.allocatable'] as string}
+                color="var(--B300)"
+            />
+        )
+    }
+
+    if (columnName === 'memory.usagePercentage') {
+        return (
+            <K8sResourceListTableUsageCell
+                percentage={resourceData['memory.usagePercentage'] as string}
+                absoluteValue={resourceData['memory.usage'] as string}
+                totalValue={resourceData['memory.allocatable'] as string}
+                color="var(--V300)"
+            />
+        )
     }
 
     return (

@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-import { KeyboardEvent, useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 import { parse as parseQueryString, ParsedQuery, stringify as stringifyQueryString } from 'query-string'
 
-import {
-    FilterChips,
-    GroupedFilterSelectPicker,
-    SearchBar,
-    useAsync,
-    useRegisterShortcut,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { FilterChips, GroupedFilterSelectPicker, SearchBar, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getClusterCapacity } from '@Components/ClusterNodes/clusterNodes.service'
 
@@ -52,25 +46,6 @@ const NodeListSearchFilter = ({
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const { search } = useLocation()
     const { push } = useHistory()
-
-    // REFS
-    const searchInputRef = useRef<HTMLInputElement | null>(null)
-
-    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
-
-    useEffect(() => {
-        const handleSearchFocus = () => {
-            searchInputRef.current?.focus()
-        }
-
-        if (registerShortcut) {
-            registerShortcut({ keys: ['/'], callback: handleSearchFocus })
-        }
-
-        return () => {
-            unregisterShortcut(['/'])
-        }
-    }, [])
 
     // CONSTANTS
     const isNodeSearchFilterApplied =
@@ -118,12 +93,6 @@ const NodeListSearchFilter = ({
         const finalQueryString = stringifyQueryString(callback(queryObject))
 
         push(`?${finalQueryString}`)
-    }
-
-    const handleSearchInputKeyUp = (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === 'Escape' || e.key === 'Esc') {
-            searchInputRef.current?.blur()
-        }
     }
 
     const handleSearchFilterChange =
@@ -186,9 +155,7 @@ const NodeListSearchFilter = ({
                     handleSearchChange={handleSearch}
                     keyboardShortcut="/"
                     inputProps={{
-                        ref: searchInputRef,
                         placeholder: 'Search Nodes',
-                        onKeyUp: handleSearchInputKeyUp,
                     }}
                     containerClassName="w-250"
                 />
@@ -251,9 +218,9 @@ const NodeListSearchFilter = ({
             <FilterChips<Partial<Record<NODE_SEARCH_KEYS | typeof NODE_K8S_VERSION_FILTER_KEY, string[]>>>
                 className="px-20 py-16"
                 filterConfig={{
-                    [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP].map(
-                        ({ value }) => value,
-                    ),
+                    [NODE_SEARCH_KEYS.NODE_GROUP]: appliedFilters[NODE_SEARCH_KEYS.NODE_GROUP]
+                        .filter(({ value }) => !!value)
+                        .map(({ value }) => value),
                     [NODE_SEARCH_KEYS.LABEL]: appliedFilters[NODE_SEARCH_KEYS.LABEL].map(({ value }) => value),
                     [NODE_K8S_VERSION_FILTER_KEY]: appliedFilters[NODE_K8S_VERSION_FILTER_KEY].map(
                         ({ value }) => value,
