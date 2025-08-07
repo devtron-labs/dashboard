@@ -74,10 +74,10 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
     }, [isFetching, isSuccess])
 
     // COMPUTED VALUES
-    const filteredChartList = useMemo(
-        () => (chartsList ?? []).filter((chart) => chart.name.toLowerCase().indexOf(searchText.toLowerCase()) >= 0),
-        [chartsList, searchText],
-    )
+    const filteredChartList = useMemo(() => {
+        const searchTextLowerCase = searchText.toLowerCase()
+        return (chartsList ?? []).filter((chart) => chart.name.toLowerCase().indexOf(searchTextLowerCase) >= 0)
+    }, [chartsList, searchText])
 
     // HANDLERS
     const handleSourceBtnClick = () => {
