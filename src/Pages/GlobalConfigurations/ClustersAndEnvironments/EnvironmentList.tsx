@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { SyntheticEvent, useMemo, useState } from 'react'
 import { generatePath, useHistory, useLocation } from 'react-router-dom'
 
@@ -48,6 +64,7 @@ const ClustersEnvironmentsList = ({
     clusterDetails,
     environments,
     filterConfig: { sortBy, searchKey, sortOrder },
+    filterClusterId,
     showUnmappedEnvs,
     setDeleteEnvConfig: setDeleteEnvId,
     setEditEnvConfig: setEditEnvId,
@@ -135,6 +152,26 @@ const ClustersEnvironmentsList = ({
         })
     }
 
+    const sortedFilteredList = namespaceEnvList
+        .filter((env) => env.environmentName.includes(searchKey))
+        .sort((a, b) => {
+            switch (sortBy) {
+                case EnvListSortableKeys.ENV_CATEGORY:
+                    return stringComparatorBySortOrder(a.category, b.category, sortOrder)
+                case EnvListSortableKeys.ENV_NAMESPACE:
+                    return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
+                case EnvListSortableKeys.ENV_TYPE:
+                    return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
+                case EnvListSortableKeys.ENV_NAME:
+                default:
+                    return environmentNameComparator(
+                        a.environmentName,
+                        b.environmentName,
+                        sortOrder || SortingOrder.ASC,
+                    )
+            }
+        })
+
     const renderNamespaceEnvList = () => {
         if (namespaceListLoading) {
             return <ClusterEnvLoader />
@@ -144,26 +181,7 @@ const ClustersEnvironmentsList = ({
             return <GenericSectionErrorState reload={reloadNamespaces} />
         }
 
-        const sortedFilteredList = namespaceEnvList
-            .filter((env) => env.environmentName.includes(searchKey))
-            .sort((a, b) => {
-                switch (sortBy) {
-                    case EnvListSortableKeys.ENV_CATEGORY:
-                        return stringComparatorBySortOrder(a.category, b.category, sortOrder)
-                    case EnvListSortableKeys.ENV_NAMESPACE:
-                        return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
-                    case EnvListSortableKeys.ENV_TYPE:
-                        return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
-                    case EnvListSortableKeys.ENV_NAME:
-                    default:
-                        return environmentNameComparator(
-                            a.environmentName,
-                            b.environmentName,
-                            sortOrder || SortingOrder.ASC,
-                        )
-                }
-            })
-
+        // Empty state when a particular cluster is selected
         if (searchKey && !sortedFilteredList.length) {
             return (
                 <div className="p-16">
@@ -272,11 +290,16 @@ const ClustersEnvironmentsList = ({
         )
     }
 
+    // If no cluster is selected and no environments are found, return null
+    if (!filterClusterId && !sortedFilteredList.length) {
+        return null
+    }
+
     return (
         <>
             {/* Cluster metadata */}
             <div
-                className="px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
+                className="dc__zi-1 px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
                 style={{ top: '37px' }}
             >
                 <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
@@ -394,7 +417,7 @@ const EnvironmentList = ({
     return (
         <>
             <div
-                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
+                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row dc__zi-1 ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
             >
                 {/* Empty div for icon */}
                 <div />
@@ -449,6 +472,7 @@ const EnvironmentList = ({
                         showUnmappedEnvs={showUnmappedEnvs}
                         setDeleteEnvConfig={setDeleteEnvConfig}
                         setEditEnvConfig={setEditEnvConfig}
+                        filterClusterId={filterClusterId}
                     />
                 ))}
             {deleteEnvConfig && (

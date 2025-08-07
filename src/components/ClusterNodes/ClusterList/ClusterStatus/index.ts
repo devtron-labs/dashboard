@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import { DeploymentAppRadioGroupType } from '@Components/v2/values/chartValuesDiff/ChartValuesView.type'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ */
 
-export interface CDPipelineDeploymentAppTypeProps
-    extends Omit<DeploymentAppRadioGroupType, 'isFromCDPipeline' | 'handleOnChange'> {
-    isVirtualEnvironment: boolean
-    noGitOpsModuleInstalledAndConfigured: boolean
-    isGitOpsInstalledButNotConfigured: boolean
-    handleChange: DeploymentAppRadioGroupType['handleOnChange']
-}
+export * from './ClusterStatus'
