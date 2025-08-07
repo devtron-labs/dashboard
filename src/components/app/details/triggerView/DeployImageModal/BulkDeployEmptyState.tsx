@@ -27,7 +27,7 @@ const BulkDeployEmptyState = ({
         return <TriggerBlockEmptyState stageType={stageType} appId={appId} />
     }
 
-    if (isTriggerBlockedDueToPlugin) {
+    if (MissingPluginBlockState && isTriggerBlockedDueToPlugin) {
         // It can't be CD
         const commonNodeAttrType: CommonNodeAttr['type'] = stageType === DeploymentNodeType.PRECD ? 'PRECD' : 'POSTCD'
 

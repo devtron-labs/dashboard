@@ -27,7 +27,6 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
 import { BulkCIDetailType, ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BULK_CI_BUILD_STATUS,
@@ -417,7 +416,7 @@ const BulkBuildImageModal = ({
                 ? BULK_CI_BUILD_STATUS(numberOfAppsLoading)
                 : BULK_CI_MATERIAL_STATUS(numberOfAppsLoading)
 
-            return <GenericEmptyState {...message} SvgImage={MechanicalOperation} contentClassName="text-center" />
+            return <GenericEmptyState {...message} imgName="img-mechanical-operation" contentClassName="text-center" />
         }
 
         if (isLoadingSingleAppInfoMap) {

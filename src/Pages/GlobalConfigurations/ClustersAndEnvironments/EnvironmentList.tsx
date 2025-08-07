@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import { SyntheticEvent, useMemo, useState } from 'react'
 import { generatePath, useHistory, useLocation } from 'react-router-dom'
 
@@ -34,9 +50,9 @@ import {
     EnvListSortableKeys,
     EnvNamespaceRowType,
 } from './cluster.type'
-import { environmentNameComparator, getSelectParsedCategory } from './cluster.util'
+import { environmentNameComparator, getNamespaceCount, getSelectParsedCategory } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
-import { ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
+import { ClusterActions, ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 import './cluster.scss'
@@ -45,17 +61,16 @@ const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 
 
 // This is a list of namespaces and environments mapped to a cluster
 const ClustersEnvironmentsList = ({
-    clusterId,
-    clusterName,
-    clusterType,
+    clusterDetails,
     environments,
-    isVirtualCluster,
-    status,
     filterConfig: { sortBy, searchKey, sortOrder },
+    filterClusterId,
     showUnmappedEnvs,
     setDeleteEnvConfig: setDeleteEnvId,
     setEditEnvConfig: setEditEnvId,
 }: ClusterEnvListProps) => {
+    const { clusterId, clusterName, isVirtualCluster, status, isProd, category } = clusterDetails
+
     const [namespaceListLoading, namespaceListResult, namespaceListError, reloadNamespaces] = useAsync(
         () => namespaceListByClusterId(`${clusterId}`),
         [],
@@ -87,17 +102,19 @@ const ClustersEnvironmentsList = ({
 
     const namespaceEnvList: EnvNamespaceRowType[] = useMemo(
         () => [
-            ...environments.map(({ id: envId, environmentName, namespace, isProd, category, description }) => ({
-                clusterId,
-                envId,
-                environmentName,
-                namespace,
-                envType: isProd ? 'Production' : 'Non Production',
-                category: category?.name ?? '',
-                description,
-                // false for virtual clusters and actual namespaces might not exist, for physical cluster showing not found if does not exist
-                namespaceNotFound: isVirtualCluster || !showUnmappedEnvs ? false : !namespacesMap[namespace],
-            })),
+            ...environments.map(
+                ({ id: envId, environmentName, namespace, isProd: isProdEnv, category: envCategory, description }) => ({
+                    clusterId,
+                    envId,
+                    environmentName,
+                    namespace,
+                    envType: isProdEnv ? 'Production' : 'Non Production',
+                    category: envCategory?.name ?? '',
+                    description,
+                    // false for virtual clusters and actual namespaces might not exist, for physical cluster showing not found if does not exist
+                    namespaceNotFound: isVirtualCluster || !showUnmappedEnvs ? false : !namespacesMap[namespace],
+                }),
+            ),
             ...(namespaceListResult?.result ?? [])
                 .filter((namespace) => !mappedNamespacesMap[namespace])
                 .map((namespace) => ({
@@ -135,6 +152,26 @@ const ClustersEnvironmentsList = ({
         })
     }
 
+    const sortedFilteredList = namespaceEnvList
+        .filter((env) => env.environmentName.includes(searchKey))
+        .sort((a, b) => {
+            switch (sortBy) {
+                case EnvListSortableKeys.ENV_CATEGORY:
+                    return stringComparatorBySortOrder(a.category, b.category, sortOrder)
+                case EnvListSortableKeys.ENV_NAMESPACE:
+                    return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
+                case EnvListSortableKeys.ENV_TYPE:
+                    return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
+                case EnvListSortableKeys.ENV_NAME:
+                default:
+                    return environmentNameComparator(
+                        a.environmentName,
+                        b.environmentName,
+                        sortOrder || SortingOrder.ASC,
+                    )
+            }
+        })
+
     const renderNamespaceEnvList = () => {
         if (namespaceListLoading) {
             return <ClusterEnvLoader />
@@ -144,26 +181,7 @@ const ClustersEnvironmentsList = ({
             return <GenericSectionErrorState reload={reloadNamespaces} />
         }
 
-        const sortedFilteredList = namespaceEnvList
-            .filter((env) => env.environmentName.includes(searchKey))
-            .sort((a, b) => {
-                switch (sortBy) {
-                    case EnvListSortableKeys.ENV_CATEGORY:
-                        return stringComparatorBySortOrder(a.category, b.category, sortOrder)
-                    case EnvListSortableKeys.ENV_NAMESPACE:
-                        return stringComparatorBySortOrder(a.namespace, b.namespace, sortOrder)
-                    case EnvListSortableKeys.ENV_TYPE:
-                        return stringComparatorBySortOrder(a.envType, b.envType, sortOrder)
-                    case EnvListSortableKeys.ENV_NAME:
-                    default:
-                        return environmentNameComparator(
-                            a.environmentName,
-                            b.environmentName,
-                            sortOrder || SortingOrder.ASC,
-                        )
-                }
-            })
-
+        // Empty state when a particular cluster is selected
         if (searchKey && !sortedFilteredList.length) {
             return (
                 <div className="p-16">
@@ -201,7 +219,7 @@ const ClustersEnvironmentsList = ({
         }
 
         return sortedFilteredList.map(
-            ({ namespace, namespaceNotFound, envId, envType, environmentName, category, description }) => (
+            ({ namespace, namespaceNotFound, envId, envType, environmentName, category: envCategory, description }) => (
                 <div
                     role="button"
                     key={`${envId}-${namespace}-${environmentName}`}
@@ -220,8 +238,8 @@ const ClustersEnvironmentsList = ({
                             </Tooltip>
                             <span>{envType}</span>
                             {isFELibAvailable && (
-                                <Tooltip content={category}>
-                                    <span className="dc__truncate">{category}</span>
+                                <Tooltip content={envCategory}>
+                                    <span className="dc__truncate">{envCategory}</span>
                                 </Tooltip>
                             )}
                             <Tooltip content={description}>
@@ -272,31 +290,45 @@ const ClustersEnvironmentsList = ({
         )
     }
 
+    // If no cluster is selected and no environments are found, return null
+    if (!filterClusterId && !sortedFilteredList.length) {
+        return null
+    }
+
     return (
         <>
             {/* Cluster metadata */}
             <div
-                className="px-20 py-6 bg__secondary flex dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
+                className="dc__zi-1 px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
                 style={{ top: '37px' }}
             >
                 <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
-                <span className="fw-6">{clusterName}</span>
-                <div className="flex dc__gap-4 fw-4">
-                    <span>{clusterType}</span>
-                    <span>·</span>
-                    <span>{environments.length} Environments</span>
-                    {showUnmappedEnvs && (
-                        <>
-                            <span>·</span>
-                            {isVirtualCluster ? (
-                                <span>{environments.filter(({ namespace }) => !!namespace).length} Namespaces</span>
-                            ) : (
-                                !namespaceListError && (
-                                    <span>{(namespaceListResult?.result ?? []).length} Namespaces</span>
-                                )
-                            )}
-                        </>
-                    )}
+                <Tooltip
+                    content={`${clusterName} (${environments.length} Environments)`}
+                    alwaysShowTippyOnHover
+                    maxWidth={250}
+                >
+                    <div className="flex left dc__gap-6">
+                        <span className="fw-6 dc__white-space-nowrap">{clusterName}</span>
+                        <span className="dc__ellipsis-right">({environments.length} Environments)</span>
+                    </div>
+                </Tooltip>
+                {showUnmappedEnvs ? (
+                    <span>
+                        {getNamespaceCount({
+                            isVirtualCluster,
+                            envList: environments,
+                            namespaceList: namespaceListResult?.result,
+                        })}
+                        &nbsp;Namespaces
+                    </span>
+                ) : (
+                    <span />
+                )}
+                <span>{isProd ? 'Production' : 'Non Production'}</span>
+                {category?.label ? <span>{category.label}</span> : <span />}
+                <div className="flex right">
+                    <ClusterActions clusterId={clusterId} isVirtualCluster={isVirtualCluster} />
                 </div>
             </div>
             {/* Env and Namespace List */}
@@ -385,7 +417,7 @@ const EnvironmentList = ({
     return (
         <>
             <div
-                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
+                className={`border__secondary--bottom bg__primary px-20 py-10 dc__grid environment-row dc__zi-1 ${isFELibAvailable ? 'with-category' : ''} dc__align-items-center dc__position-sticky dc__top-0`}
             >
                 {/* Empty div for icon */}
                 <div />
@@ -427,14 +459,11 @@ const EnvironmentList = ({
             </div>
             {clusterList
                 .filter(({ clusterId }) => !filterClusterId || filterClusterId === String(clusterId))
-                .map(({ clusterId, clusterName, isProd, isVirtualCluster, status }) => (
+                .map((clusterDetails) => (
                     <ClustersEnvironmentsList
-                        key={`${clusterName}-${clusterId}`}
-                        clusterId={clusterId}
-                        clusterName={clusterName}
-                        clusterType={isProd ? 'Production' : 'Non Production'}
-                        environments={clusterIdVsEnvMap[clusterId] ?? []}
-                        isVirtualCluster={isVirtualCluster}
+                        key={`${clusterDetails.clusterName}-${clusterDetails.clusterId}`}
+                        clusterDetails={clusterDetails}
+                        environments={clusterIdVsEnvMap[clusterDetails.clusterId] ?? []}
                         filterConfig={{
                             sortBy,
                             sortOrder,
@@ -443,7 +472,7 @@ const EnvironmentList = ({
                         showUnmappedEnvs={showUnmappedEnvs}
                         setDeleteEnvConfig={setDeleteEnvConfig}
                         setEditEnvConfig={setEditEnvConfig}
-                        status={status}
+                        filterClusterId={filterClusterId}
                     />
                 ))}
             {deleteEnvConfig && (

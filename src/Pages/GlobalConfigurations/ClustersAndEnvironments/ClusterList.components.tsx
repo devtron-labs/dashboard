@@ -1,4 +1,20 @@
-import { FunctionComponent } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { FunctionComponent, useEffect, useRef } from 'react'
 import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -18,6 +34,7 @@ import {
     noop,
     stopPropagation,
     TableCellComponentProps,
+    TableSignalEnum,
     Tooltip,
     URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -26,6 +43,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import {
+    Cluster,
     ClusterEnvTabs,
     ClusterListFields,
     ClusterRowData,
@@ -61,15 +79,7 @@ export const ClusterIconWithStatus = ({
     )
 }
 
-export const ClusterListCellComponent: FunctionComponent<
-    TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
-> = ({
-    field,
-    row: {
-        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
-    },
-    isRowActive,
-}: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
+export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: number; isVirtualCluster: boolean }) => {
     const { push } = useHistory()
     const { search } = useLocation()
 
@@ -120,6 +130,113 @@ export const ClusterListCellComponent: FunctionComponent<
         }
     }
 
+    return (
+        <div className="flex dc__gap-8">
+            <Button
+                dataTestId={`add-env-${clusterId}`}
+                ariaLabel={`add-env-${clusterId}`}
+                icon={<Icon name="ic-add" color={null} />}
+                showAriaLabelInTippy={false}
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.xs}
+                onClick={handleAddEnv}
+                showTooltip
+                tooltipProps={{
+                    content: 'Add Environment',
+                }}
+            />
+            <Button
+                dataTestId={`edit-cluster-${clusterId}`}
+                ariaLabel={`edit-cluster-${clusterId}`}
+                icon={<Icon name="ic-pencil" color={null} />}
+                variant={ButtonVariantType.borderLess}
+                showAriaLabelInTippy={false}
+                style={ButtonStyleType.neutral}
+                size={ComponentSizeType.xs}
+                onClick={handleEditCluster}
+                showTooltip
+                tooltipProps={{
+                    content: 'Edit Cluster',
+                }}
+            />
+            <ActionMenu
+                id="cluster-actions-action-menu"
+                onClick={handleActionMenuClick}
+                options={[
+                    ...(!isVirtualCluster && HibernationRulesModal
+                        ? [
+                              {
+                                  items: [
+                                      {
+                                          id: 'edit-pod-spread',
+                                          label: 'Edit Pod Spread',
+                                          startIcon: { name: 'ic-two-cubes' as IconName },
+                                      },
+                                      {
+                                          id: 'hibernation-rules',
+                                          label: 'Hibernation Rules',
+                                          startIcon: {
+                                              name: 'ic-hibernate-circle' as IconName,
+                                          },
+                                      },
+                                  ],
+                              },
+                          ]
+                        : []),
+                    {
+                        items: [
+                            {
+                                id: 'delete-cluster',
+                                label: 'Delete cluster',
+                                startIcon: { name: 'ic-delete' },
+                                isDisabled: clusterId === DEFAULT_CLUSTER_ID,
+                                type: 'negative',
+                            },
+                        ],
+                    },
+                ]}
+                buttonProps={{
+                    ariaLabel: 'cluster-actions',
+                    dataTestId: `cluster-actions-${clusterId}`,
+                    icon: <Icon name="ic-more-vertical" color={null} />,
+                    size: ComponentSizeType.xs,
+                    variant: ButtonVariantType.borderLess,
+                    style: ButtonStyleType.neutral,
+                    showAriaLabelInTippy: false,
+                }}
+            />
+        </div>
+    )
+}
+
+export const ClusterListCellComponent: FunctionComponent<
+    TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>
+> = ({
+    field,
+    row: {
+        data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
+    },
+    isRowActive,
+    signals,
+}: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
+    const linkRef = useRef<HTMLAnchorElement>(null)
+
+    useEffect(() => {
+        const handleEnter = ({ detail: { activeRowData } }) => {
+            if (activeRowData.data.clusterId === clusterId) {
+                linkRef.current?.click()
+            }
+        }
+
+        if (isRowActive) {
+            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, handleEnter)
+        }
+
+        return () => {
+            signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, handleEnter)
+        }
+    }, [isRowActive])
+
     switch (field) {
         case ClusterListFields.ICON:
             return (
@@ -130,6 +247,7 @@ export const ClusterListCellComponent: FunctionComponent<
         case ClusterListFields.CLUSTER_NAME:
             return (
                 <Link
+                    ref={linkRef}
                     to={getUrlWithSearchParams(URLS.GLOBAL_CONFIG_CLUSTER, {
                         selectedTab: ClusterEnvTabs.ENVIRONMENTS,
                         clusterId,
@@ -163,82 +281,8 @@ export const ClusterListCellComponent: FunctionComponent<
             )
         case ClusterListFields.ACTIONS:
             return (
-                <div className={isRowActive ? '' : 'dc__opacity-hover--child'}>
-                    <div className="flex dc__gap-8 py-10">
-                        <Button
-                            dataTestId={`add-env-${clusterId}`}
-                            ariaLabel={`add-env-${clusterId}`}
-                            icon={<Icon name="ic-add" color={null} />}
-                            showAriaLabelInTippy={false}
-                            variant={ButtonVariantType.borderLess}
-                            size={ComponentSizeType.xs}
-                            onClick={handleAddEnv}
-                            showTooltip
-                            tooltipProps={{
-                                content: 'Add Environment',
-                            }}
-                        />
-                        <Button
-                            dataTestId={`edit-cluster-${clusterId}`}
-                            ariaLabel={`edit-cluster-${clusterId}`}
-                            icon={<Icon name="ic-pencil" color={null} />}
-                            variant={ButtonVariantType.borderLess}
-                            showAriaLabelInTippy={false}
-                            style={ButtonStyleType.neutral}
-                            size={ComponentSizeType.xs}
-                            onClick={handleEditCluster}
-                            showTooltip
-                            tooltipProps={{
-                                content: 'Edit Cluster',
-                            }}
-                        />
-                        <ActionMenu
-                            id="cluster-actions-action-menu"
-                            onClick={handleActionMenuClick}
-                            options={[
-                                ...(!isVirtualCluster && HibernationRulesModal
-                                    ? [
-                                          {
-                                              items: [
-                                                  {
-                                                      id: 'edit-pod-spread',
-                                                      label: 'Edit Pod Spread',
-                                                      startIcon: { name: 'ic-two-cubes' as IconName },
-                                                  },
-                                                  {
-                                                      id: 'hibernation-rules',
-                                                      label: 'Hibernation Rules',
-                                                      startIcon: {
-                                                          name: 'ic-hibernate-circle' as IconName,
-                                                      },
-                                                  },
-                                              ],
-                                          },
-                                      ]
-                                    : []),
-                                {
-                                    items: [
-                                        {
-                                            id: 'delete-cluster',
-                                            label: 'Delete cluster',
-                                            startIcon: { name: 'ic-delete' },
-                                            isDisabled: clusterId === DEFAULT_CLUSTER_ID,
-                                            type: 'negative',
-                                        },
-                                    ],
-                                },
-                            ]}
-                            buttonProps={{
-                                ariaLabel: 'cluster-actions',
-                                dataTestId: 'cluster-actions',
-                                icon: <Icon name="ic-more-vertical" color={null} />,
-                                size: ComponentSizeType.xs,
-                                variant: ButtonVariantType.borderLess,
-                                style: ButtonStyleType.neutral,
-                                showAriaLabelInTippy: false,
-                            }}
-                        />
-                    </div>
+                <div className={`${isRowActive ? '' : 'dc__opacity-hover--child'} py-10`}>
+                    <ClusterActions clusterId={clusterId} isVirtualCluster={isVirtualCluster} />
                 </div>
             )
         default:
@@ -251,7 +295,7 @@ export const AddEnvironment = ({
     handleClose,
 }: {
     reloadEnvironments: () => void
-    handleClose
+    handleClose: () => void
 }) => {
     const { clusterId } = useParams<{ clusterId?: string }>()
 
@@ -260,6 +304,29 @@ export const AddEnvironment = ({
             drawerType="addEnv"
             reload={reloadEnvironments}
             clusterId={clusterId ? +clusterId : null}
+            hideClusterDrawer={handleClose}
+        />
+    )
+}
+
+export const AddEnvironmentFromClusterName = ({
+    reloadEnvironments,
+    handleClose,
+    clusterList,
+}: {
+    clusterList: Cluster[]
+    reloadEnvironments: () => void
+    handleClose: () => void
+}) => {
+    const { clusterName } = useParams<{ clusterName?: string }>()
+
+    const clusterId = clusterList.find((c) => c.clusterName === clusterName)?.clusterId
+
+    return (
+        <ClusterEnvironmentDrawer
+            drawerType="addEnv"
+            reload={reloadEnvironments}
+            clusterId={clusterId}
             hideClusterDrawer={handleClose}
         />
     )

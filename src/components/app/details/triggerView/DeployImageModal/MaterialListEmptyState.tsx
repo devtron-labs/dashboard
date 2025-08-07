@@ -3,6 +3,7 @@ import {
     ButtonVariantType,
     EMPTY_STATE_STATUS,
     GenericEmptyState,
+    GenericFilterEmptyState,
     getIsApprovalPolicyConfigured,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -48,12 +49,6 @@ const MaterialListEmptyState = ({
     const clearSearch = () => {
         onSearchApply('')
     }
-
-    const renderGenerateButton = () => (
-        <button className="flex cta h-32" onClick={clearSearch} type="button">
-            Clear filter
-        </button>
-    )
 
     const renderFilterEmptyStateSubtitle = (): JSX.Element => (
         <p className="m-0 flex cn-8 fs-13 fw-4 lh-20">
@@ -118,12 +113,10 @@ const MaterialListEmptyState = ({
 
     if (isSearchApplied) {
         return (
-            <GenericEmptyState
-                image={noArtifact}
+            <GenericFilterEmptyState
+                handleClearFilters={clearSearch}
                 title="No matching image available"
                 subTitle="We couldn't find any matching image"
-                isButtonAvailable
-                renderButton={renderGenerateButton}
             />
         )
     }

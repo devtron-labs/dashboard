@@ -25,9 +25,8 @@ export const getClusterEnvironmentUpdatePayload = ({
     envId,
     namespaceLabels,
     resourceVersion,
-    isVirtualCluster,
 }: GetClusterEnvironmentUpdatePayloadType) =>
-    isVirtualCluster
+    data.isVirtualCluster
         ? {
               id: envId,
               environment_name: data.envName,

@@ -94,7 +94,11 @@ const jsToBottomNoModule = () => {
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    process.env = { ...process.env, ...loadEnv(mode, process.cwd(), '') }
+    const secretsEnv = loadEnv('secrets', process.cwd(), '')
+    const targetUrl = secretsEnv.VITE_TARGET_URL ?? TARGET_URL
+
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd(), ''), ...secretsEnv }
+
     const baseConfig: UserConfig = {
         base: '/dashboard',
         preview: {
@@ -268,10 +272,10 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             proxy: {
                 '/orchestrator': {
-                    target: TARGET_URL,
+                    target: targetUrl,
                     changeOrigin: true,
                 },
-                '/grafana': TARGET_URL,
+                '/grafana': targetUrl,
             },
         },
     }
