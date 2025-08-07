@@ -73,3 +73,11 @@ export interface EnvironmentListType {
     setSelectedEnv?: React.Dispatch<React.SetStateAction<EnvironmentWithSelectPickerType>>
     isBorderLess?: boolean
 }
+
+export enum ComponentStates {
+    loading = 'loading',
+    loaded = 'loaded',
+    success = 'success',
+    failed = 'failed',
+    reloading = 'reloading',
+}

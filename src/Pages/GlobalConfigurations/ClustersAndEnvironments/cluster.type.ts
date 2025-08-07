@@ -372,11 +372,11 @@ export interface EnvironmentListProps {
 }
 
 export type DeleteEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'>
+
 export type EditEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'> & { isVirtualCluster: boolean }
-export interface ClusterEnvListProps
-    extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs'>,
-        Pick<Cluster, 'clusterId' | 'clusterName' | 'status' | 'isVirtualCluster'> {
-    clusterType: string
+
+export interface ClusterEnvListProps extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs'> {
+    clusterDetails: Cluster
     environments: Environment[]
     setDeleteEnvConfig: Dispatch<SetStateAction<DeleteEnvConfigType>>
     setEditEnvConfig: Dispatch<SetStateAction<EditEnvConfigType>>

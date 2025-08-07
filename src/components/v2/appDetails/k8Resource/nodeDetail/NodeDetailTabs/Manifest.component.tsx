@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
-import { useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Prompt, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
 
@@ -24,6 +24,7 @@ import {
     Checkbox,
     CHECKBOX_VALUE,
     CodeEditor,
+    CodeEditorProps,
     ConditionalWrap,
     ConfigurationType,
     DeploymentAppTypes,
@@ -36,8 +37,10 @@ import {
     TOAST_ACCESS_DENIED,
     ToastManager,
     ToastVariantType,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
     useEffectAfterMount,
     useMainContext,
+    usePrompt,
     YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -140,9 +143,12 @@ const ManifestComponent = ({
     const [lockedKeys, setLockedKeys] = useState<string[]>(null)
     const [showLockedDiffModal, setShowLockedDiffModal] = useState(false)
 
+    const previousEditorState = useRef('')
+
     const { isSuperAdmin } = useMainContext() // to show the cluster meta data at the bottom
     // Cancel is an intermediate state wherein edit is true
     const isEditMode =
+        manifestCodeEditorMode === ManifestCodeEditorMode.REVIEW ||
         manifestCodeEditorMode === ManifestCodeEditorMode.EDIT ||
         manifestCodeEditorMode === ManifestCodeEditorMode.CANCEL
 
@@ -683,6 +689,41 @@ const ManifestComponent = ({
         handleStickDynamicTabsToTop?.()
     }
 
+    const hasUnsavedChanges = previousEditorState.current !== getCodeEditorValue()
+
+    usePrompt({ shouldPrompt: hasUnsavedChanges })
+
+    const getCodeEditorProps = () => {
+        if (!previousEditorState.current) {
+            previousEditorState.current = getCodeEditorValue()
+        }
+
+        if (showManifestCompareView) {
+            return {
+                diffView: true,
+                originalValue: desiredManifest,
+                modifiedValue: getCodeEditorValue(),
+                onModifiedValueChange: handleEditorValueChange,
+            } as CodeEditorProps<true>
+        }
+
+        if (manifestCodeEditorMode === ManifestCodeEditorMode.REVIEW) {
+            return {
+                diffView: true,
+                originalValue: previousEditorState.current,
+                modifiedValue: getCodeEditorValue(),
+                onModifiedValueChange: handleEditorValueChange,
+            } as CodeEditorProps<true>
+        }
+
+        return {
+            diffView: false,
+            value: getCodeEditorValue(),
+            onChange: handleEditorValueChange,
+            autoFocus: isEditMode,
+        } as CodeEditorProps<false>
+    }
+
     const renderContent = () => {
         if (showGUIView) {
             return (
@@ -714,19 +755,7 @@ const ManifestComponent = ({
                     height={isResourceBrowserView || isDynamicTabsStuck ? 'fitToParent' : '100%'}
                     onSearchPanelOpen={handleStickDynamicTabsToTopWrapper}
                     onSearchBarAction={handleStickDynamicTabsToTopWrapper}
-                    {...(showManifestCompareView
-                        ? {
-                              diffView: true,
-                              originalValue: desiredManifest,
-                              modifiedValue: getCodeEditorValue(),
-                              onModifiedValueChange: handleEditorValueChange,
-                          }
-                        : {
-                              diffView: false,
-                              value: getCodeEditorValue(),
-                              onChange: handleEditorValueChange,
-                              autoFocus: isEditMode,
-                          })}
+                    {...getCodeEditorProps()}
                 >
                     {renderEditorInfo(true)}
 
@@ -761,50 +790,55 @@ const ManifestComponent = ({
         )
     }
 
-    return isDeleted ? (
-        <div className="h-100 flex-grow-1">
-            <MessageUI msg="This resource no longer exists" size={32} />
-        </div>
-    ) : (
-        <div
-            className={`flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-auto' : ''}`}
-            data-testid="app-manifest-container"
-            style={{
-                background: 'var(--terminal-bg)',
-            }}
-        >
-            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
-            {!error && (
+    return (
+        <>
+            <Prompt when={hasUnsavedChanges} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
+            {isDeleted ? (
+                <div className="h-100 flex-grow-1">
+                    <MessageUI msg="This resource no longer exists" size={32} />
+                </div>
+            ) : (
                 <div
-                    className={`${
-                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                    } flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-hidden' : ''}`}
+                    className={`flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-auto' : ''}`}
+                    data-testid="app-manifest-container"
+                    style={{
+                        background: 'var(--terminal-bg)',
+                    }}
                 >
-                    {isResourceMissing && !loading && !showManifestCompareView ? (
-                        <MessageUI
-                            msg="Manifest not available"
-                            size={24}
-                            isShowActionButton={showDesiredAndCompareManifest}
-                            actionButtonText="Recreate this resource"
-                            onActionButtonClick={recreateResource}
+                    {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
+                    {!error && (
+                        <div
+                            className={`${
+                                manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
+                            } flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-hidden' : ''}`}
+                        >
+                            {isResourceMissing && !loading && !showManifestCompareView ? (
+                                <MessageUI
+                                    msg="Manifest not available"
+                                    size={24}
+                                    isShowActionButton={showDesiredAndCompareManifest}
+                                    actionButtonText="Recreate this resource"
+                                    onActionButtonClick={recreateResource}
+                                />
+                            ) : (
+                                renderContent()
+                            )}
+                        </div>
+                    )}
+
+                    {showLockedDiffModal && ShowIneligibleChangesModal && (
+                        <ShowIneligibleChangesModal
+                            handleCallApplyChangesAPI={handleCallApplyChangesAPI}
+                            uneditedManifest={uneditedManifest}
+                            // NOTE: a check on modifiedManifest is made before this component is rendered
+                            editedManifest={YAML.parse(modifiedManifest)}
+                            handleModalClose={handleCloseShowLockedDiffModal}
+                            lockedKeys={lockedKeys}
                         />
-                    ) : (
-                        renderContent()
                     )}
                 </div>
             )}
-
-            {showLockedDiffModal && ShowIneligibleChangesModal && (
-                <ShowIneligibleChangesModal
-                    handleCallApplyChangesAPI={handleCallApplyChangesAPI}
-                    uneditedManifest={uneditedManifest}
-                    // NOTE: a check on modifiedManifest is made before this component is rendered
-                    editedManifest={YAML.parse(modifiedManifest)}
-                    handleModalClose={handleCloseShowLockedDiffModal}
-                    lockedKeys={lockedKeys}
-                />
-            )}
-        </div>
+        </>
     )
 }
 

@@ -4,6 +4,7 @@
 *.test.tsx
 .eslintrc.js
 vite.config.mts
+scripts/
 
 # The following files have eslint errors/warnings
 src/Pages/GlobalConfigurations/Authorization/APITokens/__tests__/ApiTokens.test.tsx
@@ -126,7 +127,6 @@ src/components/app/list/appList.modal.ts
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
 src/components/app/service.ts
-src/components/bulkEdits/BulkEdits.tsx
 src/components/bulkEdits/bulkedit.utils.tsx
 src/components/cdPipeline/BuildCD.tsx
 src/components/cdPipeline/CDPipeline.tsx
