@@ -150,7 +150,7 @@ export const getAppGroupDeploymentWindowMap = async (
     appEnvList: (Pick<WorkflowType, 'appId'> & { envId: number })[],
     envId: number,
 ): Promise<GetAppGroupDeploymentWindowMapReturnType> => {
-    if (!getDeploymentWindowStateAppGroup || !processDeploymentWindowMetadata) {
+    if (!getDeploymentWindowStateAppGroup || !processDeploymentWindowMetadata || !appEnvList?.length) {
         return {
             deploymentWindowMap: {},
             isPartialActionAllowed: false,
