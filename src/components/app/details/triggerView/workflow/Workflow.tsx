@@ -230,6 +230,7 @@ export class Workflow extends Component<WorkflowProps> {
                 ciBlockState={node.pluginBlockState}
                 filteredCIPipelines={this.props.filteredCIPipelines}
                 environmentLists={this.props.environmentLists}
+                openCIMaterialModal={this.props.openCIMaterialModal}
             />
         )
     }
@@ -252,7 +253,6 @@ export class Workflow extends Component<WorkflowProps> {
                 environmentId={node.environmentId}
                 triggerType={node.triggerType}
                 colourCode={node.colourCode}
-                inputMaterialList={node.inputMaterialList}
                 rollbackMaterialList={node.rollbackMaterialList}
                 deploymentStrategy={node.deploymentStrategy}
                 history={this.props.history}
@@ -291,7 +291,6 @@ export class Workflow extends Component<WorkflowProps> {
                 triggerType={node.triggerType}
                 title={node.title}
                 colourCode={node.colourCode}
-                inputMaterialList={node.inputMaterialList}
                 rollbackMaterialList={node.rollbackMaterialList}
                 history={this.props.history}
                 location={this.props.location}

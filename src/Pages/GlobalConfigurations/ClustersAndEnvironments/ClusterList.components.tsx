@@ -1,4 +1,20 @@
-import { FunctionComponent } from 'react'
+/*
+ * Copyright (c) 2024. Devtron Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { FunctionComponent, useEffect, useRef } from 'react'
 import { generatePath, Link, useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -18,6 +34,7 @@ import {
     noop,
     stopPropagation,
     TableCellComponentProps,
+    TableSignalEnum,
     Tooltip,
     URLS as COMMON_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -26,6 +43,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import {
+    Cluster,
     ClusterEnvTabs,
     ClusterListFields,
     ClusterRowData,
@@ -199,7 +217,26 @@ export const ClusterListCellComponent: FunctionComponent<
         data: { clusterId, clusterName, clusterType, envCount, serverUrl, clusterCategory, isVirtualCluster, status },
     },
     isRowActive,
+    signals,
 }: TableCellComponentProps<ClusterRowData, FiltersTypeEnum.STATE, {}>) => {
+    const linkRef = useRef<HTMLAnchorElement>(null)
+
+    useEffect(() => {
+        const handleEnter = ({ detail: { activeRowData } }) => {
+            if (activeRowData.data.clusterId === clusterId) {
+                linkRef.current?.click()
+            }
+        }
+
+        if (isRowActive) {
+            signals.addEventListener(TableSignalEnum.ENTER_PRESSED, handleEnter)
+        }
+
+        return () => {
+            signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, handleEnter)
+        }
+    }, [isRowActive])
+
     switch (field) {
         case ClusterListFields.ICON:
             return (
@@ -210,6 +247,7 @@ export const ClusterListCellComponent: FunctionComponent<
         case ClusterListFields.CLUSTER_NAME:
             return (
                 <Link
+                    ref={linkRef}
                     to={getUrlWithSearchParams(URLS.GLOBAL_CONFIG_CLUSTER, {
                         selectedTab: ClusterEnvTabs.ENVIRONMENTS,
                         clusterId,
@@ -257,7 +295,7 @@ export const AddEnvironment = ({
     handleClose,
 }: {
     reloadEnvironments: () => void
-    handleClose
+    handleClose: () => void
 }) => {
     const { clusterId } = useParams<{ clusterId?: string }>()
 
@@ -266,6 +304,29 @@ export const AddEnvironment = ({
             drawerType="addEnv"
             reload={reloadEnvironments}
             clusterId={clusterId ? +clusterId : null}
+            hideClusterDrawer={handleClose}
+        />
+    )
+}
+
+export const AddEnvironmentFromClusterName = ({
+    reloadEnvironments,
+    handleClose,
+    clusterList,
+}: {
+    clusterList: Cluster[]
+    reloadEnvironments: () => void
+    handleClose: () => void
+}) => {
+    const { clusterName } = useParams<{ clusterName?: string }>()
+
+    const clusterId = clusterList.find((c) => c.clusterName === clusterName)?.clusterId
+
+    return (
+        <ClusterEnvironmentDrawer
+            drawerType="addEnv"
+            reload={reloadEnvironments}
+            clusterId={clusterId}
             hideClusterDrawer={handleClose}
         />
     )
