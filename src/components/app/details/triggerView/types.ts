@@ -14,43 +14,34 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
     AppConfigProps,
     ArtifactPromotionMetadata,
-    CDMaterialResponseType,
-    CDMaterialSidebarType,
     CDMaterialType,
-    CDModalTabType,
     CdPipeline,
     CIBuildConfigType,
     CIMaterialType,
     CiPipeline,
     CommonNodeAttr,
-    ConsequenceType,
     DeploymentAppTypes,
     DeploymentHistoryDetail,
     DeploymentNodeType,
     DeploymentWithConfigType,
     DynamicDataTableCellValidationState,
-    FilterConditionsListType,
-    ImageComment,
     Material,
     PipelineType,
     PolicyKindType,
-    ReleaseTag,
     RuntimePluginVariables,
     TaskErrorObj,
-    UploadFileDTO,
-    UploadFileProps,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
 
+import { DeployImageModalProps } from './DeployImageModal/types'
 import { Offset, WorkflowDimensions } from './config'
 
 export interface RuntimeParamsErrorState {
@@ -59,112 +50,6 @@ export interface RuntimeParamsErrorState {
 }
 
 export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimePluginVariables[]) => void
-
-export type HandleRuntimeParamErrorState = (updatedErrorState: RuntimeParamsErrorState) => void
-
-type CDMaterialBulkRuntimeParams =
-    | {
-          isFromBulkCD: true
-          bulkRuntimeParams: RuntimePluginVariables[]
-          handleBulkRuntimeParamChange: HandleRuntimeParamChange
-          bulkRuntimeParamErrorState: RuntimeParamsErrorState
-          handleBulkRuntimeParamError: HandleRuntimeParamErrorState
-          bulkSidebarTab: CDMaterialSidebarType
-          bulkUploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
-      }
-    | {
-          isFromBulkCD?: false
-          bulkRuntimeParams?: never
-          handleBulkRuntimeParamChange?: never
-          bulkRuntimeParamErrorState?: never
-          handleBulkRuntimeParamError?: never
-          bulkSidebarTab?: never
-          bulkUploadFile?: never
-      }
-
-type CDMaterialPluginWarningProps =
-    | {
-          showPluginWarningBeforeTrigger: boolean
-          consequence: ConsequenceType
-          configurePluginURL: string
-      }
-    | {
-          showPluginWarningBeforeTrigger?: never
-          consequence?: never
-          configurePluginURL?: never
-      }
-
-export type CDMaterialProps = {
-    material?: CDMaterialType[]
-    isLoading: boolean
-    materialType: string
-    envName: string
-    envId?: number
-    redirectToCD?: () => void
-    stageType: DeploymentNodeType
-    changeTab?: (
-        materrialId: string | number,
-        artifactId: number,
-        tab: CDModalTabType,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?: number,
-    ) => void
-    selectImage?: (
-        index: number,
-        materialType: string,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?: number,
-    ) => void
-    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    closeCDModal: (e: React.MouseEvent) => void
-    onClickRollbackMaterial?: (
-        cdNodeId: number,
-        offset?: number,
-        size?: number,
-        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
-        searchText?: string,
-    ) => void
-    parentPipelineId?: string
-    parentPipelineType?: string
-    parentEnvironmentName?: string
-    hideInfoTabsContainer?: boolean
-    appId?: number
-    pipelineId?: number
-    isFromBulkCD?: boolean
-    requestedUserId?: number
-    triggerType?: string
-    isVirtualEnvironment?: boolean
-    isSaveLoading?: boolean
-    ciPipelineId?: number
-    appReleaseTagNames?: string[]
-    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
-    setTagsEditable?: (tagsEditable: boolean) => void
-    updateCurrentAppMaterial?: (matId: number, releaseTags?: ReleaseTag[], imageComment?: ImageComment) => void
-    handleMaterialFilters?: (
-        text: string,
-        cdNodeId,
-        nodeType: DeploymentNodeType,
-        isApprovalNode?: boolean,
-        fromRollback?: boolean,
-    ) => void
-    searchImageTag?: string
-    resourceFilters?: FilterConditionsListType[]
-    updateBulkCDMaterialsItem?: (singleCDMaterialResponse: CDMaterialResponseType) => void
-    deploymentAppType?: DeploymentAppTypes
-    selectedImageFromBulk?: string
-    isSuperAdmin?: boolean
-    isRedirectedFromAppDetails?: boolean
-    /**
-     * App name coming from app group view
-     * To be consumed through variable called appName
-     */
-    selectedAppName?: string
-    isTriggerBlockedDueToPlugin?: boolean
-    handleSuccess?: () => void
-} & CDMaterialBulkRuntimeParams &
-    CDMaterialPluginWarningProps
 
 export interface ConfigToDeployOptionType {
     label: string
@@ -624,11 +509,6 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     startY: number
 }
 
-export interface RenderCTAType {
-    mat: CDMaterialType
-    disableSelection: boolean
-}
-
 export interface WebhookPayload {
     eventTime: string
     matchedFiltersCount: number
@@ -699,4 +579,8 @@ export interface GetCDNodeSearchParams {
     cdNodeId: number
     nodeType?: DeploymentNodeType
     fromAppGroup?: boolean
+}
+
+export interface CDMaterialProps extends Pick<DeployImageModalProps, 'handleClose' | 'handleSuccess'> {
+    workflows: WorkflowType[]
 }
