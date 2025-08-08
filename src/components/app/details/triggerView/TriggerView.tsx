@@ -101,7 +101,7 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
 
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
-            const node = getSelectedNodeFromWorkflows(workflows, location.search)
+            const { node, cdNodeId } = getSelectedNodeFromWorkflows(workflows, location.search)
 
             return (
                 <ApprovalMaterialModal
@@ -111,7 +111,7 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     stageType={node?.type}
                     closeApprovalModal={closeApprovalModal}
                     appId={+appId}
-                    pipelineId={node?.id}
+                    pipelineId={cdNodeId}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
                     history={history}

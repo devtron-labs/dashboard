@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 
-import { CommonNodeAttr, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getCDPipelineURL } from '@Components/common'
 
@@ -16,17 +16,17 @@ const CDMaterial = ({ workflows, handleClose, handleSuccess }: CDMaterialProps) 
         location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
         location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
     ) {
-        const cdNode: CommonNodeAttr = getSelectedNodeFromWorkflows(workflows, location.search)
+        const { node: cdNode, cdNodeId } = getSelectedNodeFromWorkflows(workflows, location.search)
 
         const materialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
             ? MATERIAL_TYPE.inputMaterialList
             : MATERIAL_TYPE.rollbackMaterialList
 
-        const selectedWorkflow = workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
+        const selectedWorkflow = workflows.find((wf) => wf.nodes.some((node) => node.id === cdNodeId))
         const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
         const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
 
-        const { appId } = selectedWorkflow
+        const appId = selectedWorkflow?.appId ?? 0
 
         const configurePluginURL = getCDPipelineURL(
             String(appId),
@@ -40,12 +40,12 @@ const CDMaterial = ({ workflows, handleClose, handleSuccess }: CDMaterialProps) 
         return (
             <DeployImageModal
                 materialType={materialType}
-                appId={+appId}
+                appId={appId}
                 envId={cdNode.environmentId}
-                appName={selectedWorkflow.name}
+                appName={selectedWorkflow?.name ?? ''}
                 stageType={cdNode.type as DeploymentNodeType}
                 envName={cdNode.environmentName}
-                pipelineId={Number(cdNode.id)}
+                pipelineId={Number(cdNodeId)}
                 handleClose={handleClose}
                 handleSuccess={handleSuccess}
                 deploymentAppType={cdNode.deploymentAppType}
