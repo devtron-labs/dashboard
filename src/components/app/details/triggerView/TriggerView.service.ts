@@ -1,6 +1,6 @@
 import { useRef } from 'react'
 
-import { DEFAULT_ENV, getEnvironmentListMinPublic, useQuery, useQueryClient } from '@devtron-labs/devtron-fe-common-lib'
+import { DEFAULT_ENV, getEnvironmentListMinPublic, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getWorkflowStatus } from '@Components/app/service'
 import { processWorkflowStatuses } from '@Components/ApplicationGroup/AppGroup.utils'
@@ -14,7 +14,6 @@ const DEFAULT_POLLING_INTERVAL = 30000
 const PROGRESSING_POLLING_INTERVAL = 10000
 
 export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: UseTriggerViewServicesParams) => {
-    const queryClient = useQueryClient()
     const refetchIntervalRef = useRef<number>(DEFAULT_POLLING_INTERVAL)
 
     const { data: hostUrlConfig } = useQuery({
@@ -57,6 +56,7 @@ export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: Use
         isFetching: isWorkflowsLoading,
         data: wfData,
         error: workflowsError,
+        refetch: refetchWorkflows,
     } = useQuery({
         queryKey: [appId, isJobView, filteredEnvIds, 'triggerViewWorkflowList'],
         queryFn: async () => {
@@ -76,7 +76,7 @@ export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: Use
 
     const { workflows, filteredCIPipelines } = wfData ?? { workflows: [], filteredCIPipelines: [] }
 
-    const { data: updatedWfWithStatus } = useQuery({
+    const { data: updatedWfWithStatus, refetch: reloadWorkflowStatus } = useQuery({
         queryKey: [appId, 'triggerViewWorkflowStatus'],
         queryFn: ({ signal }) => getWorkflowStatus(+appId, { signal }),
         select: (response) => {
@@ -97,13 +97,8 @@ export const useTriggerViewServices = ({ appId, isJobView, filteredEnvIds }: Use
 
     const isLoading = isEnvListLoading || isWorkflowsLoading
 
-    const reloadWorkflowStatus = async () => {
-        await queryClient.invalidateQueries({ queryKey: [appId, 'triggerViewWorkflowStatus'] })
-    }
-
     const reloadWorkflows = async () => {
-        await queryClient.invalidateQueries({ queryKey: [appId, isJobView, filteredEnvIds, 'triggerViewWorkflowList'] })
-        // Invalidate status query to refetch workflow status
+        await refetchWorkflows()
         await reloadWorkflowStatus()
     }
 
