@@ -22,7 +22,6 @@ import {
     DeploymentNodeType,
     DeploymentWithConfigType,
     handleAnalyticsEvent,
-    showError,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -216,7 +215,6 @@ export const getSelectedNodeFromWorkflows = (workflows: WorkflowType[], search: 
     const { cdNodeId, nodeType } = getNodeIdAndTypeFromSearch(search)
 
     if (!cdNodeId) {
-        showError('Invalid node id')
         return {} as CommonNodeAttr
     }
 
@@ -228,7 +226,6 @@ export const getSelectedNodeFromWorkflows = (workflows: WorkflowType[], search: 
         return foundNode
     }
 
-    showError('Invalid node id')
     return {} as CommonNodeAttr
 }
 

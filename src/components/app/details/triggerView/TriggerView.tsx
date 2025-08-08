@@ -116,9 +116,7 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
             location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
         ) {
             const cdNode: CommonNodeAttr = getSelectedNodeFromWorkflows(workflows, location.search)
-            if (!cdNode.id) {
-                return null
-            }
+
             const materialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
                 ? MATERIAL_TYPE.inputMaterialList
                 : MATERIAL_TYPE.rollbackMaterialList
@@ -128,10 +126,10 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
             const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
             const configurePluginURL = getCDPipelineURL(
                 appId,
-                selectedWorkflow.id,
+                selectedWorkflow?.id || '0',
                 doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
                 doesWorkflowContainsWebhook,
-                cdNode.id,
+                cdNode.id || '0',
                 true,
             )
 
@@ -139,19 +137,19 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                 <DeployImageModal
                     materialType={materialType}
                     appId={+appId}
-                    envId={cdNode?.environmentId}
+                    envId={cdNode.environmentId}
                     appName={currentAppName}
                     stageType={cdNode.type as DeploymentNodeType}
-                    envName={cdNode?.environmentName}
+                    envName={cdNode.environmentName}
                     pipelineId={Number(cdNode.id)}
                     handleClose={revertToPreviousURL}
                     handleSuccess={reloadWorkflowStatus}
-                    deploymentAppType={cdNode?.deploymentAppType}
+                    deploymentAppType={cdNode.deploymentAppType}
                     isVirtualEnvironment={cdNode.isVirtualEnvironment}
-                    showPluginWarningBeforeTrigger={cdNode?.showPluginWarning}
-                    consequence={cdNode?.pluginBlockState}
+                    showPluginWarningBeforeTrigger={cdNode.showPluginWarning}
+                    consequence={cdNode.pluginBlockState}
                     configurePluginURL={configurePluginURL}
-                    isTriggerBlockedDueToPlugin={cdNode?.showPluginWarning && cdNode?.isTriggerBlocked}
+                    isTriggerBlockedDueToPlugin={cdNode.showPluginWarning && cdNode.isTriggerBlocked}
                     triggerType={cdNode.triggerType}
                     parentEnvironmentName={cdNode.parentEnvironmentName}
                 />

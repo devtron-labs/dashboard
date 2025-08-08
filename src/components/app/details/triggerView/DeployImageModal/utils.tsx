@@ -246,8 +246,6 @@ const processConsumedAndApprovedImages = (materials: CDMaterialType[]) => {
             !mat.userApprovalMetadata ||
             mat.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
         ) {
-            // TODO: Check if this is needed
-            // mat.isSelected = false
             consumedImage.push(mat)
         } else {
             approvedImages.push(mat)
