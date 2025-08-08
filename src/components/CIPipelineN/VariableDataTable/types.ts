@@ -22,6 +22,7 @@ import {
     RefVariableType,
     SelectPickerOptionType,
     UsePopoverProps,
+    UsePopoverReturnType,
     VariableType,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -144,7 +145,7 @@ export interface VariableDataTablePopupMenuProps {
     showIconDot?: boolean
     disableClose?: boolean
     onClose?: () => void
-    children: JSX.Element
+    children: (props: Pick<UsePopoverReturnType, 'scrollableRef'>) => JSX.Element
     position: UsePopoverProps['position']
 }
 
