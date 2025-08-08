@@ -113,4 +113,5 @@ export const TRIGGER_VIEW_PARAMS = {
     APPROVAL_NODE: 'approval-node',
     CD_NODE: 'cd-node',
     NODE_TYPE: 'node-type',
+    ROLLBACK_NODE: 'rollback-node',
 }

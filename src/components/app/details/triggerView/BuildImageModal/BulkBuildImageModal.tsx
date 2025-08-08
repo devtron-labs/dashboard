@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { Prompt } from 'react-router-dom'
 
 import {
@@ -27,7 +27,6 @@ import {
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MechanicalOperation } from '@Images/ic-mechanical-operation.svg'
 import { BulkCIDetailType, ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
 import {
     BULK_CI_BUILD_STATUS,
@@ -92,15 +91,14 @@ const BulkBuildImageModal = ({
         appId?: number,
         newWorkflows: WorkflowType[] = workflows,
     ): Promise<Record<number, BulkCIDetailType>> => {
-        const selectedWorkflows = newWorkflows.filter(
+        const validWorkflows = newWorkflows.filter(
             (workflow) =>
                 workflow.isSelected &&
+                (!appId || workflow.appId === appId) &&
                 workflow.nodes.some(
                     (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
                 ),
         )
-
-        const validWorkflows = selectedWorkflows.filter((workflow) => !appId || workflow.appId === appId)
 
         const { ciMaterialPromiseList, runtimeParamsPromiseList } = getBulkCIDataPromiseGetterList(
             validWorkflows,
@@ -136,7 +134,10 @@ const BulkBuildImageModal = ({
 
     const appInfoMap = appInfoMapRes || {}
 
-    const sortedAppList = Object.values(appInfoMap).sort((a, b) => stringComparatorBySortOrder(a.name, b.name))
+    const sortedAppList = useMemo(
+        () => Object.values(appInfoMap).sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+        [appInfoMap],
+    )
 
     const selectedAppId = selectedAppIdState ?? sortedAppList[0]?.appId ?? null
 
@@ -415,7 +416,7 @@ const BulkBuildImageModal = ({
                 ? BULK_CI_BUILD_STATUS(numberOfAppsLoading)
                 : BULK_CI_MATERIAL_STATUS(numberOfAppsLoading)
 
-            return <GenericEmptyState {...message} SvgImage={MechanicalOperation} contentClassName="text-center" />
+            return <GenericEmptyState {...message} imgName="img-mechanical-operation" contentClassName="text-center" />
         }
 
         if (isLoadingSingleAppInfoMap) {
