@@ -42,6 +42,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
+import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
 import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
@@ -77,7 +78,6 @@ import BulkSourceChange from './BulkSourceChange'
 import { getSelectedNodeAndAppId } from './utils'
 
 import './EnvTriggerView.scss'
-import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
