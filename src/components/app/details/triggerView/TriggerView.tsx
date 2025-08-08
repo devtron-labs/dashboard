@@ -17,31 +17,20 @@
 import React, { useState } from 'react'
 import { Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
-import {
-    CommonNodeAttr,
-    DeploymentNodeType,
-    DocLink,
-    ErrorScreenManager,
-    Progressing,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { DocLink, ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 import { URLS } from '../../../../config'
 import { APP_DETAILS } from '../../../../config/constantMessaging'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
-import {
-    getCDPipelineURL,
-    importComponentFromFELibrary,
-    InValidHostUrlWarningBlock,
-    useAppContext,
-} from '../../../common'
+import { importComponentFromFELibrary, InValidHostUrlWarningBlock, useAppContext } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { AppNotConfigured } from '../appDetails/AppDetails'
 import { Workflow } from './workflow/Workflow'
 import { BuildImageModal } from './BuildImageModal'
+import CDMaterial from './CDMaterial'
 import { TRIGGER_VIEW_PARAMS } from './Constants'
-import { DeployImageModal } from './DeployImageModal'
 import { useTriggerViewServices } from './TriggerView.service'
 import { getSelectedNodeFromWorkflows, shouldRenderWebhookAddImageModal } from './TriggerView.utils'
 import { CIMaterialRouterProps, MATERIAL_TYPE, TriggerViewProps } from './types'
@@ -110,74 +99,21 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
         history.push(match.url)
     }
 
-    const renderCDMaterial = () => {
-        if (
-            location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
-            location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
-        ) {
-            const cdNode: CommonNodeAttr = getSelectedNodeFromWorkflows(workflows, location.search)
-
-            const materialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
-                ? MATERIAL_TYPE.inputMaterialList
-                : MATERIAL_TYPE.rollbackMaterialList
-
-            const selectedWorkflow = workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
-            const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
-            const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
-            const configurePluginURL = getCDPipelineURL(
-                appId,
-                selectedWorkflow?.id || '0',
-                doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
-                doesWorkflowContainsWebhook,
-                cdNode.id || '0',
-                true,
-            )
-
-            return (
-                <DeployImageModal
-                    materialType={materialType}
-                    appId={+appId}
-                    envId={cdNode.environmentId}
-                    appName={currentAppName}
-                    stageType={cdNode.type as DeploymentNodeType}
-                    envName={cdNode.environmentName}
-                    pipelineId={Number(cdNode.id)}
-                    handleClose={revertToPreviousURL}
-                    handleSuccess={reloadWorkflowStatus}
-                    deploymentAppType={cdNode.deploymentAppType}
-                    isVirtualEnvironment={cdNode.isVirtualEnvironment}
-                    showPluginWarningBeforeTrigger={cdNode.showPluginWarning}
-                    consequence={cdNode.pluginBlockState}
-                    configurePluginURL={configurePluginURL}
-                    isTriggerBlockedDueToPlugin={cdNode.showPluginWarning && cdNode.isTriggerBlocked}
-                    triggerType={cdNode.triggerType}
-                    parentEnvironmentName={cdNode.parentEnvironmentName}
-                />
-            )
-        }
-
-        return null
-    }
-
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             const node = getSelectedNodeFromWorkflows(workflows, location.search)
-
-            if (!node.id) {
-                return null
-            }
 
             return (
                 <ApprovalMaterialModal
                     isLoading={isLoading}
                     node={node}
                     materialType={MATERIAL_TYPE.inputMaterialList}
-                    stageType={node.type}
+                    stageType={node?.type}
                     closeApprovalModal={closeApprovalModal}
                     appId={+appId}
-                    pipelineId={node.id}
+                    pipelineId={node?.id}
                     getModuleInfo={getModuleInfo}
-                    ciPipelineId={node.connectingCiPipelineId}
+                    ciPipelineId={node?.connectingCiPipelineId}
                     history={history}
                 />
             )
@@ -285,7 +221,11 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     </Route>
                 </Switch>
 
-                {renderCDMaterial()}
+                <CDMaterial
+                    workflows={workflows}
+                    handleClose={revertToPreviousURL}
+                    handleSuccess={reloadWorkflowStatus}
+                />
                 {renderApprovalMaterial()}
             </div>
             {WorkflowActionRouter && (

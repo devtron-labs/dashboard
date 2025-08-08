@@ -1,0 +1,66 @@
+import { useLocation } from 'react-router-dom'
+
+import { CommonNodeAttr, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getCDPipelineURL } from '@Components/common'
+
+import { TRIGGER_VIEW_PARAMS } from './Constants'
+import { DeployImageModal } from './DeployImageModal'
+import { getSelectedNodeFromWorkflows } from './TriggerView.utils'
+import { CDMaterialProps, MATERIAL_TYPE } from './types'
+
+const CDMaterial = ({ workflows, handleClose, handleSuccess }: CDMaterialProps) => {
+    const location = useLocation()
+
+    if (
+        location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
+        location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
+    ) {
+        const cdNode: CommonNodeAttr = getSelectedNodeFromWorkflows(workflows, location.search)
+
+        const materialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
+            ? MATERIAL_TYPE.inputMaterialList
+            : MATERIAL_TYPE.rollbackMaterialList
+
+        const selectedWorkflow = workflows.find((wf) => wf.nodes.some((node) => node.id === cdNode.id))
+        const selectedCINode = selectedWorkflow?.nodes.find((node) => node.type === 'CI' || node.type === 'WEBHOOK')
+        const doesWorkflowContainsWebhook = selectedCINode?.type === 'WEBHOOK'
+
+        const { appId } = selectedWorkflow
+
+        const configurePluginURL = getCDPipelineURL(
+            String(appId),
+            selectedWorkflow?.id || '0',
+            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
+            doesWorkflowContainsWebhook,
+            cdNode.id || '0',
+            true,
+        )
+
+        return (
+            <DeployImageModal
+                materialType={materialType}
+                appId={+appId}
+                envId={cdNode.environmentId}
+                appName={selectedWorkflow.name}
+                stageType={cdNode.type as DeploymentNodeType}
+                envName={cdNode.environmentName}
+                pipelineId={Number(cdNode.id)}
+                handleClose={handleClose}
+                handleSuccess={handleSuccess}
+                deploymentAppType={cdNode.deploymentAppType}
+                isVirtualEnvironment={cdNode.isVirtualEnvironment}
+                showPluginWarningBeforeTrigger={cdNode.showPluginWarning}
+                consequence={cdNode.pluginBlockState}
+                configurePluginURL={configurePluginURL}
+                isTriggerBlockedDueToPlugin={cdNode.showPluginWarning && cdNode.isTriggerBlocked}
+                triggerType={cdNode.triggerType}
+                parentEnvironmentName={cdNode.parentEnvironmentName}
+            />
+        )
+    }
+
+    return null
+}
+
+export default CDMaterial

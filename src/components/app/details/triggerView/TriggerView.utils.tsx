@@ -214,16 +214,14 @@ export const getNodeIdAndTypeFromSearch = (search: string) => {
 export const getSelectedNodeFromWorkflows = (workflows: WorkflowType[], search: string): CommonNodeAttr => {
     const { cdNodeId, nodeType } = getNodeIdAndTypeFromSearch(search)
 
-    if (!cdNodeId) {
-        return {} as CommonNodeAttr
-    }
+    if (cdNodeId) {
+        // Use flatMap to flatten all nodes, then find the matching node
+        const allNodes = workflows.flatMap((workflow) => workflow.nodes)
+        const foundNode = allNodes.find((n) => cdNodeId === n.id && n.type === nodeType)
 
-    // Use flatMap to flatten all nodes, then find the matching node
-    const allNodes = workflows.flatMap((workflow) => workflow.nodes)
-    const foundNode = allNodes.find((n) => cdNodeId === n.id && n.type === nodeType)
-
-    if (foundNode) {
-        return foundNode
+        if (foundNode) {
+            return foundNode
+        }
     }
 
     return {} as CommonNodeAttr
