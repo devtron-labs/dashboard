@@ -492,7 +492,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 workflows={filteredWorkflows}
                 isVirtualEnvironment={isVirtualEnv}
                 envId={+envId}
-                handleSuccess={reloadTriggerView}
+                handleSuccess={getWorkflowStatusData}
             />
         )
     }
@@ -611,7 +611,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
             return (
                 <ApprovalMaterialModal
-                    isLoading={false}
                     node={node ?? ({} as CommonNodeAttr)}
                     materialType={MATERIAL_TYPE.inputMaterialList}
                     stageType={DeploymentNodeType.CD}

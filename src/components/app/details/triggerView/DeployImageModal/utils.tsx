@@ -495,7 +495,7 @@ export const getBaseBulkCDDetailsMap = (validWorkflows: WorkflowType[], stageTyp
                 true,
             ),
             triggerType: currentStageNode?.triggerType,
-            warningMessage: noStageWarning || blockedStageWarning || '',
+            errorMessage: noStageWarning || blockedStageWarning || '',
             triggerBlockedInfo: currentStageNode?.triggerBlockedInfo,
             stageNotAvailable: !currentStageNode,
             showPluginWarning: currentStageNode?.showPluginWarning,
@@ -525,29 +525,36 @@ export const getBulkCDDetailsMapFromResponse: GetBulkCDDetailsMapFromResponseTyp
             )
 
             const parsedTagsWarning = searchText ? '' : tagsWarning
+            const newMaterials = searchText ? materialResponse.value.materials : updatedMaterials
+
+            // In case of no search, we will show tag not found
+            const noImageSelectedWarning =
+                searchText && !newMaterials.some((material) => material.isSelected) ? 'No image selected' : ''
 
             const updatedWarningMessage =
-                baseBulkCDDetailMap[appId].warningMessage ||
-                deploymentWindowMap[appId]?.warningMessage ||
-                parsedTagsWarning
+                baseBulkCDDetailMap[appId].errorMessage ||
+                noImageSelectedWarning ||
+                deploymentWindowMap[appId]?.warningMessage
 
             // In case of search and reload even though method gives whole state, will only update deploymentWindowMetadata, warningMessage and materialResponse
             bulkCDDetailsMap[appId] = {
                 ...baseBulkCDDetailMap[appId],
                 materialResponse: {
                     ...materialResponse.value,
-                    materials: searchText ? materialResponse.value.materials : updatedMaterials,
+                    materials: newMaterials,
                 },
-                deploymentWindowMetadata: deploymentWindowMap[appId],
+                deploymentWindowMetadata: deploymentWindowMap[appId] || ({} as DeploymentWindowProfileMetaData),
                 areMaterialsLoading: false,
                 deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
-                warningMessage: updatedWarningMessage,
+                errorMessage: updatedWarningMessage,
+                tagsWarningMessage: parsedTagsWarning,
                 materialError: null,
             }
         } else {
             bulkCDDetailsMap[appId] = {
                 ...baseBulkCDDetailMap[appId],
-                materialResponse: {} as CDMaterialResponseType,
+                tagsWarningMessage: '',
+                materialResponse: null,
                 deploymentWindowMetadata: {} as DeploymentWindowProfileMetaData,
                 deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
                 materialError:

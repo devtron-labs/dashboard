@@ -34,7 +34,6 @@ const AppDetailsCDModal = ({
     cdModal,
     deploymentAppType,
     isVirtualEnvironment,
-    loadingDetails,
     environmentName,
     handleSuccess,
     materialType,
@@ -55,7 +54,6 @@ const AppDetailsCDModal = ({
         ApprovalMaterialModal &&
         location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE) && (
             <ApprovalMaterialModal
-                isLoading={loadingDetails}
                 node={node}
                 materialType={materialType}
                 stageType={DeploymentNodeType.CD}
