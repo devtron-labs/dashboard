@@ -14,6 +14,7 @@ import {
     Drawer,
     genericCDMaterialsService,
     GenericEmptyState,
+    getIsApprovalPolicyConfigured,
     Icon,
     MODAL_TYPE,
     ModuleNameMap,
@@ -478,6 +479,9 @@ const BulkDeployModal = ({
                 const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
                     tagOption.value,
                     appDetails.materialResponse?.materials || [],
+                    !getIsApprovalPolicyConfigured(
+                        appDetails.materialResponse?.deploymentApprovalInfo?.approvalConfigData,
+                    ) || getIsExceptionUser(appDetails.materialResponse),
                 )
 
                 updatedAppInfoMap[appDetails.appId] = {

@@ -14,6 +14,7 @@ import {
     DeploymentWithConfigType,
     ExcludedImageNode,
     FilterStates,
+    getIsApprovalPolicyConfigured,
     getIsRequestAborted,
     getStageTitle,
     Icon,
@@ -381,7 +382,11 @@ export const getDeployButtonStyle = (
 export const getIsConsumedImageAvailable = (materials: CDMaterialType[]) =>
     materials.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
 
-const getTagWarningRelatedToMaterial = (updatedMaterials: CDMaterialType[], selectedImageTagName: string): string => {
+const getTagWarningRelatedToMaterial = (
+    updatedMaterials: CDMaterialType[],
+    selectedImageTagName: string,
+    canSelectNonApprovedImage: boolean,
+): string => {
     const selectedImage = updatedMaterials.find((material) => material.isSelected)
 
     const selectedTagParsedName =
@@ -399,11 +404,23 @@ const getTagWarningRelatedToMaterial = (updatedMaterials: CDMaterialType[], sele
         return `Tag ${selectedTagParsedName} is not eligible for deployment`
     }
 
+    const isNonApprovedImage =
+        !selectedImage.userApprovalMetadata ||
+        selectedImage.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
+
+    if (isNonApprovedImage && !canSelectNonApprovedImage) {
+        return `Tag ${selectedTagParsedName} is not approved`
+    }
+
     return ''
 }
 
 // If tag is not present, and image is selected we will show mixed tag
-export const getUpdatedMaterialsForTagSelection = (tagName: string, materials: CDMaterialType[]) => {
+export const getUpdatedMaterialsForTagSelection = (
+    tagName: string,
+    materials: CDMaterialType[],
+    canSelectNonApprovedImage: boolean,
+) => {
     const sourceMaterials = structuredClone(materials)
 
     const updatedMaterials = sourceMaterials.map((material, materialIndex) => {
@@ -438,7 +455,7 @@ export const getUpdatedMaterialsForTagSelection = (tagName: string, materials: C
 
     const selectedImage = updatedMaterials.find((material) => material.isSelected)
 
-    const tagsWarning = getTagWarningRelatedToMaterial(updatedMaterials, tagName)
+    const tagsWarning = getTagWarningRelatedToMaterial(updatedMaterials, tagName, canSelectNonApprovedImage)
 
     if (selectedImage && tagsWarning) {
         selectedImage.isSelected = false
@@ -522,6 +539,8 @@ export const getBulkCDDetailsMapFromResponse: GetBulkCDDetailsMapFromResponseTyp
             const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
                 selectedTagName,
                 materialResponse.value.materials,
+                !getIsApprovalPolicyConfigured(materialResponse?.value.deploymentApprovalInfo?.approvalConfigData) ||
+                    getIsExceptionUser(materialResponse.value),
             )
 
             const parsedTagsWarning = searchText ? '' : tagsWarning
