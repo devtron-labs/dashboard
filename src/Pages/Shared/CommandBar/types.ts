@@ -126,3 +126,7 @@ export interface CommandBarGroupType {
     title: string
     items: CommandBarItemType[]
 }
+
+export interface CommandGroupProps {
+    groupDetails: CommandBarGroupType
+}
