@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { CommonNodeAttr } from '@devtron-labs/devtron-fe-common-lib'
-
 // Legacy components with no props so setting to any
 export interface BulkSourceChangeProps {
     closePopup: any
@@ -28,13 +26,4 @@ export interface BulkSourceChangeProps {
 export interface SourceUpdateResponseModalProps {
     responseList: any
     isLoading: any
-}
-
-export interface RenderCDMaterialContentProps {
-    node: CommonNodeAttr
-    appId: number
-    selectedAppName: string
-    workflowId: string
-    doesWorkflowContainsWebhook: boolean
-    ciNodeId: string
 }
