@@ -1,14 +1,52 @@
 import { useEffect, useState } from 'react'
 
-import { Backdrop, KeyboardShortcut, SearchBar, useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    API_STATUS_CODES,
+    Backdrop,
+    getUserPreferences,
+    KeyboardShortcut,
+    ResponseType,
+    SearchBar,
+    useQuery,
+    useRegisterShortcut,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandGroup from './CommandGroup'
-import { NAVIGATION_GROUPS, SHORT_CUTS } from './constants'
+import { NAVIGATION_GROUPS, RECENT_ACTIONS_GROUP, SHORT_CUTS } from './constants'
+import { CommandBarGroupType } from './types'
 
 import './CommandBar.scss'
 
 const CommandBar = () => {
     const [showCommandBar, setShowCommandBar] = useState(false)
+
+    const { data: recentActionsGroup, isLoading } = useQuery({
+        queryFn: ({ signal }) =>
+            getUserPreferences(signal).then((response) => {
+                const responseData: ResponseType<typeof response> = {
+                    code: API_STATUS_CODES.OK,
+                    status: 'OK',
+                    result: response,
+                }
+                return responseData
+            }),
+        queryKey: [showCommandBar, 'recentNavigationActions'],
+        enabled: showCommandBar,
+        select: ({ result }) =>
+            result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
+                const requiredGroup = NAVIGATION_GROUPS.find((group) =>
+                    group.items.some((item) => item.id === action.id),
+                )
+
+                if (requiredGroup) {
+                    const requiredItem = requiredGroup.items.find((item) => item.id === action.id)
+                    if (requiredItem) {
+                        acc.items.push(structuredClone(requiredItem))
+                    }
+                }
+                return acc
+            }, structuredClone(RECENT_ACTIONS_GROUP)),
+    })
 
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
@@ -40,7 +78,7 @@ const CommandBar = () => {
         <Backdrop onEscape={handleClose}>
             <div className="dc__mxw-800 mxh-450 flexbox-col dc__overflow-auto dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100">
                 <div className="flexbox-col dc__overflow-auto">
-                    <div className="px-16">
+                    <div className="px-20 py-8">
                         <SearchBar
                             inputProps={{
                                 autoFocus: true,
@@ -56,8 +94,10 @@ const CommandBar = () => {
                         aria-label="Command Menu"
                         // TODO: aria-activedescendant for the currently focused item
                     >
+                        <CommandGroup isLoading={isLoading} {...(recentActionsGroup || RECENT_ACTIONS_GROUP)} />
+
                         {NAVIGATION_GROUPS.map((group) => (
-                            <CommandGroup key={group.id} groupDetails={group} />
+                            <CommandGroup key={group.id} {...group} />
                         ))}
                     </div>
                 </div>

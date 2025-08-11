@@ -433,6 +433,12 @@ export const NAVIGATION_GROUPS: CommandBarGroupType[] = NAVIGATION_LIST.map((gro
     }),
 }))
 
+export const RECENT_ACTIONS_GROUP: CommandBarGroupType = {
+    id: 'command-bar-recent-navigation-group',
+    items: [],
+    title: 'Recent Navigation',
+}
+
 export const SHORT_CUTS: Record<
     'OPEN_COMMAND_BAR',
     {
