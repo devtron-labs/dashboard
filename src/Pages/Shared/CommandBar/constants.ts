@@ -1,9 +1,8 @@
-import { getUniqueId, IconName } from '@devtron-labs/devtron-fe-common-lib'
-import { SupportedKeyboardKeysType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/Hooks/UseRegisterShortcut/types'
+import { SupportedKeyboardKeysType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 
-import { CommandBarGroupType, NavigationGroupType, NavigationItemTitle } from './types'
+import { CommandBarGroupType, NavigationGroupType } from './types'
 
 export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
@@ -12,141 +11,167 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-grid-view',
         items: [
             {
-                title: NavigationItemTitle.Overview,
+                title: 'Overview',
                 dataTestId: 'application-management-overview',
+                id: 'application-management-overview',
                 icon: 'ic-speedometer',
             },
             {
-                title: NavigationItemTitle.Applications,
+                title: 'Applications',
                 dataTestId: 'click-on-application',
+                id: 'application-management-applications',
                 icon: 'ic-grid-view',
                 href: URLS.APP,
             },
             {
-                title: NavigationItemTitle.ApplicationGroups,
+                title: 'Application Groups',
                 dataTestId: 'click-on-application-groups',
+                id: 'application-management-application-groups',
                 icon: 'ic-app-group',
                 href: URLS.APPLICATION_GROUP,
             },
             {
-                title: NavigationItemTitle.ChartStore,
+                title: 'Chart Store',
                 dataTestId: 'click-on-chart-store',
+                id: 'application-management-chart-store',
                 icon: 'ic-helm',
                 href: URLS.CHARTS,
             },
             {
-                title: NavigationItemTitle.BulkEdit,
+                title: 'Bulk Edit',
                 dataTestId: 'click-on-bulk-edit',
+                id: 'application-management-bulk-edit',
                 icon: 'ic-code',
                 href: URLS.BULK_EDITS,
             },
             {
-                title: NavigationItemTitle.Configurations,
+                title: 'Configurations',
                 dataTestId: 'click-on-configurations',
+                id: 'application-management-configurations',
                 hasSubMenu: true,
                 subItems: [
                     {
-                        title: NavigationItemTitle.GitOps,
+                        title: 'GitOps',
                         dataTestId: 'click-on-configurations-gitops',
+                        id: 'application-management-configurations-gitops',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.GitAccounts,
+                        title: 'Git accounts',
                         dataTestId: 'click-on-configurations-git-accounts',
+                        id: 'application-management-configurations-git-accounts',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.ExternalLinks,
+                        title: 'External links',
                         dataTestId: 'click-on-configurations-external-links',
+                        id: 'application-management-configurations-external-links',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.ChartRepository,
+                        title: 'Chart Repository',
                         dataTestId: 'click-on-configurations-chart-repository',
+                        id: 'application-management-configurations-chart-repository',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.DeploymentCharts,
+                        title: 'Deployment Charts',
                         dataTestId: 'click-on-configurations-deployment-charts',
+                        id: 'application-management-configurations-deployment-charts',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.Notifications,
+                        title: 'Notifications',
                         dataTestId: 'click-on-configurations-notifications',
+                        id: 'application-management-configurations-notifications',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.CatalogFrameworks,
+                        title: 'Catalog Frameworks',
                         dataTestId: 'click-on-configurations-catalog-frameworks',
+                        id: 'application-management-configurations-catalog-frameworks',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.ScopedVariables,
+                        title: 'Scoped Variables',
                         dataTestId: 'click-on-configurations-scoped-variables',
+                        id: 'application-management-configurations-scoped-variables',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.BuildInfra,
+                        title: 'Build Infra',
                         dataTestId: 'click-on-configurations-build-infra',
+                        id: 'application-management-configurations-build-infra',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                 ],
             },
             {
-                title: NavigationItemTitle.Policies,
+                title: 'Policies',
                 dataTestId: 'click-on-policies',
+                id: 'application-management-policies',
                 hasSubMenu: true,
                 subItems: [
                     {
-                        title: NavigationItemTitle.DeploymentWindow,
+                        title: 'Deployment Window',
                         dataTestId: 'click-on-policies-deployment-window',
+                        id: 'application-management-policies-deployment-window',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.ApprovalPolicy,
+                        title: 'Approval policy',
                         dataTestId: 'click-on-policies-approval-policy',
+                        id: 'application-management-policies-approval-policy',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.PluginPolicy,
+                        title: 'Plugin policy',
                         dataTestId: 'click-on-policies-plugin-policy',
+                        id: 'application-management-policies-plugin-policy',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.PullImageDigest,
+                        title: 'Pull image digest',
                         dataTestId: 'click-on-policies-pull-image-digest',
+                        id: 'application-management-policies-pull-image-digest',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.TagPolicy,
+                        title: 'Tag Policy',
                         dataTestId: 'click-on-policies-tag-policy',
+                        id: 'application-management-policies-tag-policy',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.FilterConditions,
+                        title: 'Filter conditions',
                         dataTestId: 'click-on-policies-filter-conditions',
+                        id: 'application-management-policies-filter-conditions',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.LockDeploymentConfiguration,
+                        title: 'Lock Deployment configuration',
                         dataTestId: 'click-on-policies-lock-deployment-configuration',
+                        id: 'application-management-policies-lock-deployment-configuration',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                 ],
             },
             {
-                title: NavigationItemTitle.Others,
+                title: 'Others',
                 dataTestId: 'click-on-others',
+                id: 'application-management-others',
                 hasSubMenu: true,
                 subItems: [
                     {
-                        title: NavigationItemTitle.ApplicationTemplates,
+                        title: 'Application Templates',
                         dataTestId: 'click-on-others-application-templates',
+                        id: 'application-management-others-application-templates',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                     {
-                        title: NavigationItemTitle.Projects,
+                        title: 'Projects',
                         dataTestId: 'click-on-others-projects',
+                        id: 'application-management-others-projects',
                         href: URLS.GIT_OPS_CONFIG,
                     },
                 ],
@@ -159,30 +184,35 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-grid-view',
         items: [
             {
-                title: NavigationItemTitle.Overview,
+                title: 'Overview',
                 dataTestId: 'infrastructure-management-overview',
+                id: 'infrastructure-management-overview',
                 icon: 'ic-speedometer',
             },
             {
-                title: NavigationItemTitle.ResourceBrowser,
+                title: 'Resource Browser',
                 dataTestId: 'resource-browser',
+                id: 'infrastructure-management-resource-browser',
                 icon: 'ic-cube',
                 href: URLS.RESOURCE_BROWSER,
             },
             {
-                title: NavigationItemTitle.InterceptedChanges,
+                title: 'Intercepted Changes',
                 dataTestId: 'intercepted-changes',
+                id: 'infrastructure-management-intercepted-changes',
                 icon: 'ic-file',
             },
             {
-                title: NavigationItemTitle.ResourceWatcher,
+                title: 'Resource Watcher',
                 dataTestId: 'resource-watcher',
+                id: 'infrastructure-management-resource-watcher',
                 icon: 'ic-monitoring',
                 href: URLS.RESOURCE_WATCHER,
             },
             {
-                title: NavigationItemTitle.CatalogFramework,
+                title: 'Catalog Framework',
                 dataTestId: 'catalog-framework',
+                id: 'infrastructure-management-catalog-framework',
                 icon: 'ic-file',
             },
         ],
@@ -193,13 +223,15 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-open-box',
         items: [
             {
-                title: NavigationItemTitle.Overview,
+                title: 'Overview',
                 dataTestId: 'software-release-management-overview',
+                id: 'software-release-management-overview',
                 icon: 'ic-speedometer',
             },
             {
-                title: NavigationItemTitle.SoftwareRelease,
+                title: 'Software Release',
                 dataTestId: 'software-release',
+                id: 'software-release-management-software-release',
                 icon: 'ic-open-box',
             },
         ],
@@ -210,41 +242,49 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-grid-view',
         items: [
             {
-                title: NavigationItemTitle.Overview,
+                title: 'Overview',
                 dataTestId: 'cost-visibility-overview',
+                id: 'cost-visibility-overview',
                 icon: 'ic-speedometer',
             },
             {
-                title: NavigationItemTitle.Trends,
+                title: 'Trends',
                 dataTestId: 'cost-visibility-trends',
+                id: 'cost-visibility-trends',
                 icon: 'ic-open-box',
             },
             {
-                title: NavigationItemTitle.CostBreakdown,
+                title: 'Cost Breakdown',
                 dataTestId: 'cost-breakdown',
+                id: 'cost-visibility-cost-breakdown',
                 hasSubMenu: true,
                 subItems: [
                     {
-                        title: NavigationItemTitle.Clusters,
+                        title: 'Clusters',
                         dataTestId: 'cost-breakdown-clusters',
+                        id: 'cost-visibility-cost-breakdown-clusters',
                     },
                     {
-                        title: NavigationItemTitle.Environments,
+                        title: 'Environments',
                         dataTestId: 'cost-breakdown-environments',
+                        id: 'cost-visibility-cost-breakdown-environments',
                     },
                     {
-                        title: NavigationItemTitle.Projects,
+                        title: 'Projects',
                         dataTestId: 'cost-breakdown-projects',
+                        id: 'cost-visibility-cost-breakdown-projects',
                     },
                     {
-                        title: NavigationItemTitle.Applications,
+                        title: 'Applications',
                         dataTestId: 'cost-breakdown-applications',
+                        id: 'cost-visibility-cost-breakdown-applications',
                     },
                 ],
             },
             {
-                title: NavigationItemTitle.Configurations,
+                title: 'Configurations',
                 dataTestId: 'cost-visibility-configurations',
+                id: 'cost-visibility-configurations',
                 icon: 'ic-gear',
             },
         ],
@@ -255,18 +295,21 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-shield-check',
         items: [
             {
-                title: NavigationItemTitle.Overview,
+                title: 'Overview',
                 dataTestId: 'security-center-overview',
+                id: 'security-center-overview',
                 icon: 'ic-speedometer',
             },
             {
-                title: NavigationItemTitle.ApplicationSecurity,
+                title: 'Application Security',
                 dataTestId: 'application-security',
+                id: 'security-center-application-security',
                 icon: 'ic-bug',
             },
             {
-                title: NavigationItemTitle.SecurityPolicies,
+                title: 'Security Policies',
                 dataTestId: 'security-policies',
+                id: 'security-center-security-policies',
                 icon: 'ic-gavel',
             },
         ],
@@ -277,28 +320,33 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-grid-view',
         items: [
             {
-                title: NavigationItemTitle.Jobs,
+                title: 'Jobs',
                 dataTestId: 'jobs',
+                id: 'automation-and-enablement-jobs',
                 icon: 'ic-k8s-job',
             },
             {
-                title: NavigationItemTitle.Alerting,
+                title: 'Alerting',
                 dataTestId: 'alerting',
+                id: 'automation-and-enablement-alerting',
                 icon: 'ic-bug',
             },
             {
-                title: NavigationItemTitle.IncidentResponse,
+                title: 'Incident Response',
                 dataTestId: 'incident-response',
+                id: 'automation-and-enablement-incident-response',
                 icon: 'ic-bug',
             },
             {
-                title: NavigationItemTitle.APIPortal,
+                title: 'API portal',
                 dataTestId: 'api-portal',
+                id: 'automation-and-enablement-api-portal',
                 icon: 'ic-code',
             },
             {
-                title: NavigationItemTitle.RunbookAutomation,
+                title: 'Runbook Automation',
                 dataTestId: 'runbook-automation',
+                id: 'automation-and-enablement-runbook-automation',
                 icon: 'ic-book-open',
             },
         ],
@@ -309,41 +357,49 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-gear',
         items: [
             {
-                title: NavigationItemTitle.SSOLoginServices,
+                title: 'SSO Login Services',
                 dataTestId: 'sso-login-services',
+                id: 'global-configuration-sso-login-services',
                 icon: 'ic-key',
             },
             {
-                title: NavigationItemTitle.HostURLS,
+                title: 'Host URLS',
                 dataTestId: 'host-urls',
+                id: 'global-configuration-host-urls',
                 icon: 'ic-link',
             },
             {
-                title: NavigationItemTitle.ClusterAndEnvironments,
+                title: 'Cluster & environments',
                 dataTestId: 'cluster-and-environments',
+                id: 'global-configuration-cluster-and-environments',
                 icon: 'ic-cluster',
             },
             {
-                title: NavigationItemTitle.ContainerOCIRegistry,
+                title: 'Container/OCI Registry',
                 dataTestId: 'container-oci-registry',
+                id: 'global-configuration-container-oci-registry',
                 icon: 'ic-folder',
             },
             {
-                title: NavigationItemTitle.Authorization,
+                title: 'Authorization',
                 dataTestId: 'authorization',
+                id: 'global-configuration-authorization',
                 hasSubMenu: true,
                 subItems: [
                     {
-                        title: NavigationItemTitle.UserPermissions,
+                        title: 'User Permissions',
                         dataTestId: 'user-permissions',
+                        id: 'global-configuration-authorization-user-permissions',
                     },
                     {
-                        title: NavigationItemTitle.PermissionGroups,
+                        title: 'Permission Groups',
                         dataTestId: 'permission-groups',
+                        id: 'global-configuration-authorization-permission-groups',
                     },
                     {
-                        title: NavigationItemTitle.AuthorizationAPITokens,
+                        title: 'API Tokens',
                         dataTestId: 'authorization-api-tokens',
+                        id: 'global-configuration-authorization-api-tokens',
                     },
                 ],
             },
@@ -351,81 +407,28 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     },
 ]
 
-const NAVIGATION_ITEM_TITLE_TO_ICON_MAP: Record<NavigationItemTitle, IconName> = {
-    [NavigationItemTitle.Overview]: 'ic-speedometer',
-    [NavigationItemTitle.Applications]: 'ic-grid-view',
-    [NavigationItemTitle.ApplicationGroups]: 'ic-app-group',
-    [NavigationItemTitle.ChartStore]: 'ic-helm',
-    [NavigationItemTitle.BulkEdit]: 'ic-code',
-    [NavigationItemTitle.Configurations]: 'ic-gear',
-    [NavigationItemTitle.GitOps]: 'ic-pencil',
-    [NavigationItemTitle.GitAccounts]: 'ic-pencil',
-    [NavigationItemTitle.ExternalLinks]: 'ic-pencil',
-    [NavigationItemTitle.ChartRepository]: 'ic-pencil',
-    [NavigationItemTitle.DeploymentCharts]: 'ic-pencil',
-    [NavigationItemTitle.Notifications]: 'ic-pencil',
-    [NavigationItemTitle.CatalogFrameworks]: 'ic-pencil',
-    [NavigationItemTitle.ScopedVariables]: 'ic-pencil',
-    [NavigationItemTitle.BuildInfra]: 'ic-pencil',
-    [NavigationItemTitle.Policies]: 'ic-pencil',
-    [NavigationItemTitle.DeploymentWindow]: 'ic-pencil',
-    [NavigationItemTitle.ApprovalPolicy]: 'ic-pencil',
-    [NavigationItemTitle.PluginPolicy]: 'ic-pencil',
-    [NavigationItemTitle.PullImageDigest]: 'ic-pencil',
-    [NavigationItemTitle.TagPolicy]: 'ic-pencil',
-    [NavigationItemTitle.FilterConditions]: 'ic-pencil',
-    [NavigationItemTitle.LockDeploymentConfiguration]: 'ic-pencil',
-    [NavigationItemTitle.Others]: 'ic-pencil',
-    [NavigationItemTitle.ApplicationTemplates]: 'ic-pencil',
-    [NavigationItemTitle.Projects]: 'ic-pencil',
-    [NavigationItemTitle.ResourceBrowser]: 'ic-cube',
-    [NavigationItemTitle.InterceptedChanges]: 'ic-file',
-    [NavigationItemTitle.ResourceWatcher]: 'ic-monitoring',
-    [NavigationItemTitle.CatalogFramework]: 'ic-file',
-    [NavigationItemTitle.SoftwareRelease]: 'ic-open-box',
-    [NavigationItemTitle.Trends]: 'ic-open-box',
-    [NavigationItemTitle.CostBreakdown]: 'ic-pencil',
-    [NavigationItemTitle.Clusters]: 'ic-pencil',
-    [NavigationItemTitle.Environments]: 'ic-pencil',
-    [NavigationItemTitle.ApplicationSecurity]: 'ic-bug',
-    [NavigationItemTitle.SecurityPolicies]: 'ic-gavel',
-    [NavigationItemTitle.Jobs]: 'ic-k8s-job',
-    [NavigationItemTitle.Alerting]: 'ic-bug',
-    [NavigationItemTitle.IncidentResponse]: 'ic-bug',
-    [NavigationItemTitle.APIPortal]: 'ic-code',
-    [NavigationItemTitle.RunbookAutomation]: 'ic-book-open',
-    [NavigationItemTitle.SSOLoginServices]: 'ic-key',
-    [NavigationItemTitle.HostURLS]: 'ic-link',
-    [NavigationItemTitle.ClusterAndEnvironments]: 'ic-cluster',
-    [NavigationItemTitle.ContainerOCIRegistry]: 'ic-folder',
-    [NavigationItemTitle.Authorization]: 'ic-pencil',
-    [NavigationItemTitle.UserPermissions]: 'ic-pencil',
-    [NavigationItemTitle.PermissionGroups]: 'ic-pencil',
-    [NavigationItemTitle.AuthorizationAPITokens]: 'ic-pencil',
-}
-
 export const NAVIGATION_GROUPS: CommandBarGroupType[] = NAVIGATION_LIST.map((group) => ({
     title: group.title,
-    id: getUniqueId(),
-    items: group.items.flatMap((item) => {
-        if (item.hasSubMenu && item.subItems) {
-            return item.subItems.map((subItem) => ({
+    id: group.id,
+    items: group.items.flatMap(({ hasSubMenu, subItems, title, href, id, icon }) => {
+        if (hasSubMenu && subItems) {
+            return subItems.map((subItem) => ({
                 title: `${group.title} / ${subItem.title}`,
-                id: getUniqueId(),
+                id,
                 dataTestId: subItem.dataTestId,
-                icon: NAVIGATION_ITEM_TITLE_TO_ICON_MAP[subItem.title],
+                // Since icon is not present for some subItems, using from group
+                icon: group.icon,
                 // TODO: No href present for some subItems
                 href: subItem.href ?? null,
             }))
         }
 
         return {
-            title: item.title,
-            id: getUniqueId(),
-            dataTestId: item.dataTestId,
-            icon: NAVIGATION_ITEM_TITLE_TO_ICON_MAP[item.title],
+            title,
+            id,
+            icon: icon || 'ic-arrow-right',
             // TODO: No href present for some items
-            href: item.href ?? null,
+            href: href ?? null,
         }
     }),
 }))
