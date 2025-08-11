@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { post, get, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { post, get, trash, APIOptions } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
 
 export const getChartProviderConfig = (id: number): Promise<any> => {
@@ -37,9 +37,9 @@ export const validateChartRepoConfiguration = (request: any): Promise<any> => {
     return post(URL, request)
 }
 
-export const reSyncChartRepo = (): Promise<any> => {
+export const reSyncChartRepo = ({ signal }: Pick<APIOptions, 'signal'> = {}) => {
     const URL = `${Routes.CHART_REPO}/${Routes.CHART_RESYNC}`
-    return post(URL, undefined)
+    return post(URL, undefined, { signal })
 }
 
 export function deleteChartRepo(request) {
