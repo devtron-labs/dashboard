@@ -60,51 +60,53 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
 
     return (
         <VariableDataTablePopupMenu showHeaderIcon heading="Variable configuration" position="right">
-            <>
-                <div className="p-12 flexbox-col dc__gap-12">
-                    <CustomInput
-                        placeholder="Enter variable name"
-                        name="variable-name"
-                        onChange={handleVariableName}
-                        value={data.variable.value}
-                        label="Variable"
-                        required
-                        autoFocus
-                    />
-                    <Textarea
-                        label="Description"
-                        value={variableDescription}
-                        placeholder="Describe this variable"
-                        onChange={handleVariableDescriptionChange}
-                        name="variable-description"
-                    />
-                </div>
-                <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
-                    <Checkbox
-                        isChecked={isVariableRequired}
-                        rootClassName="mb-0 flex top dc_max-width__max-content"
-                        value={CHECKBOX_VALUE.CHECKED}
-                        onChange={handleVariableRequired}
-                        data-testid="ask-value-is-required"
-                    >
-                        <Tooltip
-                            alwaysShowTippyOnHover
-                            className="w-200"
-                            placement="bottom-start"
-                            content={
-                                <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                    <p className="m-0 fw-6">Value is required</p>
-                                    <p className="m-0">
-                                        Value for required variables must be provided for pipeline execution
-                                    </p>
-                                </div>
-                            }
+            {({ scrollableRef }) => (
+                <>
+                    <div ref={scrollableRef} className="p-12 flexbox-col dc__gap-12">
+                        <CustomInput
+                            placeholder="Enter variable name"
+                            name="variable-name"
+                            onChange={handleVariableName}
+                            value={data.variable.value}
+                            label="Variable"
+                            required
+                            autoFocus
+                        />
+                        <Textarea
+                            label="Description"
+                            value={variableDescription}
+                            placeholder="Describe this variable"
+                            onChange={handleVariableDescriptionChange}
+                            name="variable-description"
+                        />
+                    </div>
+                    <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
+                        <Checkbox
+                            isChecked={isVariableRequired}
+                            rootClassName="mb-0 flex top dc_max-width__max-content"
+                            value={CHECKBOX_VALUE.CHECKED}
+                            onChange={handleVariableRequired}
+                            data-testid="ask-value-is-required"
                         >
-                            <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Value is required</div>
-                        </Tooltip>
-                    </Checkbox>
-                </div>
-            </>
+                            <Tooltip
+                                alwaysShowTippyOnHover
+                                className="w-200"
+                                placement="bottom-start"
+                                content={
+                                    <div className="fs-12 lh-18 flexbox-col dc__gap-2">
+                                        <p className="m-0 fw-6">Value is required</p>
+                                        <p className="m-0">
+                                            Value for required variables must be provided for pipeline execution
+                                        </p>
+                                    </div>
+                                }
+                            >
+                                <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">Value is required</div>
+                            </Tooltip>
+                        </Checkbox>
+                    </div>
+                </>
+            )}
         </VariableDataTablePopupMenu>
     )
 }
