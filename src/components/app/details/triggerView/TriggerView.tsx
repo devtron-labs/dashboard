@@ -105,7 +105,6 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
 
             return (
                 <ApprovalMaterialModal
-                    isLoading={isLoading}
                     node={node}
                     materialType={MATERIAL_TYPE.inputMaterialList}
                     stageType={node?.type}

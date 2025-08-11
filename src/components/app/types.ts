@@ -534,10 +534,9 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
 
 export interface AppDetailsCDModalType
     extends Pick<
-            AppDetails,
-            'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
-        >,
-        Pick<SourceInfoType, 'loadingDetails'> {
+        AppDetails,
+        'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
+    > {
     cdModal: CDModalProps
     appName?: string
     handleSuccess?: DeployImageModalProps['handleSuccess']

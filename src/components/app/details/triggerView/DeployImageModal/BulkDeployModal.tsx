@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, SyntheticEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { Prompt } from 'react-router-dom'
 
 import {
     AnimatedDeployButton,
@@ -7,11 +8,13 @@ import {
     ButtonStyleType,
     CDMaterialResponseType,
     CDMaterialServiceEnum,
+    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
     DeploymentStrategyTypeWithDefault,
     Drawer,
     genericCDMaterialsService,
     GenericEmptyState,
+    getIsApprovalPolicyConfigured,
     Icon,
     MODAL_TYPE,
     ModuleNameMap,
@@ -27,6 +30,7 @@ import {
     uploadCDPipelineFile,
     useAsync,
     useMainContext,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResponseRowType } from '@Components/ApplicationGroup/AppGroup.types'
@@ -97,6 +101,8 @@ const BulkDeployModal = ({
     const isSecurityModuleInstalled = moduleInfoRes && moduleInfoRes?.result?.status === ModuleStatus.INSTALLED
     const isCDStage = stageType === DeploymentNodeType.CD
 
+    usePrompt({ shouldPrompt: isDeploymentLoading })
+
     useEffect(
         () => () => {
             initialDataAbortControllerRef.current.abort()
@@ -139,7 +145,7 @@ const BulkDeployModal = ({
                 (node) => node.type === stageType && +node.environmentId === +envId,
             )
 
-            if (!currentStageNode) {
+            if (!currentStageNode || baseBulkCDDetailMap[workflow.appId].errorMessage) {
                 return () => null
             }
 
@@ -167,7 +173,7 @@ const BulkDeployModal = ({
             )
 
         const appEnvList = validWorkflows
-            .filter((workflow) => !baseBulkCDDetailMap[workflow.appId].warningMessage)
+            .filter((workflow) => !baseBulkCDDetailMap[workflow.appId].errorMessage)
             .map((workflow) => ({
                 appId: workflow.appId,
                 envId: +envId,
@@ -223,7 +229,8 @@ const BulkDeployModal = ({
             },
         }))
 
-        const { deploymentWindowMetadata, materialError, warningMessage } = response[selectedAppId] || {}
+        const { deploymentWindowMetadata, materialError, errorMessage, tagsWarningMessage } =
+            response[selectedAppId] || {}
 
         if (materialError) {
             showError(materialError)
@@ -243,7 +250,8 @@ const BulkDeployModal = ({
             [selectedAppId]: {
                 ...prev[selectedAppId],
                 materialResponse: response[selectedAppId]?.materialResponse,
-                warningMessage,
+                errorMessage,
+                tagsWarningMessage,
                 materialError,
                 deploymentWindowMetadata,
                 deployViewState: {
@@ -385,8 +393,6 @@ const BulkDeployModal = ({
             return
         }
 
-        setIsDeploymentLoading(true)
-
         const { cdTriggerPromiseFunctions, triggeredAppIds } = getTriggerCDPromiseMethods({
             appInfoMap,
             appsToRetry,
@@ -396,11 +402,14 @@ const BulkDeployModal = ({
             bulkDeploymentStrategy,
         })
 
+        setIsDeploymentLoading(true)
+        setNumberOfAppsLoading(triggeredAppIds.length)
+
         if (!triggeredAppIds.length) {
             setIsDeploymentLoading(false)
             ToastManager.showToast({
                 variant: ToastVariantType.error,
-                description: 'No applications selected for deployment',
+                description: 'No valid applications are present for deployment',
             })
             return
         }
@@ -418,6 +427,7 @@ const BulkDeployModal = ({
 
         setResponseList(newResponseList)
         setIsDeploymentLoading(false)
+        setNumberOfAppsLoading(0)
     }
 
     const setDeployViewState: DeployImageContentProps['setDeployViewState'] = (getUpdatedDeployViewState) => {
@@ -469,11 +479,9 @@ const BulkDeployModal = ({
                 const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
                     tagOption.value,
                     appDetails.materialResponse?.materials || [],
-                )
-
-                const { tagsWarning: previousTagWarning } = getUpdatedMaterialsForTagSelection(
-                    selectedImageTagOption.value,
-                    appDetails.materialResponse?.materials || [],
+                    !getIsApprovalPolicyConfigured(
+                        appDetails.materialResponse?.deploymentApprovalInfo?.approvalConfigData,
+                    ) || getIsExceptionUser(appDetails.materialResponse),
                 )
 
                 updatedAppInfoMap[appDetails.appId] = {
@@ -482,8 +490,7 @@ const BulkDeployModal = ({
                         ...appDetails.materialResponse,
                         materials: updatedMaterials,
                     },
-                    warningMessage:
-                        previousTagWarning || !appDetails.warningMessage ? tagsWarning : appDetails.warningMessage,
+                    tagsWarningMessage: tagsWarning,
                 }
             })
             return updatedAppInfoMap
@@ -502,16 +509,37 @@ const BulkDeployModal = ({
         await onClickDeploy(e)
     }
 
-    const isDeployButtonDisabled = useMemo(
-        () =>
+    const onImageSelection: DeployImageContentProps['onImageSelection'] = () => {
+        // Will just clear the tagsWarningMessage for app others are handled in DeployImageContent
+        setAppInfoMap((prev) => ({
+            ...prev,
+            [selectedAppId]: {
+                ...prev[selectedAppId],
+                tagsWarningMessage: '',
+            },
+        }))
+    }
+
+    const isDeployButtonDisabled = useMemo(() => {
+        const atleastOneImageSelected = Object.values(appInfoMap).some((appDetails) =>
+            (appDetails.materialResponse?.materials || []).some((material) => material.isSelected),
+        )
+
+        if (!atleastOneImageSelected) {
+            return true
+        }
+
+        return (
             isDeploymentLoading ||
             isLoadingAppInfoMap ||
+            // Not disabling deploy button even if there is a warning message, since apps with warning will not have selected materials
+            // and hence will not be deployed
             Object.values(appInfoMap).some((appDetails) => {
-                const { materialResponse, deployViewState, areMaterialsLoading } = appDetails
-                return areMaterialsLoading || !materialResponse || !deployViewState
-            }),
-        [appInfoMap, isDeploymentLoading, isLoadingAppInfoMap],
-    )
+                const { areMaterialsLoading } = appDetails
+                return areMaterialsLoading
+            })
+        )
+    }, [appInfoMap, isDeploymentLoading, isLoadingAppInfoMap])
 
     const canDeployWithoutApproval = useMemo(
         () =>
@@ -632,6 +660,7 @@ const BulkDeployModal = ({
                 handleTagChange={handleTagChange}
                 changeApp={changeApp}
                 selectedTagName={selectedImageTagOption.value}
+                onImageSelection={onImageSelection}
             />
         )
     }
@@ -682,7 +711,7 @@ const BulkDeployModal = ({
                             onButtonClick={onClickStartDeploy}
                             disabled={isDeployButtonDisabled}
                             isLoading={isDeploymentLoading}
-                            animateStartIcon={isCDStage}
+                            animateStartIcon={isCDStage && !isDeployButtonDisabled}
                             style={
                                 canDeployWithoutApproval || canImageApproverDeploy
                                     ? ButtonStyleType.warning
@@ -701,36 +730,42 @@ const BulkDeployModal = ({
     }
 
     return (
-        <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-            <div
-                className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
-                onClick={stopPropagation}
-            >
-                <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                    <DeployImageHeader
-                        handleClose={handleClose}
-                        envName={envName}
-                        stageType={stageType}
-                        isRollbackTrigger={false}
-                        isVirtualEnvironment={isVirtualEnvironment}
-                        handleNavigateToMaterialListView={showStrategyFeasibilityPage ? handleNavigateToListView : null}
-                        title={showStrategyFeasibilityPage ? 'Deployment feasibility for' : ''}
-                    />
+        <>
+            <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+                <div
+                    className="flexbox-col dc__content-space h-100 bg__modal--primary shadow__modal dc__overflow-auto bulk-ci-trigger-container"
+                    onClick={stopPropagation}
+                >
+                    <div className="flexbox-col dc__overflow-auto flex-grow-1">
+                        <DeployImageHeader
+                            handleClose={handleClose}
+                            envName={envName}
+                            stageType={stageType}
+                            isRollbackTrigger={false}
+                            isVirtualEnvironment={isVirtualEnvironment}
+                            handleNavigateToMaterialListView={
+                                showStrategyFeasibilityPage ? handleNavigateToListView : null
+                            }
+                            title={showStrategyFeasibilityPage ? 'Deployment feasibility for' : ''}
+                        />
 
-                    <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
+                        <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
+                    </div>
+
+                    {isLoadingAppInfoMap || showStrategyFeasibilityPage ? null : renderFooter()}
                 </div>
 
-                {isLoadingAppInfoMap || showStrategyFeasibilityPage ? null : renderFooter()}
-            </div>
+                {showResistanceBox && (
+                    <BulkDeployResistanceTippy
+                        actionHandler={onClickStartDeploy}
+                        handleOnClose={hideResistanceBox}
+                        modalType={MODAL_TYPE.DEPLOY}
+                    />
+                )}
+            </Drawer>
 
-            {showResistanceBox && (
-                <BulkDeployResistanceTippy
-                    actionHandler={onClickStartDeploy}
-                    handleOnClose={hideResistanceBox}
-                    modalType={MODAL_TYPE.DEPLOY}
-                />
-            )}
-        </Drawer>
+            <Prompt when={isDeploymentLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
+        </>
     )
 }
 
