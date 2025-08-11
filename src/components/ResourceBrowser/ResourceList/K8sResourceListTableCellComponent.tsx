@@ -293,7 +293,7 @@ const K8sResourceListTableCellComponent = ({
                 </div>
             ) : (
                 <div
-                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start'} py-10 ${
+                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start'} ${
                         columnName === 'status' || columnName === 'type'
                             ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]), isNodeListing)}`
                             : ''
