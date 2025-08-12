@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CustomInputProps, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
+import { CustomInputProps, MaterialType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface SourceMaterialsSelectorProps {
     repoName?: string
@@ -25,4 +25,5 @@ export interface SourceMaterialsSelectorProps {
     branchInputProps: Omit<CustomInputProps, 'required' | 'type'> & {
         hideInput?: boolean
     }
+    gitURL?: MaterialType['url']
 }
