@@ -591,6 +591,7 @@ const Details: React.FC<DetailsType> = ({
                 environmentId={appDetails.environmentId}
                 environmentName={appDetails.environmentName}
                 isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                appName={appDetails.appName}
                 deploymentAppType={appDetails.deploymentAppType}
                 cdModal={{
                     cdPipelineId: appDetails.cdPipelineId,
