@@ -224,6 +224,7 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     workflows={workflows}
                     handleClose={revertToPreviousURL}
                     handleSuccess={reloadWorkflowStatus}
+                    isTriggerView
                 />
                 {renderApprovalMaterial()}
             </div>

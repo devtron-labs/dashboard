@@ -583,4 +583,5 @@ export interface GetCDNodeSearchParams {
 
 export interface CDMaterialProps extends Pick<DeployImageModalProps, 'handleClose' | 'handleSuccess'> {
     workflows: WorkflowType[]
+    isTriggerView: boolean
 }

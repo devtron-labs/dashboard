@@ -756,6 +756,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     workflows={filteredWorkflows}
                     handleClose={revertToPreviousURL}
                     handleSuccess={getWorkflowStatusData}
+                    isTriggerView={false}
                 />
                 {renderBulkCDMaterial()}
                 {renderBulkCIMaterial()}
