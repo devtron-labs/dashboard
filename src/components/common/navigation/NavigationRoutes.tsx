@@ -17,7 +17,7 @@
 import { FunctionComponent, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
 import {
@@ -55,6 +55,7 @@ import {
     ToastManager,
     ToastVariantType,
     URLS as CommonURLS,
+    useAnimation,
     useMotionTemplate,
     useMotionValue,
     UserPreferencesType,
@@ -91,9 +92,12 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { SidePanel } from '../SidePanel'
 import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import Navigation from './Navigation'
+// import Navigation from './Navigation'
+import { NavigationV2 } from './NavigationV2'
 import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+
+import './navigation.scss'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 
@@ -128,7 +132,7 @@ const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
     const location = useLocation()
-    const match = useRouteMatch()
+    // const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
@@ -169,6 +173,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     })
     const asideWidth = useMotionValue(0)
     const navBarWidth = useMotionValue(0)
+    const mainMarginLeft = useAnimation()
 
     useEffect(() => {
         if (pageState === ViewType.FORM) {
@@ -176,7 +181,11 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 duration: 0.3,
                 ease: 'easeOut',
                 delay: 0.6,
+                onComplete: async () => {
+                    await mainMarginLeft.start({ marginLeft: 0, transition: { duration: 0.2, ease: 'easeIn' } })
+                },
             })
+
             return controls.stop
         }
         return noop
@@ -688,26 +697,29 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 <BaseConfirmationModal />
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                     {!isOnboardingPage && (
-                        <Navigation
-                            currentServerInfo={currentServerInfo}
-                            history={history}
-                            match={match}
-                            location={location}
-                            serverMode={serverMode}
-                            moduleInInstallingState={moduleInInstallingState}
-                            installedModuleMap={installedModuleMap}
-                            isSuperAdmin={isSuperAdmin}
-                            isAirgapped={isAirgapped}
-                            showStackManager={showStackManager}
-                        />
+                        // <Navigation
+                        //     currentServerInfo={currentServerInfo}
+                        //     history={history}
+                        //     match={match}
+                        //     location={location}
+                        //     serverMode={serverMode}
+                        //     moduleInInstallingState={moduleInInstallingState}
+                        //     installedModuleMap={installedModuleMap}
+                        //     isSuperAdmin={isSuperAdmin}
+                        //     isAirgapped={isAirgapped}
+                        //     showStackManager={showStackManager}
+                        // />
+                        <NavigationV2 />
                     )}
                     <>
-                        <div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                        <motion.div
+                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                             ref={navRouteRef}
+                            style={{ marginLeft: 8 }}
+                            animate={mainMarginLeft}
                         >
                             {renderMainContent()}
-                        </div>
+                        </motion.div>
                         <SidePanel asideWidth={asideWidth} />
                     </>
                     {showThemeSwitcherDialog && (

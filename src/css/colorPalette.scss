@@ -119,6 +119,11 @@ $black: 0, 0, 0;
     --divider-primary-translucent: var(--border-primary-translucent);
     --divider-secondary: var(--border-secondary);
     --divider-secondary-translucent: var(--border-secondary-translucent);
+
+    --sidebar-icon: rgb(#{$white});
+    --sidebar-text: rgb(#{$white});
+    --bg-selected-sidebar-item: rgba(#{$white}, 0.25);
+    --bg-hover-sidebar-item: rgba(#{$white}, 0.25);
 }
 
 @mixin theme-dark {
