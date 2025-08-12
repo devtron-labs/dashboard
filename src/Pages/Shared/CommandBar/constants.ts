@@ -413,7 +413,7 @@ export const NAVIGATION_GROUPS: CommandBarGroupType[] = NAVIGATION_LIST.map((gro
     items: group.items.flatMap(({ hasSubMenu, subItems, title, href, id, icon }) => {
         if (hasSubMenu && subItems) {
             return subItems.map((subItem) => ({
-                title: `${group.title} / ${subItem.title}`,
+                title: `${title} / ${subItem.title}`,
                 id,
                 dataTestId: subItem.dataTestId,
                 // Since icon is not present for some subItems, using from group
@@ -440,7 +440,7 @@ export const RECENT_ACTIONS_GROUP: CommandBarGroupType = {
 }
 
 export const SHORT_CUTS: Record<
-    'OPEN_COMMAND_BAR',
+    'OPEN_COMMAND_BAR' | 'FOCUS_SEARCH_BAR',
     {
         keys: SupportedKeyboardKeysType[]
         description: string
@@ -449,5 +449,9 @@ export const SHORT_CUTS: Record<
     OPEN_COMMAND_BAR: {
         keys: ['Meta', 'K'],
         description: 'Open Command Bar',
+    },
+    FOCUS_SEARCH_BAR: {
+        keys: ['Shift', '>'],
+        description: 'Focus Search Bar',
     },
 } as const

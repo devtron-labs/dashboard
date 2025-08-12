@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import {
     API_STATUS_CODES,
@@ -7,8 +7,10 @@ import {
     KeyboardShortcut,
     ResponseType,
     SearchBar,
+    stopPropagation,
     useQuery,
     useRegisterShortcut,
+    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandGroup from './CommandGroup'
@@ -19,6 +21,7 @@ import './CommandBar.scss'
 
 const CommandBar = () => {
     const [showCommandBar, setShowCommandBar] = useState(false)
+    const [searchText, setSearchText] = useState('')
 
     const { data: recentActionsGroup, isLoading } = useQuery({
         queryFn: ({ signal }) =>
@@ -48,25 +51,54 @@ const CommandBar = () => {
             }, structuredClone(RECENT_ACTIONS_GROUP)),
     })
 
+    const searchBarRef = useRef<HTMLInputElement>(null)
+
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
+    const handleSearchChange = (value: string) => {
+        setSearchText(value)
+    }
+
     const handleClose = () => {
+        setSearchText('')
         setShowCommandBar(false)
+    }
+
+    const handleEscape = () => {
+        if (searchText) {
+            handleSearchChange('')
+            return
+        }
+
+        handleClose()
     }
 
     const handleOpen = () => {
         setShowCommandBar(true)
     }
 
+    const focusSearchBar = () => {
+        if (searchBarRef.current) {
+            searchBarRef.current.focus()
+        }
+    }
+
     useEffect(() => {
         registerShortcut({
             keys: SHORT_CUTS.OPEN_COMMAND_BAR.keys,
-            description: 'Open Command Bar',
+            description: SHORT_CUTS.OPEN_COMMAND_BAR.description,
             callback: handleOpen,
+        })
+
+        registerShortcut({
+            keys: SHORT_CUTS.FOCUS_SEARCH_BAR.keys,
+            description: SHORT_CUTS.FOCUS_SEARCH_BAR.description,
+            callback: focusSearchBar,
         })
 
         return () => {
             unregisterShortcut(SHORT_CUTS.OPEN_COMMAND_BAR.keys)
+            unregisterShortcut(SHORT_CUTS.FOCUS_SEARCH_BAR.keys)
         }
     }, [])
 
@@ -75,59 +107,67 @@ const CommandBar = () => {
     }
 
     return (
-        <Backdrop onEscape={handleClose}>
-            <div className="dc__mxw-800 mxh-450 flexbox-col dc__overflow-auto dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100">
-                <div className="flexbox-col dc__overflow-auto">
-                    <div className="px-20 py-8">
-                        <SearchBar
-                            inputProps={{
-                                autoFocus: true,
-                                placeholder: 'Search or jump to…',
-                            }}
-                            noBackgroundAndBorder
-                        />
+        <UseRegisterShortcutProvider ignoreTags={[]}>
+            <Backdrop onEscape={handleEscape} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
+                <div
+                    onClick={stopPropagation}
+                    className="dc__mxw-800 mxh-450 flexbox-col dc__overflow-auto dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100"
+                >
+                    <div className="flexbox-col dc__overflow-auto">
+                        <div className="px-20 py-8">
+                            <SearchBar
+                                inputProps={{
+                                    autoFocus: true,
+                                    placeholder: 'Search or jump to…',
+                                    ref: searchBarRef,
+                                }}
+                                initialSearchText={searchText}
+                                handleSearchChange={handleSearchChange}
+                                noBackgroundAndBorder
+                            />
+                        </div>
+
+                        <div
+                            className="flexbox-col dc__overflow-auto border__primary--top pt-8"
+                            role="listbox"
+                            aria-label="Command Menu"
+                            // TODO: aria-activedescendant for the currently focused item
+                        >
+                            <CommandGroup isLoading={isLoading} {...(recentActionsGroup || RECENT_ACTIONS_GROUP)} />
+
+                            {NAVIGATION_GROUPS.map((group) => (
+                                <CommandGroup key={group.id} {...group} />
+                            ))}
+                        </div>
                     </div>
 
-                    <div
-                        className="flexbox-col dc__overflow-auto border__primary--top pt-8"
-                        role="listbox"
-                        aria-label="Command Menu"
-                        // TODO: aria-activedescendant for the currently focused item
-                    >
-                        <CommandGroup isLoading={isLoading} {...(recentActionsGroup || RECENT_ACTIONS_GROUP)} />
+                    <div className="flexbox dc__content-space dc__align-items-center px-20 py-12 border__primary--top bg__secondary">
+                        <div className="flexbox dc__gap-20 dc__align-items-center">
+                            <div className="flexbox dc__gap-8 dc__align-items-center">
+                                <KeyboardShortcut keyboardKey="ArrowUp" />
+                                <KeyboardShortcut keyboardKey="ArrowDown" />
+                                <span className="cn-9 fs-12 fw-4 lh-20">to navigate</span>
+                            </div>
 
-                        {NAVIGATION_GROUPS.map((group) => (
-                            <CommandGroup key={group.id} {...group} />
-                        ))}
+                            <div className="flexbox dc__gap-8 dc__align-items-center">
+                                <KeyboardShortcut keyboardKey="Enter" />
+                                <span className="cn-9 fs-12 fw-4 lh-20">to select</span>
+                            </div>
+
+                            <div className="flexbox dc__gap-8 dc__align-items-center">
+                                <KeyboardShortcut keyboardKey="Escape" />
+                                <span className="cn-9 fs-12 fw-4 lh-20">to close</span>
+                            </div>
+                        </div>
+
+                        <div className="flexbox dc__gap-8 dc__align-items-center">
+                            <KeyboardShortcut keyboardKey=">" />
+                            <span className="cn-9 fs-12 fw-4 lh-20">to search actions</span>
+                        </div>
                     </div>
                 </div>
-
-                <div className="flexbox dc__content-space dc__align-items-center px-20 py-12 border__primary--top bg__secondary">
-                    <div className="flexbox dc__gap-20 dc__align-items-center">
-                        <div className="flexbox dc__gap-8 dc__align-items-center">
-                            <KeyboardShortcut keyboardKey="ArrowUp" />
-                            <KeyboardShortcut keyboardKey="ArrowDown" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">to navigate</span>
-                        </div>
-
-                        <div className="flexbox dc__gap-8 dc__align-items-center">
-                            <KeyboardShortcut keyboardKey="Enter" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">to select</span>
-                        </div>
-
-                        <div className="flexbox dc__gap-8 dc__align-items-center">
-                            <KeyboardShortcut keyboardKey="Escape" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">to close</span>
-                        </div>
-                    </div>
-
-                    <div className="flexbox dc__gap-8 dc__align-items-center">
-                        <KeyboardShortcut keyboardKey=">" />
-                        <span className="cn-9 fs-12 fw-4 lh-20">to search actions</span>
-                    </div>
-                </div>
-            </div>
-        </Backdrop>
+            </Backdrop>
+        </UseRegisterShortcutProvider>
     )
 }
 
