@@ -35,7 +35,6 @@ import { CreateAppFormStateType } from '@Pages/App/CreateAppModal/types'
 import { GroupFilterType } from '../ApplicationGroup/AppGroup.types'
 import { DetailsType, ErrorItem, HibernationModalTypes } from './details/appDetails/appDetails.type'
 import { DeployImageModalProps } from './details/triggerView/DeployImageModal/types'
-import { CDMaterialProps } from './details/triggerView/types'
 
 interface CDModalProps {
     cdPipelineId?: number
@@ -535,13 +534,12 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
 
 export interface AppDetailsCDModalType
     extends Pick<
-            AppDetails,
-            'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
-        >,
-        Pick<SourceInfoType, 'loadingDetails'> {
+        AppDetails,
+        'appId' | 'environmentId' | 'isVirtualEnvironment' | 'deploymentAppType' | 'environmentName'
+    > {
     cdModal: CDModalProps
     appName?: string
-    handleSuccess?: CDMaterialProps['handleSuccess']
+    handleSuccess?: DeployImageModalProps['handleSuccess']
     materialType: DeployImageModalProps['materialType']
     closeCDModal: () => void
 }

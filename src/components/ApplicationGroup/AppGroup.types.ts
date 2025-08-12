@@ -79,7 +79,7 @@ export type BulkCDDetailDerivedFromNode = Required<
     >
 > & {
     stageNotAvailable: boolean
-    warningMessage: string
+    errorMessage: string
     triggerBlockedInfo: TriggerBlockedInfo
     consequence: CommonNodeAttr['pluginBlockState']
     showPluginWarning: CommonNodeAttr['showPluginWarning']
@@ -92,6 +92,7 @@ export type BulkCDDetailType = BulkCDDetailDerivedFromNode &
          */
         areMaterialsLoading: boolean
         materialError: ServerErrors | null
+        tagsWarningMessage: string
     }
 
 export interface BulkCDDetailTypeResponse {

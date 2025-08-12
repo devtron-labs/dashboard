@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { CommonNodeAttr, DeploymentNodeType, WorkflowNodeType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, DeploymentNodeType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DeployImageContentProps } from '@Components/app/details/triggerView/DeployImageModal/types'
 import { getNodeIdAndTypeFromSearch } from '@Components/app/details/triggerView/TriggerView.utils'
@@ -54,45 +54,6 @@ export const getSelectedAppListForBulkStrategy = (
     }))
 
     return appList.filter(({ pipelineId }) => feasiblePipelineIds.has(pipelineId))
-}
-
-export const getSelectedNodeAndMeta = (
-    workflows: WorkflowType[],
-    search: string,
-): { node: CommonNodeAttr; workflowId: string; appId: number; appName: string; selectedCINode: CommonNodeAttr } => {
-    const { cdNodeId, nodeType } = getNodeIdAndTypeFromSearch(search)
-
-    const result = workflows.reduce(
-        (acc, workflow) => {
-            if (acc.node) return acc
-            const foundNode = workflow.nodes.find((node) => cdNodeId === node.id && node.type === nodeType)
-
-            if (foundNode) {
-                const selectedCINode = workflow.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                )
-                return {
-                    node: foundNode,
-                    workflowId: workflow.id,
-                    appId: workflow.appId,
-                    appName: workflow.name,
-                    selectedCINode,
-                }
-            }
-            return acc
-        },
-        { node: undefined, workflowId: undefined, appId: undefined, appName: undefined, selectedCINode: undefined },
-    )
-
-    return (
-        result || {
-            node: undefined,
-            workflowId: undefined,
-            appId: undefined,
-            appName: undefined,
-            selectedCINode: undefined,
-        }
-    )
 }
 
 export const getSelectedNodeAndAppId = (

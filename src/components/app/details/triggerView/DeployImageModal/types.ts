@@ -162,6 +162,7 @@ export type DeployImageContentProps = Pick<
               appInfoMap: Record<number, BulkCDDetailType>
               selectedTagName: string
               handleTagChange: (tagOption: SelectPickerOptionType<string>) => void
+              onImageSelection: (materialIndex: number) => void
               changeApp: (appId: number) => void
               policyConsequences?: never
           }
@@ -172,6 +173,7 @@ export type DeployImageContentProps = Pick<
               handleTagChange?: never
               policyConsequences: PolicyConsequencesDTO
               changeApp?: never
+              onImageSelection?: never
           }
     )
 

@@ -152,12 +152,25 @@ const BulkTriggerSidebar = ({
             return <TriggerBlockedError stageType={stageType} />
         }
 
-        if ((!!app.warningMessage && !app.showPluginWarning) || app.materialError?.errors?.length) {
+        const isRuntimeParamsErrorPresent =
+            app.deployViewState?.runtimeParamsErrorState && !app.deployViewState.runtimeParamsErrorState.isValid
+
+        if (
+            (!!app.errorMessage && !app.showPluginWarning) ||
+            app.materialError?.errors?.length ||
+            app.tagsWarningMessage ||
+            isRuntimeParamsErrorPresent
+        ) {
             return (
                 <div className="flex left top dc__gap-4">
-                    <Icon name="ic-warning-fill" color="R500" size={14} />
-                    <span className="fw-4 fs-12 cr-5 dc__truncate--clamp-2">
-                        {app.warningMessage || app.materialError?.errors?.[0]?.userMessage}
+                    <div className="dc__no-shrink mt-2">
+                        <Icon name="ic-warning-fill" color="R500" size={14} />
+                    </div>
+                    <span className="fw-4 fs-12 cr-5 dc__truncate--clamp-2 lh-20">
+                        {app.errorMessage ||
+                            app.materialError?.errors?.[0]?.userMessage ||
+                            app.tagsWarningMessage ||
+                            'Invalid runtime parameters'}
                     </span>
                 </div>
             )

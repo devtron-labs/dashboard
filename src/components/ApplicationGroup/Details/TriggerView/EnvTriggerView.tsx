@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Prompt, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
@@ -29,7 +29,6 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
     ErrorScreenManager,
-    handleAnalyticsEvent,
     PopupMenu,
     Progressing,
     ServerErrors,
@@ -43,7 +42,8 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
-import { BulkDeployModal, DeployImageModal } from '@Components/app/details/triggerView/DeployImageModal'
+import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
+import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
@@ -58,7 +58,7 @@ import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
 import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
-import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
@@ -70,14 +70,12 @@ import {
 import { processWorkflowStatuses } from '../../AppGroup.utils'
 import {
     BulkResponseStatus,
-    ENV_TRIGGER_VIEW_GA_EVENTS,
     GetBranchChangeStatus,
     SKIPPED_RESOURCES_MESSAGE,
     SKIPPED_RESOURCES_STATUS_TEXT,
 } from '../../Constants'
 import BulkSourceChange from './BulkSourceChange'
-import { RenderCDMaterialContentProps } from './types'
-import { getSelectedNodeAndAppId, getSelectedNodeAndMeta } from './utils'
+import { getSelectedNodeAndAppId } from './utils'
 
 import './EnvTriggerView.scss'
 
@@ -492,7 +490,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 workflows={filteredWorkflows}
                 isVirtualEnvironment={isVirtualEnv}
                 envId={+envId}
-                handleSuccess={reloadTriggerView}
+                handleSuccess={getWorkflowStatusData}
             />
         )
     }
@@ -529,95 +527,18 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
-    const renderCDMaterialContent = ({
-        node,
-        appId,
-        workflowId,
-        selectedAppName,
-        doesWorkflowContainsWebhook,
-        ciNodeId,
-    }: RenderCDMaterialContentProps) => {
-        const configurePluginURL = getCDPipelineURL(
-            String(appId),
-            workflowId,
-            doesWorkflowContainsWebhook ? '0' : ciNodeId,
-            doesWorkflowContainsWebhook,
-            node?.id,
-            true,
-        )
-
-        const cdMaterialType = location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE)
-            ? MATERIAL_TYPE.inputMaterialList
-            : MATERIAL_TYPE.rollbackMaterialList
-
-        return (
-            <DeployImageModal
-                appId={appId}
-                envId={node?.environmentId}
-                appName={selectedAppName}
-                stageType={node.type as DeploymentNodeType}
-                envName={node?.environmentName}
-                pipelineId={+node.id}
-                materialType={cdMaterialType}
-                handleClose={revertToPreviousURL}
-                handleSuccess={getWorkflowStatusData}
-                deploymentAppType={node?.deploymentAppType}
-                isVirtualEnvironment={isVirtualEnv}
-                showPluginWarningBeforeTrigger={node?.showPluginWarning}
-                consequence={node?.pluginBlockState}
-                configurePluginURL={configurePluginURL}
-                isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
-                triggerType={node?.triggerType}
-                parentEnvironmentName={node?.parentEnvironmentName}
-            />
-        )
-    }
-
-    const renderCDMaterial = (): JSX.Element | null => {
-        if (
-            location.search.includes(TRIGGER_VIEW_PARAMS.CD_NODE) ||
-            location.search.includes(TRIGGER_VIEW_PARAMS.ROLLBACK_NODE)
-        ) {
-            const { node, appId, workflowId, appName, selectedCINode } = getSelectedNodeAndMeta(
-                filteredWorkflows,
-                location.search,
-            )
-
-            if (!node?.id) {
-                return null
-            }
-
-            return renderCDMaterialContent({
-                node,
-                appId,
-                selectedAppName: appName,
-                workflowId,
-                doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
-                ciNodeId: selectedCINode?.id,
-            })
-        }
-
-        return null
-    }
-
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             const { node, appId } = getSelectedNodeAndAppId(filteredWorkflows, location.search)
 
-            if (!node?.id || !appId) {
-                showError('Invalid node id')
-                return null
-            }
-
             return (
                 <ApprovalMaterialModal
-                    isLoading={false}
                     node={node ?? ({} as CommonNodeAttr)}
                     materialType={MATERIAL_TYPE.inputMaterialList}
                     stageType={DeploymentNodeType.CD}
                     closeApprovalModal={closeApprovalModal}
                     appId={appId}
-                    pipelineId={node.id}
+                    pipelineId={node?.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
                     history={history}
@@ -831,7 +752,12 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                         />
                     </Route>
                 </Switch>
-                {renderCDMaterial()}
+                <CDMaterial
+                    workflows={filteredWorkflows}
+                    handleClose={revertToPreviousURL}
+                    handleSuccess={getWorkflowStatusData}
+                    isTriggerView={false}
+                />
                 {renderBulkCDMaterial()}
                 {renderBulkCIMaterial()}
                 {renderApprovalMaterial()}

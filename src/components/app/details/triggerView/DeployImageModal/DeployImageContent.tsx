@@ -21,6 +21,7 @@ import {
     InfoBlock,
     isNullOrUndefined,
     MaterialInfo,
+    noop,
     Progressing,
     SearchBar,
     SegmentedControlProps,
@@ -59,6 +60,7 @@ const RuntimeParameters = importComponentFromFELibrary('RuntimeParameters', null
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 const CDMaterialInfo = importComponentFromFELibrary('CDMaterialInfo')
 const ConfiguredFilters = importComponentFromFELibrary('ConfiguredFilters')
+const DeploymentWindowInfoBar = importComponentFromFELibrary('DeploymentWindowInfoBar')
 
 const DeployImageContent = ({
     appId,
@@ -91,6 +93,7 @@ const DeployImageContent = ({
     selectedTagName,
     handleTagChange,
     changeApp,
+    onImageSelection = noop,
 }: DeployImageContentProps) => {
     // WARNING: Pls try not to create a useState in this component, it is supposed to be a dumb component.
     const history = useHistory()
@@ -110,6 +113,11 @@ const DeployImageContent = ({
     const isConsumedImageAvailable = getIsConsumedImageAvailable(materials)
     const isPreOrPostCD = stageType === DeploymentNodeType.PRECD || stageType === DeploymentNodeType.POSTCD
     const isCDNode = stageType === DeploymentNodeType.CD
+    const showDeploymentWindowInfoBar = !!(
+        DeploymentWindowInfoBar &&
+        isBulkTrigger &&
+        deploymentWindowMetadata.warningMessage
+    )
 
     const {
         searchText,
@@ -209,6 +217,7 @@ const DeployImageContent = ({
     }
 
     const handleImageSelection: ImageSelectionCTAProps['handleImageSelection'] = (materialIndex) => {
+        onImageSelection(materialIndex)
         setMaterialResponse((prevData) => {
             const updatedMaterialResponse = structuredClone(prevData)
             return {
@@ -668,6 +677,7 @@ const DeployImageContent = ({
     return (
         <>
             {!showFiltersView &&
+                !isBulkTrigger &&
                 isApprovalConfigured &&
                 !isExceptionUser &&
                 ApprovedImagesMessage &&
@@ -694,9 +704,20 @@ const DeployImageContent = ({
             >
                 {renderSidebar()}
                 <div
-                    className={`flexbox-col dc__overflow-auto flex-grow-1 ${isBulkTrigger && showFiltersView ? '' : 'py-16 px-20 '}`}
+                    className={`flexbox-col dc__overflow-auto flex-grow-1 ${(isBulkTrigger && showFiltersView) || showDeploymentWindowInfoBar ? '' : 'py-16 px-20'}`}
                 >
-                    {renderContent()}
+                    {showDeploymentWindowInfoBar && (
+                        <DeploymentWindowInfoBar
+                            excludedUserEmails={deploymentWindowMetadata.excludedUserEmails}
+                            userActionState={deploymentWindowMetadata.userActionState}
+                            warningMessage={deploymentWindowMetadata.warningMessage}
+                        />
+                    )}
+                    <div
+                        className={`flexbox-col dc__overflow-auto flex-grow-1 ${showDeploymentWindowInfoBar ? 'py-16 px-20' : ''}`}
+                    >
+                        {renderContent()}
+                    </div>
                 </div>
             </div>
         </>

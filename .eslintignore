@@ -103,8 +103,6 @@ src/components/app/details/testViewer/TestRunList.tsx
 src/components/app/details/triggerView/EmptyStateCIMaterial.tsx
 src/components/app/details/triggerView/MaterialSource.tsx
 src/components/app/details/triggerView/__tests__/triggerview.test.tsx
-src/components/app/details/triggerView/cdMaterial.tsx
-src/components/app/details/triggerView/ciMaterial.tsx
 src/components/app/details/triggerView/ciWebhook.service.ts
 src/components/app/details/triggerView/config.ts
 src/components/app/details/triggerView/workflow.service.ts

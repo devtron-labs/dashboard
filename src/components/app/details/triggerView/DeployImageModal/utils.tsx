@@ -14,6 +14,7 @@ import {
     DeploymentWithConfigType,
     ExcludedImageNode,
     FilterStates,
+    getIsApprovalPolicyConfigured,
     getIsRequestAborted,
     getStageTitle,
     Icon,
@@ -246,8 +247,6 @@ const processConsumedAndApprovedImages = (materials: CDMaterialType[]) => {
             !mat.userApprovalMetadata ||
             mat.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
         ) {
-            // TODO: Check if this is needed
-            // mat.isSelected = false
             consumedImage.push(mat)
         } else {
             approvedImages.push(mat)
@@ -383,7 +382,11 @@ export const getDeployButtonStyle = (
 export const getIsConsumedImageAvailable = (materials: CDMaterialType[]) =>
     materials.some((materialItem) => materialItem.deployed && materialItem.latest) ?? false
 
-const getTagWarningRelatedToMaterial = (updatedMaterials: CDMaterialType[], selectedImageTagName: string): string => {
+const getTagWarningRelatedToMaterial = (
+    updatedMaterials: CDMaterialType[],
+    selectedImageTagName: string,
+    canSelectNonApprovedImage: boolean,
+): string => {
     const selectedImage = updatedMaterials.find((material) => material.isSelected)
 
     const selectedTagParsedName =
@@ -401,11 +404,23 @@ const getTagWarningRelatedToMaterial = (updatedMaterials: CDMaterialType[], sele
         return `Tag ${selectedTagParsedName} is not eligible for deployment`
     }
 
+    const isNonApprovedImage =
+        !selectedImage.userApprovalMetadata ||
+        selectedImage.userApprovalMetadata.approvalRuntimeState !== ApprovalRuntimeStateType.approved
+
+    if (isNonApprovedImage && !canSelectNonApprovedImage) {
+        return `Tag ${selectedTagParsedName} is not approved`
+    }
+
     return ''
 }
 
 // If tag is not present, and image is selected we will show mixed tag
-export const getUpdatedMaterialsForTagSelection = (tagName: string, materials: CDMaterialType[]) => {
+export const getUpdatedMaterialsForTagSelection = (
+    tagName: string,
+    materials: CDMaterialType[],
+    canSelectNonApprovedImage: boolean,
+) => {
     const sourceMaterials = structuredClone(materials)
 
     const updatedMaterials = sourceMaterials.map((material, materialIndex) => {
@@ -440,7 +455,7 @@ export const getUpdatedMaterialsForTagSelection = (tagName: string, materials: C
 
     const selectedImage = updatedMaterials.find((material) => material.isSelected)
 
-    const tagsWarning = getTagWarningRelatedToMaterial(updatedMaterials, tagName)
+    const tagsWarning = getTagWarningRelatedToMaterial(updatedMaterials, tagName, canSelectNonApprovedImage)
 
     if (selectedImage && tagsWarning) {
         selectedImage.isSelected = false
@@ -497,7 +512,7 @@ export const getBaseBulkCDDetailsMap = (validWorkflows: WorkflowType[], stageTyp
                 true,
             ),
             triggerType: currentStageNode?.triggerType,
-            warningMessage: noStageWarning || blockedStageWarning || '',
+            errorMessage: noStageWarning || blockedStageWarning || '',
             triggerBlockedInfo: currentStageNode?.triggerBlockedInfo,
             stageNotAvailable: !currentStageNode,
             showPluginWarning: currentStageNode?.showPluginWarning,
@@ -524,32 +539,41 @@ export const getBulkCDDetailsMapFromResponse: GetBulkCDDetailsMapFromResponseTyp
             const { tagsWarning, updatedMaterials } = getUpdatedMaterialsForTagSelection(
                 selectedTagName,
                 materialResponse.value.materials,
+                !getIsApprovalPolicyConfigured(materialResponse?.value.deploymentApprovalInfo?.approvalConfigData) ||
+                    getIsExceptionUser(materialResponse.value),
             )
 
             const parsedTagsWarning = searchText ? '' : tagsWarning
+            const newMaterials = searchText ? materialResponse.value.materials : updatedMaterials
+
+            // In case of no search, we will show tag not found
+            const noImageSelectedWarning =
+                searchText && !newMaterials.some((material) => material.isSelected) ? 'No image selected' : ''
 
             const updatedWarningMessage =
-                baseBulkCDDetailMap[appId].warningMessage ||
-                deploymentWindowMap[appId]?.warningMessage ||
-                parsedTagsWarning
+                baseBulkCDDetailMap[appId].errorMessage ||
+                noImageSelectedWarning ||
+                deploymentWindowMap[appId]?.warningMessage
 
             // In case of search and reload even though method gives whole state, will only update deploymentWindowMetadata, warningMessage and materialResponse
             bulkCDDetailsMap[appId] = {
                 ...baseBulkCDDetailMap[appId],
                 materialResponse: {
                     ...materialResponse.value,
-                    materials: searchText ? materialResponse.value.materials : updatedMaterials,
+                    materials: newMaterials,
                 },
-                deploymentWindowMetadata: deploymentWindowMap[appId],
+                deploymentWindowMetadata: deploymentWindowMap[appId] || ({} as DeploymentWindowProfileMetaData),
                 areMaterialsLoading: false,
                 deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
-                warningMessage: updatedWarningMessage,
+                errorMessage: updatedWarningMessage,
+                tagsWarningMessage: parsedTagsWarning,
                 materialError: null,
             }
         } else {
             bulkCDDetailsMap[appId] = {
                 ...baseBulkCDDetailMap[appId],
-                materialResponse: {} as CDMaterialResponseType,
+                tagsWarningMessage: '',
+                materialResponse: null,
                 deploymentWindowMetadata: {} as DeploymentWindowProfileMetaData,
                 deployViewState: structuredClone(INITIAL_DEPLOY_VIEW_STATE),
                 materialError:

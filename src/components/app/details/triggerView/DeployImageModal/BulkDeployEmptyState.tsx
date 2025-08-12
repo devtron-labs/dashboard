@@ -52,7 +52,7 @@ const BulkDeployEmptyState = ({
     return (
         <GenericEmptyState
             image={emptyPreDeploy}
-            title={`${selectedApp?.appName} ${BULK_CD_MESSAGING[stageType].title}`}
+            title={`${selectedApp.appName} ${BULK_CD_MESSAGING[stageType].title}`}
             subTitle={BULK_CD_MESSAGING[stageType].subTitle}
         />
     )
