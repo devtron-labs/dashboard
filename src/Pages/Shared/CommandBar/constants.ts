@@ -467,4 +467,4 @@ export const SHORT_CUTS: Record<
         keys: ['Enter'],
         description: 'Select Item',
     },
-} as const
+}

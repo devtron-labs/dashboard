@@ -35,6 +35,7 @@ const CommandGroup = ({
             <div
                 className={`flexbox px-16 py-12 cursor dc__align-items-center dc__gap-12 dc__content-space br-8 bg__hover ${selectedItemIndex === baseIndex + index ? 'command-bar__container--selected-item' : ''}`}
                 role="option"
+                id={item.id}
                 aria-selected={selectedItemIndex === baseIndex + index}
                 ref={updateItemRef(item.id)}
                 onClick={getHandleItemClick(item)}

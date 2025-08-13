@@ -11,6 +11,7 @@ import {
     ResponseType,
     SearchBar,
     stopPropagation,
+    SupportedKeyboardKeysType,
     updateUserPreferences,
     useQuery,
     useRegisterShortcut,
@@ -97,7 +98,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
         return recentActionsGroup
             ? [...recentActionsGroup.items, ...NAVIGATION_GROUPS.flatMap((group) => group.items)]
-            : []
+            : [...NAVIGATION_GROUPS.flatMap((group) => group.items)]
     }, [areFiltersApplied, recentActionsGroup, filteredGroups])
 
     const handleClearFilters = () => {
@@ -159,7 +160,6 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
         const currentItemId = sanitizeItemId(item)
 
-        // const updatedRecentActions = recentActionsGroup?.items.filter((action) => action.id !== currentItemId)
         // In this now we will put the id as first item in the list and keep first 5 items then
         const updatedRecentActions: UserPreferencesType['commandBar']['recentNavigationActions'] = [
             {
@@ -186,6 +186,21 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
             await onItemClick(selectedItem)
         }
     }
+
+    useEffect(() => {
+        if (!isLoading && recentActionsGroup?.items?.length && !areFiltersApplied) {
+            if (selectedItemIndex !== 0) {
+                const selectedIndex = selectedItemIndex + recentActionsGroup.items.length
+
+                const itemElement = itemRefMap.current[itemFlatList[selectedIndex]?.id]
+                if (itemElement) {
+                    itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+                }
+
+                setSelectedItemIndex(selectedIndex)
+            }
+        }
+    }, [isLoading, recentActionsGroup])
 
     useEffect(() => {
         const { keys } = SHORT_CUTS.OPEN_COMMAND_BAR
@@ -261,6 +276,15 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         }
     }
 
+    const renderKeyboardShortcuts = (keys: SupportedKeyboardKeysType[], label: string) => (
+        <div className="flexbox dc__gap-8 dc__align-items-center">
+            {keys.map((key) => (
+                <KeyboardShortcut key={key} keyboardKey={key} />
+            ))}
+            <span className="cn-9 fs-12 fw-4 lh-20">{label}</span>
+        </div>
+    )
+
     return (
         <Backdrop onEscape={handleEscape} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
             <div
@@ -294,6 +318,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                         >
                             {!areFiltersApplied && (
                                 <CommandGroup
+                                    key="recent-navigation"
                                     {...(recentActionsGroup || RECENT_ACTIONS_GROUP)}
                                     isLoading={isLoading}
                                     baseIndex={0}
@@ -310,27 +335,11 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
                 <div className="flexbox dc__content-space dc__align-items-center px-20 py-12 border__primary--top bg__secondary">
                     <div className="flexbox dc__gap-20 dc__align-items-center">
-                        <div className="flexbox dc__gap-8 dc__align-items-center">
-                            <KeyboardShortcut keyboardKey="ArrowUp" />
-                            <KeyboardShortcut keyboardKey="ArrowDown" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">to navigate</span>
-                        </div>
-
-                        <div className="flexbox dc__gap-8 dc__align-items-center">
-                            <KeyboardShortcut keyboardKey="Enter" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">to select</span>
-                        </div>
-
-                        <div className="flexbox dc__gap-8 dc__align-items-center">
-                            <KeyboardShortcut keyboardKey="Escape" />
-                            <span className="cn-9 fs-12 fw-4 lh-20">to close</span>
-                        </div>
+                        {renderKeyboardShortcuts(['ArrowUp', 'ArrowDown'], 'to navigate')}
+                        {renderKeyboardShortcuts(['Enter'], 'to select')}
+                        {renderKeyboardShortcuts(['Escape'], 'to close')}
                     </div>
-
-                    <div className="flexbox dc__gap-8 dc__align-items-center">
-                        <KeyboardShortcut keyboardKey=">" />
-                        <span className="cn-9 fs-12 fw-4 lh-20">to search actions</span>
-                    </div>
+                    {renderKeyboardShortcuts(['>'], 'to search actions')}
                 </div>
             </div>
         </Backdrop>
