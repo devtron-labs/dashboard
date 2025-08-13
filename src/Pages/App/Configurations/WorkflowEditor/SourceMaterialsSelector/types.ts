@@ -16,8 +16,7 @@
 
 import { CustomInputProps, MaterialType, SelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface SourceMaterialsSelectorProps {
-    repoName?: string
+type CommonSourceTypeProps = {
     sourceTypePickerProps: Omit<
         SelectPickerProps<string | number, false>,
         'required' | 'isClearable' | 'closeMenuOnSelect' | 'size'
@@ -25,5 +24,14 @@ export interface SourceMaterialsSelectorProps {
     branchInputProps: Omit<CustomInputProps, 'required' | 'type'> & {
         hideInput?: boolean
     }
-    gitURL?: MaterialType['url']
 }
+
+export type SourceMaterialsSelectorProps =
+    | (CommonSourceTypeProps & {
+          repoName: string
+          gitURL: MaterialType['url']
+      })
+    | (CommonSourceTypeProps & {
+          repoName?: never
+          gitURL?: never
+      })
