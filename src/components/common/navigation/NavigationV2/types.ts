@@ -1,3 +1,4 @@
+import { MouseEventHandler } from 'react'
 import { NavLinkProps } from 'react-router-dom'
 
 import { customEnv, IconsProps, Never } from '@devtron-labs/devtron-fe-common-lib'
@@ -77,9 +78,10 @@ type CommonNavigationItemType = {
     dataTestId: string
     icon: IconsProps['name']
     href: string
+    disabled?: boolean
 }
 
-export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId'> & {
+export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | 'disabled'> & {
     isAvailableInEA?: boolean
     markOnlyForSuperAdmin?: boolean
     forceHideEnvKey?: keyof customEnv
@@ -110,7 +112,9 @@ export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title
     isExpanded?: boolean
     isSelected?: boolean
     to?: NavLinkProps['to']
-    onHover?: (isHover: boolean) => void
+    onClick?: MouseEventHandler<HTMLButtonElement>
 }
 
-export type NavItemProps = NavigationItemType
+export interface NavigationProps {
+    showStackManager?: boolean
+}

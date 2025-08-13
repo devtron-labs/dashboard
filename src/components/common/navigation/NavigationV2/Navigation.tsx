@@ -14,47 +14,42 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { AnimatePresence, motion, noop, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
+import { AnimatePresence, motion, SearchBar, URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NAVIGATION_LIST } from './constants'
 import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
-import { NavigationGroupType } from './types'
+import { NavigationGroupType, NavigationProps } from './types'
 
 import './styles.scss'
 
-export const NavigationV2 = () => {
+export const NavigationV2 = ({ showStackManager = false }: NavigationProps) => {
     // STATES
-    const [isExpanded, setIsExpanded] = useState(false)
-    const [hoveredNavGroup, setHoveredNavGroup] = useState<NavigationGroupType | null>(null)
+    const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
     const [searchText, setSearchText] = useState('')
 
     // HOOKS
     const { pathname } = useLocation()
 
-    // REFS
-    const navigationRef = useRef<HTMLDivElement>(null)
-
     // COMPUTED VALUES
     const selectedNavGroup = useMemo(
         () =>
             NAVIGATION_LIST.find(({ items }) =>
-                items.some((item) => {
-                    if (item.hasSubMenu) {
-                        return item.subItems.some((subItem) => subItem.href === pathname)
-                    }
-
-                    return item.href === pathname
-                }),
+                items.some((item) =>
+                    item.hasSubMenu
+                        ? item.subItems.some((subItem) => pathname.startsWith(subItem.href))
+                        : pathname.startsWith(item.href),
+                ),
             ),
         [pathname],
     )
 
-    const currentNavGroup = hoveredNavGroup || selectedNavGroup
+    const currentNavGroup = clickedNavGroup || selectedNavGroup
+    const isExpanded = !!clickedNavGroup
 
     const navItems = useMemo(() => {
         if (!currentNavGroup) {
@@ -69,14 +64,9 @@ export const NavigationV2 = () => {
     }, [currentNavGroup, searchText])
 
     // HANDLERS
-    const openExpandedNavigation = () => {
-        setIsExpanded(true)
-    }
-
-    const handleNavigationMouseOver = (e: MouseEvent<HTMLDivElement>) => {
-        if (navigationRef.current === e.target) {
-            setHoveredNavGroup(null)
-        }
+    const handleNavGroupClick = (navItem: NavigationGroupType) => () => {
+        setClickedNavGroup(navItem)
+        setSearchText('')
     }
 
     const closeExpandedNavigation =
@@ -85,41 +75,36 @@ export const NavigationV2 = () => {
             if (searchText && !forceClose) {
                 return
             }
-
-            setIsExpanded(false)
-            setHoveredNavGroup(null)
+            setClickedNavGroup(null)
             setSearchText('')
         }
-
-    const handleNavGroupHover = (navItem: NavigationGroupType) => (isHover: boolean) => {
-        if (isHover) {
-            setSearchText('')
-        }
-        setHoveredNavGroup(isHover ? navItem : hoveredNavGroup)
-    }
 
     return (
         <div className="navigation dc__position-rel">
             <nav
-                ref={navigationRef}
                 className={`navigation__default dc__position-rel dc__grid dc__overflow-hidden h-100 ${isExpanded ? 'is-expanded' : ''}`}
-                onMouseEnter={openExpandedNavigation}
-                onMouseOver={handleNavigationMouseOver}
-                onFocus={noop}
             >
                 <NavigationLogo />
-                <NavGroup title="Overview" icon="ic-speedometer" isExpanded={isExpanded} to="/global-overview" />
                 <NavGroup title="Search" icon="ic-magnifying-glass" isExpanded={isExpanded} />
-                {NAVIGATION_LIST.map(({ id, title, icon, items }) => (
+                <NavGroup title="Overview" icon="ic-speedometer" to="/dummy-url" isExpanded={isExpanded} />
+                {NAVIGATION_LIST.map((item) => (
                     <NavGroup
-                        key={id}
-                        title={title}
-                        icon={icon}
+                        key={item.id}
+                        title={item.title}
+                        icon={item.icon}
                         isExpanded={isExpanded}
-                        isSelected={hoveredNavGroup?.id === id || selectedNavGroup?.id === id}
-                        onHover={handleNavGroupHover({ id, title, icon, items })}
+                        isSelected={clickedNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
+                        onClick={handleNavGroupClick(item)}
                     />
                 ))}
+                {showStackManager && (
+                    <NavGroup
+                        title="Stack Manager"
+                        icon="ic-stack"
+                        to={URLS.STACK_MANAGER_ABOUT}
+                        isExpanded={isExpanded}
+                    />
+                )}
             </nav>
             <AnimatePresence>
                 {isExpanded && (
@@ -132,13 +117,13 @@ export const NavigationV2 = () => {
                             initial={{ opacity: 0, x: 0 }}
                             animate={{ opacity: 1, x: '100%' }}
                             exit={{ opacity: 0, x: 0 }}
-                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            transition={{ duration: 0.3, ease: 'easeOut' }}
                             className="navigation__expanded h-100 dc__right-radius-8 flexbox-col dc__position-abs dc__top-0 dc__right-0"
                             onMouseLeave={closeExpandedNavigation(false)}
                         >
                             <NavigationLogoExpanded />
                             {currentNavGroup && (
-                                <div className="flex-grow-1 flexbox-col dc__gap-16 p-16">
+                                <div className="flex-grow-1 flexbox-col dc__gap-16 p-16 dc__overflow-auto">
                                     <p className="m-0 fs-16 lh-1-5 fw-7 text__white font-merriweather">
                                         {currentNavGroup.title}
                                     </p>
@@ -148,7 +133,7 @@ export const NavigationV2 = () => {
                                         handleSearchChange={setSearchText}
                                         inputProps={{ autoFocus: true }}
                                     />
-                                    <div>
+                                    <div className="flex-grow-1 dc__overflow-auto">
                                         {navItems.map((item) => (
                                             <NavItem key={item.title} {...item} />
                                         ))}

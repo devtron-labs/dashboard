@@ -1,22 +1,22 @@
 import { useMemo } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-import { Icon, TreeView } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, preventDefault, TreeView } from '@devtron-labs/devtron-fe-common-lib'
 
-import { NavItemProps } from './types'
+import { NavigationItemType } from './types'
 import { getNavigationTreeNodes } from './utils'
 
-export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItems }: NavItemProps) => {
+export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled }: NavigationItemType) => {
     const { pathname } = useLocation()
 
     const defaultExpandedMap = useMemo(
         () =>
             hasSubMenu
                 ? {
-                      [id]: subItems.some((subItem) => subItem.href === pathname),
+                      [id]: subItems.some((subItem) => pathname.startsWith(subItem.href)),
                   }
                 : {},
-        [],
+        [pathname],
     )
 
     if (hasSubMenu) {
@@ -26,6 +26,8 @@ export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItem
                     variant="nav"
                     defaultExpandedMap={defaultExpandedMap}
                     nodes={getNavigationTreeNodes({ id, title, subItems })}
+                    selectedId={defaultExpandedMap[id] ? id : null}
+                    highlightSelectedHeadingOnlyWhenCollapsed
                 />
             </div>
         )
@@ -35,8 +37,10 @@ export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItem
         <NavLink
             to={href}
             data-testid={dataTestId}
-            className="nav-item flex left dc__gap-8 px-8 py-6 br-4"
+            className={`nav-item flex left dc__gap-8 px-8 py-6 br-4 ${disabled ? 'dc__disabled' : ''}`}
             activeClassName="is-selected fw-6"
+            aria-disabled={disabled}
+            onClick={disabled ? preventDefault : undefined}
         >
             <Icon name={icon} color="white" />
             <span className="fs-13 lh-20 text__white">{title}</span>

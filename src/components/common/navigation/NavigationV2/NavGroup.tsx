@@ -1,10 +1,10 @@
 import { NavLink } from 'react-router-dom'
 
-import { Icon } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavGroupProps } from './types'
 
-export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onHover }: NavGroupProps) => {
+export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onClick }: NavGroupProps) => {
     const shouldRenderNavLink = !!to
 
     const className = `nav-group dc__transparent px-10 py-8 dc__position-rel ${isSelected ? 'is-selected' : ''} ${isExpanded ? 'is-expanded' : ''}`
@@ -20,27 +20,17 @@ export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onHover }: N
         </>
     )
 
-    const handleMouseEnter = () => {
-        onHover?.(true)
-    }
-
-    const handleMouseLeave = () => {
-        onHover?.(false)
-    }
-
-    return shouldRenderNavLink ? (
-        <NavLink to={to} className={className} activeClassName="is-selected">
-            {content}
-        </NavLink>
-    ) : (
-        <button
-            type="button"
-            aria-label={title}
-            className={className}
-            onMouseEnter={handleMouseEnter}
-            onMouseLeave={handleMouseLeave}
-        >
-            {content}
-        </button>
+    return (
+        <Tooltip alwaysShowTippyOnHover content={title} placement="bottom">
+            {shouldRenderNavLink ? (
+                <NavLink to={to} className={className} activeClassName="is-selected">
+                    {content}
+                </NavLink>
+            ) : (
+                <button type="button" aria-label={title} className={className} onClick={onClick}>
+                    {content}
+                </button>
+            )}
+        </Tooltip>
     )
 }

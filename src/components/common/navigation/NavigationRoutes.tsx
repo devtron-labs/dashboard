@@ -182,7 +182,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 ease: 'easeOut',
                 delay: 0.6,
                 onComplete: async () => {
-                    await mainMarginLeft.start({ marginLeft: 0, transition: { duration: 0.2, ease: 'easeIn' } })
+                    await mainMarginLeft.start({ marginLeft: 0, transition: { duration: 0.2, ease: 'easeOut' } })
                 },
             })
 
@@ -709,7 +709,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                         //     isAirgapped={isAirgapped}
                         //     showStackManager={showStackManager}
                         // />
-                        <NavigationV2 />
+                        <NavigationV2 showStackManager={showStackManager} />
                     )}
                     <>
                         <motion.div

@@ -63,6 +63,10 @@
         }
     }
 
+    &__sidebar-item {
+        background: var(--bg-selected-sidebar-item);
+    }
+
     &__hover {
         &:hover {
             background: var(--bg-hover);
