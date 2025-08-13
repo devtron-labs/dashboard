@@ -30,6 +30,7 @@ import {
     CreateClusterProps,
     CreateClusterTypeEnum,
 } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import { UpgradeToEnterpriseDialog } from '@Pages/Shared/UpgradeToEnterprise'
 
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { URLS } from '../../config'
@@ -72,7 +73,18 @@ export const renderCreateResourceButton = (clusterId: string, callback: CreateRe
 
 export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateClusterProps, 'handleReloadClusterList'>) => {
     const { replace } = useHistory()
-    const { isSuperAdmin } = useMainContext()
+    const { isSuperAdmin, licenseData } = useMainContext()
+    const isFreemium = licenseData?.isFreemium
+
+    const [showUpgradeToEnterprise, setShowUpgradeToEnterprise] = useState(false)
+
+    const handleOpenUpgradeDialog = () => {
+        setShowUpgradeToEnterprise(true)
+    }
+
+    const handleCloseUpgradeDialog = () => {
+        setShowUpgradeToEnterprise(false)
+    }
 
     const handleCloseCreateClusterModal = () => {
         replace(URLS.RESOURCE_BROWSER)
@@ -86,23 +98,34 @@ export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateCluster
                         dataTestId="add_cluster_button"
                         text="New Cluster"
                         size={ComponentSizeType.small}
-                        component={ButtonComponentType.link}
                         startIcon={<Add />}
-                        linkProps={{
-                            to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
-                                type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                            }),
-                        }}
+                        {...(isFreemium
+                            ? {
+                                  component: ButtonComponentType.button,
+                                  onClick: handleOpenUpgradeDialog,
+                              }
+                            : {
+                                  component: ButtonComponentType.link,
+                                  linkProps: {
+                                      to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
+                                          type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                                      }),
+                                  },
+                              })}
                     />
                     <span className="dc__divider" />
                 </div>
 
-                <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
-                    <CreateCluster
-                        handleReloadClusterList={handleReloadClusterList}
-                        handleRedirectOnModalClose={handleCloseCreateClusterModal}
-                    />
-                </Route>
+                {!isFreemium && (
+                    <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
+                        <CreateCluster
+                            handleReloadClusterList={handleReloadClusterList}
+                            handleRedirectOnModalClose={handleCloseCreateClusterModal}
+                        />
+                    </Route>
+                )}
+
+                <UpgradeToEnterpriseDialog open={showUpgradeToEnterprise} handleClose={handleCloseUpgradeDialog} />
             </>
         )
     )

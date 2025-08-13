@@ -1,0 +1,320 @@
+<svg width="250" height="250" viewBox="0 0 250 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+ <style>
+    .diamond {
+  animation: obj-rotate 3s forwards ease;
+  transform-origin: center;
+  transform-box: fill-box;
+  }
+
+  @keyframes obj-rotate {
+  0% {transform: rotate(-90deg);}
+  30% {transform: rotate(0deg);}
+  100% {transform: rotate(0deg);}
+}
+    .shape-bottom-left {
+    animation: anim-bottom-left 3s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    @keyframes anim-bottom-left {
+      0% {
+        d: path("M59.5 160L4.5 132L60 226.5L59.5 160Z"); opacity: 0;
+      }
+      25% {
+        d: path("M59.5 160L4.5 132L60 226.5L59.5 160Z"); opacity: .2;
+      }
+      100% {
+        d: path("M2 83.6167L113.5 240L58.5 126.737L2 83.6167Z"); opacity: 1;
+      }
+   }
+
+  .shape-bottom-right {
+    animation: anim-bottom-right 3s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    @keyframes anim-bottom-right {
+      0% {
+        d: path("M191.5 160.289L246.5 132L192 226L191.5 160.289Z"); opacity: 0;
+      }
+      25% {
+        d: path("M191.5 160.289L246.5 132L192 226L191.5 160.289Z"); opacity: .2;
+      }
+      100% {
+        d: path("M197 126.7L248 85.3701L135.5 240L197 126.7Z"); opacity: 1;
+      }
+   }
+
+    .shape-bottom-front {
+    animation: anim-bottom-front 3s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    @keyframes anim-bottom-front {
+      0% {
+        d: path("M125.5 199.5L71 232.999H180L125.5 199.5Z"); opacity: 0;
+      }
+      25% {
+        d: path("M125.5 199.5L71 232.999H180L125.5 199.5Z"); opacity: .2;
+      }
+      100% {
+        d: path("M125 243L70 127H180.706L125 243Z"); opacity: 1;
+      }
+   }
+
+    .shape-top-tl {
+    animation: anim-top-tl 2.8s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  
+  @keyframes anim-top-tl {
+    0% {
+      d: path("M78.5 56.7344L42.7498 119L3.66296 119L58.8896 23L78.5 56.7344Z"); opacity: 1;
+    }
+    25% {
+      d: path("M78.5 56.7344L42.7498 119L3.66296 119L58.8896 23L78.5 56.7344Z"); opacity: 1;
+    }
+    100% {
+      d: path("M35 43L7.5 73.5L4.51562 73.5L33.5 42.5L35 43Z"); opacity: 0;
+    }
+  }
+
+    .shape-top-front {
+    animation: anim-top-bottom 3s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  
+  @keyframes anim-top-bottom {
+    0% {
+      d: path("M161.707 199.402L90.1915 199.402L70.7853 233.252L181.415 233.252L161.707 199.402Z");
+    }
+    25% {
+      d: path("M161.707 199.402L90.1915 199.402L70.7853 233.252L181.415 233.252L161.707 199.402Z");
+    }
+    100% {
+      d: path("M166.67 68.5L83.6699 68.5L70 116.999L180.67 116.999L166.67 68.5Z");
+    }
+  }
+
+    .shape-top-bl {
+    animation: anim-top-bl 3s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    @keyframes anim-top-bl {
+      0% {
+        d: path("M43.0001 132L79 193.5L59.5 227.711L3.87202 131.979L43.0001 132Z");
+      }
+      25% {
+        d: path("M43.0001 132L79 193.5L59.5 227.711L3.87202 131.979L43.0001 132Z");
+      }
+      100% {
+        d: path("M33.5 41.5L73.5 65L59.5 114L4 73.5L33.5 41.5Z");
+      }
+   }
+
+    .shape-top-br {
+    animation: anim-top-br 3s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    @keyframes anim-top-br {
+      0% {
+        d: path("M208 132L247 132L192 226.5L172.5 193L208 132Z");
+      }
+      25% {
+        d: path("M208 132L247 132L192 226.5L172.5 193L208 132Z");
+      }
+      100% {
+        d: path("M216.5 41L248.5 75.5L194 115.5L177.5 64.5L216.5 41Z");
+      }
+   }
+
+      .shape-top-face {
+      animation: anim-top-face 3s forwards ease;
+      transform-origin: center;
+      transform-box: fill-box;
+    }
+    
+    @keyframes anim-top-face {
+      0% {
+        d: path("M96.6555 75.9063L153.343 75.9062L181.687 124.999L153.343 174.092L96.6555 174.092L68.3118 124.999L96.6555 75.9063Z");
+      }
+      25% {
+        d: path("M96.6555 75.9063L153.343 75.9062L181.687 124.999L153.343 174.092L96.6555 174.092L68.3118 124.999L96.6555 75.9063Z");
+      }
+      100% {
+        d: path("M83.5 9L166.5 9L209 34L166.5 58.5L83.5 58.5L41 34L83.5 9Z");
+      }
+    }
+
+    .shape-top-back {
+    animation: anim-top-tf 2.5s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+    }
+
+    @keyframes anim-top-tf {
+      0% {
+        d: path("M89.3207 50.5973L160.863 50.5978L180.33 16.7476L69.7941 16.7471L89.3207 50.5973Z"); opacity: 1;
+      }
+      25% {
+        d: path("M89.3207 50.5973L160.863 50.5978L180.33 16.7476L69.7941 16.7471L89.3207 50.5973Z"); opacity: 1;
+      }
+      100% {
+        d: path("M97.0755 13L155.973 13L172 11L81 11L97.0755 13Z"); opacity: .1;
+      }
+   }
+
+    .shape-top-tr {
+    animation: anim-top-tr 2.8s forwards ease;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  
+  @keyframes anim-top-tr {
+    0% {
+      d: path("M191 23L171.62 57L207.54 119L246.663 119L191 23Z"); opacity: 1;
+    }
+    25% {
+      d: path("M191 23L171.62 57L207.54 119L246.663 119L191 23Z"); opacity: 1;
+    }
+    100% {
+      d: path("M215.5 42L214 43L242.5 73.5L244.5 73.5L215.5 42Z"); opacity: 0;
+    }
+  }
+
+    .small-star {
+  animation: twinkle 2.9s infinite ease;
+  transform-origin: center center;
+  transform-box: fill-box;
+  }
+
+.big-star {
+  animation: twinkle 2.6s infinite ease;
+  transform-origin: center center;
+  transform-box: fill-box;
+  }
+
+@keyframes twinkle {
+      0% { transform: rotate(0deg) scale(0); opacity: 0;}
+      60% { transform: rotate(0deg) scale(0); opacity: 1;}
+      80% { transform: rotate(180deg) scale(1); opacity: 1;}
+      100% { transform: rotate(360deg) scale(0); opacity: 0;}
+      }
+    }
+</style>
+<g class="diamond">
+<path class="shape-top-tr" d="M191 23L171.62 57L207.54 119H246.663L191 23Z" fill="url(#paint8_linear_637_2386)"/>
+<path class="shape-bottom-left" d="M59.5 160L4.5 132L60 226.5L59.5 160Z" fill="url(#paint6_linear_637_2386)"/>
+<path class="shape-bottom-right" d="M191.5 160.289L246.5 132L192 226L191.5 160.289Z" fill="url(#paint2_linear_637_2386)"/>
+<path class="shape-bottom-front" d="M125.5 199.5L71 232.999H180L125.5 199.5Z" fill="url(#paint4_linear_637_2386)"/>
+<path class="shape-top-back" d="M89.3207 50.5973L160.863 50.5978L180.33 16.7476L69.7941 16.7471L89.3207 50.5973Z" fill="url(#paint0_linear_637_2386)"/>
+<path class="shape-top-tl" d="M78.5 56.7344L42.7498 119H3.66296L58.8896 23L78.5 56.7344Z" fill="url(#paint1_linear_637_2386)"/>
+<path class="shape-top-bl" d="M43.0001 132L79 193.5L59.5 227.711L3.87202 131.979L43.0001 132Z" fill="url(#paint7_linear_637_2386)"/>
+<path class="shape-top-face" d="M96.6555 75.9063L153.343 75.9062L181.687 124.999L153.343 174.092H96.6555L68.3118 124.999L96.6555 75.9063Z" fill="url(#paint9_linear_637_2386)"/>
+<path class="shape-top-br" d="M208 132H247L192 226.5L172.5 193L208 132Z" fill="url(#paint3_linear_637_2386)"/>
+<path class="shape-top-front" d="M161.707 199.402H90.1915L70.7853 233.252H181.415L161.707 199.402Z" fill="url(#paint5_linear_637_2386)"/>
+<path class="big-star" d="M195 62C195 62 194.739 92.6268 207.056 104.944C219.373 117.261 250 117 250 117C250 117 219.373 116.739 207.056 129.056C194.739 141.373 195 172 195 172C195 172 195.261 141.373 182.944 129.056C170.627 116.739 140 117 140 117C140 117 170.627 117.261 182.944 104.944C195.261 92.6268 195 62 195 62Z" fill="#FFFCD0"/>
+<path class="small-star" d="M44 12C44 12 43.8577 28.7055 50.5761 35.4239C57.2945 42.1423 74 42 74 42C74 42 57.2945 41.8577 50.5761 48.5761C43.8577 55.2945 44 72 44 72C44 72 44.1423 55.2945 37.4239 48.5761C30.7055 41.8577 14 42 14 42C14 42 30.7055 42.1423 37.4239 35.4239C44.1423 28.7055 44 12 44 12Z" fill="#FFFCD0"/>
+<defs>
+  <linearGradient id="paint0_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#F7E373">
+      <animate attributeName="stop-color" values="#F7E373;#F7E373" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="100%" stop-color="#FC9500">
+      <animate attributeName="stop-color" values="#FC9500;#FC9500" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint1_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#FFCF08">
+      <animate attributeName="stop-color" values="#FFCF08;#F99A00" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="100%" stop-color="#E37600">
+      <animate attributeName="stop-color" values="#E37600;#FFD800" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint2_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="55%" stop-color="#C64200">
+      <animate attributeName="stop-color" values="#FF9518;#C64200" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="95%" stop-color="#FF9518">
+      <animate attributeName="stop-color" values="#C64200;#FF9518" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint3_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="75%" stop-color="#F7E373">
+      <animate attributeName="stop-color" values="#FC9500;#F7E373" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="90%" stop-color="#FC9500">
+      <animate attributeName="stop-color" values="#F7E373;#FC9500" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint4_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="32%" stop-color="#DA5724">
+      <animate attributeName="stop-color" values="#FCAC1A;#DA5724" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="60%" stop-color="#FCAC1A">
+      <animate attributeName="stop-color" values="#DA5724;#FCAC1A" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint5_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#EA8101">
+      <animate attributeName="stop-color" values="#FFF000;#EA8101" dur="2s" fill="freeze" />
+    </stop>
+    <stop offset="80%" stop-color="#FFF000">
+      <animate attributeName="stop-color" values="#FFF000;#FFF000" dur="2s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint6_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#CC501F">
+      <animate attributeName="stop-color" values="#D97600;#CC501F" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="40%" stop-color="#D97600">
+      <animate attributeName="stop-color" values="#CC501F;#D97600" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint7_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="8%" stop-color="#E37600">
+      <animate attributeName="stop-color" values="#FFCF08;#E37600" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="30%" stop-color="#FFCF08">
+      <animate attributeName="stop-color" values="#E37600;#FFCF08" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint8_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#F7E373">
+      <animate attributeName="stop-color" values="#F7E373;#F7E373" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="100%" stop-color="#FC9500">
+      <animate attributeName="stop-color" values="#FC9500;#FC9500" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+
+  <linearGradient id="paint9_linear_637_2386" gradientUnits="userSpaceOnUse">
+    <stop offset="30%" stop-color="#F99A00">
+      <animate attributeName="stop-color" values="#FFD800;#F99A00" dur="3s" fill="freeze" />
+    </stop>
+    <stop offset="55%" stop-color="#FFD800">
+      <animate attributeName="stop-color" values="#F99A00;#FFD800" dur="3s" fill="freeze" />
+    </stop>
+  </linearGradient>
+</defs>
+
+</g>
+</svg>

@@ -55,6 +55,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import { UpgradeToEnterpriseDialog } from '@Pages/Shared/UpgradeToEnterprise'
 
 import { getClusterList, getEnvironmentList } from './cluster.service'
 import {
@@ -84,8 +85,9 @@ const PodSpreadModal = importComponentFromFELibrary('PodSpreadModal', null, 'fun
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 
 const ClusterList = () => {
-    const { isSuperAdmin } = useMainContext()
+    const { isSuperAdmin, licenseData } = useMainContext()
     const isK8sClient = window._env_.K8S_CLIENT
+    const isFreemium = licenseData?.isFreemium
 
     const { push } = useHistory()
     const { search } = useLocation()
@@ -121,6 +123,7 @@ const ClusterList = () => {
     )
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
+    const [showUpgradeToEnterprise, setShowUpgradeToEnterprise] = useState(false)
 
     const clusterIdVsEnvMap: Record<number, Environment[]> = useMemo(
         () =>
@@ -350,6 +353,58 @@ const ClusterList = () => {
         )
     }
 
+    const handleOpenUpgradeDialog = () => {
+        setShowUpgradeToEnterprise(true)
+    }
+
+    const handleCloseUpgradeDialog = () => {
+        setShowUpgradeToEnterprise(false)
+    }
+
+    const renderAddClusterEnvButton = () => {
+        if (isEnvironmentsView) {
+            return (
+                <Button
+                    dataTestId="add-environment-button"
+                    linkProps={{
+                        to: {
+                            pathname: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`,
+                            search,
+                        },
+                    }}
+                    component={ButtonComponentType.link}
+                    startIcon={<Icon name="ic-add" color={null} />}
+                    size={ComponentSizeType.medium}
+                    text="Add Environment"
+                />
+            )
+        }
+
+        return (
+            <Button
+                dataTestId="add-cluster-button"
+                component={ButtonComponentType.link}
+                startIcon={<Icon name="ic-link" color={null} />}
+                size={ComponentSizeType.medium}
+                text="Connect Cluster"
+                {...(isFreemium
+                    ? {
+                          component: ButtonComponentType.button,
+                          onClick: handleOpenUpgradeDialog,
+                      }
+                    : {
+                          component: ButtonComponentType.link,
+                          linkProps: {
+                              to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
+                                  type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                              }),
+                              search,
+                          },
+                      })}
+            />
+        )
+    }
+
     return (
         <div className="flexbox-col h-100">
             <div className="flexbox-col bg__primary flex-grow-1">
@@ -394,23 +449,7 @@ const ClusterList = () => {
                             keyboardShortcut="/"
                         />
                         {ManageCategoryButton && <ManageCategoryButton search={search} />}
-                        <Button
-                            dataTestId={isEnvironmentsView ? 'add-environment-button' : 'add-cluster-button'}
-                            linkProps={{
-                                to: {
-                                    pathname: isEnvironmentsView
-                                        ? `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`
-                                        : generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
-                                              type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                                          }),
-                                    search,
-                                },
-                            }}
-                            component={ButtonComponentType.link}
-                            startIcon={<Icon name={isEnvironmentsView ? 'ic-add' : 'ic-link'} color={null} />}
-                            size={ComponentSizeType.medium}
-                            text={isEnvironmentsView ? 'Add Environment' : 'Connect Cluster'}
-                        />
+                        {renderAddClusterEnvButton()}
                         {isEnvironmentsView && (
                             <ActionMenu
                                 id="additional-options-action-menu"
@@ -451,13 +490,16 @@ const ClusterList = () => {
                 {/* Body */}
                 {renderList()}
                 {/* Modals and Routes */}
+                <UpgradeToEnterpriseDialog open={showUpgradeToEnterprise} handleClose={handleCloseUpgradeDialog} />
                 {ManageCategories && <ManageCategories />}
-                <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <CreateCluster
-                        handleReloadClusterList={reloadClusterList}
-                        handleRedirectOnModalClose={handleRedirectToClusterList}
-                    />
-                </Route>
+                {!isFreemium && (
+                    <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
+                        <CreateCluster
+                            handleReloadClusterList={reloadClusterList}
+                            handleRedirectOnModalClose={handleRedirectToClusterList}
+                        />
+                    </Route>
+                )}
                 <Route path={COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER}>
                     <EditCluster
                         clusterList={clusterListResult ?? []}
