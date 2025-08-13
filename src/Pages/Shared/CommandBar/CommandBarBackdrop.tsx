@@ -203,7 +203,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     }, [isLoading, recentActionsGroup])
 
     useEffect(() => {
-        const { keys } = SHORT_CUTS.OPEN_COMMAND_BAR
+        const { keys } = SHORT_CUTS.FOCUS_SEARCH_BAR
 
         registerShortcut({
             keys,
@@ -269,7 +269,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         })
     }
 
-    // Add this handler to prevent browser native scrolling
+    // To handle native scroll behavior
     const handleListBoxKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
         if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
             e.preventDefault()
