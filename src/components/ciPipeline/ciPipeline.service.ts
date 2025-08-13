@@ -242,7 +242,6 @@ export function getInitDataWithCIPipeline(
             },
         ]) => {
             const ciPipeline = ciPipelineRes?.result
-            console.log('pipelineMetaConfig from getPipelineMetaConfiguration', pipelineMetaConfig)
             const pipelineMetaConfigResult = pipelineMetaConfig?.result
             return parseCIResponse(
                 pipelineMetaConfig.code,
@@ -456,7 +455,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                     gitHostId: gitHost ? gitHost.id : 0,
                     regex: mat.source.regex,
                     isRegex: mat.isRegex,
-                    url: mat.url || gitMaterials[0].url, // Required BE support till then will be getting url from another api
+                    url: mat.url || gitMaterials?.[0].url, // Required BE support till then will be getting url from another api
                 }
             }) || []
     }
@@ -573,7 +572,6 @@ function parseCIResponse(
     isSecurityModuleInstalled?: boolean,
     appWorkflowId?: number,
 ) {
-    console.log('gitMaterials', gitMaterials)
     if (ciPipeline) {
         if (ciPipeline.beforeDockerBuildScripts) {
             ciPipeline.preBuildStage = migrateOldData(ciPipeline.beforeDockerBuildScripts)
