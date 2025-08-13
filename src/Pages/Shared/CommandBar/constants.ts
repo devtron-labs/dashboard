@@ -439,8 +439,10 @@ export const RECENT_ACTIONS_GROUP: CommandBarGroupType = {
     title: 'Recent Navigation',
 }
 
+export const RECENT_NAVIGATION_ITEM_ID_PREFIX = 'recent-navigation-'
+
 export const SHORT_CUTS: Record<
-    'OPEN_COMMAND_BAR' | 'FOCUS_SEARCH_BAR',
+    'OPEN_COMMAND_BAR' | 'FOCUS_SEARCH_BAR' | 'NAVIGATE_UP' | 'NAVIGATE_DOWN',
     {
         keys: SupportedKeyboardKeysType[]
         description: string
@@ -453,5 +455,13 @@ export const SHORT_CUTS: Record<
     FOCUS_SEARCH_BAR: {
         keys: ['Shift', '>'],
         description: 'Focus Search Bar',
+    },
+    NAVIGATE_UP: {
+        keys: ['ArrowUp'],
+        description: 'Navigate Up',
+    },
+    NAVIGATE_DOWN: {
+        keys: ['ArrowDown'],
+        description: 'Navigate Down',
     },
 } as const

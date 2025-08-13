@@ -68,6 +68,9 @@ export type CommandBarItemType = {
 )
 
 export interface CommandBarGroupType {
+    /**
+     * Required for semantic purpose, and need to be unique across all groups.
+     */
     id: string
     title: string
     items: CommandBarItemType[]
@@ -75,4 +78,12 @@ export interface CommandBarGroupType {
 
 export interface CommandGroupProps extends CommandBarGroupType {
     isLoading?: boolean
+    baseIndex: number
+    selectedItemIndex: number
+    updateItemRefMap: (id: string, el: HTMLDivElement) => void
+    onItemClick: (item: CommandBarItemType) => void
+}
+
+export interface CommandBarBackdropProps {
+    handleClose: () => void
 }
