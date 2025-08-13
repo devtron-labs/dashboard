@@ -64,7 +64,9 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
     const handleSearchChange = (value: string) => {
         setSearchText(value)
-        setSelectedItemIndex(0)
+        if (value !== searchText) {
+            setSelectedItemIndex(0)
+        }
     }
 
     const updateItemRefMap = (id: string, el: HTMLDivElement) => {
@@ -96,7 +98,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         return recentActionsGroup
             ? [...recentActionsGroup.items, ...NAVIGATION_GROUPS.flatMap((group) => group.items)]
             : []
-    }, [recentActionsGroup, filteredGroups])
+    }, [areFiltersApplied, recentActionsGroup, filteredGroups])
 
     const handleClearFilters = () => {
         setSearchText('')
@@ -141,37 +143,6 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         })
     }
 
-    useEffect(() => {
-        registerShortcut({
-            keys: SHORT_CUTS.FOCUS_SEARCH_BAR.keys,
-            description: SHORT_CUTS.FOCUS_SEARCH_BAR.description,
-            callback: focusSearchBar,
-        })
-
-        return () => {
-            unregisterShortcut(SHORT_CUTS.FOCUS_SEARCH_BAR.keys)
-        }
-    }, [])
-
-    useEffect(() => {
-        registerShortcut({
-            keys: SHORT_CUTS.NAVIGATE_UP.keys,
-            description: SHORT_CUTS.NAVIGATE_UP.description,
-            callback: () => handleNavigation('up'),
-        })
-
-        registerShortcut({
-            keys: SHORT_CUTS.NAVIGATE_DOWN.keys,
-            description: SHORT_CUTS.NAVIGATE_DOWN.description,
-            callback: () => handleNavigation('down'),
-        })
-
-        return () => {
-            unregisterShortcut(SHORT_CUTS.NAVIGATE_UP.keys)
-            unregisterShortcut(SHORT_CUTS.NAVIGATE_DOWN.keys)
-        }
-    }, [itemFlatList])
-
     const sanitizeItemId = (item: CommandBarItemType) =>
         (item.id.startsWith(RECENT_NAVIGATION_ITEM_ID_PREFIX)
             ? item.id.replace(RECENT_NAVIGATION_ITEM_ID_PREFIX, '')
@@ -192,14 +163,14 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         // In this now we will put the id as first item in the list and keep first 5 items then
         const updatedRecentActions: UserPreferencesType['commandBar']['recentNavigationActions'] = [
             {
-                id: currentItemId as CommandBarActionIdType,
+                id: currentItemId,
             },
-            ...(recentActionsGroup?.items
+            ...(recentActionsGroup?.items || [])
                 .filter((action) => sanitizeItemId(action) !== currentItemId)
                 .slice(0, 4)
                 .map((action) => ({
                     id: sanitizeItemId(action),
-                })) || []),
+                })),
         ]
 
         await updateUserPreferences({
@@ -207,6 +178,63 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
             value: updatedRecentActions,
         })
     }
+
+    const handleEnterSelectedItem = async () => {
+        const selectedItem = itemFlatList[selectedItemIndex]
+
+        if (selectedItem) {
+            await onItemClick(selectedItem)
+        }
+    }
+
+    useEffect(() => {
+        const { keys } = SHORT_CUTS.OPEN_COMMAND_BAR
+
+        registerShortcut({
+            keys,
+            description: SHORT_CUTS.FOCUS_SEARCH_BAR.description,
+            callback: focusSearchBar,
+        })
+
+        return () => {
+            unregisterShortcut(keys)
+        }
+    }, [])
+
+    useEffect(() => {
+        const { keys } = SHORT_CUTS.ENTER_ITEM
+        registerShortcut({
+            keys,
+            description: SHORT_CUTS.ENTER_ITEM.description,
+            callback: handleEnterSelectedItem,
+        })
+
+        return () => {
+            unregisterShortcut(keys)
+        }
+    }, [selectedItemIndex, itemFlatList, recentActionsGroup])
+
+    useEffect(() => {
+        const navigateUpKeys = SHORT_CUTS.NAVIGATE_UP.keys
+        const navigateDownKeys = SHORT_CUTS.NAVIGATE_DOWN.keys
+
+        registerShortcut({
+            keys: navigateUpKeys,
+            description: SHORT_CUTS.NAVIGATE_UP.description,
+            callback: () => handleNavigation('up'),
+        })
+
+        registerShortcut({
+            keys: navigateDownKeys,
+            description: SHORT_CUTS.NAVIGATE_DOWN.description,
+            callback: () => handleNavigation('down'),
+        })
+
+        return () => {
+            unregisterShortcut(navigateUpKeys)
+            unregisterShortcut(navigateDownKeys)
+        }
+    }, [itemFlatList])
 
     const renderNavigationGroups = (baseIndex: number) => {
         let nextIndex = baseIndex
