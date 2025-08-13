@@ -20,14 +20,16 @@ const CommandBar = () => {
     }
 
     useEffect(() => {
+        const { keys } = SHORT_CUTS.OPEN_COMMAND_BAR
+
         registerShortcut({
-            keys: SHORT_CUTS.OPEN_COMMAND_BAR.keys,
+            keys,
             description: SHORT_CUTS.OPEN_COMMAND_BAR.description,
             callback: handleOpen,
         })
 
         return () => {
-            unregisterShortcut(SHORT_CUTS.OPEN_COMMAND_BAR.keys)
+            unregisterShortcut(keys)
         }
     }, [])
 

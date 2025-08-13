@@ -22,6 +22,8 @@ const CommandGroup = ({
         onItemClick(item)
     }
 
+    const getIsItemSelected = (itemIndex: number) => selectedItemIndex === baseIndex + itemIndex
+
     const renderContent = () => {
         if (isLoading || !items?.length) {
             return (
@@ -33,10 +35,10 @@ const CommandGroup = ({
 
         return items.map((item, index) => (
             <div
-                className={`flexbox px-16 py-12 cursor dc__align-items-center dc__gap-12 dc__content-space br-8 bg__hover ${selectedItemIndex === baseIndex + index ? 'command-bar__container--selected-item' : ''}`}
+                className={`flexbox px-16 py-12 cursor dc__align-items-center dc__gap-12 dc__content-space br-8 bg__hover ${getIsItemSelected(index) ? 'command-bar__container--selected-item' : ''}`}
                 role="option"
                 id={item.id}
-                aria-selected={selectedItemIndex === baseIndex + index}
+                aria-selected={getIsItemSelected(index)}
                 ref={updateItemRef(item.id)}
                 onClick={getHandleItemClick(item)}
                 tabIndex={0}
@@ -46,7 +48,7 @@ const CommandGroup = ({
                     <h3 className="m-0 cn-9 fs-14 fw-4 lh-20 dc__truncate">{item.title}</h3>
                 </div>
 
-                {selectedItemIndex === baseIndex + index && <Icon name="ic-key-enter" color="N700" size={20} />}
+                {getIsItemSelected(index) && <Icon name="ic-key-enter" color="N700" size={20} />}
             </div>
         ))
     }
@@ -59,7 +61,7 @@ const CommandGroup = ({
                 </h2>
             </div>
 
-            <div className="flexbox-col" key={id} role="group" aria-labelledby={id}>
+            <div className="flexbox-col" role="group" aria-labelledby={id}>
                 {renderContent()}
             </div>
         </div>

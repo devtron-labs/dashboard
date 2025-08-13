@@ -12,6 +12,8 @@ import {
     SearchBar,
     stopPropagation,
     SupportedKeyboardKeysType,
+    ToastManager,
+    ToastVariantType,
     updateUserPreferences,
     useQuery,
     useRegisterShortcut,
@@ -20,7 +22,8 @@ import {
 
 import CommandGroup from './CommandGroup'
 import { NAVIGATION_GROUPS, RECENT_ACTIONS_GROUP, RECENT_NAVIGATION_ITEM_ID_PREFIX, SHORT_CUTS } from './constants'
-import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
+import { CommandBarBackdropProps, CommandBarGroupType } from './types'
+import { getNewSelectedIndex, sanitizeItemId } from './utils'
 
 const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     const history = useHistory()
@@ -49,10 +52,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                 if (requiredGroup) {
                     const requiredItem = requiredGroup.items.find((item) => item.id === action.id)
                     requiredItem.id = `${RECENT_NAVIGATION_ITEM_ID_PREFIX}${action.id}`
-
-                    if (requiredItem) {
-                        acc.items.push(structuredClone(requiredItem))
-                    }
+                    acc.items.push(structuredClone(requiredItem))
                 }
                 return acc
             }, structuredClone(RECENT_ACTIONS_GROUP)),
@@ -74,22 +74,26 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         itemRefMap.current[id] = el
     }
 
-    const lowerCaseSearchText = searchText.toLowerCase()
+    const filteredGroups = useMemo(() => {
+        const lowerCaseSearchText = searchText.toLowerCase()
 
-    const filteredGroups = searchText
-        ? NAVIGATION_GROUPS.reduce<typeof NAVIGATION_GROUPS>((acc, group) => {
-              const filteredItems = group.items.filter((item) => item.title.toLowerCase().includes(lowerCaseSearchText))
+        if (!searchText) {
+            return NAVIGATION_GROUPS
+        }
 
-              if (filteredItems.length > 0) {
-                  acc.push({
-                      ...group,
-                      items: filteredItems,
-                  })
-              }
+        return NAVIGATION_GROUPS.reduce<typeof NAVIGATION_GROUPS>((acc, group) => {
+            const filteredItems = group.items.filter((item) => item.title.toLowerCase().includes(lowerCaseSearchText))
 
-              return acc
-          }, [])
-        : NAVIGATION_GROUPS
+            if (filteredItems.length > 0) {
+                acc.push({
+                    ...group,
+                    items: filteredItems,
+                })
+            }
+
+            return acc
+        }, [])
+    }, [searchText])
 
     const itemFlatList: CommandBarGroupType['items'] = useMemo(() => {
         if (areFiltersApplied) {
@@ -120,21 +124,13 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         }
     }
 
-    const getNewSelectedIndex = (prevIndex: number, type: 'up' | 'down') => {
-        if (type === 'up') {
-            return prevIndex === 0 ? itemFlatList.length - 1 : prevIndex - 1
-        }
-        return prevIndex === itemFlatList.length - 1 ? 0 : prevIndex + 1
-    }
-
     const handleNavigation = (type: 'up' | 'down') => {
         if (!itemFlatList.length) {
             return
         }
 
-        // Want this to have cyclic navigation
         setSelectedItemIndex((prevIndex) => {
-            const newIndex = getNewSelectedIndex(prevIndex, type)
+            const newIndex = getNewSelectedIndex(prevIndex, type, itemFlatList.length)
             const item = itemFlatList[newIndex]
             const itemElement = itemRefMap.current[item.id]
             if (itemElement) {
@@ -144,14 +140,13 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         })
     }
 
-    const sanitizeItemId = (item: CommandBarItemType) =>
-        (item.id.startsWith(RECENT_NAVIGATION_ITEM_ID_PREFIX)
-            ? item.id.replace(RECENT_NAVIGATION_ITEM_ID_PREFIX, '')
-            : item.id) as CommandBarActionIdType
-
     const onItemClick = async (item: CommandBarGroupType['items'][number]) => {
         if (!item.href) {
             logExceptionToSentry(new Error(`CommandBar item with id ${item.id} does not have a valid href`))
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `CommandBar item with id ${item.id} does not have a valid href`,
+            })
             return
         }
 
@@ -187,6 +182,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         }
     }
 
+    // Intention: To retain the selected item index when recent actions are loaded
     useEffect(() => {
         if (!isLoading && recentActionsGroup?.items?.length && !areFiltersApplied) {
             if (selectedItemIndex !== 0) {
@@ -203,11 +199,11 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     }, [isLoading, recentActionsGroup])
 
     useEffect(() => {
-        const { keys } = SHORT_CUTS.FOCUS_SEARCH_BAR
+        const { keys, description } = SHORT_CUTS.FOCUS_SEARCH_BAR
 
         registerShortcut({
             keys,
-            description: SHORT_CUTS.FOCUS_SEARCH_BAR.description,
+            description,
             callback: focusSearchBar,
         })
 
@@ -217,10 +213,11 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     }, [])
 
     useEffect(() => {
-        const { keys } = SHORT_CUTS.ENTER_ITEM
+        const { keys, description } = SHORT_CUTS.ENTER_ITEM
+
         registerShortcut({
             keys,
-            description: SHORT_CUTS.ENTER_ITEM.description,
+            description,
             callback: handleEnterSelectedItem,
         })
 
