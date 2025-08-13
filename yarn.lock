@@ -5765,7 +5765,6 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-simple-import-sort: "npm:^12.1.1"
     fast-json-patch: "npm:^3.1.1"
-    flexsearch: "npm:^0.6.32"
     husky: "npm:^7.0.4"
     jest-extended: "npm:^2.0.0"
     jest-junit: "npm:^13.0.0"
@@ -7069,13 +7068,6 @@ __metadata:
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
   checksum: 10c0/324166b125ee07d4ca9bcf3a5f98d915d5db4f39d711fba640a3178b959919aae1f7cfd8aabcfef5826ed8aa8a2aa14cc85b2d7d18ff638ddf4ae3df39573eaf
-  languageName: node
-  linkType: hard
-
-"flexsearch@npm:^0.6.32":
-  version: 0.6.32
-  resolution: "flexsearch@npm:0.6.32"
-  checksum: 10c0/f033fba51568bcd4f8fc0588cd457a0af15b48dfcdf1128341b0af19949ba957ada2ff2b39bb28a5a11df0dda8e73ca6fb7518d06c42f8fd8adc1679b93d0d41
   languageName: node
   linkType: hard
 
