@@ -20,7 +20,13 @@ const ENTERPRISE_PLAN_OFFERINGS = [
 const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => (
     <GenericModal name="upgrade-to-enterprise" open={open} width={450} onClose={noop}>
         <GenericModal.Body>
-            <div className="p-32 flexbox-col dc__gap-32 border__primary">
+            <div
+                className="p-32 flexbox-col dc__gap-32 border__primary"
+                style={{
+                    background:
+                        'linear-gradient(183deg, var(--bg-primary) 5.64%, var(--bg-primary, #FFF) 41.13%, var(--B100) 76.62%, var(--V200) 94.36%)',
+                }}
+            >
                 <div className="flexbox-col dc__gap-16">
                     <div className="flexbox dc__content-space dc__align-start">
                         <ICUpgradeToEnterprise className="icon-dim-64" />
