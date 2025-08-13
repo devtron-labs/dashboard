@@ -407,15 +407,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     },
 ]
 
-export const NAVIGATION_GROUPS: CommandBarGroupType[] = NAVIGATION_LIST.map((group) => ({
+export const NAVIGATION_GROUPS: CommandBarGroupType[] = NAVIGATION_LIST.map<CommandBarGroupType>((group) => ({
     title: group.title,
     id: group.id,
     items: group.items.flatMap(({ hasSubMenu, subItems, title, href, id, icon }) => {
-        if (hasSubMenu && subItems) {
-            return subItems.map((subItem) => ({
+        if (hasSubMenu && subItems?.length) {
+            return subItems.map<CommandBarGroupType['items'][number]>((subItem) => ({
                 title: `${title} / ${subItem.title}`,
-                id,
-                dataTestId: subItem.dataTestId,
+                id: subItem.id,
                 // Since icon is not present for some subItems, using from group
                 icon: group.icon,
                 // TODO: No href present for some subItems
@@ -439,7 +438,7 @@ export const RECENT_ACTIONS_GROUP: CommandBarGroupType = {
     title: 'Recent Navigation',
 }
 
-export const RECENT_NAVIGATION_ITEM_ID_PREFIX = 'recent-navigation-'
+export const RECENT_NAVIGATION_ITEM_ID_PREFIX = 'recent-navigation-' as const
 
 export const SHORT_CUTS: Record<
     'OPEN_COMMAND_BAR' | 'FOCUS_SEARCH_BAR' | 'NAVIGATE_UP' | 'NAVIGATE_DOWN',

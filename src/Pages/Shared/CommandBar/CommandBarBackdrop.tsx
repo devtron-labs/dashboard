@@ -7,16 +7,19 @@ import {
     GenericFilterEmptyState,
     getUserPreferences,
     KeyboardShortcut,
+    logExceptionToSentry,
     ResponseType,
     SearchBar,
     stopPropagation,
+    updateUserPreferences,
     useQuery,
     useRegisterShortcut,
+    UserPreferencesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandGroup from './CommandGroup'
 import { NAVIGATION_GROUPS, RECENT_ACTIONS_GROUP, RECENT_NAVIGATION_ITEM_ID_PREFIX, SHORT_CUTS } from './constants'
-import { CommandBarBackdropProps, CommandBarGroupType } from './types'
+import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
 
 const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     const history = useHistory()
@@ -38,7 +41,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         queryKey: ['recentNavigationActions'],
         select: ({ result }) =>
             result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
-                const requiredGroup = NAVIGATION_GROUPS.find((group) =>
+                const requiredGroup = structuredClone(NAVIGATION_GROUPS).find((group) =>
                     group.items.some((item) => item.id === action.id),
                 )
 
@@ -169,12 +172,40 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         }
     }, [itemFlatList])
 
-    const onItemClick = (item: CommandBarGroupType['items'][number]) => {
-        if (item.href) {
-            history.push(item.href)
+    const sanitizeItemId = (item: CommandBarItemType) =>
+        (item.id.startsWith(RECENT_NAVIGATION_ITEM_ID_PREFIX)
+            ? item.id.replace(RECENT_NAVIGATION_ITEM_ID_PREFIX, '')
+            : item.id) as CommandBarActionIdType
+
+    const onItemClick = async (item: CommandBarGroupType['items'][number]) => {
+        if (!item.href) {
+            logExceptionToSentry(new Error(`CommandBar item with id ${item.id} does not have a valid href`))
+            return
         }
 
+        history.push(item.href)
         handleClose()
+
+        const currentItemId = sanitizeItemId(item)
+
+        // const updatedRecentActions = recentActionsGroup?.items.filter((action) => action.id !== currentItemId)
+        // In this now we will put the id as first item in the list and keep first 5 items then
+        const updatedRecentActions: UserPreferencesType['commandBar']['recentNavigationActions'] = [
+            {
+                id: currentItemId as CommandBarActionIdType,
+            },
+            ...(recentActionsGroup?.items
+                .filter((action) => sanitizeItemId(action) !== currentItemId)
+                .slice(0, 4)
+                .map((action) => ({
+                    id: sanitizeItemId(action),
+                })) || []),
+        ]
+
+        await updateUserPreferences({
+            path: 'commandBar.recentNavigationActions',
+            value: updatedRecentActions,
+        })
     }
 
     const renderNavigationGroups = (baseIndex: number) => {

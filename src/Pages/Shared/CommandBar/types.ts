@@ -5,9 +5,12 @@ import {
     NavigationSubMenuItemID,
     Never,
     URLS as CommonURLS,
+    UserPreferencesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
+
+import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
 
 export type NavigationRootItemID =
     | 'application-management'
@@ -52,8 +55,10 @@ export interface NavigationGroupType extends Pick<CommonNavigationItemType, 'tit
     items: NavigationItemType[]
 }
 
+export type CommandBarActionIdType = UserPreferencesType['commandBar']['recentNavigationActions'][number]['id']
+
 export type CommandBarItemType = {
-    id: string
+    id: CommandBarActionIdType | `${typeof RECENT_NAVIGATION_ITEM_ID_PREFIX}${CommandBarActionIdType}`
     title: string
     icon: IconsProps['name']
 } & (
