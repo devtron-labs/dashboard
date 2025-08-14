@@ -83,7 +83,7 @@ const ResourceBrowser: React.FC = () => {
             <PageHeader
                 additionalHeaderInfo={renderAdditionalBrowserHeaderInfo}
                 isBreadcrumbs={false}
-                renderActionButtons={renderNewClusterButton(reloadDetailClusterList)}
+                renderActionButtons={renderNewClusterButton(reloadDetailClusterList, sortedClusterList.length)}
             />
             {renderContent()}
         </div>

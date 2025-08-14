@@ -21,7 +21,7 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
     <GenericModal name="upgrade-to-enterprise" open={open} width={450} onClose={noop}>
         <GenericModal.Body>
             <div
-                className="p-32 flexbox-col dc__gap-32 border__primary"
+                className="p-32 flexbox-col dc__gap-32"
                 style={{
                     background:
                         'linear-gradient(183deg, var(--bg-primary) 5.64%, var(--bg-primary, #FFF) 41.13%, var(--B100) 76.62%, var(--V200) 94.36%)',
@@ -68,8 +68,9 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
                                 grow.
                             </span>
                         </div>
+                        {/* TODO: Add onClick handler */}
                         <Button
-                            dataTestId="upgrate-to-enterprise"
+                            dataTestId="upgrade-to-enterprise"
                             text="Upgrade Now"
                             endIcon={<Icon name="ic-arrow-right" color={null} />}
                         />
