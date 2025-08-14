@@ -261,7 +261,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'cost-visibility-overview',
                 id: 'cost-visibility-overview',
                 icon: 'ic-speedometer',
-                href: COMMON_URLS.COST_VISIBILITY,
+                href: COMMON_URLS.COST_VISIBILITY_OVERVIEW,
             },
             {
                 title: 'Cost Breakdown',
