@@ -28,7 +28,6 @@ import {
 // Fallback Icon
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
-import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import './navigation.scss'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
@@ -165,7 +164,6 @@ export default class Navigation extends Component<
         showLogoutCard: boolean
         showHelpCard: boolean
         showMoreOptionCard: boolean
-        isCommandBarActive: boolean
         forceUpdateTime: number
     }
 > {
@@ -177,13 +175,11 @@ export default class Navigation extends Component<
             showLogoutCard: false,
             showHelpCard: false,
             showMoreOptionCard: false,
-            isCommandBarActive: false,
             forceUpdateTime: Date.now(),
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
-        this.toggleCommandBar = this.toggleCommandBar.bind(this)
         this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
     }
 
@@ -249,10 +245,6 @@ export default class Navigation extends Component<
 
     toggleHelpCard() {
         this.setState({ showHelpCard: !this.state.showHelpCard })
-    }
-
-    toggleCommandBar(flag: boolean): void {
-        this.setState({ isCommandBarActive: flag })
     }
 
     onLogout(): void {
@@ -373,15 +365,6 @@ export default class Navigation extends Component<
                         )}
                     </aside>
                 </nav>
-                <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
-                    <Command
-                        location={this.props.location}
-                        match={this.props.match}
-                        history={this.props.history}
-                        isCommandBarActive={this.state.isCommandBarActive}
-                        toggleCommandBar={this.toggleCommandBar}
-                    />
-                </CommandErrorBoundary>
             </>
         )
     }
