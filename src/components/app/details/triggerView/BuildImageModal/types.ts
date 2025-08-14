@@ -19,10 +19,10 @@ import {
     BuildImageModalProps,
     CIPipelineMaterialDTO,
     FilteredCIPipelineMapType,
+    FilteredCIPipelinesType,
     HandleRuntimeParamChange,
     MaterialSourceProps,
     RuntimeParamsErrorState,
-    TriggerViewState,
 } from '../types'
 
 export interface TriggerBuildSidebarProps {
@@ -55,7 +55,7 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'isJobView'> & {
     handleRuntimeParamError: (errorState: RuntimeParamsErrorState) => void
     runtimeParams: RuntimePluginVariables[]
     handleDisplayWebhookModal: () => void
-    selectedCIPipeline: TriggerViewState['filteredCIPipelines'][number]
+    selectedCIPipeline: FilteredCIPipelinesType
     handleReloadWithWorkflows: () => Promise<void>
     appId: number
     /**
@@ -80,8 +80,9 @@ export type GitInfoMaterialProps = Pick<BuildImageModalProps, 'isJobView'> & {
     )
 
 export interface BulkBuildImageModalProps
-    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflows' | 'reloadWorkflowStatus'> {
+    extends Pick<BuildImageModalProps, 'handleClose' | 'workflows' | 'reloadWorkflowStatus'> {
     filteredCIPipelineMap: FilteredCIPipelineMapType
+    reloadWorkflows: () => Promise<WorkflowType[]>
 }
 
 export interface BuildImageHeaderProps {

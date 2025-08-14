@@ -96,28 +96,37 @@ export const processWorkflowStatuses = (
             }
         })
     }
-    // Update Workflow using maps
-    const _workflows = workflowsList.map((wf) => {
-        wf.nodes = wf.nodes.map((node) => {
+    // Update Workflow using maps, returning new objects for reactivity
+    const _workflows = workflowsList.map((wf) => ({
+        ...wf,
+        nodes: wf.nodes.map((node) => {
             switch (node.type) {
                 case 'CI':
-                    node.status = ciMap[node.id]?.status
-                    node.storageConfigured = ciMap[node.id]?.storageConfigured
-                    break
+                    return {
+                        ...node,
+                        status: ciMap[node.id]?.status,
+                        storageConfigured: ciMap[node.id]?.storageConfigured,
+                    }
                 case 'PRECD':
-                    node.status = preCDMap[node.id]
-                    break
+                    return {
+                        ...node,
+                        status: preCDMap[node.id],
+                    }
                 case 'POSTCD':
-                    node.status = postCDMap[node.id]
-                    break
+                    return {
+                        ...node,
+                        status: postCDMap[node.id],
+                    }
                 case 'CD':
-                    node.status = cdMap[node.id]
-                    break
+                    return {
+                        ...node,
+                        status: cdMap[node.id],
+                    }
+                default:
+                    return { ...node }
             }
-            return node
         })
-        return wf
-    })
+    }))
     return { cicdInProgress, workflows: _workflows }
 }
 

@@ -240,9 +240,9 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
     })
 }
 
-export const getWorkflowStatus = (appId: string) => {
+export const getWorkflowStatus = (appId: number, options: APIOptions) => {
     const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/${Routes.APP_LIST_V2}`
-    return get(URL)
+    return get(URL, options)
 }
 
 export const getCIPipelines = (appId, filteredEnvIds?: string, callback?: (...args) => void) => {

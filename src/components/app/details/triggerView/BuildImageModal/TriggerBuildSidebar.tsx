@@ -71,7 +71,7 @@ const TriggerBuildSidebar = ({
         }
     }
 
-    const getErrorMessageFromAppDetails = (appDetails: (typeof appList)[number]): string | null => {
+    const getErrorMessageFromAppDetails = (appDetails: (typeof appList)[number]): JSX.Element | null => {
         const materialListError = appDetails.materialInitialError
             ? appDetails.materialInitialError.errors?.[0].userMessage || 'Error fetching material list'
             : null
@@ -84,7 +84,19 @@ const TriggerBuildSidebar = ({
             ? 'Invalid runtime parameters'
             : null
 
-        return appDetails.errorMessage || materialListError || runtimeParamsInitialError || runtimeParamsDataError
+        const errorMessage =
+            appDetails.errorMessage || materialListError || runtimeParamsInitialError || runtimeParamsDataError
+
+        if (!errorMessage) {
+            return null
+        }
+
+        return (
+            <span className="flexbox cr-5 fw-4 fs-12 dc__gap-4">
+                <Icon name="ic-error" size={20} color={null} />
+                <span className="dc__block dc__word-break lh-20 dc__truncate--clamp-6">{errorMessage}</span>
+            </span>
+        )
     }
 
     const renderAppName = (appDetails: (typeof appList)[number]): JSX.Element | null => (
@@ -101,14 +113,7 @@ const TriggerBuildSidebar = ({
                     {appDetails.warningMessage}
                 </span>
             )}
-            {appDetails.appId !== appId && !!getErrorMessageFromAppDetails(appDetails) && (
-                <span className="flexbox cr-5 fw-4 fs-12 dc__gap-4">
-                    <Icon name="ic-error" size={20} color={null} />
-                    <span className="dc__block dc__word-break lh-20 dc__truncate--clamp-6">
-                        {getErrorMessageFromAppDetails(appDetails)}
-                    </span>
-                </span>
-            )}
+            {getErrorMessageFromAppDetails(appDetails)}
             {appDetails.node?.pluginBlockState &&
                 appDetails.node.pluginBlockState.action !== ConsequenceAction.ALLOW_FOREVER &&
                 PolicyEnforcementMessage && (
