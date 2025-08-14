@@ -141,6 +141,7 @@ export const SourceMaterials = ({
                                         ).message,
                                     autoFocus: index === 0,
                                 }}
+                                gitURL={mat?.url}
                             />
                             {isBranchRegex && (
                                 <InfoBlock description="Branch Regex allows you to easily switch between branches matching the configured regex before triggering the build pipeline." />

@@ -14,30 +14,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../config'
 import { CiPipelineSourceConfig, GitProviderIcon, GitProviderType } from '@devtron-labs/devtron-fe-common-lib'
-
-export interface StaticNodeProps {
-    x: number
-    y: number
-    branch: string
-    icon: string
-    id: string
-    url: string
-    title: string
-    height: number
-    width: number
-    downstreams: any[]
-    sourceType: string
-    regex?: string
-    primaryBranchAfterRegex?: string
-    to?: string
-    handleGoToWorkFlowEditor?: (e?: any) => void
-}
-
+import { StaticNodeProps } from './types'
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
+    console.log('props',this.props.url)
+
         return (
             <div
                 className={`workflow-node workflow-node--static ${

@@ -17,13 +17,11 @@
 import { Component, ReactElement } from 'react'
 import {
     WorkflowNodeType,
-    SelectedNode,
-    CommonNodeAttr,
     ConditionalWrap,
     Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
-import { Link, RouteComponentProps } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import ToggleCDSelectButton from '../ToggleCDSelectButton'
 import { ReactComponent as Warning } from '../../../assets/icons/ic-warning.svg'
 import { ReactComponent as ICLinkedCINode } from '../../../assets/icons/ic-node-build-linked.svg'
@@ -31,40 +29,7 @@ import { ReactComponent as IcLink } from '../../../assets/icons/ic-link.svg'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 import { URLS } from '../../../config'
 import { getLinkedCITippyContent } from '../../../Pages/Shared/LinkedCIDetailsModal/utils'
-import { WorkflowProps } from '../Workflow'
-
-export interface CINodeProps extends RouteComponentProps<{}>, Pick<WorkflowProps, 'isOffendingPipelineView' | 'isTemplateView'> {
-    x: number
-    y: number
-    width: number
-    height: number
-    id: number
-    title: string
-    type: string
-    description: string
-    workflowId: number
-    triggerType: string
-    isLinkedCI: boolean
-    isExternalCI: boolean
-    isJobCI: boolean
-    isTrigger: boolean
-    linkedCount: number
-    downstreams: CommonNodeAttr[]
-    to: string
-    toggleCDMenu: () => void
-    configDiffView?: boolean
-    hideWebhookTippy?: () => void
-    isJobView?: boolean
-    showPluginWarning?: boolean
-    envList?: any[]
-    filteredCIPipelines?: any[]
-    addNewPipelineBlocked?: boolean
-    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
-    selectedNode?: SelectedNode
-    isLastNode?: boolean
-    appId: string
-    getWorkflows: () => void
-}
+import { CINodeProps } from './types'
 
 export class CINode extends Component<CINodeProps> {
     handleLinkedCIWorkflowChipClick = (e) => {

@@ -162,7 +162,7 @@ export const CIStepperContent = ({
                 <InfoBlock variant="success" description="Build pipeline is created" size={ComponentSizeType.medium} />
             )}
             {materials.map((material, index) => {
-                const { id, name, type, isRegex, value, regex, gitMaterialId } = material
+                const { id, name, type, isRegex, value, regex, gitMaterialId, url } = material
 
                 const isBranchRegex = type === SourceTypeMap.BranchRegex || isRegex
                 const isBranchFixed = type === SourceTypeMap.BranchFixed && !isRegex
@@ -183,6 +183,7 @@ export const CIStepperContent = ({
                     <Fragment key={id}>
                         <SourceMaterialsSelector
                             repoName={name}
+                            gitURL={url}
                             sourceTypePickerProps={{
                                 inputId: 'ci-pipeline-sourceType',
                                 label: 'Source Type',

@@ -55,12 +55,14 @@ export const Build = ({
                             ...mat,
                             value: '',
                             regex: event.target.value,
+                            gitURL: mat?.url,
                         }
                     }
                     return {
                         ...mat,
                         regex: '',
                         value: event.target.value,
+                        gitURL: mat?.url,
                     }
                 }
                 return mat
