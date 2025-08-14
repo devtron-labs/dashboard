@@ -49,13 +49,18 @@ const ResourceBrowser: React.FC = () => {
     )
 
     const sortedClusterList: ClusterDetail[] = useMemo(
+        () => sortObjectArrayAlphabetically(detailClusterList || clusterListMinData || [], 'name'),
+        [detailClusterList, clusterListMinData],
+    )
+
+    const filteredSortedCluserList = useMemo(
         () =>
-            sortObjectArrayAlphabetically(detailClusterList || clusterListMinData || [], 'name').filter(
+            sortedClusterList.filter(
                 (option) =>
                     !(window._env_.HIDE_DEFAULT_CLUSTER && option.id === DEFAULT_CLUSTER_ID) &&
                     !option.isVirtualCluster,
             ),
-        [detailClusterList, clusterListMinData],
+        [sortedClusterList],
     )
 
     const renderContent = () => {
@@ -66,7 +71,7 @@ const ResourceBrowser: React.FC = () => {
         return (
             <ClusterListView
                 parentRef={parentRef}
-                clusterOptions={sortedClusterList}
+                clusterOptions={filteredSortedCluserList}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
@@ -83,7 +88,7 @@ const ResourceBrowser: React.FC = () => {
             <PageHeader
                 additionalHeaderInfo={renderAdditionalBrowserHeaderInfo}
                 isBreadcrumbs={false}
-                renderActionButtons={renderNewClusterButton(reloadDetailClusterList)}
+                renderActionButtons={renderNewClusterButton(reloadDetailClusterList, sortedClusterList.length)}
             />
             {renderContent()}
         </div>
