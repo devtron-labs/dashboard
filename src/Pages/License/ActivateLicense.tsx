@@ -57,7 +57,7 @@ const ActivateLicense = () => {
 
         // licenseDataError.code === 404 means, oss and licensing does not exist
         //  In case licenseStatusError is null, license is valid
-        if (licenseDataError?.code === API_STATUS_CODES.NOT_FOUND || !licenseData.licenseStatusError) {
+        if (licenseDataError?.code === API_STATUS_CODES.NOT_FOUND || !licenseData?.licenseStatusError) {
             redirectToLogin()
             return
         }
