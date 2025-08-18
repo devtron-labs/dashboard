@@ -175,6 +175,7 @@ const DeployImageModal = ({
     const allowWarningWithTippyNodeTypeProp = getAllowWarningWithTippyNodeTypeProp(stageType)
     const runtimeParamsList = materialResponse?.runtimeParams || []
     const requestedUserId = materialResponse?.requestedUserId
+    const showFiltersView = deployViewState.showAppliedFilters || deployViewState.showConfiguredFilters
 
     usePrompt({ shouldPrompt: isDeploymentLoading })
 
@@ -715,7 +716,7 @@ const DeployImageModal = ({
                     onClick={stopPropagation}
                 >
                     <div className="flexbox-col dc__overflow-auto flex-grow-1">
-                        {!deployViewState.showAppliedFilters && !deployViewState.showConfiguredFilters && (
+                        {!showFiltersView && (
                             <DeployImageHeader
                                 handleClose={handleClose}
                                 envName={envName}
@@ -747,7 +748,7 @@ const DeployImageModal = ({
                         <div className="flex-grow-1 dc__overflow-auto bg__tertiary w-100">{renderContent()}</div>
                     </div>
 
-                    {initialDataError || isInitialDataLoading || materialList.length === 0 ? null : (
+                    {initialDataError || isInitialDataLoading || showFiltersView || materialList.length === 0 ? null : (
                         <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
                             {renderFooter()}
                         </div>
