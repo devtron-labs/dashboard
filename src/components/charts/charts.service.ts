@@ -33,6 +33,7 @@ import {
     HelmProjectUpdatePayload,
     DeleteInstalledChartParamsType,
     ChartDetailsDTO,
+    ChartListType,
 } from './charts.types'
 
 interface RootObject {
@@ -288,8 +289,8 @@ export function updateHelmAppProject(payload: HelmProjectUpdatePayload): Promise
     return put(Routes.UPDATE_HELM_APP_META_INFO, payload)
 }
 
-export function getChartProviderList(): Promise<ResponseType> {
-    return get('app-store/chart-provider/list')
+export function getChartProviderList() {
+    return get<ChartListType[]>('app-store/chart-provider/list')
 }
 
 export function updateChartProviderList(payload) {

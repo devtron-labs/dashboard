@@ -21,11 +21,11 @@ import { CIMaterialType, ConsequenceType, Icon, getWorkflowNodeStatusTitle } fro
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
-import { TriggerViewContext } from '../../config'
 import { DEFAULT_ENV } from '../../Constants'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
+import { WorkflowProps } from '../../types'
 
-export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }> {
+export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowProps, 'openCIMaterialModal'> {
     x: number
     y: number
     height: number
@@ -119,7 +119,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
         )
     }
 
-    renderCardContent(context) {
+    renderCardContent() {
         const hideDetails = this.hideDetails(this.props.status?.toLowerCase())
         let _selectedEnv
         if (this.props.isJobView) {
@@ -198,7 +198,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                         className="workflow-node__deploy-btn workflow-node__deploy-btn--ci"
                         onClick={(event) => {
                             event.stopPropagation()
-                            context.onClickCIMaterial(this.props.id, this.props.title)
+                            this.props.openCIMaterialModal(this.props.id)
                         }}
                     >
                         Select Material
@@ -218,11 +218,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
                 height={this.props.height}
                 style={{ overflow: 'visible' }}
             >
-                <TriggerViewContext.Consumer>
-                    {(context) => {
-                        return this.renderCardContent(context)
-                    }}
-                </TriggerViewContext.Consumer>
+                {this.renderCardContent()}
             </foreignObject>
         )
     }

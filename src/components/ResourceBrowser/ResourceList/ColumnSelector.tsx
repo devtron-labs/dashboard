@@ -19,6 +19,7 @@ import { MultiValue, SelectInstance } from 'react-select'
 
 import {
     ButtonVariantType,
+    deepEqual,
     Icon,
     SelectPicker,
     SelectPickerOptionType,
@@ -64,13 +65,6 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
         setSelectedColumns(getSelectedColumns())
     }, [allColumns])
 
-    const handleMenuClose = () => {
-        setIsMenuOpen(false)
-        resetTriggerAutoClickTimestamp()
-
-        selectRef.current?.blur()
-    }
-
     const onChange = (newValue: MultiValue<SelectPickerOptionType<TableColumnType>>) => {
         setTriggerAutoClickTimestampToNow()
         setSelectedColumns(newValue)
@@ -90,7 +84,14 @@ const ColumnSelector = ({ setVisibleColumns, visibleColumns, allColumns }: Colum
 
         selectRef.current?.blur()
 
-        setVisibleColumns(newVisibleColumns)
+        if (!deepEqual(newVisibleColumns, visibleColumns.slice(1))) {
+            setVisibleColumns(newVisibleColumns)
+        }
+    }
+
+    const handleMenuClose = () => {
+        handleApplySelectedColumns()
+        resetTriggerAutoClickTimestamp()
     }
 
     return (

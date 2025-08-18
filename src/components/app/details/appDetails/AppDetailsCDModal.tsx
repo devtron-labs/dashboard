@@ -16,14 +16,14 @@
 
 import { useHistory, useLocation } from 'react-router-dom'
 
-import { DeploymentNodeType, stopPropagation, VisibleModal } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../common'
 import { URL_PARAM_MODE_TYPE } from '../../../common/helpers/types'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { AppDetailsCDModalType } from '../../types'
-import CDMaterial from '../triggerView/cdMaterial'
 import { TRIGGER_VIEW_PARAMS } from '../triggerView/Constants'
+import { DeployImageModal } from '../triggerView/DeployImageModal'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 
@@ -34,7 +34,6 @@ const AppDetailsCDModal = ({
     cdModal,
     deploymentAppType,
     isVirtualEnvironment,
-    loadingDetails,
     environmentName,
     handleSuccess,
     materialType,
@@ -55,7 +54,6 @@ const AppDetailsCDModal = ({
         ApprovalMaterialModal &&
         location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE) && (
             <ApprovalMaterialModal
-                isLoading={loadingDetails}
                 node={node}
                 materialType={materialType}
                 stageType={DeploymentNodeType.CD}
@@ -70,28 +68,22 @@ const AppDetailsCDModal = ({
 
     const renderCDModal = () =>
         (mode === URL_PARAM_MODE_TYPE.LIST || mode === URL_PARAM_MODE_TYPE.REVIEW_CONFIG) && (
-            <VisibleModal parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                <div className="modal-body--cd-material h-100 contains-diff-view flexbox-col" onClick={stopPropagation}>
-                    <CDMaterial
-                        materialType={materialType}
-                        appId={appId}
-                        envId={environmentId}
-                        pipelineId={cdModal.cdPipelineId}
-                        stageType={DeploymentNodeType.CD}
-                        envName={environmentName}
-                        closeCDModal={closeCDModal}
-                        triggerType={cdModal.triggerType}
-                        isVirtualEnvironment={isVirtualEnvironment}
-                        ciPipelineId={cdModal.ciPipelineId}
-                        deploymentAppType={deploymentAppType}
-                        parentEnvironmentName={cdModal.parentEnvironmentName}
-                        isLoading={loadingDetails}
-                        isRedirectedFromAppDetails
-                        handleSuccess={handleSuccess}
-                        selectedAppName={appName}
-                    />
-                </div>
-            </VisibleModal>
+            <DeployImageModal
+                materialType={materialType}
+                appId={appId}
+                envId={environmentId}
+                pipelineId={cdModal.cdPipelineId}
+                stageType={DeploymentNodeType.CD}
+                envName={environmentName}
+                handleClose={closeCDModal}
+                triggerType={cdModal.triggerType}
+                isVirtualEnvironment={isVirtualEnvironment}
+                deploymentAppType={deploymentAppType}
+                parentEnvironmentName={cdModal.parentEnvironmentName}
+                isRedirectedFromAppDetails
+                handleSuccess={handleSuccess}
+                appName={appName}
+            />
         )
 
     return (
