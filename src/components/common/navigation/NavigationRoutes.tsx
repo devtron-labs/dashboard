@@ -92,7 +92,6 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { SidePanel } from '../SidePanel'
 import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-// import Navigation from './Navigation'
 import { NavigationV2 } from './NavigationV2'
 import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
@@ -697,19 +696,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 <BaseConfirmationModal />
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                     {!isOnboardingPage && (
-                        // <Navigation
-                        //     currentServerInfo={currentServerInfo}
-                        //     history={history}
-                        //     match={match}
-                        //     location={location}
-                        //     serverMode={serverMode}
-                        //     moduleInInstallingState={moduleInInstallingState}
-                        //     installedModuleMap={installedModuleMap}
-                        //     isSuperAdmin={isSuperAdmin}
-                        //     isAirgapped={isAirgapped}
-                        //     showStackManager={showStackManager}
-                        // />
-                        <NavigationV2 showStackManager={showStackManager} />
+                        <NavigationV2
+                            showStackManager={showStackManager}
+                            isAirgapped={isAirgapped}
+                            serverMode={serverMode}
+                            moduleInInstallingState={moduleInInstallingState}
+                            installedModuleMap={installedModuleMap}
+                            isSuperAdmin={isSuperAdmin}
+                        />
                     )}
                     <>
                         <motion.div

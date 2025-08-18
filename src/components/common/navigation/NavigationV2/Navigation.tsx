@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
-import { AnimatePresence, motion, SearchBar, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AnimatePresence,
+    ModuleNameMap,
+    ModuleStatus,
+    motion,
+    SearchBar,
+    URLS,
+    useQuery,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
+import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT } from '@Config/constants'
 
 import { NAVIGATION_LIST } from './constants'
 import { NavGroup } from './NavGroup'
@@ -27,13 +38,88 @@ import { NavigationGroupType, NavigationProps } from './types'
 
 import './styles.scss'
 
-export const NavigationV2 = ({ showStackManager = false }: NavigationProps) => {
+export const NavigationV2 = ({
+    showStackManager = false,
+    isAirgapped,
+    installedModuleMap,
+    moduleInInstallingState,
+}: NavigationProps) => {
     // STATES
     const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
     const [searchText, setSearchText] = useState('')
 
     // HOOKS
     const { pathname } = useLocation()
+
+    // REFS
+    const securityTrivyModuleTimeout = useRef<NodeJS.Timeout>(null)
+    const securityClairModuleTimeout = useRef<NodeJS.Timeout>(null)
+
+    useEffect(
+        () => () => {
+            clearTimeout(securityTrivyModuleTimeout.current)
+            clearTimeout(securityClairModuleTimeout.current)
+        },
+        [],
+    )
+
+    // SECURITY MODULES API CALLS
+    const {
+        isLoading: isSecurityTrivyLoading,
+        data: securityTrivyResponse,
+        isSuccess: isSecurityTrivySuccess,
+        refetch: refetchSecurityTrivy,
+    } = useQuery({
+        queryFn: () => getModuleInfo(ModuleNameMap.SECURITY_TRIVY, true),
+        queryKey: [ModuleNameMap.SECURITY_TRIVY, moduleInInstallingState],
+        retry: MODULE_STATUS_RETRY_COUNT,
+        enabled:
+            !(installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] || window._env_.K8S_CLIENT) ||
+            moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY,
+    })
+
+    const {
+        isLoading: isSecurityClairLoading,
+        data: securityClairResponse,
+        isSuccess: isSecurityClairSuccess,
+        refetch: refetchSecurityClair,
+    } = useQuery({
+        queryFn: () => getModuleInfo(ModuleNameMap.SECURITY_CLAIR, true),
+        queryKey: [ModuleNameMap.SECURITY_CLAIR, moduleInInstallingState],
+        retry: MODULE_STATUS_RETRY_COUNT,
+        enabled:
+            !(installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] || window._env_.K8S_CLIENT) ||
+            moduleInInstallingState === ModuleNameMap.SECURITY_CLAIR,
+    })
+
+    useEffect(() => {
+        if (!isSecurityTrivyLoading && isSecurityTrivySuccess) {
+            if (securityTrivyResponse.status === ModuleStatus.INSTALLED) {
+                Object.assign(installedModuleMap.current, {
+                    ...installedModuleMap.current,
+                    [ModuleNameMap.SECURITY_TRIVY]: true,
+                })
+            } else if (securityTrivyResponse.status === ModuleStatus.INSTALLING) {
+                securityTrivyModuleTimeout.current = setTimeout(async () => {
+                    await refetchSecurityTrivy()
+                }, MODULE_STATUS_POLLING_INTERVAL)
+            }
+        }
+    }, [isSecurityTrivyLoading, isSecurityTrivySuccess])
+
+    useEffect(() => {
+        if (!isSecurityClairLoading && isSecurityClairSuccess) {
+            if (securityClairResponse.status === ModuleStatus.INSTALLED) {
+                Object.assign(installedModuleMap.current, {
+                    ...installedModuleMap.current,
+                    [ModuleNameMap.SECURITY_CLAIR]: true,
+                })
+                securityClairModuleTimeout.current = setTimeout(async () => {
+                    await refetchSecurityClair()
+                }, MODULE_STATUS_POLLING_INTERVAL)
+            }
+        }
+    }, [isSecurityClairLoading, isSecurityClairSuccess])
 
     // COMPUTED VALUES
     const selectedNavGroup = useMemo(
@@ -97,7 +183,7 @@ export const NavigationV2 = ({ showStackManager = false }: NavigationProps) => {
                         onClick={handleNavGroupClick(item)}
                     />
                 ))}
-                {showStackManager && (
+                {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
                     <NavGroup
                         title="Stack Manager"
                         icon="ic-stack"

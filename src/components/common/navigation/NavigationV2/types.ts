@@ -1,7 +1,7 @@
-import { MouseEventHandler } from 'react'
+import { MouseEventHandler, MutableRefObject } from 'react'
 import { NavLinkProps } from 'react-router-dom'
 
-import { customEnv, IconsProps, Never } from '@devtron-labs/devtron-fe-common-lib'
+import { customEnv, IconsProps, Never, SERVER_MODE } from '@devtron-labs/devtron-fe-common-lib'
 
 export type NavigationItemID =
     | 'application-management-overview'
@@ -117,4 +117,9 @@ export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title
 
 export interface NavigationProps {
     showStackManager?: boolean
+    isAirgapped: boolean
+    serverMode: SERVER_MODE
+    moduleInInstallingState: string
+    installedModuleMap: MutableRefObject<Record<string, boolean>>
+    isSuperAdmin: boolean
 }
