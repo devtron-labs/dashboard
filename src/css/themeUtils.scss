@@ -63,8 +63,8 @@
         }
     }
 
-    &__sidebar-item {
-        background: var(--bg-selected-sidebar-item);
+    &__sidenav-subsection-item {
+        background: var(--sidenav-subsection-item-selected);
     }
 
     &__hover {
@@ -82,8 +82,8 @@
             }
         }
 
-        &-sidebar-item:hover {
-            background: var(--bg-hover-sidebar-item);
+        &-sidenav-subsection-item:hover {
+            background: var(--sidenav-subsection-item-hover);
         }
     }
 
@@ -105,14 +105,14 @@
         }
     }
 
-    &__sidebar {
-        color: var(--sidebar-text);
+    &__sidenav {
+        color: var(--sidenav-text);
     }
 }
 
 .icon-fill {
     &__white {
-        *[fill^="#"] {
+        *[fill^='#'] {
             fill: var(--white);
         }
     }
@@ -120,7 +120,7 @@
 
 .icon-stroke {
     &__white {
-        *[stroke^="#"] {
+        *[stroke^='#'] {
             stroke: var(--white);
         }
     }
@@ -163,19 +163,20 @@
 }
 
 .border {
-    @include border("primary", "--border-primary");
-    @include border("primary-translucent", "--border-primary-translucent");
-    @include border("secondary", "--border-secondary");
-    @include border("secondary-translucent", "--border-secondary-translucent");
-    @include border("white", "--white");
-    @include border("white-10", "--white-10");
-    @include border("primary-warning", "--Y200");
+    @include border('primary', '--border-primary');
+    @include border('primary-translucent', '--border-primary-translucent');
+    @include border('secondary', '--border-secondary');
+    @include border('secondary-translucent', '--border-secondary-translucent');
+    @include border('white', '--white');
+    @include border('white-10', '--white-10');
+    @include border('primary-warning', '--Y200');
+    @include border('sidenav-primary', '--sidenav-border-primary');
+    @include border('sidenav-secondary', '--sidenav-border-secondary');
 }
 
 .divider {
-    @include divider("primary", "--divider-primary");
-    @include divider("primary-translucent", "--divider-primary-translucent");
-    @include divider("secondary", "--divider-secondary");
-    @include divider("secondary-translucent", "--divider-secondary-translucent");
-    @include divider("white-10", "--white-10");
+    @include divider('primary', '--divider-primary');
+    @include divider('primary-translucent', '--divider-primary-translucent');
+    @include divider('secondary', '--divider-secondary');
+    @include divider('secondary-translucent', '--divider-secondary-translucent');
 }

@@ -3,42 +3,31 @@
 
     &__default {
         grid-template-rows: 56px repeat(auto-fill, 52px);
-        background-image: url('../../../../assets/img/devtron-bg.webp');
+        background-image: url('../../assets/img/devtron-bg.webp');
         background-size: 100vw 100vh;
         background-repeat: no-repeat;
         z-index: calc(#{var(--navigation-index)} + 1);
 
         &.is-expanded {
-            background-image: linear-gradient(90deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0.25) 100%),
-                url('../../../../assets/img/devtron-bg.webp');
+            background-image: linear-gradient(
+                    90deg,
+                    var(--sidenav-bg-section-collapsed-selected) 0%,
+                    var(--sidenav-bg-section-collapsed-selected) 100%
+                ),
+                url('../../assets/img/devtron-bg.webp');
         }
     }
 
     &__expanded {
         width: #{$navigation-expanded-width};
         background:
-            linear-gradient(90deg, rgba(0, 0, 0, 0.75) 0%, rgba(0, 0, 0, 0.75) 100%),
-            url('../../../../assets/img/devtron-bg.webp') -56px / 100vw 100vh no-repeat;
+            linear-gradient(
+                90deg,
+                var(--sidenav-bg-section-expanded-selected) 0%,
+                var(--sidenav-bg-section-expanded-selected) 100%
+            ),
+            url('../../assets/img/devtron-bg.webp') -56px / 100vw 100vh no-repeat;
         z-index: var(--navigation-index);
-
-        &__search-bar {
-            & > div {
-                background-color: transparent;
-                min-width: 0;
-                border-color: rgba(255, 255, 255, 0.75);
-            }
-
-            svg.search-bar__icon {
-                :where([fill^='#']) {
-                    fill: var(--sidebar-icon);
-                }
-            }
-
-            input {
-                color: var(--sidebar-text);
-                background-color: transparent;
-            }
-        }
 
         &__backdrop {
             height: 100%;
@@ -60,13 +49,13 @@
     .nav-group {
         &.is-selected .nav-group__icon-container,
         &:hover .nav-group__icon-container {
-            background-color: rgba(255, 255, 255, 0.25);
+            background-color: var(--sidenav-subsection-item-hover);
         }
 
         &.is-expanded {
             &.is-selected .nav-group__icon-container,
             &:hover .nav-group__icon-container {
-                background-color: rgba(0, 0, 0, 0.75);
+                background-color: var(--sidenav-bg-subsection);
             }
         }
 
@@ -79,11 +68,11 @@
 
     .nav-item {
         &:hover {
-            background-color: rgba(255, 255, 255, 0.25);
+            background-color: var(--sidenav-subsection-item-hover);
         }
 
         &.is-selected {
-            background-color: rgba(255, 255, 255, 0.25);
+            background-color: var(--sidenav-subsection-item-selected);
         }
     }
 }

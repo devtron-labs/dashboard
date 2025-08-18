@@ -1,6 +1,6 @@
 import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common/helpers/Helpers'
+import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 import { URLS } from '@Config/routes'
 

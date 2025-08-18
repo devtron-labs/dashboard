@@ -38,7 +38,7 @@ import { NavigationGroupType, NavigationProps } from './types'
 
 import './styles.scss'
 
-export const NavigationV2 = ({
+export const Navigation = ({
     showStackManager = false,
     isAirgapped,
     installedModuleMap,
@@ -214,7 +214,7 @@ export const NavigationV2 = ({
                                         {currentNavGroup.title}
                                     </p>
                                     <SearchBar
-                                        containerClassName="navigation__expanded__search-bar"
+                                        variant="sidenav"
                                         initialSearchText={searchText}
                                         handleSearchChange={setSearchText}
                                         inputProps={{ autoFocus: true }}

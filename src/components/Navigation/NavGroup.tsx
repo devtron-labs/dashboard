@@ -15,7 +15,7 @@ export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onClick }: N
                 <Icon name={icon} color="white" size={20} />
             </span>
             <span className="nav-group__divider-container dc__position-abs dc__left-0 dc__bottom-0 flex w-100">
-                <span className="divider__white-10--horizontal w-24" />
+                <span className="border__sidenav-primary--bottom w-24" />
             </span>
         </>
     )

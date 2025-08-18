@@ -9,7 +9,6 @@ const getNavigationTreeItems = (items: NavigationItemType['subItems']) =>
         href,
         type: 'item',
         as: 'link',
-        activeClassName: 'nav-item is-selected br-4 fw-6',
         isDisabled: disabled,
     }))
 

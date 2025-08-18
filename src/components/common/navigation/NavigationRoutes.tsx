@@ -65,6 +65,7 @@ import {
     ViewIsPipelineRBACConfiguredRadioTabs,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { Navigation } from '@Components/Navigation'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { Configurations } from '@Pages/Releases/Detail'
 
@@ -92,7 +93,6 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { SidePanel } from '../SidePanel'
 import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import { NavigationV2 } from './NavigationV2'
 import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 
@@ -696,7 +696,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 <BaseConfirmationModal />
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                     {!isOnboardingPage && (
-                        <NavigationV2
+                        <Navigation
                             showStackManager={showStackManager}
                             isAirgapped={isAirgapped}
                             serverMode={serverMode}

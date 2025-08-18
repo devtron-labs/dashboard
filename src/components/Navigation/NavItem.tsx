@@ -9,24 +9,28 @@ import { getNavigationTreeNodes } from './utils'
 export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled }: NavigationItemType) => {
     const { pathname } = useLocation()
 
-    const defaultExpandedMap = useMemo(
-        () =>
-            hasSubMenu
-                ? {
-                      [id]: subItems.some((subItem) => pathname.startsWith(subItem.href)),
-                  }
-                : {},
-        [pathname],
-    )
+    const { defaultExpandedMap, selectedId } = useMemo(() => {
+        if (hasSubMenu) {
+            const activeSubItem = subItems.find((subItem) => pathname.startsWith(subItem.href))
+            return {
+                defaultExpandedMap: {
+                    [id]: !!activeSubItem,
+                },
+                selectedId: activeSubItem?.id ?? null,
+            }
+        }
+
+        return { defaultExpandedMap: {}, selectedId: null }
+    }, [pathname, hasSubMenu, subItems])
 
     if (hasSubMenu) {
         return (
             <div>
                 <TreeView
-                    variant="nav"
+                    variant="sidenav"
                     defaultExpandedMap={defaultExpandedMap}
                     nodes={getNavigationTreeNodes({ id, title, subItems })}
-                    selectedId={defaultExpandedMap[id] ? id : null}
+                    selectedId={selectedId}
                     highlightSelectedHeadingOnlyWhenCollapsed
                 />
             </div>
@@ -43,7 +47,7 @@ export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItem
             onClick={disabled ? preventDefault : undefined}
         >
             <Icon name={icon} color="white" />
-            <span className="fs-13 lh-20 text__white">{title}</span>
+            <span className="fs-13 lh-20 text__sidenav">{title}</span>
         </NavLink>
     )
 }
