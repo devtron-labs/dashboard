@@ -63,6 +63,7 @@ import {
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
+import { getGitProviderIcon } from '@Components/common/helpers/utils'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
@@ -605,7 +606,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         ...provider,
         value: provider.id,
         label: provider.name,
-        startIcon: renderMaterialIcon(provider.url),
+        startIcon: getGitProviderIcon(provider.url),
     })
 
     handleGitProviderChange: SelectPickerProps['onChange'] = (selected) => {

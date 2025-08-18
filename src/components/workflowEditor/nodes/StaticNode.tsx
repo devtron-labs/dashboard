@@ -20,8 +20,6 @@ import { CiPipelineSourceConfig, GitProviderIcon, GitProviderType } from '@devtr
 import { StaticNodeProps } from './types'
 export class StaticNode extends Component<StaticNodeProps> {
     renderCardContent() {
-    console.log('props',this.props.url)
-
         return (
             <div
                 className={`workflow-node workflow-node--static ${

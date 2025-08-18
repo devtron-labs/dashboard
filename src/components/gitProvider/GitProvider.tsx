@@ -30,7 +30,6 @@ import {
     ToastManager,
     SelectPicker,
     ComponentSizeType,
-    renderMaterialIcon,
     ERROR_STATUS_CODE,
     Button,
     ButtonStyleType,
@@ -42,6 +41,7 @@ import {
     InfoBlock,
     DTSwitchProps,
     DTSwitch,
+    GitProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import {
@@ -325,9 +325,7 @@ const CollapsedList = ({
             >
                 <List.Logo>
                     {id && (
-                        <div className="">
-                            <span className="mr-8">{renderMaterialIcon(url)}</span>
-                        </div>
+                        <GitProviderIcon gitRepoUrl={url} />
                     )}
                     {!id && collapsed && <Add className="icon-dim-24 fcb-5 dc__vertical-align-middle" />}
                 </List.Logo>
@@ -472,7 +470,6 @@ const GitForm = ({
         },
     })
 
-    const [deleting, setDeleting] = useState(false)
     const [confirmation, setConfirmation] = useState(false)
 
     const isTLSInitiallyConfigured = id && enableTLSVerification

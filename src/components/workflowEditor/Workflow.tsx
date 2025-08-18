@@ -878,8 +878,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     render() {
-{    console.log('props', this.props)}
-
         return <>{this.renderWorkflow()}</>
     }
 }
