@@ -35,6 +35,7 @@ import {
     SegmentedControlProps,
     SelectPicker,
     SelectPickerOptionType,
+    SelectPickerProps,
     useAsync,
     useRegisterShortcut,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -181,6 +182,14 @@ const ResourceFilterOptions = ({
     const getResourcesToExport = (): Promise<Record<ResourceRecommenderHeaderType, string>[]> =>
         Promise.resolve(getResourceRecommendationsCSVData(filteredRows.map((row) => row.data)))
 
+    const onNamespaceFilterKeyDown: SelectPickerProps['onKeyDown'] = (e) => {
+        if (e.key === 'Escape' || e.key === 'Esc') {
+            e.preventDefault()
+            namespaceFilterRef.current?.blurInput()
+            namespaceFilterRef.current?.blur()
+        }
+    }
+
     return (
         <>
             {typeof renderRefreshBar === 'function' && renderRefreshBar()}
@@ -217,6 +226,7 @@ const ResourceFilterOptions = ({
                             handleSearchChange={handleOnChangeSearchText}
                             initialSearchText={searchText}
                             keyboardShortcut="/"
+                            containerClassName="w-250"
                         />
                     </div>
                 </div>
@@ -284,6 +294,7 @@ const ResourceFilterOptions = ({
                             icon={<NamespaceIcon className="fcn-6" />}
                             disabledTippyContent={NAMESPACE_NOT_APPLICABLE_TEXT}
                             shouldMenuAlignRight
+                            onKeyDown={onNamespaceFilterKeyDown}
                             keyboardShortcut="N"
                         />
                     </div>

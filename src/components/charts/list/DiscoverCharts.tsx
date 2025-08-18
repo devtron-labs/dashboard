@@ -19,8 +19,6 @@ import { NavLink, Prompt, Route, Switch, useHistory, useLocation, useRouteMatch 
 import Tippy from '@tippyjs/react'
 
 import {
-    Button,
-    ButtonVariantType,
     ComponentSizeType,
     ConditionalWrap,
     DetectBottom,
@@ -29,13 +27,13 @@ import {
     FeatureTitleWithInfo,
     handleAnalyticsEvent,
     PageHeader,
-    Popover,
     Progressing,
     showError,
+    stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
     useMainContext,
-    usePopover,
+    useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ChartDetails } from '@Pages/ChartStore'
@@ -44,7 +42,6 @@ import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 import { ReactComponent as WarningIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import { ReactComponent as Next } from '../../../assets/icons/ic-arrow-forward.svg'
 import { ReactComponent as BackIcon } from '../../../assets/icons/ic-back.svg'
-import { ReactComponent as SourceIcon } from '../../../assets/icons/ic-source.svg'
 import empty from '../../../assets/img/ic-empty-chartgroup@2x.png'
 import { SERVER_MODE, URLS } from '../../../config'
 import { isGitOpsModuleInstalledAndConfigured } from '../../../services/service'
@@ -55,7 +52,7 @@ import AdvancedConfig from '../AdvancedConfig'
 import ChartCard from '../ChartCard'
 import ChartHeaderFilter from '../ChartHeaderFilters'
 import { deployChartGroup, getChartProviderList } from '../charts.service'
-import { Chart, ChartGroupEntry, ChartListType, EmptyCharts } from '../charts.types'
+import { Chart, ChartGroupEntry, EmptyCharts } from '../charts.types'
 import ChartValues from '../chartValues/ChartValues'
 import { QueryParams } from '../constants'
 import ChartGroupBasicDeploy from '../modal/ChartGroupBasicDeploy'
@@ -65,7 +62,7 @@ import useChartGroup from '../useChartGroup'
 import { ChartGroupCard } from '../ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
 import ChartGroupRouter from './ChartGroup'
-import ChartListPopUp from './ChartListPopUp'
+import { ChartsList } from './ChartsList'
 import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
@@ -113,19 +110,8 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const [isGrid, setIsGrid] = useState<boolean>(true)
     const [showGitOpsWarningModal, toggleGitOpsWarningModal] = useState(false)
     const [clickedOnAdvance, setClickedOnAdvance] = useState(null)
-    const [chartActiveMap, setChartActiveMap] = useState({})
-
-    const [chartLists, setChartLists] = useState<ChartListType[]>([])
-    const [isLoading, setIsLoading] = useState<boolean>(false)
-    const [filteredChartList, setFilteredChartList] = useState<ChartListType[]>([])
 
     const chartStoreRef = useRef<HTMLDivElement>(null)
-
-    const { open, overlayProps, popoverProps, triggerProps, closePopover } = usePopover({
-        id: 'profile-menu',
-        alignment: 'end',
-        width: 250,
-    })
 
     const noChartAvailable: boolean =
         chartList.length > 0 || searchApplied || selectedChartRepo.length > 0 || !!chartCategoryIds
@@ -133,13 +119,15 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         (chart: ChartGroupEntry) => chart.originalValuesYaml === chart.valuesYaml,
     )
 
-    useEffect(() => {
-        getChartFilter()
-    }, [])
+    const { isLoading, data: chartsList } = useQuery({
+        queryKey: ['chartsList'],
+        queryFn: getChartProviderList,
+        select: ({ result }) => result.sort((a, b) => stringComparatorBySortOrder(a.name, b.name)),
+    })
 
     const chartRepos = useMemo(
         () =>
-            chartLists
+            (chartsList ?? [])
                 .filter((chartRepo) => chartRepo.active)
                 .map((chartRepo) => ({
                     value: chartRepo.id,
@@ -147,7 +135,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                     isOCIRegistry: chartRepo.isOCIRegistry,
                 }))
                 .sort(sortOptionsByLabel),
-        [chartLists],
+        [chartsList],
     )
 
     useEffect(() => {
@@ -158,26 +146,6 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             getGitOpsModuleInstalledAndConfigured()
         }
     }, [chartRepos, location.search, state.loading])
-
-    const getChartFilter = async () => {
-        setIsLoading(true)
-        try {
-            const chartRepos = (await getChartProviderList()).result || []
-            chartRepos.sort((a, b) => a.name.localeCompare(b.name))
-            setChartLists(chartRepos)
-            setFilteredChartList(chartRepos)
-            setChartActiveMap(
-                chartRepos.reduce((acc, curr) => {
-                    acc[curr.name] = curr.active
-                    return acc
-                }, {}),
-            )
-        } catch (err) {
-            showError(err)
-        } finally {
-            setIsLoading(false)
-        }
-    }
 
     async function getGitOpsModuleInstalledAndConfigured() {
         await isGitOpsModuleInstalledAndConfigured().then((response) => {
@@ -378,34 +346,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                         {state.charts.length === 0 ? (
                             <>
                                 {renderAdditionalChartHeaderInfo()}
-                                {isSuperAdmin && (
-                                    <Popover
-                                        open={open}
-                                        overlayProps={overlayProps}
-                                        popoverProps={popoverProps}
-                                        triggerProps={triggerProps}
-                                        triggerElement={null}
-                                        buttonProps={{
-                                            onClick: onClickSourceButton,
-                                            text: 'source',
-                                            variant: ButtonVariantType.secondary,
-                                            size: ComponentSizeType.xxs,
-                                            dataTestId: 'chart-store-source-button',
-                                            startIcon: <SourceIcon />
-                                        }}
-                                    >
-                                        <ChartListPopUp
-                                            onClose={closePopover}
-                                            chartList={chartLists}
-                                            filteredChartList={filteredChartList}
-                                            setFilteredChartList={setFilteredChartList}
-                                            isLoading={isLoading}
-                                            setShowSourcePopUp={closePopover}
-                                            chartActiveMap={chartActiveMap}
-                                            setChartActiveMap={setChartActiveMap}
-                                        />
-                                    </Popover>
-                                )}
+                                {isSuperAdmin && <ChartsList isLoading={isLoading} chartsList={chartsList} />}
                             </>
                         ) : (
                             'Deploy multiple charts'
@@ -736,8 +677,10 @@ const ChartListHeader = ({ charts }) => (
         <h3 className="chart-grid__title pl-20 pr-20 pt-16" data-testid="chart-store-chart-heading">
             {charts.length === 0 ? 'All Charts' : 'Select Charts'}
         </h3>
-        <p className="mb-0 mt-4 pl-20" data-testid="chart-store-list-subheading">
-            Select chart to deploy. &nbsp;
+        <div className="flex left dc__gap-4 mt-4 pl-20">
+            <p className="m-0" data-testid="chart-store-list-subheading">
+                Select chart to deploy.
+            </p>
             <DocLink
                 dataTestId="chart-group-link"
                 docLinkKey="CHART_LIST"
@@ -745,7 +688,7 @@ const ChartListHeader = ({ charts }) => (
                 fontWeight="normal"
                 size={ComponentSizeType.small}
             />
-        </p>
+        </div>
     </div>
 )
 

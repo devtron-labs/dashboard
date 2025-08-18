@@ -14,97 +14,84 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
-import Tippy from '@tippyjs/react'
+import { memo } from 'react'
 
 import {
     getCITriggerInfo,
+    getParsedCIMaterialInfo,
     GitProviderIcon,
     GitProviderType,
+    Icon,
     LoadingCard,
-    showError,
+    useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
-import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { DeployedCommitCardType } from './appDetails.type'
 
 const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifactId }: DeployedCommitCardType) => {
-    const [commitId, setCommitId] = useState<string>(null)
-    const [commitMessage, setCommitMessage] = useState<string>(null)
-    const [noValidCommit, setNoValidCommit] = useState<boolean>(false)
+    const { data: materials, isLoading } = useQuery({
+        queryFn: () => getCITriggerInfo({ envId, ciArtifactId }),
+        queryKey: [envId, ciArtifactId],
+        select: ({ result }) => getParsedCIMaterialInfo(result).materials ?? [],
+    })
 
-    useEffect(() => {
-        if (envId && ciArtifactId) {
-            const params = {
-                envId,
-                ciArtifactId,
-            }
-
-            getCITriggerInfo(params)
-                .then((result) => {
-                    const materials = result?.materials
-                    if (materials && materials.length > 0) {
-                        const lastCommit = materials[0]?.history[0]
-                        const shortenCommitId = lastCommit?.commit?.slice(0, 7)
-                        setCommitId(shortenCommitId)
-                        setCommitMessage(lastCommit?.message)
-                    } else {
-                        setNoValidCommit(true)
-                    }
-                })
-                .catch((error) => {
-                    showError(error)
-                    setNoValidCommit(true)
-                })
-        }
-    }, [envId, ciArtifactId])
-
-    if (cardLoading) {
+    if (cardLoading || isLoading) {
         return <LoadingCard />
     }
 
-    if (!commitId || noValidCommit) {
+    if (materials.length === 0 || !materials[0].history[0]?.commit?.slice(0, 7)) {
         return null
     }
 
     return (
-        <div
-            data-testid="deployed-commit-card"
-            onClick={showCommitInfoDrawer}
-            className="app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 w-200"
-        >
-            <div className="app-details-info-card__top-container flex">
-                <div className="app-details-info-card__top-container__content">
-                    <div className="app-details-info-card__top-container__content__title-wrapper">
-                        <div className="fs-12 fw-4 cn-7 mr-5">Deployed commit</div>
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            placement="top"
-                            content="Last deployment was triggered with this commit"
-                            maxWidth={250}
-                        >
-                            <div className="flex">
-                                <ICHelpOutline className="icon-dim-16 mt-2" />
+        <div className="flexbox deployed-commit-card">
+            {materials.map((material) => {
+                const lastCommit = material.history[0]
+
+                return (
+                    <div
+                        data-testid="deployed-commit-card"
+                        onClick={showCommitInfoDrawer}
+                        className="app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 w-200"
+                    >
+                        <div className="app-details-info-card__top-container flex">
+                            <div className="app-details-info-card__top-container__content">
+                                <div className="app-details-info-card__top-container__content__title-wrapper">
+                                    <div className="fs-12 fw-4 cn-7 mr-5">Deployed commit</div>
+                                    <Icon
+                                        name="ic-help-outline"
+                                        color="N500"
+                                        size={14}
+                                        tooltipProps={{
+                                            alwaysShowTippyOnHover: true,
+                                            content: 'Last deployment was triggered with this commit',
+                                            className: 'dc__mxw-250',
+                                        }}
+                                    />
+                                </div>
+                                <div className="flex fs-12 fw-4">
+                                    <CommitIcon className="icon-dim-20" />
+                                    <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 mono">
+                                        {lastCommit?.commit?.slice(0, 7) ?? ''}
+                                    </div>
+                                </div>
                             </div>
-                        </Tippy>
+                            <GitProviderIcon gitProvider={GitProviderType.GIT} size={24} />
+                            {/* @TODO: This should be dynamic, dependent on the source */}
+                            {/* <GitHub className="github-icon" /> */}
+                        </div>
+                        <div className="app-details-info-card__bottom-container dc__content-space">
+                            <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
+                                {lastCommit?.message ?? ''}
+                            </span>
+                            <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
+                        </div>
                     </div>
-                    <div className="flex fs-12 fw-4">
-                        <CommitIcon className="icon-dim-20" />
-                        <div className="dc__ellipsis-right cn-7 ml-2 fw-4 fs-12 mono">{commitId}</div>
-                    </div>
-                </div>
-                <GitProviderIcon gitProvider={GitProviderType.GIT} size={24} />
-                {/* @TODO: This should be dynamic, dependent on the source */}
-                {/* <GitHub className="github-icon" /> */}
-            </div>
-            <div className="app-details-info-card__bottom-container dc__content-space">
-                <span className="app-details-info-card__bottom-container__message fs-12 fw-4">{commitMessage}</span>
-                <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
-            </div>
+                )
+            })}
         </div>
     )
 }
 
-export default React.memo(DeployedCommitCard)
+export default memo(DeployedCommitCard)
