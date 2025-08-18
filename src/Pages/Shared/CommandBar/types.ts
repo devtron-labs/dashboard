@@ -1,6 +1,6 @@
 import { IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { NavigationItemType } from '@Components/common/navigation/NavigationV2/types'
+import { NavigationItemType } from '@Components/Navigation/types'
 
 import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
 

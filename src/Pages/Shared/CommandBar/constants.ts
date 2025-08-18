@@ -1,6 +1,6 @@
 import { SupportedKeyboardKeysType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { NAVIGATION_LIST } from '@Components/common/navigation/NavigationV2/constants'
+import { NAVIGATION_LIST } from '@Components/Navigation/constants'
 
 import { CommandBarGroupType } from './types'
 
