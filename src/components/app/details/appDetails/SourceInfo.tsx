@@ -171,7 +171,7 @@ export const SourceInfo = ({
 
     const renderAppDetailsCDButton = () => {
         const { buttonStyle, iconName } = getDeployButtonConfig(deploymentUserActionState)
-        
+
         return (
             <Button
                 dataTestId="deploy-button"
@@ -208,7 +208,7 @@ export const SourceInfo = ({
             : ''
 
         return (
-            <div className="flex left w-100 h-40">
+            <div className="flex left w-100 pt-16 px-20">
                 <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
                 {appDetails?.deploymentAppType && (
                     <div className={`flex ${!appDetails.isVirtualEnvironment ? 'ml-16' : ''}`}>
@@ -222,6 +222,7 @@ export const SourceInfo = ({
                         <div className="pl-8">
                             <ConfigSyncStatusButton
                                 areConfigurationsDrifted={appDetails.resourceTree.hasDrift}
+                                appName={appDetails.appName}
                                 appId={appDetails.appId}
                                 envId={envId}
                             />
@@ -414,7 +415,7 @@ export const SourceInfo = ({
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
                   environment && (
-                      <div className="flex left w-100 flex-wrap dc__row-gap-12">
+                      <div className="app-details-info-card-container flex left w-100 dc__row-gap-12 pb-16 dc__overflow-auto">
                           {status && (
                               <AppStatusCard
                                   // TODO: Fix and remove

@@ -4,7 +4,7 @@
     "private": true,
     "homepage": "/dashboard",
     "dependencies": {
-        "@devtron-labs/devtron-fe-common-lib": "1.19.0",
+        "@devtron-labs/devtron-fe-common-lib": "1.19.0-pre-5",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
         "@rjsf/core": "^5.13.3",
         "@rjsf/utils": "^5.13.3",
@@ -48,6 +48,7 @@
         "lint": "tsc --noEmit && eslint 'src/**/*.{js,jsx,ts,tsx}' --max-warnings 0",
         "lint-fix": "eslint 'src/**/*.{js,jsx,ts,tsx}' --fix",
         "start": "vite --open",
+        "dev": "node scripts/secrets-mgr.js",
         "build": "NODE_OPTIONS=--max_old_space_size=8192 vite build",
         "serve": "vite preview",
         "build-light": "NODE_OPTIONS=--max_old_space_size=8192 GENERATE_SOURCEMAP=false vite build",

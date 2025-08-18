@@ -44,8 +44,10 @@ import {
     RESOURCE_BROWSER_ROUTES,
     getUrlWithSearchParams,
     ResourceBrowserActionMenuEnum,
+    UNSAVED_CHANGES_PROMPT_MESSAGE,
+    usePrompt,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory, generatePath } from 'react-router-dom'
+import { useParams, useLocation, useHistory, generatePath, Prompt } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
@@ -110,6 +112,10 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
     const { push, replace } = useHistory()
+
+    const hasUnsavedChanges = (nodeDetail?.manifest ? YAMLStringify(nodeDetail.manifest) : '') !== modifiedManifest
+
+    usePrompt({ shouldPrompt: hasUnsavedChanges })
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -1073,6 +1079,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 <Progressing pageLoader size={32} />
             ) : (
                 <>
+                    <Prompt when={hasUnsavedChanges} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
                     {renderNodeDetailsTabs()}
                     {renderTabContent()}
                     {showCordonNodeDialog && (

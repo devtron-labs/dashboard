@@ -14,31 +14,27 @@
  * limitations under the License.
  */
 
-import { Dispatch, SetStateAction } from 'react'
 import { MultiValue } from 'react-select'
 
 import {
     ACTION_STATE,
     AppInfoListType,
-    ApprovalConfigDataType,
-    CDModalTabType,
+    CIMaterialType,
     CommonNodeAttr,
     DeploymentNodeType,
-    DeploymentStrategyTypeWithDefault,
-    FilterConditionsListType,
     GVKType,
     MODAL_TYPE,
     OptionType,
-    PipelineIdsVsDeploymentStrategyMap,
     ResponseType,
     RuntimePluginVariables,
+    ServerErrors,
+    TriggerBlockedInfo,
     UseUrlFiltersReturnType,
-    WorkflowNodeType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { TIME_STAMP_ORDER } from '@Components/app/details/triggerView/Constants'
-import { CDMaterialProps, RuntimeParamsErrorState, WebhookPayloadType } from '@Components/app/details/triggerView/types'
+import { GitInfoMaterialProps } from '@Components/app/details/triggerView/BuildImageModal/types'
+import { DeployImageContentProps } from '@Components/app/details/triggerView/DeployImageModal/types'
 import {
     AppConfigState,
     EnvConfigurationsNavProps,
@@ -50,7 +46,6 @@ import { WorkloadCheckType } from '../v2/appDetails/sourceInfo/scaleWorkloads/sc
 import { AppFilterTabs, BulkResponseStatus } from './Constants'
 
 interface BulkTriggerAppDetailType {
-    workFlowId: string
     appId: number
     name: string
     material?: any[]
@@ -58,48 +53,51 @@ interface BulkTriggerAppDetailType {
 }
 
 export interface BulkCIDetailType extends BulkTriggerAppDetailType {
-    ciPipelineName: string
-    ciPipelineId: string
-    isFirstTrigger: boolean
-    isCacheAvailable: boolean
-    isLinkedCI: boolean
-    isLinkedCD: boolean
-    title: string
-    isJobCI: boolean
-    isWebhookCI: boolean
-    parentAppId: number
-    parentCIPipelineId: number
+    workflowId: string
+    material: CIMaterialType[]
+    runtimeParams: RuntimePluginVariables[]
+    node: CommonNodeAttr
     errorMessage: string
-    hideSearchHeader: boolean
+    runtimeParamsInitialError: ServerErrors | null
+    materialInitialError: ServerErrors | null
     filteredCIPipelines: any
+    ciConfiguredGitMaterialId: WorkflowType['ciConfiguredGitMaterialId']
+    runtimeParamsErrorState: GitInfoMaterialProps['runtimeParamsErrorState']
+    ignoreCache: boolean
 }
+
+export type BulkCDDetailDerivedFromNode = Required<
+    Pick<
+        DeployImageContentProps,
+        | 'pipelineId'
+        | 'appId'
+        | 'parentEnvironmentName'
+        | 'isTriggerBlockedDueToPlugin'
+        | 'configurePluginURL'
+        | 'triggerType'
+        | 'appName'
+    >
+> & {
+    stageNotAvailable: boolean
+    errorMessage: string
+    triggerBlockedInfo: TriggerBlockedInfo
+    consequence: CommonNodeAttr['pluginBlockState']
+    showPluginWarning: CommonNodeAttr['showPluginWarning']
+}
+
+export type BulkCDDetailType = BulkCDDetailDerivedFromNode &
+    Pick<DeployImageContentProps, 'materialResponse' | 'deploymentWindowMetadata' | 'deployViewState'> & {
+        /**
+         * True in cases when we reload materials on single app
+         */
+        areMaterialsLoading: boolean
+        materialError: ServerErrors | null
+        tagsWarningMessage: string
+    }
 
 export interface BulkCDDetailTypeResponse {
     bulkCDDetailType: BulkCDDetailType[]
     uniqueReleaseTags: string[]
-}
-
-export interface BulkCDDetailType
-    extends BulkTriggerAppDetailType,
-        Pick<CDMaterialProps, 'isTriggerBlockedDueToPlugin' | 'configurePluginURL' | 'consequence'>,
-        Partial<Pick<CommonNodeAttr, 'showPluginWarning' | 'triggerBlockedInfo'>> {
-    cdPipelineName?: string
-    cdPipelineId?: string
-    stageType?: DeploymentNodeType
-    triggerType?: string
-    envName: string
-    envId: number
-    parentPipelineId?: string
-    parentPipelineType?: WorkflowNodeType
-    parentEnvironmentName?: string
-    approvalConfigData?: ApprovalConfigDataType
-    requestedUserId?: number
-    appReleaseTags?: string[]
-    tagsEditable?: boolean
-    ciPipelineId?: number
-    hideImageTaggingHardDelete?: boolean
-    resourceFilters?: FilterConditionsListType[]
-    isExceptionUser?: boolean
 }
 
 export type TriggerVirtualEnvResponseRowType =
@@ -122,61 +120,6 @@ export type ResponseRowType = {
     message: string
     envId?: number
 } & TriggerVirtualEnvResponseRowType
-
-interface BulkRuntimeParamsType {
-    runtimeParams: Record<string, RuntimePluginVariables[]>
-    setRuntimeParams: React.Dispatch<React.SetStateAction<Record<string, RuntimePluginVariables[]>>>
-    runtimeParamsErrorState: Record<string, RuntimeParamsErrorState>
-    setRuntimeParamsErrorState: React.Dispatch<React.SetStateAction<Record<string, RuntimeParamsErrorState>>>
-}
-
-export interface BulkCITriggerType extends BulkRuntimeParamsType {
-    appList: BulkCIDetailType[]
-    closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any[]>) => void
-    onClickTriggerBulkCI: (appIgnoreCache: Record<number, boolean>, appsToRetry?: Record<string, boolean>) => void
-    getWebhookPayload: (id, webhookTimeStampOrder?: typeof TIME_STAMP_ORDER) => void
-    webhookPayloads: WebhookPayloadType
-    setWebhookPayloads: React.Dispatch<React.SetStateAction<WebhookPayloadType>>
-    isWebhookPayloadLoading: boolean
-    isShowRegexModal: (_appId: number, ciNodeId: number, inputMaterialList: any[]) => boolean
-    responseList: ResponseRowType[]
-    isLoading: boolean
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    setPageViewType: React.Dispatch<React.SetStateAction<string>>
-}
-
-export interface BulkCDTriggerType extends BulkRuntimeParamsType {
-    stage: DeploymentNodeType
-    appList: BulkCDDetailType[]
-    closePopup: (e) => void
-    updateBulkInputMaterial: (materialList: Record<string, any>) => void
-    onClickTriggerBulkCD: (
-        skipIfHibernated: boolean,
-        pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap,
-        appsToRetry?: Record<string, boolean>,
-    ) => void
-    changeTab?: (
-        materrialId: string | number,
-        artifactId: number,
-        tab: CDModalTabType,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ) => void
-    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    selectImage?: (
-        index: number,
-        materialType: string,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-    ) => void
-    responseList: ResponseRowType[]
-    isLoading: boolean
-    setLoading: React.Dispatch<React.SetStateAction<boolean>>
-    isVirtualEnv?: boolean
-    uniqueReleaseTags: string[]
-    feasiblePipelineIds: Set<number>
-    bulkDeploymentStrategy: DeploymentStrategyTypeWithDefault
-    setBulkDeploymentStrategy: Dispatch<SetStateAction<DeploymentStrategyTypeWithDefault>>
-}
 
 export interface ProcessWorkFlowStatusType {
     cicdInProgress: boolean
@@ -211,15 +154,11 @@ export interface TriggerResponseModalBodyProps {
 
 type RetryFailedType =
     | {
-          onClickRetryDeploy: BulkCDTriggerType['onClickTriggerBulkCD']
-          skipHibernatedApps: boolean
-          pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap
+          onClickRetryDeploy: (appsToRetry: Record<string, boolean>) => void
           onClickRetryBuild?: never
       }
     | {
           onClickRetryDeploy?: never
-          skipHibernatedApps?: never
-          pipelineIdVsStrategyMap?: never
           onClickRetryBuild: (appsToRetry: Record<string, boolean>) => void
       }
 
@@ -233,11 +172,6 @@ export interface TriggerModalRowType {
     isVirtualEnv?: boolean
 }
 
-export interface WorkflowNodeSelectionType {
-    id: number
-    name: string
-    type: WorkflowNodeType
-}
 export interface WorkflowAppSelectionType {
     id: number
     name: string

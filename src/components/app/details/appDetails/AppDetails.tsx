@@ -78,7 +78,7 @@ import RotatePodsModal from '../../../v2/appDetails/sourceInfo/rotatePods/Rotate
 import SyncErrorComponent from '../../../v2/appDetails/SyncError.component'
 import { TriggerUrlModal } from '../../list/TriggerUrl'
 import { fetchAppDetailsInTime, fetchResourceTreeInTime } from '../../service'
-import { AggregatedNodes } from '../../types'
+import { AggregatedNodes, AppDetailsCDModalType } from '../../types'
 import { renderCIListHeader } from '../cdDetails/utils'
 import { MATERIAL_TYPE } from '../triggerView/types'
 import AppEnvSelector from './AppDetails.components'
@@ -235,7 +235,7 @@ const Details: React.FC<DetailsType> = ({
     const [rotateModal, setRotateModal] = useState<boolean>(false)
     const [hibernating, setHibernating] = useState<boolean>(false)
     const [showIssuesModal, toggleIssuesModal] = useState<boolean>(false)
-    const [CDModalMaterialType, setCDModalMaterialType] = useState<string | null>(null)
+    const [CDModalMaterialType, setCDModalMaterialType] = useState<AppDetailsCDModalType['materialType']>(null)
     const [appDetailsError, setAppDetailsError] = useState(undefined)
 
     const [hibernationPatchChartName, setHibernationPatchChartName] = useState<string>('')
@@ -591,8 +591,8 @@ const Details: React.FC<DetailsType> = ({
                 environmentId={appDetails.environmentId}
                 environmentName={appDetails.environmentName}
                 isVirtualEnvironment={appDetails.isVirtualEnvironment}
+                appName={appDetails.appName}
                 deploymentAppType={appDetails.deploymentAppType}
-                loadingDetails={loadingDetails}
                 cdModal={{
                     cdPipelineId: appDetails.cdPipelineId,
                     ciPipelineId: appDetails.ciPipelineId,
@@ -718,9 +718,7 @@ const Details: React.FC<DetailsType> = ({
     const isDeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     return (
         <>
-            <div
-                className={`w-100 pt-16 pr-20 pb-16 pl-20 dc__gap-16 ${isDeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}
-            >
+            <div className={`w-100 dc__gap-16 ${isDeploymentAppDeleting ? 'app-info-bg' : 'app-info-bg-gradient'}`}>
                 <SourceInfo
                     appDetails={appDetails}
                     setDetailed={setShowAppStatusModal}
