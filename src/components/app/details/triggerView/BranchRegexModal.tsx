@@ -72,7 +72,7 @@ const BranchRegexModal = ({
     const isRegexValueInvalid = (_cm): void => {
         const regExp = new RegExp(_cm.source.regex)
         const regVal = structuredClone(regexValue[_cm.gitMaterialId])
-        if (!regExp.test(regVal.value)) {
+        if (!regExp.test(regVal.value) || !regVal.value) {
             const _regexVal = {
                 ...regexValue,
                 [_cm.gitMaterialId]: { value: regVal.value, isInvalid: true },
@@ -84,42 +84,39 @@ const BranchRegexModal = ({
     const handleSave = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsSavingRegexValue(true)
-        const payload: Parameters<typeof savePipeline>[0] = {
-            appId: +appId,
-            id: +workflowId,
-            ciPipelineMaterial: [],
-        }
-
-        if (selectedCIPipeline?.ciMaterial?.length) {
-            payload.ciPipelineMaterial = selectedCIPipeline.ciMaterial.map((_cm) => {
-                const regVal = regexValue[_cm.gitMaterialId]
-                let _updatedCM
-
-                if (regVal?.value && _cm.source.regex) {
-                    isRegexValueInvalid(_cm)
-
-                    _updatedCM = {
-                        ..._cm,
-                        type: SourceTypeMap.BranchFixed,
-                        value: regVal.value,
-                        regex: _cm.source.regex,
-                    }
-                } else {
-                    // Maintain the flattened object structure for unchanged values
-                    _updatedCM = {
-                        ..._cm,
-                        ..._cm.source,
-                    }
-                }
-
-                // Deleting as it's not required in the request payload
-                delete _updatedCM.source
-
-                return _updatedCM
-            })
-        }
 
         try {
+            const payload: Parameters<typeof savePipeline>[0] = {
+                appId: +appId,
+                id: +workflowId,
+                ciPipelineMaterial: selectedCIPipeline.ciMaterial.map((_cm) => {
+                    const regVal = regexValue[_cm.gitMaterialId]
+                    let _updatedCM
+
+                    if (regVal?.value && _cm.source.regex) {
+                        isRegexValueInvalid(_cm)
+
+                        _updatedCM = {
+                            ..._cm,
+                            type: SourceTypeMap.BranchFixed,
+                            value: regVal.value,
+                            regex: _cm.source.regex,
+                        }
+                    } else {
+                        // Maintain the flattened object structure for unchanged values
+                        _updatedCM = {
+                            ..._cm,
+                            ..._cm.source,
+                        }
+                    }
+
+                    // Deleting as it's not required in the request payload
+                    delete _updatedCM.source
+
+                    return _updatedCM
+                }),
+            }
+
             await savePipeline(payload, {
                 isRegexMaterial: true,
                 isTemplateView: false,

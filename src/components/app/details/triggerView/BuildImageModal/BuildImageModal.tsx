@@ -1,11 +1,3 @@
-/**
- * Service layer requirements:
- * - We need to have filteredCIPipelines
- * - Will find the selected pipeline from filteredCIPipelines from which we will get envId [in case of job view]
- * - isLoading as prop for when workflows are loading
- * - If !isLoading and filteredCIPipelines does not contain the selected pipeline, we will show error
- */
-
 import { useEffect, useRef, useState } from 'react'
 import { Prompt, useHistory, useParams } from 'react-router-dom'
 
@@ -179,7 +171,7 @@ const BuildImageModal = ({
     }
 
     const getCIPipelineURLWrapper = (): string =>
-        getCIPipelineURL(String(appId), String(workflowId), true, ciNodeId, false, ciNode?.isJobCI, false)
+        getCIPipelineURL(String(appId), String(workflowId), true, ciNodeId, false, ciNode.isJobCI, false)
 
     const redirectToCIPipeline = () => {
         push(getCIPipelineURLWrapper())
@@ -257,7 +249,7 @@ const BuildImageModal = ({
         return (
             <Button
                 dataTestId="ci-trigger-start-build-button"
-                text={isJobView || ciNode?.isJobCI ? 'Run Job' : 'Start Build'}
+                text={isJobView || ciNode.isJobCI ? 'Run Job' : 'Start Build'}
                 disabled={!canTrigger || showContentLoader}
                 isLoading={isBuildTriggerLoading}
                 onClick={isCTAActionable ? handleStartBuildAction : noop}
@@ -270,7 +262,7 @@ const BuildImageModal = ({
     const renderCTAButton = () => {
         if (
             AllowedWithWarningTippy &&
-            ciNode?.pluginBlockState?.action === ConsequenceAction.ALLOW_UNTIL_TIME &&
+            ciNode.pluginBlockState?.action === ConsequenceAction.ALLOW_UNTIL_TIME &&
             !isJobView
         ) {
             return (
@@ -301,7 +293,7 @@ const BuildImageModal = ({
     )
 
     const renderCacheInfo = () => {
-        if (ciNode?.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED) {
+        if (ciNode.status?.toLowerCase() === BUILD_STATUS.NOT_TRIGGERED) {
             return (
                 <div className="flexbox dc__gap-8">
                     <div className="m-4">
@@ -338,7 +330,7 @@ const BuildImageModal = ({
                 </div>
             )
         }
-        if (!ciNode?.storageConfigured) {
+        if (!ciNode.storageConfigured) {
             return (
                 <div className="flexbox dc__gap-8">
                     <div className="m-4">
@@ -427,7 +419,7 @@ const BuildImageModal = ({
                         <div className="flex-grow-1 dc__overflow-auto w-100">{renderContent()}</div>
                     </div>
 
-                    {ciNode?.isTriggerBlocked || showWebhookModal || !!screenErrorData ? null : (
+                    {!ciNode || ciNode.isTriggerBlocked || showWebhookModal || !!screenErrorData ? null : (
                         <div className="flexbox dc__content-space dc__gap-12 py-16 px-20 border__primary--top dc__no-shrink">
                             {isJobView ? renderEnvironments() : renderCacheInfo()}
                             {renderCTAButton()}

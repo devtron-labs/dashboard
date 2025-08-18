@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-import { createContext } from 'react'
-import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
-import { TriggerViewContextType } from './types'
 import { importComponentFromFELibrary } from '@Components/common'
 
 const WebhookAddImageButton = importComponentFromFELibrary('WebhookAddImageButton', null, 'function')
-
-export const TriggerViewContext = createContext<TriggerViewContextType>({
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean, imageTag?: string) => {},
-    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => {},
-    reloadTriggerView: () => {},
-})
 
 export enum WorkflowDimensionType {
     TRIGGER = 'trigger',

@@ -36,6 +36,7 @@ export interface UsePipelineDeploymentConfigProps {
     deploymentStrategy: DeploymentStrategyType
     setDeploymentStrategy: Dispatch<SetStateAction<DeploymentStrategyType>>
     pipelineStrategyOptions: Strategy[]
+    isCDNode: boolean
 }
 
 export type PipelineConfigDiffProps = Pick<

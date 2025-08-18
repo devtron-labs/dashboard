@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, SyntheticEvent } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     DeploymentAppTypes,
@@ -27,6 +27,7 @@ import {
     ToastManager,
     ForceDeleteConfirmationModal,
     LoadingCard,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { ReactComponent as ErrorIcon } from '../../../../assets/icons/ic-warning.svg'
@@ -50,7 +51,8 @@ const IssuesCard = ({ cardLoading, setErrorsList, toggleIssuesModal, setDetailed
     const appDetails = IndexStore.getAppDetails()
     const conditions = appDetails?.resourceTree?.conditions || []
 
-    const showIssuesListingModal = () => {
+    const showIssuesListingModal = (e?: SyntheticEvent) => {
+        stopPropagation(e)
         toggleIssuesModal(true)
     }
 
