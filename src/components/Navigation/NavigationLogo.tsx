@@ -15,7 +15,7 @@ export const NavigationLogo = () => {
             <span className="flex dc__position-rel">
                 <span className="icon-dim-24 flex px-2 border__white bw-2 br-4" style={{ backgroundColor }}>
                     <span className="fs-12 lh-16 fw-6 text__sidenav">
-                        {ORGANIZATION_NAME.slice(0, 2).toLocaleUpperCase()}
+                        {ORGANIZATION_NAME.slice(0, 2).toUpperCase()}
                     </span>
                 </span>
                 <span
