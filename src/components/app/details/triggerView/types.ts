@@ -14,45 +14,34 @@
  * limitations under the License.
  */
 
-import React from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
     AppConfigProps,
     ArtifactPromotionMetadata,
-    CDMaterialResponseType,
-    CDMaterialSidebarType,
     CDMaterialType,
-    CDModalTabType,
     CdPipeline,
     CIBuildConfigType,
     CIMaterialType,
     CiPipeline,
     CommonNodeAttr,
-    ConsequenceType,
     DeploymentAppTypes,
     DeploymentHistoryDetail,
     DeploymentNodeType,
     DeploymentWithConfigType,
     DynamicDataTableCellValidationState,
-    FilterConditionsListType,
-    ImageComment,
     Material,
     PipelineType,
     PolicyKindType,
-    ReleaseTag,
     RuntimePluginVariables,
     TaskErrorObj,
-    UploadFileDTO,
-    UploadFileProps,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CIPipelineBuildType } from '@Components/ciPipeline/types'
 import { EnvironmentWithSelectPickerType } from '@Components/CIPipelineN/types'
-import { AppContextType } from '@Components/common'
 
-import { HostURLConfig } from '../../../../services/service.types'
+import { DeployImageModalProps } from './DeployImageModal/types'
 import { Offset, WorkflowDimensions } from './config'
 
 export interface RuntimeParamsErrorState {
@@ -61,112 +50,6 @@ export interface RuntimeParamsErrorState {
 }
 
 export type HandleRuntimeParamChange = (updatedRuntimeParams: RuntimePluginVariables[]) => void
-
-export type HandleRuntimeParamErrorState = (updatedErrorState: RuntimeParamsErrorState) => void
-
-type CDMaterialBulkRuntimeParams =
-    | {
-          isFromBulkCD: true
-          bulkRuntimeParams: RuntimePluginVariables[]
-          handleBulkRuntimeParamChange: HandleRuntimeParamChange
-          bulkRuntimeParamErrorState: RuntimeParamsErrorState
-          handleBulkRuntimeParamError: HandleRuntimeParamErrorState
-          bulkSidebarTab: CDMaterialSidebarType
-          bulkUploadFile: (props: UploadFileProps) => Promise<UploadFileDTO>
-      }
-    | {
-          isFromBulkCD?: false
-          bulkRuntimeParams?: never
-          handleBulkRuntimeParamChange?: never
-          bulkRuntimeParamErrorState?: never
-          handleBulkRuntimeParamError?: never
-          bulkSidebarTab?: never
-          bulkUploadFile?: never
-      }
-
-type CDMaterialPluginWarningProps =
-    | {
-          showPluginWarningBeforeTrigger: boolean
-          consequence: ConsequenceType
-          configurePluginURL: string
-      }
-    | {
-          showPluginWarningBeforeTrigger?: never
-          consequence?: never
-          configurePluginURL?: never
-      }
-
-export type CDMaterialProps = {
-    material?: CDMaterialType[]
-    isLoading: boolean
-    materialType: string
-    envName: string
-    envId?: number
-    redirectToCD?: () => void
-    stageType: DeploymentNodeType
-    changeTab?: (
-        materrialId: string | number,
-        artifactId: number,
-        tab: CDModalTabType,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?: number,
-    ) => void
-    selectImage?: (
-        index: number,
-        materialType: string,
-        selectedCDDetail?: { id: number; type: DeploymentNodeType },
-        appId?: number,
-    ) => void
-    toggleSourceInfo?: (materialIndex: number, selectedCDDetail?: { id: number; type: DeploymentNodeType }) => void
-    closeCDModal: (e: React.MouseEvent) => void
-    onClickRollbackMaterial?: (
-        cdNodeId: number,
-        offset?: number,
-        size?: number,
-        callback?: (loadingMore: boolean, noMoreImages?: boolean) => void,
-        searchText?: string,
-    ) => void
-    parentPipelineId?: string
-    parentPipelineType?: string
-    parentEnvironmentName?: string
-    hideInfoTabsContainer?: boolean
-    appId?: number
-    pipelineId?: number
-    isFromBulkCD?: boolean
-    requestedUserId?: number
-    triggerType?: string
-    isVirtualEnvironment?: boolean
-    isSaveLoading?: boolean
-    ciPipelineId?: number
-    appReleaseTagNames?: string[]
-    setAppReleaseTagNames?: (appReleaseTags: string[]) => void
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
-    setTagsEditable?: (tagsEditable: boolean) => void
-    updateCurrentAppMaterial?: (matId: number, releaseTags?: ReleaseTag[], imageComment?: ImageComment) => void
-    handleMaterialFilters?: (
-        text: string,
-        cdNodeId,
-        nodeType: DeploymentNodeType,
-        isApprovalNode?: boolean,
-        fromRollback?: boolean,
-    ) => void
-    searchImageTag?: string
-    resourceFilters?: FilterConditionsListType[]
-    updateBulkCDMaterialsItem?: (singleCDMaterialResponse: CDMaterialResponseType) => void
-    deploymentAppType?: DeploymentAppTypes
-    selectedImageFromBulk?: string
-    isSuperAdmin?: boolean
-    isRedirectedFromAppDetails?: boolean
-    /**
-     * App name coming from app group view
-     * To be consumed through variable called appName
-     */
-    selectedAppName?: string
-    isTriggerBlockedDueToPlugin?: boolean
-    handleSuccess?: () => void
-} & CDMaterialBulkRuntimeParams &
-    CDMaterialPluginWarningProps
 
 export interface ConfigToDeployOptionType {
     label: string
@@ -241,7 +124,8 @@ interface InputMaterials {
 
 export interface TriggerCDNodeProps
     extends RouteComponentProps<{ appId: string; envId: string }>,
-        Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
+        Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
+        Pick<WorkflowProps, 'reloadTriggerView'> {
     x: number
     y: number
     height: number
@@ -269,6 +153,8 @@ export interface TriggerCDNodeProps
     deploymentAppType: DeploymentAppTypes
     appId: number
     isDeploymentBlocked?: boolean
+    onClickCDMaterial: (cdNodeId: number, nodeType: DeploymentNodeType) => void
+    onClickRollbackMaterial: (cdNodeId: number) => void
 }
 
 export interface TriggerCDNodeState {
@@ -280,7 +166,8 @@ export interface TriggerCDNodeState {
 
 export interface TriggerPrePostCDNodeProps
     extends RouteComponentProps<{ appId: string; envId: string }>,
-        Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>> {
+        Partial<Pick<CommonNodeAttr, 'isTriggerBlocked'>>,
+        Pick<TriggerCDNodeProps, 'reloadTriggerView' | 'onClickCDMaterial'> {
     x: number
     y: number
     height: number
@@ -333,12 +220,7 @@ export interface WorkflowProps
     filteredCIPipelines?: any[]
     handleWebhookAddImageClick?: (webhookId: number) => void
     openCIMaterialModal: (ciNodeId: string) => void
-}
-
-export interface TriggerViewContextType {
-    onClickCDMaterial: (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode?: boolean) => void
-    onClickRollbackMaterial: (cdNodeId: number, offset?: number, size?: number) => void
-    reloadTriggerView: () => void
+    reloadTriggerView: () => Promise<void> | void
 }
 
 export enum BulkSelectionEvents {
@@ -350,13 +232,12 @@ export interface TriggerViewRouterProps {
     envId: string
 }
 
-export interface TriggerViewProps extends RouteComponentProps<CIMaterialRouterProps> {
+export interface TriggerViewProps {
     isJobView?: boolean
     filteredEnvIds?: string
-    appContext: AppContextType
 }
 
-interface FilteredCIPipelinesType {
+export interface FilteredCIPipelinesType {
     active: boolean
     ciMaterial: CiMaterial[]
     dockerArgs: any
@@ -377,35 +258,10 @@ interface FilteredCIPipelinesType {
     scanEnabled: boolean
 }
 
-export interface TriggerViewState {
-    code: number
-    view: string
-    workflows: WorkflowType[]
-    nodeType: null | 'CI' | 'CD' | 'PRECD' | 'POSTCD' | 'APPROVAL'
-    cdNodeId: number
-    materialType: '' | 'inputMaterialList' | 'rollbackMaterialList'
-    isLoading: boolean
-    hostURLConfig: HostURLConfig
-    workflowId: number
-    filteredCIPipelines: FilteredCIPipelinesType[]
-    isSaveLoading?: boolean
-    environmentLists?: any[]
-    appReleaseTags?: string[]
-    tagsEditable?: boolean
-    hideImageTaggingHardDelete?: boolean
-    configs?: boolean
-    isDefaultConfigPresent?: boolean
-    searchImageTag?: string
-    resourceFilters?: FilterConditionsListType[]
-    selectedWebhookNodeId: number
-    isEnvListLoading?: boolean
-}
-
-export type FilteredCIPipelineMapType = Map<number, TriggerViewState['filteredCIPipelines']>
+export type FilteredCIPipelineMapType = Map<number, FilteredCIPipelinesType[]>
 
 export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
     handleClose: () => void
-    reloadWorkflows: () => Promise<WorkflowType[]>
     workflows: WorkflowType[]
     /**
      * If not present would extract from selected workflow
@@ -415,12 +271,14 @@ export type BuildImageModalProps = Pick<WorkflowProps, 'isJobView'> & {
     reloadWorkflowStatus: () => void
 } & (
         | {
-              filteredCIPipelines: TriggerViewState['filteredCIPipelines']
+              filteredCIPipelines: FilteredCIPipelinesType[]
               filteredCIPipelineMap?: never
+              reloadWorkflows: () => Promise<void>
           }
         | {
               filteredCIPipelineMap: FilteredCIPipelineMapType
               filteredCIPipelines?: never
+              reloadWorkflows: () => Promise<WorkflowType[]>
           }
     )
 
@@ -611,7 +469,7 @@ export const MATERIAL_TYPE = {
     rollbackMaterialList: 'rollbackMaterialList',
     inputMaterialList: 'inputMaterialList',
     none: 'none',
-}
+} as const
 
 export interface EmptyStateCIMaterialProps {
     isRepoError: boolean
@@ -651,11 +509,6 @@ export interface AddDimensionsToDownstreamDeploymentsParams {
     startY: number
 }
 
-export interface RenderCTAType {
-    mat: CDMaterialType
-    disableSelection: boolean
-}
-
 export interface WebhookPayload {
     eventTime: string
     matchedFiltersCount: number
@@ -671,14 +524,13 @@ export interface WebhookReceivedFiltersType {
     match: boolean
 }
 
-export interface CiWebhookModalProps
-    extends Pick<TriggerViewState, 'workflowId'>,
-        Pick<BuildImageModalProps, 'isJobView'> {
+export interface CiWebhookModalProps extends Pick<BuildImageModalProps, 'isJobView'> {
     ciPipelineMaterialId: number
     gitMaterialUrl: string
     ciPipelineId: number
     appId: string
     isJobCI: boolean
+    workflowId: number
 }
 
 export interface CIWebhookPayload {
@@ -708,4 +560,28 @@ export interface CIPipelineMaterialDTO {
             id: number
         }
     }
+}
+
+export interface UseTriggerViewServicesParams {
+    appId: string
+    isJobView: boolean
+    filteredEnvIds: string
+}
+
+export enum CDNodeActions {
+    APPROVAL = 'approval',
+    CD_MATERIAL = 'cdMaterial',
+    ROLLBACK_MATERIAL = 'rollbackMaterial',
+}
+
+export interface GetCDNodeSearchParams {
+    actionType: CDNodeActions
+    cdNodeId: number
+    nodeType?: DeploymentNodeType
+    fromAppGroup?: boolean
+}
+
+export interface CDMaterialProps extends Pick<DeployImageModalProps, 'handleClose' | 'handleSuccess'> {
+    workflows: WorkflowType[]
+    isTriggerView: boolean
 }

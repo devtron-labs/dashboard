@@ -14,91 +14,68 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
+import React, { useEffect, useState } from 'react'
 import { Prompt, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
-    API_STATUS_CODES,
-    ApiQueuingWithBatch,
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    CDMaterialResponseType,
     Checkbox,
     CHECKBOX_VALUE,
     CommonNodeAttr,
     ComponentSizeType,
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
-    DeploymentStrategyTypeWithDefault,
     ErrorScreenManager,
-    getStageTitle,
-    PipelineIdsVsDeploymentStrategyMap,
     PopupMenu,
     Progressing,
-    RuntimePluginVariables,
     ServerErrors,
     showError,
     sortCallback,
-    stopPropagation,
     ToastManager,
     ToastVariantType,
-    TriggerBlockType,
-    triggerCDNode,
     usePrompt,
-    VisibleModal,
     WorkflowNodeType,
     WorkflowType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BuildImageModal, BulkBuildImageModal } from '@Components/app/details/triggerView/BuildImageModal'
+import CDMaterial from '@Components/app/details/triggerView/CDMaterial'
+import { BulkDeployModal } from '@Components/app/details/triggerView/DeployImageModal'
 import { shouldRenderWebhookAddImageModal } from '@Components/app/details/triggerView/TriggerView.utils'
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
 import { ReactComponent as Dropdown } from '../../../../assets/icons/ic-chevron-down.svg'
-import { ReactComponent as CloseIcon } from '../../../../assets/icons/ic-close.svg'
 import { ReactComponent as Close } from '../../../../assets/icons/ic-cross.svg'
 import { ReactComponent as DeployIcon } from '../../../../assets/icons/ic-nav-rocket.svg'
 import { ReactComponent as Pencil } from '../../../../assets/icons/ic-pencil.svg'
 import { URLS, ViewType } from '../../../../config'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { AppNotConfigured } from '../../../app/details/appDetails/AppDetails'
-import CDMaterial from '../../../app/details/triggerView/cdMaterial'
-import { TriggerViewContext } from '../../../app/details/triggerView/config'
 import { TRIGGER_VIEW_PARAMS } from '../../../app/details/triggerView/Constants'
-import { CIMaterialRouterProps, MATERIAL_TYPE, RuntimeParamsErrorState } from '../../../app/details/triggerView/types'
+import { CIMaterialRouterProps, MATERIAL_TYPE } from '../../../app/details/triggerView/types'
 import { Workflow } from '../../../app/details/triggerView/workflow/Workflow'
 import { triggerBranchChange } from '../../../app/service'
-import { getCDPipelineURL, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
+import { importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../../../common'
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { getWorkflows, getWorkflowStatus } from '../../AppGroup.service'
 import {
     AppGroupDetailDefaultType,
-    BulkCDDetailType,
-    BulkCDDetailTypeResponse,
     ProcessWorkFlowStatusType,
     ResponseRowType,
-    TriggerVirtualEnvResponseRowType,
     WorkflowAppSelectionType,
-    WorkflowNodeSelectionType,
 } from '../../AppGroup.types'
 import { processWorkflowStatuses } from '../../AppGroup.utils'
 import {
-    BULK_CD_RESPONSE_STATUS_TEXT,
-    BULK_CI_RESPONSE_STATUS_TEXT,
-    BULK_VIRTUAL_RESPONSE_STATUS,
     BulkResponseStatus,
-    ENV_TRIGGER_VIEW_GA_EVENTS,
     GetBranchChangeStatus,
     SKIPPED_RESOURCES_MESSAGE,
     SKIPPED_RESOURCES_STATUS_TEXT,
 } from '../../Constants'
-import BulkCDTrigger from './BulkCDTrigger'
 import BulkSourceChange from './BulkSourceChange'
-import { RenderCDMaterialContentProps } from './types'
-import { getSelectedCDNode } from './utils'
+import { getSelectedNodeAndAppId } from './utils'
 
 import './EnvTriggerView.scss'
 
@@ -108,16 +85,9 @@ const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
     null,
     'function',
 )
-const getRuntimeParamsPayload = importComponentFromFELibrary('getRuntimeParamsPayload', null, 'function')
-const validateRuntimeParameters = importComponentFromFELibrary(
-    'validateRuntimeParameters',
-    () => ({ isValid: true, cellError: {} }),
-    'function',
-)
 const ChangeImageSource = importComponentFromFELibrary('ChangeImageSource', null, 'function')
 const WebhookAddImageModal = importComponentFromFELibrary('WebhookAddImageModal', null, 'function')
 
-// FIXME: IN CIMaterials we are sending isCDLoading while in CD materials we are sending isCILoading
 let inprogressStatusTimer
 const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultType) => {
     const { envId } = useParams<{ envId: string }>()
@@ -126,13 +96,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const match = useRouteMatch<CIMaterialRouterProps>()
     const { url } = useRouteMatch()
 
-    // ref to make sure that on initial mount after we fetch workflows we handle modal based on url
-    const handledLocation = useRef(false)
-    const abortControllerRef = useRef(new AbortController())
-
     const [pageViewType, setPageViewType] = useState<string>(ViewType.LOADING)
-    const [isCILoading, setCILoading] = useState(false)
-    const [isCDLoading, setCDLoading] = useState(false)
     const [isBranchChangeLoading, setIsBranchChangeLoading] = useState(false)
     const [showPreDeployment, setShowPreDeployment] = useState(false)
     const [showPostDeployment, setShowPostDeployment] = useState(false)
@@ -143,29 +107,15 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     const [selectedAppList, setSelectedAppList] = useState<WorkflowAppSelectionType[]>([])
     const [workflows, setWorkflows] = useState<WorkflowType[]>([])
     const [filteredWorkflows, setFilteredWorkflows] = useState<WorkflowType[]>([])
-    const [selectedCDNode, setSelectedCDNode] = useState<WorkflowNodeSelectionType>(null)
     const [filteredCIPipelines, setFilteredCIPipelines] = useState(null)
     const [bulkTriggerType, setBulkTriggerType] = useState<DeploymentNodeType>(null)
-    const [materialType, setMaterialType] = useState(MATERIAL_TYPE.inputMaterialList)
     const [responseList, setResponseList] = useState<ResponseRowType[]>([])
     const [isSelectAll, setSelectAll] = useState(false)
     const [selectAllValue, setSelectAllValue] = useState<CHECKBOX_VALUE>(CHECKBOX_VALUE.CHECKED)
-    // Mapping pipelineId (in case of CI) and appId (in case of CD) to runtime params
-    const [runtimeParams, setRuntimeParams] = useState<Record<string, RuntimePluginVariables[]>>({})
-    const [runtimeParamsErrorState, setRuntimeParamsErrorState] = useState<Record<string, RuntimeParamsErrorState>>({})
-    const [isBulkTriggerLoading, setIsBulkTriggerLoading] = useState<boolean>(false)
     const [selectedWebhookNode, setSelectedWebhookNode] = useState<{ appId: number; id: number }>(null)
-    const [bulkDeploymentStrategy, setBulkDeploymentStrategy] = useState<DeploymentStrategyTypeWithDefault>('DEFAULT')
 
-    const enableRoutePrompt = isBranchChangeLoading || isBulkTriggerLoading
+    const enableRoutePrompt = isBranchChangeLoading
     usePrompt({ shouldPrompt: enableRoutePrompt })
-
-    useEffect(
-        () => () => {
-            handledLocation.current = false
-        },
-        [],
-    )
 
     useEffect(() => {
         if (envId) {
@@ -183,72 +133,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         inprogressStatusTimer && clearTimeout(inprogressStatusTimer)
         getWorkflowsData()
     }
-
-    useEffect(() => {
-        if (!handledLocation.current && filteredWorkflows?.length) {
-            handledLocation.current = true
-            // Would have been better if filteredWorkflows had default value to null since we are using it as a flag
-            // URL Encoding for Bulk is not planned as of now
-            setShowBulkCDModal(false)
-            if (location.search.includes('approval-node')) {
-                const searchParams = new URLSearchParams(location.search)
-                const nodeId = Number(searchParams.get('approval-node'))
-                if (!isNaN(nodeId)) {
-                    onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node id',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                }
-            } else if (location.search.includes('rollback-node')) {
-                const searchParams = new URLSearchParams(location.search)
-                const nodeId = Number(searchParams.get('rollback-node'))
-                if (!isNaN(nodeId)) {
-                    onClickRollbackMaterial(nodeId)
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node id',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                }
-            } else if (location.search.includes('cd-node')) {
-                const searchParams = new URLSearchParams(location.search)
-                const nodeId = Number(searchParams.get('cd-node'))
-                const nodeType = searchParams.get('node-type') ?? DeploymentNodeType.CD
-
-                if (
-                    nodeType !== DeploymentNodeType.CD &&
-                    nodeType !== DeploymentNodeType.PRECD &&
-                    nodeType !== DeploymentNodeType.POSTCD
-                ) {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node type',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                } else if (!isNaN(nodeId)) {
-                    onClickCDMaterial(nodeId, nodeType as DeploymentNodeType)
-                } else {
-                    ToastManager.showToast({
-                        variant: ToastVariantType.error,
-                        description: 'Invalid node id',
-                    })
-                    history.push({
-                        search: '',
-                    })
-                }
-            }
-        }
-    }, [filteredWorkflows])
 
     const preserveSelection = (_workflows: WorkflowType[]) => {
         if (!workflows || !_workflows) {
@@ -450,109 +334,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
-    const onClickCDMaterial = (cdNodeId, nodeType: DeploymentNodeType, isApprovalNode: boolean = false): void => {
-        ReactGA.event(
-            isApprovalNode ? ENV_TRIGGER_VIEW_GA_EVENTS.ApprovalNodeClicked : ENV_TRIGGER_VIEW_GA_EVENTS.ImageClicked,
-        )
-
-        let _workflowId
-        let _appID
-        let _selectedNode
-
-        // FIXME: This needs to be replicated in rollback, env group since we need cipipelineid as 0 in external case
-        const _workflows = [...filteredWorkflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (cdNodeId == node.id && node.type === nodeType) {
-                    // TODO: Ig not using this, can remove it
-                    if (node.type === WorkflowNodeType.CD) {
-                        node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
-                    }
-                    _selectedNode = node
-                    _workflowId = workflow.id
-                    _appID = workflow.appId
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-
-        if (!_selectedNode) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Invalid node id',
-            })
-            history.push({
-                search: '',
-            })
-            return
-        }
-
-        setFilteredWorkflows(_workflows)
-        setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
-        setMaterialType(MATERIAL_TYPE.inputMaterialList)
-
-        const newParams = new URLSearchParams(location.search)
-        newParams.set(isApprovalNode ? 'approval-node' : 'cd-node', cdNodeId.toString())
-        if (!isApprovalNode) {
-            newParams.set('node-type', nodeType)
-        } else {
-            const currentApprovalState = newParams.get(TRIGGER_VIEW_PARAMS.APPROVAL_STATE)
-            // If the current state is pending, then we should change the state to pending
-            const approvalState =
-                currentApprovalState === TRIGGER_VIEW_PARAMS.PENDING
-                    ? TRIGGER_VIEW_PARAMS.PENDING
-                    : TRIGGER_VIEW_PARAMS.APPROVAL
-
-            newParams.set(TRIGGER_VIEW_PARAMS.APPROVAL_STATE, approvalState)
-            newParams.delete(TRIGGER_VIEW_PARAMS.CD_NODE)
-            newParams.delete(TRIGGER_VIEW_PARAMS.NODE_TYPE)
-        }
-        history.push({
-            search: newParams.toString(),
-        })
-    }
-
-    const onClickRollbackMaterial = (cdNodeId: number) => {
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.RollbackClicked)
-
-        let _selectedNode
-
-        const _workflows = [...filteredWorkflows].map((workflow) => {
-            const nodes = workflow.nodes.map((node) => {
-                if (node.type === 'CD' && +node.id == cdNodeId) {
-                    node.approvalConfigData = workflow.approvalConfiguredIdsMap[cdNodeId]
-                    _selectedNode = node
-                }
-                return node
-            })
-            workflow.nodes = nodes
-            return workflow
-        })
-
-        if (!_selectedNode) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Invalid node id',
-            })
-            history.push({
-                search: '',
-            })
-            return
-        }
-
-        setFilteredWorkflows(_workflows)
-        setSelectedCDNode({ id: +cdNodeId, name: _selectedNode.name, type: _selectedNode.type })
-        setMaterialType(MATERIAL_TYPE.rollbackMaterialList)
-        getWorkflowStatusData(_workflows)
-
-        const newParams = new URLSearchParams(location.search)
-        newParams.set('rollback-node', cdNodeId.toString())
-        history.push({
-            search: newParams.toString(),
-        })
-    }
-
     const isBuildAndBranchTriggerAllowed = (node: CommonNodeAttr): boolean =>
         !node.isLinkedCI && !node.isLinkedCD && node.type !== WorkflowNodeType.WEBHOOK
 
@@ -596,8 +377,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         if (!appIds.length) {
             updateResponseListData(skippedResources)
             setIsBranchChangeLoading(false)
-            setCDLoading(false)
-            setCILoading(false)
             return
         }
 
@@ -615,8 +394,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     })
                 })
                 updateResponseListData([..._responseList, ...skippedResources])
-                setCDLoading(false)
-                setCILoading(false)
             })
             .catch((error) => {
                 showError(error)
@@ -624,16 +401,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             .finally(() => {
                 setIsBranchChangeLoading(false)
             })
-    }
-
-    const closeCDModal = (e: React.MouseEvent): void => {
-        e?.stopPropagation()
-        abortControllerRef.current.abort()
-        setCDLoading(false)
-        history.push({
-            search: '',
-        })
-        getWorkflowStatusData(workflows)
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
@@ -645,12 +412,8 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const hideBulkCDModal = () => {
-        setCDLoading(false)
         setShowBulkCDModal(false)
         setResponseList([])
-        setBulkDeploymentStrategy('DEFAULT')
-        setRuntimeParams({})
-        setRuntimeParamsErrorState({})
 
         history.push({
             search: '',
@@ -658,28 +421,17 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const onShowBulkCDModal = (e) => {
-        setCDLoading(true)
         setBulkTriggerType(e.currentTarget.dataset.triggerType)
-        setMaterialType(MATERIAL_TYPE.inputMaterialList)
-        setTimeout(() => {
-            setShowBulkCDModal(true)
-        }, 100)
+        setShowBulkCDModal(true)
     }
 
     const hideBulkCIModal = () => {
-        setCILoading(false)
         setShowBulkCIModal(false)
         setResponseList([])
-
-        setRuntimeParams({})
-        setRuntimeParamsErrorState({})
     }
 
     const onShowBulkCIModal = () => {
-        setCILoading(true)
-        setTimeout(() => {
-            setShowBulkCIModal(true)
-        }, 100)
+        setShowBulkCIModal(true)
     }
 
     const hideChangeSourceModal = () => {
@@ -702,146 +454,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         setShowBulkSourceChangeModal(true)
     }
 
-    const updateBulkCDInputMaterial = (cdMaterialResponse: Record<string, CDMaterialResponseType>): void => {
-        const _workflows = filteredWorkflows.map((wf) => {
-            if (wf.isSelected && cdMaterialResponse[wf.appId]) {
-                const _appId = wf.appId
-                const _cdNode = wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-                )
-                let _selectedNode: CommonNodeAttr
-                const _materialData = cdMaterialResponse[_appId]
-
-                if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                    _selectedNode = _cdNode.preNode
-                } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                    _selectedNode = _cdNode
-                    _selectedNode.requestedUserId = _materialData.requestedUserId
-                    _selectedNode.approvalConfigData = _materialData.deploymentApprovalInfo?.approvalConfigData
-                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.postNode
-                }
-
-                if (_selectedNode) {
-                    _selectedNode.inputMaterialList = _materialData.materials
-                }
-                wf.appReleaseTags = _materialData?.appReleaseTagNames
-                wf.tagsEditable = _materialData?.tagsEditable
-                wf.canApproverDeploy = _materialData?.canApproverDeploy ?? false
-                wf.isExceptionUser = _materialData?.deploymentApprovalInfo?.approvalConfigData?.isExceptionUser ?? false
-            }
-
-            return wf
-        })
-        setFilteredWorkflows(_workflows)
-    }
-
-    const validateBulkRuntimeParams = (): boolean => {
-        let isRuntimeParamErrorPresent = false
-
-        const updatedRuntimeParamsErrorState = Object.keys(runtimeParams).reduce((acc, key) => {
-            const validationState = validateRuntimeParameters(runtimeParams[key])
-            acc[key] = validationState
-            isRuntimeParamErrorPresent = !isRuntimeParamErrorPresent && !validationState.isValid
-            return acc
-        }, {})
-        setRuntimeParamsErrorState(updatedRuntimeParamsErrorState)
-
-        if (isRuntimeParamErrorPresent) {
-            setCDLoading(false)
-            setCILoading(false)
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please resolve all the runtime parameter errors before triggering the pipeline',
-            })
-            return false
-        }
-
-        return true
-    }
-
-    // Helper to get selected CD nodes
-    const getSelectedCDNodesWithArtifacts = (
-        selectedWorkflows: WorkflowType[],
-    ): { node: CommonNodeAttr; wf: WorkflowType }[] =>
-        selectedWorkflows
-            .filter((wf) => wf.isSelected)
-            .map((wf) => {
-                const _cdNode = wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-                )
-                if (!_cdNode) return null
-
-                const _selectedNode: CommonNodeAttr | undefined = getSelectedCDNode(bulkTriggerType, _cdNode)
-
-                const selectedArtifacts = _selectedNode?.[materialType]?.filter((artifact) => artifact.isSelected) ?? []
-                if (selectedArtifacts.length > 0) {
-                    return { node: _selectedNode, wf }
-                }
-                return null
-            })
-            .filter(Boolean)
-
-    const onClickTriggerBulkCD = (
-        skipIfHibernated: boolean,
-        pipelineIdVsStrategyMap: PipelineIdsVsDeploymentStrategyMap,
-        appsToRetry?: Record<string, boolean>,
-    ) => {
-        if (isCDLoading || !validateBulkRuntimeParams()) {
-            return
-        }
-
-        ReactGA.event(ENV_TRIGGER_VIEW_GA_EVENTS.BulkCDTriggered(bulkTriggerType))
-        setCDLoading(true)
-        const _appIdMap = new Map<string, string>()
-        const nodeList: CommonNodeAttr[] = []
-        const triggeredAppList: { appId: number; envId?: number; appName: string }[] = []
-
-        const eligibleNodes = getSelectedCDNodesWithArtifacts(
-            filteredWorkflows.filter((wf) => !appsToRetry || appsToRetry[wf.appId]),
-        )
-        eligibleNodes.forEach(({ node: eligibleNode, wf }) => {
-            nodeList.push(eligibleNode)
-            _appIdMap.set(eligibleNode.id, wf.appId.toString())
-            triggeredAppList.push({ appId: wf.appId, appName: wf.name, envId: eligibleNode.environmentId })
-        })
-
-        const _CDTriggerPromiseFunctionList = []
-        nodeList.forEach((node, index) => {
-            let ciArtifact = null
-            const currentAppId = _appIdMap.get(node.id)
-
-            node[materialType].forEach((artifact) => {
-                if (artifact.isSelected == true) {
-                    ciArtifact = artifact
-                }
-            })
-            const pipelineId = Number(node.id)
-            const strategy = pipelineIdVsStrategyMap[pipelineId]
-
-            // skip app if bulkDeploymentStrategy is not default and strategy is not configured for app
-            if (ciArtifact && (bulkDeploymentStrategy === 'DEFAULT' || !!strategy)) {
-                _CDTriggerPromiseFunctionList.push(() =>
-                    triggerCDNode({
-                        pipelineId,
-                        ciArtifactId: Number(ciArtifact.id),
-                        appId: Number(currentAppId),
-                        stageType: bulkTriggerType,
-                        ...(getRuntimeParamsPayload
-                            ? { runtimeParamsPayload: getRuntimeParamsPayload(runtimeParams[currentAppId] ?? []) }
-                            : {}),
-                        skipIfHibernated,
-                        // strategy DEFAULT means custom chart
-                        ...(strategy && strategy !== 'DEFAULT' ? { strategy } : {}),
-                    }),
-                )
-            } else {
-                triggeredAppList.splice(index, 1)
-            }
-        })
-        handleBulkTrigger(_CDTriggerPromiseFunctionList, triggeredAppList, WorkflowNodeType.CD)
-    }
-
     const updateResponseListData = (_responseList) => {
         setResponseList((prevList) => {
             const resultMap = new Map(_responseList.map((data) => [data.appId, data]))
@@ -850,233 +462,6 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                 sortCallback('appName', a, b),
             )
         })
-    }
-
-    const filterStatusType = (
-        type: WorkflowNodeType,
-        CIStatus: string,
-        VirtualStatus: string,
-        CDStatus: string,
-    ): string => {
-        if (type === WorkflowNodeType.CI) {
-            return CIStatus
-        }
-        if (isVirtualEnv) {
-            return VirtualStatus
-        }
-        return CDStatus
-    }
-
-    const handleBulkTrigger = (
-        promiseFunctionList: any[],
-        triggeredAppList: { appId: number; envId?: number; appName: string }[],
-        type: WorkflowNodeType,
-        skippedResources: ResponseRowType[] = [],
-    ): void => {
-        setIsBulkTriggerLoading(true)
-        const _responseList = skippedResources
-        if (promiseFunctionList.length) {
-            ApiQueuingWithBatch(promiseFunctionList).then((responses: any[]) => {
-                responses.forEach((response, index) => {
-                    if (response.status === 'fulfilled') {
-                        const statusType = filterStatusType(
-                            type,
-                            BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
-                            BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.PASS],
-                            BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.PASS],
-                        )
-
-                        const virtualEnvResponseRowType: TriggerVirtualEnvResponseRowType =
-                            [DeploymentNodeType.CD, DeploymentNodeType.POSTCD, DeploymentNodeType.PRECD].includes(
-                                bulkTriggerType,
-                            ) && isVirtualEnv
-                                ? {
-                                      isVirtual: true,
-                                      helmPackageName: response.value?.result?.helmPackageName,
-                                      cdWorkflowType: bulkTriggerType,
-                                  }
-                                : {}
-
-                        _responseList.push({
-                            appId: triggeredAppList[index].appId,
-                            appName: triggeredAppList[index].appName,
-                            statusText: statusType,
-                            status: BulkResponseStatus.PASS,
-                            envId: triggeredAppList[index].envId,
-                            message: '',
-                            ...virtualEnvResponseRowType,
-                        })
-                    } else {
-                        const errorReason = response.reason
-                        if (errorReason.code === API_STATUS_CODES.EXPECTATION_FAILED) {
-                            const statusType = filterStatusType(
-                                type,
-                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP],
-                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.SKIP],
-                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.SKIP],
-                            )
-                            _responseList.push({
-                                appId: triggeredAppList[index].appId,
-                                appName: triggeredAppList[index].appName,
-                                statusText: statusType,
-                                status: BulkResponseStatus.SKIP,
-                                message: errorReason.errors[0].userMessage,
-                            })
-                        } else if (errorReason.code === 403 || errorReason.code === 422) {
-                            // Adding 422 to handle the unauthorized state due to deployment window
-                            const statusType = filterStatusType(
-                                type,
-                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
-                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.UNAUTHORIZE],
-                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.UNAUTHORIZE],
-                            )
-                            _responseList.push({
-                                appId: triggeredAppList[index].appId,
-                                appName: triggeredAppList[index].appName,
-                                statusText: statusType,
-                                status: BulkResponseStatus.UNAUTHORIZE,
-                                message: errorReason.errors[0].userMessage,
-                            })
-                        } else {
-                            const statusType = filterStatusType(
-                                type,
-                                BULK_CI_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
-                                BULK_VIRTUAL_RESPONSE_STATUS[BulkResponseStatus.FAIL],
-                                BULK_CD_RESPONSE_STATUS_TEXT[BulkResponseStatus.FAIL],
-                            )
-                            _responseList.push({
-                                appId: triggeredAppList[index].appId,
-                                appName: triggeredAppList[index].appName,
-                                statusText: statusType,
-                                status: BulkResponseStatus.FAIL,
-                                message: errorReason.errors[0].userMessage,
-                            })
-                        }
-                    }
-                })
-                updateResponseListData(_responseList)
-                setCDLoading(false)
-                setCILoading(false)
-                setIsBulkTriggerLoading(false)
-                getWorkflowStatusData(workflows)
-            })
-        } else {
-            setCDLoading(false)
-            setCILoading(false)
-            setIsBulkTriggerLoading(false)
-
-            if (!skippedResources.length) {
-                hideBulkCIModal()
-                hideBulkCDModal()
-            } else {
-                updateResponseListData(_responseList)
-            }
-        }
-    }
-
-    // Would only set data no need to get data related to materials from it, we will get that in bulk trigger
-    const createBulkCDTriggerData = (): BulkCDDetailTypeResponse => {
-        const uniqueReleaseTags: string[] = []
-        const uniqueTagsSet = new Set<string>()
-        const _selectedAppWorkflowList: BulkCDDetailType[] = []
-
-        filteredWorkflows.forEach((wf) => {
-            if (wf.isSelected) {
-                // extract unique tags for this workflow
-                wf.appReleaseTags?.forEach((tag) => {
-                    if (!uniqueTagsSet.has(tag)) {
-                        uniqueReleaseTags.push(tag)
-                    }
-                    uniqueTagsSet.add(tag)
-                })
-                const _cdNode = wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CD && node.environmentId === +envId,
-                )
-                const selectedCINode = wf.nodes.find(
-                    (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                )
-                const doesWorkflowContainsWebhook = selectedCINode?.type === WorkflowNodeType.WEBHOOK
-
-                let _selectedNode: CommonNodeAttr
-                if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                    _selectedNode = _cdNode.preNode
-                } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                    _selectedNode = _cdNode
-                } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                    _selectedNode = _cdNode.postNode
-                }
-                if (_selectedNode) {
-                    const stageType = DeploymentNodeType[_selectedNode.type]
-                    const isTriggerBlockedDueToPlugin =
-                        _selectedNode.isTriggerBlocked && _selectedNode.showPluginWarning
-                    const isTriggerBlockedDueToMandatoryTags =
-                        _selectedNode.isTriggerBlocked &&
-                        _selectedNode.triggerBlockedInfo?.blockedBy === TriggerBlockType.MANDATORY_TAG
-                    const stageText = getStageTitle(stageType)
-
-                    _selectedAppWorkflowList.push({
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        cdPipelineName: _cdNode.title,
-                        cdPipelineId: _cdNode.id,
-                        stageType,
-                        triggerType: _cdNode.triggerType,
-                        envName: _selectedNode.environmentName,
-                        envId: _selectedNode.environmentId,
-                        parentPipelineId: _selectedNode.parentPipelineId,
-                        parentPipelineType: WorkflowNodeType[_selectedNode.parentPipelineType],
-                        parentEnvironmentName: _selectedNode.parentEnvironmentName,
-                        material: _selectedNode.inputMaterialList,
-                        approvalConfigData: _selectedNode.approvalConfigData,
-                        requestedUserId: _selectedNode.requestedUserId,
-                        appReleaseTags: wf.appReleaseTags,
-                        tagsEditable: wf.tagsEditable,
-                        ciPipelineId: _selectedNode.connectingCiPipelineId,
-                        hideImageTaggingHardDelete: wf.hideImageTaggingHardDelete,
-                        showPluginWarning: _selectedNode.showPluginWarning,
-                        isTriggerBlockedDueToPlugin,
-                        configurePluginURL: getCDPipelineURL(
-                            String(wf.appId),
-                            wf.id,
-                            doesWorkflowContainsWebhook ? '0' : selectedCINode?.id,
-                            doesWorkflowContainsWebhook,
-                            _selectedNode.id,
-                            true,
-                        ),
-                        consequence: _selectedNode.pluginBlockState,
-                        warningMessage:
-                            isTriggerBlockedDueToPlugin || isTriggerBlockedDueToMandatoryTags
-                                ? `${stageText} is blocked`
-                                : '',
-                        triggerBlockedInfo: _selectedNode.triggerBlockedInfo,
-                        isExceptionUser: wf.isExceptionUser,
-                    })
-                } else {
-                    let warningMessage = ''
-                    if (bulkTriggerType === DeploymentNodeType.PRECD) {
-                        warningMessage = 'No pre-deployment stage'
-                    } else if (bulkTriggerType === DeploymentNodeType.CD) {
-                        warningMessage = 'No deployment stage'
-                    } else if (bulkTriggerType === DeploymentNodeType.POSTCD) {
-                        warningMessage = 'No post-deployment stage'
-                    }
-                    _selectedAppWorkflowList.push({
-                        workFlowId: wf.id,
-                        appId: wf.appId,
-                        name: wf.name,
-                        warningMessage,
-                        envName: _cdNode.environmentName,
-                        envId: _cdNode.environmentId,
-                    })
-                }
-            }
-        })
-        _selectedAppWorkflowList.sort((a, b) => sortCallback('name', a, b))
-        return {
-            bulkCDDetailType: _selectedAppWorkflowList,
-            uniqueReleaseTags,
-        }
     }
 
     if (pageViewType === ViewType.LOADING) {
@@ -1098,36 +483,14 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             return null
         }
 
-        const bulkCDDetailTypeResponse = createBulkCDTriggerData()
-        const _selectedAppWorkflowList: BulkCDDetailType[] = bulkCDDetailTypeResponse.bulkCDDetailType
-
-        const { uniqueReleaseTags } = bulkCDDetailTypeResponse
-
-        const feasiblePipelineIds = new Set(
-            getSelectedCDNodesWithArtifacts(filteredWorkflows).map(({ node }) => +node.id),
-        )
-
-        // Have to look for its each prop carefully
-        // No need to send uniqueReleaseTags will get those in BulkCDTrigger itself
         return (
-            <BulkCDTrigger
-                stage={bulkTriggerType}
-                appList={_selectedAppWorkflowList}
-                feasiblePipelineIds={feasiblePipelineIds}
-                closePopup={hideBulkCDModal}
-                updateBulkInputMaterial={updateBulkCDInputMaterial}
-                onClickTriggerBulkCD={onClickTriggerBulkCD}
-                responseList={responseList}
-                isLoading={isCDLoading}
-                setLoading={setCDLoading}
-                isVirtualEnv={isVirtualEnv}
-                uniqueReleaseTags={uniqueReleaseTags}
-                runtimeParams={runtimeParams}
-                setRuntimeParams={setRuntimeParams}
-                runtimeParamsErrorState={runtimeParamsErrorState}
-                setRuntimeParamsErrorState={setRuntimeParamsErrorState}
-                bulkDeploymentStrategy={bulkDeploymentStrategy}
-                setBulkDeploymentStrategy={setBulkDeploymentStrategy}
+            <BulkDeployModal
+                handleClose={hideBulkCDModal}
+                stageType={bulkTriggerType}
+                workflows={filteredWorkflows}
+                isVirtualEnvironment={isVirtualEnv}
+                envId={+envId}
+                handleSuccess={getWorkflowStatusData}
             />
         )
     }
@@ -1164,136 +527,18 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
-    const renderCDMaterialContent = ({
-        node,
-        appId,
-        workflowId,
-        selectedAppName,
-        doesWorkflowContainsWebhook,
-        ciNodeId,
-    }: RenderCDMaterialContentProps) => {
-        const configurePluginURL = getCDPipelineURL(
-            String(appId),
-            workflowId,
-            doesWorkflowContainsWebhook ? '0' : ciNodeId,
-            doesWorkflowContainsWebhook,
-            node?.id,
-            true,
-        )
-
-        return (
-            <CDMaterial
-                materialType={materialType}
-                appId={appId}
-                envId={node?.environmentId}
-                pipelineId={selectedCDNode?.id}
-                stageType={DeploymentNodeType[selectedCDNode?.type]}
-                envName={node?.environmentName}
-                closeCDModal={closeCDModal}
-                triggerType={node?.triggerType}
-                isVirtualEnvironment={isVirtualEnv}
-                parentEnvironmentName={node?.parentEnvironmentName}
-                // Wont need it and it might be isCDLoading
-                isLoading={isCILoading}
-                ciPipelineId={node?.connectingCiPipelineId}
-                deploymentAppType={node?.deploymentAppType}
-                selectedAppName={selectedAppName}
-                showPluginWarningBeforeTrigger={node?.showPluginWarning}
-                consequence={node?.pluginBlockState}
-                configurePluginURL={configurePluginURL}
-                isTriggerBlockedDueToPlugin={node?.showPluginWarning && node?.isTriggerBlocked}
-            />
-        )
-    }
-
-    const renderCDMaterial = (): JSX.Element | null => {
-        if (!selectedCDNode?.id) {
-            return null
-        }
-
-        if (location.search.includes('cd-node') || location.search.includes('rollback-node')) {
-            let node: CommonNodeAttr
-            let _appID
-            let selectedAppName: string
-            let workflowId: string
-            let selectedCINode: CommonNodeAttr
-
-            if (selectedCDNode?.id) {
-                for (const _wf of filteredWorkflows) {
-                    node = _wf.nodes.find((el) => +el.id == selectedCDNode.id && el.type == selectedCDNode.type)
-                    if (node) {
-                        selectedCINode = _wf.nodes.find(
-                            (node) => node.type === WorkflowNodeType.CI || node.type === WorkflowNodeType.WEBHOOK,
-                        )
-                        workflowId = _wf.id
-                        _appID = _wf.appId
-                        selectedAppName = _wf.name
-                        break
-                    }
-                }
-            }
-            const material = node?.[materialType] || []
-
-            return (
-                <VisibleModal parentClassName="dc__overflow-hidden" close={closeCDModal}>
-                    <div
-                        className={`modal-body--cd-material h-100 contains-diff-view flexbox-col ${
-                            material.length > 0 ? '' : 'no-material'
-                        }`}
-                        onClick={stopPropagation}
-                    >
-                        {isCDLoading ? (
-                            <>
-                                <div className="trigger-modal__header flex right">
-                                    <button type="button" className="dc__transparent" onClick={closeCDModal}>
-                                        <CloseIcon />
-                                    </button>
-                                </div>
-                                <div className="flex-grow-1">
-                                    <Progressing pageLoader size={32} />
-                                </div>
-                            </>
-                        ) : (
-                            renderCDMaterialContent({
-                                node,
-                                appId: _appID,
-                                selectedAppName,
-                                workflowId,
-                                doesWorkflowContainsWebhook: selectedCINode?.type === WorkflowNodeType.WEBHOOK,
-                                ciNodeId: selectedCINode?.id,
-                            })
-                        )}
-                    </div>
-                </VisibleModal>
-            )
-        }
-
-        return null
-    }
-
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
-            let node: CommonNodeAttr
-            let _appID
-            if (selectedCDNode?.id) {
-                for (const _wf of filteredWorkflows) {
-                    node = _wf.nodes.find((el) => +el.id == selectedCDNode.id && el.type == selectedCDNode.type)
-                    if (node) {
-                        _appID = _wf.appId
-                        break
-                    }
-                }
-            }
+            const { node, appId } = getSelectedNodeAndAppId(filteredWorkflows, location.search)
 
             return (
                 <ApprovalMaterialModal
-                    isLoading={isCDLoading}
                     node={node ?? ({} as CommonNodeAttr)}
-                    materialType={materialType}
-                    stageType={DeploymentNodeType[selectedCDNode?.type]}
+                    materialType={MATERIAL_TYPE.inputMaterialList}
+                    stageType={DeploymentNodeType.CD}
                     closeApprovalModal={closeApprovalModal}
-                    appId={_appID}
-                    pipelineId={selectedCDNode?.id}
+                    appId={appId}
+                    pipelineId={node?.id}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
                     history={history}
@@ -1372,23 +617,16 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     text="Build image"
                     onClick={onShowBulkCIModal}
                     size={ComponentSizeType.medium}
-                    isLoading={isCILoading}
                 />
                 <div className="flex">
                     <button
-                        className={`cta flex h-32 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
+                        className={`cta flex h-32 dc__gap-8 ${_showPopupMenu ? 'dc__no-right-radius' : ''}`}
                         data-trigger-type="CD"
                         data-testid="bulk-deploy-button"
                         onClick={onShowBulkCDModal}
                     >
-                        {isCDLoading ? (
-                            <Progressing />
-                        ) : (
-                            <>
-                                <DeployIcon className="icon-dim-16 dc__no-svg-fill mr-8" />
-                                Deploy
-                            </>
-                        )}
+                        <DeployIcon className="icon-dim-16 dc__no-svg-fill" />
+                        Deploy
                     </button>
                     {_showPopupMenu && renderDeployPopupMenu()}
                 </div>
@@ -1474,6 +712,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                     index={index}
                     handleWebhookAddImageClick={handleWebhookAddImageClick(workflow.appId)}
                     openCIMaterialModal={openCIMaterialModal}
+                    reloadTriggerView={reloadTriggerView}
                 />
             ))}
             <LinkedCIDetail workflows={filteredWorkflows} handleClose={revertToPreviousURL} />
@@ -1498,34 +737,31 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
 
                 <Prompt when={enableRoutePrompt} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
 
-                <TriggerViewContext.Provider
-                    value={{
-                        onClickCDMaterial,
-                        onClickRollbackMaterial,
-                        reloadTriggerView,
-                    }}
-                >
-                    {renderWorkflow()}
+                {renderWorkflow()}
 
-                    <Switch>
-                        <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
-                            <BuildImageModal
-                                handleClose={revertToPreviousURL}
-                                isJobView={false}
-                                filteredCIPipelineMap={filteredCIPipelines}
-                                workflows={workflows}
-                                reloadWorkflows={getWorkflowsData}
-                                reloadWorkflowStatus={getWorkflowStatusData}
-                                environmentLists={[]}
-                            />
-                        </Route>
-                    </Switch>
-                    {renderCDMaterial()}
-                    {renderBulkCDMaterial()}
-                    {renderBulkCIMaterial()}
-                    {renderApprovalMaterial()}
-                    {renderBulkSourceChange()}
-                </TriggerViewContext.Provider>
+                <Switch>
+                    <Route path={`${url}${URLS.BUILD}/:ciNodeId`}>
+                        <BuildImageModal
+                            handleClose={revertToPreviousURL}
+                            isJobView={false}
+                            filteredCIPipelineMap={filteredCIPipelines}
+                            workflows={workflows}
+                            reloadWorkflows={getWorkflowsData}
+                            reloadWorkflowStatus={getWorkflowStatusData}
+                            environmentLists={[]}
+                        />
+                    </Route>
+                </Switch>
+                <CDMaterial
+                    workflows={filteredWorkflows}
+                    handleClose={revertToPreviousURL}
+                    handleSuccess={getWorkflowStatusData}
+                    isTriggerView={false}
+                />
+                {renderBulkCDMaterial()}
+                {renderBulkCIMaterial()}
+                {renderApprovalMaterial()}
+                {renderBulkSourceChange()}
                 <div />
             </div>
             {!!selectedAppList.length && (
