@@ -1,13 +1,13 @@
 import {
     Button,
+    ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    CONTACT_SUPPORT_LINK,
     GenericModal,
     Icon,
     noop,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ReactComponent as ICUpgradeToEnterprise } from './ic-upgrade-enterprise.svg'
 
 const ENTERPRISE_PLAN_OFFERINGS = [
     'Unlimited clusters',
@@ -29,7 +29,7 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
             >
                 <div className="flexbox-col dc__gap-16">
                     <div className="flexbox dc__content-space dc__align-start">
-                        <ICUpgradeToEnterprise className="icon-dim-64" />
+                        <Icon name="ic-upgrade-enterprise" size={64} color={null} />
                         <Button
                             dataTestId="close-upgrade-dialog"
                             icon={<Icon name="ic-close-large" color={null} />}
@@ -68,11 +68,14 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
                                 grow.
                             </span>
                         </div>
-                        {/* TODO: Add onClick handler */}
                         <Button
                             dataTestId="upgrade-to-enterprise"
                             text="Upgrade Now"
                             endIcon={<Icon name="ic-arrow-right" color={null} />}
+                            component={ButtonComponentType.anchor}
+                            anchorProps={{
+                                href: CONTACT_SUPPORT_LINK,
+                            }}
                         />
                     </div>
                 </div>
