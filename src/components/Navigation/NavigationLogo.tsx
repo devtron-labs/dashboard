@@ -15,7 +15,7 @@ export const NavigationLogo = () => {
             <span className="flex dc__position-rel">
                 <span className="icon-dim-24 flex px-2 border__white bw-2 br-4" style={{ backgroundColor }}>
                     <span className="fs-12 lh-16 fw-6 text__sidenav">
-                        {ORGANIZATION_NAME.slice(0, 2).toLocaleUpperCase()}
+                        {ORGANIZATION_NAME.slice(0, 2).toUpperCase()}
                     </span>
                 </span>
                 <span
@@ -45,7 +45,7 @@ export const NavigationLogoExpanded = () => {
     return (
         <div className="flex left dc__gap-8 px-16 pt-12 pb-11 border__sidenav-secondary--bottom">
             {showOrganizationName && <Icon name="ic-devtron" color="white" size={32} />}
-            <img src={TextLogo} alt="devtron" className="navigation__expanded__logo" />
+            <img src={TextLogo} alt="devtron" width={76} height={16} />
         </div>
     )
 }

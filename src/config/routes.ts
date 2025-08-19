@@ -33,7 +33,7 @@ export const URLS = {
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
     EXTERNAL_FLUX_APP: 'external-flux',
-    APPLICATION_MANAGEMENT_OVERVIEW: '/application-management-overview',
+    APPLICATION_MANAGEMENT_OVERVIEW: '/application-management/overview',
     APP_LIST: 'list',
     APP_VALUES: 'values',
     APP_DETAILS: 'details',

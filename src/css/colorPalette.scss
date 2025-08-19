@@ -120,10 +120,9 @@ $black: 0, 0, 0;
     --divider-secondary: var(--border-secondary);
     --divider-secondary-translucent: var(--border-secondary-translucent);
 
-    --sidenav-bg-section-collapsed-default: rgba(#{$white}, 0.00);
     --sidenav-bg-section-collapsed-hover: rgba(#{$white}, 0.25);
     --sidenav-bg-section-collapsed-selected: rgba(#{$white}, 0.25);
-    --sidenav-bg-section-expanded-default: rgba(#{$white}, 0.20);
+    --sidenav-bg-section-expanded: rgba(#{$white}, 0.20);
     --sidenav-bg-section-expanded-hover: rgba(#{$black}, 0.75);
     --sidenav-bg-section-expanded-selected: rgba(#{$black}, 0.75);
     --sidenav-bg-subsection: rgba(#{$black}, 0.75);
@@ -135,7 +134,7 @@ $black: 0, 0, 0;
     --sidenav-border-secondary: rgba(#{$white}, 0.10);
 
     --sidenav-input-placeholder: rgb(118, 125, 132);
-    --sidenav-input-border:  rgba(214, 227, 241, 0.25);
+    --sidenav-input-border: rgba(214, 227, 241, 0.25);
     --sidenav-input-border-hover: rgba(214, 227, 241, 0.40);
     --sidenav-input-border-focus: rgb(116, 181, 255);
     --sidenav-input-icon: rgb(200, 203, 206);
@@ -245,10 +244,9 @@ $black: 0, 0, 0;
     --divider-secondary: var(--border-secondary);
     --divider-secondary-translucent: var(--border-secondary-translucent);
 
-    --sidenav-bg-section-collapsed-default: rgba(#{$white}, 0.00);
     --sidenav-bg-section-collapsed-hover: rgba(#{$white}, 0.25);
     --sidenav-bg-section-collapsed-selected: rgba(#{$white}, 0.25);
-    --sidenav-bg-section-expanded-default: rgba(#{$white}, 0.20);
+    --sidenav-bg-section-expanded: rgba(#{$white}, 0.20);
     --sidenav-bg-section-expanded-hover: rgba(#{$black}, 0.75);
     --sidenav-bg-section-expanded-selected: rgba(#{$black}, 0.75);
     --sidenav-bg-subsection: rgba(#{$black}, 0.75);
@@ -260,7 +258,7 @@ $black: 0, 0, 0;
     --sidenav-border-secondary: rgba(#{$white}, 0.10);
 
     --sidenav-input-placeholder: rgb(118, 125, 132);
-    --sidenav-input-border:  rgba(214, 227, 241, 0.25);
+    --sidenav-input-border: rgba(214, 227, 241, 0.25);
     --sidenav-input-border-hover: rgba(214, 227, 241, 0.40);
     --sidenav-input-border-focus: rgb(116, 181, 255);
     --sidenav-input-icon: rgb(200, 203, 206);
