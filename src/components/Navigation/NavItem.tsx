@@ -9,19 +9,10 @@ import { getNavigationTreeNodes } from './utils'
 export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled }: NavigationItemType) => {
     const { pathname } = useLocation()
 
-    const { defaultExpandedMap, selectedId } = useMemo(() => {
-        if (hasSubMenu) {
-            const activeSubItem = subItems.find((subItem) => pathname.startsWith(subItem.href))
-            return {
-                defaultExpandedMap: {
-                    [id]: !!activeSubItem,
-                },
-                selectedId: activeSubItem?.id ?? null,
-            }
-        }
-
-        return { defaultExpandedMap: {}, selectedId: null }
-    }, [pathname, hasSubMenu, subItems])
+    const defaultExpandedMap = useMemo(
+        () => (hasSubMenu ? subItems.some((subItem) => pathname.startsWith(subItem.href)) : {}),
+        [pathname, hasSubMenu, subItems],
+    )
 
     if (hasSubMenu) {
         return (
@@ -30,7 +21,7 @@ export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItem
                     variant="sidenav"
                     defaultExpandedMap={defaultExpandedMap}
                     nodes={getNavigationTreeNodes({ id, title, subItems })}
-                    selectedId={selectedId}
+                    selectedId={defaultExpandedMap[id] ? id : null}
                     highlightSelectedHeadingOnlyWhenCollapsed
                 />
             </div>

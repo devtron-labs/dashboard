@@ -45,7 +45,7 @@ export const NavigationLogoExpanded = () => {
     return (
         <div className="flex left dc__gap-8 px-16 pt-12 pb-11 border__sidenav-secondary--bottom">
             {showOrganizationName && <Icon name="ic-devtron" color="white" size={32} />}
-            <img src={TextLogo} alt="devtron" className="navigation__expanded__logo" />
+            <img src={TextLogo} alt="devtron" width={76} height={16} />
         </div>
     )
 }

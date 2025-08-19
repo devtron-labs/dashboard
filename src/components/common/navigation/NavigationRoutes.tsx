@@ -55,7 +55,6 @@ import {
     ToastManager,
     ToastVariantType,
     URLS as CommonURLS,
-    useAnimation,
     useMotionTemplate,
     useMotionValue,
     UserPreferencesType,
@@ -131,7 +130,6 @@ const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
     const location = useLocation()
-    // const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
@@ -172,7 +170,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     })
     const asideWidth = useMotionValue(0)
     const navBarWidth = useMotionValue(0)
-    const mainMarginLeft = useAnimation()
 
     useEffect(() => {
         if (pageState === ViewType.FORM) {
@@ -180,9 +177,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 duration: 0.3,
                 ease: 'easeOut',
                 delay: 0.6,
-                onComplete: async () => {
-                    await mainMarginLeft.start({ marginLeft: 0, transition: { duration: 0.2, ease: 'easeOut' } })
-                },
             })
 
             return controls.stop
@@ -707,10 +701,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     )}
                     <>
                         <motion.div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                             ref={navRouteRef}
-                            style={{ marginLeft: 8 }}
-                            animate={mainMarginLeft}
                         >
                             {renderMainContent()}
                         </motion.div>

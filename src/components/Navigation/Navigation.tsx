@@ -74,7 +74,7 @@ export const Navigation = ({
         queryKey: [ModuleNameMap.SECURITY_TRIVY, moduleInInstallingState],
         retry: MODULE_STATUS_RETRY_COUNT,
         enabled:
-            !(installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] || window._env_.K8S_CLIENT) ||
+            !(installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY] || window._env_.K8S_CLIENT) ||
             moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY,
     })
 

@@ -41,11 +41,6 @@
             transform: translateX(calc(100vw - 100%));
             z-index: var(--modal-index);
         }
-
-        &__logo {
-            width: 76px;
-            height: 16px;
-        }
     }
 
     &__small-dt-logo {
