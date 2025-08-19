@@ -43,6 +43,7 @@ export const Navigation = ({
     isAirgapped,
     installedModuleMap,
     moduleInInstallingState,
+    serverMode,
 }: NavigationProps) => {
     // STATES
     const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
@@ -65,31 +66,35 @@ export const Navigation = ({
 
     // SECURITY MODULES API CALLS
     const {
-        isLoading: isSecurityTrivyLoading,
+        isFetching: isSecurityTrivyLoading,
         data: securityTrivyResponse,
         isSuccess: isSecurityTrivySuccess,
         refetch: refetchSecurityTrivy,
     } = useQuery({
         queryFn: () => getModuleInfo(ModuleNameMap.SECURITY_TRIVY, true),
-        queryKey: [ModuleNameMap.SECURITY_TRIVY, moduleInInstallingState],
+        queryKey: [ModuleNameMap.SECURITY_TRIVY],
         retry: MODULE_STATUS_RETRY_COUNT,
+        select: ({ result }) => result,
         enabled:
-            !(installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY] || window._env_.K8S_CLIENT) ||
-            moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY,
+            !!serverMode &&
+            (!(installedModuleMap.current[ModuleNameMap.SECURITY_TRIVY] || window._env_.K8S_CLIENT) ||
+                moduleInInstallingState === ModuleNameMap.SECURITY_TRIVY),
     })
 
     const {
-        isLoading: isSecurityClairLoading,
+        isFetching: isSecurityClairLoading,
         data: securityClairResponse,
         isSuccess: isSecurityClairSuccess,
         refetch: refetchSecurityClair,
     } = useQuery({
         queryFn: () => getModuleInfo(ModuleNameMap.SECURITY_CLAIR, true),
-        queryKey: [ModuleNameMap.SECURITY_CLAIR, moduleInInstallingState],
+        queryKey: [ModuleNameMap.SECURITY_CLAIR],
         retry: MODULE_STATUS_RETRY_COUNT,
+        select: ({ result }) => result,
         enabled:
-            !(installedModuleMap.current?.[ModuleNameMap.SECURITY_CLAIR] || window._env_.K8S_CLIENT) ||
-            moduleInInstallingState === ModuleNameMap.SECURITY_CLAIR,
+            !!serverMode &&
+            (!(installedModuleMap.current[ModuleNameMap.SECURITY_CLAIR] || window._env_.K8S_CLIENT) ||
+                moduleInInstallingState === ModuleNameMap.SECURITY_CLAIR),
     })
 
     useEffect(() => {
@@ -114,6 +119,7 @@ export const Navigation = ({
                     ...installedModuleMap.current,
                     [ModuleNameMap.SECURITY_CLAIR]: true,
                 })
+            } else if (securityClairResponse.status === ModuleStatus.INSTALLING) {
                 securityClairModuleTimeout.current = setTimeout(async () => {
                     await refetchSecurityClair()
                 }, MODULE_STATUS_POLLING_INTERVAL)

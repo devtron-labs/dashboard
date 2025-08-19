@@ -331,6 +331,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
 
     const getServerMode = async (): Promise<SERVER_MODE> => {
         const response = await getAllModulesInfo()
+
+        Object.values(response).forEach(({ name, status }) => {
+            installedModuleMap.current = {
+                ...installedModuleMap.current,
+                [name]: status === ModuleStatus.INSTALLED,
+            }
+        })
+
         const isFullMode =
             response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED
         return isFullMode ? SERVER_MODE.FULL : SERVER_MODE.EA_ONLY
