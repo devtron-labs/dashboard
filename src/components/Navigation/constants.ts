@@ -323,14 +323,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 disabled: true,
             },
             {
-                title: 'Trends',
-                dataTestId: 'cost-visibility-trends',
-                id: 'cost-visibility-trends',
-                icon: 'ic-trend-up',
-                href: '/cost-trends',
-                disabled: true,
-            },
-            {
                 title: 'Cost Breakdown',
                 dataTestId: 'cost-breakdown',
                 id: 'cost-visibility-cost-breakdown',

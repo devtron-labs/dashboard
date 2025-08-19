@@ -248,12 +248,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-speedometer',
             },
             {
-                title: 'Trends',
-                dataTestId: 'cost-visibility-trends',
-                id: 'cost-visibility-trends',
-                icon: 'ic-open-box',
-            },
-            {
                 title: 'Cost Breakdown',
                 dataTestId: 'cost-breakdown',
                 id: 'cost-visibility-cost-breakdown',
