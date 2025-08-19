@@ -3,7 +3,7 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
-    CONTACT_SUPPORT_LINK,
+    CONTACT_SALES_LINK,
     GenericModal,
     Icon,
     noop,
@@ -70,11 +70,11 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
                         </div>
                         <Button
                             dataTestId="upgrade-to-enterprise"
-                            text="Upgrade Now"
+                            text="Contact to upgrade"
                             endIcon={<Icon name="ic-arrow-right" color={null} />}
                             component={ButtonComponentType.anchor}
                             anchorProps={{
-                                href: CONTACT_SUPPORT_LINK,
+                                href: CONTACT_SALES_LINK,
                             }}
                         />
                     </div>
