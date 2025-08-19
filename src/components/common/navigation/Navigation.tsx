@@ -34,8 +34,6 @@ import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.
 import { importComponentFromFELibrary } from '../helpers/Helpers'
 import { OrganizationFrame, OrganizationTextLogo } from '../../../Pages/Shared'
 import { NavigationListItemType } from './types'
-import { NAVIGATION_GROUPS } from '@Pages/Shared/CommandBar/constants'
-import { CommandBar } from '@Pages/Shared/CommandBar'
 
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
@@ -367,8 +365,6 @@ export default class Navigation extends Component<
                         )}
                     </aside>
                 </nav>
-
-                <CommandBar/>
             </>
         )
     }

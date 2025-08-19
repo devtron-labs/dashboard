@@ -52,7 +52,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                 if (requiredGroup) {
                     const requiredItem = requiredGroup.items.find((item) => item.id === action.id)
                     requiredItem.id = `${RECENT_NAVIGATION_ITEM_ID_PREFIX}${action.id}`
-                    acc.items.push(structuredClone(requiredItem))
+                    acc.items.push(requiredItem)
                 }
                 return acc
             }, structuredClone(RECENT_ACTIONS_GROUP)),
