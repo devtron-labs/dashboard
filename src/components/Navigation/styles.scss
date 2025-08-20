@@ -8,7 +8,6 @@
         background-repeat: no-repeat;
         z-index: calc(#{var(--navigation-index)} + 1);
 
-        &:hover,
         &.is-expanded {
             background-image: linear-gradient(
                     90deg,
@@ -16,15 +15,6 @@
                     var(--sidenav-bg-section-expanded) 100%
                 ),
                 url('../../assets/img/devtron-bg.webp');
-        }
-
-        &:hover {
-            .nav-group {
-                &.is-selected .nav-group__icon-container,
-                &:hover .nav-group__icon-container {
-                    background-color: var(--sidenav-bg-section-expanded-hover);
-                }
-            }
         }
     }
 
@@ -47,7 +37,7 @@
         bottom: -10px;
     }
 
-    .nav-group {
+    .nav-group:not([aria-disabled='true']) {
         &:hover .nav-group__icon-container {
             background-color: var(--sidenav-bg-section-collapsed-hover);
         }
@@ -73,7 +63,7 @@
         }
     }
 
-    .nav-item {
+    .nav-item:not([aria-disabled='true']) {
         &:hover {
             background-color: var(--sidenav-subsection-item-hover);
         }

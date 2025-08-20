@@ -17,6 +17,7 @@ export type NavigationRootItemID =
     | 'cost-visibility'
     | 'security-center'
     | 'automation-and-enablement'
+    | 'backup-and-restore'
     | 'global-configuration'
 
 type CommonNavigationItemType = {
@@ -25,9 +26,10 @@ type CommonNavigationItemType = {
     icon: IconsProps['name']
     href: string
     disabled?: boolean
+    keywords?: string[]
 }
 
-export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | 'disabled'> & {
+export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | 'disabled' | 'keywords'> & {
     isAvailableInEA?: boolean
     markOnlyForSuperAdmin?: boolean
     forceHideEnvKey?: keyof customEnv
@@ -52,13 +54,14 @@ export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | '
 export interface NavigationGroupType extends Pick<CommonNavigationItemType, 'title' | 'icon'> {
     id: NavigationRootItemID
     items: NavigationItemType[]
+    disabled?: boolean
 }
 
-export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title'> {
+export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title' | 'disabled'> {
     isExpanded?: boolean
     isSelected?: boolean
     to?: NavLinkProps['to']
-    onClick?: MouseEventHandler<HTMLButtonElement>
+    onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>
 }
 
 export interface NavigationProps {

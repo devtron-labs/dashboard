@@ -4,10 +4,10 @@ import { Icon, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavGroupProps } from './types'
 
-export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onClick }: NavGroupProps) => {
+export const NavGroup = ({ title, icon, isSelected, isExpanded, to, disabled, onClick }: NavGroupProps) => {
     const shouldRenderNavLink = !!to
 
-    const className = `nav-group dc__transparent px-10 py-8 dc__position-rel ${isSelected ? 'is-selected' : ''} ${isExpanded ? 'is-expanded' : ''}`
+    const className = `nav-group dc__transparent px-10 py-8 dc__position-rel ${isSelected ? 'is-selected' : ''} ${isExpanded ? 'is-expanded' : ''} ${disabled ? 'dc__disabled' : ''}`
 
     const content = (
         <>
@@ -21,13 +21,25 @@ export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onClick }: N
     )
 
     return (
-        <Tooltip alwaysShowTippyOnHover content={title} placement="bottom">
+        <Tooltip alwaysShowTippyOnHover content={disabled ? 'Coming Soon' : title} placement="bottom">
             {shouldRenderNavLink ? (
-                <NavLink to={to} className={className} activeClassName="is-selected">
+                <NavLink
+                    to={to}
+                    className={className}
+                    activeClassName="is-selected"
+                    aria-disabled={disabled}
+                    onClick={onClick}
+                >
                     {content}
                 </NavLink>
             ) : (
-                <button type="button" aria-label={title} className={className} onClick={onClick}>
+                <button
+                    type="button"
+                    aria-label={title}
+                    aria-disabled={disabled}
+                    className={className}
+                    onClick={onClick}
+                >
                     {content}
                 </button>
             )}

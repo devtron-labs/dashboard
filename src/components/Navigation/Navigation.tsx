@@ -36,6 +36,7 @@ import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
 import { NavigationGroupType, NavigationProps } from './types'
+import { doesNavigationItemMatchPath, filterNavigationItems } from './utils'
 
 import './styles.scss'
 
@@ -130,31 +131,17 @@ export const Navigation = ({
 
     // COMPUTED VALUES
     const selectedNavGroup = useMemo(
-        () =>
-            NAVIGATION_LIST.find(({ items }) =>
-                items.some((item) =>
-                    item.hasSubMenu
-                        ? item.subItems.some((subItem) => pathname.startsWith(subItem.href))
-                        : pathname.startsWith(item.href),
-                ),
-            ),
+        () => NAVIGATION_LIST.find(({ items }) => items.some((item) => doesNavigationItemMatchPath(item, pathname))),
         [pathname],
     )
 
     const currentNavGroup = clickedNavGroup || selectedNavGroup
     const isExpanded = !!clickedNavGroup
 
-    const navItems = useMemo(() => {
-        if (!currentNavGroup) {
-            return []
-        }
-
-        const searchTextNormalized = searchText.toLowerCase().trim()
-
-        return searchTextNormalized
-            ? currentNavGroup.items.filter(({ title }) => title.toLowerCase().includes(searchTextNormalized))
-            : currentNavGroup.items
-    }, [currentNavGroup, searchText])
+    const navItems = useMemo<NavigationGroupType['items']>(
+        () => (currentNavGroup ? filterNavigationItems(currentNavGroup.items, searchText) : []),
+        [currentNavGroup, searchText],
+    )
 
     // HANDLERS
     const handleNavGroupClick = (navItem: NavigationGroupType) => () => {
@@ -186,9 +173,11 @@ export const Navigation = ({
                             key={item.id}
                             title={item.title}
                             icon={item.icon}
+                            disabled={item.disabled}
                             isExpanded={isExpanded}
                             isSelected={clickedNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
                             onClick={handleNavGroupClick(item)}
+                            to={item.items.find(({ disabled }) => !disabled)?.href}
                         />
                     ))}
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
@@ -206,6 +195,7 @@ export const Navigation = ({
                             <div
                                 className="navigation__expanded__backdrop dc__position-abs dc__top-0"
                                 onClick={closeExpandedNavigation(true)}
+                                onMouseEnter={closeExpandedNavigation(false)}
                             />
 
                             <motion.div
@@ -214,7 +204,6 @@ export const Navigation = ({
                                 exit={{ opacity: 0, x: 0 }}
                                 transition={{ duration: 0.3, ease: 'easeOut' }}
                                 className="navigation__expanded h-100 dc__right-radius-8 flexbox-col dc__position-abs dc__top-0 dc__right-0"
-                                onMouseLeave={closeExpandedNavigation(false)}
                             >
                                 <NavigationLogoExpanded />
                                 {currentNavGroup && (

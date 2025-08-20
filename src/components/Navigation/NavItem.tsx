@@ -4,14 +4,16 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { Icon, preventDefault, TreeView } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavigationItemType } from './types'
-import { getNavigationTreeNodes } from './utils'
+import { doesNavigationItemMatchPath, getNavigationTreeNodes } from './utils'
 
-export const NavItem = ({ id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled }: NavigationItemType) => {
+export const NavItem = (navItem: NavigationItemType) => {
+    const { id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled } = navItem
+
     const { pathname } = useLocation()
 
     const defaultExpandedMap = useMemo(
-        () => (hasSubMenu ? subItems.some((subItem) => pathname.startsWith(subItem.href)) : {}),
-        [pathname, hasSubMenu, subItems],
+        () => ({ [id]: doesNavigationItemMatchPath(navItem, pathname) }),
+        [pathname, navItem],
     )
 
     if (hasSubMenu) {
