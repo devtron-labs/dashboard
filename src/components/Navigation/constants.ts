@@ -185,7 +185,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'application-management-overview',
                 id: 'application-management-overview',
                 icon: 'ic-speedometer',
-                href: URLS.APPLICATION_MANAGEMENT_OVERVIEW,
+                href: '/application-management/overview',
                 disabled: true,
             },
             {
