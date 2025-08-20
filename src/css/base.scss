@@ -5029,6 +5029,14 @@ details[open] {
             background-color: var(--N100);
             transform: unset;
         }
+
+        &-gap-8 {
+            gap: 16px;
+
+            &> :not(:first-child)::before {
+                top: -8px;
+            }
+        }
     }
 }
 
