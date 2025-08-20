@@ -55,7 +55,6 @@ import {
     ToastManager,
     ToastVariantType,
     URLS as CommonURLS,
-    useAnimation,
     useMotionTemplate,
     useMotionValue,
     UserPreferencesType,
@@ -132,7 +131,6 @@ const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter'
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
     const location = useLocation()
-    // const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
@@ -173,7 +171,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     })
     const asideWidth = useMotionValue(0)
     const navBarWidth = useMotionValue(0)
-    const mainMarginLeft = useAnimation()
 
     useEffect(() => {
         if (pageState === ViewType.FORM) {
@@ -181,9 +178,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 duration: 0.3,
                 ease: 'easeOut',
                 delay: 0.6,
-                onComplete: async () => {
-                    await mainMarginLeft.start({ marginLeft: 0, transition: { duration: 0.2, ease: 'easeOut' } })
-                },
             })
 
             return controls.stop
@@ -338,6 +332,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
 
     const getServerMode = async (): Promise<SERVER_MODE> => {
         const response = await getAllModulesInfo()
+
+        Object.values(response).forEach(({ name, status }) => {
+            installedModuleMap.current = {
+                ...installedModuleMap.current,
+                [name]: status === ModuleStatus.INSTALLED,
+            }
+        })
+
         const isFullMode =
             response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED
         return isFullMode ? SERVER_MODE.FULL : SERVER_MODE.EA_ONLY
@@ -709,10 +711,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     )}
                     <>
                         <motion.div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                             ref={navRouteRef}
-                            style={{ marginLeft: 8 }}
-                            animate={mainMarginLeft}
                         >
                             {renderMainContent()}
                         </motion.div>
