@@ -37,22 +37,30 @@
         bottom: -10px;
     }
 
-    .nav-group:not([aria-disabled='true']) {
-        &:hover .nav-group__icon-container {
-            background-color: var(--sidenav-bg-section-collapsed-hover);
+    .nav-group {
+        &:focus {
+            outline: none;
         }
 
-        &.is-selected .nav-group__icon-container {
-            background-color: var(--sidenav-bg-section-collapsed-selected);
-        }
-
-        &.is-expanded {
+        &:not([aria-disabled='true']) {
+            &:focus .nav-group__icon-container,
             &:hover .nav-group__icon-container {
-                background-color: var(--sidenav-bg-section-expanded-hover);
+                background-color: var(--sidenav-bg-section-collapsed-hover);
             }
 
             &.is-selected .nav-group__icon-container {
-                background-color: var(--sidenav-bg-section-expanded-selected);
+                background-color: var(--sidenav-bg-section-collapsed-selected);
+            }
+
+            &.is-expanded {
+                &:focus .nav-group__icon-container,
+                &:hover .nav-group__icon-container {
+                    background-color: var(--sidenav-bg-section-expanded-hover);
+                }
+
+                &.is-selected .nav-group__icon-container {
+                    background-color: var(--sidenav-bg-section-expanded-selected);
+                }
             }
         }
 
@@ -71,5 +79,16 @@
         &.is-selected {
             background-color: var(--sidenav-subsection-item-selected);
         }
+    }
+}
+
+// This is outside .navigation class, since tooltip is rendered outside body
+.nav-group__tooltip.tippy-box {
+    background-color: var(--bg-tooltip-black);
+    border: 1px solid var(--N0);
+    padding: 5px 9px;
+
+    .tippy-content {
+        line-height: 20px;
     }
 }

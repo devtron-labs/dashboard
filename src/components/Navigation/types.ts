@@ -1,4 +1,4 @@
-import { MouseEventHandler, MutableRefObject } from 'react'
+import { MouseEventHandler, MutableRefObject, ReactNode } from 'react'
 import { NavLinkProps } from 'react-router-dom'
 
 import {
@@ -62,6 +62,7 @@ export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title
     isSelected?: boolean
     to?: NavLinkProps['to']
     onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>
+    tooltip?: ReactNode
 }
 
 export interface NavigationProps {

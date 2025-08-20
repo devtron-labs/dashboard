@@ -312,7 +312,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Tenants',
                 dataTestId: 'tenants',
                 id: 'software-release-management-tenants',
-                icon: 'ic-open-box',
+                icon: 'ic-building',
                 href: FE_LIB_ROUTER_URLS.TENANTS,
             },
         ],
@@ -423,7 +423,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         title: 'Backup & Restore',
         id: 'backup-and-restore',
-        icon: 'ic-cloud',
+        icon: 'ic-database-backup',
         disabled: true,
         items: [
             {

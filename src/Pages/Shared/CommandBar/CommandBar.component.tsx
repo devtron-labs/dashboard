@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 import { useRegisterShortcut, UseRegisterShortcutProvider } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandBarBackdrop from './CommandBarBackdrop'
 import { SHORT_CUTS } from './constants'
+import { CommandBarProps } from './types'
 
 import './CommandBar.scss'
 
-const CommandBar = () => {
-    const [showCommandBar, setShowCommandBar] = useState(false)
+const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     const handleOpen = () => {

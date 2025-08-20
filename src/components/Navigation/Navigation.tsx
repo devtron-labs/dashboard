@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
     AnimatePresence,
+    KeyboardShortcut,
     ModuleNameMap,
     ModuleStatus,
     motion,
@@ -50,6 +51,7 @@ export const Navigation = ({
     // STATES
     const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
     const [searchText, setSearchText] = useState('')
+    const [showCommandBar, setShowCommandBar] = useState(false)
 
     // HOOKS
     const { pathname } = useLocation()
@@ -144,12 +146,15 @@ export const Navigation = ({
     )
 
     // HANDLERS
-    const handleNavGroupClick = (navItem: NavigationGroupType) => () => {
+    const handleNavGroupClick = (navItem: NavigationGroupType) => (e: MouseEvent) => {
+        if (selectedNavGroup?.id === navItem.id) {
+            e.preventDefault()
+        }
         setClickedNavGroup(navItem)
         setSearchText('')
     }
 
-    const closeExpandedNavigation =
+    const handleCloseExpandedNavigation =
         (forceClose = false) =>
         () => {
             if (searchText && !forceClose) {
@@ -159,6 +164,11 @@ export const Navigation = ({
             setSearchText('')
         }
 
+    const handleOpenCommandBar = () => {
+        setShowCommandBar(true)
+        handleCloseExpandedNavigation(true)()
+    }
+
     return (
         <>
             <div className="navigation dc__position-rel">
@@ -166,7 +176,19 @@ export const Navigation = ({
                     className={`navigation__default dc__position-rel dc__grid dc__overflow-hidden h-100 ${isExpanded ? 'is-expanded' : ''}`}
                 >
                     <NavigationLogo />
-                    <NavGroup title="Search" icon="ic-magnifying-glass" isExpanded={isExpanded} />
+                    <NavGroup
+                        title="Search"
+                        icon="ic-magnifying-glass"
+                        isExpanded={isExpanded}
+                        onClick={handleOpenCommandBar}
+                        tooltip={
+                            <span className="flex">
+                                Search &nbsp;
+                                <KeyboardShortcut keyboardKey="Meta" />
+                                <KeyboardShortcut keyboardKey="K" />
+                            </span>
+                        }
+                    />
                     <NavGroup title="Overview" icon="ic-speedometer" to="/dummy-url" isExpanded={isExpanded} />
                     {NAVIGATION_LIST.map((item) => (
                         <NavGroup
@@ -194,8 +216,8 @@ export const Navigation = ({
                         <>
                             <div
                                 className="navigation__expanded__backdrop dc__position-abs dc__top-0"
-                                onClick={closeExpandedNavigation(true)}
-                                onMouseEnter={closeExpandedNavigation(false)}
+                                onClick={handleCloseExpandedNavigation(true)}
+                                onMouseEnter={handleCloseExpandedNavigation(false)}
                             />
 
                             <motion.div
@@ -230,7 +252,7 @@ export const Navigation = ({
                 </AnimatePresence>
             </div>
 
-            <CommandBar />
+            <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
         </>
     )
 }
