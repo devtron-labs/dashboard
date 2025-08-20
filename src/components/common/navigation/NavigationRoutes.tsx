@@ -17,7 +17,7 @@
 import { FunctionComponent, lazy, Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import TagManager from 'react-gtm-module'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Switch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
 import {
@@ -64,6 +64,7 @@ import {
     ViewIsPipelineRBACConfiguredRadioTabs,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { Navigation } from '@Components/Navigation'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { Configurations } from '@Pages/Releases/Detail'
 
@@ -91,9 +92,10 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { SidePanel } from '../SidePanel'
 import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import Navigation from './Navigation'
 import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+
+import './navigation.scss'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 
@@ -124,11 +126,11 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
+const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
     const location = useLocation()
-    const match = useRouteMatch()
     const navRouteRef = useRef<HTMLDivElement>()
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
@@ -177,6 +179,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 ease: 'easeOut',
                 delay: 0.6,
             })
+
             return controls.stop
         }
         return noop
@@ -329,6 +332,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
 
     const getServerMode = async (): Promise<SERVER_MODE> => {
         const response = await getAllModulesInfo()
+
+        Object.values(response).forEach(({ name, status }) => {
+            installedModuleMap.current = {
+                ...installedModuleMap.current,
+                [name]: status === ModuleStatus.INSTALLED,
+            }
+        })
+
         const isFullMode =
             response[ModuleNameMap.CICD] && response[ModuleNameMap.CICD].status === ModuleStatus.INSTALLED
         return isFullMode ? SERVER_MODE.FULL : SERVER_MODE.EA_ONLY
@@ -578,6 +589,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
+                                        ...(CostVisibilityRouter ? [<CostVisibilityRouter />] : []),
                                         ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
                                             ? [
                                                   <Route
@@ -689,25 +701,21 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
                     {!isOnboardingPage && (
                         <Navigation
-                            currentServerInfo={currentServerInfo}
-                            history={history}
-                            match={match}
-                            location={location}
+                            showStackManager={showStackManager}
+                            isAirgapped={isAirgapped}
                             serverMode={serverMode}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
                             isSuperAdmin={isSuperAdmin}
-                            isAirgapped={isAirgapped}
-                            showStackManager={showStackManager}
                         />
                     )}
                     <>
-                        <div
+                        <motion.div
                             className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
                             ref={navRouteRef}
                         >
                             {renderMainContent()}
-                        </div>
+                        </motion.div>
                         <SidePanel asideWidth={asideWidth} />
                     </>
                     {showThemeSwitcherDialog && (

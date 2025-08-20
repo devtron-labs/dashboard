@@ -12,6 +12,7 @@ on:
       - 'release-**'
       - 'develop'
       - 'hotfix-**'
+      - 'kubecon-2025'
     # paths-ignore:
     #   - 'docs/**'
     #   - '.github/'

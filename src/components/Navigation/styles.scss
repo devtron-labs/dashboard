@@ -1,0 +1,85 @@
+.navigation {
+    $navigation-expanded-width: 224px;
+
+    &__default {
+        grid-template-rows: 56px repeat(auto-fill, 52px);
+        background-image: url('../../assets/img/devtron-bg.webp');
+        background-size: 100vw 100vh;
+        background-repeat: no-repeat;
+        z-index: calc(#{var(--navigation-index)} + 1);
+
+        &:hover,
+        &.is-expanded {
+            background-image: linear-gradient(
+                    90deg,
+                    var(--sidenav-bg-section-expanded) 0%,
+                    var(--sidenav-bg-section-expanded) 100%
+                ),
+                url('../../assets/img/devtron-bg.webp');
+        }
+
+        &:hover {
+            .nav-group {
+                &.is-selected .nav-group__icon-container,
+                &:hover .nav-group__icon-container {
+                    background-color: var(--sidenav-bg-section-expanded-hover);
+                }
+            }
+        }
+    }
+
+    &__expanded {
+        width: #{$navigation-expanded-width};
+        background:
+            linear-gradient(90deg, var(--sidenav-bg-subsection) 0%, var(--sidenav-bg-subsection) 100%),
+            url('../../assets/img/devtron-bg.webp') -56px / 100vw 100vh no-repeat;
+        z-index: var(--navigation-index);
+
+        &__backdrop {
+            height: 100%;
+            width: calc(100vw - 100% - #{$navigation-expanded-width});
+            transform: translateX(calc(100vw - 100%));
+            z-index: var(--modal-index);
+        }
+    }
+
+    &__small-dt-logo {
+        bottom: -10px;
+    }
+
+    .nav-group {
+        &:hover .nav-group__icon-container {
+            background-color: var(--sidenav-bg-section-collapsed-hover);
+        }
+
+        &.is-selected .nav-group__icon-container {
+            background-color: var(--sidenav-bg-section-collapsed-selected);
+        }
+
+        &.is-expanded {
+            &:hover .nav-group__icon-container {
+                background-color: var(--sidenav-bg-section-expanded-hover);
+            }
+
+            &.is-selected .nav-group__icon-container {
+                background-color: var(--sidenav-bg-section-expanded-selected);
+            }
+        }
+
+        &:last-child {
+            .nav-group__divider-container {
+                display: none;
+            }
+        }
+    }
+
+    .nav-item {
+        &:hover {
+            background-color: var(--sidenav-subsection-item-hover);
+        }
+
+        &.is-selected {
+            background-color: var(--sidenav-subsection-item-selected);
+        }
+    }
+}
