@@ -3,10 +3,10 @@ import {
     ButtonComponentType,
     ButtonStyleType,
     ButtonVariantType,
+    ComponentSizeType,
     CONTACT_SALES_LINK,
     GenericModal,
     Icon,
-    noop,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const ENTERPRISE_PLAN_OFFERINGS = [
@@ -18,7 +18,14 @@ const ENTERPRISE_PLAN_OFFERINGS = [
 ]
 
 const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handleClose: () => void }) => (
-    <GenericModal name="upgrade-to-enterprise" open={open} width={450} onClose={noop}>
+    <GenericModal
+        name="upgrade-to-enterprise"
+        open={open}
+        width={450}
+        borderRadius={16}
+        onClose={handleClose}
+        onEscape={handleClose}
+    >
         <GenericModal.Body>
             <div
                 className="p-32 flexbox-col dc__gap-32"
@@ -38,16 +45,21 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
                             onClick={handleClose}
                             ariaLabel="close-upgrade-dialog"
                             showAriaLabelInTippy={false}
+                            size={ComponentSizeType.medium}
                         />
                     </div>
                     <div className="flexbox-col dc__gap-8">
-                        <h1 className="fs-24 lh-1-5 fw-7 cn-9 m-0">Upgrade to Enterprise Plan</h1>
-                        <span className="fs-16 fw-4 lh-1-5 cn-9">
-                            Your freemium plan allows only 1 cluster. Unlock more to scale without limits.
-                        </span>
+                        <h1 className="fs-24 lh-1-5 fw-7 cn-9 m-0 font-merriweather">Upgrade to Enterprise Plan</h1>
+                        <div className="flexbox-col dc__gap-20 fs-16 fw-4 cn-9 lh-1-5">
+                            <span>
+                                Freemium plan allows managing the Devtron host cluster along with one additional
+                                cluster.
+                            </span>
+                            <span>Switch to Enterprise plan to scale without limits.</span>
+                        </div>
                     </div>
                 </div>
-                <div className="flexbox-col border__primary-translucent br-12 shadow__card--10">
+                <div className="flexbox-col border__primary-translucent bg__primary br-12 shadow__card--10">
                     <div className="flexbox-col dc__gap-16 p-20">
                         <span className="fs-15 fw-6 lh-1-5 cn-9">What’s included</span>
                         <div className="flexbox-col dc__gap-8">
@@ -59,7 +71,7 @@ const UpgradeToEnterpriseDialog = ({ open, handleClose }: { open: boolean; handl
                             ))}
                         </div>
                     </div>
-                    <div className="divider__primary--horizontal" />
+                    <div className="divider__secondary--horizontal" />
                     <div className="p-20 flexbox-col dc__gap-20">
                         <div className="flexbox-col dc__gap-4">
                             <span className="fs-15 fw-6 lh-1-5 cn-9">Unlock Devtron&apos;s Full Potential</span>
