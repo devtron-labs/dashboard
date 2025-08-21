@@ -18,7 +18,7 @@ import { useEffect, useRef } from 'react'
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import './environmentStatus.scss'
 import { NotesDrawerType } from './notesDrawer.type'
-import { Drawer, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType, Drawer, Icon, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
 
 const NotesDrawer = ({ notes, close }: NotesDrawerType) => {
     const appNotesRef = useRef<HTMLDivElement>(null)
@@ -59,9 +59,16 @@ const NotesDrawer = ({ notes, close }: NotesDrawerType) => {
                         data-testid="notes-heading-after-click"
                     >
                         Notes
-                        <span className="cursor" onClick={close} data-testid="close-notes-button">
-                            <Close className="icon-dim-24" />
-                        </span>
+                        <Button
+                            dataTestId="close-notes-button"
+                            icon={<Icon name="ic-close-large" color={null} />}
+                            onClick={close}
+                            ariaLabel="Close notes drawer"
+                            showAriaLabelInTippy={false}
+                            size={ComponentSizeType.xs}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.negativeGrey}
+                        />
                     </div>
                 </div>
                 <div className="app-notes__body dc__white-space-pre">
