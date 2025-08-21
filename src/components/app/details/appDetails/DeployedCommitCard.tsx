@@ -22,6 +22,7 @@ import {
     GitProviderIcon,
     Icon,
     LoadingCard,
+    Tooltip,
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -47,6 +48,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
         <div className="flexbox deployed-commit-card">
             {materials.map((material) => {
                 const lastCommit = material.history[0]
+                const commitMessage = lastCommit?.message ?? ''
 
                 return (
                     <div
@@ -78,10 +80,12 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                             </div>
                             <GitProviderIcon gitRepoUrl={lastCommit?.commitURL} size={24} />
                         </div>
-                        <div className="app-details-info-card__bottom-container dc__content-space">
-                            <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
-                                {lastCommit?.message ?? ''}
-                            </span>
+                        <div className="app-details-info-card__bottom-container dc__content-space dc__gap-8">
+                            <Tooltip content={commitMessage} placement="bottom">
+                                <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
+                                    {commitMessage}
+                                </span>
+                            </Tooltip>
                             <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
                         </div>
                     </div>
