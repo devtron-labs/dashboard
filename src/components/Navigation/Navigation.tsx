@@ -241,7 +241,7 @@ export const Navigation = ({
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
                                             {navItems.map((item) => (
-                                                <NavItem key={item.title} {...item} />
+                                                <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
                                             ))}
                                         </div>
                                     </div>

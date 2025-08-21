@@ -65,6 +65,10 @@ export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title
     tooltip?: ReactNode
 }
 
+export type NavItemProps = NavigationItemType & {
+    hasSearchText: boolean
+}
+
 export interface NavigationProps {
     showStackManager?: boolean
     isAirgapped: boolean

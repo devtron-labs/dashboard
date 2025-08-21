@@ -1,29 +1,56 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
 import { Icon, preventDefault, TreeView } from '@devtron-labs/devtron-fe-common-lib'
 
-import { NavigationItemType } from './types'
+import { NavItemProps } from './types'
 import { doesNavigationItemMatchPath, getNavigationTreeNodes } from './utils'
 
-export const NavItem = (navItem: NavigationItemType) => {
+export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
+    // PROPS
     const { id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled } = navItem
 
+    // HOOKS
     const { pathname } = useLocation()
 
-    const defaultExpandedMap = useMemo(
-        () => ({ [id]: doesNavigationItemMatchPath(navItem, pathname) }),
-        [pathname, navItem],
-    )
+    // STATES
+    const [expandedMap, setExpandedMap] = useState<Record<string, boolean>>({
+        [id]: doesNavigationItemMatchPath(navItem, pathname),
+    })
+
+    useEffect(() => {
+        if (hasSearchText) {
+            setExpandedMap((prevExpandedMap) => ({
+                ...prevExpandedMap,
+                [id]: true,
+            }))
+        }
+    }, [hasSearchText])
+
+    // COMPUTED VALUES
+    const selectedId = useMemo(() => (doesNavigationItemMatchPath(navItem, pathname) ? id : null), [pathname, navItem])
+
+    // HANDLERS
+    const handleToggle = () => {
+        setExpandedMap((prevExpandedMap) => ({
+            ...prevExpandedMap,
+            [id]: !prevExpandedMap[id],
+        }))
+    }
 
     if (hasSubMenu) {
         return (
             <div>
                 <TreeView
                     variant="sidenav"
-                    defaultExpandedMap={defaultExpandedMap}
                     nodes={getNavigationTreeNodes({ id, title, subItems })}
-                    selectedId={defaultExpandedMap[id] ? id : null}
+                    isControlled
+                    getUpdateItemsRefMap={null}
+                    flatNodeList={null}
+                    depth={0}
+                    expandedMap={expandedMap}
+                    onToggle={handleToggle}
+                    selectedId={selectedId}
                     highlightSelectedHeadingOnlyWhenCollapsed
                 />
             </div>
