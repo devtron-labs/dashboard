@@ -36,7 +36,7 @@ import { NAVIGATION_LIST } from './constants'
 import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
-import { NavigationGroupType, NavigationProps } from './types'
+import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
 import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
 
 import './styles.scss'
@@ -146,10 +146,19 @@ export const Navigation = ({
     )
 
     // HANDLERS
-    const handleNavGroupClick = (navItem: NavigationGroupType) => () => {
-        setClickedNavGroup(navItem)
-        setSearchText('')
-    }
+    const handleNavGroupClick =
+        (navItem: NavigationGroupType): NavGroupProps['onClick'] =>
+        (e) => {
+            // Prevent navigation, if the item is already active
+            if (
+                selectedNavGroup?.id === navItem.id &&
+                doesNavigationItemMatchPath(findActiveNavigationItemOfNavGroup(selectedNavGroup.items), pathname)
+            ) {
+                e.preventDefault()
+            }
+            setClickedNavGroup(navItem)
+            setSearchText('')
+        }
 
     const handleCloseExpandedNavigation =
         (forceClose = false) =>
