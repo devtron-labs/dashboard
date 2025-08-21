@@ -20,7 +20,6 @@ import {
     getCITriggerInfo,
     getParsedCIMaterialInfo,
     GitProviderIcon,
-    GitProviderType,
     Icon,
     LoadingCard,
     useQuery,
@@ -77,9 +76,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                                     </div>
                                 </div>
                             </div>
-                            <GitProviderIcon gitProvider={GitProviderType.GIT} size={24} />
-                            {/* @TODO: This should be dynamic, dependent on the source */}
-                            {/* <GitHub className="github-icon" /> */}
+                            <GitProviderIcon gitRepoUrl={lastCommit?.commitURL} size={24} />
                         </div>
                         <div className="app-details-info-card__bottom-container dc__content-space">
                             <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
