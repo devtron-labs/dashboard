@@ -74,3 +74,6 @@ export const doesNavigationItemMatchPath = (
 
     return exact ? pathname === item.href : pathname.startsWith(item.href)
 }
+
+export const findActiveNavigationItemOfNavGroup = (items: NavigationItemType[]) =>
+    items.find(({ disabled }) => !disabled)

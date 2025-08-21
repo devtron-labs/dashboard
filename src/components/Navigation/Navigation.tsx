@@ -37,7 +37,7 @@ import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
 import { NavigationGroupType, NavigationProps } from './types'
-import { doesNavigationItemMatchPath, filterNavigationItems } from './utils'
+import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
 
 import './styles.scss'
 
@@ -147,7 +147,10 @@ export const Navigation = ({
 
     // HANDLERS
     const handleNavGroupClick = (navItem: NavigationGroupType) => (e: MouseEvent) => {
-        if (selectedNavGroup?.id === navItem.id) {
+        if (
+            selectedNavGroup?.id === navItem.id &&
+            doesNavigationItemMatchPath(findActiveNavigationItemOfNavGroup(navItem.items), pathname)
+        ) {
             e.preventDefault()
         }
         setClickedNavGroup(navItem)
@@ -199,7 +202,7 @@ export const Navigation = ({
                             isExpanded={isExpanded}
                             isSelected={clickedNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
                             onClick={handleNavGroupClick(item)}
-                            to={item.items.find(({ disabled }) => !disabled)?.href}
+                            to={findActiveNavigationItemOfNavGroup(item.items)?.href}
                         />
                     ))}
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
