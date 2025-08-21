@@ -64,7 +64,6 @@ import {
     INCLUDE_EXCLUDE_PLACEHOLDER,
     USE_REGEX_TIPPY_CONTENT,
 } from './constants'
-import { getGitProviderIcon } from '@Components/common/helpers/utils'
 
 export class MaterialView extends Component<MaterialViewProps, MaterialViewState> {
     constructor(props) {
