@@ -182,8 +182,8 @@ export const Navigation = ({
                         isExpanded={isExpanded}
                         onClick={handleOpenCommandBar}
                         tooltip={
-                            <span className="flex">
-                                Search &nbsp;
+                            <span className="flex dc__gap-2">
+                                Search&nbsp;
                                 <KeyboardShortcut keyboardKey="Meta" />
                                 <KeyboardShortcut keyboardKey="K" />
                             </span>
