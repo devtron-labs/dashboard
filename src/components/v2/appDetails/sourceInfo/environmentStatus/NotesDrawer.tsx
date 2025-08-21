@@ -15,7 +15,6 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import './environmentStatus.scss'
 import { NotesDrawerType } from './notesDrawer.type'
 import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType, Drawer, Icon, MarkDown } from '@devtron-labs/devtron-fe-common-lib'
