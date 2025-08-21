@@ -17,7 +17,7 @@
 import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-cluster|add-isolated-cluster)'
+export const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-using-server-url|connect-using-kubeconfig|create-cluster|add-isolated-cluster)'
 
 export const URLS = {
     CHARTS: '/chart-store',
@@ -83,7 +83,6 @@ export const URLS = {
     GLOBAL_CONFIG_AUTH: '/global-config/auth',
     GLOBAL_CONFIG_AUTH_USER_PERMISSION: '/global-config/auth/users',
     GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS: '/global-config/auth/groups',
-    GLOBAL_CONFIG_API: '/api',
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
     GLOBAL_CONFIG_PROJECT: '/global-config/projects',

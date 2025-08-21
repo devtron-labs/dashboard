@@ -15,21 +15,13 @@
  */
 
 import React, { useState } from 'react'
-import { generatePath, Route, useHistory } from 'react-router-dom'
+import { Route, useHistory } from 'react-router-dom'
 
-import {
-    Button,
-    ButtonComponentType,
-    ComponentSizeType,
-    handleAnalyticsEvent,
-    useMainContext,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ComponentSizeType, handleAnalyticsEvent, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
 import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
-import {
-    CreateClusterProps,
-    CreateClusterTypeEnum,
-} from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import { CreateClusterProps } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import { AddClusterButton } from '@Pages/Shared/AddEditCluster'
 
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { URLS } from '../../config'
@@ -82,18 +74,7 @@ export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateCluster
         isSuperAdmin && (
             <>
                 <div>
-                    <Button
-                        dataTestId="add_cluster_button"
-                        text="New Cluster"
-                        size={ComponentSizeType.small}
-                        component={ButtonComponentType.link}
-                        startIcon={<Add />}
-                        linkProps={{
-                            to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
-                                type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                            }),
-                        }}
-                    />
+                    <AddClusterButton />
                     <span className="dc__divider" />
                 </div>
 

@@ -37,6 +37,7 @@ import {
     ButtonComponentType,
     Icon,
     InfoBlock,
+    AuthenticationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
@@ -55,7 +56,6 @@ import {
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
-import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import {
     INCLUDE_EXCLUDE_COMMIT_TIPPY,
     INCLUDE_EXCLUDE_COMMIT_INFO,

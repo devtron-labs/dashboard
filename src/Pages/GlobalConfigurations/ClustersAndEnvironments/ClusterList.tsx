@@ -15,7 +15,7 @@
  */
 
 import { useMemo, useState } from 'react'
-import { generatePath, Route, useHistory, useLocation } from 'react-router-dom'
+import { Route, useHistory, useLocation } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -53,9 +53,9 @@ import {
 import NoClusterImg from '@Images/no-cluster-empty-state.png'
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
-import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
-import { CreateClusterTypeEnum } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import AddClusterButton from '@Pages/Shared/AddEditCluster/AddClusterButton'
 
+import CreateCluster from './CreateCluster/CreateCluster.component'
 import { getClusterList, getEnvironmentList } from './cluster.service'
 import {
     ClusterEnvFilterType,
@@ -119,6 +119,11 @@ const ClusterList = () => {
         [],
         isSuperAdmin && !isK8sClient,
     )
+
+    const handleReload = () => {
+        reloadClusterList()
+        reloadEnvironments()
+    }
 
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
 
@@ -288,7 +293,7 @@ const ClusterList = () => {
         }
 
         if (clusterListError || envListError) {
-            return <ErrorScreenManager code={clusterListError?.code ?? envListError.code} />
+            return <ErrorScreenManager code={clusterListError?.code ?? envListError.code} reload={handleReload} />
         }
 
         if (isEnvironmentsView) {
@@ -394,23 +399,24 @@ const ClusterList = () => {
                             keyboardShortcut="/"
                         />
                         {ManageCategoryButton && <ManageCategoryButton search={search} />}
-                        <Button
-                            dataTestId={isEnvironmentsView ? 'add-environment-button' : 'add-cluster-button'}
-                            linkProps={{
-                                to: {
-                                    pathname: isEnvironmentsView
-                                        ? `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`
-                                        : generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
-                                              type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                                          }),
-                                    search,
-                                },
-                            }}
-                            component={ButtonComponentType.link}
-                            startIcon={<Icon name={isEnvironmentsView ? 'ic-add' : 'ic-link'} color={null} />}
-                            size={ComponentSizeType.medium}
-                            text={isEnvironmentsView ? 'Add Environment' : 'Connect Cluster'}
-                        />
+                        {isEnvironmentsView ? (
+                            <Button
+                                dataTestId="add-environment-button"
+                                linkProps={{
+                                    to: {
+                                        pathname: `${URLS.GLOBAL_CONFIG_CLUSTER}${URLS.CREATE_ENVIRONMENT}`,
+                                        search,
+                                    },
+                                }}
+                                component={ButtonComponentType.link}
+                                startIcon={<Icon name="ic-add" color={null} />}
+                                size={ComponentSizeType.medium}
+                                text="Add Environment"
+                            />
+                        ) : (
+                            <AddClusterButton />
+                        )}
+
                         {isEnvironmentsView && (
                             <ActionMenu
                                 id="additional-options-action-menu"
