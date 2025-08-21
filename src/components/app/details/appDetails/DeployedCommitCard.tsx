@@ -23,6 +23,7 @@ import {
     GitProviderType,
     LoadingCard,
     showError,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as CommitIcon } from '../../../../assets/icons/ic-code-commit.svg'
@@ -99,8 +100,10 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                 {/* @TODO: This should be dynamic, dependent on the source */}
                 {/* <GitHub className="github-icon" /> */}
             </div>
-            <div className="app-details-info-card__bottom-container dc__content-space">
-                <span className="app-details-info-card__bottom-container__message fs-12 fw-4">{commitMessage}</span>
+            <div className="app-details-info-card__bottom-container dc__gap-8 dc__content-space">
+                <Tooltip content={commitMessage} placement="bottom">
+                    <span className="app-details-info-card__bottom-container__message fs-12 fw-4">{commitMessage}</span>
+                </Tooltip>
                 <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
             </div>
         </div>
