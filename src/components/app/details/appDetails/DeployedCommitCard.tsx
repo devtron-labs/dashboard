@@ -77,7 +77,6 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
                                 </div>
                             </div>
                             <GitProviderIcon gitRepoUrl={lastCommit?.commitURL} size={24} />
-                            {/* @TODO: This should be dynamic, dependent on the source */}
                         </div>
                         <div className="app-details-info-card__bottom-container dc__content-space">
                             <span className="app-details-info-card__bottom-container__message fs-12 fw-4">
