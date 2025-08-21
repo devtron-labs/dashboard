@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -146,13 +146,7 @@ export const Navigation = ({
     )
 
     // HANDLERS
-    const handleNavGroupClick = (navItem: NavigationGroupType) => (e: MouseEvent) => {
-        if (
-            selectedNavGroup?.id === navItem.id &&
-            doesNavigationItemMatchPath(findActiveNavigationItemOfNavGroup(navItem.items), pathname)
-        ) {
-            e.preventDefault()
-        }
+    const handleNavGroupClick = (navItem: NavigationGroupType) => () => {
         setClickedNavGroup(navItem)
         setSearchText('')
     }
@@ -237,6 +231,7 @@ export const Navigation = ({
                                             {currentNavGroup.title}
                                         </p>
                                         <SearchBar
+                                            key={currentNavGroup.id}
                                             variant="sidenav"
                                             initialSearchText={searchText}
                                             handleSearchChange={setSearchText}
