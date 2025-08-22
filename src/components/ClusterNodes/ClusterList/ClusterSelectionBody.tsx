@@ -78,7 +78,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
                 image={NoClusterEmptyState}
                 title="No clusters found"
                 subTitle="Add a cluster to view and debug Kubernetes resources in the cluster"
-                renderButton={renderNewClusterButton(refreshData)}
+                renderButton={renderNewClusterButton(refreshData, 0)}
             />
         )
     }
