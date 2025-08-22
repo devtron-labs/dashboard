@@ -190,7 +190,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'application-management-overview',
                 icon: 'ic-speedometer',
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_OVERVIEW,
-                disabled: true,
             },
             {
                 title: 'Applications',
