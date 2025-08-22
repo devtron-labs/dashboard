@@ -57,12 +57,12 @@ const ActivateLicense = () => {
 
         // licenseDataError.code === 404 means, oss and licensing does not exist
         //  In case licenseStatusError is null, license is valid
-        if (licenseDataError?.code === API_STATUS_CODES.NOT_FOUND || !licenseData.licenseStatusError) {
+        if (licenseDataError?.code === API_STATUS_CODES.NOT_FOUND || !licenseData?.licenseStatusError) {
             redirectToLogin()
             return
         }
 
-        if (licenseData?.licenseStatusError.code === LicensingErrorCodes.LicKeyNotFound) {
+        if (licenseData?.licenseStatusError?.code === LicensingErrorCodes.LicKeyNotFound) {
             setShowActivateDialog(true)
         }
     }, [isLoading, licenseData])
@@ -91,11 +91,17 @@ const ActivateLicense = () => {
                     <div className="fs-20 lh-1-5 fw-7 cn-9 font-merriweather dc__truncate">
                         {licenseData.enterpriseName}
                     </div>
-                    <div className="fs-16 lh-1-5 cr-5 fw-4">Your license key is no longer valid</div>
+                    <div className="fs-16 lh-1-5 cr-5 fw-4">
+                        {licenseData.isFreemium &&
+                        licenseData.licenseStatusError?.code === LicensingErrorCodes.ClusterLimitExceeded
+                            ? 'Freemium Limit Reached'
+                            : 'Your license key is no longer valid'}
+                    </div>
                 </div>
             </div>
             {licenseData.licenseStatusError &&
-            licenseData.licenseStatusError.code !== LicensingErrorCodes.LicenseExpired ? (
+            licenseData.licenseStatusError.code !== LicensingErrorCodes.LicenseExpired &&
+            licenseData.licenseStatusError.code !== LicensingErrorCodes.ClusterLimitExceeded ? (
                 <InfoBlock
                     heading="Need help?"
                     description={
@@ -124,7 +130,9 @@ const ActivateLicense = () => {
                     licenseStatus={licenseData.licenseStatus}
                     isTrial={licenseData.isTrial}
                     licenseSuffix={licenseData.licenseSuffix}
+                    isFreemium={licenseData.isFreemium}
                     appTheme={appTheme}
+                    licenseStatusError={licenseData.licenseStatusError}
                 />
             )}
             <div className="flex dc__content-space">

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { SyntheticEvent } from 'react'
 
 import {
     AppEnvironment as BaseAppEnvironmentType,
@@ -49,7 +49,7 @@ export interface NodeStreamMap {
 export interface ChartUsedCardType {
     appDetails: AppDetails
     notes: string
-    onClickShowNotes: () => void
+    onClickShowNotes: (e: SyntheticEvent) => void
     cardLoading: boolean
     onClickUpgrade: () => void
 }

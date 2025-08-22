@@ -15,16 +15,13 @@
  */
 
 import React, { useState } from 'react'
-import { Route, useHistory } from 'react-router-dom'
 
 import { Button, ComponentSizeType, handleAnalyticsEvent, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
-import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
 import { CreateClusterProps } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
 import { AddClusterButton } from '@Pages/Shared/AddEditCluster'
 
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
 
@@ -62,33 +59,22 @@ export const renderCreateResourceButton = (clusterId: string, callback: CreateRe
     <CreateResourceButton closeModal={callback} clusterId={clusterId} />
 )
 
-export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateClusterProps, 'handleReloadClusterList'>) => {
-    const { replace } = useHistory()
+export const NewClusterButton = ({
+    handleReloadClusterList,
+    clusterCount,
+}: Pick<CreateClusterProps, 'handleReloadClusterList'> & { clusterCount: number }) => {
     const { isSuperAdmin } = useMainContext()
-
-    const handleCloseCreateClusterModal = () => {
-        replace(URLS.RESOURCE_BROWSER)
-    }
 
     return (
         isSuperAdmin && (
-            <>
-                <div>
-                    <AddClusterButton />
-                    <span className="dc__divider" />
-                </div>
-
-                <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
-                    <CreateCluster
-                        handleReloadClusterList={handleReloadClusterList}
-                        handleRedirectOnModalClose={handleCloseCreateClusterModal}
-                    />
-                </Route>
-            </>
+            <div>
+                <AddClusterButton clusterCount={clusterCount} handleReloadClusterList={handleReloadClusterList} />
+                <span className="dc__divider" />
+            </div>
         )
     )
 }
 
-export const renderNewClusterButton = (handleReloadClusterList: () => void) => () => (
-    <NewClusterButton handleReloadClusterList={handleReloadClusterList} />
+export const renderNewClusterButton = (handleReloadClusterList: () => void, clusterCount: number) => () => (
+    <NewClusterButton handleReloadClusterList={handleReloadClusterList} clusterCount={clusterCount} />
 )

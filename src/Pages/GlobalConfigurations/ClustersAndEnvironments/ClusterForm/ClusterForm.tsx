@@ -305,7 +305,7 @@ const ClusterForm = ({
                 required: false,
             },
             proxyUrl: {
-                required: RemoteConnectionRadio && proxyUrl,
+                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.Proxy,
                 validator: {
                     error: 'Please provide a valid URL. URL must start with http:// or https://',
                     regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,

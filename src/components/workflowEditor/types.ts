@@ -17,6 +17,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
+    AddPipelineType,
     AppConfigProps,
     ChangeCIPayloadType,
     CiPipeline,
@@ -40,7 +41,6 @@ import { CdPipelineResult } from '../app/details/triggerView/types'
 import { InputVariablesFromInputListType } from '../cdPipeline/cdPipeline.types'
 import { DeleteDialogType, ForceDeleteMessageType } from '../cdPipeline/types'
 import { LoadingState } from '../ciConfig/types'
-import { WorkflowProps } from './Workflow'
 
 export interface BlackListedCI {
     [key: number]: CiPipeline
@@ -351,4 +351,53 @@ export interface ToggleCDSelectButtonProps extends Required<Pick<AppConfigProps,
     }
     getWorkflows?: () => void
     hideDeleteButton?: boolean
+}
+
+export interface WorkflowProps
+    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
+        Required<Pick<AppConfigProps, 'isTemplateView'>> {
+    nodes: CommonNodeAttr[]
+    id: number
+    name: string
+    startX: number
+    startY: number
+    width: number | string
+    height: number | string
+    showDeleteDialog: (workflowId: number) => void
+    handleCDSelect: (
+        workflowId: number | string,
+        ciPipelineId: number | string,
+        parentPipelineType: string,
+        parentPipelineId: number | string,
+        isWebhookCD?: boolean,
+        childPipelineId?: number | string,
+        addType?: AddPipelineType,
+    ) => void
+    openEditWorkflow: (event, workflowId: number) => string
+    handleCISelect: (workflowId: string | number, type: CIPipelineNodeType) => void
+    addCIPipeline: (type: CIPipelineNodeType) => void
+    addWebhookCD: (workflowId?: number | string) => void
+    cdWorkflowList?: any[]
+    showWebhookTippy?: boolean
+    hideWebhookTippy?: () => void
+    isJobView?: boolean
+    envList?: any[]
+    filteredCIPipelines?: any[]
+    addNewPipelineBlocked?: boolean
+    handleChangeCI?: (changeCIPayload: ChangeCIPayloadType) => void
+    selectedNode?: SelectedNode
+    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
+    appName?: string
+    getWorkflows?: () => void
+    refreshParentWorkflows?: () => void
+    reloadEnvironments?: () => void
+    workflowPositionState?: WorkflowPositionState
+    handleDisplayLoader?: () => void
+    isOffendingPipelineView?: boolean
+}
+
+export interface WorkflowState {
+    top: number
+    left: number
+    showCIMenu: boolean
 }

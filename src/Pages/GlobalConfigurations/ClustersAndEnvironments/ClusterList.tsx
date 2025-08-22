@@ -33,7 +33,6 @@ import {
     GenericFilterEmptyState,
     getSelectPickerOptionByValue,
     Icon,
-    noop,
     numberComparatorBySortOrder,
     OptionType,
     PaginationEnum,
@@ -55,7 +54,6 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 import AddClusterButton from '@Pages/Shared/AddEditCluster/AddClusterButton'
 
-import CreateCluster from './CreateCluster/CreateCluster.component'
 import { getClusterList, getEnvironmentList } from './cluster.service'
 import {
     ClusterEnvFilterType,
@@ -104,10 +102,6 @@ const ClusterList = () => {
         initialSortKey: EnvListSortableKeys.ENV_NAME,
     })
 
-    const clearSearch = () => {
-        handleSearch('')
-    }
-
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
         getClusterList,
         [],
@@ -120,13 +114,9 @@ const ClusterList = () => {
         isSuperAdmin && !isK8sClient,
     )
 
-    const handleReload = () => {
-        reloadClusterList()
-        reloadEnvironments()
-    }
-
     const [showUnmappedEnvs, setShowUnmappedEnvs] = useState(false)
 
+    const clusterCount = clusterListResult?.length ?? 0
     const clusterIdVsEnvMap: Record<number, Environment[]> = useMemo(
         () =>
             (envListResult ?? []).reduce<Record<number, Environment[]>>((agg, curr) => {
@@ -250,6 +240,15 @@ const ClusterList = () => {
     const isEnvironmentsView = selectedTab === ClusterEnvTabs.ENVIRONMENTS
     const isClusterEnvListLoading = clusterListLoading || envListLoading
 
+    const clearSearch = () => {
+        handleSearch('')
+    }
+
+    const handleReload = () => {
+        reloadClusterList()
+        reloadEnvironments()
+    }
+
     // Early return for non super admin users
     if (!isK8sClient && !isSuperAdmin) {
         return <ErrorScreenNotAuthorized />
@@ -343,13 +342,17 @@ const ClusterList = () => {
         )
     }
 
+    const renderAddClusterButton = () => (
+        <AddClusterButton clusterCount={clusterCount} handleReloadClusterList={reloadClusterList} />
+    )
+
     if (clusterListResult && !clusterListResult.length) {
         return (
             <GenericEmptyState
                 title="Manage Clusters and Environments"
                 subTitle="It looks like you haven't set up any Kubernetes clusters yet. Start by adding your first cluster and environment."
                 isButtonAvailable
-                renderButton={noop}
+                renderButton={renderAddClusterButton}
                 image={NoClusterImg}
             />
         )
@@ -414,9 +417,8 @@ const ClusterList = () => {
                                 text="Add Environment"
                             />
                         ) : (
-                            <AddClusterButton />
+                            renderAddClusterButton()
                         )}
-
                         {isEnvironmentsView && (
                             <ActionMenu
                                 id="additional-options-action-menu"
@@ -458,12 +460,6 @@ const ClusterList = () => {
                 {renderList()}
                 {/* Modals and Routes */}
                 {ManageCategories && <ManageCategories />}
-                <Route path={URLS.GLOBAL_CONFIG_CREATE_CLUSTER}>
-                    <CreateCluster
-                        handleReloadClusterList={reloadClusterList}
-                        handleRedirectOnModalClose={handleRedirectToClusterList}
-                    />
-                </Route>
                 <Route path={COMMON_URLS.GLOBAL_CONFIG_EDIT_CLUSTER}>
                     <EditCluster
                         clusterList={clusterListResult ?? []}

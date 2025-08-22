@@ -38,6 +38,7 @@ import {
     Icon,
     InfoBlock,
     AuthenticationType,
+    GitProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
@@ -605,7 +606,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         ...provider,
         value: provider.id,
         label: provider.name,
-        startIcon: renderMaterialIcon(provider.url),
+        startIcon: <GitProviderIcon gitRepoUrl={provider.url} />,
     })
 
     handleGitProviderChange: SelectPickerProps['onChange'] = (selected) => {

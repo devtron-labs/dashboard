@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ComponentSizeType, CustomInput, Icon, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import { ComponentSizeType, CustomInput, GitProviderIcon, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SourceMaterialsSelectorProps } from './types'
 
@@ -22,11 +22,12 @@ export const SourceMaterialsSelector = ({
     repoName,
     sourceTypePickerProps,
     branchInputProps,
+    gitURL,
 }: SourceMaterialsSelectorProps) => (
     <div className="flexbox-col dc__gap-8">
         {repoName && (
             <div className="flex left dc__gap-8">
-                <Icon name="ic-git" color={null} size={24} />
+                <GitProviderIcon gitRepoUrl={gitURL} size={24} />
                 <p className="m-0 fs-13 lh-20 fw-6 cn-9 dc__truncate">{repoName}</p>
             </div>
         )}
