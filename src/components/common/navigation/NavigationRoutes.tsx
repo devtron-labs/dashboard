@@ -126,7 +126,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
-const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter', null, 'function')
+const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
@@ -589,7 +589,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(CostVisibilityRouter ? [<CostVisibilityRouter />] : []),
                                         ...(!window._env_.HIDE_NETWORK_STATUS_INTERFACE && NetworkStatusInterface
                                             ? [
                                                   <Route
@@ -628,11 +627,14 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             </AppContext.Provider>
                                         </Route>
                                     )}
-                                    <Route>
-                                        <RedirectUserWithSentry
-                                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
-                                        />
-                                    </Route>
+                                    {EnterpriseRouter && (
+                                        <Route path={[CommonURLS.APPLICATION_MANAGEMENT, CommonURLS.COST_VISIBILITY]}>
+                                            <EnterpriseRouter />
+                                        </Route>
+                                    )}
+                                    <RedirectUserWithSentry
+                                        isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
+                                    />
                                 </Switch>
                                 {AIResponseWidget && intelligenceConfig && <AIResponseWidget parentRef={navRouteRef} />}
                             </ErrorBoundary>
