@@ -230,9 +230,9 @@ const GenericAppList = ({
 
     const buildAppDetailUrl = (app: GenericAppType): string => {
         if (isArgoCDAppList) {
-            return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+            return `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
         }
-        return `${URLS.APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
+        return `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
     }
 
     function renderAppListHeader() {

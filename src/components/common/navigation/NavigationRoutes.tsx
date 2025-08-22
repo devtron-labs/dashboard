@@ -65,6 +65,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Navigation } from '@Components/Navigation'
+import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { Configurations } from '@Pages/Releases/Detail'
 
@@ -126,6 +127,7 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
+const DevtronAppTemplates = importComponentFromFELibrary('DevtronAppTemplates', null, 'function')
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
@@ -523,7 +525,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                         >
                             <ErrorBoundary>
                                 <Switch>
-                                    <Route key={URLS.RESOURCE_BROWSER} path={URLS.RESOURCE_BROWSER}>
+                                    <Route
+                                        key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
+                                        path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
+                                    >
                                         <ResourceBrowser />
                                     </Route>
                                     <Route
@@ -532,8 +537,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     />
                                     {!window._env_.K8S_CLIENT && [
                                         <Route
-                                            key={URLS.APP}
-                                            path={URLS.APP}
+                                            key={URLS.APPLICATION_MANAGEMENT_APP}
+                                            path={URLS.APPLICATION_MANAGEMENT_APP}
                                             render={() => (
                                                 <AppRouter
                                                     isSuperAdmin={isSuperAdmin}
@@ -542,27 +547,33 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                 />
                                             )}
                                         />,
-                                        <Route key={URLS.APPLICATION_GROUP} path={URLS.APPLICATION_GROUP}>
+                                        <Route
+                                            key={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
+                                            path={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
+                                        >
                                             <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                         </Route>,
                                         <Route
-                                            key={URLS.CHARTS}
-                                            path={URLS.CHARTS}
+                                            key={URLS.APPLICATION_MANAGEMENT_CHART_STORE}
+                                            path={URLS.APPLICATION_MANAGEMENT_CHART_STORE}
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
                                         />,
                                         <Route
-                                            key={URLS.BULK_EDITS}
-                                            path={URLS.BULK_EDITS}
+                                            key={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
+                                            path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                         />,
                                         <Route
-                                            key={URLS.SECURITY}
-                                            path={URLS.SECURITY}
+                                            key={CommonURLS.SECURITY_CENTER}
+                                            path={CommonURLS.SECURITY_CENTER}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
                                         ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
                                             ? [
-                                                  <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>
+                                                  <Route
+                                                      key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER}
+                                                      path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER}
+                                                  >
                                                       <ResourceWatcherRouter />
                                                   </Route>,
                                               ]
@@ -570,8 +581,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
                                             ? [
                                                   <Route
-                                                      key={URLS.SOFTWARE_DISTRIBUTION_HUB}
-                                                      path={URLS.SOFTWARE_DISTRIBUTION_HUB}
+                                                      key={CommonURLS.SOFTWARE_RELEASE_MANAGEMENT}
+                                                      path={CommonURLS.SOFTWARE_RELEASE_MANAGEMENT}
                                                   >
                                                       <ImageSelectionUtilityProvider
                                                           value={{
@@ -621,10 +632,18 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     ]}
                                     {/* TODO: Check why its coming as empty in case route is in other library */}
                                     {!window._env_.K8S_CLIENT && (
-                                        <Route path={URLS.JOB} key={URLS.JOB}>
+                                        <Route
+                                            path={URLS.AUTOMATION_AND_ENABLEMENT_JOB}
+                                            key={URLS.AUTOMATION_AND_ENABLEMENT_JOB}
+                                        >
                                             <AppContext.Provider value={contextValue}>
                                                 <Jobs />
                                             </AppContext.Provider>
+                                        </Route>
+                                    )}
+                                    {window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates && (
+                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP}>
+                                            <DevtronAppTemplates AppConfig={AppConfig} />
                                         </Route>
                                     )}
                                     {EnterpriseRouter && (

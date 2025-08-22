@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ReactComponent as Dropdown } from '../../assets/icons/appstatus/ic-chevron-down.svg'
+import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { AppCheckListProps, AppCheckListState } from './checklist.type'
 import { URLS } from '../../config'
-import { ReactComponent as Check } from '../../assets/icons/ic-outline-check.svg'
-import Uncheck from '../../assets/img/ic-success@2x.png'
 import './checklist.scss'
 
 export class AppCheckList extends Component<AppCheckListProps, AppCheckListState> {
@@ -44,7 +42,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                     )}
                     {!project && (
                         <NavLink
-                            to={`${URLS.GLOBAL_CONFIG_PROJECT}`}
+                            to={COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS}
                             className="dc__no-decor  mt-8 flex left"
                             style={{ color: project ? `var(--N500)` : `var(--B500)` }}
                         >

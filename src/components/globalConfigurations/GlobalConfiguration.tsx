@@ -46,7 +46,6 @@ import { BodyType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { getShouldHidePageHeaderAndSidebar } from './utils'
-import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { ListProps } from './types'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
@@ -220,7 +219,7 @@ const NavItem = ({ serverMode }) => {
             hideRoute: !isFeatureGitOpsEnabled,
             isAvailableInEA: isFeatureGitOpsEnabled,
         },
-        { name: 'Projects', href: URLS.GLOBAL_CONFIG_PROJECT, component: Project, isAvailableInEA: true },
+        { name: 'Projects', href: CommonURLS.APPLICATION_MANAGEMENT_PROJECTS, component: Project, isAvailableInEA: true },
         {
             name: `Clusters${window._env_.K8S_CLIENT ? '' : ' & Environments'}`,
             href: URLS.GLOBAL_CONFIG_CLUSTER,
@@ -289,7 +288,7 @@ const NavItem = ({ serverMode }) => {
             ? [
                   {
                       name: 'Application Templates',
-                      href: CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP,
+                      href: CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP,
                       component: DevtronAppTemplates,
                       isAvailableInEA: false,
                   },
@@ -614,7 +613,7 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
             return URLS.GLOBAL_CONFIG_CLUSTER
         }
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return URLS.GLOBAL_CONFIG_PROJECT
+            return CommonURLS.APPLICATION_MANAGEMENT_PROJECTS
         }
         return URLS.GLOBAL_CONFIG_HOST_URL
     }
@@ -662,8 +661,8 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                     : []),
 
                 <Route
-                    key={URLS.GLOBAL_CONFIG_PROJECT}
-                    path={URLS.GLOBAL_CONFIG_PROJECT}
+                    key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
+                    path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
                     render={(props) => {
                         return <Project {...props} isSuperAdmin={isSuperAdmin} />
                     }}
@@ -788,11 +787,6 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 LockDeploymentConfiguration && (
                     <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
                         <LockDeploymentConfiguration />
-                    </Route>
-                ),
-                window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates && (
-                    <Route path={CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP}>
-                        <DevtronAppTemplates AppConfig={AppConfig} />
                     </Route>
                 ),
             ]}

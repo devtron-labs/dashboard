@@ -35,7 +35,7 @@ export const renderESOInfo = (isESO: boolean) =>
             description={
                 <p className="m-0 cn-9 fs-13 fw-4 lh-20">
                     <Link
-                        to={`${URLS.CHARTS_DISCOVER}?appStoreName=external-secret`}
+                        to={`${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}?appStoreName=external-secret`}
                         className="anchor"
                         target="_blank"
                     >

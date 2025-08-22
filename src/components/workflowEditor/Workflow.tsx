@@ -405,10 +405,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 title={node.title}
                 redirectTo={`${
                     this.props.isTemplateView
-                        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                               appId: this.props.match.params.appId,
                           })
-                        : `${URLS.APP}/${this.props.match.params.appId}`
+                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
                 }/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
@@ -668,7 +668,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.history.push(
-            `${URLS.JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 

@@ -28,6 +28,7 @@ import {
     Progressing,
     SelectPicker,
     showError,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
@@ -213,7 +214,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
     }
 
     handleEnvironmentChange(selected): void {
-        const URL = `/app/${this.props.match.params.appId}/deployment-metrics/${selected.value}`
+        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}/deployment-metrics/${selected.value}`
         this.props.history.push(URL)
         ReactGA.event({
             category: 'Deployment Metrics',

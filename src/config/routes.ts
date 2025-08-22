@@ -20,15 +20,15 @@ import { generatePath } from 'react-router-dom'
 const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-cluster|add-isolated-cluster)'
 
 export const URLS = {
-    CHARTS: '/chart-store',
-    CHARTS_DISCOVER: '/chart-store/discover',
-    APP: '/app',
-    JOB: '/job',
+    APPLICATION_MANAGEMENT_APP: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
+    APPLICATION_MANAGEMENT_CHART_STORE: COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE,
+    APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER: COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER,
+    APPLICATION_MANAGEMENT_APPLICATION_GROUP: COMMON_URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
+    APPLICATION_MANAGEMENT_BULK_EDIT: `${COMMON_URLS.APPLICATION_MANAGEMENT}/bulk-edit`,
+    AUTOMATION_AND_ENABLEMENT_JOB: COMMON_URLS.AUTOMATION_AND_ENABLEMENT_JOB,
     CREATE_JOB: 'create-job',
-    APPLICATION_GROUP: '/application-group',
-    RESOURCE_BROWSER: COMMON_URLS.RESOURCE_BROWSER,
-    RESOURCE_BROWSER_INSTALLATION_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/installation-cluster/:installationId`,
-    RESOURCE_BROWSER_CREATE_CLUSTER: `${COMMON_URLS.RESOURCE_BROWSER}/${CREATE_CLUSTER_PATH}`,
+    RESOURCE_BROWSER_INSTALLATION_CLUSTER: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/installation-cluster/:installationId`,
+    RESOURCE_BROWSER_CREATE_CLUSTER: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/${CREATE_CLUSTER_PATH}`,
     EXTERNAL_APPS: 'ea',
     DEVTRON_CHARTS: 'dc',
     EXTERNAL_ARGO_APP: 'eaa',
@@ -66,7 +66,6 @@ export const URLS = {
     APP_JOB_CI_CONFIG: 'ci-job',
     AUTHENTICATE: '/auth/login',
     BASE_CONFIG: 'base-config',
-    BULK_EDITS: '/bulk-edits',
     LINKED_CD: 'linked-cd',
     LOGIN: '/login',
     LOGIN_ADMIN: '/login/admin', //
@@ -85,7 +84,6 @@ export const URLS = {
     GLOBAL_CONFIG_API: '/api',
     GLOBAL_CONFIG_NOTIFIER: '/global-config/notifier',
     GLOBAL_CONFIG_NOTIFIER_ADD_NEW: '/global-config/notifier/edit',
-    GLOBAL_CONFIG_PROJECT: '/global-config/projects',
     GLOBAL_CONFIG_EXTERNAL_LINKS: '/global-config/external-links',
     GLOBAL_CONFIG_CATALOG_FRAMEWORK: '/global-config/catalog-framework',
     GLOBAL_CONFIG_PULL_IMAGE_DIGEST: '/global-config/pull-image-digest',
@@ -100,7 +98,6 @@ export const URLS = {
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     LINKED_CI_DETAILS: 'linked-ci-details',
-    SECURITY: '/security',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
     STACK_MANAGER_DISCOVER_MODULES_DETAILS: '/stack-manager/discover/details',
@@ -115,15 +112,12 @@ export const URLS = {
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
-    RESOURCE_WATCHER: '/resource-watcher',
-    RELEASES: '/releases',
-    DEVTRON_APP_LIST: '/app/list/d',
-    HELM_APP_LIST: '/app/list/h',
-    ARGO_APP_LIST: '/app/list/a',
-    FLUX_APP_LIST: '/app/list/f',
+    DEVTRON_APP_LIST: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/list/d`,
+    HELM_APP_LIST: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/list/h`,
+    ARGO_APP_LIST: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/list/a`,
+    FLUX_APP_LIST: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/list/f`,
     BUILD: '/build',
     WEBHOOK_MODAL: 'webhook',
-    SOFTWARE_DISTRIBUTION_HUB: '/software-distribution-hub',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
     CREATE_ENVIRONMENT: '/create/environment',
     POD_SPREAD: 'pod-spread',
@@ -153,10 +147,10 @@ const ORDERED_APP_COMPOSE_ROUTES: { stage: string; path: string }[] = [
 
 export const getAppComposeURL = (appId: string, appStage: APP_COMPOSE_STAGE | null, isJobView: boolean | null, isTemplateView: AppConfigProps['isTemplateView']): string => {
     const _url = isTemplateView
-        ? `${generatePath(COMMON_URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+        ? `${generatePath(COMMON_URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
               appId,
           })}/${COMMON_URLS.APP_CONFIG}`
-        : `${isJobView ? URLS.JOB : URLS.APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
+        : `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
     if (!appStage) {
         return _url
     }

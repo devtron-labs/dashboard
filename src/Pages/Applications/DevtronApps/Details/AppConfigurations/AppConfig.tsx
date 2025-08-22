@@ -62,7 +62,7 @@ import './appConfig.scss'
 const getApprovalPolicyConfigForApp: (appId: number) => Promise<ResourceIdToResourceApprovalPolicyConfigMapType> =
     importComponentFromFELibrary('getApprovalPolicyConfigForApp', null, 'function')
 
-export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: AppConfigProps) => {
+const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateView }: AppConfigProps) => {
     // HOOKS
     const { appId } = useParams<{ appId: string }>()
     const match = useRouteMatch()
@@ -328,7 +328,7 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
 
     // METHODS
     const reloadAppConfig = () => {
-        history.push(`/app/${appId}/edit`)
+        history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`)
         setState((prevState) => ({ ...prevState, view: ViewType.LOADING }))
         setReload(!reload)
     }
@@ -353,19 +353,19 @@ export const AppConfig = ({ appName, resourceKind, filteredEnvIds, isTemplateVie
                         variant: ToastVariantType.success,
                         description: 'Job Deleted!',
                     })
-                    history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+                    history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}`)
                 } else if (isTemplateView) {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
                         description: 'Template Deleted!',
                     })
-                    history.push(CommonUrls.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP)
+                    history.push(CommonUrls.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP)
                 } else {
                     ToastManager.showToast({
                         variant: ToastVariantType.success,
                         description: 'Application Deleted!',
                     })
-                    history.push(`${URLS.APP}/${URLS.APP_LIST}`)
+                    history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}`)
                 }
             }
         } catch (error) {

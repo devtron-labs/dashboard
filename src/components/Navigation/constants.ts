@@ -6,7 +6,6 @@ import { URLS } from '@Config/routes'
 
 import { NavigationGroupType, NavigationItemType } from './types'
 
-const FE_LIB_URLS = importComponentFromFELibrary('URLS', {}, 'function')
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
 
 const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
@@ -198,42 +197,42 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-application',
                 id: 'application-management-applications',
                 icon: 'ic-grid-view',
-                href: URLS.APP,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
             },
             {
                 title: 'Application Groups',
                 dataTestId: 'click-on-application-groups',
                 id: 'application-management-application-groups',
                 icon: 'ic-app-group',
-                href: URLS.APPLICATION_GROUP,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
             },
             {
                 title: 'Chart Store',
                 dataTestId: 'click-on-chart-store',
                 id: 'application-management-chart-store',
                 icon: 'ic-helm',
-                href: URLS.CHARTS,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE,
             },
             {
                 title: 'Bulk Edit',
                 dataTestId: 'click-on-bulk-edit',
                 id: 'application-management-bulk-edit',
                 icon: 'ic-code',
-                href: URLS.BULK_EDITS,
+                href: URLS.APPLICATION_MANAGEMENT_BULK_EDIT,
             },
             {
                 title: 'Application Templates',
                 dataTestId: 'click-on-application-templates',
                 id: 'application-management-application-templates',
                 icon: 'ic-files',
-                href: COMMON_URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP,
             },
             {
                 title: 'Projects',
                 dataTestId: 'click-on-projects',
                 id: 'application-management-projects',
                 icon: 'ic-folder',
-                href: URLS.GLOBAL_CONFIG_PROJECT,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS,
             },
             {
                 title: 'Configurations',
@@ -269,7 +268,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'resource-browser',
                 id: 'infrastructure-management-resource-browser',
                 icon: 'ic-cube',
-                href: URLS.RESOURCE_BROWSER,
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
             },
             {
                 title: 'Catalog Framework',
@@ -284,7 +283,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'resource-watcher',
                 id: 'infrastructure-management-resource-watcher',
                 icon: 'ic-monitoring',
-                href: `${URLS.RESOURCE_WATCHER}/${FE_LIB_URLS.WATCHERS}`,
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
             },
         ],
     },
@@ -363,14 +362,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'security-scans',
                 id: 'security-center-security-scans',
                 icon: 'ic-bug',
-                href: `${URLS.SECURITY}/scans`,
+                href: `${COMMON_URLS.SECURITY_CENTER}/scans`,
             },
             {
                 title: 'Security Policy',
                 dataTestId: 'security-policy',
                 id: 'security-center-security-policy',
                 icon: 'ic-gavel',
-                href: `${URLS.SECURITY}/policies`,
+                href: `${COMMON_URLS.SECURITY_CENTER}/policies`,
             },
         ],
     },
@@ -384,7 +383,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'jobs',
                 id: 'automation-and-enablement-jobs',
                 icon: 'ic-k8s-job',
-                href: URLS.JOB,
+                href: URLS.AUTOMATION_AND_ENABLEMENT_JOB,
             },
             {
                 title: 'Alerting',
@@ -430,7 +429,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Overview',
                 dataTestId: 'backup-and-restore-overview',
                 id: 'backup-and-restore-overview',
-                icon: 'ic-cube',
+                icon: 'ic-speedometer',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -446,7 +445,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Backup Repositories',
                 dataTestId: 'backup-repositories',
                 id: 'backup-and-restore-backup-repositories',
-                icon: 'ic-cube',
+                icon: 'ic-clock',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -454,7 +453,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Backup Locations',
                 dataTestId: 'backup-locations',
                 id: 'backup-and-restore-backup-locations',
-                icon: 'ic-cube',
+                icon: 'ic-folder',
                 href: '/dummy-url',
                 disabled: true,
             },

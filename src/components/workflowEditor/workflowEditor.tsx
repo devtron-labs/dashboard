@@ -305,10 +305,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     handleCISelect = (workflowId: number | string, type: CIPipelineNodeType) => {
         let link = `${
             this.props.isTemplateView
-                ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                       appId: this.props.match.params.appId,
                   })
-                : `${URLS.APP}/${this.props.match.params.appId}`
+                : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
         }/edit/workflow/${workflowId}`
 
         switch (type) {
@@ -348,10 +348,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.history.push(
             `${
                 this.props.isTemplateView
-                    ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                    ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                           appId: this.props.match.params.appId,
                       })
-                    : `${URLS.APP}/${this.props.match.params.appId}`
+                    : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
             }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 workflowId || 0
             }/${PipelineType.WEBHOOK.toLowerCase()}/0/${URLS.APP_CD_CONFIG}/0/build`,
@@ -366,10 +366,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.history.push(
             `${
                 this.props.isTemplateView
-                    ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                    ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                           appId: this.props.match.params.appId,
                       })
-                    : `${URLS.APP}/${this.props.match.params.appId}`
+                    : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
             }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${
                 changeCIPayload?.appWorkflowId ?? 0
             }/${URLS.LINKED_CD}?changeCi=${Number(!!changeCIPayload)}&switchFromCiPipelineId=${
@@ -395,10 +395,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             : `${URLS.APP_CI_CONFIG.toLowerCase()}/${ciPipelineId}`
         let LINK = `${
             this.props.isTemplateView
-                ? `${generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                ? `${generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                       appId: this.props.match.params.appId,
                   })}`
-                : `${URLS.APP}/${this.props.match.params.appId}`
+                : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
         }/${CommonURLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
         }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
@@ -426,10 +426,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.props.history.push(
             `${
                 this.props.isTemplateView
-                    ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                    ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                           appId: this.props.match.params.appId,
                       })
-                    : `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}`
+                    : `${this.props.isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
             }/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
         )
         this.props.getWorkflows()
@@ -443,10 +443,10 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         showWebhookTippy?: boolean,
     ) => {
         const _url = this.props.isTemplateView
-            ? `${generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+            ? `${generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                   appId: this.props.match.params.appId,
               })}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`
-            : `${this.props.isJobView ? URLS.JOB : URLS.APP}/${this.props.match.params.appId}/${
+            : `${this.props.isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}/${
                   CommonURLS.APP_CONFIG
               }/${URLS.APP_WORKFLOW_CONFIG}`
         this.props.history.push(_url)
@@ -788,7 +788,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     openCreateModal = () => {
-        this.props.history.push(`${URLS.JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
+        this.props.history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
     }
 
     renderNewJobPipelineButton = () => {
