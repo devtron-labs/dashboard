@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { SyntheticEvent, useMemo, useState } from 'react'
 import './environmentStatus.scss'
 import IndexStore from '../../index.store'
 import { URLS } from '../../../../../config'
@@ -29,6 +29,7 @@ import {
     AppStatusModalTabType,
     DeploymentAppTypes,
     LoadingCard,
+    stopPropagation,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { EnvironmentStatusComponentType } from '../environment.type'
@@ -112,7 +113,8 @@ const EnvironmentStatusComponent = ({
         )
     }
 
-    const onClickShowNotes = () => {
+    const onClickShowNotes = (e: SyntheticEvent) => {
+        stopPropagation(e)
         setShowNotes(true)
     }
 
