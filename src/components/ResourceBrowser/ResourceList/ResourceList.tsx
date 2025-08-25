@@ -390,7 +390,7 @@ const ResourceListWrapper = () => {
                     component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
                     linked: true,
                 },
-                ':clusterId': {
+                ':clusterId(\\d+)': {
                     component: (
                         <ClusterSelector
                             onChange={onClusterChange}

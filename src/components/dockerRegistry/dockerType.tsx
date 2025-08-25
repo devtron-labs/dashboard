@@ -37,12 +37,6 @@ export enum SSHAuthenticationType {
     Password_And_SSH_Private_Key = 'PASSWORD_AND_SSH_PRIVATE_KEY',
 }
 
-export enum RemoteConnectionType {
-    Direct = 'DIRECT',
-    Proxy = 'PROXY',
-    SSHTunnel = 'SSH',
-}
-
 export const CredentialType: CredentialTypes = {
     SAME_AS_REGISTRY: 'SAME_AS_REGISTRY',
     NAME: 'NAME',

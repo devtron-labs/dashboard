@@ -34,6 +34,10 @@ const EnterpriseTrialDialog = ({ featureTitle, featureDescription, showBorder = 
     return (
         <div
             className={`flexbox-col ${showBorder ? 'border__primary br-16' : ''} dc__overflow-hidden enterprise-trial-dialog`}
+            style={{
+                background:
+                    'linear-gradient(249deg, var(--bg-primary, #FFF) 0%, var(--bg-primary, #FFF) 70.16%, var(--B100, #E5F2FF) 84.88%, var(--V200, #C5BBFA) 100%)',
+            }}
         >
             <div className="p-24 flexbox-col dc__gap-16 border__secondary--bottom">
                 <Icon name="ic-enterprise-tag" size={null} color={null} />

@@ -17,15 +17,12 @@
 import {
     ClusterEnvironmentCategoryType,
     ClusterStatusType,
-    Icon,
     NodeTaintType,
     OptionType,
     SelectPickerOptionType,
     SortingOrder,
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ReactComponent as Warning } from '@Icons/ic-alert-triangle.svg'
 
 import {
     AddClusterFormPrefilledInfoType,
@@ -104,38 +101,6 @@ export const getNamespaceFromLocalStorage = (fallbackNamespace: string): string 
     }
     return fallbackNamespace
 }
-
-export const PrometheusWarningInfo = () => (
-    <div className="pt-10 pb-10 pl-16 pr-16 bcy-1 br-4 bw-1 dc__cluster-error mb-40">
-        <div className="flex left dc__align-start">
-            <Warning className="icon-dim-20 fcr-7" />
-            <div className="ml-8 fs-13">
-                <span className="fw-6 dc__capitalize">Warning: </span>Prometheus configuration will be removed and you
-                won’t be able to see metrics for applications deployed in this cluster.
-            </div>
-        </div>
-    </div>
-)
-
-export const PrometheusRequiredFieldInfo = () => (
-    <div className="pt-10 pb-10 pl-16 pr-16 bcr-1 br-4 bw-1 er-2 mb-16">
-        <div className="flex left dc__align-start">
-            <Icon name="ic-error" size={20} color="R500" />
-            <div className="ml-8 fs-13">
-                Fill all the required fields OR turn off the above switch to skip configuring prometheus.
-            </div>
-        </div>
-    </div>
-)
-
-export const renderKubeConfigClusterCountInfo = (clusterCount: number) => (
-    <div>
-        <div className="flex left dc__gap-4">
-            <span className="fw-6">{clusterCount} valid cluster(s). </span>
-            <span>Select the cluster you want to add/update</span>
-        </div>
-    </div>
-)
 
 export const getSelectParsedCategory = (category: ClusterEnvironmentCategoryType): SelectPickerOptionType =>
     category?.name

@@ -336,45 +336,68 @@ export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: Edi
     const { clusterId } = useParams<{ clusterId: string }>()
     const cluster = clusterList.find((c) => c.clusterId === +clusterId)
 
-    if (!cluster || !cluster.isVirtualCluster) {
-        return (
-            <Drawer position="right" width="1000px" onClose={handleClose}>
-                <div className="h-100 bg__primary" onClick={stopPropagation}>
-                    {!cluster ? (
-                        <GenericEmptyState
-                            title="Cluster not found"
-                            subTitle="The cluster that you are looking is not available."
-                        />
-                    ) : (
-                        <EditClusterDrawerContent
-                            handleModalClose={handleClose}
-                            sshTunnelConfig={cluster.sshTunnelConfig}
-                            clusterId={cluster.clusterId}
-                            clusterName={cluster.clusterName}
-                            serverUrl={cluster.serverUrl}
-                            reload={reloadClusterList}
-                            prometheusUrl={cluster.prometheusUrl}
-                            proxyUrl={cluster.proxyUrl}
-                            toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
-                            isProd={cluster.isProd}
-                            installationId={cluster.installationId}
-                            category={cluster.category}
-                            insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
-                        />
-                    )}
-                </div>
-            </Drawer>
+    const renderBody = () => {
+        if (!cluster) {
+            return (
+                <GenericEmptyState
+                    title="Cluster not found"
+                    subTitle="The cluster that you are looking is not available."
+                />
+            )
+        }
+
+        return cluster.isVirtualCluster ? (
+            <VirtualClusterForm
+                id={+cluster.clusterId}
+                clusterName={cluster.clusterName}
+                handleModalClose={handleClose}
+                reload={reloadClusterList}
+                category={cluster.category}
+                isProd={cluster.isProd}
+            />
+        ) : (
+            <EditClusterDrawerContent
+                handleModalClose={handleClose}
+                sshTunnelConfig={cluster.sshTunnelConfig}
+                clusterId={cluster.clusterId}
+                clusterName={cluster.clusterName}
+                serverUrl={cluster.serverUrl}
+                reload={reloadClusterList}
+                prometheusUrl={cluster.prometheusUrl}
+                proxyUrl={cluster.proxyUrl}
+                toConnectWithSSHTunnel={cluster.toConnectWithSSHTunnel}
+                isProd={cluster.isProd}
+                installationId={cluster.installationId}
+                category={cluster.category}
+                insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
+            />
         )
     }
+
     return (
-        <VirtualClusterForm
-            id={+cluster.clusterId}
-            clusterName={cluster.clusterName}
-            handleModalClose={handleClose}
-            reload={reloadClusterList}
-            category={cluster.category}
-            isProd={cluster.isProd}
-        />
+        <Drawer position="right" width="1000px" onClose={handleClose}>
+            <div className="flexbox-col h-100 bg__primary" onClick={stopPropagation}>
+                <div className="flex flex-align-center dc__border-bottom flex-justify bg__primary py-12 px-20">
+                    <h2 data-testid="add_cluster_header" className="fs-16 fw-6 lh-1-43 m-0 title-padding">
+                        <span className="fw-6 fs-16 cn-9">
+                            {cluster?.isVirtualCluster ? 'Edit Isolated Cluster' : 'Edit Cluster'}
+                        </span>
+                    </h2>
+
+                    <Button
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        dataTestId="header_close_icon"
+                        style={ButtonStyleType.negativeGrey}
+                        size={ComponentSizeType.xs}
+                        variant={ButtonVariantType.borderLess}
+                        ariaLabel="Close edit cluster drawer"
+                        onClick={handleClose}
+                        showAriaLabelInTippy={false}
+                    />
+                </div>
+                {renderBody()}
+            </div>
+        </Drawer>
     )
 }
 

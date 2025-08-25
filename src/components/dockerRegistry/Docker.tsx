@@ -51,6 +51,8 @@ import {
     ComponentSizeType,
     PasswordField,
     RegistryCredentialsType,
+    RemoteConnectionType,
+    AuthenticationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -82,12 +84,10 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
-    RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'

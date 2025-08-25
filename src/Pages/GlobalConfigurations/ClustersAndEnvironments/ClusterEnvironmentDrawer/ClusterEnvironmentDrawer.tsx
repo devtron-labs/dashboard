@@ -419,7 +419,7 @@ export const ClusterEnvironmentDrawer = ({
                             </div>
                         )}
 
-                        {EnvironmentLabels && !data.isVirtualCluster && (
+                        {EnvironmentLabels && data.clusterId && !data.isVirtualCluster && (
                             <div className="dc__border-top-n1 pt-16">
                                 <EnvironmentLabels
                                     tags={namespaceLabels.labels}
