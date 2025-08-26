@@ -68,7 +68,7 @@ export default function MaterialSource({
 
     const handleRefreshAction = (e) => {
         e.stopPropagation()
-        refreshMaterial.refresh(refreshMaterial.pipelineId, Number(e.currentTarget.dataset.id))
+        refreshMaterial(Number(e.currentTarget.dataset.id))
 
         if (clearSearch) {
             clearSearch(e)
@@ -95,14 +95,14 @@ export default function MaterialSource({
     }
 
     return (
-        <div className="flexbox-col flex-grow-1 dc__overflow-auto">
+        <div className="flexbox-col flex-grow-1">
             {material.map((mat, index) => {
                 return (
                     <div
                         key={index}
                         data-id={mat.id}
                         data-testid={`material-list-item-${index}`}
-                        className={`material-list__item flex left column dc__gap-10 p-12 cursor ${mat.isSelected ? 'material-selected' : ''}`}
+                        className={`material-list__item flex left column dc__gap-10 p-12 cursor dc__no-shrink ${mat.isSelected ? 'material-selected' : ''}`}
                         onClick={handleSelectMaterialAction}
                     >
                         <div className="flex left column dc__gap-4 w-100">

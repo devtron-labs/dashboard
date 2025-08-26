@@ -33,10 +33,8 @@ export const TriggerResponseModalFooter = ({
     closePopup,
     isLoading,
     responseList,
-    skipHibernatedApps,
     onClickRetryBuild,
     onClickRetryDeploy,
-    pipelineIdVsStrategyMap,
 }: TriggerResponseModalFooterProps) => {
     const isShowRetryButton = responseList?.some((response) => response.status === BulkResponseStatus.FAIL)
 
@@ -52,7 +50,7 @@ export const TriggerResponseModalFooter = ({
         if (onClickRetryBuild) {
             onClickRetryBuild(appsToRetry)
         } else {
-            onClickRetryDeploy(skipHibernatedApps, pipelineIdVsStrategyMap, appsToRetry)
+            onClickRetryDeploy(appsToRetry)
         }
     }
 
@@ -83,7 +81,7 @@ const TriggerResponseModalBody = ({ responseList, isLoading, isVirtualEnv }: Tri
         return <Progressing pageLoader />
     }
     return (
-        <div className="response-list-container bg__primary pr-20 pb-16 pl-20 flex-grow-1">
+        <div className="response-list-container bg__primary pr-20 pb-16 pl-20 flex-grow-1 h-100">
             <div
                 className="dc__position-sticky dc__top-0 bg__primary dc__border-bottom response-row dc__border-bottom pt-24 pb-8"
                 style={{ zIndex: 1 }}

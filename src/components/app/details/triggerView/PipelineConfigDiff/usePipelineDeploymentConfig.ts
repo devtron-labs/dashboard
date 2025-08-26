@@ -62,6 +62,7 @@ export const usePipelineDeploymentConfig = ({
     deploymentStrategy,
     setDeploymentStrategy,
     pipelineStrategyOptions,
+    isCDNode,
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
     const { pathname, search } = useLocation()
@@ -91,7 +92,7 @@ export const usePipelineDeploymentConfig = ({
                     ({ result }) => getDefaultVersionAndPreviousDeploymentOptions(result).previousDeployments,
                 ),
             [envId],
-            !!appId && !!envId,
+            !!appId && !!envId && isCDNode,
         )
 
     const isLastDeployedConfigAvailable = previousDeployments?.length !== 0
@@ -204,7 +205,7 @@ export const usePipelineDeploymentConfig = ({
             return _pipelineDeploymentConfigRes
         },
         [isRollbackTriggerSelected && wfrId, deploymentStrategy],
-        !previousDeploymentsLoader && !!previousDeployments && (!isRollbackTriggerSelected || !!wfrId),
+        isCDNode && !previousDeploymentsLoader && !!previousDeployments && (!isRollbackTriggerSelected || !!wfrId),
     )
 
     // CONSTANTS

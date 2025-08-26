@@ -61,7 +61,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
         initialSortKey: ClusterMapListSortableKeys.CLUSTER_NAME,
     })
 
-    const { handleBulkSelection, getSelectedIdentifiersCount } =
+    const { handleBulkSelection, getSelectedIdentifiersCount, selectedIdentifiers } =
         useBulkSelection<BulkSelectionIdentifiersType<ClusterDetail>>()
 
     const identifierCount = getSelectedIdentifiersCount()
@@ -119,6 +119,7 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
                     count={identifierCount}
                     handleClearBulkSelection={handleClearBulkSelection}
                     onChangeShowKubeConfigModal={onChangeShowKubeConfigModal}
+                    selectedIdentifiersIds={Object.keys(selectedIdentifiers).map((key) => selectedIdentifiers[key].id)}
                 />
             )
         }

@@ -14,39 +14,12 @@
  * limitations under the License.
  */
 
-import { CommonNodeAttr, DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'
+import { CommonNodeAttr, DeploymentNodeType, WorkflowType } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getIsMaterialApproved } from '@Components/app/details/triggerView/cdMaterials.utils'
+import { DeployImageContentProps } from '@Components/app/details/triggerView/DeployImageModal/types'
+import { getNodeIdAndTypeFromSearch } from '@Components/app/details/triggerView/TriggerView.utils'
 
-import { BulkCDDetailType, BulkCIDetailType } from '../../AppGroup.types'
-
-export const getIsAppUnorthodox = (app: BulkCIDetailType): boolean =>
-    app.isLinkedCI || app.isWebhookCI || app.isLinkedCD
-
-export const getIsNonApprovedImageSelected = (appList: BulkCDDetailType[]): boolean =>
-    appList.some((app) => {
-        if (!app.isExceptionUser) {
-            return false
-        }
-
-        return (app.material || []).some(
-            (material) => material.isSelected && !getIsMaterialApproved(material.userApprovalMetadata),
-        )
-    })
-
-export const getIsImageApprovedByDeployerSelected = (appList: BulkCDDetailType[]): boolean =>
-    appList.some((app) => {
-        if (!app.isExceptionUser) {
-            return false
-        }
-
-        return (app.material || []).some(
-            (material) =>
-                material.isSelected &&
-                !material.canApproverDeploy &&
-                material.userApprovalMetadata?.hasCurrentUserApproved,
-        )
-    })
+import { BulkCDDetailType } from '../../AppGroup.types'
 
 export const getSelectedCDNode = (bulkTriggerType: DeploymentNodeType, _cdNode: CommonNodeAttr) => {
     if (bulkTriggerType === DeploymentNodeType.PRECD) {
@@ -61,7 +34,41 @@ export const getSelectedCDNode = (bulkTriggerType: DeploymentNodeType, _cdNode: 
     return null
 }
 
-export const getSelectedAppListForBulkStrategy = (appList: BulkCDDetailType[], feasiblePipelineIds: Set<number>) =>
-    appList
-        .map((app) => ({ pipelineId: +app.cdPipelineId, appName: app.name }))
-        .filter(({ pipelineId }) => feasiblePipelineIds.has(pipelineId))
+export const getSelectedAppListForBulkStrategy = (
+    appInfoRes: DeployImageContentProps['appInfoMap'],
+): Pick<BulkCDDetailType, 'pipelineId' | 'appName'>[] => {
+    const feasiblePipelineIds: Set<number> = Object.values(appInfoRes).reduce((acc, appDetails) => {
+        const materials = appDetails.materialResponse?.materials || []
+        const isMaterialSelected = materials.some((material) => material.isSelected)
+
+        if (isMaterialSelected) {
+            acc.add(+appDetails.pipelineId)
+        }
+
+        return acc
+    }, new Set<number>())
+
+    const appList: Pick<BulkCDDetailType, 'pipelineId' | 'appName'>[] = Object.values(appInfoRes).map((appDetails) => ({
+        pipelineId: +appDetails.pipelineId,
+        appName: appDetails.appName,
+    }))
+
+    return appList.filter(({ pipelineId }) => feasiblePipelineIds.has(pipelineId))
+}
+
+export const getSelectedNodeAndAppId = (
+    workflows: WorkflowType[],
+    search: string,
+): { node: CommonNodeAttr; appId: number } => {
+    const { cdNodeId, nodeType } = getNodeIdAndTypeFromSearch(search)
+
+    const result = workflows.reduce(
+        (acc, workflow) => {
+            if (acc.node) return acc
+            const node = workflow.nodes.find((n) => n.id === cdNodeId && n.type === nodeType)
+            return node ? { node, appId: workflow.appId } : acc
+        },
+        { node: undefined, appId: undefined },
+    )
+    return result
+}

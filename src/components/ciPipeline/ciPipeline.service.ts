@@ -135,7 +135,7 @@ function getPipelineBaseMetaConfiguration(
     isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
     return getSourceConfig(appId, queryParams, isTemplateView).then((response) => {
-        const materials = response?.result?.material?.map((mat) => {
+        const materials: MaterialType[] = response?.result?.material?.map((mat: MaterialType) => {
             return {
                 id: 0,
                 gitMaterialId: mat.id,
@@ -146,6 +146,7 @@ function getPipelineBaseMetaConfiguration(
                 gitMaterialName: mat.name,
                 gitProviderId: mat.gitProviderId,
                 gitHostId: 0,
+                url: mat.url,
             }
         })
         const _baseCiPipelineSourceTypeOptions = CiPipelineSourceTypeBaseOptions.map((obj) => ({ ...obj }))
@@ -348,8 +349,6 @@ export function deleteCIPipeline(
     gitMaterials,
     appId: number,
     workflowId: number,
-    isExternalCI: boolean,
-    webhookConditionList,
     isTemplateView: AppConfigProps['isTemplateView'],
 ) {
     const updatedCI = {
@@ -456,6 +455,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                     gitHostId: gitHost ? gitHost.id : 0,
                     regex: mat.source.regex,
                     isRegex: mat.isRegex,
+                    url: mat.url || gitMaterials?.[0].url, // Required BE support till then will be getting url from another api
                 }
             }) || []
     }
@@ -477,6 +477,7 @@ function createMaterialList(ciPipeline, gitMaterials: MaterialType[], gitHost: G
                 gitHostId: mat.gitHostId,
                 gitProviderId: mat.gitProviderId,
                 isRegex: mat.isRegex,
+                url: mat.url,
             })
         }
     }
@@ -563,7 +564,7 @@ function migrateOldData(
 function parseCIResponse(
     responseCode: number,
     ciPipeline,
-    gitMaterials,
+    gitMaterials: MaterialType[],
     gitHost,
     webhookEvents,
     ciPipelineSourceTypeOptions,

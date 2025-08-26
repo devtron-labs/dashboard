@@ -223,11 +223,8 @@ const propertyComparatorMap = {
     errors: numberInStringComparator,
     'k8s version': versionComparatorBySortOrder,
     taints: numberInStringComparator,
-    'cpu usage (%)': numberInStringComparator,
-    'cpu allocatable': numberInStringComparator,
-    'mem usage (%)': numberInStringComparator,
-    'mem allocatable': numberInStringComparator,
-    'cpu usage (absolute)': numberInStringComparator,
+    'cpu usage': numberInStringComparator,
+    'mem usage': numberInStringComparator,
     restarts: numberInStringComparator,
 }
 
@@ -325,6 +322,16 @@ export const getStatusClass = (status: string, isNodeListing: boolean) => {
 
 export const getColumnSize = (field: string, isEventListing: boolean) => {
     if (!isEventListing) {
+        if (field === 'pods' || field === 'taints' || field === 'errors') {
+            return {
+                range: {
+                    maxWidth: 600,
+                    minWidth: 120,
+                    startWidth: 120,
+                },
+            }
+        }
+
         return {
             range: {
                 maxWidth: 600,

@@ -15,10 +15,13 @@
  */
 
 import { useState } from 'react'
-import Tippy from '@tippyjs/react'
 import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
     DTSwitch,
-    Progressing,
+    Icon,
     RegistryIcon,
     RegistryType,
     showError,
@@ -27,7 +30,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { List } from '../../globalConfigurations/GlobalConfiguration'
 import { updateChartProviderList, updateSyncSpecificChart } from '../charts.service'
-import { ReactComponent as SyncIcon } from '../../../assets/icons/ic-arrows_clockwise.svg'
 import { ReactComponent as Helm } from '../../../assets/icons/ic-helmchart.svg'
 import { ChartListType } from '../charts.types'
 import { getNonEditableChartRepoText } from '../../common'
@@ -113,25 +115,18 @@ const ChartListPopUpRow = ({
                         <Helm className="icon-dim-20 fcb-5 dc__vertical-align-middle " />
                     )}
                 </List.Logo>
-                <div className="dc__truncate-text">{list.name}</div>
-                <Tippy className="default-tt" arrow={false} placement="top" content="Refetch charts">
-                    <a
-                        rel="noreferrer noopener"
-                        target="_blank"
-                        className={`dc__link ${!isSpecificChartRefetchLoading ? 'cursor' : ''} ${
-                            !enabled ? 'cursor-not-allowed' : ''
-                        }`}
-                        onClick={() => enabled && refetchSpecificChart(list.id, list.isOCIRegistry)}
-                    >
-                        {isSpecificChartRefetchLoading ? (
-                            <Progressing size={16} fillColor="var(--N500)" />
-                        ) : (
-                            <span>
-                                <SyncIcon className={`${enabled ? 'scn-5' : 'scn-2'}`} />
-                            </span>
-                        )}
-                    </a>
-                </Tippy>
+                <span className="dc__truncate-text cn-9">{list.name}</span>
+                <Button
+                    dataTestId="chart-refetch-button"
+                    isLoading={isSpecificChartRefetchLoading}
+                    disabled={!enabled}
+                    onClick={() => refetchSpecificChart(list.id, list.isOCIRegistry)}
+                    icon={<Icon name="ic-arrows-clockwise" color={enabled ? 'N500' : 'N200'} />}
+                    ariaLabel="Refetch charts"
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.neutral}
+                    size={ComponentSizeType.xxs}
+                />
 
                 <div className="ml-auto">
                     <DTSwitch
