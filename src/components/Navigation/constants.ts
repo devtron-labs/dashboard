@@ -469,6 +469,20 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         ],
     },
     {
+        id: 'ai-recommendations',
+        title: 'AI Recommendations',
+        icon: 'ic-openai',
+        items: [
+            {
+                title: 'Overview',
+                dataTestId: 'ai-recommendations-overview',
+                id: 'ai-recommendations-overview',
+                icon: 'ic-speedometer',
+                href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
+            },
+        ],
+    },
+    {
         id: 'global-configuration',
         title: 'Global Configuration',
         icon: 'ic-gear',
