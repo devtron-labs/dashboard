@@ -247,9 +247,20 @@ export const Navigation = ({
                                             inputProps={{ autoFocus: true }}
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
-                                            {navItems.map((item) => (
-                                                <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
-                                            ))}
+                                            {navItems
+                                                .map(
+                                                    (item) =>
+                                                        (item.forceHideEnvKey
+                                                            ? window._env_[item.forceHideEnvKey]
+                                                            : !item.hideNav) && (
+                                                            <NavItem
+                                                                key={item.title}
+                                                                {...item}
+                                                                hasSearchText={!!searchText}
+                                                            />
+                                                        ),
+                                                )
+                                                .filter(Boolean)}
                                         </div>
                                     </div>
                                 )}

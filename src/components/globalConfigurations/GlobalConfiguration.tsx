@@ -29,7 +29,6 @@ import {
 import { URLS } from '../../config'
 import { ErrorBoundary, importComponentFromFELibrary } from '../common'
 import arrowTriangle, { ReactComponent as Dropdown } from '../../assets/icons/ic-chevron-down.svg'
-import { AddNotification } from '../notifications/AddNotification'
 import { getHostURLConfiguration, getAppCheckList } from '../../services/service'
 import './globalConfigurations.scss'
 import {
@@ -39,7 +38,6 @@ import {
     Routes,
     SERVER_MODE,
 } from '../../config/constants'
-import ExternalLinks from '../externalLinks/ExternalLinks'
 import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type'
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType } from './globalConfiguration.type'
@@ -50,28 +48,18 @@ import { ListProps } from './types'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
-const GitOpsConfiguration = lazy(() => import('../gitOps/GitOpsConfiguration'))
-const GitProvider = lazy(() => import('../gitProvider/GitProvider'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterList'))
-const ChartRepo = lazy(() => import('../chartRepo/ChartRepo'))
-const Notifier = lazy(() => import('../notifications/Notifications'))
-const Project = lazy(() => import('../project/ProjectList'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
-const DeploymentChartsRouter = lazy(() => import('@Pages/GlobalConfigurations/DeploymentCharts'))
-const ScopedVariables = lazy(() => import('../scopedVariables/ScopedVariables'))
 // NOTE: Might import from index itself
-const BuildInfra = lazy(() => import('@Pages/GlobalConfigurations/BuildInfra/BuildInfra'))
 const TagListContainer = importComponentFromFELibrary('TagListContainer')
 const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
 const FilterConditions = importComponentFromFELibrary('FilterConditions')
 const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
 const ApprovalPolicy = importComponentFromFELibrary('ApprovalPolicy', null, 'function')
-const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
 const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
 const ImagePromotion = importComponentFromFELibrary('ImagePromotion')
-const DevtronAppTemplates = importComponentFromFELibrary('DevtronAppTemplates', null, 'function')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -213,21 +201,12 @@ const NavItem = ({ serverMode }) => {
             isAvailableInEA: false,
         },
         {
-            name: 'GitOps ',
-            href: URLS.GLOBAL_CONFIG_GITOPS,
-            component: GitOpsConfiguration,
-            hideRoute: !isFeatureGitOpsEnabled,
-            isAvailableInEA: isFeatureGitOpsEnabled,
-        },
-        { name: 'Projects', href: CommonURLS.APPLICATION_MANAGEMENT_PROJECTS, component: Project, isAvailableInEA: true },
-        {
             name: `Clusters${window._env_.K8S_CLIENT ? '' : ' & Environments'}`,
             href: URLS.GLOBAL_CONFIG_CLUSTER,
             component: Clusters,
             isAvailableInEA: true,
             isAvailableInDesktop: true,
         },
-        { name: 'Git Accounts', href: URLS.GLOBAL_CONFIG_GIT, component: GitProvider, isAvailableInEA: false },
         {
             name: serverMode === SERVER_MODE.EA_ONLY ? 'OCI Registry' : 'Container/ OCI Registry',
             href: URLS.GLOBAL_CONFIG_DOCKER,
@@ -237,13 +216,6 @@ const NavItem = ({ serverMode }) => {
     ]
 
     const ConfigOptional = [
-        { name: 'Chart Repositories', href: URLS.GLOBAL_CONFIG_CHART, component: ChartRepo, isAvailableInEA: true },
-        {
-            name: 'Deployment Charts',
-            href: CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
-            component: DeploymentChartsRouter,
-            isAvailableInEA: false,
-        },
         {
             name: 'Authorization',
             href: `${URLS.GLOBAL_CONFIG_AUTH}/users`,
@@ -277,23 +249,6 @@ const NavItem = ({ serverMode }) => {
             component: Authorization,
             isAvailableInEA: true,
         },
-        {
-            name: 'Notifications',
-            href: URLS.GLOBAL_CONFIG_NOTIFIER,
-            component: Notifier,
-            moduleName: ModuleNameMap.NOTIFICATION,
-            isAvailableInEA: false,
-        },
-        ...(window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates
-            ? [
-                  {
-                      name: 'Application Templates',
-                      href: CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP,
-                      component: DevtronAppTemplates,
-                      isAvailableInEA: false,
-                  },
-              ]
-            : []),
     ]
 
     useEffect(() => {
@@ -444,9 +399,9 @@ const NavItem = ({ serverMode }) => {
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
                     {ConfigOptional.map(
                         (route, index) =>
-                            ((serverMode !== SERVER_MODE.EA_ONLY && !route.moduleName) ||
+                            ((serverMode !== SERVER_MODE.EA_ONLY && !(route as any).moduleName) ||
                                 route.isAvailableInEA ||
-                                installedModuleMap.current?.[route.moduleName]) &&
+                                installedModuleMap.current?.[(route as any).moduleName]) &&
                             (route.group ? (
                                 <>
                                     <NavLink
@@ -512,34 +467,8 @@ const NavItem = ({ serverMode }) => {
                             )}
                         </>
                     )}
-                    <NavLink
-                        to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-                        key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
-                        activeClassName="active-route"
-                    >
-                        <div className="flexbox flex-justify">External Links</div>
-                    </NavLink>
-                    {CatalogFramework && (
-                        <NavLink
-                            to={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                            key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}
-                            activeClassName="active-route"
-                        >
-                            <div className="flexbox flex-justify">Catalog Framework</div>
-                        </NavLink>
-                    )}
                     {serverMode !== SERVER_MODE.EA_ONLY && (
                         <>
-                            {window._env_.ENABLE_SCOPED_VARIABLES && (
-                                <NavLink
-                                    to={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                                    key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-nav-link`}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Scoped Variables</div>
-                                </NavLink>
-                            )}
-
                             {PluginsPolicy && (
                                 <NavLink
                                     to={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
@@ -587,14 +516,6 @@ const NavItem = ({ serverMode }) => {
                                     <div className="flexbox flex-justify">Lock Deployment Configuration</div>
                                 </NavLink>
                             )}
-
-                            <NavLink
-                                to={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                                key={URLS.GLOBAL_CONFIG_BUILD_INFRA}
-                                activeClassName="active-route"
-                            >
-                                <div className="flexbox flex-justify">Build Infra</div>
-                            </NavLink>
                         </>
                     )}
                 </>
@@ -646,38 +567,6 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                       ]
                     : []),
 
-                ...(isFeatureGitOpsEnabled
-                    ? [
-                          <Route
-                              key={URLS.GLOBAL_CONFIG_GITOPS}
-                              path={URLS.GLOBAL_CONFIG_GITOPS}
-                              render={(props) => {
-                                  return (
-                                      <GitOpsConfiguration handleChecklistUpdate={handleChecklistUpdate} {...props} />
-                                  )
-                              }}
-                          />,
-                      ]
-                    : []),
-
-                <Route
-                    key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
-                    path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
-                    render={(props) => {
-                        return <Project {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
-                ...(serverMode !== SERVER_MODE.EA_ONLY
-                    ? [
-                          <Route
-                              key={URLS.GLOBAL_CONFIG_GIT}
-                              path={URLS.GLOBAL_CONFIG_GIT}
-                              render={(props) => {
-                                  return <GitProvider {...props} isSuperAdmin={isSuperAdmin} />
-                              }}
-                          />,
-                      ]
-                    : []),
                 <Route
                     key={URLS.GLOBAL_CONFIG_DOCKER}
                     path={`${URLS.GLOBAL_CONFIG_DOCKER}/:id?`}
@@ -692,63 +581,10 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                         )
                     }}
                 />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_CHART}
-                    path={URLS.GLOBAL_CONFIG_CHART}
-                    render={(props) => {
-                        return <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
-                ...(serverMode !== SERVER_MODE.EA_ONLY
-                    ? [
-                          <Route
-                              key={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
-                              path={CommonURLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
-                          >
-                              <DeploymentChartsRouter />
-                          </Route>,
-                      ]
-                    : []),
+
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    path={`${URLS.GLOBAL_CONFIG_NOTIFIER}/edit`}
-                    render={(props) => {
-                        return <AddNotification {...props} />
-                    }}
-                />,
-                <Route
-                    key={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    path={URLS.GLOBAL_CONFIG_NOTIFIER}
-                    render={(props) => {
-                        return <Notifier {...props} isSuperAdmin={isSuperAdmin} />
-                    }}
-                />,
-                <Route key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS} path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}>
-                    <ExternalLinks />
-                </Route>,
-                ...(serverMode !== SERVER_MODE.EA_ONLY
-                    ? [
-                          <Route key={URLS.GLOBAL_CONFIG_BUILD_INFRA} path={URLS.GLOBAL_CONFIG_BUILD_INFRA}>
-                              <BuildInfra isSuperAdmin={isSuperAdmin} />
-                          </Route>,
-                      ]
-                    : []),
             ]}
-            {CatalogFramework && (
-                <Route key={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK} path={URLS.GLOBAL_CONFIG_CATALOG_FRAMEWORK}>
-                    <CatalogFramework isSuperAdmin={isSuperAdmin} />
-                </Route>
-            )}
             {serverMode !== SERVER_MODE.EA_ONLY && [
-                window._env_.ENABLE_SCOPED_VARIABLES && (
-                    <Route
-                        key={`${CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}-route`}
-                        path={CommonURLS.GLOBAL_CONFIG_SCOPED_VARIABLES}
-                    >
-                        <ScopedVariables isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                ),
                 DeploymentWindow && (
                     <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
                         <DeploymentWindow isSuperAdmin={isSuperAdmin} />
@@ -808,14 +644,15 @@ const Title = ({ title = '', subtitle = '', style = {}, className = '', tag = ''
     return (
         <div className="flex column left">
             <div className={`list__title ${className} flex left w-100`} style={style}>
-                <div className='dc__no-shrink dc__mxw-400 dc__truncate'><InteractiveCellText text={title} /></div>
+                <div className="dc__no-shrink dc__mxw-400 dc__truncate">
+                    <InteractiveCellText text={title} />
+                </div>
                 {tag && <div className="tag dc__no-shrink">{tag}</div>}
                 {category && (
                     <div className="dc__border bg__secondary px-6 fs-12 lh-18 br-4 ml-8 fw-4 lh-18 dc__mxw-150 dc__no-shrink dc__truncate dc__text-center">
                         <InteractiveCellText text={category} fontSize={12} />
                     </div>
                 )}
-
             </div>
             {subtitle && <div className={`list__subtitle ${className}`}>{subtitle}</div>}
         </div>

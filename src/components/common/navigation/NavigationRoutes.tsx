@@ -68,6 +68,7 @@ import { Navigation } from '@Components/Navigation'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
 import { Configurations } from '@Pages/Releases/Detail'
+import { ApplicationManagementConfigurations } from '@PagesDevtron2.0/ApplicationManagement'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
 import {
@@ -100,6 +101,7 @@ import './navigation.scss'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 
+const ProjectList = lazy(() => import('@Components/project/ProjectList'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -127,7 +129,6 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 }> = importComponentFromFELibrary('ViewIsPipelineRBACConfigured', null, 'function')
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
-const DevtronAppTemplates = importComponentFromFELibrary('DevtronAppTemplates', null, 'function')
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
@@ -563,6 +564,12 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                         />,
+                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
+                                            {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
+                                        </Route>,
+                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
+                                            <ApplicationManagementConfigurations />
+                                        </Route>,
                                         <Route
                                             key={CommonURLS.SECURITY_CENTER}
                                             path={CommonURLS.SECURITY_CENTER}
@@ -641,14 +648,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             </AppContext.Provider>
                                         </Route>
                                     )}
-                                    {window._env_.FEATURE_APPLICATION_TEMPLATES_ENABLE && DevtronAppTemplates && (
-                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP}>
-                                            <DevtronAppTemplates AppConfig={AppConfig} />
-                                        </Route>
-                                    )}
                                     {EnterpriseRouter && (
                                         <Route path={[CommonURLS.APPLICATION_MANAGEMENT, CommonURLS.COST_VISIBILITY]}>
-                                            <EnterpriseRouter />
+                                            <EnterpriseRouter AppConfig={AppConfig} />
                                         </Route>
                                     )}
                                     <RedirectUserWithSentry
