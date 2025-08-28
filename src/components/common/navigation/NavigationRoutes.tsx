@@ -650,7 +650,13 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         </Route>
                                     )}
                                     {EnterpriseRouter && (
-                                        <Route path={[CommonURLS.APPLICATION_MANAGEMENT, CommonURLS.COST_VISIBILITY]}>
+                                        <Route
+                                            path={[
+                                                CommonURLS.APPLICATION_MANAGEMENT,
+                                                CommonURLS.COST_VISIBILITY,
+                                                CommonURLS.AI_RECOMMENDATIONS,
+                                            ]}
+                                        >
                                             <EnterpriseRouter
                                                 AppConfig={AppConfig}
                                                 OfflinePipelineModalAppView={OffendingPipelineModalAppView}

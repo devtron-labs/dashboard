@@ -19,6 +19,7 @@ export type NavigationRootItemID =
     | 'automation-and-enablement'
     | 'backup-and-restore'
     | 'global-configuration'
+    | 'ai-recommendations'
 
 type CommonNavigationItemType = {
     title: string
