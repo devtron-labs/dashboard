@@ -209,7 +209,7 @@ const DeploymentChartsList = () => {
             errorScreenManagerProps={{
                 code: chartListError?.code,
                 reload: reloadChartList,
-                redirectURL: URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST,
+                redirectURL: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS,
             }}
         >
             {!!chartList && (

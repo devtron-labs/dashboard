@@ -37,6 +37,7 @@ import {
     ButtonComponentType,
     Icon,
     InfoBlock,
+    GitProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
@@ -605,7 +606,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
         ...provider,
         value: provider.id,
         label: provider.name,
-        startIcon: renderMaterialIcon(provider.url),
+        startIcon: <GitProviderIcon gitRepoUrl={provider.url} />,
     })
 
     handleGitProviderChange: SelectPickerProps['onChange'] = (selected) => {
@@ -686,7 +687,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     component: ButtonComponentType.link,
                                     variant: ButtonVariantType.borderLess,
                                     linkProps: {
-                                        to: URLS.GLOBAL_CONFIG_GIT,
+                                        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
                                     },
                                     text: 'Add Git Account',
                                     startIcon: <Icon name="ic-add" color={null} />,

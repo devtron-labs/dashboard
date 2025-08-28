@@ -3,28 +3,18 @@
 
     &__default {
         grid-template-rows: 56px repeat(auto-fill, 52px);
-        background-image: url('../../assets/img/devtron-bg.webp');
+        background-image: var(--devtron-bg);
         background-size: 100vw 100vh;
         background-repeat: no-repeat;
         z-index: calc(#{var(--navigation-index)} + 1);
 
-        &:hover,
         &.is-expanded {
             background-image: linear-gradient(
                     90deg,
                     var(--sidenav-bg-section-expanded) 0%,
                     var(--sidenav-bg-section-expanded) 100%
                 ),
-                url('../../assets/img/devtron-bg.webp');
-        }
-
-        &:hover {
-            .nav-group {
-                &.is-selected .nav-group__icon-container,
-                &:hover .nav-group__icon-container {
-                    background-color: var(--sidenav-bg-section-expanded-hover);
-                }
-            }
+                var(--devtron-bg);
         }
     }
 
@@ -32,7 +22,7 @@
         width: #{$navigation-expanded-width};
         background:
             linear-gradient(90deg, var(--sidenav-bg-subsection) 0%, var(--sidenav-bg-subsection) 100%),
-            url('../../assets/img/devtron-bg.webp') -56px / 100vw 100vh no-repeat;
+            var(--devtron-bg) -56px / 100vw 100vh no-repeat;
         z-index: var(--navigation-index);
 
         &__backdrop {
@@ -48,21 +38,29 @@
     }
 
     .nav-group {
-        &:hover .nav-group__icon-container {
-            background-color: var(--sidenav-bg-section-collapsed-hover);
+        &:focus {
+            outline: none;
         }
 
-        &.is-selected .nav-group__icon-container {
-            background-color: var(--sidenav-bg-section-collapsed-selected);
-        }
-
-        &.is-expanded {
+        &:not([aria-disabled='true']) {
+            &:focus .nav-group__icon-container,
             &:hover .nav-group__icon-container {
-                background-color: var(--sidenav-bg-section-expanded-hover);
+                background-color: var(--sidenav-bg-section-collapsed-hover);
             }
 
             &.is-selected .nav-group__icon-container {
-                background-color: var(--sidenav-bg-section-expanded-selected);
+                background-color: var(--sidenav-bg-section-collapsed-selected);
+            }
+
+            &.is-expanded {
+                &:focus .nav-group__icon-container,
+                &:hover .nav-group__icon-container {
+                    background-color: var(--sidenav-bg-section-expanded-hover);
+                }
+
+                &.is-selected .nav-group__icon-container {
+                    background-color: var(--sidenav-bg-section-expanded-selected);
+                }
             }
         }
 
@@ -73,7 +71,7 @@
         }
     }
 
-    .nav-item {
+    .nav-item:not([aria-disabled='true']) {
         &:hover {
             background-color: var(--sidenav-subsection-item-hover);
         }
@@ -81,5 +79,17 @@
         &.is-selected {
             background-color: var(--sidenav-subsection-item-selected);
         }
+    }
+}
+
+// This is outside .navigation class, since tooltip is rendered outside body
+.nav-group__tooltip.tippy-box {
+    background-color: var(--bg-tooltip-black);
+    border: 1px solid var(--N0);
+    padding: 5px 9px;
+    transform: translateX(-14px);
+
+    .tippy-content {
+        line-height: 20px;
     }
 }

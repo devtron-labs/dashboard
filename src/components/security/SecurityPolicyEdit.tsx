@@ -25,6 +25,7 @@ import {
     getCVEUrlFromCVEName,
     ConditionalWrap,
     Icon,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import {
@@ -535,7 +536,7 @@ export class SecurityPolicyEdit extends Component<
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
                         <h1 className="form__title">
-                            <NavLink to="/security/policies/clusters">Clusters</NavLink>
+                            <NavLink to={`${URLS.SECURITY_CENTER}/policies/clusters`}>Clusters</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0].name}
                         </h1>
@@ -545,7 +546,7 @@ export class SecurityPolicyEdit extends Component<
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
                         <h1 className="form__title">
-                            <NavLink to="/security/policies/environments">Environments</NavLink>
+                            <NavLink to={`${URLS.SECURITY_CENTER}/policies/environments`}>Environments</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0].name}
                         </h1>
@@ -556,7 +557,7 @@ export class SecurityPolicyEdit extends Component<
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
                         <h1 className="form__title">
-                            <NavLink to="/security/policies/apps">Applications</NavLink>
+                            <NavLink to={`${URLS.SECURITY_CENTER}/policies/apps`}>Applications</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0]?.name.substring(0, i)}
                         </h1>

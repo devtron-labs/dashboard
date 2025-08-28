@@ -102,7 +102,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {
                         this.setState({
-                            sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+                            sourcePipelineURL: `${URLS.APPLICATION_MANAGEMENT_APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
                         })
                     })
                 })
@@ -149,7 +149,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 this.props.isTemplateView,
             )
             this.setState({
-                sourcePipelineURL: `${URLS.APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
+                sourcePipelineURL: `${URLS.APPLICATION_MANAGEMENT_APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
             })
         }
     }

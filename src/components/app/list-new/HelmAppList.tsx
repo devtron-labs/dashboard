@@ -316,9 +316,9 @@ const HelmAppList = ({
 
     function _buildAppDetailUrl(app: HelmApp) {
         if (app.isExternal) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
+            return `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
         }
-        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+        return `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
     }
 
     function _removeExternalAppFetchError(e) {

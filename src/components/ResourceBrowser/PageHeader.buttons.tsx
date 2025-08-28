@@ -22,6 +22,7 @@ import {
     ButtonComponentType,
     ComponentSizeType,
     handleAnalyticsEvent,
+    URLS as COMMON_URLS,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -30,6 +31,7 @@ import {
     CreateClusterProps,
     CreateClusterTypeEnum,
 } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import { UpgradeToEnterpriseDialog } from '@Pages/Shared/UpgradeToEnterprise'
 
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { URLS } from '../../config'
@@ -70,12 +72,27 @@ export const renderCreateResourceButton = (clusterId: string, callback: CreateRe
     <CreateResourceButton closeModal={callback} clusterId={clusterId} />
 )
 
-export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateClusterProps, 'handleReloadClusterList'>) => {
+export const NewClusterButton = ({
+    handleReloadClusterList,
+    clusterCount,
+}: Pick<CreateClusterProps, 'handleReloadClusterList'> & { clusterCount: number }) => {
     const { replace } = useHistory()
-    const { isSuperAdmin } = useMainContext()
+    const { isSuperAdmin, licenseData } = useMainContext()
+    const isFreemium = licenseData?.isFreemium ?? false
+    const isClusterAdditionAllowed = !isFreemium || clusterCount < licenseData?.moduleLimits?.maxAllowedClusters
+
+    const [showUpgradeToEnterprise, setShowUpgradeToEnterprise] = useState(false)
+
+    const handleOpenUpgradeDialog = () => {
+        setShowUpgradeToEnterprise(true)
+    }
+
+    const handleCloseUpgradeDialog = () => {
+        setShowUpgradeToEnterprise(false)
+    }
 
     const handleCloseCreateClusterModal = () => {
-        replace(URLS.RESOURCE_BROWSER)
+        replace(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
     }
 
     return (
@@ -86,28 +103,39 @@ export const NewClusterButton = ({ handleReloadClusterList }: Pick<CreateCluster
                         dataTestId="add_cluster_button"
                         text="New Cluster"
                         size={ComponentSizeType.small}
-                        component={ButtonComponentType.link}
                         startIcon={<Add />}
-                        linkProps={{
-                            to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
-                                type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                            }),
-                        }}
+                        {...(isClusterAdditionAllowed
+                            ? {
+                                  component: ButtonComponentType.link,
+                                  linkProps: {
+                                      to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
+                                          type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                                      }),
+                                  },
+                              }
+                            : {
+                                  component: ButtonComponentType.button,
+                                  onClick: handleOpenUpgradeDialog,
+                              })}
                     />
                     <span className="dc__divider" />
                 </div>
 
-                <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
-                    <CreateCluster
-                        handleReloadClusterList={handleReloadClusterList}
-                        handleRedirectOnModalClose={handleCloseCreateClusterModal}
-                    />
-                </Route>
+                {isClusterAdditionAllowed && (
+                    <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
+                        <CreateCluster
+                            handleReloadClusterList={handleReloadClusterList}
+                            handleRedirectOnModalClose={handleCloseCreateClusterModal}
+                        />
+                    </Route>
+                )}
+
+                <UpgradeToEnterpriseDialog open={showUpgradeToEnterprise} handleClose={handleCloseUpgradeDialog} />
             </>
         )
     )
 }
 
-export const renderNewClusterButton = (handleReloadClusterList: () => void) => () => (
-    <NewClusterButton handleReloadClusterList={handleReloadClusterList} />
+export const renderNewClusterButton = (handleReloadClusterList: () => void, clusterCount: number) => () => (
+    <NewClusterButton handleReloadClusterList={handleReloadClusterList} clusterCount={clusterCount} />
 )

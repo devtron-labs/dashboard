@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { RouteComponentProps, Link, generatePath } from 'react-router-dom'
+import { Link, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import { CINode } from './nodes/CINode'
 import { CDNode } from './nodes/CDNode'
@@ -40,19 +40,15 @@ import {
     noop,
     WorkflowNodeType,
     PipelineType,
-    AddPipelineType,
-    SelectedNode,
     ConditionalWrap,
     ChangeCIPayloadType,
-    CIPipelineNodeType,
     URLS as CommonURLS,
-    AppConfigProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
 import { ReactComponent as ICDelete } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as ICEdit } from '../../assets/icons/ic-pencil.svg'
-import { WorkflowPositionState } from './types'
+import { WorkflowProps, WorkflowState } from './types'
 import { CHANGE_CI_TOOLTIP } from './constants'
 
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
@@ -62,55 +58,6 @@ const getParsedPluginPolicyConsequenceData = importComponentFromFELibrary(
     () => null,
     'function',
 )
-
-export interface WorkflowProps
-    extends RouteComponentProps<{ appId: string; workflowId?: string; ciPipelineId?: string; cdPipelineId?: string }>,
-        Required<Pick<AppConfigProps, 'isTemplateView'>> {
-    nodes: CommonNodeAttr[]
-    id: number
-    name: string
-    startX: number
-    startY: number
-    width: number | string
-    height: number | string
-    showDeleteDialog: (workflowId: number) => void
-    handleCDSelect: (
-        workflowId: number | string,
-        ciPipelineId: number | string,
-        parentPipelineType: string,
-        parentPipelineId: number | string,
-        isWebhookCD?: boolean,
-        childPipelineId?: number | string,
-        addType?: AddPipelineType,
-    ) => void
-    openEditWorkflow: (event, workflowId: number) => string
-    handleCISelect: (workflowId: string | number, type: CIPipelineNodeType) => void
-    addCIPipeline: (type: CIPipelineNodeType) => void
-    addWebhookCD: (workflowId?: number | string) => void
-    cdWorkflowList?: any[]
-    showWebhookTippy?: boolean
-    hideWebhookTippy?: () => void
-    isJobView?: boolean
-    envList?: any[]
-    filteredCIPipelines?: any[]
-    addNewPipelineBlocked?: boolean
-    handleChangeCI?: (changeCIPayload: ChangeCIPayloadType) => void
-    selectedNode?: SelectedNode
-    handleSelectedNodeChange?: (selectedNode: SelectedNode) => void
-    appName?: string
-    getWorkflows?: () => void
-    refreshParentWorkflows?: () => void
-    reloadEnvironments?: () => void
-    workflowPositionState?: WorkflowPositionState
-    handleDisplayLoader?: () => void
-    isOffendingPipelineView?: boolean
-}
-
-interface WorkflowState {
-    top: number
-    left: number
-    showCIMenu: boolean
-}
 
 export class Workflow extends Component<WorkflowProps, WorkflowState> {
     constructor(props) {
@@ -458,10 +405,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 title={node.title}
                 redirectTo={`${
                     this.props.isTemplateView
-                        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                               appId: this.props.match.params.appId,
                           })
-                        : `${URLS.APP}/${this.props.match.params.appId}`
+                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
                 }/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
@@ -721,7 +668,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.history.push(
-            `${URLS.JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 

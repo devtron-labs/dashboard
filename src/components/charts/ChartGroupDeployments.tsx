@@ -119,7 +119,7 @@ const CollapsibleDeployment: React.FC<{
                 {props.installedChartGroup.installedCharts.map((chart: InstalledChart, index) => {
                     return (
                         <Link
-                            to={`${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`}
+                            to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`}
                             key={`${index} - ${chart.chartName}}`}
                             className="chart-group-deployment__row"
                             data-testid={`group-deployment-${props.index}`}

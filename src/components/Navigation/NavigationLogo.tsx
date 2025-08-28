@@ -29,11 +29,11 @@ export const NavigationLogo = () => {
     } else if (SIDEBAR_DT_LOGO) {
         logoContent = <img src={SIDEBAR_DT_LOGO} alt="devtron" className="icon-dim-40" width={40} height={40} />
     } else {
-        logoContent = <Icon name="ic-devtron" color="white" size={40} />
+        logoContent = <Icon name="ic-devtron" color="white" size={28} />
     }
 
     return (
-        <NavLink className="flex" to={URLS.APP}>
+        <NavLink className="flex" to={URLS.APPLICATION_MANAGEMENT_APP}>
             {logoContent}
         </NavLink>
     )
@@ -43,8 +43,10 @@ export const NavigationLogoExpanded = () => {
     const showOrganizationName = !!window._env_.ORGANIZATION_NAME
 
     return (
-        <div className="flex left dc__gap-8 px-16 pt-12 pb-11 border__sidenav-secondary--bottom">
-            {showOrganizationName && <Icon name="ic-devtron" color="white" size={32} />}
+        <div
+            className={`flex left dc__gap-8 px-16 border__sidenav-secondary--bottom ${showOrganizationName ? 'pt-14 pb-13' : 'pt-20 pb-19'}`}
+        >
+            {showOrganizationName && <Icon name="ic-devtron" color="white" size={28} />}
             <img src={TextLogo} alt="devtron" width={76} height={16} />
         </div>
     )

@@ -1,13 +1,14 @@
+import { MouseEvent } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import { Icon, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavGroupProps } from './types'
 
-export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onClick }: NavGroupProps) => {
+export const NavGroup = ({ title, icon, isSelected, isExpanded, to, disabled, onClick, tooltip }: NavGroupProps) => {
     const shouldRenderNavLink = !!to
 
-    const className = `nav-group dc__transparent px-10 py-8 dc__position-rel ${isSelected ? 'is-selected' : ''} ${isExpanded ? 'is-expanded' : ''}`
+    const className = `nav-group dc__transparent px-10 py-8 dc__position-rel ${isSelected ? 'is-selected' : ''} ${isExpanded ? 'is-expanded' : ''} ${disabled ? 'dc__disabled' : ''}`
 
     const content = (
         <>
@@ -20,16 +21,44 @@ export const NavGroup = ({ title, icon, isSelected, isExpanded, to, onClick }: N
         </>
     )
 
+    const handleNavLinkClick = (e: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+        if (disabled) {
+            e.preventDefault()
+            return
+        }
+        onClick?.(e)
+    }
+
     return (
-        <Tooltip alwaysShowTippyOnHover content={title} placement="bottom">
+        <Tooltip
+            alwaysShowTippyOnHover
+            content={tooltip || (disabled ? `Coming Soon - ${title}` : title)}
+            placement="right"
+            className="nav-group__tooltip no-content-padding"
+        >
             {shouldRenderNavLink ? (
-                <NavLink to={to} className={className} activeClassName="is-selected">
+                <NavLink
+                    to={to}
+                    className={className}
+                    activeClassName="is-selected"
+                    aria-disabled={disabled}
+                    onClick={handleNavLinkClick}
+                >
                     {content}
                 </NavLink>
             ) : (
-                <button type="button" aria-label={title} className={className} onClick={onClick}>
-                    {content}
-                </button>
+                <span>
+                    <button
+                        type="button"
+                        aria-label={title}
+                        aria-disabled={disabled}
+                        disabled={disabled}
+                        className={className}
+                        onClick={onClick}
+                    >
+                        {content}
+                    </button>
+                </span>
             )}
         </Tooltip>
     )

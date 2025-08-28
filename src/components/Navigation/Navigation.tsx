@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AnimatePresence,
+    KeyboardShortcut,
     ModuleNameMap,
     ModuleStatus,
     motion,
@@ -35,7 +36,8 @@ import { NAVIGATION_LIST } from './constants'
 import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
-import { NavigationGroupType, NavigationProps } from './types'
+import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
+import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
 
 import './styles.scss'
 
@@ -49,6 +51,7 @@ export const Navigation = ({
     // STATES
     const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
     const [searchText, setSearchText] = useState('')
+    const [showCommandBar, setShowCommandBar] = useState(false)
 
     // HOOKS
     const { pathname } = useLocation()
@@ -130,39 +133,34 @@ export const Navigation = ({
 
     // COMPUTED VALUES
     const selectedNavGroup = useMemo(
-        () =>
-            NAVIGATION_LIST.find(({ items }) =>
-                items.some((item) =>
-                    item.hasSubMenu
-                        ? item.subItems.some((subItem) => pathname.startsWith(subItem.href))
-                        : pathname.startsWith(item.href),
-                ),
-            ),
+        () => NAVIGATION_LIST.find(({ items }) => items.some((item) => doesNavigationItemMatchPath(item, pathname))),
         [pathname],
     )
 
     const currentNavGroup = clickedNavGroup || selectedNavGroup
     const isExpanded = !!clickedNavGroup
 
-    const navItems = useMemo(() => {
-        if (!currentNavGroup) {
-            return []
-        }
-
-        const searchTextNormalized = searchText.toLowerCase().trim()
-
-        return searchTextNormalized
-            ? currentNavGroup.items.filter(({ title }) => title.toLowerCase().includes(searchTextNormalized))
-            : currentNavGroup.items
-    }, [currentNavGroup, searchText])
+    const navItems = useMemo<NavigationGroupType['items']>(
+        () => (currentNavGroup ? filterNavigationItems(currentNavGroup.items, searchText) : []),
+        [currentNavGroup, searchText],
+    )
 
     // HANDLERS
-    const handleNavGroupClick = (navItem: NavigationGroupType) => () => {
-        setClickedNavGroup(navItem)
-        setSearchText('')
-    }
+    const handleNavGroupClick =
+        (navItem: NavigationGroupType): NavGroupProps['onClick'] =>
+        (e) => {
+            // Prevent navigation, if the item is already active
+            if (
+                selectedNavGroup?.id === navItem.id &&
+                doesNavigationItemMatchPath(findActiveNavigationItemOfNavGroup(selectedNavGroup.items), pathname)
+            ) {
+                e.preventDefault()
+            }
+            setClickedNavGroup(navItem)
+            setSearchText('')
+        }
 
-    const closeExpandedNavigation =
+    const handleCloseExpandedNavigation =
         (forceClose = false) =>
         () => {
             if (searchText && !forceClose) {
@@ -172,6 +170,11 @@ export const Navigation = ({
             setSearchText('')
         }
 
+    const handleOpenCommandBar = () => {
+        setShowCommandBar(true)
+        handleCloseExpandedNavigation(true)()
+    }
+
     return (
         <>
             <div className="navigation dc__position-rel">
@@ -179,16 +182,30 @@ export const Navigation = ({
                     className={`navigation__default dc__position-rel dc__grid dc__overflow-hidden h-100 ${isExpanded ? 'is-expanded' : ''}`}
                 >
                     <NavigationLogo />
-                    <NavGroup title="Search" icon="ic-magnifying-glass" isExpanded={isExpanded} />
+                    <NavGroup
+                        title="Search"
+                        icon="ic-magnifying-glass"
+                        isExpanded={isExpanded}
+                        onClick={handleOpenCommandBar}
+                        tooltip={
+                            <span className="flex dc__gap-2">
+                                Search&nbsp;
+                                <KeyboardShortcut keyboardKey="Meta" />
+                                <KeyboardShortcut keyboardKey="K" />
+                            </span>
+                        }
+                    />
                     <NavGroup title="Overview" icon="ic-speedometer" to="/dummy-url" isExpanded={isExpanded} />
                     {NAVIGATION_LIST.map((item) => (
                         <NavGroup
                             key={item.id}
                             title={item.title}
                             icon={item.icon}
+                            disabled={item.disabled}
                             isExpanded={isExpanded}
                             isSelected={clickedNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
                             onClick={handleNavGroupClick(item)}
+                            to={findActiveNavigationItemOfNavGroup(item.items)?.href}
                         />
                     ))}
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
@@ -205,7 +222,8 @@ export const Navigation = ({
                         <>
                             <div
                                 className="navigation__expanded__backdrop dc__position-abs dc__top-0"
-                                onClick={closeExpandedNavigation(true)}
+                                onClick={handleCloseExpandedNavigation(true)}
+                                onMouseEnter={handleCloseExpandedNavigation(false)}
                             />
 
                             <motion.div
@@ -214,7 +232,6 @@ export const Navigation = ({
                                 exit={{ opacity: 0, x: 0 }}
                                 transition={{ duration: 0.3, ease: 'easeOut' }}
                                 className="navigation__expanded h-100 dc__right-radius-8 flexbox-col dc__position-abs dc__top-0 dc__right-0"
-                                onMouseLeave={closeExpandedNavigation(false)}
                             >
                                 <NavigationLogoExpanded />
                                 {currentNavGroup && (
@@ -223,15 +240,20 @@ export const Navigation = ({
                                             {currentNavGroup.title}
                                         </p>
                                         <SearchBar
+                                            key={currentNavGroup.id}
                                             variant="sidenav"
                                             initialSearchText={searchText}
                                             handleSearchChange={setSearchText}
                                             inputProps={{ autoFocus: true }}
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
-                                            {navItems.map((item) => (
-                                                <NavItem key={item.title} {...item} />
-                                            ))}
+                                            {navItems
+                                                .filter(({ forceHideEnvKey, hideNav }) =>
+                                                    forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav,
+                                                )
+                                                .map((item) => (
+                                                    <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
+                                                ))}
                                         </div>
                                     </div>
                                 )}
@@ -241,7 +263,7 @@ export const Navigation = ({
                 </AnimatePresence>
             </div>
 
-            <CommandBar />
+            <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
         </>
     )
 }

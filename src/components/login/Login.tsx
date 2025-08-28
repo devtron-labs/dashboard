@@ -82,7 +82,7 @@ const Login = () => {
         if (queryParam && queryParam.includes('login')) {
             queryParam =
                 window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
-                    ? URLS.APP
+                    ? URLS.APPLICATION_MANAGEMENT_APP
                     : CommonURL.NETWORK_STATUS_INTERFACE
             const url = `${location.pathname}?continue=${queryParam}`
             history.push(url)
