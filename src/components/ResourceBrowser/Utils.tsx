@@ -15,14 +15,14 @@
  */
 
 import React from 'react'
-import { generatePath, useLocation } from 'react-router-dom'
+import { generatePath, matchPath, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import queryString from 'query-string'
 
 import {
     ApiResourceGroupType,
+    BreadcrumbText,
     DATE_TIME_FORMAT_STRING,
-    FeatureTitleWithInfo,
     getUrlWithSearchParams,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
@@ -40,6 +40,7 @@ import { LAST_SEEN } from '../../config'
 import { eventAgeComparator, importComponentFromFELibrary, processK8SObjects } from '../common'
 import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import {
+    INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG,
     JUMP_TO_KIND_SHORT_NAMES,
     K8S_EMPTY_GROUP,
     MONITORING_DASHBOARD_TAB_ID,
@@ -418,20 +419,21 @@ export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatu
               kind: 'node',
           })
 
-const renderAppGroupDescriptionContent = () =>
-    'Job allows execution of repetitive tasks in a manual or automated manner. Execute custom tasks or choose from a library of preset plugins in your job pipeline.'
+export const getInfrastructureManagementBreadcrumbsConfig = (pathname: string) => {
+    const alias = {
+        'infrastructure-management': {
+            component: <InfrastructureManagementIcon />,
+            linked: true,
+        },
+    }
 
-export const renderAdditionalBrowserHeaderInfo = () => (
-    <FeatureTitleWithInfo
-        title={
-            <div className="flexbox dc__gap-4">
-                <InfrastructureManagementIcon />
-                <span>/</span>
-                <span>Infrastructure Management</span>
-            </div>
+    INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG.forEach(({ key, route, heading }) => {
+        const isActive = !!matchPath(pathname, { path: route, exact: true })
+        alias[key] = {
+            component: <BreadcrumbText isActive={isActive} heading={heading} />,
+            linked: !isActive,
         }
-        docLink="RESOURCE_BROWSER"
-        renderDescriptionContent={renderAppGroupDescriptionContent}
-        showInfoIconTippy
-    />
-)
+    })
+
+    return { alias }
+}
