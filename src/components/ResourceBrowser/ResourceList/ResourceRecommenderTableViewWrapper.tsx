@@ -56,7 +56,7 @@ export const ResourceRecommenderTableViewWrapper = ({
         {resourceListError ? (
             <ErrorScreenManager
                 code={resourceListError?.code}
-                redirectURL={URLS.RESOURCE_BROWSER}
+                redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
                 reload={reloadResourceListData}
             />
         ) : (

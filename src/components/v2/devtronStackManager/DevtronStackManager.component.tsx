@@ -598,7 +598,7 @@ const InstallationStatus = ({
                     >
                         {isUpgradeView && !canViewLogs && (
                             <NavLink
-                                to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}`}
+                                to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}`}
                                 target="_blank"
                             >
                                 View details
@@ -606,7 +606,7 @@ const InstallationStatus = ({
                         )}
                         {((isUpgradeView && canViewLogs) || (!isUpgradeView && isCICDModule)) && logPodName && (
                             <NavLink
-                                to={`${URLS.APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
+                                to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/1%7Cdevtroncd%7C${appName}/${appName}/${URLS.APP_DETAILS}/${URLS.APP_DETAILS_K8}/pod/${logPodName}/logs`}
                                 target="_blank"
                             >
                                 View logs

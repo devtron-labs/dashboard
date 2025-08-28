@@ -30,7 +30,7 @@ const ExternalFluxAppDetailsRoute = () => {
         <>
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.FLUX_APPS}
-                redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.FLUX_APPS}`}
+                redirectURL={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.FLUX_APPS}`}
                 showAppDetailsOnly
             />
             <Suspense fallback={<Progressing pageLoader />}>

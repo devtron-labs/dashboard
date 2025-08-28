@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@use './themeTokens.scss' as *;
+
 $white: 255, 255, 255;
 $black: 0, 0, 0;
 
@@ -246,7 +248,7 @@ $black: 0, 0, 0;
 
     --sidenav-bg-section-collapsed-hover: rgba(#{$white}, 0.40);
     --sidenav-bg-section-collapsed-selected: rgba(#{$white}, 0.40);
-    --sidenav-bg-section-expanded: rgba(#{$white}, 0.20);
+    --sidenav-bg-section-expanded: rgba(#{$white}, 0.10);
     --sidenav-bg-section-expanded-hover: rgba(#{$black}, 0.75);
     --sidenav-bg-section-expanded-selected: rgba(#{$black}, 0.75);
     --sidenav-bg-subsection: rgba(#{$black}, 0.75);
@@ -306,10 +308,12 @@ $black: 0, 0, 0;
     &.theme {
         &__light {
             @include theme-light;
+            @include theme-light-tokens;
         }
 
         &__dark {
             @include theme-dark;
+            @include theme-dark-tokens;
         }
     }
 }
@@ -317,6 +321,7 @@ $black: 0, 0, 0;
 .component-specific-theme {
     &__light {
         @include theme-light;
+        @include theme-light-tokens;
 
         $code-editor-diff-red: 243, 62, 62;
         $code-editor-diff-green: 29, 173, 112;
@@ -346,11 +351,11 @@ $black: 0, 0, 0;
 
     &__dark {
         @include theme-dark;
+        @include theme-dark-tokens;
 
         $code-editor-diff-red: 255, 93, 96;
         $code-editor-diff-green: 122, 198, 128;
         $selection-color: 116, 181, 255;
-
 
         // CODE-EDITOR COLORS
         --fg-code-editor: #a5d6ff;

@@ -260,8 +260,8 @@ const DeploymentsTableLinkCellComponent = ({ row }: DeploymentsTableCellComponen
             className="flex left fs-13 lh-20 dc__truncate dc__w-fit-content"
             to={
                 appOfferingMode === SERVER_MODE.EA_ONLY
-                    ? `${URLS.APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
-                    : `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
+                    ? `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
+                    : `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
             }
         >
             {row.data.appName}

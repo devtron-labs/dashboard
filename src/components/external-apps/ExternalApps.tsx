@@ -30,7 +30,7 @@ export default function ExternalApps() {
         <div className="flexbox-col h-100">
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.HELM_APPS}
-                redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
+                redirectURL={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

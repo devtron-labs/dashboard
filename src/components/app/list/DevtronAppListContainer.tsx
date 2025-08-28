@@ -125,7 +125,7 @@ const DevtronAppList = ({
     }, [appListResponseLoading])
 
     const handleEditApp = (appId: number): void => {
-        const url = `/${Routes.APP}/${appId}/${Routes.EDIT}`
+        const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${Routes.EDIT}`
         history.push(url)
     }
 
@@ -139,9 +139,9 @@ const DevtronAppList = ({
         setCurrentAppName(app.name)
 
         if (envId) {
-            return `/${Routes.APP}/${app.id}/details/${envId}`
+            return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/details/${envId}`
         }
-        return `/${Routes.APP}/${app.id}/trigger`
+        return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/trigger`
     }
 
     const expandRow = (id: number): void => {
@@ -207,7 +207,7 @@ const DevtronAppList = ({
                 />
                 <ContentCard
                     datatestid="create-application"
-                    redirectTo={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    redirectTo={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
                     rootClassName="ev-5"
                     imgSrc={DeployCICD}
                     title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}

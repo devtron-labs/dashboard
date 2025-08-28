@@ -29,6 +29,7 @@ import {
     SelectPickerProps,
     ToastManager,
     ToastVariantType,
+    URLS,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -37,7 +38,6 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
-import { URLS } from '../../../config'
 import { ResourceBrowserGAEvent } from '../Constants'
 import { ClusterSelectorType } from '../Types'
 import { getClusterSelectOptions } from './utils'
@@ -134,7 +134,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     }
 
     const handleRedirectToClusterList = () => {
-        replace(URLS.RESOURCE_BROWSER)
+        replace(URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
     }
 
     return (
