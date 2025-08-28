@@ -60,7 +60,7 @@ export class AppCheckList extends Component<AppCheckListProps, AppCheckListState
                     )}
                     {!git && (
                         <NavLink
-                            to={`${URLS.GLOBAL_CONFIG_GIT}`}
+                            to={`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS}`}
                             className="dc__no-decor mt-8 flex left"
                             style={{ color: git ? `var(--N500)` : `var(--B500)` }}
                         >

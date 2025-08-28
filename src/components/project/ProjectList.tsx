@@ -23,6 +23,7 @@ import {
     FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
+    PageHeader,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -224,17 +225,23 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             )
         }
         return (
-            <section className="global-configuration__component flex-1">
-                {this.renderPageHeader()}
-                {this.renderAddProject()}
-                {this.state.projects.map((project, index) => {
-                    return (
-                        <React.Fragment key={`${project.name}-${index}`}>
-                            {this.renderProjects(project, index)}
-                        </React.Fragment>
-                    )
-                })}
-            </section>
+            <>
+                {/* TODO: replace this PageHeader with Application Management PageHeader */}
+                <PageHeader headerName="Application Management / Projects" />
+                <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
+                    <div className="project-list-container flex-grow-1">
+                        {this.renderPageHeader()}
+                        {this.renderAddProject()}
+                        {this.state.projects.map((project, index) => {
+                            return (
+                                <React.Fragment key={`${project.name}-${index}`}>
+                                    {this.renderProjects(project, index)}
+                                </React.Fragment>
+                            )
+                        })}
+                    </div>
+                </section>
+            </>
         )
     }
 }

@@ -31,7 +31,7 @@ export const getConfigureGitOpsCredentialsButtonProps = ({
     endIcon: <ICArrowRight />,
     component: ButtonComponentType.link,
     linkProps: {
-        to: URLS.GLOBAL_CONFIG_GITOPS,
+        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS,
     },
 })
 
