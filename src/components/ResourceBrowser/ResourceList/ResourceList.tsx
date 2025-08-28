@@ -387,7 +387,7 @@ const ResourceListWrapper = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'resource-browser': {
+                'infrastructure-management': {
                     component: <InfrastructureManagementIcon />,
                     linked: true,
                 },

@@ -4,7 +4,7 @@ export const SECURITY_BREADCRUMB_CONFIG = [
     {
         key: 'scans',
         route: URLS.SECURITY_SCANS,
-        heading: 'Security Center',
+        heading: 'Security Scans',
     },
     {
         key: 'policies',

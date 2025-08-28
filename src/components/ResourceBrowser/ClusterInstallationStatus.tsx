@@ -60,8 +60,12 @@ const ClusterInstallationStatus = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'resource-browser': {
+                'infrastructure-management': {
                     component: <InfrastructureManagementIcon />,
+                    linked: true,
+                },
+                'resource-browser': {
+                    component: <span className="cn-9 fs-16 fw-6 lh-24">Resource Browser</span>,
                     linked: true,
                 },
                 'installation-cluster': {

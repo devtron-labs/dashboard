@@ -390,7 +390,7 @@ export const INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG = [
     {
         key: 'resource-browser',
         route: '/resource-browser',
-        heading: 'Kubernetes Resource Browser',
+        heading: 'Resource Browser',
     },
 ]
 

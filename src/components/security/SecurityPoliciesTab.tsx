@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
+import { Switch, Route, Redirect, NavLink, RouteComponentProps, useRouteMatch } from 'react-router-dom'
 import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 import { SecurityPolicyCluster } from './SecurityPolicyCluster'
 import { SecurityPolicyApp } from './SecurityPolicyApp'
@@ -23,9 +23,10 @@ import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
 import { VulnerabilityExposure } from './AddCVEPolicy'
 import { SecurityPageHeader } from './SecurityPageHeader'
 
-export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
-    renderRouter() {
-        const { path } = this.props.match
+export const SecurityPoliciesTab = () => {
+
+    const {path} = useRouteMatch()
+    const renderRouter = () => {
         return (
             <Switch>
                 <Route path={`${path}/global`} component={SecurityPolicyGlobal} />
@@ -38,8 +39,6 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
         )
     }
 
-    render() {
-        const { path } = this.props.match
         return (
             <>
                 <SecurityPageHeader />
@@ -82,9 +81,8 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
                             Check CVE Policy
                         </NavLink>
                     </div>
-                    <div className="flexbox-col security-policy__content">{this.renderRouter()}</div>
+                    <div className="flexbox-col security-policy__content">{renderRouter()}</div>
                 </div>
             </>
         )
-    }
 }

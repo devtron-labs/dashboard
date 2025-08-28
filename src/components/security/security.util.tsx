@@ -53,7 +53,7 @@ export const getSecurityBreadcrumbAlias = (url: string): Parameters<typeof useBr
     const cleanUrl = url.split('?')[0].split('#')[0]
 
     const alias = {
-        security: {
+        'security-center': {
             component: (
                 <Button
                     dataTestId="redirect-to-overview-btn"
