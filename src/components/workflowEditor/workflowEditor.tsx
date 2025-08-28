@@ -846,6 +846,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             text="Learn about creating workflows"
                             docLinkKey="APP_CREATE_WORKFLOW"
                             dataTestId="learn-more-about-creating-workflow-link"
+                            fullWidth
                         />
                     </div>
                 }
