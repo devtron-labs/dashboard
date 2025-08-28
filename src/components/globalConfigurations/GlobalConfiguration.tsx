@@ -167,7 +167,7 @@ const NavItem = ({ serverMode }) => {
     const [, setForceUpdateTime] = useState(Date.now())
     // Add key of NavItem if grouping is used
     const [collapsedState, setCollapsedState] = useState<Record<string, boolean>>({
-        Authorization: !location.pathname.startsWith('/global-config/auth'),
+        Authorization: !location.pathname.startsWith(URLS.GLOBAL_CONFIG_AUTH),
     })
     const { tippyConfig, setTippyConfig } = useGlobalConfiguration()
     const {
