@@ -14,10 +14,71 @@
  * limitations under the License.
  */
 
+import {
+    Button,
+    ButtonComponentType,
+    ComponentSizeType,
+    Icon,
+    ButtonVariantType,
+    BreadcrumbText,
+    useBreadcrumb,
+} from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { URLS } from '@Config/routes'
+import { SECURITY_BREADCRUMB_CONFIG } from './constants'
 import { VulnerabilityExposureFilterKeys, VulnerabilityExposureSearchParams } from './security.types'
+import { matchPath } from 'react-router-dom'
 
 export const parseVulnerabilityExposureSearchParams = (searchParams: URLSearchParams) => ({
     [VulnerabilityExposureFilterKeys.cluster]: searchParams.getAll(VulnerabilityExposureFilterKeys.cluster),
     [VulnerabilityExposureFilterKeys.environment]: searchParams.getAll(VulnerabilityExposureFilterKeys.environment),
     [VulnerabilityExposureSearchParams.cveName]: searchParams.get(VulnerabilityExposureSearchParams.cveName) ?? '',
 })
+
+export const getTippyContent = () => (
+    <div className="px-12 pt-12 fs-13 fw-4">
+        Devtron provides DevSecOps capabilities across your software development life cycle.
+        <p className="pt-20 m-0">
+            One of the key components of DevSecOps is the detection of security risks. Currently, Devtron supports the
+            following types of scanning:
+        </p>
+        <ul className="pl-20">
+            <li>Image Scan</li>
+            <li>Code Scan</li>
+            <li>Kubernetes Manifest Scan</li>
+        </ul>
+    </div>
+)
+
+export const getSecurityBreadcrumbAlias = (url: string): Parameters<typeof useBreadcrumb>[0] => {
+    const cleanUrl = url.split('?')[0].split('#')[0]
+
+    const alias = {
+        security: {
+            component: (
+                <Button
+                    dataTestId="redirect-to-overview-btn"
+                    component={ButtonComponentType.link}
+                    size={ComponentSizeType.xs}
+                    icon={<Icon name="ic-shield-check" color={null} />}
+                    variant={ButtonVariantType.borderLess}
+                    linkProps={{
+                        to: URLS.SECURITY_SCANS,
+                    }}
+                    ariaLabel="Redirect to Security Scans Overview"
+                    showAriaLabelInTippy={false}
+                />
+            ),
+            linked: true,
+        },
+    }
+
+    SECURITY_BREADCRUMB_CONFIG.forEach(({ key, route, heading }) => {
+        const isActive = !!matchPath(cleanUrl, { path: route, })
+        alias[key] = {
+            component: <BreadcrumbText isActive={isActive} heading={heading} />,
+            linked: !isActive,
+        }
+    })
+
+    return { alias }
+}

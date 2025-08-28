@@ -23,6 +23,7 @@ import {
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
+    InfrastructureManagementIcon,
     RESOURCE_BROWSER_ROUTES,
     useAsync,
     useBreadcrumb,
@@ -387,7 +388,7 @@ const ResourceListWrapper = () => {
         {
             alias: {
                 'resource-browser': {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
+                    component: <InfrastructureManagementIcon />,
                     linked: true,
                 },
                 ':clusterId': {

@@ -27,6 +27,7 @@ import {
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
+    InfrastructureManagementIcon,
     InitTabType,
     K8sResourceDetailDataType,
     Nodes,
@@ -422,7 +423,13 @@ const renderAppGroupDescriptionContent = () =>
 
 export const renderAdditionalBrowserHeaderInfo = () => (
     <FeatureTitleWithInfo
-        title="Kubernetes Resource Browser"
+        title={
+            <div className="flexbox dc__gap-4">
+                <InfrastructureManagementIcon />
+                <span>/</span>
+                <span>Infrastructure Management</span>
+            </div>
+        }
         docLink="RESOURCE_BROWSER"
         renderDescriptionContent={renderAppGroupDescriptionContent}
         showInfoIconTippy

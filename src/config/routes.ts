@@ -101,6 +101,8 @@ export const URLS = {
     GETTING_STARTED: 'getting-started',
     LINKED_CI_DETAILS: 'linked-ci-details',
     SECURITY: '/security',
+    SECURITY_SCANS: '/security/scans',
+    SECURITY_POLICIES: 'security/policies',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
     STACK_MANAGER_DISCOVER_MODULES_DETAILS: '/stack-manager/discover/details',

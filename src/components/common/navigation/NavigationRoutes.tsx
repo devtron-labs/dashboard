@@ -555,11 +555,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={URLS.BULK_EDITS}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                         />,
-                                        <Route
-                                            key={URLS.SECURITY}
-                                            path={URLS.SECURITY}
-                                            render={(props) => <Security {...props} serverMode={serverMode} />}
-                                        />,
+                                        <Route key={URLS.SECURITY} path={URLS.SECURITY} render={() => <Security />} />,
                                         ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
                                             ? [
                                                   <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>

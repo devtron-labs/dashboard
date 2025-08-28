@@ -66,7 +66,7 @@ const NavigationList: NavigationListItemType[] = [
         isAvailableInEA: false,
     },
     {
-        title: 'Software Distribution Hub',
+        title: 'Software Release Management',
         dataTestId: 'click-on-releases',
         type: 'link',
         icon: 'ic-open-box',
