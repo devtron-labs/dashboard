@@ -22,6 +22,7 @@ import {
     ButtonComponentType,
     ComponentSizeType,
     handleAnalyticsEvent,
+    URLS as COMMON_URLS,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -91,7 +92,7 @@ export const NewClusterButton = ({
     }
 
     const handleCloseCreateClusterModal = () => {
-        replace(URLS.RESOURCE_BROWSER)
+        replace(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
     }
 
     return (

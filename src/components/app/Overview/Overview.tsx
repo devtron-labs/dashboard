@@ -284,7 +284,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                 <span>{chartUsed.appStoreChartName}/</span>
                                 <Link
                                     className="dc__ellipsis-right"
-                                    to={`${URLS.CHARTS_DISCOVER}${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                    to={`${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/${URLS.CHART}/${chartUsed.appStoreChartId}`}
                                 >
                                     {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
                                 </Link>
@@ -334,7 +334,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                         <div>
                             <div className="fs-13 fw-4 lh-20 cn-7 mb-4">Created from template</div>
                             <Link
-                                to={generatePath(CommonUrls.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                                to={generatePath(CommonUrls.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                                     appId: templateConfig.id,
                                 })}
                                 className="flexbox dc__gap-8 dc__w-fit-content"
@@ -411,7 +411,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <div key={jobPipeline.ciPipelineID} className="flex dc__content-start pr-16 pl-16">
                         <div className="h-20 m-tb-8 cb-5 fs-13 w-300">
                             <Link
-                                to={`${URLS.JOB}/${appId}/ci-details/${jobPipeline.ciPipelineID}/`}
+                                to={`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${appId}/ci-details/${jobPipeline.ciPipelineID}/`}
                                 className="fs-13 dc__ellipsis-right"
                             >
                                 {jobPipeline.ciPipelineName}

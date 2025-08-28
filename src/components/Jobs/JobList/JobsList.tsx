@@ -130,11 +130,11 @@ const JobsList = () => {
     }
 
     const openJobCreateModel = () => {
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
+        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
     const closeJobCreateModal = () => {
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}`)
+        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}`)
     }
 
     const renderCreateJobRouter = () => (

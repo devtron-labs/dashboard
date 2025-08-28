@@ -179,7 +179,7 @@ export default function ChartGroupUpdate({}) {
     }
 
     function redirectToGroupDetail(): void {
-        const url = `${URLS.CHARTS}/discover/group/${groupId}`
+        const url = `${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}`
         history.push(url)
     }
 

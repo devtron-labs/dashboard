@@ -25,6 +25,7 @@ import {
     Icon,
     InfrastructureManagementIcon,
     RESOURCE_BROWSER_ROUTES,
+    URLS,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -40,7 +41,6 @@ import { ClusterListType } from '@Components/ClusterNodes/types'
 import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
-import { URLS } from '../../../config'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import { importComponentFromFELibrary } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
@@ -89,7 +89,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
+    } = useTabs(`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
     const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
@@ -344,7 +344,7 @@ const ResourceListWrapper = () => {
         /* if user manually tries default cluster url redirect */
         if (Number(selected.value) === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
-                pathname: URLS.RESOURCE_BROWSER,
+                pathname: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
             })
             return
         }

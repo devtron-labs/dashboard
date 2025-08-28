@@ -219,7 +219,7 @@ export default function CIDetails({ isJobView, filteredEnvIds }: { isJobView?: b
     const pipeline = pipelinesMap.get(+pipelineId)
 
     const redirectToArtifactLogs = () => {
-        push(`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`)
+        push(`${URLS.APPLICATION_MANAGEMENT_APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`)
     }
     const renderSourcePipelineButton = () => {
         return (

@@ -74,7 +74,7 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const redirectToJobOverview = (job: Job): string => {
-        return `${URLS.JOB}/${job.id}/${URLS.APP_OVERVIEW}`
+        return `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${job.id}/${URLS.APP_OVERVIEW}`
     }
 
     const renderJobPipelines = () => {
@@ -189,7 +189,7 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const createJobHandler = () => {
-        history.push(`${URLS.JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
+        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
     }
 
     if (props.view === JobListViewType.LOADING) {

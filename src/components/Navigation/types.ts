@@ -19,6 +19,7 @@ export type NavigationRootItemID =
     | 'automation-and-enablement'
     | 'backup-and-restore'
     | 'global-configuration'
+    | 'ai-recommendations'
 
 type CommonNavigationItemType = {
     title: string
@@ -27,14 +28,17 @@ type CommonNavigationItemType = {
     href: string
     disabled?: boolean
     keywords?: string[]
+    forceHideEnvKey?: keyof customEnv
+    hideNav?: boolean
 }
 
-export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | 'disabled' | 'keywords'> & {
+export type NavigationItemType = Pick<
+    CommonNavigationItemType,
+    'dataTestId' | 'disabled' | 'keywords' | 'forceHideEnvKey' | 'hideNav'
+> & {
     isAvailableInEA?: boolean
     markOnlyForSuperAdmin?: boolean
-    forceHideEnvKey?: keyof customEnv
     title: string
-    hideNav?: boolean
     markAsBeta?: boolean
     isAvailableInDesktop?: boolean
     moduleName?: string

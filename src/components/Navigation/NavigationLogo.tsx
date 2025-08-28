@@ -33,7 +33,7 @@ export const NavigationLogo = () => {
     }
 
     return (
-        <NavLink className="flex" to={URLS.APP}>
+        <NavLink className="flex" to={URLS.APPLICATION_MANAGEMENT_APP}>
             {logoContent}
         </NavLink>
     )

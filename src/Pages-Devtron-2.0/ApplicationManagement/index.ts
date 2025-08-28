@@ -1,1 +1,1 @@
-export * from './Overview'
+export { Configurations as ApplicationManagementConfigurationsRouter } from './Configurations'
