@@ -67,8 +67,9 @@ import {
 import { Navigation } from '@Components/Navigation'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { Configurations } from '@Pages/Releases/Detail'
-import { ApplicationManagementConfigurations } from '@PagesDevtron2.0/ApplicationManagement'
+import { ApplicationManagementConfigurationsRouter } from '@PagesDevtron2.0/ApplicationManagement'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
 import {
@@ -568,7 +569,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
                                         </Route>,
                                         <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
-                                            <ApplicationManagementConfigurations />
+                                            <ApplicationManagementConfigurationsRouter />
                                         </Route>,
                                         <Route
                                             key={CommonURLS.SECURITY_CENTER}
@@ -650,7 +651,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     )}
                                     {EnterpriseRouter && (
                                         <Route path={[CommonURLS.APPLICATION_MANAGEMENT, CommonURLS.COST_VISIBILITY]}>
-                                            <EnterpriseRouter AppConfig={AppConfig} />
+                                            <EnterpriseRouter
+                                                AppConfig={AppConfig}
+                                                OfflinePipelineModalAppView={OffendingPipelineModalAppView}
+                                            />
                                         </Route>
                                     )}
                                     <RedirectUserWithSentry

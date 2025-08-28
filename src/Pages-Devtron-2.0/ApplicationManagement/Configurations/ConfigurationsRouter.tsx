@@ -37,7 +37,7 @@ export const Configurations = () => {
         <>
             {/* TODO Rohit: Update with Application Management Header */}
             <PageHeader headerName="Application Management / Configurations" />
-            <div className="application-management-configurations dc__grid flex-grow-1">
+            <div className="application-management-configurations dc__grid flex-grow-1 dc__overflow-auto">
                 <div className="border__primary--right">SidePanel</div>
                 <div className="bg__secondary">
                     <Switch>

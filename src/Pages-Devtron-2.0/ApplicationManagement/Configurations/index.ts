@@ -1,1 +1,1 @@
-export * from './Configurations'
+export * from './ConfigurationsRouter'

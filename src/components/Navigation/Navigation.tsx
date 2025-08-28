@@ -248,19 +248,12 @@ export const Navigation = ({
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
                                             {navItems
-                                                .map(
-                                                    (item) =>
-                                                        (item.forceHideEnvKey
-                                                            ? window._env_[item.forceHideEnvKey]
-                                                            : !item.hideNav) && (
-                                                            <NavItem
-                                                                key={item.title}
-                                                                {...item}
-                                                                hasSearchText={!!searchText}
-                                                            />
-                                                        ),
+                                                .filter(({ forceHideEnvKey, hideNav }) =>
+                                                    forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav,
                                                 )
-                                                .filter(Boolean)}
+                                                .map((item) => (
+                                                    <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
+                                                ))}
                                         </div>
                                     </div>
                                 )}

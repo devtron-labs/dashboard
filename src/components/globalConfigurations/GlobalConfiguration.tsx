@@ -42,7 +42,6 @@ import { ModuleStatus } from '../v2/devtronStackManager/DevtronStackManager.type
 import { getModuleInfo } from '../v2/devtronStackManager/DevtronStackManager.service'
 import { BodyType } from './globalConfiguration.type'
 import { GlobalConfigurationProvider, useGlobalConfiguration } from './GlobalConfigurationProvider'
-import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { getShouldHidePageHeaderAndSidebar } from './utils'
 import { ListProps } from './types'
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
@@ -51,15 +50,6 @@ const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterList'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
-// NOTE: Might import from index itself
-const TagListContainer = importComponentFromFELibrary('TagListContainer')
-const PluginsPolicy = importComponentFromFELibrary('PluginsPolicy', null, 'function')
-const FilterConditions = importComponentFromFELibrary('FilterConditions')
-const LockDeploymentConfiguration = importComponentFromFELibrary('LockDeploymentConfiguration', null, 'function')
-const ApprovalPolicy = importComponentFromFELibrary('ApprovalPolicy', null, 'function')
-const PullImageDigest = importComponentFromFELibrary('PullImageDigest')
-const DeploymentWindow = importComponentFromFELibrary('DeploymentWindowComponent')
-const ImagePromotion = importComponentFromFELibrary('ImagePromotion')
 
 export default function GlobalConfiguration(props) {
     const location = useLocation()
@@ -436,88 +426,6 @@ const NavItem = ({ serverMode }) => {
                             )),
                     )}
                     <hr className="mt-8 mb-8 w-100 checklist__divider" />
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <>
-                            {DeploymentWindow && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
-                                    key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Deployment Window</div>
-                                </NavLink>
-                            )}
-                            {ApprovalPolicy && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_APPROVAL_POLICY}
-                                    key={URLS.GLOBAL_CONFIG_APPROVAL_POLICY}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Approval Policy</div>
-                                </NavLink>
-                            )}
-                            {window._env_.FEATURE_IMAGE_PROMOTION_ENABLE && ImagePromotion && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
-                                    key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Image Promotion</div>
-                                </NavLink>
-                            )}
-                        </>
-                    )}
-                    {serverMode !== SERVER_MODE.EA_ONLY && (
-                        <>
-                            {PluginsPolicy && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
-                                    key={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Plugin Policy</div>
-                                </NavLink>
-                            )}
-
-                            {PullImageDigest && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
-                                    key={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Pull Image Digest</div>
-                                </NavLink>
-                            )}
-
-                            {TagListContainer && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_TAGS}
-                                    key={URLS.GLOBAL_CONFIG_TAGS}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Tags Policy</div>
-                                </NavLink>
-                            )}
-                            {FilterConditions && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
-                                    key={URLS.GLOBAL_CONFIG_FILTER_CONDITION}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Filter Condition</div>
-                                </NavLink>
-                            )}
-                            {LockDeploymentConfiguration && (
-                                <NavLink
-                                    to={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
-                                    key={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}
-                                    activeClassName="active-route"
-                                >
-                                    <div className="flexbox flex-justify">Lock Deployment Configuration</div>
-                                </NavLink>
-                            )}
-                        </>
-                    )}
                 </>
             )}
         </div>
@@ -583,48 +491,6 @@ const Body = ({ getHostURLConfig, checkList, serverMode, handleChecklistUpdate, 
                 />,
 
                 <Route key={URLS.GLOBAL_CONFIG_AUTH} path={URLS.GLOBAL_CONFIG_AUTH} component={Authorization} />,
-            ]}
-            {serverMode !== SERVER_MODE.EA_ONLY && [
-                DeploymentWindow && (
-                    <Route key={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW} path={URLS.GLOBAL_CONFIG_DEPLOYMENT_WINDOW}>
-                        <DeploymentWindow isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                ),
-                ApprovalPolicy && (
-                    <Route key={URLS.GLOBAL_CONFIG_APPROVAL_POLICY} path={URLS.GLOBAL_CONFIG_APPROVAL_POLICY}>
-                        <ApprovalPolicy />
-                    </Route>
-                ),
-                ImagePromotion && (
-                    <Route key={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION} path={URLS.GLOBAL_CONFIG_IMAGE_PROMOTION}>
-                        <ImagePromotion isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                ),
-                PluginsPolicy && (
-                    <Route path={URLS.GLOBAL_CONFIG_PLUGIN_POLICY}>
-                        <PluginsPolicy OfflinePipelineModalAppView={OffendingPipelineModalAppView} />
-                    </Route>
-                ),
-                PullImageDigest && (
-                    <Route path={URLS.GLOBAL_CONFIG_PULL_IMAGE_DIGEST}>
-                        <PullImageDigest isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                ),
-                TagListContainer && (
-                    <Route path={URLS.GLOBAL_CONFIG_TAGS}>
-                        <TagListContainer />
-                    </Route>
-                ),
-                FilterConditions && (
-                    <Route path={URLS.GLOBAL_CONFIG_FILTER_CONDITION}>
-                        <FilterConditions isSuperAdmin={isSuperAdmin} />
-                    </Route>
-                ),
-                LockDeploymentConfiguration && (
-                    <Route path={URLS.GLOBAL_CONFIG_LOCK_DEPLOYMENT_CONFIGURATION}>
-                        <LockDeploymentConfiguration />
-                    </Route>
-                ),
             ]}
             <Redirect to={defaultRoute()} />
         </Switch>
