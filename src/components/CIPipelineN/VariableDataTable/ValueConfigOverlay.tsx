@@ -286,7 +286,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         }
 
         return (
-            <div className="p-12 flex-grow-1">
+            <div ref={scrollableRef} className="p-12 flex-grow-1">
                 <div className="dc__border-dashed br-6 p-16 flexbox-col dc__align-items-center dc__gap-12">
                     <ICChoicesDropdown />
                     <div className="w-100 dc__text-center fs-12 lh-18 flexbox-col dc__gap-2">
