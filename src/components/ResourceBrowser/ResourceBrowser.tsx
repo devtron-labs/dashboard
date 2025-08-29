@@ -46,7 +46,7 @@ const ResourceBrowser: React.FC = () => {
     const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListing(true, abortControllerRef))
 
     const { pathname } = useLocation()
-    const { breadcrumbs } = useBreadcrumb(getInfrastructureManagementBreadcrumbsConfig(pathname), [pathname])
+    const { breadcrumbs } = useBreadcrumb(getInfrastructureManagementBreadcrumbsConfig(), [pathname])
 
     useEffect(
         () => () => {
