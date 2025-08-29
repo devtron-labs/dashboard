@@ -48,6 +48,7 @@ import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-ap
 import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import { SecurityScanType } from '../security.types'
+import { SecurityPageHeader } from '../SecurityPageHeader'
 import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
 import {
     ScanDetailsType,
@@ -422,6 +423,7 @@ export const SecurityScansTab = () => {
 
     return (
         <>
+            <SecurityPageHeader />
             {renderFilters()}
             {renderSavedFilters()}
             {renderScanListContainer()}
