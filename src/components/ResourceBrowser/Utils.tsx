@@ -428,8 +428,8 @@ export const getInfrastructureManagementBreadcrumbsConfig = (pathname: string) =
         },
     }
 
-    INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG.forEach(({ key, heading }) => {
-        const isActive = !!matchPath(cleanUrl, { path: key, exact: false })
+    INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG.forEach(({ key, route, heading }) => {
+        const isActive = !!matchPath(cleanUrl, { path: route, exact: true })
         alias[key] = {
             component: <BreadcrumbText heading={heading} isActive={isActive} />,
             linked: false,
