@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import { generatePath, useLocation } from 'react-router-dom'
+import { generatePath, matchPath, useLocation } from 'react-router-dom'
 import moment from 'moment'
 import queryString from 'query-string'
 
@@ -419,7 +419,8 @@ export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatu
               kind: 'node',
           })
 
-export const getInfrastructureManagementBreadcrumbsConfig = () => {
+export const getInfrastructureManagementBreadcrumbsConfig = (pathname: string) => {
+    const cleanUrl = pathname.split('?')[0].split('#')[0]
     const alias = {
         'infrastructure-management': {
             component: <InfrastructureManagementIcon />,
@@ -428,8 +429,9 @@ export const getInfrastructureManagementBreadcrumbsConfig = () => {
     }
 
     INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG.forEach(({ key, heading }) => {
+        const isActive = !!matchPath(cleanUrl, { path: key, exact: false })
         alias[key] = {
-            component: <BreadcrumbText heading={heading} />,
+            component: <BreadcrumbText heading={heading} isActive={isActive} />,
             linked: false,
         }
     })

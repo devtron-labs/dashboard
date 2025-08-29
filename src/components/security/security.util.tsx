@@ -71,11 +71,11 @@ export const getSecurityBreadcrumbAlias = (url: string): Parameters<typeof useBr
             linked: true,
         },
     }
-
     SECURITY_BREADCRUMB_CONFIG.forEach(({ key, route, heading }) => {
+        const isActive = !!matchPath(cleanUrl, { path: route, exact: false })
         alias[key] = {
-            component: <BreadcrumbText heading={heading} />,
-            linked: false,
+            component: <BreadcrumbText isActive={isActive} heading={heading} />,
+            linked: false
         }
     })
 

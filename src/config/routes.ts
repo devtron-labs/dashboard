@@ -88,7 +88,7 @@ export const URLS = {
     LINKED_CI_DETAILS: 'linked-ci-details',
     SECURITY: '/security',
     SECURITY_SCANS: '/security-center/scans',
-    SECURITY_POLICIES: 'security-center/policies',
+    SECURITY_POLICIES: '/security-center/policies',
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
     STACK_MANAGER_DISCOVER_MODULES_DETAILS: '/stack-manager/discover/details',
