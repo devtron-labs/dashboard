@@ -1,10 +1,18 @@
 import { lazy } from 'react'
 import { Redirect, Route, Switch } from 'react-router-dom'
 
-import { noop, PageHeader, SERVER_MODE, URLS as COMMON_URLS, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    noop,
+    PageHeader,
+    SERVER_MODE,
+    SideNavigation,
+    URLS as COMMON_URLS,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import ChartRepo from '@Components/chartRepo/ChartRepo'
 import { importComponentFromFELibrary } from '@Components/common'
+import { APPLICATION_MANAGEMENT_CONFIGURATIONS } from '@Components/Navigation'
 import { AddNotification } from '@Components/notifications/AddNotification'
 import { URLS } from '@Config/routes'
 
@@ -38,7 +46,9 @@ export const Configurations = () => {
             {/* TODO Rohit: Update with Application Management Header */}
             <PageHeader headerName="Application Management / Configurations" />
             <div className="application-management-configurations dc__grid flex-grow-1 dc__overflow-auto">
-                <div className="border__primary--right">SidePanel</div>
+                <div className="py-12 pl-8 pr-7 border__primary--right">
+                    <SideNavigation list={APPLICATION_MANAGEMENT_CONFIGURATIONS} />
+                </div>
                 <div className="bg__secondary">
                     <Switch>
                         {isFeatureGitOpsEnabled && (
