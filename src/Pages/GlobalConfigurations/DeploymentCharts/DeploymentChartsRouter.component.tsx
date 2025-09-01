@@ -35,11 +35,11 @@ const DeploymentChartsRouter = () => {
         // NOTE: need to give fixed height here for resizable code editor height
         <div className="flexbox-col bg__primary h-100">
             <Switch>
-                <Route exact path={URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}>
+                <Route exact path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS}>
                     <DeploymentChartsList />
                 </Route>
                 {DeploymentChartDetailRouter && <DeploymentChartDetailRouter />}
-                <Redirect to={URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST} />
+                <Redirect to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS} />
             </Switch>
         </div>
     )

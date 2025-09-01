@@ -19,7 +19,7 @@
     min-height: 100vh;
     display: grid;
     overflow: hidden;
-    background: url('../../../assets/img/devtron-bg.webp') center / 100vw 100vh no-repeat;
+    background: var(--devtron-bg) center / 100vw 100vh no-repeat;
 }
 
 .main {

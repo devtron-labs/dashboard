@@ -63,13 +63,13 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser:
         }
 
         if (window._env_.K8S_CLIENT) {
-            push(URLS.RESOURCE_BROWSER)
+            push(CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
             push(URLS.GETTING_STARTED)
         } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
-            push(URLS.RESOURCE_BROWSER)
+            push(CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
         } else {
-            push(`${URLS.APP}/${URLS.APP_LIST}`)
+            push(`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}`)
         }
     }, [])
     return null
@@ -79,7 +79,7 @@ const RedirectToAppList = () => {
     const { replace } = useHistory()
     const { serverMode } = useMainContext()
     useEffect(() => {
-        const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
+        const baseUrl = `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}`
         if (serverMode === SERVER_MODE.FULL) {
             replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
         } else {

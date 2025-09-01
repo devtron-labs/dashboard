@@ -18,7 +18,6 @@ import React, { Component } from 'react'
 import folder from '@Icons/ic-folder.svg'
 import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { deleteProject } from './service'
-import './project.scss'
 import {
     CustomInput,
     ButtonWithLoader,

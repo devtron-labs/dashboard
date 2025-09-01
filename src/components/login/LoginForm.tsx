@@ -28,8 +28,7 @@ import {
     PasswordField,
     ServerErrors,
     showError,
-    URLS as CommonURL,
-    URLS,
+    URLS as COMMON_URLS,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -69,11 +68,13 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
         }
 
         if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
-            return CommonURL.NETWORK_STATUS_INTERFACE
+            return COMMON_URLS.NETWORK_STATUS_INTERFACE
         }
 
         // NOTE: we don't have serverMode therefore defaulting to flag value
-        return window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE ? URLS.RESOURCE_BROWSER : URLS.APP
+        return window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE
+            ? COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER
+            : COMMON_URLS.APPLICATION_MANAGEMENT_APP
     }
 
     const onSubmitLogin = (e): void => {
@@ -171,7 +172,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
                         text="Login using SSO service"
                         component={ButtonComponentType.link}
                         linkProps={{
-                            to: `${URLS.LOGIN_SSO}${location.search}`,
+                            to: `${COMMON_URLS.LOGIN_SSO}${location.search}`,
                         }}
                         variant={ButtonVariantType.text}
                     />

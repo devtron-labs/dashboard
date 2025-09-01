@@ -110,7 +110,7 @@ export default function SavedVariablesView({
             }}
         >
             <Switch>
-                <Route path={`${URLS.GLOBAL_CONFIG_SCOPED_VARIABLES}/:currentView?`} exact>
+                <Route path={`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}/:currentView?`} exact>
                     <SavedVariablesContent
                         searchKey={searchKey}
                         onSearch={handleSearch}
@@ -127,7 +127,7 @@ export default function SavedVariablesView({
                         <ScopedVariablesEnvironmentDetailsRouter reloadScopedVariables={reloadScopedVariables} />
                     )}
 
-                <Redirect to={URLS.GLOBAL_CONFIG_SCOPED_VARIABLES} />
+                <Redirect to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES} />
             </Switch>
         </div>
     ) : (

@@ -137,7 +137,7 @@ export const getCIPipelineBranchSelectorFooterConfig = (
             value: (
                 <span>
                     Select git host for this git account to view all supported options.&nbsp;
-                    <Link className="anchor" to={URLS.GLOBAL_CONFIG_GIT}>
+                    <Link className="anchor" to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS}>
                         Select git host
                     </Link>
                 </span>

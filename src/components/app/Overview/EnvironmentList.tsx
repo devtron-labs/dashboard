@@ -109,7 +109,7 @@ export const EnvironmentList = ({
         <button
             className="flex cta dc__gap-4"
             onClick={() => {
-                history.push(`${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}`)
+                history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}`)
             }}
         >
             Continue App Configuration <IconForward className="icon-dim-12" />
@@ -117,7 +117,7 @@ export const EnvironmentList = ({
     )
 
     const getDeploymentHistoryLink = (environment: AppEnvironment) =>
-        `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${environment.environmentId}/${environment.pipelineId}/${
+        `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${environment.environmentId}/${environment.pipelineId}/${
             environment.latestCdWorkflowRunnerId ?? ''
         }`
 
@@ -213,7 +213,7 @@ export const EnvironmentList = ({
                                                     />
                                                 )}
                                                 <Link
-                                                    to={`${URLS.APP}/${appId}/details/${_env.environmentId}/`}
+                                                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/details/${_env.environmentId}/`}
                                                     className="anchor fs-13 dc__ellipsis-right"
                                                 >
                                                     {_env.environmentName}

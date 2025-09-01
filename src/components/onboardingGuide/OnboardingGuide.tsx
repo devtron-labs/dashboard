@@ -51,7 +51,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
 
     const redirectDeployCardToCICD = (): string => {
         return serverMode === SERVER_MODE.FULL
-            ? `${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`
+            ? `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`
             : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`
     }
 
@@ -93,7 +93,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                 <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
                         <ContentCard
-                            redirectTo={URLS.CHARTS_DISCOVER}
+                            redirectTo={URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}
                             onClick={onClickHelmChart}
                             imgSrc={HelmCollage}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.title}
@@ -133,7 +133,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                     </div>
                     <div className="fs-14 mt-40 mb-20 flex column">
                         <NavLink
-                            to={`${URLS.APP}/${URLS.APP_LIST}`}
+                            to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}`}
                             className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                             onClick={handleSkipOnboarding}
