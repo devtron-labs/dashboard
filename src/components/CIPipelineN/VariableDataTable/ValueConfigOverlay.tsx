@@ -31,6 +31,7 @@ import {
     Textarea,
     TextareaProps,
     Tooltip,
+    UsePopoverReturnType,
     validateRequiredPositiveNumber,
     VariableTypeFormat,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -174,10 +175,10 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
     }
 
     // RENDERERS
-    const renderContent = () => {
+    const renderContent = (scrollableRef: UsePopoverReturnType['scrollableRef']) => {
         if (isFormatFile) {
             return (
-                <div className="dc__overflow-auto p-12 flex-grow-1 flexbox-col dc__gap-12">
+                <div ref={scrollableRef} className="dc__overflow-auto p-12 flex-grow-1 flexbox-col dc__gap-12">
                     <CustomInput
                         name={`file-mount-${rowId}`}
                         label="File mount path"
@@ -228,7 +229,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
 
         if (isFormatBoolOrDate) {
             return (
-                <div className="p-12 flex-grow-1">
+                <div ref={scrollableRef} className="p-12 flex-grow-1">
                     <div className="dc__border-dashed br-6 p-16 flexbox-col dc__align-items-center dc__gap-12">
                         <ICInfoOutlineGrey className="icon-dim-24" />
                         <div className="w-100 dc__text-center fs-12 lh-18 flexbox-col dc__gap-2">
@@ -242,7 +243,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
 
         if (choices.length) {
             return (
-                <div className="flexbox-col dc__gap-6 pt-12 min-h-100">
+                <div ref={scrollableRef} className="flexbox-col dc__gap-6 pt-12 min-h-100">
                     <div className="py-4 px-12">
                         <Button
                             text="Add choice"
@@ -285,7 +286,7 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
         }
 
         return (
-            <div className="p-12 flex-grow-1">
+            <div ref={scrollableRef} className="p-12 flex-grow-1">
                 <div className="dc__border-dashed br-6 p-16 flexbox-col dc__align-items-center dc__gap-12">
                     <ICChoicesDropdown />
                     <div className="w-100 dc__text-center fs-12 lh-18 flexbox-col dc__gap-2">
@@ -318,45 +319,49 @@ export const ValueConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOverlay
             }
             position="bottom"
         >
-            <>
-                {renderContent()}
-                {(choices.length || AskValueAtRuntimeCheckbox) && (
-                    <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
-                        {!!choices.length && (
-                            <Checkbox
-                                isChecked={!blockCustomValue}
-                                rootClassName="mb-0 flex top dc_max-width__max-content"
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={handleAllowCustomInput}
-                                data-testid="allow-custom-input"
-                            >
-                                <Tooltip
-                                    alwaysShowTippyOnHover
-                                    className="w-200"
-                                    placement="bottom-start"
-                                    content={
-                                        <div className="fs-12 lh-18 flexbox-col dc__gap-2">
-                                            <p className="m-0 fw-6">Allow custom input</p>
-                                            <p className="m-0">Allow entering any value other than provided choices</p>
-                                        </div>
-                                    }
+            {({ scrollableRef }) => (
+                <>
+                    {renderContent(scrollableRef)}
+                    {(choices.length || AskValueAtRuntimeCheckbox) && (
+                        <div className="dc__border-top-n1 p-12 flexbox-col dc__gap-8">
+                            {!!choices.length && (
+                                <Checkbox
+                                    isChecked={!blockCustomValue}
+                                    rootClassName="mb-0 flex top dc_max-width__max-content"
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    onChange={handleAllowCustomInput}
+                                    data-testid="allow-custom-input"
                                 >
-                                    <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">
-                                        Allow Custom input
-                                    </div>
-                                </Tooltip>
-                            </Checkbox>
-                        )}
-                        {AskValueAtRuntimeCheckbox && (
-                            <AskValueAtRuntimeCheckbox
-                                isChecked={askValueAtRuntime}
-                                value={CHECKBOX_VALUE.CHECKED}
-                                onChange={handleAskValueAtRuntime}
-                            />
-                        )}
-                    </div>
-                )}
-            </>
+                                    <Tooltip
+                                        alwaysShowTippyOnHover
+                                        className="w-200"
+                                        placement="bottom-start"
+                                        content={
+                                            <div className="fs-12 lh-18 flexbox-col dc__gap-2">
+                                                <p className="m-0 fw-6">Allow custom input</p>
+                                                <p className="m-0">
+                                                    Allow entering any value other than provided choices
+                                                </p>
+                                            </div>
+                                        }
+                                    >
+                                        <div className="dc__border-dashed--n3-bottom fs-13 cn-9 lh-20">
+                                            Allow Custom input
+                                        </div>
+                                    </Tooltip>
+                                </Checkbox>
+                            )}
+                            {AskValueAtRuntimeCheckbox && (
+                                <AskValueAtRuntimeCheckbox
+                                    isChecked={askValueAtRuntime}
+                                    value={CHECKBOX_VALUE.CHECKED}
+                                    onChange={handleAskValueAtRuntime}
+                                />
+                            )}
+                        </div>
+                    )}
+                </>
+            )}
         </VariableDataTablePopupMenu>
     )
 }

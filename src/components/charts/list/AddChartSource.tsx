@@ -27,7 +27,7 @@ const AddChartSource = ({ text }: { text?: string }) => (
             text,
             dataTestId: 'add-chart-source-button',
             startIcon: <Icon name="ic-add" color="B500" />,
-            size: ComponentSizeType.xxs,
+            size: ComponentSizeType.small,
             variant: ButtonVariantType.borderLess,
         }}
     />

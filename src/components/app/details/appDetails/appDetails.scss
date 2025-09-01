@@ -1384,3 +1384,49 @@ table.resource-tree {
         outline: none !important;
     }
 }
+
+.app-details-info-card-container {
+    > * {
+        flex-shrink: 0;
+
+        &:first-child {
+            margin-left: 20px;
+        }
+
+        &:last-child {
+            margin-right: 20px;
+        }
+    }
+}
+
+.deployed-commit-card {
+    &:hover {
+        .app-details-info-card:not(:first-child) {
+            margin-left: -170px;
+        }
+    }
+
+    .app-details-info-card {
+        transition: margin 0.2s ease-in-out;
+
+        &:not(:first-child) {
+            margin-left: -185px;
+        }
+
+        &:nth-of-type(1n + 4) {
+            display: none;
+        }
+
+        &:nth-child(1) {
+            z-index: 3;
+        }
+
+        &:nth-child(2) {
+            z-index: 2;
+        }
+
+        &:nth-child(3) {
+            z-index: 1;
+        }
+    }
+}

@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     Checkbox,
     CHECKBOX_VALUE,
-    DeploymentNodeType,
     noop,
     WorkflowNodeType,
     PipelineType,
     CommonNodeAttr,
+    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { StaticNode } from './nodes/staticNode'
 import { TriggerCINode } from './nodes/triggerCINode'
@@ -31,19 +31,16 @@ import { TriggerLinkedCINode } from './nodes/TriggerLinkedCINode'
 import { TriggerCDNode } from './nodes/triggerCDNode'
 import { TriggerPrePostCDNode } from './nodes/triggerPrePostCDNode'
 import { getCIPipelineURL, importComponentFromFELibrary, RectangularEdge as Edge } from '../../../../common'
-import { WorkflowProps, TriggerViewContextType } from '../types'
+import { CDNodeActions, WorkflowProps } from '../types'
 import { WebhookNode } from '../../../../workflowEditor/nodes/WebhookNode'
 import { GIT_BRANCH_NOT_CONFIGURED } from '../../../../../config'
-import { TriggerViewContext } from '../config'
-
+import { getCDNodeActionSearch } from '../TriggerView.utils'
 const ApprovalNodeEdge = importComponentFromFELibrary('ApprovalNodeEdge')
 const LinkedCDNode = importComponentFromFELibrary('LinkedCDNode')
 const ImagePromotionLink = importComponentFromFELibrary('ImagePromotionLink', null, 'function')
 const BulkDeployLink = importComponentFromFELibrary('BulkDeployLink', null, 'function')
 
 export class Workflow extends Component<WorkflowProps> {
-    static contextType?: React.Context<TriggerViewContextType> = TriggerViewContext
-
     goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
             const ciPipelineURL = getCIPipelineURL(
@@ -65,6 +62,34 @@ export class Workflow extends Component<WorkflowProps> {
                 this.props.history.push(ciPipelineURL)
             }
         }
+    }
+
+    onClickCDMaterial = (cdNodeId: number, nodeType: DeploymentNodeType) => {
+        const search = getCDNodeActionSearch({
+            actionType: CDNodeActions.CD_MATERIAL,
+            cdNodeId,
+            nodeType,
+            fromAppGroup: this.props.fromAppGrouping,
+        })
+        this.props.history.push({ search })
+    }
+
+    onClickRollbackMaterial = (cdNodeId: number) => {
+        const search = getCDNodeActionSearch({
+            actionType: CDNodeActions.ROLLBACK_MATERIAL,
+            cdNodeId,
+            fromAppGroup: this.props.fromAppGrouping,
+        })
+        this.props.history.push({ search })
+    }
+
+    onClickApprovalNode = (cdNodeId: number) => {
+        const search = getCDNodeActionSearch({
+            actionType: CDNodeActions.APPROVAL,
+            cdNodeId,
+            fromAppGroup: this.props.fromAppGrouping,
+        })
+        this.props.history.push({ search })
     }
 
     renderNodes() {
@@ -230,6 +255,7 @@ export class Workflow extends Component<WorkflowProps> {
                 ciBlockState={node.pluginBlockState}
                 filteredCIPipelines={this.props.filteredCIPipelines}
                 environmentLists={this.props.environmentLists}
+                openCIMaterialModal={this.props.openCIMaterialModal}
             />
         )
     }
@@ -252,7 +278,6 @@ export class Workflow extends Component<WorkflowProps> {
                 environmentId={node.environmentId}
                 triggerType={node.triggerType}
                 colourCode={node.colourCode}
-                inputMaterialList={node.inputMaterialList}
                 rollbackMaterialList={node.rollbackMaterialList}
                 deploymentStrategy={node.deploymentStrategy}
                 history={this.props.history}
@@ -269,6 +294,9 @@ export class Workflow extends Component<WorkflowProps> {
                 appId={this.props.appId}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 isTriggerBlocked={node.isTriggerBlocked}
+                onClickCDMaterial={this.onClickCDMaterial}
+                onClickRollbackMaterial={this.onClickRollbackMaterial}
+                reloadTriggerView={this.props.reloadTriggerView}
             />
         )
     }
@@ -291,7 +319,6 @@ export class Workflow extends Component<WorkflowProps> {
                 triggerType={node.triggerType}
                 title={node.title}
                 colourCode={node.colourCode}
-                inputMaterialList={node.inputMaterialList}
                 rollbackMaterialList={node.rollbackMaterialList}
                 history={this.props.history}
                 location={this.props.location}
@@ -303,6 +330,8 @@ export class Workflow extends Component<WorkflowProps> {
                 appId={this.props.appId}
                 isDeploymentBlocked={node.isDeploymentBlocked}
                 isTriggerBlocked={node.isTriggerBlocked}
+                onClickCDMaterial={this.onClickCDMaterial}
+                reloadTriggerView={this.props.reloadTriggerView}
             />
         )
     }
@@ -320,13 +349,6 @@ export class Workflow extends Component<WorkflowProps> {
         }, [])
     }
 
-    onClickNodeEdge = (nodeId: number) => {
-        this.context.onClickCDMaterial(nodeId, DeploymentNodeType.CD, true)
-        this.props.history.push({
-            search: `approval-node=${nodeId}`,
-        })
-    }
-
     renderEdgeList() {
         const edges = this.getEdges()
         // In the SVG, the bottom elements are rendered on top.
@@ -339,7 +361,7 @@ export class Workflow extends Component<WorkflowProps> {
                         key={`trigger-edge-${edgeNode.startNode.id}${edgeNode.startNode.x}${edgeNode.startNode.y}-${edgeNode.endNode.id}`}
                         startNode={edgeNode.startNode}
                         endNode={edgeNode.endNode}
-                        onClickEdge={() => this.onClickNodeEdge(edgeNode.endNode.id)}
+                        onClickEdge={() => this.onClickApprovalNode(edgeNode.endNode.id)}
                         edges={edges}
                     />
                 )
