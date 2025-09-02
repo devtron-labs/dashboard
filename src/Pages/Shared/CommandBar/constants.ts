@@ -32,7 +32,7 @@ export const NAVIGATION_GROUPS: CommandBarGroupType[] = NAVIGATION_LIST.map<Comm
 export const RECENT_ACTIONS_GROUP: CommandBarGroupType = {
     id: 'command-bar-recent-navigation-group',
     items: [],
-    title: 'Recent Navigation',
+    title: 'Recent',
 }
 
 export const RECENT_NAVIGATION_ITEM_ID_PREFIX = 'recent-navigation-' as const

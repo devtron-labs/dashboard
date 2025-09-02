@@ -321,7 +321,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                         <GenericFilterEmptyState handleClearFilters={handleClearFilters} />
                     ) : (
                         <div
-                            className="flexbox-col dc__overflow-auto border__primary--top pt-8"
+                            className="flexbox-col dc__overflow-auto border__primary--top"
                             role="listbox"
                             aria-label="Command Menu"
                             aria-activedescendant={itemFlatList[selectedItemIndex]?.id}
@@ -349,7 +349,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                     <div className="flexbox dc__gap-20 dc__align-items-center">
                         {renderKeyboardShortcuts(['ArrowUp', 'ArrowDown'], 'to navigate')}
                         {renderKeyboardShortcuts(['Enter'], 'to select')}
-                        {renderKeyboardShortcuts(['Escape'], 'to close')}
+                        {renderKeyboardShortcuts(['Escape'], searchText ? 'to clear search' : 'to close')}
                     </div>
                     {renderKeyboardShortcuts(['>'], 'to search actions')}
                 </div>
