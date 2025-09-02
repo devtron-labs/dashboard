@@ -288,7 +288,7 @@ const MigrateToDevtronValidationFactory = ({
                                 onClick: handleAddClusterClick,
                                 linkProps: {
                                     to: generatePath(URLS.GLOBAL_CONFIG_CREATE_CLUSTER, {
-                                        type: CreateClusterTypeEnum.CONNECT_CLUSTER,
+                                        type: CreateClusterTypeEnum.CONNECT_USING_SERVER_URL,
                                     }),
                                     target: '_blank',
                                 },
