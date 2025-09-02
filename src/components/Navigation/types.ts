@@ -1,4 +1,4 @@
-import { MouseEventHandler, MutableRefObject } from 'react'
+import { MouseEventHandler, MutableRefObject, ReactNode } from 'react'
 import { NavLinkProps } from 'react-router-dom'
 
 import {
@@ -17,7 +17,9 @@ export type NavigationRootItemID =
     | 'cost-visibility'
     | 'security-center'
     | 'automation-and-enablement'
+    | 'backup-and-restore'
     | 'global-configuration'
+    | 'ai-recommendations'
 
 type CommonNavigationItemType = {
     title: string
@@ -25,14 +27,18 @@ type CommonNavigationItemType = {
     icon: IconsProps['name']
     href: string
     disabled?: boolean
+    keywords?: string[]
+    forceHideEnvKey?: keyof customEnv
+    hideNav?: boolean
 }
 
-export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | 'disabled'> & {
+export type NavigationItemType = Pick<
+    CommonNavigationItemType,
+    'dataTestId' | 'disabled' | 'keywords' | 'forceHideEnvKey' | 'hideNav'
+> & {
     isAvailableInEA?: boolean
     markOnlyForSuperAdmin?: boolean
-    forceHideEnvKey?: keyof customEnv
     title: string
-    hideNav?: boolean
     markAsBeta?: boolean
     isAvailableInDesktop?: boolean
     moduleName?: string
@@ -52,13 +58,19 @@ export type NavigationItemType = Pick<CommonNavigationItemType, 'dataTestId' | '
 export interface NavigationGroupType extends Pick<CommonNavigationItemType, 'title' | 'icon'> {
     id: NavigationRootItemID
     items: NavigationItemType[]
+    disabled?: boolean
 }
 
-export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title'> {
+export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title' | 'disabled'> {
     isExpanded?: boolean
     isSelected?: boolean
     to?: NavLinkProps['to']
-    onClick?: MouseEventHandler<HTMLButtonElement>
+    onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>
+    tooltip?: ReactNode
+}
+
+export type NavItemProps = NavigationItemType & {
+    hasSearchText: boolean
 }
 
 export interface NavigationProps {

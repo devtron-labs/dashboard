@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react'
+
 import { IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavigationItemType } from '@Components/Navigation/types'
@@ -40,4 +42,9 @@ export interface CommandGroupProps extends CommandBarGroupType {
 
 export interface CommandBarBackdropProps {
     handleClose: () => void
+}
+
+export interface CommandBarProps {
+    showCommandBar: boolean
+    setShowCommandBar: Dispatch<SetStateAction<boolean>>
 }

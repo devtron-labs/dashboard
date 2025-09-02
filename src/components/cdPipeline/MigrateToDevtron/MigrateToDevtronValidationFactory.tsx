@@ -158,7 +158,7 @@ const MigrateToDevtronValidationFactory = ({
         <p className="m-0">
             Chart version &apos;{requiredChartVersion}&apos; not found for &apos;{requiredChartName}&apos; chart.&nbsp;
             <Link
-                to={COMMON_URLS.GLOBAL_CONFIG_DEPLOYMENT_CHARTS_LIST}
+                to={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_DEPLOYMENT_CHARTS}
                 data-testid="upload-chart-button"
                 target="_blank"
                 className="anchor"

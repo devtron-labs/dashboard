@@ -16,6 +16,8 @@
 
 import { NO_MATCHING_RESULT } from '@devtron-labs/devtron-fe-common-lib'
 
+import { URLS } from './routes'
+
 export const EA_MANIFEST_SECRET_INFO_TEXT = 'The values for all keys in the data field are base64-encoded strings.'
 export const EA_MANIFEST_SECRET_EDIT_MODE_INFO_TEXT =
     'The values for all keys in the data field have to be base64-encoded strings.'
@@ -117,7 +119,7 @@ export const SSO_NOT_CONFIGURED_STATE_TEXTS = {
     infoText:
         ' Devtron uses Single Sign-On (SSO) to enable one-click login. Please set up an SSO login service before adding users.',
     linkText: 'Go to SSO login services',
-    redirectLink: '/global-config/auth/login-service',
+    redirectLink: `${URLS.GLOBAL_CONFIG_AUTH}/login-service`,
 }
 
 export const ERR_MESSAGE_ARGOCD = 'Deployment pipeline cannot be attached to a pipeline being deleted.'

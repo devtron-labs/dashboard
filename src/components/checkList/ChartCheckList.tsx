@@ -17,6 +17,7 @@
 import React, { Component } from 'react'
 import { NavLink } from 'react-router-dom'
 import { ChartCheckListProps } from './checklist.type'
+import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 
 export class ChartCheckList extends Component<ChartCheckListProps, {}> {
@@ -31,7 +32,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                 <div className="fs-13">
                     {!this.props.chartChecklist.project && (
                         <NavLink
-                            to={`${URLS.GLOBAL_CONFIG_PROJECT}`}
+                            to={COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS}
                             className="dc__no-decor  mt-8 flex left"
                             style={{ color: project ? `var(--N500)` : `var(--B500)` }}
                         >

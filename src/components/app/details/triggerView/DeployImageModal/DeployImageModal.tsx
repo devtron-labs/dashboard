@@ -352,7 +352,7 @@ const DeployImageModal = ({
     )
 
     const redirectToDeploymentStepsPage = () => {
-        history.push(`${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`)
+        history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`)
     }
 
     const handleDeployment = ({ ciArtifactId, deploymentWithConfig, computedWfrId }: HandleDeploymentProps) => {

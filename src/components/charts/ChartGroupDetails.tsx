@@ -107,7 +107,7 @@ export default function ChartGroupDetails() {
     }
 
     function redirectToConfigure() {
-        const url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
+        const url = `${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}/edit`
         push(url)
     }
 
@@ -148,7 +148,7 @@ export default function ChartGroupDetails() {
             installedChartData: chartGroupInstalled?.result?.installedChartData,
         }
         await deleteChartGroup(payload)
-        push(`${URLS.CHARTS}/discover`)
+        push(URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER)
     }
 
     const renderDeleteComponent = () => {

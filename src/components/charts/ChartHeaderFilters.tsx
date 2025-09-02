@@ -55,7 +55,7 @@ const ChartHeaderFilter = ({
     }
 
     const handleViewAllCharts = (): void => {
-        history.push(`${match.url.split('/chart-store')[0]}${URLS.GLOBAL_CONFIG_CHART}`)
+        history.push(`${match.url.split(URLS.APPLICATION_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`)
     }
 
     // Should be replaced with useURLFilters

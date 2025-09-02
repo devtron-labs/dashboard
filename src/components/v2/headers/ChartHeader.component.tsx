@@ -31,7 +31,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
         return (
             <div className="m-0 flex left ">
                 <Link
-                    to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
+                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
                     className="dc__devtron-breadcrumb__item"
                 >
                     <span className="cb-5 fs-16 cursor">Helm Apps </span>

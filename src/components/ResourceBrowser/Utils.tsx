@@ -410,7 +410,7 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix:
 
 export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
     shouldRedirectToInstallationStatus
-        ? `${CommonURLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        ? `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/installation-cluster/${id}`
         : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
               clusterId: id,
               group: K8S_EMPTY_GROUP,

@@ -19,6 +19,7 @@ import {
     NO_MATCHING_RESULT,
     Nodes,
     RESOURCE_BROWSER_ROUTES,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
@@ -378,9 +379,9 @@ export const ResourceBrowserGAEvent = {
 export const ResourceBrowserRouteToTabIdMap: Partial<
     Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
 > = {
-    '/resource-browser/:clusterId/:kind/:group': ResourceBrowserTabsId.k8s_Resources,
-    '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
-    '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
-    '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
-    '/resource-browser/:clusterId/resource-recommender': RESOURCE_RECOMMENDER_TAB_ID,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/:kind/:group`]: ResourceBrowserTabsId.k8s_Resources,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/overview`]: ResourceBrowserTabsId.cluster_overview,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`]: MONITORING_DASHBOARD_TAB_ID,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/terminal`]: ResourceBrowserTabsId.terminal,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/resource-recommender`]: RESOURCE_RECOMMENDER_TAB_ID,
 }

@@ -687,7 +687,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     component: ButtonComponentType.link,
                                     variant: ButtonVariantType.borderLess,
                                     linkProps: {
-                                        to: URLS.GLOBAL_CONFIG_GIT,
+                                        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
                                     },
                                     text: 'Add Git Account',
                                     startIcon: <Icon name="ic-add" color={null} />,

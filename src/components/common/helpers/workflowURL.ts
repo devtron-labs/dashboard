@@ -26,7 +26,7 @@ export function getCDPipelineURL(
     cdPipelineId: string = null,
     shouldComputeCompleteURL: boolean = false,
 ) {
-    const prefix = `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
+    const prefix = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/`
     const suffix = `${workflowId}/${isWebhookParent ? 'webhook' : 'ci-pipeline'}/${ciPipelineId}/cd-pipeline${
         cdPipelineId ? `/${cdPipelineId}` : ''
     }`
@@ -49,7 +49,7 @@ export function getCIPipelineURL(
 ) {
     let prefixURL = ''
     if (addPrefix) {
-        prefixURL = `${isTemplateView ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+        prefixURL = `${isTemplateView ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
             appId,
         }) : `/${isJobView ? 'job' : 'app'}/${appId}`}/edit/workflow/`
     }
@@ -70,7 +70,7 @@ export function getLinkedCIPipelineURL(
 ) {
     const suffix = `${workflowId}/linked-ci${ciPipelineId ? `/${ciPipelineId}` : ''}`
     if (addPrefix) {
-        return `/app/${appId}/edit/workflow/${suffix}`
+        return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/workflow/${suffix}`
     }
 
     return suffix
