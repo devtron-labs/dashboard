@@ -36,6 +36,7 @@ import { deployChartGroup } from './charts.service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
+import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()
@@ -62,6 +63,10 @@ export default function ChartGroupAdvanceDeploy() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                'application-management': {
+                    component: <ApplicationManagementIcon />,
+                    linked: true,
+                },
                 'chart-store': 'Chart store',
                 group: 'Chart groups',
                 ':groupId': {

@@ -51,6 +51,7 @@ import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
+import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()
@@ -72,6 +73,10 @@ export default function ChartGroupDetails() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                'application-management': {
+                    component: <ApplicationManagementIcon />,
+                    linked: true,
+                },
                 'chart-store': null,
                 group: 'Chart groups',
                 ':groupId': {

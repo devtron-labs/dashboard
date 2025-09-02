@@ -87,6 +87,7 @@ import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
 import CreateAppGroup from './CreateAppGroup'
 import AppDetail from '@Components/app/details/appDetails/AppDetails'
+import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 
@@ -587,6 +588,10 @@ export const EnvHeader = ({
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                'application-management': {
+                    component: <ApplicationManagementIcon /> ,
+                    linked: true,
+                },
                 ':envId': {
                     component: <EnvSelector onChange={handleEnvChange} envId={+envId} envName={envName} />,
                     linked: false,
