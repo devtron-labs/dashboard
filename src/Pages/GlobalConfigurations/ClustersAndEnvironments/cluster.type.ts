@@ -32,12 +32,6 @@ export const POLLING_INTERVAL = 30000
 
 export const DEFAULT_CLUSTER_ID = 1
 
-export const AuthenticationType = {
-    BASIC: 'BASIC',
-    ANONYMOUS: 'ANONYMOUS',
-    IAM: 'IAM',
-}
-
 export const emptyClusterTerminalParamsData = {
     selectedImage: null,
     selectedNamespace: null,
@@ -184,7 +178,6 @@ export const RemoteConnectionTypeCluster = 'cluster'
 
 export type EditClusterFormProps = {
     id: number
-    hideEditModal: () => void
     isProd?: boolean
     clusterName: string
     serverUrl: string
@@ -199,7 +192,10 @@ export type EditClusterFormProps = {
     isTlsConnection: boolean
 }
 
-export type ClusterFormProps = { reload: () => void } & Pick<ClusterMetadataTypes, 'category'> &
+export type ClusterFormProps = { reload: () => void; handleModalClose: () => void } & Pick<
+    ClusterMetadataTypes,
+    'category'
+> &
     (
         | ({
               handleCloseCreateClusterForm?: never
