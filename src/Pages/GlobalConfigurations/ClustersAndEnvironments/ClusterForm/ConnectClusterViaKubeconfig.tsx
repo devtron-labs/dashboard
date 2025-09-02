@@ -11,6 +11,7 @@ import {
     InfoBlock,
     ModalSidebarPanel,
     showError,
+    YAMLtoJSON,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ErrorIcon } from '@Icons/ic-warning-y6.svg'
@@ -20,7 +21,7 @@ import { DataListType, SaveClusterPayloadType, UserDetails } from '../cluster.ty
 import UserNameDropDownList from '../UseNameListDropdown'
 import KubeConfigEditor from './KubeConfigEditor'
 import { ConnectClusterViaKubeconfigProps } from './types'
-import { renderKubeConfigClusterCountInfo, YAMLtoJSON } from './utils'
+import { renderKubeConfigClusterCountInfo } from './utils'
 
 const ConnectClusterViaKubeconfig = ({ reload, handleModalClose }: ConnectClusterViaKubeconfigProps) => {
     const [isLoading, setIsLoading] = useState(false)
