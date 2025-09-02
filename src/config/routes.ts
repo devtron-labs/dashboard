@@ -17,7 +17,7 @@
 import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-cluster|create-cluster|add-isolated-cluster)'
+export const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-using-server-url|connect-using-kubeconfig|create-cluster|add-isolated-cluster)'
 
 export const URLS = {
     APPLICATION_MANAGEMENT_APP: COMMON_URLS.APPLICATION_MANAGEMENT_APP,

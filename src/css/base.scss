@@ -5029,6 +5029,14 @@ details[open] {
             background-color: var(--N100);
             transform: unset;
         }
+
+        &-gap-8 {
+            gap: 16px;
+
+            &> :not(:first-child)::before {
+                top: -8px;
+            }
+        }
     }
 }
 
@@ -5185,6 +5193,32 @@ details[open] {
 .dc__contain {
     &--paint {
         contain: paint;
+    }
+}
+
+.DayPicker {
+    background-color: var(--bg-menu-primary);
+    box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.07), 0 2px 5px 0 rgba(0, 0, 0, 0.07), 0 3px 8px 0 rgba(0, 0, 0, 0.07);
+
+    .DayPickerNavigation_button {
+        background-color: var(--bg-primary);
+        border: 1px solid var(--border-primary-translucent);
+
+        &:hover {
+            background-color: var(--bg-hover);
+        }
+    }
+
+    .CalendarMonthGrid {
+        background: var(--bg-menu-primary);
+
+        .CalendarMonth_caption {
+            color: var(--N900);
+        }
+
+        .CalendarMonth {
+            background: var(--bg-menu-primary);
+        }
     }
 }
 
