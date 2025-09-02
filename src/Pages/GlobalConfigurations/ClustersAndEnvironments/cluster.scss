@@ -107,3 +107,8 @@
         overflow: visible !important;
     }
 }
+
+.form__radio-item.disabled {
+    background-color: var(--bg-primary) !important;
+    opacity: 0.5;
+}
