@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { useRegisterShortcut, UseRegisterShortcutProvider } from '@devtron-labs/devtron-fe-common-lib'
+import { useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandBarBackdrop from './CommandBarBackdrop'
 import { SHORT_CUTS } from './constants'
@@ -37,11 +37,7 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
         return null
     }
 
-    return (
-        <UseRegisterShortcutProvider ignoreTags={[]}>
-            <CommandBarBackdrop handleClose={handleClose} />
-        </UseRegisterShortcutProvider>
-    )
+    return <CommandBarBackdrop handleClose={handleClose} />
 }
 
 export default CommandBar

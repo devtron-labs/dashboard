@@ -8,6 +8,7 @@ import {
     getUserPreferences,
     KeyboardShortcut,
     logExceptionToSentry,
+    noop,
     ResponseType,
     SearchBar,
     stopPropagation,
@@ -109,15 +110,6 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         setSearchText('')
     }
 
-    const handleEscape = () => {
-        if (searchText) {
-            handleClearFilters()
-            return
-        }
-
-        handleClose()
-    }
-
     const focusSearchBar = () => {
         if (searchBarRef.current) {
             searchBarRef.current.focus()
@@ -213,6 +205,29 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     }, [])
 
     useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                e.stopPropagation()
+
+                if (searchText) {
+                    handleClearFilters()
+                    setTimeout(() => {
+                        focusSearchBar()
+                    }, 100)
+                } else {
+                    handleClose()
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+        }
+    }, [searchText])
+
+    useEffect(() => {
         const { keys, description } = SHORT_CUTS.ENTER_ITEM
 
         registerShortcut({
@@ -283,10 +298,10 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     )
 
     return (
-        <Backdrop onEscape={handleEscape} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
+        <Backdrop onEscape={noop} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
             <div
                 onClick={stopPropagation}
-                className="dc__mxw-800 mxh-450 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100"
+                className="dc__mxw-720 mxh-500 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100"
             >
                 <div className="flexbox-col dc__overflow-hidden">
                     <div className="px-20 py-8">

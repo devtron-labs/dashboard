@@ -44,7 +44,7 @@ const CommandGroup = ({
                 tabIndex={0}
             >
                 <div className="flexbox dc__align-items-center dc__gap-12">
-                    <Icon name={item.icon} size={24} color="N700" />
+                    <Icon name={item.icon} size={20} color="N700" />
                     <h3 className="m-0 cn-9 fs-14 fw-4 lh-20 dc__truncate">{item.title}</h3>
                 </div>
 

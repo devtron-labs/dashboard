@@ -26,6 +26,7 @@ import {
     SearchBar,
     URLS,
     useQuery,
+    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
@@ -263,7 +264,9 @@ export const Navigation = ({
                 </AnimatePresence>
             </div>
 
-            <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
+            <UseRegisterShortcutProvider ignoreTags={[]}>
+                <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
+            </UseRegisterShortcutProvider>
         </>
     )
 }
