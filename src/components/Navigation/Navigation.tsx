@@ -195,7 +195,7 @@ export const Navigation = ({
                             </span>
                         }
                     />
-                    <NavGroup title="Overview" icon="ic-speedometer" to="/dummy-url" isExpanded={isExpanded} />
+                    <NavGroup title="Overview" icon="ic-speedometer" to="/dummy-url" isExpanded={isExpanded} disabled />
                     {NAVIGATION_LIST.map((item) => (
                         <NavGroup
                             key={item.id}
