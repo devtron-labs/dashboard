@@ -1,35 +1,25 @@
 import { useEffect } from 'react'
 
-import { useRegisterShortcut } from '@devtron-labs/devtron-fe-common-lib'
-
 import CommandBarBackdrop from './CommandBarBackdrop'
-import { SHORT_CUTS } from './constants'
 import { CommandBarProps } from './types'
 
 import './CommandBar.scss'
 
 const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
-    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
-
-    const handleOpen = () => {
-        setShowCommandBar(true)
-    }
-
     const handleClose = () => {
         setShowCommandBar(false)
     }
 
     useEffect(() => {
-        const { keys } = SHORT_CUTS.OPEN_COMMAND_BAR
-
-        registerShortcut({
-            keys,
-            description: SHORT_CUTS.OPEN_COMMAND_BAR.description,
-            callback: handleOpen,
-        })
-
+        const handleOpen = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault()
+                setShowCommandBar(true)
+            }
+        }
+        window.addEventListener('keydown', handleOpen)
         return () => {
-            unregisterShortcut(keys)
+            window.removeEventListener('keydown', handleOpen)
         }
     }, [])
 

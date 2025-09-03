@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react'
 
-import { IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
+import { IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavigationItemType } from '@Components/Navigation/types'
 
@@ -12,6 +12,7 @@ export type CommandBarItemType = {
     id: CommandBarActionIdType | `${typeof RECENT_NAVIGATION_ITEM_ID_PREFIX}${CommandBarActionIdType}`
     title: string
     icon: IconsProps['name']
+    iconColor?: IconBaseColorType | 'none'
     href: NavigationItemType['href']
 } & (
     | {

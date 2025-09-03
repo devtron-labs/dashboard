@@ -30,7 +30,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT } from '@Config/constants'
+import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, ViewType } from '@Config/constants'
 import { CommandBar } from '@Pages/Shared/CommandBar'
 
 import { NAVIGATION_LIST } from './constants'
@@ -48,6 +48,7 @@ export const Navigation = ({
     installedModuleMap,
     moduleInInstallingState,
     serverMode,
+    pageState,
 }: NavigationProps) => {
     // STATES
     const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
@@ -264,9 +265,11 @@ export const Navigation = ({
                 </AnimatePresence>
             </div>
 
-            <UseRegisterShortcutProvider ignoreTags={[]}>
-                <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
-            </UseRegisterShortcutProvider>
+            {pageState === ViewType.FORM && (
+                <UseRegisterShortcutProvider ignoreTags={[]}>
+                    <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
+                </UseRegisterShortcutProvider>
+            )}
         </>
     )
 }

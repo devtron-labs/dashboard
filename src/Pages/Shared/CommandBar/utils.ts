@@ -1,5 +1,10 @@
+import { SERVER_MODE } from '@devtron-labs/devtron-fe-common-lib'
+
+import { NAVIGATION_LIST } from '@Components/Navigation/constants'
+import { URLS } from '@Config/routes'
+
 import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
-import { CommandBarActionIdType, CommandBarItemType } from './types'
+import { CommandBarActionIdType, CommandBarGroupType, CommandBarItemType } from './types'
 
 export const sanitizeItemId = (item: CommandBarItemType) =>
     (item.id.startsWith(RECENT_NAVIGATION_ITEM_ID_PREFIX)
@@ -12,3 +17,84 @@ export const getNewSelectedIndex = (prevIndex: number, type: 'up' | 'down', tota
     }
     return prevIndex === totalItems - 1 ? 0 : prevIndex + 1
 }
+
+const getAppManagementAdditionalNavItems = (
+    serverMode: SERVER_MODE,
+    isSuperAdmin: boolean,
+): CommandBarGroupType['items'] => [
+    ...(serverMode === SERVER_MODE.FULL
+        ? [
+              {
+                  id: 'app-management-devtron-app-list',
+                  title: 'Devtron Applications',
+                  icon: 'ic-devtron-app',
+                  iconColor: 'none',
+                  href: URLS.DEVTRON_APP_LIST,
+              } satisfies CommandBarGroupType['items'][number],
+          ]
+        : []),
+    {
+        id: 'app-management-helm-app-list',
+        title: 'Helm Applications',
+        icon: 'ic-helm-app',
+        iconColor: 'none',
+        href: URLS.HELM_APP_LIST,
+    },
+    ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
+        ? [
+              {
+                  id: 'app-management-argo-app-list',
+                  title: 'ArgoCD Applications',
+                  icon: 'ic-argocd-app',
+                  iconColor: 'none',
+                  href: URLS.ARGO_APP_LIST,
+              } satisfies CommandBarGroupType['items'][number],
+          ]
+        : []),
+    ...(window._env_?.FEATURE_EXTERNAL_FLUX_CD_ENABLE && isSuperAdmin
+        ? [
+              {
+                  id: 'app-management-flux-app-list',
+                  title: 'FluxCD Applications',
+                  icon: 'ic-fluxcd-app',
+                  iconColor: 'none',
+                  href: URLS.FLUX_APP_LIST,
+              } satisfies CommandBarGroupType['items'][number],
+          ]
+        : []),
+]
+
+export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boolean): CommandBarGroupType[] =>
+    NAVIGATION_LIST.map<CommandBarGroupType>((group) => {
+        const isAppManagementBlock = group.id === 'application-management'
+        const additionalItems = isAppManagementBlock ? getAppManagementAdditionalNavItems(serverMode, isSuperAdmin) : []
+
+        const parsedItems = group.items.flatMap<CommandBarGroupType['items'][number]>(
+            ({ hasSubMenu, subItems, title, href, id, icon }) => {
+                if (hasSubMenu && subItems?.length) {
+                    return subItems.map<CommandBarGroupType['items'][number]>((subItem) => ({
+                        title: `${title} / ${subItem.title}`,
+                        id: subItem.id,
+                        // Since icon is not present for some subItems, using from group
+                        icon: group.icon,
+                        // TODO: No href present for some subItems
+                        href: subItem.href ?? null,
+                    }))
+                }
+
+                return {
+                    title,
+                    id,
+                    icon: icon || 'ic-arrow-right',
+                    // TODO: No href present for some items
+                    href: href ?? null,
+                }
+            },
+        )
+
+        return {
+            title: group.title,
+            id: group.id,
+            items: [...additionalItems, ...parsedItems],
+        }
+    })
