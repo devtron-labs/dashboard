@@ -9,6 +9,7 @@ export const RECENT_ACTIONS_GROUP: CommandBarGroupType = {
 }
 
 export const RECENT_NAVIGATION_ITEM_ID_PREFIX = 'recent-navigation-' as const
+export const DEVTRON_APPLICATIONS_COMMAND_GROUP_ID = 'devtron-applications-command-group' as const
 
 export const SHORT_CUTS: Record<
     'NAVIGATE_UP' | 'NAVIGATE_DOWN' | 'ENTER_ITEM',

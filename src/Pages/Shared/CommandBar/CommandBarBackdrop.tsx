@@ -25,9 +25,9 @@ import {
 import CommandGroup from './CommandGroup'
 import { RECENT_ACTIONS_GROUP, RECENT_NAVIGATION_ITEM_ID_PREFIX, SHORT_CUTS } from './constants'
 import { CommandBarBackdropProps, CommandBarGroupType } from './types'
-import { getNavigationGroups, getNewSelectedIndex, sanitizeItemId } from './utils'
+import { getAdditionalNavGroups, getNavigationGroups, getNewSelectedIndex, sanitizeItemId } from './utils'
 
-const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
+const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandBarBackdropProps) => {
     const history = useHistory()
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
@@ -87,7 +87,8 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
             return navigationGroups
         }
 
-        return navigationGroups.reduce<typeof navigationGroups>((acc, group) => {
+        const additionalGroups = getAdditionalNavGroups(searchText, appList)
+        const parsedGroups = navigationGroups.reduce<typeof navigationGroups>((acc, group) => {
             const filteredItems = group.items.filter((item) => item.title.toLowerCase().includes(lowerCaseSearchText))
 
             if (filteredItems.length > 0) {
@@ -99,6 +100,10 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
             return acc
         }, [])
+
+        const combinedGroups = [...additionalGroups, ...parsedGroups]
+
+        return combinedGroups
     }, [searchText])
 
     const showEmptyState = areFiltersApplied && !filteredGroups.length
@@ -307,6 +312,8 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                             initialSearchText={searchText}
                             handleSearchChange={handleSearchChange}
                             noBackgroundAndBorder
+                            shouldDebounce
+                            isLoading={isLoadingAppList}
                         />
                     </div>
 
