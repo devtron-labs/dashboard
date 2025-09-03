@@ -13,7 +13,7 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
     const { isLoading: isLoadingAppList, data: appList } = useQuery({
         queryKey: ['commandBar__app-list'],
         queryFn: () => getAppListMin(),
-        refetchInterval: (+window._env_.COMMAND_BAR_REFETCH_INTERVAL || 30) * 1000,
+        refetchInterval: (+window._env_.COMMAND_BAR_REFETCH_INTERVAL || 3600) * 1000,
         select: ({ result }) => result,
     })
 
