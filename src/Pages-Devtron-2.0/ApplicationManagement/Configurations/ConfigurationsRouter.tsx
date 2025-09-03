@@ -43,13 +43,13 @@ export const Configurations = () => {
 
     return (
         <>
-            {/* TODO Rohit: Update with Application Management Header */}
+            {/* TODO: Update with Application Management Header */}
             <PageHeader headerName="Application Management / Configurations" />
             <div className="application-management-configurations dc__grid flex-grow-1 dc__overflow-auto">
                 <div className="py-12 pl-8 pr-7 border__primary--right">
                     <SideNavigation list={APPLICATION_MANAGEMENT_CONFIGURATIONS} />
                 </div>
-                <div className="bg__secondary">
+                <div className="bg__secondary dc__overflow-auto">
                     <Switch>
                         {isFeatureGitOpsEnabled && (
                             <Route
