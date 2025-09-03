@@ -59,6 +59,7 @@ export const Navigation = ({
     // REFS
     const securityTrivyModuleTimeout = useRef<NodeJS.Timeout>(null)
     const securityClairModuleTimeout = useRef<NodeJS.Timeout>(null)
+    const timeoutRef = useRef<NodeJS.Timeout>(null)
 
     useEffect(
         () => () => {
@@ -170,6 +171,27 @@ export const Navigation = ({
             setSearchText('')
         }
 
+    const handleNavGroupHover = (navGroup: typeof clickedNavGroup) => (isHovered: boolean) => {
+        clearTimeout(timeoutRef.current)
+
+        if (isHovered) {
+            if (!clickedNavGroup) {
+                setClickedNavGroup(navGroup)
+                return
+            }
+
+            timeoutRef.current = setTimeout(() => {
+                setClickedNavGroup(navGroup)
+            }, 50)
+        }
+    }
+
+    const handleOpenExpandedNavigation = () => {
+        if (!clickedNavGroup) {
+            setClickedNavGroup(selectedNavGroup)
+        }
+    }
+
     const handleOpenCommandBar = () => {
         setShowCommandBar(true)
         handleCloseExpandedNavigation(true)()
@@ -180,6 +202,7 @@ export const Navigation = ({
             <div className="navigation dc__position-rel">
                 <nav
                     className={`navigation__default dc__position-rel dc__grid dc__overflow-hidden h-100 ${isExpanded ? 'is-expanded' : ''}`}
+                    onMouseEnter={handleOpenExpandedNavigation}
                 >
                     <NavigationLogo />
                     <NavGroup
@@ -206,6 +229,7 @@ export const Navigation = ({
                             isSelected={clickedNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
                             onClick={handleNavGroupClick(item)}
                             to={findActiveNavigationItemOfNavGroup(item.items)?.href}
+                            onHover={handleNavGroupHover(item)}
                         />
                     ))}
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
