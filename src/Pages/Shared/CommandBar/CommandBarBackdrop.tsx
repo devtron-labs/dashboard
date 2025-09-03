@@ -283,7 +283,12 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     )
 
     return (
-        <Backdrop onEscape={handleEscape} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
+        <Backdrop
+            onEscape={handleEscape}
+            onClick={handleClose}
+            deactivateFocusOnEscape={!!searchText}
+            returnFocusOnDeactivate={false}
+        >
             <div
                 onClick={stopPropagation}
                 className="dc__mxw-800 mxh-450 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100"
