@@ -51,12 +51,12 @@ const ResourceBrowserRouter: React.FC = () => {
                 </Route>
             )}
 
-            <Route path={[path, URLS.RESOURCE_BROWSER_CREATE_CLUSTER]} exact>
-                <ResourceBrowser />
+            <Route path={`${path}/:clusterId(\\d+)`}>
+                <ResourceList />
             </Route>
 
-            <Route path={`${path}/:clusterId`}>
-                <ResourceList />
+            <Route>
+                <ResourceBrowser />
             </Route>
 
             <Redirect to={path} />
