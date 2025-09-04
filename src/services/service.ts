@@ -83,7 +83,7 @@ export const getSourceConfig = (
     const URL = isTemplateView
         ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id, ...queryParams } })
         : getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
-    return get(URL)
+    return get<{ material: GitMaterialDTO[]; workflowCacheConfig: any }>(URL)
 }
 
 export function getCIConfig(appId: number, isTemplateView: AppConfigProps['isTemplateView']) {
