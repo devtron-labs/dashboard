@@ -99,6 +99,26 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
         }
     })
 
+export const parseAppListToNavItems = (appList: CommandBarBackdropProps['appList']): CommandBarGroupType[] => {
+    if (!appList?.length) {
+        return []
+    }
+
+    return [
+        {
+            title: 'Devtron Applications',
+            id: DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
+            items: appList.map((app) => ({
+                id: `app-management-devtron-app-list-${app.id}`,
+                title: app.name,
+                icon: 'ic-devtron-app',
+                iconColor: 'none',
+                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
+            })),
+        },
+    ]
+}
+
 export const getAdditionalNavGroups = (
     searchText: string,
     appList: CommandBarBackdropProps['appList'],
@@ -110,22 +130,5 @@ export const getAdditionalNavGroups = (
     const lowerCaseSearchText = searchText.toLowerCase()
 
     const filteredAppList = appList.filter((app) => app.name && app.name.toLowerCase().includes(lowerCaseSearchText))
-
-    if (!filteredAppList.length) {
-        return []
-    }
-
-    return [
-        {
-            title: 'Devtron Applications',
-            id: DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
-            items: filteredAppList.map((app) => ({
-                id: `app-management-devtron-app-list-${app.id}`,
-                title: app.name,
-                icon: 'ic-devtron-app',
-                iconColor: 'none',
-                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
-            })),
-        },
-    ]
+    return parseAppListToNavItems(filteredAppList)
 }

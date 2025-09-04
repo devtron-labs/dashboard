@@ -25,7 +25,13 @@ import {
 import CommandGroup from './CommandGroup'
 import { RECENT_ACTIONS_GROUP, RECENT_NAVIGATION_ITEM_ID_PREFIX, SHORT_CUTS } from './constants'
 import { CommandBarBackdropProps, CommandBarGroupType } from './types'
-import { getAdditionalNavGroups, getNavigationGroups, getNewSelectedIndex, sanitizeItemId } from './utils'
+import {
+    getAdditionalNavGroups,
+    getNavigationGroups,
+    getNewSelectedIndex,
+    parseAppListToNavItems,
+    sanitizeItemId,
+} from './utils'
 
 const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandBarBackdropProps) => {
     const history = useHistory()
@@ -51,14 +57,16 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
         queryKey: ['recentNavigationActions'],
         select: ({ result }) =>
             result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
-                const requiredGroup = navigationGroups.find((group) =>
-                    group.items.some((item) => item.id === action.id),
-                )
+                const allGroups = [...navigationGroups, ...parseAppListToNavItems(appList)]
+
+                const requiredGroup = allGroups.find((group) => group.items.some((item) => item.id === action.id))
 
                 if (requiredGroup) {
                     const requiredItem = requiredGroup.items.find((item) => item.id === action.id)
-                    requiredItem.id = `${RECENT_NAVIGATION_ITEM_ID_PREFIX}${action.id}`
-                    acc.items.push(requiredItem)
+                    acc.items.push({
+                        ...requiredItem,
+                        id: `${RECENT_NAVIGATION_ITEM_ID_PREFIX}${action.id}`,
+                    })
                 }
                 return acc
             }, structuredClone(RECENT_ACTIONS_GROUP)),
