@@ -1,10 +1,10 @@
-import { SERVER_MODE } from '@devtron-labs/devtron-fe-common-lib'
+import { SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NAVIGATION_LIST } from '@Components/Navigation/constants'
 import { URLS } from '@Config/routes'
 
-import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
-import { CommandBarActionIdType, CommandBarGroupType, CommandBarItemType } from './types'
+import { DEVTRON_APPLICATIONS_COMMAND_GROUP_ID, RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
+import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
 
 export const sanitizeItemId = (item: CommandBarItemType) =>
     (item.id.startsWith(RECENT_NAVIGATION_ITEM_ID_PREFIX)
@@ -98,3 +98,37 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
             items: [...additionalItems, ...parsedItems],
         }
     })
+
+export const parseAppListToNavItems = (appList: CommandBarBackdropProps['appList']): CommandBarGroupType[] => {
+    if (!appList?.length) {
+        return []
+    }
+
+    return [
+        {
+            title: 'Devtron Applications',
+            id: DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
+            items: appList.map((app) => ({
+                id: `app-management-devtron-app-list-${app.id}`,
+                title: app.name,
+                icon: 'ic-devtron-app',
+                iconColor: 'none',
+                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
+            })),
+        },
+    ]
+}
+
+export const getAdditionalNavGroups = (
+    searchText: string,
+    appList: CommandBarBackdropProps['appList'],
+): CommandBarGroupType[] => {
+    if (searchText.length < 3 || !appList?.length) {
+        return []
+    }
+
+    const lowerCaseSearchText = searchText.toLowerCase()
+
+    const filteredAppList = appList.filter((app) => app.name && app.name.toLowerCase().includes(lowerCaseSearchText))
+    return parseAppListToNavItems(filteredAppList)
+}
