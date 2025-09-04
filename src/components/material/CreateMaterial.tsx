@@ -24,12 +24,12 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { createMaterial } from './material.service'
 import { MaterialView } from './MaterialView'
-import { CreateMaterialState } from './material.types'
+import { CreateMaterialState, MaterialViewProps } from './material.types'
 
 interface CreateMaterialProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     appId: number
     isMultiGit: boolean
-    providers: any[]
+    providers: MaterialViewProps['providers']
     refreshMaterials: () => void
     isGitProviderValid
     isCheckoutPathValid

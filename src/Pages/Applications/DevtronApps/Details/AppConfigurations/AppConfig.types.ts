@@ -165,6 +165,7 @@ export interface AppConfigurationContextType
     isJobView: boolean
     envIdToEnvApprovalConfigurationMap: ResourceIdToResourceApprovalPolicyConfigMapType
     lastUnlockedStage: string
+    // TODO: Remove this
     isWorkflowEditorUnlocked: boolean
     getRepo: string
     envConfig: EnvConfigurationState

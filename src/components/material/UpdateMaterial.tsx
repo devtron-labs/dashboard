@@ -31,7 +31,7 @@ export interface UpdateMaterialProps extends Required<Pick<AppConfigProps, 'isTe
     isMultiGit: boolean
     preventRepoDelete: boolean
     material: GitMaterialType
-    providers: any[]
+    providers: MaterialViewProps['providers']
     isGitProviderValid
     isCheckoutPathValid
     refreshMaterials: () => void

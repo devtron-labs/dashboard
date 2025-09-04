@@ -16,18 +16,33 @@
 
 import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 
-export interface MaterialListProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
+import { GitAccountDTO } from '@Services/service.types'
+
+export interface MaterialListProps extends Pick<AppConfigProps, 'isTemplateView'> {
     appId: string
+    isCreateAppView?: boolean
+    isJobView?: boolean
     respondOnSuccess: () => void
     toggleRepoSelectionTippy: () => void
     setRepo: React.Dispatch<React.SetStateAction<string>>
-    isJobView?: boolean
-    handleGitMaterialsChange: (updatedGitMaterial: GitMaterialType[], isError: boolean) => void
-    isCreateAppView: boolean
+    handleGitMaterialsChange?: (updatedGitMaterial: GitMaterialType[], isError: boolean) => void
 }
 
 export interface MaterialServiceProps extends Pick<MaterialListProps, 'isTemplateView'> {
     request: any
+}
+
+export interface GitMaterialDTO {
+    checkoutPath: string
+    createBackup: boolean
+    fetchSubmodules: boolean
+    filterPattern: string[]
+    gitProviderId: number
+    id: number
+    isUsedInCiConfig: boolean
+    name: string
+    url: string
+    active: boolean
 }
 
 export interface GitMaterialType {
@@ -36,7 +51,7 @@ export interface GitMaterialType {
     gitProvider: { id: number; name: string; url?: string; authMode?: string }
     url: string
     checkoutPath: string
-    filterPattern?: []
+    filterPattern?: string[]
     includeExcludeFilePath?: string
     active: boolean
     fetchSubmodules: boolean
@@ -92,7 +107,7 @@ export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateVi
     isCollapsed: boolean
     isLoading: boolean
     isError: MaterialError
-    providers: any[]
+    providers: GitAccountDTO[]
     handleProviderChange: (selected, url) => void
     handleCheckoutPathCheckbox: (event) => void
     handleExcludeRepoCheckbox: (event) => void
