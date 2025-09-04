@@ -63,12 +63,6 @@
                 }
             }
         }
-
-        &:last-child {
-            .nav-group__divider-container {
-                display: none;
-            }
-        }
     }
 
     .nav-item:not([aria-disabled='true']) {
