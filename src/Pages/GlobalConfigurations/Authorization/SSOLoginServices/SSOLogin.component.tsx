@@ -814,6 +814,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     </div>
                 </div>
                 {this.renderSSOCodeEditor()}
+                {console.log(this.isAutoAssignPermissionFlowActive)}
                 {this.isAutoAssignPermissionFlowActive && (
                     <div className="w-100">
                         <AutoAssignToggleTile
