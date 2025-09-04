@@ -181,6 +181,7 @@ if (!window || !window._env_) {
         FEATURE_FLUX_DEPLOYMENTS_ENABLE: false,
         FEATURE_LINK_EXTERNAL_FLUX_ENABLE: false,
         FEATURE_CANARY_ROLLOUT_PROGRESS_ENABLE: true,
+        COMMAND_BAR_REFETCH_INTERVAL: 3600,
     }
 }
 
