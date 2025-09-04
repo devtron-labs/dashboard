@@ -64,7 +64,7 @@ const CommandGroup = ({
     return (
         <div className={`flexbox-col ${baseIndex === 0 ? 'px-8 pb-8 pt-16' : 'p-8'}`}>
             <div className="flexbox px-16 py-6 dc__gap-4 dc__position-sticky dc__top-0 dc__zi-1 bg__modal--primary">
-                <h2 className="m-0 cn-7 fs-13 fw-6 lh-20 dc__uppercase font-ibm-plex-mono" id={id}>
+                <h2 className="m-0 cn-7 fs-13 fw-6 lh-20 dc__uppercase font-ibm-plex-sans" id={id}>
                     {title}
                 </h2>
             </div>

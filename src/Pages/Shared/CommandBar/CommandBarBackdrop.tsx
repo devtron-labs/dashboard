@@ -304,13 +304,18 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
     )
 
     return (
-        <Backdrop onEscape={noop} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
+        <Backdrop
+            onEscape={noop}
+            onClick={handleClose}
+            deactivateFocusOnEscape={!!searchText}
+            returnFocusOnDeactivate={false}
+        >
             <div
                 onClick={stopPropagation}
                 className="dc__mxw-720 mxh-500 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100"
             >
                 <div className="flexbox-col dc__overflow-hidden flex-grow-1">
-                    <div className="px-20 py-8">
+                    <div className="px-16 py-12">
                         <SearchBar
                             inputProps={{
                                 autoFocus: true,

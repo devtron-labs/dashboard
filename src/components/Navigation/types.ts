@@ -68,7 +68,9 @@ export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title
     isSelected?: boolean
     to?: NavLinkProps['to']
     onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>
+    showTooltip?: boolean
     tooltip?: ReactNode
+    onHover?: (isHovered: boolean) => void
 }
 
 export type NavItemProps = NavigationItemType & {
