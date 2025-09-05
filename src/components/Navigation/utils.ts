@@ -96,10 +96,10 @@ export const doesNavigationItemMatchPath = (
     const navItem = item as NavigationItemType
 
     if (navItem.hasSubMenu && navItem.subItems) {
-        return navItem.subItems.some((subItem) => doesNavigationItemMatchPath(subItem, pathname))
+        return navItem.subItems.some((subItem) => !subItem.disabled && doesNavigationItemMatchPath(subItem, pathname))
     }
 
-    return isSubPath(item.href, pathname)
+    return !navItem.disabled && isSubPath(item.href, pathname)
 }
 
 /**

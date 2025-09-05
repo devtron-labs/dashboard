@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -26,10 +26,11 @@ import {
     SearchBar,
     URLS,
     useQuery,
+    UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
-import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT } from '@Config/constants'
+import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, ViewType } from '@Config/constants'
 import { CommandBar } from '@Pages/Shared/CommandBar'
 
 import { NAVIGATION_LIST } from './constants'
@@ -47,9 +48,10 @@ export const Navigation = ({
     installedModuleMap,
     moduleInInstallingState,
     serverMode,
+    pageState,
 }: NavigationProps) => {
     // STATES
-    const [clickedNavGroup, setClickedNavGroup] = useState<NavigationGroupType | null>(null)
+    const [hoveredNavGroup, setHoveredNavGroup] = useState<NavigationGroupType | null>(null)
     const [searchText, setSearchText] = useState('')
     const [showCommandBar, setShowCommandBar] = useState(false)
 
@@ -59,6 +61,7 @@ export const Navigation = ({
     // REFS
     const securityTrivyModuleTimeout = useRef<NodeJS.Timeout>(null)
     const securityClairModuleTimeout = useRef<NodeJS.Timeout>(null)
+    const timeoutRef = useRef<NodeJS.Timeout>(null)
 
     useEffect(
         () => () => {
@@ -137,8 +140,10 @@ export const Navigation = ({
         [pathname],
     )
 
-    const currentNavGroup = clickedNavGroup || selectedNavGroup
-    const isExpanded = !!clickedNavGroup
+    // The current navigation group is the one that is hovered or the one that is active, \
+    // this is used to determine which nav group items are to be shown in expanded state.
+    const currentNavGroup = hoveredNavGroup || selectedNavGroup
+    const isExpanded = !!hoveredNavGroup
 
     const navItems = useMemo<NavigationGroupType['items']>(
         () => (currentNavGroup ? filterNavigationItems(currentNavGroup.items, searchText) : []),
@@ -156,7 +161,7 @@ export const Navigation = ({
             ) {
                 e.preventDefault()
             }
-            setClickedNavGroup(navItem)
+            setHoveredNavGroup(navItem)
             setSearchText('')
         }
 
@@ -166,9 +171,31 @@ export const Navigation = ({
             if (searchText && !forceClose) {
                 return
             }
-            setClickedNavGroup(null)
+            setHoveredNavGroup(null)
             setSearchText('')
         }
+
+    const handleNavGroupHover = (navGroup: typeof hoveredNavGroup) => (isHovered: boolean) => {
+        clearTimeout(timeoutRef.current)
+
+        if (isHovered) {
+            if (!hoveredNavGroup) {
+                setHoveredNavGroup(navGroup)
+                return
+            }
+
+            timeoutRef.current = setTimeout(() => {
+                setHoveredNavGroup(navGroup)
+                setSearchText('')
+            }, 50)
+        }
+    }
+
+    const handleOpenExpandedNavigation = (e: MouseEvent<HTMLDivElement>) => {
+        if (!hoveredNavGroup && e.target === e.currentTarget) {
+            setHoveredNavGroup(selectedNavGroup)
+        }
+    }
 
     const handleOpenCommandBar = () => {
         setShowCommandBar(true)
@@ -180,6 +207,7 @@ export const Navigation = ({
             <div className="navigation dc__position-rel">
                 <nav
                     className={`navigation__default dc__position-rel dc__grid dc__overflow-hidden h-100 ${isExpanded ? 'is-expanded' : ''}`}
+                    onMouseEnter={handleOpenExpandedNavigation}
                 >
                     <NavigationLogo />
                     <NavGroup
@@ -187,6 +215,7 @@ export const Navigation = ({
                         icon="ic-magnifying-glass"
                         isExpanded={isExpanded}
                         onClick={handleOpenCommandBar}
+                        showTooltip
                         tooltip={
                             <span className="flex dc__gap-2">
                                 Search&nbsp;
@@ -194,8 +223,17 @@ export const Navigation = ({
                                 <KeyboardShortcut keyboardKey="K" />
                             </span>
                         }
+                        onHover={handleCloseExpandedNavigation(true)}
                     />
-                    <NavGroup title="Overview" icon="ic-speedometer" to="/dummy-url" isExpanded={isExpanded} />
+                    <NavGroup
+                        title="Overview"
+                        icon="ic-speedometer"
+                        to="/dummy-url"
+                        isExpanded={isExpanded}
+                        onHover={handleCloseExpandedNavigation(true)}
+                        disabled
+                        showTooltip
+                    />
                     {NAVIGATION_LIST.map((item) => (
                         <NavGroup
                             key={item.id}
@@ -203,9 +241,10 @@ export const Navigation = ({
                             icon={item.icon}
                             disabled={item.disabled}
                             isExpanded={isExpanded}
-                            isSelected={clickedNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
+                            isSelected={hoveredNavGroup?.id === item.id || selectedNavGroup?.id === item.id}
                             onClick={handleNavGroupClick(item)}
                             to={findActiveNavigationItemOfNavGroup(item.items)?.href}
+                            onHover={handleNavGroupHover(item)}
                         />
                     ))}
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
@@ -214,6 +253,8 @@ export const Navigation = ({
                             icon="ic-stack"
                             to={URLS.STACK_MANAGER_ABOUT}
                             isExpanded={isExpanded}
+                            onHover={handleCloseExpandedNavigation(true)}
+                            showTooltip
                         />
                     )}
                 </nav>
@@ -247,13 +288,21 @@ export const Navigation = ({
                                             inputProps={{ autoFocus: true }}
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
-                                            {navItems
-                                                .filter(({ forceHideEnvKey, hideNav }) =>
-                                                    forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav,
-                                                )
-                                                .map((item) => (
-                                                    <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
-                                                ))}
+                                            {navItems.length ? (
+                                                navItems
+                                                    .filter(({ forceHideEnvKey, hideNav }) =>
+                                                        forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav,
+                                                    )
+                                                    .map((item) => (
+                                                        <NavItem
+                                                            key={item.title}
+                                                            {...item}
+                                                            hasSearchText={!!searchText}
+                                                        />
+                                                    ))
+                                            ) : (
+                                                <span className="fs-13 lh-20 text__sidenav">No matching results</span>
+                                            )}
                                         </div>
                                     </div>
                                 )}
@@ -263,7 +312,11 @@ export const Navigation = ({
                 </AnimatePresence>
             </div>
 
-            <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
+            {pageState === ViewType.FORM && (
+                <UseRegisterShortcutProvider ignoreTags={[]}>
+                    <CommandBar showCommandBar={showCommandBar} setShowCommandBar={setShowCommandBar} />
+                </UseRegisterShortcutProvider>
+            )}
         </>
     )
 }

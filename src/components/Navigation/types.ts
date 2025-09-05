@@ -10,6 +10,8 @@ import {
     SERVER_MODE,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ViewType } from '@Config/constants'
+
 export type NavigationRootItemID =
     | 'application-management'
     | 'infrastructure-management'
@@ -66,7 +68,9 @@ export interface NavGroupProps extends Pick<NavigationGroupType, 'icon' | 'title
     isSelected?: boolean
     to?: NavLinkProps['to']
     onClick?: MouseEventHandler<HTMLButtonElement | HTMLAnchorElement>
+    showTooltip?: boolean
     tooltip?: ReactNode
+    onHover?: (isHovered: boolean) => void
 }
 
 export type NavItemProps = NavigationItemType & {
@@ -79,5 +83,5 @@ export interface NavigationProps {
     serverMode: SERVER_MODE
     moduleInInstallingState: string
     installedModuleMap: MutableRefObject<Record<string, boolean>>
-    isSuperAdmin: boolean
+    pageState: ViewType
 }

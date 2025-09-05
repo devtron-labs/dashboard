@@ -4,10 +4,11 @@ import { useHistory } from 'react-router-dom'
 import {
     API_STATUS_CODES,
     Backdrop,
-    GenericFilterEmptyState,
+    GenericSectionErrorState,
     getUserPreferences,
     KeyboardShortcut,
     logExceptionToSentry,
+    noop,
     ResponseType,
     SearchBar,
     stopPropagation,
@@ -15,22 +16,33 @@ import {
     ToastManager,
     ToastVariantType,
     updateUserPreferences,
+    useMainContext,
     useQuery,
     useRegisterShortcut,
     UserPreferencesType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandGroup from './CommandGroup'
-import { NAVIGATION_GROUPS, RECENT_ACTIONS_GROUP, RECENT_NAVIGATION_ITEM_ID_PREFIX, SHORT_CUTS } from './constants'
+import { RECENT_ACTIONS_GROUP, RECENT_NAVIGATION_ITEM_ID_PREFIX, SHORT_CUTS } from './constants'
 import { CommandBarBackdropProps, CommandBarGroupType } from './types'
-import { getNewSelectedIndex, sanitizeItemId } from './utils'
+import {
+    getAdditionalNavGroups,
+    getNavigationGroups,
+    getNewSelectedIndex,
+    parseAppListToNavItems,
+    sanitizeItemId,
+} from './utils'
 
-const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
+const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandBarBackdropProps) => {
     const history = useHistory()
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
     const [searchText, setSearchText] = useState('')
     const [selectedItemIndex, setSelectedItemIndex] = useState(0)
+
+    const { serverMode, isSuperAdmin } = useMainContext()
+
+    const navigationGroups = useMemo(() => getNavigationGroups(serverMode, isSuperAdmin), [serverMode, isSuperAdmin])
 
     const { data: recentActionsGroup, isLoading } = useQuery({
         queryFn: ({ signal }) =>
@@ -45,14 +57,16 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         queryKey: ['recentNavigationActions'],
         select: ({ result }) =>
             result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
-                const requiredGroup = structuredClone(NAVIGATION_GROUPS).find((group) =>
-                    group.items.some((item) => item.id === action.id),
-                )
+                const allGroups = [...navigationGroups, ...parseAppListToNavItems(appList)]
+
+                const requiredGroup = allGroups.find((group) => group.items.some((item) => item.id === action.id))
 
                 if (requiredGroup) {
                     const requiredItem = requiredGroup.items.find((item) => item.id === action.id)
-                    requiredItem.id = `${RECENT_NAVIGATION_ITEM_ID_PREFIX}${action.id}`
-                    acc.items.push(requiredItem)
+                    acc.items.push({
+                        ...requiredItem,
+                        id: `${RECENT_NAVIGATION_ITEM_ID_PREFIX}${action.id}`,
+                    })
                 }
                 return acc
             }, structuredClone(RECENT_ACTIONS_GROUP)),
@@ -78,11 +92,16 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         const lowerCaseSearchText = searchText.toLowerCase()
 
         if (!searchText) {
-            return NAVIGATION_GROUPS
+            return navigationGroups
         }
 
-        return NAVIGATION_GROUPS.reduce<typeof NAVIGATION_GROUPS>((acc, group) => {
-            const filteredItems = group.items.filter((item) => item.title.toLowerCase().includes(lowerCaseSearchText))
+        const additionalGroups = getAdditionalNavGroups(searchText, appList)
+        const parsedGroups = navigationGroups.reduce<typeof navigationGroups>((acc, group) => {
+            const filteredItems = group.items.filter(
+                (item) =>
+                    item.title.toLowerCase().includes(lowerCaseSearchText) ||
+                    item.keywords?.some((keyword) => keyword.toLowerCase().includes(lowerCaseSearchText)),
+            )
 
             if (filteredItems.length > 0) {
                 acc.push({
@@ -93,7 +112,13 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
             return acc
         }, [])
+
+        const combinedGroups = [...additionalGroups, ...parsedGroups]
+
+        return combinedGroups
     }, [searchText])
+
+    const showEmptyState = areFiltersApplied && !filteredGroups.length
 
     const itemFlatList: CommandBarGroupType['items'] = useMemo(() => {
         if (areFiltersApplied) {
@@ -101,21 +126,12 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
         }
 
         return recentActionsGroup
-            ? [...recentActionsGroup.items, ...NAVIGATION_GROUPS.flatMap((group) => group.items)]
-            : [...NAVIGATION_GROUPS.flatMap((group) => group.items)]
+            ? [...recentActionsGroup.items, ...navigationGroups.flatMap((group) => group.items)]
+            : [...navigationGroups.flatMap((group) => group.items)]
     }, [areFiltersApplied, recentActionsGroup, filteredGroups])
 
     const handleClearFilters = () => {
         setSearchText('')
-    }
-
-    const handleEscape = () => {
-        if (searchText) {
-            handleClearFilters()
-            return
-        }
-
-        handleClose()
     }
 
     const focusSearchBar = () => {
@@ -134,7 +150,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
             const item = itemFlatList[newIndex]
             const itemElement = itemRefMap.current[item.id]
             if (itemElement) {
-                itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+                itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest' })
             }
             return newIndex
         })
@@ -190,7 +206,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
 
                 const itemElement = itemRefMap.current[itemFlatList[selectedIndex]?.id]
                 if (itemElement) {
-                    itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' })
+                    itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest' })
                 }
 
                 setSelectedItemIndex(selectedIndex)
@@ -199,18 +215,27 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     }, [isLoading, recentActionsGroup])
 
     useEffect(() => {
-        const { keys, description } = SHORT_CUTS.FOCUS_SEARCH_BAR
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                e.stopPropagation()
 
-        registerShortcut({
-            keys,
-            description,
-            callback: focusSearchBar,
-        })
+                if (searchText) {
+                    handleClearFilters()
+                    setTimeout(() => {
+                        focusSearchBar()
+                    }, 100)
+                } else {
+                    handleClose()
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
 
         return () => {
-            unregisterShortcut(keys)
+            window.removeEventListener('keydown', handleKeyDown)
         }
-    }, [])
+    }, [searchText])
 
     useEffect(() => {
         const { keys, description } = SHORT_CUTS.ENTER_ITEM
@@ -274,7 +299,7 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     }
 
     const renderKeyboardShortcuts = (keys: SupportedKeyboardKeysType[], label: string) => (
-        <div className="flexbox dc__gap-8 dc__align-items-center">
+        <div className="flexbox dc__gap-6 dc__align-items-center">
             {keys.map((key) => (
                 <KeyboardShortcut key={key} keyboardKey={key} />
             ))}
@@ -283,13 +308,18 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
     )
 
     return (
-        <Backdrop onEscape={handleEscape} onClick={handleClose} deactivateFocusOnEscape={!!searchText}>
+        <Backdrop
+            onEscape={noop}
+            onClick={handleClose}
+            deactivateFocusOnEscape={!!searchText}
+            returnFocusOnDeactivate={false}
+        >
             <div
                 onClick={stopPropagation}
-                className="dc__mxw-800 mxh-450 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container w-100 h-100"
+                className="dc__mxw-720 mxh-500 flexbox-col dc__overflow-hidden dc__content-space br-12 bg__modal--primary command-bar__container border__secondary-translucent w-100 h-100"
             >
-                <div className="flexbox-col dc__overflow-hidden">
-                    <div className="px-20 py-8">
+                <div className="flexbox-col dc__overflow-hidden flex-grow-1">
+                    <div className="px-16 py-12 bg__modal--secondary border__primary--bottom">
                         <SearchBar
                             inputProps={{
                                 autoFocus: true,
@@ -299,14 +329,22 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                             initialSearchText={searchText}
                             handleSearchChange={handleSearchChange}
                             noBackgroundAndBorder
+                            shouldDebounce
+                            isLoading={isLoadingAppList}
                         />
                     </div>
 
-                    {areFiltersApplied && !filteredGroups.length ? (
-                        <GenericFilterEmptyState handleClearFilters={handleClearFilters} />
+                    {showEmptyState ? (
+                        <GenericSectionErrorState
+                            title="No results found"
+                            subTitle=""
+                            description=""
+                            useInfoIcon
+                            rootClassName="flex-grow-1"
+                        />
                     ) : (
                         <div
-                            className="flexbox-col dc__overflow-auto border__primary--top pt-8"
+                            className="flexbox-col dc__overflow-auto"
                             role="listbox"
                             aria-label="Command Menu"
                             aria-activedescendant={itemFlatList[selectedItemIndex]?.id}
@@ -330,13 +368,18 @@ const CommandBarBackdrop = ({ handleClose }: CommandBarBackdropProps) => {
                     )}
                 </div>
 
-                <div className="flexbox dc__content-space dc__align-items-center px-20 py-12 border__primary--top bg__secondary">
-                    <div className="flexbox dc__gap-20 dc__align-items-center">
-                        {renderKeyboardShortcuts(['ArrowUp', 'ArrowDown'], 'to navigate')}
-                        {renderKeyboardShortcuts(['Enter'], 'to select')}
-                        {renderKeyboardShortcuts(['Escape'], 'to close')}
+                <div className="flexbox dc__content-space dc__align-items-center px-20 py-12 border__secondary--top bg__secondary">
+                    <div
+                        className={`flexbox dc__gap-20 dc__align-items-center flex-grow-1 ${showEmptyState ? 'dc__content-center' : ''}`}
+                    >
+                        {!showEmptyState && (
+                            <>
+                                {renderKeyboardShortcuts(['ArrowUp', 'ArrowDown'], 'to navigate')}
+                                {renderKeyboardShortcuts(['Enter'], 'to select')}
+                            </>
+                        )}
+                        {renderKeyboardShortcuts(['Escape'], searchText ? 'to clear search' : 'to close')}
                     </div>
-                    {renderKeyboardShortcuts(['>'], 'to search actions')}
                 </div>
             </div>
         </Backdrop>
