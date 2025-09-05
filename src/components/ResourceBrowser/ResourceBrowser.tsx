@@ -91,6 +91,7 @@ const ResourceBrowser: React.FC = () => {
     }
 
     const renderBreadcrumb = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
     return (
         <div className="flexbox-col h-100 bg__primary" ref={parentRef}>
             <PageHeader

@@ -25,6 +25,7 @@ import {
     DetectBottom,
     ToastManager,
     ToastVariantType,
+    ApplicationManagementIcon
 } from '@devtron-labs/devtron-fe-common-lib'
 import ChartCard from './ChartCard'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
@@ -39,7 +40,6 @@ import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './constants'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import { sortOptionsByLabel } from '../common'
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export default function ChartGroupUpdate({}) {
     const history = useHistory()

@@ -18,6 +18,7 @@ import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
+    ApplicationManagementIcon,
     BreadCrumb,
     ErrorScreenManager,
     FilterChips,
@@ -33,7 +34,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import appGroupEmpty from '@Images/application-group-empty-state.webp'
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { getEnvAppList } from '../AppGroup.service'

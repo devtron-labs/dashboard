@@ -389,7 +389,7 @@ export const ResourceBrowserRouteToTabIdMap: Partial<
 export const INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG = [
     {
         key: 'resource-browser',
-        route: `${URLS.INFRASTRUCTURE_MANAGEMENT}/resource-browser`,
+        route: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
         heading: 'Resource Browser',
     },
 ]

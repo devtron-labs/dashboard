@@ -26,6 +26,7 @@ import {
     PageHeader,
     ToastVariantType,
     ToastManager,
+    ApplicationManagementIcon
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
@@ -36,7 +37,6 @@ import { deployChartGroup } from './charts.service'
 import { ReactComponent as WarningIcon } from '../../assets/icons/ic-alert-triangle.svg'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export default function ChartGroupAdvanceDeploy() {
     const { groupId } = useParams<{ groupId: string }>()

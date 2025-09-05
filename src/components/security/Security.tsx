@@ -24,17 +24,15 @@ import './security.scss'
 export const Security = () => {
     const { path } = useRouteMatch()
 
-    const renderRouter = () => (
-        <Switch>
-            <Route path={`${path}/scans`} component={SecurityScansTab} />
-            <Route path={`${path}/policies`} component={SecurityPoliciesTab} />
-            <Redirect to={`${path}`} />
-        </Switch>
-    )
-
     return (
         <div className="security-scan-container bg__primary flexbox-col min-h-100">
-            <div className="security-scan flexbox-col flex-grow-1">{renderRouter()}</div>
+            <div className="security-scan flexbox-col flex-grow-1">
+                <Switch>
+                    <Route path={`${path}/scans`} component={SecurityScansTab} />
+                    <Route path={`${path}/policies`} component={SecurityPoliciesTab} />
+                    <Redirect to={`${path}`} />
+                </Switch>
+            </div>
         </div>
     )
 }

@@ -31,6 +31,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    ApplicationManagementIcon
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
@@ -51,7 +52,6 @@ import { ChartSelector } from '../AppSelector'
 import NoGitOpsConfiguredWarning from '../workflowEditor/NoGitOpsConfiguredWarning'
 import { renderChartGroupDeploymentToastMessage } from './charts.helper'
 import { getDeployableChartsFromConfiguredCharts } from './list/utils'
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export default function ChartGroupDetails() {
     const { groupId } = useParams<{ groupId }>()

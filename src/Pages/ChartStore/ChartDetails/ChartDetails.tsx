@@ -19,6 +19,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     APIResponseHandler,
+    ApplicationManagementIcon,
     BreadCrumb,
     handleAnalyticsEvent,
     PageHeader,
@@ -30,7 +31,6 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 import { ChartSelector } from '@Components/AppSelector'
 import { getChartSelectAPI } from '@Components/charts/charts.util'
 import { URLS } from '@Config/routes'

@@ -42,6 +42,7 @@ import {
     DeleteConfirmationModal,
     useMainContext,
     OptionType,
+    ApplicationManagementIcon
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -87,7 +88,6 @@ import '../app/details/app.scss'
 import { CONTEXT_NOT_AVAILABLE_ERROR, DeleteComponentsName } from '../../config/constantMessaging'
 import CreateAppGroup from './CreateAppGroup'
 import AppDetail from '@Components/app/details/appDetails/AppDetails'
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export const AppGroupAppFilterContext = React.createContext<AppGroupAppFilterContextType>(null)
 

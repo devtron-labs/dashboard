@@ -26,6 +26,7 @@ import {
     PageHeader,
     BreadCrumb,
     useBreadcrumb,
+    ApplicationManagementIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -34,7 +35,7 @@ import { ProjectListState, ProjectType, ProjectListProps } from './types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import './project.scss'
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
+import { useLocation } from 'react-router-dom'
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
     constructor(props) {
@@ -210,15 +211,20 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     renderBreadcrumbs = () => {
-        const {breadcrumbs} = useBreadcrumb({
-            alias: {
-                'application-management': {
-                    component: <ApplicationManagementIcon />,
-                    linked: true,
+        const { pathname } = useLocation()
+
+        const { breadcrumbs } = useBreadcrumb(
+            {
+                alias: {
+                    'application-management': {
+                        component: <ApplicationManagementIcon />,
+                        linked: true,
+                    },
                 },
-                projects: null,
             },
-        })
+            [pathname],
+        )
+
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 

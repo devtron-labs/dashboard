@@ -19,6 +19,7 @@ import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    ApplicationManagementIcon,
     BreadCrumb,
     handleAnalyticsEvent,
     noop,
@@ -36,7 +37,6 @@ import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetails
 import { AppSelector } from '../../AppSelector'
 import { useAppContext } from '../../common'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
-import { ApplicationManagementIcon } from '../ApplicationManagementIcon'
 import { AppHeaderType } from '../types'
 
 import './appDetails/appDetails.scss'
