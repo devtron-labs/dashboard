@@ -1,4 +1,4 @@
-import { SupportedKeyboardKeysType } from '@devtron-labs/devtron-fe-common-lib'
+import { IconName, NavigationItemID, SupportedKeyboardKeysType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { CommandBarGroupType } from './types'
 
@@ -30,4 +30,10 @@ export const SHORT_CUTS: Record<
         keys: ['Enter'],
         description: 'Select Item',
     },
+}
+
+export const NAV_SUB_ITEMS_ICON_MAPPING: Partial<Record<NavigationItemID, IconName>> = {
+    'application-management-configurations': 'ic-gear',
+    'application-management-policies': 'ic-gavel',
+    'global-configuration-authorization': 'ic-key',
 }
