@@ -108,7 +108,6 @@ const AppComposeRouter = () => {
                     <div className="flex-grow-1 dc__overflow-auto">
                         <MaterialList
                             respondOnSuccess={respondOnSuccess}
-                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepo={setRepoState}
                             isJobView={isJobView}
@@ -201,7 +200,6 @@ const AppComposeRouter = () => {
                     <div className="flex-grow-1 dc__overflow-auto">
                         <MaterialList
                             respondOnSuccess={respondOnSuccess}
-                            isWorkflowEditorUnlocked={isUnlocked.workflowEditor}
                             toggleRepoSelectionTippy={toggleRepoSelectionTippy}
                             setRepo={setRepoState}
                             isTemplateView={isTemplateView}

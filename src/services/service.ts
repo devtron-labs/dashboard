@@ -44,6 +44,7 @@ import {
     ConfigOverrideWorkflowDetailsResponse,
     MinChartRefDTO,
     ClusterEnvTeams,
+    GitAccountDTO,
 } from './service.types'
 import { Chart } from '../components/charts/charts.types'
 import { getModuleInfo } from '../components/v2/devtronStackManager/DevtronStackManager.service'
@@ -51,6 +52,7 @@ import { ModuleStatus } from '../components/v2/devtronStackManager/DevtronStackM
 import { LOGIN_COUNT } from '../components/onboardingGuide/onboarding.utils'
 import { getProjectList } from '@Components/project/service'
 import { OffendingWorkflowQueryParamType } from '@Components/app/details/triggerView/types'
+import { GitMaterialDTO } from '@Components/material/material.types'
 
 export function getAppConfigStatus(
     appId: number,
@@ -81,7 +83,7 @@ export const getSourceConfig = (
     const URL = isTemplateView
         ? getTemplateAPIRoute({ type: GetTemplateAPIRouteType.GIT_MATERIAL, queryParams: { id, ...queryParams } })
         : getUrlWithSearchParams<'pipelineType'>(`${Routes.SOURCE_CONFIG_GET}/${id}`, queryParams ?? {})
-    return get(URL)
+    return get<{ material: GitMaterialDTO[]; workflowCacheConfig: any }>(URL)
 }
 
 export function getCIConfig(appId: number, isTemplateView: AppConfigProps['isTemplateView']) {
@@ -112,7 +114,7 @@ export function getCDConfig(
 
 export const getGitProviderListAuth = (appId: string) => {
     const URL = `${Routes.APP}/${appId}/autocomplete/git`
-    return get(URL)
+    return get<GitAccountDTO[]>(URL)
 }
 
 export const getTeamList = (): Promise<TeamList> => {

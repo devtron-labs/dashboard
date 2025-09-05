@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { TLSConnectionDTO } from '@Components/common'
 import {
     DeploymentAppTypes,
     DeploymentStrategy,
@@ -171,4 +172,13 @@ export interface ClusterEnvTeams {
     clusters: Cluster[]
     environments: EnvListMinDTO[]
     teams: Teams[]
+}
+
+export interface GitAccountDTO extends TLSConnectionDTO {
+    active: boolean
+    authMode: 'SSH' | 'USERNAME_PASSWORD' | 'ANONYMOUS'
+    gitHostId: number
+    id: number
+    name: string
+    url: string
 }
