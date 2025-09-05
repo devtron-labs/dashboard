@@ -51,7 +51,7 @@ const MaterialList = ({
         Promise.all([getSourceConfig(appId, null, isTemplateView), getGitProviderListAuth(appId)])
 
     const {
-        isLoading: isLoadingInitialResponse,
+        isFetching: isLoadingInitialResponse,
         data: initialResponse,
         error: initialDataError,
         refetch: refetchInitialData,
