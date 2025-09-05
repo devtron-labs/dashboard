@@ -26,7 +26,7 @@ import {
     PageHeader,
     BreadCrumb,
     useBreadcrumb,
-    ApplicationManagementIcon,
+    getApplicationManagementBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -216,10 +216,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         const { breadcrumbs } = useBreadcrumb(
             {
                 alias: {
-                    'application-management': {
-                        component: <ApplicationManagementIcon />,
-                        linked: true,
-                    },
+                    ...getApplicationManagementBreadcrumb(),
                     projects: { component: <span className="cn-9 fs-16 fw-6 lh-24">Projects</span> },
                 },
             },

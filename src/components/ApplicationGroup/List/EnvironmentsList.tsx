@@ -18,12 +18,12 @@ import { useMemo } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
-    ApplicationManagementIcon,
     BreadCrumb,
     ErrorScreenManager,
     FilterChips,
     FilterSelectPicker,
     GenericEmptyState,
+    getApplicationManagementBreadcrumb,
     ImageType,
     PageHeader,
     SearchBar,
@@ -207,10 +207,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'application-management': {
-                    component: <ApplicationManagementIcon />,
-                    linked: true,
-                },
+                ...getApplicationManagementBreadcrumb(),
                 'application-group': {
                     component: <span className="cb-5 fs-16 dc__capitalize">Application groups</span>,
                     linked: true,

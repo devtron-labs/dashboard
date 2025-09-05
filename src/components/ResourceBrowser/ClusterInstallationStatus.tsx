@@ -17,7 +17,7 @@
 import { useMemo } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
-import { InfrastructureManagementIcon, useAsync, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { getInfrastructureManagementBreadcrumb, useAsync, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
@@ -60,10 +60,7 @@ const ClusterInstallationStatus = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'infrastructure-management': {
-                    component: <InfrastructureManagementIcon />,
-                    linked: true,
-                },
+                ...getInfrastructureManagementBreadcrumb(),
                 'resource-browser': {
                     component: <span className="cn-9 fs-16 fw-6 lh-24">Resource Browser</span>,
                     linked: true,

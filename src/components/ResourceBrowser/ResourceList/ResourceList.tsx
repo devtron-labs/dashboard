@@ -20,10 +20,10 @@ import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-
 import {
     DevtronProgressing,
     ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
-    InfrastructureManagementIcon,
     RESOURCE_BROWSER_ROUTES,
     URLS,
     useAsync,
@@ -387,10 +387,7 @@ const ResourceListWrapper = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'infrastructure-management': {
-                    component: <InfrastructureManagementIcon />,
-                    linked: true,
-                },
+                ...getInfrastructureManagementBreadcrumb(),
                 ':clusterId(\\d+)': {
                     component: (
                         <ClusterSelector

@@ -31,7 +31,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
-    ApplicationManagementIcon
+    getApplicationManagementBreadcrumb
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
@@ -73,10 +73,7 @@ export default function ChartGroupDetails() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'application-management': {
-                    component: <ApplicationManagementIcon />,
-                    linked: true,
-                },
+                ...getApplicationManagementBreadcrumb(),
                 'chart-store': null,
                 group: 'Chart groups',
                 ':groupId': {

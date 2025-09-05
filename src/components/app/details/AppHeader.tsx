@@ -21,6 +21,7 @@ import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 
 import {
     ApplicationManagementIcon,
     BreadCrumb,
+    getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     noop,
     PageHeader,
@@ -136,10 +137,8 @@ export const AppHeader = ({
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'application-management': {
-                    component: <ApplicationManagementIcon />,
-                    linked: true,
-                },
+                ApplicationManagementIcon,
+                ...getApplicationManagementBreadcrumb(),
                 ':appId(\\d+)': {
                     component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
                     linked: false,

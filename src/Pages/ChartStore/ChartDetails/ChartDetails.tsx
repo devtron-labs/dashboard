@@ -19,8 +19,8 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import {
     APIResponseHandler,
-    ApplicationManagementIcon,
     BreadCrumb,
+    getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
     SegmentedControl,
@@ -84,10 +84,7 @@ export const ChartDetails = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'application-management': {
-                    component: <ApplicationManagementIcon />,
-                    linked: true,
-                },
+                ...getApplicationManagementBreadcrumb(),
                 ':chartSegment?': null,
                 ':chartId': {
                     component: (

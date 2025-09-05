@@ -2,8 +2,8 @@ import { lazy } from 'react'
 import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
 
 import {
-    ApplicationManagementIcon,
     BreadCrumb,
+    getApplicationManagementBreadcrumb,
     noop,
     PageHeader,
     SERVER_MODE,
@@ -48,10 +48,7 @@ export const Configurations = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'application-management': {
-                    component: <ApplicationManagementIcon />,
-                    linked: true,
-                },
+                ...getApplicationManagementBreadcrumb(),
                 configurations: {
                     component: <span className="cn-9 fs-16 fw-6 lh-24">Configurations</span>,
                     linked: true,

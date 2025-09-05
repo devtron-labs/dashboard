@@ -23,11 +23,11 @@ import {
     ApiResourceGroupType,
     BreadcrumbText,
     DATE_TIME_FORMAT_STRING,
+    getInfrastructureManagementBreadcrumb,
     getUrlWithSearchParams,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKType,
-    InfrastructureManagementIcon,
     InitTabType,
     K8sResourceDetailDataType,
     Nodes,
@@ -422,10 +422,7 @@ export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatu
 export const getInfrastructureManagementBreadcrumbsConfig = (pathname: string) => {
     const cleanUrl = pathname.split('?')[0].split('#')[0]
     const alias = {
-        'infrastructure-management': {
-            component: <InfrastructureManagementIcon />,
-            linked: true,
-        },
+        ...getInfrastructureManagementBreadcrumb(),
     }
 
     INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG.forEach(({ key, route, heading }) => {
