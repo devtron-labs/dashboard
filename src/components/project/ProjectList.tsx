@@ -220,6 +220,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                         component: <ApplicationManagementIcon />,
                         linked: true,
                     },
+                    projects: { component: <span className="cn-9 fs-16 fw-6 lh-24">Projects</span> },
                 },
             },
             [pathname],
@@ -248,7 +249,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
         return (
             <>
-                <PageHeader breadCrumbs={this.renderBreadcrumbs} />
+                <PageHeader breadCrumbs={this.renderBreadcrumbs} isBreadcrumbs />
                 <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
                     <div className="project-list-container flex-grow-1">
                         {this.renderPageHeader()}
