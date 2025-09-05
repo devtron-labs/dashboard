@@ -13,8 +13,9 @@ export type CommandBarItemType = {
     id: CommandBarActionIdType | `${typeof RECENT_NAVIGATION_ITEM_ID_PREFIX}${CommandBarActionIdType}`
     title: string
     icon: IconsProps['name']
-    iconColor?: IconBaseColorType | 'none'
+    keywords: string[]
     href: NavigationItemType['href']
+    iconColor?: IconBaseColorType | 'none'
 } & (
     | {
           onSelect?: never
