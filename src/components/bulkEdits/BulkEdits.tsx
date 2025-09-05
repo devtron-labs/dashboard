@@ -18,9 +18,12 @@
 
 import { Component, createRef } from 'react'
 import Draggable, { DraggableEventHandler } from 'react-draggable'
+import { useLocation } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 
 import {
+    ApplicationManagementIcon,
+    BreadCrumb,
     BulkEditConfigV2Type,
     BulkEditVersion,
     Button,
@@ -42,6 +45,7 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    useBreadcrumb,
     useMotionTemplate,
     useMotionValue,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -587,17 +591,38 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         return !showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()
     }
 
+    // eslint-disable-next-line class-methods-use-this
+    renderBreadcrumbs = () => {
+        const { pathname } = useLocation()
+
+        const { breadcrumbs } = useBreadcrumb(
+            {
+                alias: {
+                    'application-management': {
+                        component: <ApplicationManagementIcon />,
+                        linked: true,
+                    },
+                    'bulk-edit': { component: <span className="cn-9 fs-16 fw-6 lh-24">Bulk Edit</span> },
+                },
+            },
+            [pathname],
+        )
+
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
     render() {
         return (
             <div className="fs-13 flexbox-col flex-grow-1 h-100 dc__overflow-hidden">
                 <PageHeader
-                    headerName="Bulk Edit"
+                    breadCrumbs={this.renderBreadcrumbs}
                     tippyProps={{
                         isTippyCustomized: true,
                         tippyMessage:
                             'Execute payloads to perform bulk configuration changes across multiple Devtron components.',
                         tippyRedirectLink: 'BULK_UPDATE',
                     }}
+                    isBreadcrumbs
                 />
                 {this.renderBulkEditBody()}
             </div>

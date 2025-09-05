@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
+
+import { URLS } from '@Config/routes'
 
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 
 import './security.scss'
 
-export const Security = () => {
-    const { path } = useRouteMatch()
-
-    return (
-        <div className="security-scan-container bg__primary flexbox-col min-h-100">
-            <div className="security-scan flexbox-col flex-grow-1">
-                <Switch>
-                    <Route path={`${path}/scans`} component={SecurityScansTab} />
-                    <Route path={`${path}/policies`} component={SecurityPoliciesTab} />
-                    <Redirect to={`${path}`} />
-                </Switch>
-            </div>
+export const Security = () => (
+    <div className="security-scan-container bg__primary flexbox-col min-h-100">
+        <div className="security-scan flexbox-col flex-grow-1">
+            <Switch>
+                <Route path={URLS.SECURITY_SCANS} component={SecurityScansTab} />
+                <Route path={URLS.SECURITY_POLICIES} component={SecurityPoliciesTab} />
+                <Redirect to={URLS.SECURITY_SCANS} />
+            </Switch>
         </div>
-    )
-}
+    </div>
+)

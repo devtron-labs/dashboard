@@ -65,7 +65,6 @@ export const Configurations = () => {
 
     return (
         <>
-            {/* TODO: Update with Application Management Header */}
             <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs />
             <div className="application-management-configurations dc__grid flex-grow-1 dc__overflow-auto">
                 <div className="py-12 pl-8 pr-7 border__primary--right">
