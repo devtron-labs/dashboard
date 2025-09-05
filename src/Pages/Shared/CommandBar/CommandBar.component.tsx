@@ -1,35 +1,36 @@
 import { useEffect } from 'react'
 
-import { useRegisterShortcut, UseRegisterShortcutProvider } from '@devtron-labs/devtron-fe-common-lib'
+import { useQuery } from '@devtron-labs/devtron-fe-common-lib'
+
+import { getAppListMin } from '@Services/service'
 
 import CommandBarBackdrop from './CommandBarBackdrop'
-import { SHORT_CUTS } from './constants'
 import { CommandBarProps } from './types'
 
 import './CommandBar.scss'
 
 const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
-    const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
-
-    const handleOpen = () => {
-        setShowCommandBar(true)
-    }
+    const { isLoading: isLoadingAppList, data: appList } = useQuery({
+        queryKey: ['commandBar__app-list'],
+        queryFn: () => getAppListMin(),
+        refetchInterval: (+window._env_.COMMAND_BAR_REFETCH_INTERVAL || 3600) * 1000,
+        select: ({ result }) => result,
+    })
 
     const handleClose = () => {
         setShowCommandBar(false)
     }
 
     useEffect(() => {
-        const { keys } = SHORT_CUTS.OPEN_COMMAND_BAR
-
-        registerShortcut({
-            keys,
-            description: SHORT_CUTS.OPEN_COMMAND_BAR.description,
-            callback: handleOpen,
-        })
-
+        const handleOpen = (e: KeyboardEvent) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                e.preventDefault()
+                setShowCommandBar(true)
+            }
+        }
+        window.addEventListener('keydown', handleOpen)
         return () => {
-            unregisterShortcut(keys)
+            window.removeEventListener('keydown', handleOpen)
         }
     }, [])
 
@@ -37,11 +38,7 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
         return null
     }
 
-    return (
-        <UseRegisterShortcutProvider ignoreTags={[]}>
-            <CommandBarBackdrop handleClose={handleClose} />
-        </UseRegisterShortcutProvider>
-    )
+    return <CommandBarBackdrop handleClose={handleClose} appList={appList} isLoadingAppList={isLoadingAppList} />
 }
 
 export default CommandBar

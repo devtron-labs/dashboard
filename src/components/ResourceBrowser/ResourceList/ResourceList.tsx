@@ -391,7 +391,7 @@ const ResourceListWrapper = () => {
                     component: <InfrastructureManagementIcon />,
                     linked: true,
                 },
-                ':clusterId': {
+                ':clusterId(\\d+)': {
                     component: (
                         <ClusterSelector
                             onChange={onClusterChange}

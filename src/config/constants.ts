@@ -488,11 +488,6 @@ export const RegistryTypeName = {
     OCI_PUBLIC: 'Public Registry',
 }
 
-export const AppCreationType = {
-    Blank: 'BLANK',
-    Existing: 'EXISTING',
-}
-
 export const BuildStageVariable = {
     PreBuild: 'preBuildStage',
     Build: 'buildStage',

@@ -739,7 +739,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                             serverMode={serverMode}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
-                            isSuperAdmin={isSuperAdmin}
+                            pageState={pageState}
                         />
                     )}
                     <>
