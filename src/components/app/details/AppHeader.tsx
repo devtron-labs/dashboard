@@ -36,6 +36,7 @@ import { AppGroupAppFilterContext } from '../../ApplicationGroup/AppGroupDetails
 import { AppSelector } from '../../AppSelector'
 import { useAppContext } from '../../common'
 import { importComponentFromFELibrary } from '../../common/helpers/Helpers'
+import { ApplicationManagementIcon } from '../ApplicationManagementIcon'
 import { AppHeaderType } from '../types'
 
 import './appDetails/appDetails.scss'
@@ -135,6 +136,10 @@ export const AppHeader = ({
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                'application-management': {
+                    component: <ApplicationManagementIcon />,
+                    linked: true,
+                },
                 ':appId(\\d+)': {
                     component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
                     linked: false,

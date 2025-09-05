@@ -39,6 +39,7 @@ import ChartHeaderFilters from './ChartHeaderFilters'
 import { QueryParams } from './constants'
 import ChartEmptyState from '../common/emptyState/ChartEmptyState'
 import { sortOptionsByLabel } from '../common'
+import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 
 export default function ChartGroupUpdate({}) {
     const history = useHistory()
@@ -81,6 +82,10 @@ export default function ChartGroupUpdate({}) {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                'application-management': {
+                    component: <ApplicationManagementIcon />,
+                    linked: true,
+                },
                 group: 'Chart Groups',
                 ':groupId': {
                     component: state.name,

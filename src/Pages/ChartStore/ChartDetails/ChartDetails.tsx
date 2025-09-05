@@ -30,6 +30,7 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { ApplicationManagementIcon } from '@Components/app/ApplicationManagementIcon'
 import { ChartSelector } from '@Components/AppSelector'
 import { getChartSelectAPI } from '@Components/charts/charts.util'
 import { URLS } from '@Config/routes'
@@ -83,6 +84,10 @@ export const ChartDetails = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                'application-management': {
+                    component: <ApplicationManagementIcon />,
+                    linked: true,
+                },
                 ':chartSegment?': null,
                 ':chartId': {
                     component: (
