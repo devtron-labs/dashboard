@@ -32,9 +32,8 @@ import { GitAccountDTO } from '@Services/service.types'
 
 import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
 import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { CreateMaterial } from './CreateMaterial'
 import { GitMaterialType, MaterialListProps } from './material.types'
-import { UpdateMaterial } from './UpdateMaterial'
+import MaterialForm from './MaterialForm'
 
 import './material.scss'
 
@@ -113,13 +112,6 @@ const MaterialList = ({
         return undefined
     }
 
-    const isGitProviderValid = (provider: GitAccountDTO) => {
-        if (provider && provider.id) {
-            return undefined
-        }
-        return 'This is required field'
-    }
-
     const handleSingleGitMaterialUpdate = (id: GitMaterialType['id']) => (updatedMaterial, isError) => {
         if (handleGitMaterialsChange) {
             handleGitMaterialsChange(
@@ -137,9 +129,9 @@ const MaterialList = ({
             >
                 {isJobView ? 'Source code' : 'Git Repositories'}
             </h2>
-            <div className="flexbox dc__gap-8">
-                <p className="form__subtitle form__subtitle--artifacts">
-                    Manage source code repositories for this {isJobView ? 'job' : 'application'}.&nbsp;
+            <div className="flexbox dc__gap-8 mb-16">
+                <p className="m-0 fs-12 lh-20 cn-6">
+                    Manage source code repositories for this {isJobView ? 'job' : 'application'}.
                 </p>
                 <DocLink
                     dataTestId="git-repo-doc-link"
@@ -194,13 +186,12 @@ const MaterialList = ({
                 <>
                     {renderPageHeader()}
                     {!isJobView && !materials.length && renderSampleApp()}
-                    <CreateMaterial
-                        key={materials.length}
+                    <MaterialForm
+                        key="create-material-form"
                         appId={Number(appId)}
                         isMultiGit={materials.length > 0}
                         providers={providers}
                         refreshMaterials={refreshMaterials}
-                        isGitProviderValid={isGitProviderValid}
                         isCheckoutPathValid={isCheckoutPathValid}
                         reload={refetchInitialData}
                         isJobView={isJobView}
@@ -209,7 +200,7 @@ const MaterialList = ({
                 </>
             )}
             {materials.map((mat) => (
-                <UpdateMaterial
+                <MaterialForm
                     key={mat.id}
                     appId={Number(appId)}
                     isMultiGit={materials.length > 0}
@@ -217,7 +208,6 @@ const MaterialList = ({
                     providers={providers}
                     material={mat}
                     refreshMaterials={refreshMaterials}
-                    isGitProviderValid={isGitProviderValid}
                     isCheckoutPathValid={isCheckoutPathValid}
                     reload={refetchInitialData}
                     toggleRepoSelectionTippy={toggleRepoSelectionTippy}

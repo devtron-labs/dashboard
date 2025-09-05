@@ -48,7 +48,7 @@ export interface GitMaterialDTO {
 export interface GitMaterialType {
     id?: number
     name?: string
-    gitProvider: { id: number; name: string; url?: string; authMode?: string }
+    gitProvider: GitAccountDTO
     url: string
     checkoutPath: string
     filterPattern?: string[]
@@ -67,36 +67,10 @@ export interface MaterialListState {
     configStatus: number
 }
 
-export interface CreateMaterialState {
-    material: {
-        gitProvider: { id: number; name: string; url?: string }
-        url: string
-        checkoutPath: string
-        active: boolean
-        fetchSubmodules: boolean
-        includeExcludeFilePath: string
-        isExcludeRepoChecked: boolean
-    }
-    isCollapsed: boolean
-    isChecked: boolean
-    isLearnHowClicked: boolean
-    isLoading: boolean
-    isError: MaterialError
-}
-
 interface MaterialError {
     gitProvider: undefined | string
     url: undefined | string
     checkoutPath: undefined | string
-}
-
-export interface UpdateMaterialState {
-    material: GitMaterialType
-    isCollapsed: boolean
-    isChecked: boolean
-    isLearnHowClicked: boolean
-    isLoading: boolean
-    isError: MaterialError
 }
 
 export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateView'> {
@@ -131,4 +105,49 @@ export interface MaterialViewProps extends Pick<MaterialListProps, 'isTemplateVi
 export interface MaterialViewState {
     deleting: boolean
     confirmation: boolean
+}
+
+export type MaterialFormProps = Required<Pick<AppConfigProps, 'isTemplateView'>> & {
+    appId: number
+    isMultiGit: boolean
+    providers: MaterialViewProps['providers']
+    isCheckoutPathValid: (checkoutPath: string) => string | undefined
+    refreshMaterials: () => void
+    reload: () => void
+    isJobView: boolean
+} & (
+        | {
+              material: GitMaterialType
+              preventRepoDelete: boolean
+              toggleRepoSelectionTippy: () => void
+              setRepo: React.Dispatch<React.SetStateAction<string>>
+              isCreateAppView: MaterialViewProps['isCreateAppView']
+              handleSingleGitMaterialUpdate: (updatedMaterial: GitMaterialType, isError: boolean) => void
+          }
+        | {
+              material?: never
+              preventRepoDelete?: never
+              toggleRepoSelectionTippy?: never
+              setRepo?: never
+              isCreateAppView?: never
+              handleSingleGitMaterialUpdate?: never
+          }
+    )
+
+export interface UpsertMaterialItemPayload {
+    url: string
+    checkoutPath: string
+    gitProviderId: number
+    fetchSubmodules: boolean
+    filterPattern: string[]
+}
+
+export interface CreateMaterialPayload {
+    appId: number
+    material: UpsertMaterialItemPayload[]
+}
+
+export interface UpdateMaterialPayload {
+    appId: number
+    material: Omit<UpsertMaterialItemPayload, 'id'> & { id: number }
 }
