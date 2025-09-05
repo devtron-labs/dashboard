@@ -3,7 +3,11 @@ import { SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-commo
 import { NAVIGATION_LIST } from '@Components/Navigation/constants'
 import { URLS } from '@Config/routes'
 
-import { DEVTRON_APPLICATIONS_COMMAND_GROUP_ID, RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
+import {
+    DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
+    NAV_SUB_ITEMS_ICON_MAPPING,
+    RECENT_NAVIGATION_ITEM_ID_PREFIX,
+} from './constants'
 import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
 
 export const sanitizeItemId = (item: CommandBarItemType) =>
@@ -30,6 +34,7 @@ const getAppManagementAdditionalNavItems = (
                   icon: 'ic-devtron-app',
                   iconColor: 'none',
                   href: URLS.DEVTRON_APP_LIST,
+                  keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
         : []),
@@ -39,6 +44,7 @@ const getAppManagementAdditionalNavItems = (
         icon: 'ic-helm-app',
         iconColor: 'none',
         href: URLS.HELM_APP_LIST,
+        keywords: [],
     },
     ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
         ? [
@@ -48,6 +54,7 @@ const getAppManagementAdditionalNavItems = (
                   icon: 'ic-argocd-app',
                   iconColor: 'none',
                   href: URLS.ARGO_APP_LIST,
+                  keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
         : []),
@@ -59,6 +66,7 @@ const getAppManagementAdditionalNavItems = (
                   icon: 'ic-fluxcd-app',
                   iconColor: 'none',
                   href: URLS.FLUX_APP_LIST,
+                  keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
         : []),
@@ -70,15 +78,16 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
         const additionalItems = isAppManagementBlock ? getAppManagementAdditionalNavItems(serverMode, isSuperAdmin) : []
 
         const parsedItems = group.items.flatMap<CommandBarGroupType['items'][number]>(
-            ({ hasSubMenu, subItems, title, href, id, icon }) => {
+            ({ hasSubMenu, subItems, title, href, id, icon, keywords }) => {
                 if (hasSubMenu && subItems?.length) {
                     return subItems.map<CommandBarGroupType['items'][number]>((subItem) => ({
                         title: `${title} / ${subItem.title}`,
                         id: subItem.id,
                         // Since icon is not present for some subItems, using from group
-                        icon: group.icon,
+                        icon: NAV_SUB_ITEMS_ICON_MAPPING[id] || group.icon,
                         // TODO: No href present for some subItems
                         href: subItem.href ?? null,
+                        keywords: subItem.keywords || [],
                     }))
                 }
 
@@ -88,6 +97,7 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
                     icon: icon || 'ic-arrow-right',
                     // TODO: No href present for some items
                     href: href ?? null,
+                    keywords: keywords || [],
                 }
             },
         )
@@ -114,6 +124,7 @@ export const parseAppListToNavItems = (appList: CommandBarBackdropProps['appList
                 icon: 'ic-devtron-app',
                 iconColor: 'none',
                 href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
+                keywords: [],
             })),
         },
     ]
