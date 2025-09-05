@@ -52,7 +52,7 @@ const MaterialForm = ({
         if (!url.length) {
             return 'This is a required field'
         }
-        if (isAWSCodeCommitURL(formMaterial?.gitProvider?.url)) {
+        if (isAWSCodeCommitURL(formMaterial.gitProvider?.url)) {
             if (isAWSCodeCommitURL(url)) {
                 return undefined
             }
@@ -178,7 +178,7 @@ const MaterialForm = ({
             material
                 ? {
                       gitProvider: isGitProviderValid(material.gitProvider),
-                      url: isGitUrlValid(material.url, formMaterial?.gitProvider?.id),
+                      url: isGitUrlValid(material.url, formMaterial.gitProvider?.id),
                       checkoutPath: isCheckoutPathValid(material.checkoutPath),
                   }
                 : {

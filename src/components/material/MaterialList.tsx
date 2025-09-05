@@ -112,14 +112,15 @@ const MaterialList = ({
         return undefined
     }
 
-    const handleSingleGitMaterialUpdate = (id: GitMaterialType['id']) => (updatedMaterial, isError) => {
-        if (handleGitMaterialsChange) {
-            handleGitMaterialsChange(
-                materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
-                isError,
-            )
+    const handleSingleGitMaterialUpdate =
+        (id: GitMaterialType['id']) => (updatedMaterial: GitMaterialType, isError: boolean) => {
+            if (handleGitMaterialsChange) {
+                handleGitMaterialsChange(
+                    materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
+                    isError,
+                )
+            }
         }
-    }
 
     const renderPageHeader = () => (
         <>

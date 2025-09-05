@@ -149,5 +149,5 @@ export interface CreateMaterialPayload {
 
 export interface UpdateMaterialPayload {
     appId: number
-    material: Omit<UpsertMaterialItemPayload, 'id'> & { id: number }
+    material: UpsertMaterialItemPayload & { id: number }
 }
