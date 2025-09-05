@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction } from 'react'
 
-import { IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
+import { IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavigationItemType } from '@Components/Navigation/types'
+import { AppListMinDTO } from '@Services/service.types'
 
 import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
 
@@ -12,6 +13,7 @@ export type CommandBarItemType = {
     id: CommandBarActionIdType | `${typeof RECENT_NAVIGATION_ITEM_ID_PREFIX}${CommandBarActionIdType}`
     title: string
     icon: IconsProps['name']
+    iconColor?: IconBaseColorType | 'none'
     href: NavigationItemType['href']
 } & (
     | {
@@ -41,6 +43,8 @@ export interface CommandGroupProps extends CommandBarGroupType {
 }
 
 export interface CommandBarBackdropProps {
+    isLoadingAppList: boolean
+    appList: AppListMinDTO[]
     handleClose: () => void
 }
 

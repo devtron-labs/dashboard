@@ -63,12 +63,6 @@
                 }
             }
         }
-
-        &:last-child {
-            .nav-group__divider-container {
-                display: none;
-            }
-        }
     }
 
     .nav-item:not([aria-disabled='true']) {
@@ -85,7 +79,7 @@
 // This is outside .navigation class, since tooltip is rendered outside body
 .nav-group__tooltip.tippy-box {
     background-color: var(--bg-tooltip-black);
-    border: 1px solid var(--N0);
+    border: 1px solid var(--white-20);
     padding: 5px 9px;
     transform: translateX(-14px);
 
