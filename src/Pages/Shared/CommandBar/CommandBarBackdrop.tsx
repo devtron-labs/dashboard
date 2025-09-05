@@ -30,10 +30,11 @@ import {
     getNavigationGroups,
     getNewSelectedIndex,
     parseAppListToNavItems,
+    parseChartListToNavItems,
     sanitizeItemId,
 } from './utils'
 
-const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandBarBackdropProps) => {
+const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }: CommandBarBackdropProps) => {
     const history = useHistory()
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
@@ -57,7 +58,11 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
         queryKey: ['recentNavigationActions'],
         select: ({ result }) =>
             result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
-                const allGroups = [...navigationGroups, ...parseAppListToNavItems(appList)]
+                const allGroups = [
+                    ...navigationGroups,
+                    ...parseAppListToNavItems(resourceList?.appList),
+                    ...parseChartListToNavItems(resourceList?.chartList),
+                ]
 
                 const requiredGroup = allGroups.find((group) => group.items.some((item) => item.id === action.id))
 
@@ -95,7 +100,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
             return navigationGroups
         }
 
-        const additionalGroups = getAdditionalNavGroups(searchText, appList)
+        const additionalGroups = getAdditionalNavGroups(searchText, resourceList)
         const parsedGroups = navigationGroups.reduce<typeof navigationGroups>((acc, group) => {
             const filteredItems = group.items.filter(
                 (item) =>
@@ -330,7 +335,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
                             handleSearchChange={handleSearchChange}
                             noBackgroundAndBorder
                             shouldDebounce
-                            isLoading={isLoadingAppList}
+                            isLoading={isLoadingResourceList}
                         />
                     </div>
 

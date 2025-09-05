@@ -1,9 +1,10 @@
-import { SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, ImageWithFallback, SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NAVIGATION_LIST } from '@Components/Navigation/constants'
 import { URLS } from '@Config/routes'
 
 import {
+    CHART_LIST_COMMAND_GROUP_ID,
     DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
     NAV_SUB_ITEMS_ICON_MAPPING,
     RECENT_NAVIGATION_ITEM_ID_PREFIX,
@@ -109,7 +110,9 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
         }
     })
 
-export const parseAppListToNavItems = (appList: CommandBarBackdropProps['appList']): CommandBarGroupType[] => {
+export const parseAppListToNavItems = (
+    appList: CommandBarBackdropProps['resourceList']['appList'],
+): CommandBarGroupType[] => {
     if (!appList?.length) {
         return []
     }
@@ -130,16 +133,54 @@ export const parseAppListToNavItems = (appList: CommandBarBackdropProps['appList
     ]
 }
 
+export const parseChartListToNavItems = (
+    chartList: CommandBarBackdropProps['resourceList']['chartList'],
+): CommandBarGroupType[] => {
+    if (!chartList?.length) {
+        return []
+    }
+
+    return [
+        {
+            title: 'Charts',
+            id: CHART_LIST_COMMAND_GROUP_ID,
+            items: chartList.map<CommandBarGroupType['items'][number]>((chart) => ({
+                id: `chart-list-${chart.id}`,
+                title: chart.name,
+                subText: chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id,
+                iconElement: (
+                    <ImageWithFallback
+                        imageProps={{
+                            src: chart.icon,
+                            alt: chart.name,
+                            width: '20px',
+                            height: '20px',
+                        }}
+                        fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
+                    />
+                ),
+                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
+                keywords: [],
+            })),
+        },
+    ]
+}
+
 export const getAdditionalNavGroups = (
     searchText: string,
-    appList: CommandBarBackdropProps['appList'],
+    resourceList: CommandBarBackdropProps['resourceList'],
 ): CommandBarGroupType[] => {
-    if (searchText.length < 3 || !appList?.length) {
+    const { appList, chartList } = resourceList || { appList: [], chartList: [] }
+
+    if (searchText.length < 3) {
         return []
     }
 
     const lowerCaseSearchText = searchText.toLowerCase()
 
     const filteredAppList = appList.filter((app) => app.name && app.name.toLowerCase().includes(lowerCaseSearchText))
-    return parseAppListToNavItems(filteredAppList)
+    const filteredChartList = chartList.filter(
+        (chart) => chart.name && chart.name.toLowerCase().includes(lowerCaseSearchText),
+    )
+    return [...parseAppListToNavItems(filteredAppList), ...parseChartListToNavItems(filteredChartList)]
 }

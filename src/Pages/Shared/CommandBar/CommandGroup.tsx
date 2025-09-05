@@ -38,7 +38,7 @@ const CommandGroup = ({
 
             return (
                 <div
-                    className={`flexbox px-16 py-12 cursor dc__align-items-center dc__gap-12 dc__content-space br-8 bg__hover ${getIsItemSelected(index) ? 'command-bar__container--selected-item' : ''}`}
+                    className={`flexbox px-16 ${item.subText ? 'py-8' : 'py-12'} cursor dc__align-items-center dc__gap-12 dc__content-space br-8 bg__hover ${getIsItemSelected(index) ? 'command-bar__container--selected-item' : ''}`}
                     role="option"
                     id={item.id}
                     aria-selected={getIsItemSelected(index)}
@@ -47,12 +47,19 @@ const CommandGroup = ({
                     tabIndex={0}
                 >
                     <div className="flexbox dc__align-items-center dc__gap-12">
-                        <Icon
-                            name={item.icon}
-                            size={20}
-                            color={iconColorWithFallback === 'none' ? null : iconColorWithFallback}
-                        />
-                        <h3 className="m-0 cn-9 fs-14 fw-4 lh-20 dc__truncate">{item.title}</h3>
+                        {item.iconElement ? (
+                            item.iconElement
+                        ) : (
+                            <Icon
+                                name={item.icon}
+                                size={20}
+                                color={iconColorWithFallback === 'none' ? null : iconColorWithFallback}
+                            />
+                        )}
+                        <div className="flexbox-col">
+                            <h3 className="m-0 cn-9 fs-14 fw-4 lh-20 dc__truncate">{item.title}</h3>
+                            {item.subText && <p className="m-0 cn-7 fs-13 fw-4 lh-20 dc__truncate">{item.subText}</p>}
+                        </div>
                     </div>
 
                     {getIsItemSelected(index) && <Icon name="ic-key-enter" color="N700" size={20} />}

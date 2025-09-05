@@ -3,19 +3,18 @@ import { Dispatch, SetStateAction } from 'react'
 import { IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavigationItemType } from '@Components/Navigation/types'
-import { AppListMinDTO } from '@Services/service.types'
 
 import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
+import { getCommandBarResourceLists } from './service'
 
 export type CommandBarActionIdType = UserPreferencesType['commandBar']['recentNavigationActions'][number]['id']
 
 export type CommandBarItemType = {
     id: CommandBarActionIdType | `${typeof RECENT_NAVIGATION_ITEM_ID_PREFIX}${CommandBarActionIdType}`
     title: string
-    icon: IconsProps['name']
     keywords: string[]
     href: NavigationItemType['href']
-    iconColor?: IconBaseColorType | 'none'
+    subText?: string
 } & (
     | {
           onSelect?: never
@@ -24,7 +23,19 @@ export type CommandBarItemType = {
           href?: never
           onSelect: (e: React.MouseEvent<HTMLButtonElement>) => void
       }
-)
+) &
+    (
+        | {
+              icon: IconsProps['name']
+              iconColor?: IconBaseColorType | 'none'
+              iconElement?: never
+          }
+        | {
+              iconElement: JSX.Element
+              icon?: never
+              iconColor?: never
+          }
+    )
 
 export interface CommandBarGroupType {
     /**
@@ -44,8 +55,8 @@ export interface CommandGroupProps extends CommandBarGroupType {
 }
 
 export interface CommandBarBackdropProps {
-    isLoadingAppList: boolean
-    appList: AppListMinDTO[]
+    isLoadingResourceList: boolean
+    resourceList: Awaited<ReturnType<typeof getCommandBarResourceLists>>
     handleClose: () => void
 }
 
