@@ -20,6 +20,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import {
     APIResponseHandler,
     BreadCrumb,
+    getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
     SegmentedControl,
@@ -83,6 +84,7 @@ export const ChartDetails = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ...getApplicationManagementBreadcrumb(),
                 ':chartSegment?': null,
                 ':chartId': {
                     component: (

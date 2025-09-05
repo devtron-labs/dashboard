@@ -42,6 +42,7 @@ import {
     DeleteConfirmationModal,
     useMainContext,
     OptionType,
+    getApplicationManagementBreadcrumb
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { MultiValue } from 'react-select'
@@ -587,6 +588,7 @@ export const EnvHeader = ({
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ...getApplicationManagementBreadcrumb(),
                 ':envId': {
                     component: <EnvSelector onChange={handleEnvChange} envId={+envId} envName={envName} />,
                     linked: false,

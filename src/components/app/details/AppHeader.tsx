@@ -19,7 +19,9 @@ import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    ApplicationManagementIcon,
     BreadCrumb,
+    getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     noop,
     PageHeader,
@@ -135,6 +137,8 @@ export const AppHeader = ({
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ApplicationManagementIcon,
+                ...getApplicationManagementBreadcrumb(),
                 ':appId(\\d+)': {
                     component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
                     linked: false,
