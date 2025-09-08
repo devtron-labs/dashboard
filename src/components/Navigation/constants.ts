@@ -8,7 +8,7 @@ import { NavigationGroupType, NavigationItemType } from './types'
 
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
 
-const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
+export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
         title: 'GitOps',
         dataTestId: 'click-on-configurations-gitops',
@@ -17,14 +17,14 @@ const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
         keywords: ['config'],
     },
     {
-        title: 'Git accounts',
+        title: 'Git Accounts',
         dataTestId: 'click-on-configurations-git-accounts',
         id: 'application-management-configurations-git-accounts',
         href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
         keywords: ['config'],
     },
     {
-        title: 'External links',
+        title: 'External Links',
         dataTestId: 'click-on-configurations-external-links',
         id: 'application-management-configurations-external-links',
         href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS,
@@ -84,21 +84,21 @@ const APPLICATION_MANAGEMENT_POLICIES: NavigationItemType['subItems'] = [
         keywords: ['policy'],
     },
     {
-        title: 'Approval policy',
+        title: 'Approval Policy',
         dataTestId: 'click-on-policies-approval-policy',
         id: 'application-management-policies-approval-policy',
         href: FE_LIB_ROUTER_URLS.APPROVAL_POLICY_LIST,
         keywords: ['policy'],
     },
     {
-        title: 'Plugin policy',
+        title: 'Plugin Policy',
         dataTestId: 'click-on-policies-plugin-policy',
         id: 'application-management-policies-plugin-policy',
         href: FE_LIB_ROUTER_URLS.PLUGIN_POLICY_PROFILE_LIST,
         keywords: ['policy'],
     },
     {
-        title: 'Pull image digest',
+        title: 'Pull Image Digest',
         dataTestId: 'click-on-policies-pull-image-digest',
         id: 'application-management-policies-pull-image-digest',
         href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_PULL_IMAGE_DIGEST,
@@ -411,7 +411,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 disabled: true,
             },
             {
-                title: 'API portal',
+                title: 'API Portal',
                 dataTestId: 'api-portal',
                 id: 'automation-and-enablement-api-portal',
                 icon: 'ic-code',
@@ -432,21 +432,27 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         title: 'Backup & Restore',
         id: 'backup-and-restore',
         icon: 'ic-database-backup',
-        disabled: true,
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'backup-and-restore-overview',
                 id: 'backup-and-restore-overview',
                 icon: 'ic-speedometer',
+                href: COMMON_URLS.BACKUP_AND_RESTORE_OVERVIEW,
+            },
+            {
+                title: 'Backup & Schedule',
+                dataTestId: 'backup-and-restore-backup-and-schedule',
+                id: 'backup-and-restore-backup-and-schedule',
+                icon: 'ic-floppy-disk',
                 href: '/dummy-url',
                 disabled: true,
             },
             {
-                title: 'Backup & Restore',
-                dataTestId: 'backup-and-restore-item',
-                id: 'backup-and-restore-item',
-                icon: 'ic-cube',
+                title: 'Restores',
+                dataTestId: 'backup-and-restore-restores',
+                id: 'backup-and-restore-restores',
+                icon: 'ic-clock-counterclockwise',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -454,7 +460,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Backup Repositories',
                 dataTestId: 'backup-repositories',
                 id: 'backup-and-restore-backup-repositories',
-                icon: 'ic-clock',
+                icon: 'ic-folder',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -462,7 +468,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Backup Locations',
                 dataTestId: 'backup-locations',
                 id: 'backup-and-restore-backup-locations',
-                icon: 'ic-folder',
+                icon: 'ic-storage',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -470,7 +476,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'History & Logs',
                 dataTestId: 'history-and-logs',
                 id: 'backup-and-restore-history-and-logs',
-                icon: 'ic-cube',
+                icon: 'ic-clipboard',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -510,7 +516,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: URLS.GLOBAL_CONFIG_HOST_URL,
             },
             {
-                title: 'Cluster & environments',
+                title: 'Cluster & Environments',
                 dataTestId: 'cluster-and-environments',
                 id: 'global-configuration-cluster-and-environments',
                 icon: 'ic-cluster',

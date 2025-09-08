@@ -574,7 +574,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         <Route
                                             key={CommonURLS.SECURITY_CENTER}
                                             path={CommonURLS.SECURITY_CENTER}
-                                            render={(props) => <Security {...props} serverMode={serverMode} />}
+                                            render={() => <Security />}
                                         />,
                                         ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
                                             ? [
@@ -739,7 +739,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                             serverMode={serverMode}
                             moduleInInstallingState={moduleInInstallingState}
                             installedModuleMap={installedModuleMap}
-                            isSuperAdmin={isSuperAdmin}
+                            pageState={pageState}
                         />
                     )}
                     <>

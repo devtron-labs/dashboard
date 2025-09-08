@@ -32,39 +32,6 @@
         grid-column: 1 / -1;
     }
 
-    .global-configuration__navigation {
-        padding: 16px 12px;
-        border-right: solid 1px var(--N200);
-        background: var(--bg-primary);
-        height: 100%;
-        overflow: auto;
-
-        a {
-            font-size: 13px;
-            line-height: 32px;
-            color: var(--N700);
-            width: 100%;
-            border-radius: 4px;
-            padding: 0 8px;
-            text-decoration: none;
-
-            &:hover {
-                text-decoration: none;
-                background: var(--bg-hover);
-            }
-
-            &.active-route {
-                color: var(--B500);
-                font-weight: 600;
-                background: var(--B100);
-            }
-        }
-    }
-
-    .global-configuration__error-icon {
-        margin: auto 0;
-    }
-
     .global-configuration__component-wrapper {
         padding: 0;
         overflow-y: auto;
@@ -481,4 +448,22 @@
 
 .align-self-top {
     align-self: flex-start;
+}
+
+.global-configuration__user-permissions-tooltip {
+    .tippy-arrow {
+        color: var(--N800);
+    }
+
+    &__btn {
+        > div > .button {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white-20);
+
+            &:hover {
+                background-color: transparent;
+            }
+        }
+    }
 }

@@ -163,7 +163,12 @@ export const AppNotConfigured = ({
                 subtitle || (
                     <>
                         {APP_DETAILS.APP_FULLY_NOT_CONFIGURED}&nbsp;
-                        <DocLink text={APP_DETAILS.NEED_HELP} docLinkKey="APP_CREATE" dataTestId="app-details-empty" />
+                        <DocLink
+                            text={APP_DETAILS.NEED_HELP}
+                            docLinkKey="APP_CREATE"
+                            dataTestId="app-details-empty"
+                            fullWidth
+                        />
                     </>
                 )
             }
