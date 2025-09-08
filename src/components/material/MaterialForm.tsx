@@ -178,7 +178,7 @@ const MaterialForm = ({
             material
                 ? {
                       gitProvider: isGitProviderValid(material.gitProvider),
-                      url: isGitUrlValid(material.url, formMaterial.gitProvider?.id),
+                      url: isGitUrlValid(material.url, material.gitProvider?.id),
                       checkoutPath: isCheckoutPathValid(material.checkoutPath),
                   }
                 : {
