@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction } from 'react'
 
-import { IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterType, IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { Chart } from '@Components/charts/charts.types'
 import { NavigationItemType } from '@Components/Navigation/types'
+import { AppListMinDTO } from '@Services/service.types'
 
 import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'
-import { getCommandBarResourceLists } from './service'
 
 export type CommandBarActionIdType = UserPreferencesType['commandBar']['recentNavigationActions'][number]['id']
 
@@ -58,9 +59,15 @@ export interface CommandGroupProps extends CommandBarGroupType {
     onItemClick: (item: CommandBarItemType) => void
 }
 
+export interface CommandBarResourceListType {
+    appList: AppListMinDTO[]
+    chartList: Chart[]
+    clusterList: ClusterType[]
+}
+
 export interface CommandBarBackdropProps {
     isLoadingResourceList: boolean
-    resourceList: Awaited<ReturnType<typeof getCommandBarResourceLists>>
+    resourceList: CommandBarResourceListType
     handleClose: () => void
 }
 

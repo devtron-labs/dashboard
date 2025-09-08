@@ -8,10 +8,12 @@ import {
 
 import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
 import { NAVIGATION_LIST } from '@Components/Navigation/constants'
+import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 import { URLS } from '@Config/routes'
 
 import {
     CHART_LIST_COMMAND_GROUP_ID,
+    CLUSTER_LIST_COMMAND_GROUP_ID,
     DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
     NAV_SUB_ITEMS_ICON_MAPPING,
     RECENT_NAVIGATION_ITEM_ID_PREFIX,
@@ -211,6 +213,49 @@ export const parseChartListToNavItems = (
     ]
 }
 
+export const parseClusterListToNavItems = (
+    clusterList: CommandBarBackdropProps['resourceList']['clusterList'],
+    shouldSliceTopFive = false,
+    searchKey = '',
+): CommandBarGroupType[] => {
+    if (!clusterList?.length) {
+        return []
+    }
+
+    const slicedClusters = shouldSliceTopFive ? clusterList.slice(0, 5) : clusterList
+    const numberOfOtherClusters = clusterList.length - slicedClusters.length
+
+    const clusterItems = slicedClusters.map<CommandBarGroupType['items'][number]>((cluster) => ({
+        id: `cluster-list-${cluster.id}`,
+        title: cluster.name,
+        icon: 'ic-bg-cluster',
+        // TODO: Do we need to verify clusterCreatingPhase here?
+        href: getClusterChangeRedirectionUrl(false, String(cluster.id)),
+        keywords: [],
+    }))
+
+    if (shouldSliceTopFive && numberOfOtherClusters > 0) {
+        clusterItems.push({
+            id: 'search-cluster-list-view',
+            title: `${numberOfOtherClusters} more matching clusters`,
+            icon: 'ic-arrow-right',
+            href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
+                searchKey,
+            )}`,
+            keywords: [],
+            excludeFromRecent: true,
+        })
+    }
+
+    return [
+        {
+            title: 'Clusters',
+            id: CLUSTER_LIST_COMMAND_GROUP_ID,
+            items: clusterItems,
+        },
+    ]
+}
+
 export const getAdditionalNavGroups = (
     searchText: string,
     resourceList: CommandBarBackdropProps['resourceList'],
@@ -230,5 +275,6 @@ export const getAdditionalNavGroups = (
     return [
         ...parseAppListToNavItems(filteredAppList, true, searchText),
         ...parseChartListToNavItems(filteredChartList, true, searchText),
+        ...parseClusterListToNavItems(resourceList.clusterList, true, searchText),
     ]
 }

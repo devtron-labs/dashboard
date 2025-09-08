@@ -31,6 +31,7 @@ import {
     getNewSelectedIndex,
     parseAppListToNavItems,
     parseChartListToNavItems,
+    parseClusterListToNavItems,
     sanitizeItemId,
 } from './utils'
 
@@ -62,6 +63,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
                     ...navigationGroups,
                     ...parseAppListToNavItems(resourceList?.appList),
                     ...parseChartListToNavItems(resourceList?.chartList),
+                    ...parseClusterListToNavItems(resourceList?.clusterList),
                 ]
 
                 const requiredGroup = allGroups.find((group) => group.items.some((item) => item.id === action.id))
