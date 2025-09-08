@@ -315,10 +315,16 @@ export const getAdditionalNavGroups = (
     const filteredChartList = chartList.filter(
         (chart) => chart.name && chart.name.toLowerCase().includes(lowerCaseSearchText),
     )
+    const filteredClusterList = resourceList.clusterList.filter(
+        (cluster) => cluster.name && cluster.name.toLowerCase().includes(lowerCaseSearchText),
+    )
+    const filteredHelmAppList = resourceList.helmAppList.filter(
+        (helmApp) => helmApp.appName && helmApp.appName.toLowerCase().includes(lowerCaseSearchText),
+    )
     return [
         ...parseAppListToNavItems(filteredAppList, true, searchText),
-        ...parseHelmAppListToNavItems(resourceList.helmAppList, true, searchText),
+        ...parseHelmAppListToNavItems(filteredHelmAppList, true, searchText),
         ...parseChartListToNavItems(filteredChartList, true, searchText),
-        ...parseClusterListToNavItems(resourceList.clusterList, true, searchText),
+        ...parseClusterListToNavItems(filteredClusterList, true, searchText),
     ]
 }
