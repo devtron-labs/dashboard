@@ -285,7 +285,6 @@ src/components/scopedVariables/__tests__/utils.test.tsx
 src/components/scopedVariables/utils.tsx
 src/components/security/AddCveModal.tsx
 src/components/security/DeleteCVEModal.tsx
-src/components/security/Security.tsx
 src/components/security/SecurityPoliciesTab.tsx
 src/components/security/SecurityPolicyApp.tsx
 src/components/security/SecurityPolicyCluster.tsx
