@@ -22,7 +22,8 @@ import {
     ButtonVariantType,
     BreadcrumbText,
     useBreadcrumb,
-} from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { URLS } from '@Config/routes'
 import { SECURITY_BREADCRUMB_CONFIG } from './constants'
 import { VulnerabilityExposureFilterKeys, VulnerabilityExposureSearchParams } from './security.types'
