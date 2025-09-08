@@ -32,6 +32,7 @@ import {
     parseAppListToNavItems,
     parseChartListToNavItems,
     parseClusterListToNavItems,
+    parseHelmAppListToNavItems,
     sanitizeItemId,
 } from './utils'
 
@@ -62,6 +63,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
                 const allGroups = [
                     ...navigationGroups,
                     ...parseAppListToNavItems(resourceList?.appList),
+                    ...parseHelmAppListToNavItems(resourceList?.helmAppList),
                     ...parseChartListToNavItems(resourceList?.chartList),
                     ...parseClusterListToNavItems(resourceList?.clusterList),
                 ]

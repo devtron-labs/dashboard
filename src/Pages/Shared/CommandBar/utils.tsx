@@ -15,6 +15,7 @@ import {
     CHART_LIST_COMMAND_GROUP_ID,
     CLUSTER_LIST_COMMAND_GROUP_ID,
     DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
+    HELM_APP_LIST_COMMAND_GROUP_ID,
     NAV_SUB_ITEMS_ICON_MAPPING,
     RECENT_NAVIGATION_ITEM_ID_PREFIX,
 } from './constants'
@@ -256,6 +257,48 @@ export const parseClusterListToNavItems = (
     ]
 }
 
+export const parseHelmAppListToNavItems = (
+    helmAppList: CommandBarBackdropProps['resourceList']['helmAppList'],
+    shouldSliceTopFive = false,
+    searchKey = '',
+): CommandBarGroupType[] => {
+    if (!helmAppList?.length) {
+        return []
+    }
+
+    const slicedHelmApps = shouldSliceTopFive ? helmAppList.slice(0, 5) : helmAppList
+    const numberOfOtherHelmApps = helmAppList.length - slicedHelmApps.length
+
+    const helmAppItems = slicedHelmApps.map<CommandBarGroupType['items'][number]>((helmApp) => ({
+        id: `helm-app-list-${+helmApp.appId}`,
+        title: helmApp.appName,
+        subText: helmApp.chartName,
+        icon: 'ic-helm-app',
+        iconColor: 'none',
+        href: `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
+        keywords: [],
+    }))
+
+    if (shouldSliceTopFive && numberOfOtherHelmApps > 0) {
+        helmAppItems.push({
+            id: 'search-helm-app-list-view',
+            title: `${numberOfOtherHelmApps} more matching helm apps`,
+            icon: 'ic-arrow-right',
+            href: `${URLS.HELM_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchKey)}`,
+            keywords: [],
+            excludeFromRecent: true,
+        })
+    }
+
+    return [
+        {
+            title: 'Helm Applications',
+            id: HELM_APP_LIST_COMMAND_GROUP_ID,
+            items: helmAppItems,
+        },
+    ]
+}
+
 export const getAdditionalNavGroups = (
     searchText: string,
     resourceList: CommandBarBackdropProps['resourceList'],
@@ -274,6 +317,7 @@ export const getAdditionalNavGroups = (
     )
     return [
         ...parseAppListToNavItems(filteredAppList, true, searchText),
+        ...parseHelmAppListToNavItems(resourceList.helmAppList, true, searchText),
         ...parseChartListToNavItems(filteredChartList, true, searchText),
         ...parseClusterListToNavItems(resourceList.clusterList, true, searchText),
     ]
