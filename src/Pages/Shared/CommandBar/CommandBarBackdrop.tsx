@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -47,18 +47,8 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
 
     const navigationGroups = useMemo(() => getNavigationGroups(serverMode, isSuperAdmin), [serverMode, isSuperAdmin])
 
-    const { data: recentActionsGroup, isLoading } = useQuery({
-        queryFn: ({ signal }) =>
-            getUserPreferences(signal).then((response) => {
-                const responseData: ResponseType<typeof response> = {
-                    code: API_STATUS_CODES.OK,
-                    status: 'OK',
-                    result: response,
-                }
-                return responseData
-            }),
-        queryKey: ['recentNavigationActions'],
-        select: ({ result }) =>
+    const parseRecentActionsGroup = useCallback(
+        ({ result }: ResponseType<Awaited<ReturnType<typeof getUserPreferences>>>) =>
             result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
                 const allGroups = [
                     ...navigationGroups,
@@ -79,6 +69,22 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
                 }
                 return acc
             }, structuredClone(RECENT_ACTIONS_GROUP)),
+        [resourceList],
+    )
+
+    const { data: recentActionsGroup, isLoading } = useQuery({
+        queryFn: ({ signal }) =>
+            getUserPreferences(signal).then((response) => {
+                const responseData: ResponseType<typeof response> = {
+                    code: API_STATUS_CODES.OK,
+                    status: 'OK',
+                    result: response,
+                }
+                return responseData
+            }),
+        queryKey: ['recentNavigationActions', isLoadingResourceList],
+        enabled: !isLoadingResourceList,
+        select: parseRecentActionsGroup,
     })
 
     const areFiltersApplied = !!searchText
@@ -159,7 +165,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
             const item = itemFlatList[newIndex]
             const itemElement = itemRefMap.current[item.id]
             if (itemElement) {
-                itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+                itemElement.scrollIntoView({ block: 'center', inline: 'nearest' })
             }
             return newIndex
         })

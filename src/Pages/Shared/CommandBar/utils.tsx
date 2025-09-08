@@ -122,209 +122,242 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
 
 export const parseAppListToNavItems = (
     appList: CommandBarBackdropProps['resourceList']['appList'],
-    shouldSliceTopFive = false,
-    searchKey = '',
 ): CommandBarGroupType[] => {
     if (!appList?.length) {
         return []
-    }
-
-    const slicedApps = shouldSliceTopFive ? appList.slice(0, 5) : appList
-    const numberOfOtherApps = appList.length - slicedApps.length
-
-    const appItems = slicedApps.map<CommandBarGroupType['items'][number]>((app) => ({
-        id: `app-management-devtron-app-list-${app.id}`,
-        title: app.name,
-        icon: 'ic-devtron-app',
-        iconColor: 'none',
-        href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
-        keywords: [],
-    }))
-
-    if (shouldSliceTopFive && numberOfOtherApps > 0) {
-        appItems.push({
-            id: 'search-app-list-view',
-            title: `${numberOfOtherApps} more matching devtron apps`,
-            icon: 'ic-arrow-right',
-            href: `${URLS.DEVTRON_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchKey)}`,
-            keywords: [],
-            excludeFromRecent: true,
-        })
     }
 
     return [
         {
             title: 'Devtron Applications',
             id: DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
-            items: appItems,
+            items: appList.map<CommandBarGroupType['items'][number]>((app) => ({
+                id: `app-management-devtron-app-list-${app.id}`,
+                title: app.name,
+                icon: 'ic-devtron-app',
+                iconColor: 'none',
+                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
+                keywords: [],
+            })),
         },
     ]
 }
 
 export const parseChartListToNavItems = (
     chartList: CommandBarBackdropProps['resourceList']['chartList'],
-    shouldSliceTopFive = false,
-    searchKey = '',
 ): CommandBarGroupType[] => {
     if (!chartList?.length) {
         return []
-    }
-
-    const slicedCharts = shouldSliceTopFive ? chartList.slice(0, 5) : chartList
-    const numberOfOtherCharts = chartList.length - slicedCharts.length
-
-    const chartItems = slicedCharts.map<CommandBarGroupType['items'][number]>((chart) => ({
-        id: `chart-list-${chart.id}`,
-        title: chart.name,
-        subText: chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id,
-        iconElement: (
-            <ImageWithFallback
-                imageProps={{
-                    src: chart.icon,
-                    alt: chart.name,
-                    width: '20px',
-                    height: '20px',
-                }}
-                fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
-            />
-        ),
-        href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
-        keywords: [],
-    }))
-
-    if (shouldSliceTopFive && numberOfOtherCharts > 0) {
-        chartItems.push({
-            id: 'search-chart-list-view',
-            title: `${numberOfOtherCharts} more matching charts`,
-            icon: 'ic-arrow-right',
-            href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
-                searchKey,
-            )}`,
-            keywords: [],
-            excludeFromRecent: true,
-        })
     }
 
     return [
         {
             title: 'Charts',
             id: CHART_LIST_COMMAND_GROUP_ID,
-            items: chartItems,
+            items: chartList.map<CommandBarGroupType['items'][number]>((chart) => ({
+                id: `chart-list-${chart.id}`,
+                title: chart.name,
+                subText: chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id,
+                iconElement: (
+                    <ImageWithFallback
+                        imageProps={{
+                            src: chart.icon,
+                            alt: chart.name,
+                            width: '20px',
+                            height: '20px',
+                        }}
+                        fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
+                    />
+                ),
+                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
+                keywords: [],
+            })),
         },
     ]
 }
 
 export const parseClusterListToNavItems = (
     clusterList: CommandBarBackdropProps['resourceList']['clusterList'],
-    shouldSliceTopFive = false,
-    searchKey = '',
 ): CommandBarGroupType[] => {
     if (!clusterList?.length) {
         return []
-    }
-
-    const slicedClusters = shouldSliceTopFive ? clusterList.slice(0, 5) : clusterList
-    const numberOfOtherClusters = clusterList.length - slicedClusters.length
-
-    const clusterItems = slicedClusters.map<CommandBarGroupType['items'][number]>((cluster) => ({
-        id: `cluster-list-${cluster.id}`,
-        title: cluster.name,
-        icon: 'ic-bg-cluster',
-        // TODO: Do we need to verify clusterCreatingPhase here?
-        href: getClusterChangeRedirectionUrl(false, String(cluster.id)),
-        keywords: [],
-    }))
-
-    if (shouldSliceTopFive && numberOfOtherClusters > 0) {
-        clusterItems.push({
-            id: 'search-cluster-list-view',
-            title: `${numberOfOtherClusters} more matching clusters`,
-            icon: 'ic-arrow-right',
-            href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
-                searchKey,
-            )}`,
-            keywords: [],
-            excludeFromRecent: true,
-        })
     }
 
     return [
         {
             title: 'Clusters',
             id: CLUSTER_LIST_COMMAND_GROUP_ID,
-            items: clusterItems,
+            items: clusterList.map<CommandBarGroupType['items'][number]>((cluster) => ({
+                id: `cluster-list-${cluster.id}`,
+                title: cluster.name,
+                icon: 'ic-bg-cluster',
+                href: getClusterChangeRedirectionUrl(false, String(cluster.id)),
+                keywords: [],
+            })),
         },
     ]
 }
 
 export const parseHelmAppListToNavItems = (
     helmAppList: CommandBarBackdropProps['resourceList']['helmAppList'],
-    shouldSliceTopFive = false,
-    searchKey = '',
 ): CommandBarGroupType[] => {
     if (!helmAppList?.length) {
         return []
-    }
-
-    const slicedHelmApps = shouldSliceTopFive ? helmAppList.slice(0, 5) : helmAppList
-    const numberOfOtherHelmApps = helmAppList.length - slicedHelmApps.length
-
-    const helmAppItems = slicedHelmApps.map<CommandBarGroupType['items'][number]>((helmApp) => ({
-        id: `helm-app-list-${+helmApp.appId}`,
-        title: helmApp.appName,
-        subText: helmApp.chartName,
-        icon: 'ic-helm-app',
-        iconColor: 'none',
-        href: `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
-        keywords: [],
-    }))
-
-    if (shouldSliceTopFive && numberOfOtherHelmApps > 0) {
-        helmAppItems.push({
-            id: 'search-helm-app-list-view',
-            title: `${numberOfOtherHelmApps} more matching helm apps`,
-            icon: 'ic-arrow-right',
-            href: `${URLS.HELM_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchKey)}`,
-            keywords: [],
-            excludeFromRecent: true,
-        })
     }
 
     return [
         {
             title: 'Helm Applications',
             id: HELM_APP_LIST_COMMAND_GROUP_ID,
-            items: helmAppItems,
+            items: helmAppList.map<CommandBarGroupType['items'][number]>((helmApp) => ({
+                id: `helm-app-list-${+helmApp.appId}`,
+                title: helmApp.appName,
+                subText: helmApp.chartName,
+                iconElement: (
+                    <ImageWithFallback
+                        imageProps={{
+                            src: helmApp.chartAvatar,
+                            alt: helmApp.chartName,
+                            width: '20px',
+                            height: '20px',
+                        }}
+                        fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
+                    />
+                ),
+                href: `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
+                keywords: [],
+            })),
         },
     ]
+}
+
+const topFiveGroupParser = (
+    filteredGroup: CommandBarGroupType,
+    additionalItemConfig: Pick<CommandBarGroupType['items'][number], 'id' | 'href'>,
+): CommandBarGroupType[] => {
+    if (!filteredGroup?.items?.length) {
+        return []
+    }
+
+    const showOtherItems = filteredGroup.items.length > 5
+    const slicedItems = showOtherItems ? filteredGroup.items.slice(0, 5) : filteredGroup.items
+    const numberOfOtherItems = filteredGroup.items.length - slicedItems.length
+
+    if (!showOtherItems) {
+        return [filteredGroup]
+    }
+
+    return [
+        {
+            ...filteredGroup,
+            items: [
+                ...slicedItems,
+                {
+                    id: additionalItemConfig.id,
+                    href: additionalItemConfig.href,
+                    title: `${numberOfOtherItems} more matching ${filteredGroup.title.toLowerCase()}`,
+                    icon: 'ic-arrow-right',
+                    keywords: [],
+                    excludeFromRecent: true,
+                },
+            ],
+        },
+    ]
+}
+
+const getTopFiveAppListGroup = (
+    appList: CommandBarBackdropProps['resourceList']['appList'],
+    searchText: string,
+): CommandBarGroupType[] => {
+    const lowerCaseSearchText = searchText.toLowerCase()
+
+    const filteredAppList = appList.filter((app) => app.name && app.name.toLowerCase().includes(lowerCaseSearchText))
+    const parsedAppList = parseAppListToNavItems(filteredAppList)
+    return parsedAppList[0]
+        ? topFiveGroupParser(parsedAppList[0], {
+              id: 'search-app-list-view',
+              href: `${URLS.DEVTRON_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
+          })
+        : parsedAppList
+}
+
+const getTopFiveHelmAppListGroup = (
+    helmAppList: CommandBarBackdropProps['resourceList']['helmAppList'],
+    searchText: string,
+): CommandBarGroupType[] => {
+    const lowerCaseSearchText = searchText.toLowerCase()
+
+    const filteredHelmAppList = helmAppList.filter(
+        (helmApp) => helmApp.appName && helmApp.appName.toLowerCase().includes(lowerCaseSearchText),
+    )
+    const parsedHelmAppList = parseHelmAppListToNavItems(filteredHelmAppList)
+    return parsedHelmAppList[0]
+        ? topFiveGroupParser(parsedHelmAppList[0], {
+              id: 'search-helm-app-list-view',
+              href: `${URLS.HELM_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
+          })
+        : parsedHelmAppList
+}
+
+const getTopFiveClusterListGroup = (
+    clusterList: CommandBarBackdropProps['resourceList']['clusterList'],
+    searchText: string,
+): CommandBarGroupType[] => {
+    const lowerCaseSearchText = searchText.toLowerCase()
+
+    const filteredClusterList = clusterList.filter(
+        (cluster) => cluster.name && cluster.name.toLowerCase().includes(lowerCaseSearchText),
+    )
+    const parsedClusterList = parseClusterListToNavItems(filteredClusterList)
+    return parsedClusterList[0]
+        ? topFiveGroupParser(parsedClusterList[0], {
+              id: 'search-cluster-list-view',
+              href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
+                  searchText,
+              )}`,
+          })
+        : parsedClusterList
+}
+
+const getTopFiveChartListGroup = (
+    chartList: CommandBarBackdropProps['resourceList']['chartList'],
+    searchText: string,
+): CommandBarGroupType[] => {
+    const lowerCaseSearchText = searchText.toLowerCase()
+
+    const filteredChartList = chartList.filter(
+        (chart) => chart.name && chart.name.toLowerCase().includes(lowerCaseSearchText),
+    )
+    const parsedChartList = parseChartListToNavItems(filteredChartList)
+    return parsedChartList[0]
+        ? topFiveGroupParser(parsedChartList[0], {
+              id: 'search-chart-list-view',
+              href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
+                  searchText,
+              )}`,
+          })
+        : parsedChartList
 }
 
 export const getAdditionalNavGroups = (
     searchText: string,
     resourceList: CommandBarBackdropProps['resourceList'],
 ): CommandBarGroupType[] => {
-    const { appList, chartList } = resourceList || { appList: [], chartList: [] }
+    const { appList, chartList, clusterList, helmAppList } = resourceList || {
+        appList: [],
+        chartList: [],
+        clusterList: [],
+        helmAppList: [],
+    }
 
     if (searchText.length < 3) {
         return []
     }
 
-    const lowerCaseSearchText = searchText.toLowerCase()
-
-    const filteredAppList = appList.filter((app) => app.name && app.name.toLowerCase().includes(lowerCaseSearchText))
-    const filteredChartList = chartList.filter(
-        (chart) => chart.name && chart.name.toLowerCase().includes(lowerCaseSearchText),
-    )
-    const filteredClusterList = resourceList.clusterList.filter(
-        (cluster) => cluster.name && cluster.name.toLowerCase().includes(lowerCaseSearchText),
-    )
-    const filteredHelmAppList = resourceList.helmAppList.filter(
-        (helmApp) => helmApp.appName && helmApp.appName.toLowerCase().includes(lowerCaseSearchText),
-    )
     return [
-        ...parseAppListToNavItems(filteredAppList, true, searchText),
-        ...parseHelmAppListToNavItems(filteredHelmAppList, true, searchText),
-        ...parseChartListToNavItems(filteredChartList, true, searchText),
-        ...parseClusterListToNavItems(filteredClusterList, true, searchText),
+        ...getTopFiveAppListGroup(appList, searchText),
+        ...getTopFiveHelmAppListGroup(helmAppList, searchText),
+        ...getTopFiveChartListGroup(chartList, searchText),
+        ...getTopFiveClusterListGroup(clusterList, searchText),
     ]
 }
