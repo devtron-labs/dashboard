@@ -1,5 +1,12 @@
-import { Icon, ImageWithFallback, SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Icon,
+    ImageWithFallback,
+    SERVER_MODE,
+    URL_FILTER_KEYS,
+    URLS as COMMON_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
+import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
 import { NAVIGATION_LIST } from '@Components/Navigation/constants'
 import { URLS } from '@Config/routes'
 
@@ -112,56 +119,94 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
 
 export const parseAppListToNavItems = (
     appList: CommandBarBackdropProps['resourceList']['appList'],
+    shouldSliceTopFive = false,
+    searchKey = '',
 ): CommandBarGroupType[] => {
     if (!appList?.length) {
         return []
+    }
+
+    const slicedApps = shouldSliceTopFive ? appList.slice(0, 5) : appList
+    const numberOfOtherApps = appList.length - slicedApps.length
+
+    const appItems = slicedApps.map<CommandBarGroupType['items'][number]>((app) => ({
+        id: `app-management-devtron-app-list-${app.id}`,
+        title: app.name,
+        icon: 'ic-devtron-app',
+        iconColor: 'none',
+        href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
+        keywords: [],
+    }))
+
+    if (shouldSliceTopFive && numberOfOtherApps > 0) {
+        appItems.push({
+            id: 'search-app-list-view',
+            title: `${numberOfOtherApps} more matching devtron apps`,
+            icon: 'ic-arrow-right',
+            href: `${URLS.DEVTRON_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchKey)}`,
+            keywords: [],
+            excludeFromRecent: true,
+        })
     }
 
     return [
         {
             title: 'Devtron Applications',
             id: DEVTRON_APPLICATIONS_COMMAND_GROUP_ID,
-            items: appList.map((app) => ({
-                id: `app-management-devtron-app-list-${app.id}`,
-                title: app.name,
-                icon: 'ic-devtron-app',
-                iconColor: 'none',
-                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${URLS.APP_OVERVIEW}`,
-                keywords: [],
-            })),
+            items: appItems,
         },
     ]
 }
 
 export const parseChartListToNavItems = (
     chartList: CommandBarBackdropProps['resourceList']['chartList'],
+    shouldSliceTopFive = false,
+    searchKey = '',
 ): CommandBarGroupType[] => {
     if (!chartList?.length) {
         return []
+    }
+
+    const slicedCharts = shouldSliceTopFive ? chartList.slice(0, 5) : chartList
+    const numberOfOtherCharts = chartList.length - slicedCharts.length
+
+    const chartItems = slicedCharts.map<CommandBarGroupType['items'][number]>((chart) => ({
+        id: `chart-list-${chart.id}`,
+        title: chart.name,
+        subText: chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id,
+        iconElement: (
+            <ImageWithFallback
+                imageProps={{
+                    src: chart.icon,
+                    alt: chart.name,
+                    width: '20px',
+                    height: '20px',
+                }}
+                fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
+            />
+        ),
+        href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
+        keywords: [],
+    }))
+
+    if (shouldSliceTopFive && numberOfOtherCharts > 0) {
+        chartItems.push({
+            id: 'search-chart-list-view',
+            title: `${numberOfOtherCharts} more matching charts`,
+            icon: 'ic-arrow-right',
+            href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
+                searchKey,
+            )}`,
+            keywords: [],
+            excludeFromRecent: true,
+        })
     }
 
     return [
         {
             title: 'Charts',
             id: CHART_LIST_COMMAND_GROUP_ID,
-            items: chartList.map<CommandBarGroupType['items'][number]>((chart) => ({
-                id: `chart-list-${chart.id}`,
-                title: chart.name,
-                subText: chart.chart_name ? chart.chart_name : chart.docker_artifact_store_id,
-                iconElement: (
-                    <ImageWithFallback
-                        imageProps={{
-                            src: chart.icon,
-                            alt: chart.name,
-                            width: '20px',
-                            height: '20px',
-                        }}
-                        fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
-                    />
-                ),
-                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
-                keywords: [],
-            })),
+            items: chartItems,
         },
     ]
 }
@@ -182,5 +227,8 @@ export const getAdditionalNavGroups = (
     const filteredChartList = chartList.filter(
         (chart) => chart.name && chart.name.toLowerCase().includes(lowerCaseSearchText),
     )
-    return [...parseAppListToNavItems(filteredAppList), ...parseChartListToNavItems(filteredChartList)]
+    return [
+        ...parseAppListToNavItems(filteredAppList, true, searchText),
+        ...parseChartListToNavItems(filteredChartList, true, searchText),
+    ]
 }

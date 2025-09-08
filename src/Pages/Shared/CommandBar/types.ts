@@ -14,6 +14,10 @@ export type CommandBarItemType = {
     title: string
     keywords: string[]
     href: NavigationItemType['href']
+    /**
+     * @default false
+     */
+    excludeFromRecent?: boolean
     subText?: string
 } & (
     | {

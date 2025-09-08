@@ -161,18 +161,10 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
         })
     }
 
-    const onItemClick = async (item: CommandBarGroupType['items'][number]) => {
-        if (!item.href) {
-            logExceptionToSentry(new Error(`CommandBar item with id ${item.id} does not have a valid href`))
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: `CommandBar item with id ${item.id} does not have a valid href`,
-            })
+    const pushItemToRecent = async (item: CommandBarGroupType['items'][number]) => {
+        if (item.excludeFromRecent) {
             return
         }
-
-        history.push(item.href)
-        handleClose()
 
         const currentItemId = sanitizeItemId(item)
 
@@ -193,6 +185,22 @@ const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }
             path: 'commandBar.recentNavigationActions',
             value: updatedRecentActions,
         })
+    }
+
+    const onItemClick = async (item: CommandBarGroupType['items'][number]) => {
+        if (!item.href) {
+            logExceptionToSentry(new Error(`CommandBar item with id ${item.id} does not have a valid href`))
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `CommandBar item with id ${item.id} does not have a valid href`,
+            })
+            return
+        }
+
+        history.push(item.href)
+        handleClose()
+
+        await pushItemToRecent(item)
     }
 
     const handleEnterSelectedItem = async () => {
