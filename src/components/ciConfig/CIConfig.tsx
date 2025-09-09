@@ -20,7 +20,7 @@ import { getGitProviderIcon, sortObjectArrayAlphabetically } from '../common'
 import { getDockerRegistryMinAuth } from './service'
 import { getSourceConfig, getCIConfig } from '../../services/service'
 import { ComponentStates } from '@Components/CIPipelineN/types'
-import { CIConfigProps, MaterialOptionType } from './types'
+import { CIConfigProps } from './types'
 import './CIConfig.scss'
 import CIConfigForm from './CIConfigForm'
 
@@ -69,7 +69,7 @@ export default function CIConfig({
                 Array.isArray(sourceConfig.material) &&
                 sortObjectArrayAlphabetically(sourceConfig.material, 'name')
                 const _sourceConfig = { ...sourceConfig }
-                const sourceConfigMaterial = sourceConfig.material?.map((material: MaterialOptionType) => {
+                const sourceConfigMaterial = sourceConfig.material?.map((material) => {
                     return {
                         ...material,
                         label: material?.name || '',

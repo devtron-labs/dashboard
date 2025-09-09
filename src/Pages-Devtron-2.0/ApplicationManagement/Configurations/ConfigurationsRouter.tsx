@@ -1,12 +1,15 @@
 import { lazy } from 'react'
-import { Redirect, Route, Switch } from 'react-router-dom'
+import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
 
 import {
+    BreadCrumb,
+    getApplicationManagementBreadcrumb,
     noop,
     PageHeader,
     SERVER_MODE,
     SideNavigation,
     URLS as COMMON_URLS,
+    useBreadcrumb,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -31,6 +34,7 @@ const BuildInfra = lazy(() =>
 const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 
 export const Configurations = () => {
+    const { pathname } = useLocation()
     const { featureGitOpsFlags: isFeatureGitOpsEnabled, serverMode, isSuperAdmin } = useMainContext()
 
     const getDefaultRoute = () => {
@@ -41,10 +45,24 @@ export const Configurations = () => {
         return URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS
     }
 
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getApplicationManagementBreadcrumb(),
+                configurations: {
+                    component: <span className="cn-9 fs-16 fw-6 lh-24">Configurations</span>,
+                    linked: true,
+                },
+            },
+        },
+        [pathname],
+    )
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
     return (
         <>
-            {/* TODO: Update with Application Management Header */}
-            <PageHeader headerName="Application Management / Configurations" />
+            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs />
             <div className="application-management-configurations dc__grid flex-grow-1 dc__overflow-auto">
                 <div className="py-12 pl-8 pr-7 border__primary--right">
                     <SideNavigation list={APPLICATION_MANAGEMENT_CONFIGURATIONS} />

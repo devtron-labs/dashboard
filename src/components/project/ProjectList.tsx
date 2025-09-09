@@ -24,6 +24,9 @@ import {
     ToastVariantType,
     ToastManager,
     PageHeader,
+    BreadCrumb,
+    useBreadcrumb,
+    getApplicationManagementBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -32,6 +35,7 @@ import { ProjectListState, ProjectType, ProjectListProps } from './types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import './project.scss'
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { useLocation } from 'react-router-dom'
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
     constructor(props) {
@@ -206,6 +210,22 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
     }
 
+    renderBreadcrumbs = () => {
+        const { pathname } = useLocation()
+
+        const { breadcrumbs } = useBreadcrumb(
+            {
+                alias: {
+                    ...getApplicationManagementBreadcrumb(),
+                    projects: { component: <span className="cn-9 fs-16 fw-6 lh-24">Projects</span> },
+                },
+            },
+            [pathname],
+        )
+
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
     render() {
         if (!this.props.isSuperAdmin) {
             return (
@@ -226,8 +246,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
         return (
             <>
-                {/* TODO: replace this PageHeader with Application Management PageHeader */}
-                <PageHeader headerName="Application Management / Projects" />
+                <PageHeader breadCrumbs={this.renderBreadcrumbs} isBreadcrumbs />
                 <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
                     <div className="project-list-container flex-grow-1">
                         {this.renderPageHeader()}

@@ -253,10 +253,7 @@ src/components/globalConfigurations/GlobalConfiguration.tsx
 src/components/globalConfigurations/GlobalConfigurationProvider.tsx
 src/components/hostURL/HostURL.tsx
 src/components/hyperion/EnvironmentSelect.tsx
-src/components/material/CreateMaterial.tsx
-src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx
-src/components/material/UpdateMaterial.tsx
 src/components/notifications/AddNotification.tsx
 src/components/notifications/ModifyRecipientsModal.tsx
 src/components/notifications/NotificationTab.tsx
@@ -288,7 +285,6 @@ src/components/scopedVariables/__tests__/utils.test.tsx
 src/components/scopedVariables/utils.tsx
 src/components/security/AddCveModal.tsx
 src/components/security/DeleteCVEModal.tsx
-src/components/security/Security.tsx
 src/components/security/SecurityPoliciesTab.tsx
 src/components/security/SecurityPolicyApp.tsx
 src/components/security/SecurityPolicyCluster.tsx
