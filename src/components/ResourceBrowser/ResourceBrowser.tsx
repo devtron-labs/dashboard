@@ -22,6 +22,7 @@ import {
     ClusterDetail,
     DevtronProgressing,
     ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
     PageHeader,
     useAsync,
     useBreadcrumb,
@@ -34,7 +35,6 @@ import { sortObjectArrayAlphabetically } from '../common'
 import { KUBERNETES_RESOURCE_BROWSER_DESCRIPTION } from './Constants'
 import { renderNewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
-import { getInfrastructureManagementBreadcrumbsConfig } from './Utils'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)
@@ -46,7 +46,18 @@ const ResourceBrowser: React.FC = () => {
     const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListing(true, abortControllerRef))
 
     const { pathname } = useLocation()
-    const { breadcrumbs } = useBreadcrumb(getInfrastructureManagementBreadcrumbsConfig(pathname), [pathname])
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                'resource-browser': {
+                    component: <span className="cn-9 fs-16 fw-6 lh-24">Resource Browser</span>,
+                    linked: true,
+                },
+            },
+        },
+        [pathname],
+    )
 
     useEffect(
         () => () => {

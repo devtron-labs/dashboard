@@ -386,13 +386,5 @@ export const ResourceBrowserRouteToTabIdMap: Partial<
     [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/resource-recommender`]: RESOURCE_RECOMMENDER_TAB_ID,
 }
 
-export const INFRASTRUCTURE_MANAGEMENT_BREADCRUMB_CONFIG = [
-    {
-        key: 'resource-browser',
-        route: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
-        heading: 'Resource Browser',
-    },
-]
-
 export const KUBERNETES_RESOURCE_BROWSER_DESCRIPTION =
     'The Resource Browser gives you a powerful, centralized view of all your Kubernetes objects across clusters. Effortlessly troubleshoot and manage resources with features like live manifest editing, log viewing, and direct resource creation or deletion—right from the UI. All in one place, across all your cluster'
