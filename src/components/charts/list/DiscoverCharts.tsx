@@ -63,7 +63,7 @@ import { ChartGroupCard } from '../ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
 import ChartGroupRouter from './ChartGroup'
 import { ChartsList } from './ChartsList'
-import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
+import { CHART_STORE_TIPPY_CONTENT, getDeployableChartsFromConfiguredCharts } from './utils'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
@@ -345,7 +345,12 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                     <div className="flex dc__gap-16">
                         {state.charts.length === 0 ? (
                             <>
-                                {renderAdditionalChartHeaderInfo()}
+                                <PageHeader tippyProps={{
+                                    isTippyCustomized: true,
+                                    tippyRedirectLink: 'CHART_STORE',
+                                    tippyMessage: CHART_STORE_TIPPY_CONTENT,
+                                    tippyHeader: 'Chart Store',
+                                }} isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
                                 {isSuperAdmin && <ChartsList isLoading={isLoading} chartsList={chartsList} />}
                             </>
                         ) : (

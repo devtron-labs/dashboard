@@ -40,7 +40,6 @@ import {
 } from '../Types'
 import { getJobStatusLabelFromValue, parseSearchParams } from '../Utils'
 import JobListContainer from './JobListContainer'
-import { renderAdditionalJobsHeaderInfo } from './utils'
 
 import '../../app/list/list.scss'
 
@@ -156,7 +155,7 @@ const JobsList = () => {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton headerName="" additionalHeaderInfo={renderAdditionalJobsHeaderInfo} />
+                    <HeaderWithCreateButton isJobView />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         masterFilters={masterFilters}

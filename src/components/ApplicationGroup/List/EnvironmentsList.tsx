@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
     BreadCrumb,
+    BreadcrumbText,
     ErrorScreenManager,
     FilterChips,
     FilterSelectPicker,
@@ -209,9 +210,9 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
                 'application-group': {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Application groups</span>,
-                    linked: true,
+                    component: <BreadcrumbText heading="Application Groups" isActive />,
                 },
+                list: null,
             },
         },
         [pathname],
