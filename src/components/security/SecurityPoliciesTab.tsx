@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
-import { Switch, Route, Redirect, NavLink, RouteComponentProps, useRouteMatch } from 'react-router-dom'
+import { Switch, Route, Redirect, NavLink, useRouteMatch } from 'react-router-dom'
 import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 import { SecurityPolicyCluster } from './SecurityPolicyCluster'
 import { SecurityPolicyApp } from './SecurityPolicyApp'

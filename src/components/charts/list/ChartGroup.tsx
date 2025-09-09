@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader, ApplicationManagementIcon, getApplicationManagementBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader, getApplicationManagementBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
 import { ChartGroupCard } from '../ChartGroupCard'
