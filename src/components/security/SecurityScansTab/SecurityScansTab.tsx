@@ -205,9 +205,12 @@ export const SecurityScansTab = () => {
 
     if (!isLoading && scanListError) {
         return (
-            <div className="flexbox-col flex-grow-1 dc__content-center">
-                <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
-            </div>
+            <>
+                <SecurityPageHeader />
+                <div className="flexbox-col flex-grow-1 dc__content-center">
+                    <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
+                </div>
+            </>
         )
     }
 
@@ -215,11 +218,14 @@ export const SecurityScansTab = () => {
 
     if (isScanListEmpty && !areFiltersActive) {
         return (
-            <GenericEmptyState
-                image={AppNotDeployed}
-                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                classname="flex-grow-1"
-            />
+            <>
+                <SecurityPageHeader />
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                    classname="flex-grow-1"
+                />
+            </>
         )
     }
 
