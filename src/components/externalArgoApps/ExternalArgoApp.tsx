@@ -34,6 +34,7 @@ export default function ExternalArgoApp() {
                 breadCrumbConfig={{
                     'eaa': null,
                     ':namespace': null,
+                    ':clusterId(\\d+)': null,
                 }}
             />
             <Suspense fallback={<Progressing pageLoader />}>
