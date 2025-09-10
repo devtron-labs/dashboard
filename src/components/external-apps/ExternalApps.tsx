@@ -31,6 +31,9 @@ export default function ExternalApps() {
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.HELM_APPS}
                 redirectURL={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
+                breadCrumbConfig={{
+                    ea: null,
+                }}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>
