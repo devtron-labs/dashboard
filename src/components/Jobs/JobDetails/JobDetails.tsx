@@ -153,8 +153,8 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                     ),
                     linked: false,
                 },
-                app: {
-                    component: <BreadcrumbText heading="Jobs" />,
+                job: {
+                    component: <BreadcrumbText heading="Job" />,
                     linked: true,
                 },
             },
