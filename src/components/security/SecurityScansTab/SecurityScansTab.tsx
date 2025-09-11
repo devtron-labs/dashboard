@@ -205,9 +205,12 @@ export const SecurityScansTab = () => {
 
     if (!isLoading && scanListError) {
         return (
-            <div className="flexbox-col flex-grow-1 dc__content-center">
-                <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
-            </div>
+            <>
+                <SecurityPageHeader />
+                <div className="flexbox-col flex-grow-1 dc__content-center">
+                    <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
+                </div>
+            </>
         )
     }
 
@@ -215,16 +218,19 @@ export const SecurityScansTab = () => {
 
     if (isScanListEmpty && !areFiltersActive) {
         return (
-            <GenericEmptyState
-                image={AppNotDeployed}
-                title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                classname="flex-grow-1"
-            />
+            <>
+                <SecurityPageHeader />
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                    classname="flex-grow-1"
+                />
+            </>
         )
     }
 
     const renderHeader = () => (
-        <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-77 bg__primary">
+        <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-48 bg__primary">
             <div className="icon-dim-24" />
             <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell

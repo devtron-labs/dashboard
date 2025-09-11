@@ -25,7 +25,8 @@ import {
     DetectBottom,
     ToastManager,
     ToastVariantType,
-    getApplicationManagementBreadcrumb
+    getApplicationManagementBreadcrumb,
+    BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ChartCard from './ChartCard'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
@@ -83,6 +84,11 @@ export default function ChartGroupUpdate({}) {
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
+                'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
                 group: 'Chart Groups',
                 ':groupId': {
                     component: state.name,

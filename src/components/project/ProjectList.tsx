@@ -27,6 +27,7 @@ import {
     BreadCrumb,
     useBreadcrumb,
     getApplicationManagementBreadcrumb,
+    BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -181,19 +182,6 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         )
     }
 
-    renderPageHeader() {
-        return (
-            <FeatureTitleWithInfo
-                title={HEADER_TEXT.PROJECTS.title}
-                renderDescriptionContent={() => HEADER_TEXT.PROJECTS.description}
-                docLink={HEADER_TEXT.PROJECTS.docLink}
-                showInfoIconTippy
-                additionalContainerClasses="mb-20"
-                dataTestId="project-list-title"
-            />
-        )
-    }
-
     renderAddProject() {
         const unSavedItem = this.state.projects.find((item) => !item.id)
         if (!unSavedItem) {
@@ -217,7 +205,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             {
                 alias: {
                     ...getApplicationManagementBreadcrumb(),
-                    projects: { component: <span className="cn-9 fs-16 fw-6 lh-24">Projects</span> },
+                    projects: { component: <BreadcrumbText heading="Projects" isActive /> },
                 },
             },
             [pathname],
@@ -226,12 +214,28 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
+    renderPageHeader = () => (
+        <PageHeader
+            breadCrumbs={this.renderBreadcrumbs}
+            isBreadcrumbs
+            tippyProps={{
+                isTippyCustomized: true,
+                tippyRedirectLink: HEADER_TEXT.PROJECTS.docLink,
+                tippyMessage: HEADER_TEXT.PROJECTS.description,
+                tippyHeader: 'Projects',
+            }}
+        />
+    )
+
     render() {
         if (!this.props.isSuperAdmin) {
             return (
-                <div className="dc__align-reload-center">
-                    <ErrorScreenNotAuthorized />
-                </div>
+                <>
+                    {this.renderPageHeader()}
+                    <div className="dc__align-reload-center">
+                        <ErrorScreenNotAuthorized />
+                    </div>
+                </>
             )
         }
         if (this.state.view === ViewType.LOADING) {
@@ -246,10 +250,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
         return (
             <>
-                <PageHeader breadCrumbs={this.renderBreadcrumbs} isBreadcrumbs />
+                {this.renderPageHeader()}
                 <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
                     <div className="project-list-container flex-grow-1">
-                        {this.renderPageHeader()}
                         {this.renderAddProject()}
                         {this.state.projects.map((project, index) => {
                             return (

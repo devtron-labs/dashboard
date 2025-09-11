@@ -19,9 +19,11 @@ import { useLocation } from 'react-router-dom'
 
 import {
     BreadCrumb,
+    BreadcrumbText,
     ClusterDetail,
     DevtronProgressing,
     ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
     PageHeader,
     useAsync,
     useBreadcrumb,
@@ -34,7 +36,6 @@ import { sortObjectArrayAlphabetically } from '../common'
 import { KUBERNETES_RESOURCE_BROWSER_DESCRIPTION } from './Constants'
 import { renderNewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
-import { getInfrastructureManagementBreadcrumbsConfig } from './Utils'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)
@@ -46,7 +47,17 @@ const ResourceBrowser: React.FC = () => {
     const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListing(true, abortControllerRef))
 
     const { pathname } = useLocation()
-    const { breadcrumbs } = useBreadcrumb(getInfrastructureManagementBreadcrumbsConfig(pathname), [pathname])
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                'resource-browser': {
+                    component: <BreadcrumbText heading="Resource Browser" isActive />,
+                },
+            },
+        },
+        [pathname],
+    )
 
     useEffect(
         () => () => {

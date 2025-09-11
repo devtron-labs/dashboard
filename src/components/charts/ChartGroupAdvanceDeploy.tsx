@@ -26,7 +26,8 @@ import {
     PageHeader,
     ToastVariantType,
     ToastManager,
-    getApplicationManagementBreadcrumb
+    getApplicationManagementBreadcrumb,
+    BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
@@ -63,8 +64,8 @@ export default function ChartGroupAdvanceDeploy() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-               ...getApplicationManagementBreadcrumb(),
-                'chart-store': 'Chart store',
+                ...getApplicationManagementBreadcrumb(),
+                'chart-store': 'Chart Store',
                 group: 'Chart groups',
                 ':groupId': {
                     component: state.name,

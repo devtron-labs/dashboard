@@ -19,12 +19,14 @@ import { NavLink, Prompt, Route, Switch, useHistory, useLocation, useRouteMatch 
 import Tippy from '@tippyjs/react'
 
 import {
+    BreadCrumb,
     ComponentSizeType,
     ConditionalWrap,
     DetectBottom,
     DevtronProgressing,
     DocLink,
     FeatureTitleWithInfo,
+    getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
     Progressing,
@@ -32,6 +34,7 @@ import {
     stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
+    useBreadcrumb,
     useMainContext,
     useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -63,7 +66,7 @@ import { ChartGroupCard } from '../ChartGroupCard'
 import ChartCardSkeletonRow from './ChartCardSkeleton'
 import ChartGroupRouter from './ChartGroup'
 import { ChartsList } from './ChartsList'
-import { getDeployableChartsFromConfiguredCharts, renderAdditionalChartHeaderInfo } from './utils'
+import { CHART_STORE_TIPPY_CONTENT, getDeployableChartsFromConfiguredCharts } from './utils'
 
 const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { serverMode } = useMainContext()
@@ -296,7 +299,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     }
 
     function handleViewAllCharts(): void {
-        history.push(`${match.url.split(URLS.APPLICATION_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`)
+        history.push(
+            `${match.url.split(URLS.APPLICATION_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`,
+        )
     }
 
     function renderCreateGroupButton() {
@@ -317,9 +322,17 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         )
     }
 
-    const onClickSourceButton = (e) => {
-        handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_SOURCE' })
-    }
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getApplicationManagementBreadcrumb(),
+                'chart-store': null,
+                discover: { component: 'Chart Store', linked: false },
+            },
+        },
+        [],
+    )
+
 
     const renderBreadcrumbs = () => {
         if (typeof state.configureChartIndex === 'number') {
@@ -331,30 +344,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             )
         }
 
-        return (
-            <div className="bg__primary">
-                <div className="m-0 flex left">
-                    {state.charts.length > 0 && (
-                        <>
-                            <NavLink to={match.url} className="dc__devtron-breadcrumb__item">
-                                <span className="cb-5 fs-16 cursor">Discover </span>
-                            </NavLink>
-                            <span className="fs-16 cn-5 ml-4 mr-4"> / </span>
-                        </>
-                    )}
-                    <div className="flex dc__gap-16">
-                        {state.charts.length === 0 ? (
-                            <>
-                                {renderAdditionalChartHeaderInfo()}
-                                {isSuperAdmin && <ChartsList isLoading={isLoading} chartsList={chartsList} />}
-                            </>
-                        ) : (
-                            'Deploy multiple charts'
-                        )}
-                    </div>
-                </div>
-            </div>
-        )
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
     }
 
     async function reloadNextAfterBottom() {

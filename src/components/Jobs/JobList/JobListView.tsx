@@ -201,10 +201,12 @@ export default function JobListView(props: JobListViewProps) {
     }
     if (props.view === JobListViewType.EMPTY || props.view === JobListViewType.NO_RESULT) {
         return (
+            <>
             <JobsEmptyState
                 view={props.view}
                 clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearFilters}
             />
+            </>
         )
     }
     if (props.view === JobListViewType.ERROR) {

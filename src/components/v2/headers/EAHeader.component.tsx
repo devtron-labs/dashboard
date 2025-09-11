@@ -16,27 +16,54 @@
 
 import ReactGA from 'react-ga4'
 import { Link, useParams, useRouteMatch } from 'react-router-dom'
-import { PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    getApplicationManagementBreadcrumb,
+    PageHeader,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
 import { ReactComponent as Settings } from '../../../assets/icons/ic-settings.svg'
 import { EAHeaderComponentType } from './appHeader.type'
 
-const EAHeaderComponent = ({ title, redirectURL, showAppDetailsOnly = false }: EAHeaderComponentType) => {
+const EAHeaderComponent = ({
+    title,
+    redirectURL,
+    showAppDetailsOnly = false,
+    breadCrumbConfig,
+}: EAHeaderComponentType) => {
     const match = useRouteMatch()
     const params = useParams<{ appId: string; appName: string }>()
 
-    const renderBreadcrumbs = () => {
-        return (
-            <div className="m-0 flex left fs-12 cn-9fw-4 fs-16">
-                <Link to={redirectURL} className="dc__devtron-breadcrumb__item">
-                    <div className="cb-5">{title}</div>
-                </Link>
-                <span className="ml-4 mr-4">/</span>
-                <span>{params.appName}</span>
-            </div>
-        )
-    }
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getApplicationManagementBreadcrumb(),
+                ...breadCrumbConfig,
+                app: {
+                    component: (
+                        <Link to={redirectURL} className="dc__devtron-breadcrumb__item">
+                            <div className="cb-5">{title}</div>
+                        </Link>
+                    ),
+                },
+                ':appName': {
+                    component: <BreadcrumbText heading={params.appName} isActive />,
+                    linked: false,
+                },
+                ':clusterId': null,
+                ':appId(\\d+)': null,
+            },
+        },
+        [params.appName],
+    )
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
     const renderExternalHelmApp = () => {
         const tabs: TabProps[] = [
             {
