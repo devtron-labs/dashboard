@@ -23,6 +23,7 @@ import ChartGroupUpdate from '../ChartGroupUpdate'
 import ChartGroupDetails from '../ChartGroupDetails'
 import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
+import { BreadcrumbText } from '@devtron-labs/devtron-fe-common-lib'
 
 const ChartGroupList = () => {
     const [loading, result] = useAsync(getChartGroups, [])
@@ -31,6 +32,10 @@ const ChartGroupList = () => {
             alias: {
                  ...getApplicationManagementBreadcrumb(),
                 'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
                 group: { component: 'Chart Groups', linked: false },
             },
         },
