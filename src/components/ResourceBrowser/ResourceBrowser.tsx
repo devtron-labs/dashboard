@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
     BreadCrumb,
+    BreadcrumbText,
     ClusterDetail,
     DevtronProgressing,
     ErrorScreenManager,
@@ -51,7 +52,7 @@ const ResourceBrowser: React.FC = () => {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
                 'resource-browser': {
-                    component: <span className="cn-9 fs-16 fw-6 lh-24">Resource Browser</span>,
+                    component: <BreadcrumbText heading="Resource Browser" isActive />,
                 },
             },
         },

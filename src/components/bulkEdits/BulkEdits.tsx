@@ -23,6 +23,7 @@ import yamlJsParser from 'yaml'
 
 import {
     BreadCrumb,
+    BreadcrumbText,
     BulkEditConfigV2Type,
     BulkEditVersion,
     Button,
@@ -599,7 +600,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             {
                 alias: {
                     ...getApplicationManagementBreadcrumb(),
-                    'bulk-edit': { component: <span className="cn-9 fs-16 fw-6 lh-24">Bulk Edit</span> },
+                    'bulk-edit': { component: <BreadcrumbText heading="Bulk Edits" isActive /> },
                 },
             },
             [pathname],
