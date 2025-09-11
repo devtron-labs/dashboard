@@ -1,7 +1,7 @@
 {
     "google": {
         "config": {
-            "type": "oidc",
+            "type": "google",
             "id": "google",
             "name": "Google",
             "config": {
