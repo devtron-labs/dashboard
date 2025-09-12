@@ -689,7 +689,7 @@ const ManifestComponent = ({
         handleStickDynamicTabsToTop?.()
     }
 
-    const hasUnsavedChanges = previousEditorState.current !== getCodeEditorValue()
+    const hasUnsavedChanges = isEditMode && previousEditorState.current !== getCodeEditorValue()
 
     usePrompt({ shouldPrompt: hasUnsavedChanges })
 
