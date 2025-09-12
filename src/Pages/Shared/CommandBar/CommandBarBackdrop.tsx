@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -30,10 +30,13 @@ import {
     getNavigationGroups,
     getNewSelectedIndex,
     parseAppListToNavItems,
+    parseChartListToNavItems,
+    parseClusterListToNavItems,
+    parseHelmAppListToNavItems,
     sanitizeItemId,
 } from './utils'
 
-const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandBarBackdropProps) => {
+const CommandBarBackdrop = ({ handleClose, isLoadingResourceList, resourceList }: CommandBarBackdropProps) => {
     const history = useHistory()
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
 
@@ -44,20 +47,16 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
 
     const navigationGroups = useMemo(() => getNavigationGroups(serverMode, isSuperAdmin), [serverMode, isSuperAdmin])
 
-    const { data: recentActionsGroup, isLoading } = useQuery({
-        queryFn: ({ signal }) =>
-            getUserPreferences(signal).then((response) => {
-                const responseData: ResponseType<typeof response> = {
-                    code: API_STATUS_CODES.OK,
-                    status: 'OK',
-                    result: response,
-                }
-                return responseData
-            }),
-        queryKey: ['recentNavigationActions'],
-        select: ({ result }) =>
+    const parseRecentActionsGroup = useCallback(
+        ({ result }: ResponseType<Awaited<ReturnType<typeof getUserPreferences>>>) =>
             result.commandBar.recentNavigationActions.reduce<CommandBarGroupType>((acc, action) => {
-                const allGroups = [...navigationGroups, ...parseAppListToNavItems(appList)]
+                const allGroups = [
+                    ...navigationGroups,
+                    ...parseAppListToNavItems(resourceList?.appList),
+                    ...parseHelmAppListToNavItems(resourceList?.helmAppList),
+                    ...parseChartListToNavItems(resourceList?.chartList),
+                    ...parseClusterListToNavItems(resourceList?.clusterList),
+                ]
 
                 const requiredGroup = allGroups.find((group) => group.items.some((item) => item.id === action.id))
 
@@ -70,6 +69,22 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
                 }
                 return acc
             }, structuredClone(RECENT_ACTIONS_GROUP)),
+        [resourceList],
+    )
+
+    const { data: recentActionsGroup, isLoading } = useQuery({
+        queryFn: ({ signal }) =>
+            getUserPreferences(signal).then((response) => {
+                const responseData: ResponseType<typeof response> = {
+                    code: API_STATUS_CODES.OK,
+                    status: 'OK',
+                    result: response,
+                }
+                return responseData
+            }),
+        queryKey: ['recentNavigationActions', isLoadingResourceList],
+        enabled: !isLoadingResourceList,
+        select: parseRecentActionsGroup,
     })
 
     const areFiltersApplied = !!searchText
@@ -95,7 +110,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
             return navigationGroups
         }
 
-        const additionalGroups = getAdditionalNavGroups(searchText, appList)
+        const additionalGroups = getAdditionalNavGroups(searchText, resourceList)
         const parsedGroups = navigationGroups.reduce<typeof navigationGroups>((acc, group) => {
             const filteredItems = group.items.filter(
                 (item) =>
@@ -150,24 +165,16 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
             const item = itemFlatList[newIndex]
             const itemElement = itemRefMap.current[item.id]
             if (itemElement) {
-                itemElement.scrollIntoView({ block: 'nearest', inline: 'nearest' })
+                itemElement.scrollIntoView({ block: 'center', inline: 'nearest' })
             }
             return newIndex
         })
     }
 
-    const onItemClick = async (item: CommandBarGroupType['items'][number]) => {
-        if (!item.href) {
-            logExceptionToSentry(new Error(`CommandBar item with id ${item.id} does not have a valid href`))
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: `CommandBar item with id ${item.id} does not have a valid href`,
-            })
+    const pushItemToRecent = async (item: CommandBarGroupType['items'][number]) => {
+        if (item.excludeFromRecent) {
             return
         }
-
-        history.push(item.href)
-        handleClose()
 
         const currentItemId = sanitizeItemId(item)
 
@@ -188,6 +195,22 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
             path: 'commandBar.recentNavigationActions',
             value: updatedRecentActions,
         })
+    }
+
+    const onItemClick = async (item: CommandBarGroupType['items'][number]) => {
+        if (!item.href) {
+            logExceptionToSentry(new Error(`CommandBar item with id ${item.id} does not have a valid href`))
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: `CommandBar item with id ${item.id} does not have a valid href`,
+            })
+            return
+        }
+
+        history.push(item.href)
+        handleClose()
+
+        await pushItemToRecent(item)
     }
 
     const handleEnterSelectedItem = async () => {
@@ -330,7 +353,7 @@ const CommandBarBackdrop = ({ handleClose, isLoadingAppList, appList }: CommandB
                             handleSearchChange={handleSearchChange}
                             noBackgroundAndBorder
                             shouldDebounce
-                            isLoading={isLoadingAppList}
+                            isLoading={isLoadingResourceList}
                         />
                     </div>
 

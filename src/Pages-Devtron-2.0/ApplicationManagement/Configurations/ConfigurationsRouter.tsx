@@ -51,7 +51,6 @@ export const Configurations = () => {
                 ...getApplicationManagementBreadcrumb(),
                 configurations: {
                     component: <span className="cn-9 fs-16 fw-6 lh-24">Configurations</span>,
-                    linked: true,
                 },
             },
         },

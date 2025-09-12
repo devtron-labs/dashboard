@@ -31,6 +31,11 @@ export default function ExternalArgoApp() {
                 title={AppListConstants.AppTabs.ARGO_APPS}
                 redirectURL={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.ARGO_APPS}`}
                 showAppDetailsOnly
+                breadCrumbConfig={{
+                    'eaa': null,
+                    ':namespace': null,
+                    ':clusterId(\\d+)': null,
+                }}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

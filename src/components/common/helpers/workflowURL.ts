@@ -45,13 +45,17 @@ export function getCIPipelineURL(
     ciPipelineId: string | number = null,
     isJobView: boolean,
     isCIJob: boolean,
-    isTemplateView: AppConfigProps['isTemplateView']
+    isTemplateView: AppConfigProps['isTemplateView'],
 ) {
     let prefixURL = ''
     if (addPrefix) {
-        prefixURL = `${isTemplateView ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
-            appId,
-        }) : `/${isJobView ? 'job' : 'app'}/${appId}`}/edit/workflow/`
+        prefixURL = `${
+            isTemplateView
+                ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
+                      appId,
+                  })
+                : `/${isJobView ? CommonURLS.AUTOMATION_AND_ENABLEMENT_JOB : CommonURLS.APPLICATION_MANAGEMENT_APP}/${appId}`
+        }/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''
     const ciPipelineType = isCIJob ? URLS.APP_JOB_CI_CONFIG : URLS.APP_CI_CONFIG

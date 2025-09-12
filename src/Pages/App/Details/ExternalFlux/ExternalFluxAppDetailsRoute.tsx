@@ -32,6 +32,11 @@ const ExternalFluxAppDetailsRoute = () => {
                 title={AppListConstants.AppTabs.FLUX_APPS}
                 redirectURL={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.FLUX_APPS}`}
                 showAppDetailsOnly
+                breadCrumbConfig={{
+                    ':namespace': null,
+                    'external-flux': null,
+                    ':templateType': null,
+                }}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

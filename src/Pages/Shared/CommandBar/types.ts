@@ -1,7 +1,9 @@
 import { Dispatch, SetStateAction } from 'react'
 
-import { IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterType, IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
 
+import { HelmApp } from '@Components/app/list-new/AppListType'
+import { Chart } from '@Components/charts/charts.types'
 import { NavigationItemType } from '@Components/Navigation/types'
 import { AppListMinDTO } from '@Services/service.types'
 
@@ -12,10 +14,13 @@ export type CommandBarActionIdType = UserPreferencesType['commandBar']['recentNa
 export type CommandBarItemType = {
     id: CommandBarActionIdType | `${typeof RECENT_NAVIGATION_ITEM_ID_PREFIX}${CommandBarActionIdType}`
     title: string
-    icon: IconsProps['name']
     keywords: string[]
     href: NavigationItemType['href']
-    iconColor?: IconBaseColorType | 'none'
+    /**
+     * @default false
+     */
+    excludeFromRecent?: boolean
+    subText?: string
 } & (
     | {
           onSelect?: never
@@ -24,7 +29,19 @@ export type CommandBarItemType = {
           href?: never
           onSelect: (e: React.MouseEvent<HTMLButtonElement>) => void
       }
-)
+) &
+    (
+        | {
+              icon: IconsProps['name']
+              iconColor?: IconBaseColorType | 'none'
+              iconElement?: never
+          }
+        | {
+              iconElement: JSX.Element
+              icon?: never
+              iconColor?: never
+          }
+    )
 
 export interface CommandBarGroupType {
     /**
@@ -43,9 +60,16 @@ export interface CommandGroupProps extends CommandBarGroupType {
     onItemClick: (item: CommandBarItemType) => void
 }
 
-export interface CommandBarBackdropProps {
-    isLoadingAppList: boolean
+export interface CommandBarResourceListType {
     appList: AppListMinDTO[]
+    chartList: Chart[]
+    clusterList: ClusterType[]
+    helmAppList: HelmApp[]
+}
+
+export interface CommandBarBackdropProps {
+    isLoadingResourceList: boolean
+    resourceList: CommandBarResourceListType
     handleClose: () => void
 }
 

@@ -18,6 +18,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    BreadcrumbText,
     DevtronProgressing,
     ErrorScreenManager,
     getInfrastructureManagementBreadcrumb,
@@ -388,6 +389,10 @@ const ResourceListWrapper = () => {
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
+                'resource-browser': {
+                    component: <BreadcrumbText heading="Resource Browser" />,
+                    linked: true,
+                },
                 ':clusterId(\\d+)': {
                     component: (
                         <ClusterSelector

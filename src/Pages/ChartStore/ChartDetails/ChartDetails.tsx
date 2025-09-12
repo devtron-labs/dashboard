@@ -85,6 +85,10 @@ export const ChartDetails = () => {
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
+                discover: {
+                    component: 'Chart Store',
+                    linked: true,
+                },
                 ':chartSegment?': null,
                 ':chartId': {
                     component: (
