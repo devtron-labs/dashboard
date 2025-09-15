@@ -488,7 +488,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         icon: 'ic-openai',
         items: [
             {
-                title: 'Overview',
+                title: 'Notifications',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
                 icon: 'ic-speedometer',
