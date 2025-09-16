@@ -29,3 +29,8 @@ export const CONTAINER_CONDITION_TYPE_TO_CONDITION_TYPE_MAP = {
     [ConditionContainerType.TRIGGER_SKIP]: [ConditionType.TRIGGER, ConditionType.SKIP],
     [ConditionContainerType.PASS_FAILURE]: [ConditionType.PASS, ConditionType.FAIL],
 }
+
+export enum TaskActionMenuOptionIdEnum {
+    DELETE = 'delete',
+    MOVE = 'move',
+}

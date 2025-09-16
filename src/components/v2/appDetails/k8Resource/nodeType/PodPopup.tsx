@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-import { ModuleNameMap, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ActionMenu,
+    ActionMenuProps,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    ModuleNameMap,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICDeleteInteractive } from '../../../../../assets/icons/ic-delete-interactive.svg'
 import { NodeDetailTabs } from '../../../../app/types'
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../../../common'
 import { NodeType } from '../../appDetails.type'
+import { NodeActionMenuOptionsIdEnum } from '../../constants'
 import { PodPopupProps } from './types'
 
 const OpenSecurityModalButton = importComponentFromFELibrary('OpenSecurityModalButton', null, 'function')
@@ -37,42 +46,73 @@ const PodPopup = ({
         installedModuleMap.current?.[ModuleNameMap.SECURITY_TRIVY],
     )
 
-    const handleDescribeEvents = () => {
-        describeNode(NodeDetailTabs.EVENTS)
-    }
-
-    const handleDescribeLogs = () => {
-        describeNode(NodeDetailTabs.LOGS)
+    const handleActionMenuClick: ActionMenuProps['onClick'] = (item) => {
+        switch (item.id) {
+            case NodeActionMenuOptionsIdEnum.VIEW_EVENTS:
+                describeNode(NodeDetailTabs.EVENTS)
+                break
+            case NodeActionMenuOptionsIdEnum.VIEW_LOGS:
+                describeNode(NodeDetailTabs.LOGS)
+                break
+            case NodeActionMenuOptionsIdEnum.CHECK_VULNERABILITY:
+                handleShowVulnerabilityModal()
+                break
+            case NodeActionMenuOptionsIdEnum.DELETE:
+                toggleShowDeleteConfirmation()
+                break
+            default:
+                break
+        }
     }
 
     return (
-        <div className="pod-info__popup-container flexbox-col">
-            {kind === NodeType.Pod && (
-                <span
-                    data-testid="view-events-button"
-                    className="flex pod-info__popup-row"
-                    onClickCapture={handleDescribeEvents}
-                >
-                    View Events
-                </span>
-            )}
-            {kind === NodeType.Pod && (
-                <span data-testid="view-logs-button" className="flex pod-info__popup-row" onClick={handleDescribeLogs}>
-                    View Container Logs
-                </span>
-            )}
-            {showResourceScanModal && OpenSecurityModalButton && (
-                <OpenSecurityModalButton handleShowVulnerabilityModal={handleShowVulnerabilityModal} />
-            )}
-            <span
-                data-testid="delete-resource-button"
-                className="flex dc__gap-8 pod-info__popup-row cr-5"
-                onClick={toggleShowDeleteConfirmation}
-            >
-                <ICDeleteInteractive className="icon-dim-16 scr-5" />
-                <span>Delete</span>
-            </span>
-        </div>
+        <ActionMenu<NodeActionMenuOptionsIdEnum>
+            id="node-resource-dot-button"
+            onClick={handleActionMenuClick}
+            options={[
+                {
+                    items: [
+                        ...(kind === NodeType.Pod
+                            ? [
+                                  {
+                                      id: NodeActionMenuOptionsIdEnum.VIEW_EVENTS,
+                                      label: 'View Events',
+                                  },
+                                  {
+                                      id: NodeActionMenuOptionsIdEnum.VIEW_LOGS,
+                                      label: 'View Container Logs',
+                                  },
+                              ]
+                            : []),
+
+                        ...(showResourceScanModal && OpenSecurityModalButton
+                            ? [
+                                  {
+                                      id: NodeActionMenuOptionsIdEnum.CHECK_VULNERABILITY,
+                                      label: 'Check vulnerabilities',
+                                      //   startIcon: { name: 'ic-bug' },
+                                  },
+                              ]
+                            : []),
+                        {
+                            id: NodeActionMenuOptionsIdEnum.DELETE,
+                            label: 'Delete',
+                            startIcon: { name: 'ic-delete' },
+                            type: 'negative',
+                        },
+                    ],
+                },
+            ]}
+            buttonProps={{
+                icon: <Icon name="ic-more-vertical" color={null} />,
+                ariaLabel: 'additional-options',
+                dataTestId: 'additional-options',
+                showAriaLabelInTippy: false,
+                style: ButtonStyleType.neutral,
+                variant: ButtonVariantType.borderLess,
+                size: ComponentSizeType.medium,
+            }}
+        />
     )
 }
 
