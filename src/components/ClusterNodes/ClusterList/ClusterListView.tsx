@@ -92,7 +92,8 @@ const ClusterListView = (props: ClusterViewType) => {
                 }
                 acc[cluster.name] = cluster
                 return acc
-            }, {} as ClusterDetail) ?? {},
+            }, {} as BulkSelectionIdentifiersType<ClusterDetail>) ??
+            ({} as BulkSelectionIdentifiersType<ClusterDetail>),
         [filteredList],
     )
 
@@ -149,7 +150,7 @@ const ClusterListView = (props: ClusterViewType) => {
                 )}
             </div>
 
-            <ClusterSelectionBody {...props} filteredList={filteredList} />
+            <ClusterSelectionBody {...props} filteredList={filteredList} identifierMap={allOnThisPageIdentifiers} />
         </BulkSelectionProvider>
     )
 }
