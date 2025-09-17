@@ -109,10 +109,6 @@ export interface SavedVariablesContentProps extends Required<Pick<DescriptorProp
     variablesList: VariableType[]
 }
 
-export interface YAMLEditorDropdownItemProps extends Pick<SavedVariablesContentProps, 'scopedVariablesYAML'> {
-    item: string
-}
-
 export interface DescriptorTabProps {
     handleCurrentViewUpdate: (view: ScopedVariablesFileViewType) => void
     currentView: ScopedVariablesFileViewType

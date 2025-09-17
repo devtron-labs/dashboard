@@ -16,29 +16,34 @@
 
 import { useEffect } from 'react'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 
 import {
+    ActionMenu,
+    ActionMenuItemType,
+    ActionMenuProps,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
     CodeEditor,
+    ComponentSizeType,
+    Icon,
     MODES,
-    PopupMenu,
     SavedVariablesViewParamsType,
     ScopedVariablesFileViewType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as ICFileDownload } from '../../assets/icons/ic-file-download.svg'
-import { ReactComponent as ICPencil } from '../../assets/icons/ic-pencil.svg'
 import { importComponentFromFELibrary } from '../common'
 import {
     DOWNLOAD_FILE_NAME,
     DOWNLOAD_FILES_AS,
     DOWNLOAD_TEMPLATE_NAME,
+    DownloadVariableType,
     DROPDOWN_ITEMS,
     SCOPED_VARIABLES_TEMPLATE_DATA,
 } from './constants'
 import DescriptorTab from './DescriptionTab'
 import Descriptor from './Descriptor'
-import { DescriptorTabProps, SavedVariablesContentProps, YAMLEditorDropdownItemProps } from './types'
+import { DescriptorTabProps, SavedVariablesContentProps } from './types'
 import { downloadData, parseURLViewToValidView } from './utils'
 import VariablesList from './VariablesList'
 
@@ -53,35 +58,6 @@ const ScopedVariablesEnvironmentListContainer = importComponentFromFELibrary(
     null,
     'function',
 )
-
-const YAMLEditorDropdownItem = ({ item, scopedVariablesYAML }: YAMLEditorDropdownItemProps) => {
-    const handleDownloadFileClick = () => {
-        if (!scopedVariablesYAML) {
-            return
-        }
-        switch (item) {
-            case DROPDOWN_ITEMS[0]:
-                downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
-                break
-            case DROPDOWN_ITEMS[1]:
-                downloadData(SCOPED_VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
-                break
-            default:
-                break
-        }
-    }
-
-    return (
-        <button
-            key={item}
-            className="scoped-variables-editor-infobar__dropdown-item bg__primary p-8 flex center dc__align-self-stretch dc__gap-12 dc__content-start cursor cn-9 fs-13 lh-20 fw-4 dc__hover-n50 dc__outline-none-imp dc__no-border"
-            onClick={handleDownloadFileClick}
-            type="button"
-        >
-            {item}
-        </button>
-    )
-}
 
 const SavedVariablesContent = ({
     searchKey,
@@ -109,46 +85,60 @@ const SavedVariablesContent = ({
         history.push(generatePath(path, { ...params, currentView: view }))
     }
 
+    const handleActionMenuClick: ActionMenuProps<DownloadVariableType>['onClick'] = (
+        item: ActionMenuItemType<DownloadVariableType>,
+    ) => {
+        if (!scopedVariablesYAML) {
+            return
+        }
+        switch (item.id) {
+            case DownloadVariableType.FILE:
+                downloadData(scopedVariablesYAML, DOWNLOAD_FILE_NAME, DOWNLOAD_FILES_AS)
+                break
+            case DownloadVariableType.TEMPLATE:
+                downloadData(SCOPED_VARIABLES_TEMPLATE, DOWNLOAD_TEMPLATE_NAME, DOWNLOAD_FILES_AS)
+                break
+            default:
+                break
+        }
+    }
+
     const renderYAMLView = () => (
         <div className="bg__tertiary flex-grow-1 dc__no-shrink p-8 flex column dc__align-start dc__content-start dc__gap-16 dc__align-self-stretch">
             <div className="flex-grow-1 dc__no-shrink dc__border dc__border-radius-4-imp flex column dc__content-space dc__align-self-stretch dc__align-start dc__overflow-auto">
-                <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bg__primary dc__gap-16 dc__content-space dc__align-items-center dc__align-self-stretch">
+                <div className="dc__position-rel dc__top-radius-4 dc__border-bottom flex pt-8 pb-8 pl-12 pr-12 bg__primary dc__gap-8 dc__content-space dc__align-items-center dc__align-self-stretch">
                     <p className="flex-grow-1 dc__no-shrink cn-9 fs-13 fw-4 lh-20 m-0">Last saved file</p>
-                    <Tippy className="default-tt" arrow placement="top" content="Edit">
-                        <button
-                            className="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
-                            type="button"
-                            onClick={handleActivateEditView}
-                            data-testid="edit-variables-btn"
-                            aria-label="Edit Variable"
-                        >
-                            <ICPencil className="icon-dim-20" />
-                        </button>
-                    </Tippy>
+                    <Button
+                        dataTestId="edit-variables-btn"
+                        ariaLabel="Edit Variable"
+                        onClick={handleActivateEditView}
+                        icon={<Icon name="ic-pencil" color={null} size={20} />}
+                        style={ButtonStyleType.neutral}
+                        variant={ButtonVariantType.borderLess}
+                        size={ComponentSizeType.medium}
+                    />
 
-                    <PopupMenu autoClose>
-                        <PopupMenu.Button
-                            isKebab
-                            rootClassName="h-20 p-0 dc__no-background dc__no-border dc__outline-none-imp"
-                            dataTestId="dropdown-btn"
-                        >
-                            <Tippy className="default-tt" arrow placement="top" content="Download file/template">
-                                <div>
-                                    <ICFileDownload className="icon-dim-20" />
-                                </div>
-                            </Tippy>
-                        </PopupMenu.Button>
-
-                        <PopupMenu.Body rootClassName="scoped-variables-editor-infobar__dropdown pt-4 pb-4 pl-0 pr-0 bg__primary flex column dc__content-start dc__align-start dc__position-abs bg__primary dc__border dc__border-radius-4-imp">
-                            {DROPDOWN_ITEMS.map((item) => (
-                                <YAMLEditorDropdownItem
-                                    key={item}
-                                    item={item}
-                                    scopedVariablesYAML={scopedVariablesYAML}
-                                />
-                            ))}
-                        </PopupMenu.Body>
-                    </PopupMenu>
+                    <ActionMenu<DownloadVariableType>
+                        id="additional-options-action-menu"
+                        onClick={handleActionMenuClick}
+                        options={[
+                            {
+                                items: Object.entries(DROPDOWN_ITEMS).map(([id, label]) => ({
+                                    id: id as DownloadVariableType,
+                                    label,
+                                })),
+                            },
+                        ]}
+                        buttonProps={{
+                            icon: <Icon name="ic-file-download" color={null} size={20} />,
+                            ariaLabel: 'additional-options',
+                            dataTestId: 'additional-options',
+                            showAriaLabelInTippy: false,
+                            style: ButtonStyleType.neutral,
+                            variant: ButtonVariantType.borderLess,
+                            size: ComponentSizeType.medium,
+                        }}
+                    />
                 </div>
 
                 <CodeEditor mode={MODES.YAML} readOnly noParsing value={scopedVariablesYAML} height="fitToParent" />

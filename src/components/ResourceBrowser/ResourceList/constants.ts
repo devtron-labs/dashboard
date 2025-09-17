@@ -85,3 +85,7 @@ export const NODE_SEARCH_KEY_PLACEHOLDER: Record<NODE_SEARCH_KEYS | typeof NODE_
     [NODE_SEARCH_KEYS.NODE_GROUP]: 'Search by node group name Eg. mainnode',
     [NODE_K8S_VERSION_FILTER_KEY]: 'Select K8s version',
 }
+
+export enum ClusterActionMenuOptionIdEnum {
+    DELETE = 'DELETE',
+}

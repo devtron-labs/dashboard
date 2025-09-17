@@ -24,3 +24,10 @@ export enum ApplicationsGAEvents {
 }
 
 export const EXPLAIN_AI_EXCLUDED_STATUS = new Set([StatusType.HEALTHY.toLowerCase(), 'running', 'completed', 'ready'])
+
+export enum NodeActionMenuOptionsIdEnum {
+    VIEW_EVENTS = 'view-events',
+    VIEW_LOGS = 'view-logs',
+    CHECK_VULNERABILITY = 'check-vulnerability',
+    DELETE = 'delete',
+}
