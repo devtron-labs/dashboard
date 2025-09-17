@@ -19,8 +19,6 @@ import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-// Replacing recharts with shared Chart component
-import { Chart } from '@devtron-labs/devtron-fe-common-lib'
 import type { SimpleDataset, ChartColorKey } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
@@ -31,6 +29,7 @@ import {
     SelectPicker,
     showError,
     URLS,
+    Chart,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
