@@ -17,7 +17,6 @@
 import { get } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes } from '../../../../config'
-import metrics from './deploymentMetrics.data.json'
 
 export function getDeploymentMetrics(startTime, endTime, appId: string | number, envId: string | number): Promise<any> {
     startTime += 'Z'
@@ -60,7 +59,7 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
     const startTimestamp = s.valueOf()
     const endTimestamp = e.valueOf()
     const millisecondsInDay = 86400000
-    const numberOfDays = 1 + (endTimestamp - startTimestamp) / millisecondsInDay
+    const numberOfDays = (endTimestamp - startTimestamp) / millisecondsInDay
     const numberOfWeeks = Math.ceil(numberOfDays / 7)
     const millisecondsInWeek = 7 * millisecondsInDay
 
