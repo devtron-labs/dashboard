@@ -52,6 +52,8 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
     filteredList,
     refreshData,
     parentRef,
+    isClusterDetailListLoading,
+    identifierMap,
 }) => {
     const [showKubeConfigModal, setShowKubeConfigModal] = useState(false)
     const [selectedClusterName, setSelectedClusterName] = useState('')
@@ -136,6 +138,8 @@ const ClusterSelectionBody: React.FC<ClusterSelectionBodyTypes> = ({
                         clusterName={selectedClusterName || identifierCount === 0}
                         handleModalClose={onChangeCloseKubeConfigModal}
                         isSingleClusterButton={!!selectedClusterName}
+                        isClusterDetailListLoading={isClusterDetailListLoading}
+                        identifierMap={identifierMap}
                     />
                 )}
             </div>

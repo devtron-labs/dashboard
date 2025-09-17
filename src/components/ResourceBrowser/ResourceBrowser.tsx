@@ -44,7 +44,9 @@ const ResourceBrowser: React.FC = () => {
     const [detailClusterListLoading, detailClusterList, , reloadDetailClusterList] = useAsync(() =>
         getClusterListing(false, abortControllerRef),
     )
-    const [initialLoading, clusterListMinData, error] = useAsync(() => getClusterListing(true, abortControllerRef))
+    const [initialLoading, clusterListMinData, error, reloadMinClusterListing] = useAsync(() =>
+        getClusterListing(true, abortControllerRef),
+    )
 
     const { pathname } = useLocation()
     const { breadcrumbs } = useBreadcrumb(
@@ -71,7 +73,7 @@ const ResourceBrowser: React.FC = () => {
         [detailClusterList, clusterListMinData],
     )
 
-    const filteredSortedCluserList = useMemo(
+    const filteredSortedClusterList = useMemo(
         () =>
             sortedClusterList.filter(
                 (option) =>
@@ -83,16 +85,17 @@ const ResourceBrowser: React.FC = () => {
 
     const renderContent = () => {
         if (error) {
-            return <ErrorScreenManager code={error.code} />
+            return <ErrorScreenManager code={error.code} reload={reloadMinClusterListing} />
         }
 
         return (
             <ClusterListView
                 parentRef={parentRef}
-                clusterOptions={filteredSortedCluserList}
+                clusterOptions={filteredSortedClusterList}
                 clusterListLoader={detailClusterListLoading}
                 initialLoading={initialLoading}
                 refreshData={reloadDetailClusterList}
+                isClusterDetailListLoading={detailClusterListLoading}
             />
         )
     }
