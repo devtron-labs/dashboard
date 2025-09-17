@@ -48,7 +48,7 @@ export const ssoDocumentationMap: Record<SSOProvider, string> = {
  *
  * Note: Remove once ON for all providers
  */
-export const autoAssignPermissionsFlowActiveProviders = [SSOProvider.microsoft, SSOProvider.ldap]
+export const autoAssignPermissionsFlowActiveProviders = [SSOProvider.microsoft, SSOProvider.ldap, SSOProvider.oidc]
 
 export const ssoProviderToDisplayNameMap: Record<SSOProvider, string> = {
     [SSOProvider.google]: 'Google',
