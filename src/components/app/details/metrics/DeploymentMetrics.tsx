@@ -19,7 +19,9 @@ import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import { Bar, BarChart, Label, Legend, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+// Replacing recharts with shared Chart component
+import { Chart } from '@devtron-labs/devtron-fe-common-lib'
+import type { SimpleDataset, ChartColorKey } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     EMPTY_STATE_STATUS,
@@ -48,13 +50,7 @@ import {
     BenchmarkLine,
     EliteCategoryMessage,
     FailureLegendEmptyState,
-    FrequencyTooltip,
-    frequencyXAxisLabel,
     getGALabel,
-    LeadTimeTooltip,
-    leadTimeXAxisLabel,
-    recoveryTimeLabel,
-    RecoveryTimeTooltip,
     ReferenceLineLegend,
     renderCategoryTag,
 } from './deploymentMetrics.util'
@@ -283,254 +279,214 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
             <>
                 {this.renderInputs()}
                 <div className="deployment-metrics__graphs">
-                    <div className="deployment-metrics__frequency-graph">
-                        <ResponsiveContainer>
-                            <BarChart data={this.state.frequencyAndLeadTimeGraph}>
-                                <Tooltip cursor={{ fill: 'var(--G100)' }} content={<FrequencyTooltip />} />
-                                <Legend
-                                    verticalAlign="top"
-                                    align="left"
-                                    height={134}
-                                    content={
-                                        <FrequencyGraphLegend
-                                            noFailures={this.state.recoveryTimeGraph.length === 0}
-                                            label="Deployment Frequency"
-                                            frequencyBenchmark={this.state.frequencyBenchmark}
-                                            failureRateBenchmark={this.state.failureRateBenchmark}
-                                            frequency={`${this.state.avgFrequency} / day`}
-                                            failureRate={`${this.state.failureRate} %`}
-                                            setFrequencyMetric={() => {
-                                                ReactGA.event({
-                                                    category: 'Deployment Metrics',
-                                                    action: 'Graph Bar Clicked',
-                                                    label: 'Deployment Frequency',
-                                                })
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'DEPLOYMENT_FREQUENCY',
-                                                        valueLabel: `${this.state.avgFrequency} /day`,
-                                                        catgory: this.state.frequencyBenchmark.name,
-                                                        value: this.state.avgFrequency,
-                                                    },
-                                                })
-                                            }}
-                                            setFailureMetric={() => {
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'FAILURE_RATE',
-                                                        valueLabel: `${this.state.failureRate} %`,
-                                                        catgory: this.state.failureRateBenchmark.name,
-                                                        value: this.state.failureRate,
-                                                    },
-                                                })
-                                            }}
-                                        />
-                                    }
-                                />
-                                <YAxis type="number" dataKey="frequency" domain={[0, this.state.maxFrequency]} hide />
-                                <XAxis
-                                    dataKey="xAxisLabel"
-                                    tickLine={false}
-                                    tick={false}
-                                    axisLine={{ stroke: 'var(--G300)' }}
-                                >
-                                    <Label position="insideBottomLeft" content={frequencyXAxisLabel} />
-                                </XAxis>
-                                <Bar
-                                    dataKey="failures"
-                                    stackId="deployment"
-                                    fill="var(--R300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: data.startTime,
-                                                endDate: data.endTime,
-                                            },
-                                        })
-                                    }}
-                                />
-                                <Bar
-                                    dataKey="success"
-                                    stackId="deployment"
-                                    fill="var(--G300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: data.startTime,
-                                                endDate: data.endTime,
-                                            },
-                                        })
-                                    }}
-                                />
-                                {this.state.frequencyBenchmark ? (
-                                    <ReferenceLine
-                                        y={this.state.frequencyBenchmark.targetValue}
-                                        stroke={this.state.frequencyBenchmark.color}
-                                        strokeWidth="0.5"
-                                        label=""
-                                    />
-                                ) : null}
-                                <ReferenceLine
-                                    y={this.state.avgFrequency}
-                                    stroke="var(--N900)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="3 3"
-                                    label=""
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div className="deployment-metrics__frequency-graph flexbox-col">
+                        <div className="mb-12">
+                            <FrequencyGraphLegend
+                                noFailures={this.state.recoveryTimeGraph.length === 0}
+                                label="Deployment Frequency"
+                                frequencyBenchmark={this.state.frequencyBenchmark}
+                                failureRateBenchmark={this.state.failureRateBenchmark}
+                                frequency={`${this.state.avgFrequency} / day`}
+                                failureRate={`${this.state.failureRate} %`}
+                                setFrequencyMetric={() => {
+                                    ReactGA.event({
+                                        category: 'Deployment Metrics',
+                                        action: 'Graph Bar Clicked',
+                                        label: 'Deployment Frequency',
+                                    })
+                                    this.setState({
+                                        benchmarkModalData: {
+                                            metric: 'DEPLOYMENT_FREQUENCY',
+                                            valueLabel: `${this.state.avgFrequency} /day`,
+                                            catgory: this.state.frequencyBenchmark.name,
+                                            value: this.state.avgFrequency,
+                                        },
+                                    })
+                                }}
+                                setFailureMetric={() => {
+                                    this.setState({
+                                        benchmarkModalData: {
+                                            metric: 'FAILURE_RATE',
+                                            valueLabel: `${this.state.failureRate} %`,
+                                            catgory: this.state.failureRateBenchmark.name,
+                                            value: this.state.failureRate,
+                                        },
+                                    })
+                                }}
+                            />
+                        </div>
+                        {this.renderDeploymentFrequencyChart()}
                     </div>
-                    <div className="deployment-metrics__lead-graph">
-                        <ResponsiveContainer>
-                            <BarChart data={this.state.frequencyAndLeadTimeGraph}>
-                                <Tooltip cursor={{ fill: 'var(--B100)' }} content={<LeadTimeTooltip />} />
-                                <Legend
-                                    verticalAlign="top"
-                                    align="left"
-                                    height={134}
-                                    content={
-                                        <RecoveryAndLeadTimeGraphLegend
-                                            noFailures={false}
-                                            label="Mean Lead Time"
-                                            benchmark={this.state.leadTimeBenchmark}
-                                            tooltipText="How long it takes to deliver a change to production?"
-                                            valueLabel={`${this.state.meanLeadTimeLabel}`}
-                                            setMetric={() => {
-                                                ReactGA.event({
-                                                    category: 'Deployment Metrics',
-                                                    action: 'Graph Bar Clicked',
-                                                    label: 'Mean Lead Time',
-                                                })
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'LEAD_TIME',
-                                                        valueLabel: `${this.state.meanLeadTimeLabel}`,
-                                                        catgory: this.state.leadTimeBenchmark.name,
-                                                        value: this.state.meanLeadTime,
-                                                    },
-                                                })
-                                            }}
-                                        />
-                                    }
-                                />
-                                <XAxis
-                                    dataKey="xAxisLabel"
-                                    tickLine={false}
-                                    tick={false}
-                                    axisLine={{ stroke: 'var(--B300)' }}
-                                >
-                                    <Label position="insideBottomLeft" offset={15} content={leadTimeXAxisLabel} />
-                                </XAxis>
-                                <YAxis type="number" dataKey="maxLeadTime" hide />
-                                <Bar
-                                    dataKey="maxLeadTime"
-                                    fill="var(--B300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: data.startTime,
-                                                endDate: data.endTime,
-                                            },
-                                        })
-                                    }}
-                                />
-                                {this.state.leadTimeBenchmark ? (
-                                    <ReferenceLine
-                                        y={this.state.leadTimeBenchmark.targetValue}
-                                        stroke={this.state.leadTimeBenchmark.color}
-                                        strokeWidth="0.5"
-                                        label=""
-                                    />
-                                ) : null}
-                                <ReferenceLine
-                                    y={this.state.meanLeadTime}
-                                    stroke="var(--N900)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="3 3"
-                                    label=""
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div className="deployment-metrics__lead-graph flexbox-col">
+                        <div className="mb-12">
+                            <RecoveryAndLeadTimeGraphLegend
+                                noFailures={false}
+                                label="Mean Lead Time"
+                                benchmark={this.state.leadTimeBenchmark}
+                                tooltipText="How long it takes to deliver a change to production?"
+                                valueLabel={`${this.state.meanLeadTimeLabel}`}
+                                setMetric={() => {
+                                    ReactGA.event({
+                                        category: 'Deployment Metrics',
+                                        action: 'Graph Bar Clicked',
+                                        label: 'Mean Lead Time',
+                                    })
+                                    this.setState({
+                                        benchmarkModalData: {
+                                            metric: 'LEAD_TIME',
+                                            valueLabel: `${this.state.meanLeadTimeLabel}`,
+                                            catgory: this.state.leadTimeBenchmark.name,
+                                            value: this.state.meanLeadTime,
+                                        },
+                                    })
+                                }}
+                            />
+                        </div>
+                        {this.renderRecoveryAndLeadTimeGraph()}
                     </div>
-                    <div className="deployment-metrics__recovery-graph">
-                        <ResponsiveContainer>
-                            <BarChart data={this.state.recoveryTimeGraph}>
-                                <Tooltip cursor={{ fill: 'var(--Y100)' }} content={<RecoveryTimeTooltip />} />
-                                <Legend
-                                    verticalAlign="top"
-                                    align="left"
-                                    height={134}
-                                    content={
-                                        <RecoveryAndLeadTimeGraphLegend
-                                            noFailures={this.state.recoveryTimeGraph.length === 0}
-                                            label="Mean Time to Recovery"
-                                            setMetric={() => {
-                                                ReactGA.event({
-                                                    category: 'Deployment Metrics',
-                                                    action: 'Graph Bar Clicked',
-                                                    label: 'Mean Time To Recovery',
-                                                })
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'RECOVERY_TIME',
-                                                        valueLabel: `${this.state.meanRecoveryTimeLabel}`,
-                                                        catgory: this.state.recoveryTimeBenchmark.name,
-                                                        value: this.state.meanRecoveryTime,
-                                                    },
-                                                })
-                                            }}
-                                            benchmark={this.state.recoveryTimeBenchmark}
-                                            tooltipText="How long does it take to fix a failed pipeline?"
-                                            valueLabel={`${this.state.meanRecoveryTimeLabel}`}
-                                        />
-                                    }
-                                />
-                                <XAxis
-                                    dataKey="xAxisLabel"
-                                    tickLine={false}
-                                    tick={false}
-                                    axisLine={{ stroke: 'var(--Y300)' }}
-                                >
-                                    <Label position="insideBottomLeft" offset={15} content={recoveryTimeLabel} />
-                                </XAxis>
-                                <YAxis type="number" dataKey="recoveryTime" hide />
-                                <Bar
-                                    dataKey="recoveryTime"
-                                    fill="var(--Y300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        // NOTE: startDate, and endDate [releasetTime-2, releaseTime+2]
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: moment(data.releaseTime),
-                                                endDate: moment(data.releaseTime).add(2, 'seconds'),
-                                            },
-                                        })
-                                    }}
-                                />
-                                {this.state.recoveryTimeBenchmark ? (
-                                    <ReferenceLine
-                                        y={this.state.recoveryTimeBenchmark.targetValue}
-                                        stroke={this.state.recoveryTimeBenchmark.color}
-                                        strokeWidth="0.5"
-                                        label=""
-                                    />
-                                ) : null}
-                                <ReferenceLine
-                                    y={this.state.meanRecoveryTime}
-                                    stroke="var(--N900)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="3 3"
-                                    label=""
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
+                    <div className="deployment-metrics__recovery-graph flexbox-col">
+                        <div className="mb-12">
+                            <RecoveryAndLeadTimeGraphLegend
+                                noFailures={this.state.recoveryTimeGraph.length === 0}
+                                label="Mean Time to Recovery"
+                                setMetric={() => {
+                                    ReactGA.event({
+                                        category: 'Deployment Metrics',
+                                        action: 'Graph Bar Clicked',
+                                        label: 'Mean Time To Recovery',
+                                    })
+                                    this.setState({
+                                        benchmarkModalData: {
+                                            metric: 'RECOVERY_TIME',
+                                            valueLabel: `${this.state.meanRecoveryTimeLabel}`,
+                                            catgory: this.state.recoveryTimeBenchmark.name,
+                                            value: this.state.meanRecoveryTime,
+                                        },
+                                    })
+                                }}
+                                benchmark={this.state.recoveryTimeBenchmark}
+                                tooltipText="How long does it take to fix a failed pipeline?"
+                                valueLabel={`${this.state.meanRecoveryTimeLabel}`}
+                            />
+                        </div>
+                        {this.renderMeanTimeToRecoveryChart()}
                     </div>
                 </div>
             </>
+        )
+    }
+
+    private renderDeploymentFrequencyChart() {
+        const freqData = this.state.frequencyAndLeadTimeGraph
+        const xAxisLabels = freqData.map((d) => d.xAxisLabel)
+        const datasets: SimpleDataset[] = [
+            {
+                datasetName: 'Failures',
+                yAxisValues: freqData.map((d) => d.failures ?? 0),
+                backgroundColor: 'CoralRed300' as ChartColorKey,
+            },
+            {
+                datasetName: 'Success',
+                yAxisValues: freqData.map((d) => d.success ?? 0),
+                backgroundColor: 'LimeGreen300' as ChartColorKey,
+            },
+        ]
+        return (
+            <div className="flex dc__no-shrink">
+                <Chart
+                    id="deployment-frequency"
+                    type="stackedBar"
+                    xAxisLabels={xAxisLabels}
+                    hideXAxisLabels
+                    datasets={datasets}
+                    yAxisMax={this.state.maxFrequency}
+                    onChartClick={(_evt, elements) => {
+                        if (!elements || elements.length === 0) return
+                        const index = elements[0].index
+                        const d = freqData[index]
+                        if (!d) return
+                        this.setState({
+                            filterBy: {
+                                startDate: moment(d.startTime),
+                                endDate: moment(d.endTime),
+                            },
+                        })
+                    }}
+                />
+            </div>
+        )
+    }
+
+    private renderRecoveryAndLeadTimeGraph() {
+        const data = this.state.frequencyAndLeadTimeGraph
+        const xAxisLabels = data.map((d) => d.xAxisLabel)
+        const datasets: SimpleDataset[] = [
+            {
+                datasetName: 'Mean Lead Time',
+                yAxisValues: data.map((d) => d.maxLeadTime ?? 0),
+                backgroundColor: 'SkyBlue300' as ChartColorKey,
+            },
+        ]
+        return (
+            <div className="flex dc__no-shrink">
+                <Chart
+                    id="mean-lead-time"
+                    type="stackedBar"
+                    xAxisLabels={xAxisLabels}
+                    hideXAxisLabels
+                    datasets={datasets}
+                    onChartClick={(_evt, elements) => {
+                        if (!elements || elements.length === 0) return
+                        const index = elements[0].index
+                        const d = data[index]
+                        if (!d) return
+                        this.setState({
+                            filterBy: {
+                                startDate: moment(d.startTime),
+                                endDate: moment(d.endTime),
+                            },
+                        })
+                    }}
+                />
+            </div>
+        )
+    }
+
+    private renderMeanTimeToRecoveryChart() {
+        type RecoveryPoint = { xAxisLabel?: string; recoveryTime: number; releaseTime?: number }
+        const data = this.state.recoveryTimeGraph as unknown as RecoveryPoint[]
+        const xAxisLabels = data.map((d) => d.xAxisLabel ?? '')
+        const datasets: SimpleDataset[] = [
+            {
+                datasetName: 'Mean Time to Recovery',
+                yAxisValues: data.map((d) => d.recoveryTime ?? 0),
+                backgroundColor: 'GoldenYellow300' as ChartColorKey,
+            },
+        ]
+
+        return (
+            <div className="flex dc__no-shrink">
+                <Chart
+                    id="mean-time-to-recovery"
+                    type="stackedBar"
+                    xAxisLabels={xAxisLabels}
+                    hideXAxisLabels
+                    datasets={datasets}
+                    onChartClick={(_evt, elements) => {
+                        if (!elements || elements.length === 0) return
+                        const index = elements[0].index
+                        const d = data[index]
+                        if (!d) return
+                        // NOTE: startDate, and endDate [releaseTime-2, releaseTime+2]
+                        this.setState({
+                            filterBy: {
+                                startDate: d.releaseTime ? moment(d.releaseTime) : undefined,
+                                endDate: d.releaseTime ? moment(d.releaseTime).add(2, 'seconds') : undefined,
+                            },
+                        })
+                    }}
+                />
+            </div>
         )
     }
 
@@ -622,7 +578,11 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
             return this.renderNoEnvironmentView()
         }
-        if (this.state.view === ViewType.FORM && (!this.props.match.params.envId || !(this.state.environments ?? []).find((env) => env.value === +this.props.match.params.envId))) {
+        if (
+            this.state.view === ViewType.FORM &&
+            (!this.props.match.params.envId ||
+                !(this.state.environments ?? []).find((env) => env.value === +this.props.match.params.envId))
+        ) {
             return this.renderSelectEnvironmentView()
         }
         if (this.state.view === ViewType.FORM && this.state.frequencyAndLeadTimeGraph.length === 0) {
