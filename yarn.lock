@@ -3973,15 +3973,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-csv@npm:^1.1.3":
-  version: 1.1.10
-  resolution: "@types/react-csv@npm:1.1.10"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10c0/58d300aacccc70c67d2df538726983b4483f3b446db67687baa0026bd4d562cbb956a47eab49516bbe22b9bf8e9b92d1e28f608361a77b2ffa36825bd9c72295
-  languageName: node
-  linkType: hard
-
 "@types/react-dates@npm:^21.8.6":
   version: 21.8.6
   resolution: "@types/react-dates@npm:21.8.6"
@@ -5756,7 +5747,6 @@ __metadata:
     "@types/jest": "npm:^27.4.1"
     "@types/node": "npm:20.11.0"
     "@types/react": "npm:17.0.39"
-    "@types/react-csv": "npm:^1.1.3"
     "@types/react-dates": "npm:^21.8.6"
     "@types/react-dom": "npm:17.0.13"
     "@types/react-router-dom": "npm:^5.3.3"
@@ -5795,7 +5785,6 @@ __metadata:
     prettier: "npm:^3.1.1"
     query-string: "npm:^7.1.1"
     react: "npm:^17.0.2"
-    react-csv: "npm:^2.2.2"
     react-dates: "npm:^21.8.0"
     react-dom: "npm:^17.0.2"
     react-draggable: "npm:^4.4.5"
@@ -9830,13 +9819,6 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10c0/709a0f3c41748018e4c128f2c60db1360b8c5d973d7532d99554adf7bd4b3b377d271b4feab4f7cd9018c9e7baf54138fc324fa1cca2322b89e2d2784f2b06be
-  languageName: node
-  linkType: hard
-
-"react-csv@npm:^2.2.2":
-  version: 2.2.2
-  resolution: "react-csv@npm:2.2.2"
-  checksum: 10c0/287e7ba2085a32a0e65d7a19b9e063e43f06f75ab6ebc18bb52b518007a1d6ec5f5ce33fc7c4e290e3ea41cfb251657b6e62aadadc8d7ffcef7e53d43bf3eb69
   languageName: node
   linkType: hard
 
