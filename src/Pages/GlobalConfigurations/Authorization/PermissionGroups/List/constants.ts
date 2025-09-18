@@ -43,3 +43,14 @@ export const GROUP_EXPORT_HEADERS: ExportToCsvProps<keyof ExportPermissionGroupD
     { label: 'Application', key: 'application' },
     { label: 'Role', key: 'role' },
 ]
+
+export const GROUP_EXPORT_HEADER_ROW = {
+    groupName: 'Group Name',
+    groupId: 'Group ID',
+    description: 'Description',
+    superAdmin: 'Super admin',
+    project: 'Project',
+    environment: 'Environment',
+    application: 'Application',
+    role: 'Role',
+}

@@ -16,10 +16,9 @@
 
 import { ExportToCsv } from '@devtron-labs/devtron-fe-common-lib'
 
-import { GROUP_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
-import { GROUP_EXPORT_HEADERS } from './constants'
+import { GROUP_EXPORT_HEADER_ROW, GROUP_EXPORT_HEADERS } from './constants'
 import { ExportPermissionGroupDataType, PermissionGroupListHeaderProps } from './types'
 
 const ExportPermissionGroupsToCsv = ({

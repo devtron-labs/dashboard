@@ -19,11 +19,10 @@ import { useState } from 'react'
 import { ExportToCsv, ExportToCsvProps, getFormattedUTCTimeForExport } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { USER_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
-import { USER_EXPORT_HEADERS } from './constants'
+import { USER_EXPORT_HEADER_ROW, USER_EXPORT_HEADERS } from './constants'
 import ExportConfigurationDialog from './ExportConfigurationDialog'
 import { ExportConfigurationDialogProps, ExportUserPermissionCSVDataType, UserPermissionListHeaderProps } from './types'
 
