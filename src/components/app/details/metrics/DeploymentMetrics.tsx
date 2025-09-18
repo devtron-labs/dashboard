@@ -278,8 +278,8 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         return (
             <>
                 {this.renderInputs()}
-                <div className="deployment-metrics__graphs">
-                    <div className="deployment-metrics__frequency-graph flexbox-col">
+                <div className="deployment-metrics__graphs dc__gap-12">
+                    <div className="deployment-metrics__frequency-graph dc__grid">
                         <div className="mb-12">
                             <FrequencyGraphLegend
                                 noFailures={this.state.recoveryTimeGraph.length === 0}
@@ -317,7 +317,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                         </div>
                         {this.renderDeploymentFrequencyChart()}
                     </div>
-                    <div className="deployment-metrics__lead-graph flexbox-col">
+                    <div className="deployment-metrics__lead-graph dc__grid">
                         <div className="mb-12">
                             <RecoveryAndLeadTimeGraphLegend
                                 noFailures={false}
@@ -344,7 +344,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                         </div>
                         {this.renderRecoveryAndLeadTimeGraph()}
                     </div>
-                    <div className="deployment-metrics__recovery-graph flexbox-col">
+                    <div className="deployment-metrics__recovery-graph dc__grid">
                         <div className="mb-12">
                             <RecoveryAndLeadTimeGraphLegend
                                 noFailures={this.state.recoveryTimeGraph.length === 0}
@@ -400,6 +400,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                     hideXAxisLabels
                     datasets={datasets}
                     yAxisMax={this.state.maxFrequency}
+                    averageLineValue={this.state.avgFrequency}
                     onChartClick={(_evt, elements) => {
                         if (!elements || elements.length === 0) return
                         const index = elements[0].index
@@ -422,7 +423,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         const xAxisLabels = data.map((d) => d.xAxisLabel)
         const datasets: SimpleDataset[] = [
             {
-                datasetName: 'Mean Lead Time',
+                datasetName: 'Max Lead Time',
                 yAxisValues: data.map((d) => d.maxLeadTime ?? 0),
                 backgroundColor: 'SkyBlue300' as ChartColorKey,
             },
@@ -435,6 +436,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                     xAxisLabels={xAxisLabels}
                     hideXAxisLabels
                     datasets={datasets}
+                    averageLineValue={this.state.frequencyBenchmark}
                     onChartClick={(_evt, elements) => {
                         if (!elements || elements.length === 0) return
                         const index = elements[0].index
@@ -458,7 +460,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         const xAxisLabels = data.map((d) => d.xAxisLabel ?? '')
         const datasets: SimpleDataset[] = [
             {
-                datasetName: 'Mean Time to Recovery',
+                datasetName: 'Recovery Time for Failed Deployments',
                 yAxisValues: data.map((d) => d.recoveryTime ?? 0),
                 backgroundColor: 'GoldenYellow300' as ChartColorKey,
             },
@@ -472,6 +474,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                     xAxisLabels={xAxisLabels}
                     hideXAxisLabels
                     datasets={datasets}
+                    averageLineValue={this.state.meanRecoveryTime}
                     onChartClick={(_evt, elements) => {
                         if (!elements || elements.length === 0) return
                         const index = elements[0].index
