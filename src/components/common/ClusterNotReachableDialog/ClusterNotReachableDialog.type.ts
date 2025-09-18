@@ -18,4 +18,5 @@ export interface ClusterNotReachableDialogType {
     clusterName: string
     onClickCancel: () => void
     onClickDelete: () => void
+    isDeleting?: boolean
 }
