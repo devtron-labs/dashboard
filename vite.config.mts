@@ -31,7 +31,7 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 import { compression, defineAlgorithm } from 'vite-plugin-compression2'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
-const TARGET_URL = 'https://preview.devtron.ai/'
+const TARGET_URL = 'https://gadgeon-dashboard.devtron.info/';
 
 function reactVirtualized(): PluginOption {
     return {
@@ -96,7 +96,7 @@ const jsToBottomNoModule = () => {
 export default defineConfig(({ mode }) => {
     const secretsEnv = loadEnv('secrets', process.cwd(), '')
     const targetUrl = secretsEnv.VITE_TARGET_URL ?? TARGET_URL
-
+  const targetUrl1 = secretsEnv.VITE_TARGET_URL ?? TARGET_URL
     process.env = { ...process.env, ...loadEnv(mode, process.cwd(), ''), ...secretsEnv }
 
     const baseConfig: UserConfig = {
@@ -272,6 +272,10 @@ export default defineConfig(({ mode }) => {
             port: 3000,
             proxy: {
                 '/orchestrator': {
+                    target: targetUrl,
+                    changeOrigin: true,
+                },
+                '/athena': {
                     target: targetUrl,
                     changeOrigin: true,
                 },
