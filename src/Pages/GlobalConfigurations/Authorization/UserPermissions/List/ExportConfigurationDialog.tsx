@@ -46,12 +46,9 @@ const ExportConfigurationDialog = ({
         }))
     }
 
-    useEffect(
-        () => () => {
-            setSelectedConfig(initialConfig)
-        },
-        [],
-    )
+    useEffect(() => {
+        setSelectedConfig(initialConfig)
+    }, [])
 
     const handleProceedAction = () => {
         proceed(true)
