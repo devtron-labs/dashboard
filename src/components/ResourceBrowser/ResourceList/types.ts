@@ -168,7 +168,7 @@ export type DynamicTabComponentWrapperProps = Pick<
 
 export interface ResourceRecommenderTableViewWrapperProps
     extends TableViewWrapperProps<
-        unknown,
+        K8sResourceDetailDataType,
         FiltersTypeEnum.URL,
         ResourceFilterOptionsProps & {
             resourceListError: ServerErrors

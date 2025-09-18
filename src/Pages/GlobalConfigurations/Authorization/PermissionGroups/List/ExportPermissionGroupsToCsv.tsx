@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import { FILE_NAMES, GROUP_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'
-import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCsv'
+import { ExportToCsv } from '@devtron-labs/devtron-fe-common-lib'
+
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
-import { PermissionGroupListHeaderProps } from './types'
+import { GROUP_EXPORT_HEADER_ROW, GROUP_EXPORT_HEADERS } from './constants'
+import { ExportPermissionGroupDataType, PermissionGroupListHeaderProps } from './types'
 
 const ExportPermissionGroupsToCsv = ({
     disabled,
@@ -29,7 +30,7 @@ const ExportPermissionGroupsToCsv = ({
     /**
      * Provides the list of permission groups which have access to devtron applications
      */
-    const getPermissionGroupDataToExport = async () => {
+    const getPermissionGroupDataToExport = async (): Promise<ExportPermissionGroupDataType[]> => {
         const { permissionGroups } = await exportCsvPromise()
 
         const groupsList = permissionGroups.reduce((_groupsList, _group) => {
@@ -44,7 +45,7 @@ const ExportPermissionGroupsToCsv = ({
                 isRowAdded = true
             }
 
-            const _groupData = {
+            const _groupData: ExportPermissionGroupDataType = {
                 groupName: _group.name,
                 groupId: _group.id,
                 description: _group.description || '-',
@@ -75,11 +76,14 @@ const ExportPermissionGroupsToCsv = ({
     }
 
     return (
-        <ExportToCsv
+        <ExportToCsv<keyof ExportPermissionGroupDataType>
             disabled={disabled}
             apiPromise={getPermissionGroupDataToExport}
-            fileName={FILE_NAMES.Groups}
-            showOnlyIcon
+            fileName="Devtron Apps Permission Group"
+            triggerElementConfig={{
+                showOnlyIcon: true,
+            }}
+            headers={GROUP_EXPORT_HEADERS}
         />
     )
 }

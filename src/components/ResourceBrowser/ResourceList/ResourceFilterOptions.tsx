@@ -25,11 +25,9 @@ import {
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
     GVKOptionValueType,
-    Icon,
     Nodes,
     noop,
     OptionType,
-    ResourceRecommenderHeaderType,
     SearchBar,
     SegmentedControl,
     SegmentedControlProps,
@@ -41,8 +39,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as NamespaceIcon } from '@Icons/ic-env.svg'
-import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
-import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
 
 import { convertToOptionsList, importComponentFromFELibrary } from '../../common'
 import { NAMESPACE_NOT_APPLICABLE_OPTION, NAMESPACE_NOT_APPLICABLE_TEXT } from '../Constants'
@@ -51,11 +47,6 @@ import { ResourceFilterOptionsProps } from '../Types'
 import { K8sResourceListURLParams } from './types'
 
 const FilterButton = importComponentFromFELibrary('FilterButton', null, 'function')
-const getResourceRecommendationsCSVData = importComponentFromFELibrary(
-    'getResourceRecommendationsCSVData',
-    null,
-    'function',
-)
 const ResourceRecommenderActionMenu = importComponentFromFELibrary('ResourceRecommenderActionMenu', null, 'function')
 
 const ResourceFilterOptions = ({
@@ -71,7 +62,6 @@ const ResourceFilterOptions = ({
     updateSearchParams,
     filteredRows,
     gvkFilterConfig,
-    isResourceListLoading,
     resourceRecommenderConfig,
     selectedAPIVersionGVKFilter,
     selectedKindGVKFilter,
@@ -178,9 +168,6 @@ const ResourceFilterOptions = ({
             { redirectionMethod: 'replace' },
         )
     }
-
-    const getResourcesToExport = (): Promise<Record<ResourceRecommenderHeaderType, string>[]> =>
-        Promise.resolve(getResourceRecommendationsCSVData(filteredRows.map((row) => row.data)))
 
     const onNamespaceFilterKeyDown: SelectPickerProps['onKeyDown'] = (e) => {
         if (e.key === 'Escape' || e.key === 'Esc') {
@@ -299,21 +286,8 @@ const ResourceFilterOptions = ({
                         />
                     </div>
 
-                    {isResourceRecommender && ResourceRecommenderActionMenu && getResourceRecommendationsCSVData && (
-                        <ResourceRecommenderActionMenu {...resourceLastScannedOnDetails}>
-                            <ExportToCsv
-                                fileName={FILE_NAMES.ResourceRecommendations}
-                                disabled={isResourceListLoading}
-                                apiPromise={getResourcesToExport}
-                                triggerElementClassname="bg__hover dc__transparent flexbox dc__gap-8 px-8 py-6 w-100"
-                                hideExportResultModal
-                            >
-                                <span className="mt-2 flex dc__no-shrink">
-                                    <Icon name="ic-download" size={16} color="N800" />
-                                </span>
-                                <span className="cn-9 fs-13 fw-4 lh-1-5">Export CSV</span>
-                            </ExportToCsv>
-                        </ResourceRecommenderActionMenu>
+                    {isResourceRecommender && ResourceRecommenderActionMenu && (
+                        <ResourceRecommenderActionMenu {...resourceLastScannedOnDetails} filteredRows={filteredRows} />
                     )}
                 </div>
             </div>

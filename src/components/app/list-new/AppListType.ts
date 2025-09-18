@@ -223,3 +223,18 @@ export interface GetAppListFiltersParams {
     serverMode: SERVER_MODE
     selectedEnvironments: { label: string; value: string }[]
 }
+
+export interface ExportAppListDataType {
+    appName: string
+    appId: number | string
+    projectName: string
+    projectId: number | string
+    status: string
+    environmentName: string
+    environmentId: number | string
+    clusterName: string
+    clusterId: number | string
+    namespace: string
+    namespaceId: number | string
+    lastDeployedTime: string
+}

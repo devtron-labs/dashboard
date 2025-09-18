@@ -108,18 +108,24 @@ const UserPermissionList = () => {
 
     const showLoadingState = isLoading || getIsRequestAborted(error)
 
-    const getUserDataForExport: UserPermissionContainerProps['getUserDataForExport'] = (selectedConfig) =>
-        getUserList({
-            ...filterConfig,
-            showAll: true,
-            offset: null,
-            size: null,
-            sortBy: UserListSortableKeys.email,
-            sortOrder: SortingOrder.ASC,
-            ...(getUserTypeToFetchFromSelectedConfigOptions && {
-                typeToFetch: getUserTypeToFetchFromSelectedConfigOptions(selectedConfig),
-            }),
-        })
+    const getUserDataForExport: UserPermissionContainerProps['getUserDataForExport'] = (
+        selectedConfig,
+        signal: AbortSignal,
+    ) =>
+        getUserList(
+            {
+                ...filterConfig,
+                showAll: true,
+                offset: null,
+                size: null,
+                sortBy: UserListSortableKeys.email,
+                sortOrder: SortingOrder.ASC,
+                ...(getUserTypeToFetchFromSelectedConfigOptions && {
+                    typeToFetch: getUserTypeToFetchFromSelectedConfigOptions(selectedConfig),
+                }),
+            },
+            signal,
+        )
 
     const getSelectAllDialogStatus = () => {
         // Set to show the modal, the function is called only if there is an existing selection,

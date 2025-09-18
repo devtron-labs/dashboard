@@ -92,7 +92,10 @@ export interface ClusterOptionType extends OptionType {
 }
 
 export interface ResourceFilterOptionsProps
-    extends Pick<TableViewWrapperProps<unknown, FiltersTypeEnum.URL>, 'updateSearchParams' | 'filteredRows'>,
+    extends Pick<
+            TableViewWrapperProps<K8sResourceDetailDataType, FiltersTypeEnum.URL>,
+            'updateSearchParams' | 'filteredRows'
+        >,
         Partial<Pick<K8sResourceListFilterType, 'eventType'>> {
     selectedResource: ApiResourceGroupType
     selectedCluster?: ClusterOptionType
@@ -107,7 +110,6 @@ export interface ResourceFilterOptionsProps
      * @default undefined
      */
     searchPlaceholder?: string
-    isResourceListLoading?: boolean
     gvkFilterConfig?: {
         gvkOptions: GroupBase<SelectPickerOptionType<GVKOptionValueType>>[]
         areGVKOptionsLoading: boolean

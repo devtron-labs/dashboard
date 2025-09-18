@@ -58,3 +58,14 @@ export interface UserPermissionTableProps
     showPagination: boolean
     isActionsDisabled: boolean
 }
+
+export interface ExportPermissionGroupDataType {
+    groupName: string
+    groupId: number
+    description: string
+    superAdmin: boolean
+    project: string
+    environment: string
+    application: string
+    role: string
+}
