@@ -37,7 +37,13 @@ import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
 import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
 import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
 
-export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
+
+
+export const getAppList = (request, options?: APIOptions) => {
+    // Use ATHENA_ROOT instead of ORCHESTRATOR_ROOT for app list API
+    const athenaUrl = `${window.__ATHENA_ROOT__}/${Routes.APP_LIST}`
+    return post(athenaUrl, request, options)
+}
 
 export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
     if (!group) {
