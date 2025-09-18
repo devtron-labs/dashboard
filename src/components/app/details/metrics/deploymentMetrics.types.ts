@@ -17,6 +17,8 @@
 import { RouteComponentProps } from 'react-router-dom'
 import { Moment } from 'moment'
 
+import { ChartColorKey } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+
 export interface GraphType {
     xAxisLabel: string
     frequency: number
@@ -43,6 +45,14 @@ export interface Environment {
     deploymentAppDeleteRequest?: boolean
 }
 
+export interface BenchmarkType {
+    color: ChartColorKey | ''
+    name: string
+    targetName: string
+    targetLabel?: string
+    targetValue: number
+}
+
 export interface DeploymentMetricsState {
     code: number
     view: string
@@ -64,18 +74,18 @@ export interface DeploymentMetricsState {
     maxFrequency: number
     totalDeployments: number
     failedDeployments: number
-    frequencyBenchmark: any
+    frequencyBenchmark: BenchmarkType
 
     failureRate: number
-    failureRateBenchmark: any
+    failureRateBenchmark: BenchmarkType
 
     meanLeadTime: number
     meanLeadTimeLabel: string
-    leadTimeBenchmark: any
+    leadTimeBenchmark: BenchmarkType
 
     meanRecoveryTime: number
     meanRecoveryTimeLabel: string
-    recoveryTimeBenchmark: any
+    recoveryTimeBenchmark: BenchmarkType
 
     statusFilter: number
 

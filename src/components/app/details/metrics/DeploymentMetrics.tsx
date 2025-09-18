@@ -398,8 +398,17 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                     xAxisLabels={xAxisLabels}
                     hideXAxisLabels
                     datasets={datasets}
-                    yAxisMax={this.state.maxFrequency}
-                    averageLineValue={this.state.avgFrequency}
+                    referenceLines={[
+                        ...(this.state.frequencyBenchmark
+                            ? [
+                                  {
+                                      value: this.state.frequencyBenchmark.targetValue,
+                                      color: this.state.frequencyBenchmark.color as ChartColorKey,
+                                  },
+                              ]
+                            : []),
+                        { value: this.state.avgFrequency },
+                    ]}
                     onChartClick={(_evt, elements) => {
                         if (!elements || elements.length === 0) return
                         const index = elements[0].index
@@ -435,7 +444,17 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                     xAxisLabels={xAxisLabels}
                     hideXAxisLabels
                     datasets={datasets}
-                    averageLineValue={this.state.frequencyBenchmark}
+                    referenceLines={[
+                        ...(this.state.leadTimeBenchmark
+                            ? [
+                                  {
+                                      value: this.state.leadTimeBenchmark.targetValue,
+                                      color: this.state.leadTimeBenchmark.color as ChartColorKey,
+                                  },
+                              ]
+                            : []),
+                        { value: this.state.meanLeadTime },
+                    ]}
                     onChartClick={(_evt, elements) => {
                         if (!elements || elements.length === 0) return
                         const index = elements[0].index
@@ -473,7 +492,17 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                     xAxisLabels={xAxisLabels}
                     hideXAxisLabels
                     datasets={datasets}
-                    averageLineValue={this.state.meanRecoveryTime}
+                    referenceLines={[
+                        ...(this.state.recoveryTimeBenchmark
+                            ? [
+                                  {
+                                      value: this.state.recoveryTimeBenchmark.targetValue,
+                                      color: this.state.recoveryTimeBenchmark.color as ChartColorKey,
+                                  },
+                              ]
+                            : []),
+                        { value: this.state.meanRecoveryTime },
+                    ]}
                     onChartClick={(_evt, elements) => {
                         if (!elements || elements.length === 0) return
                         const index = elements[0].index

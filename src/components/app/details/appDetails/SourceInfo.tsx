@@ -158,7 +158,7 @@ export const SourceInfo = ({
             loadingCards.push(<LoadingCard key={i} />)
         }
 
-        return <div className="flex left mb-16">{loadingCards}</div>
+        return <div className="flex left mb-16 ml-20">{loadingCards}</div>
     }
 
     const onClickSliderVerticalButton = () => {
