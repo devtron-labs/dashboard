@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import { ExportToCsvProps } from '@devtron-labs/devtron-fe-common-lib'
+
 import { DEFAULT_SHIMMER_LOADING_TABLE_ROWS } from '../../../../../config'
 import { PermissionGroup } from '../../types'
+import { ExportPermissionGroupDataType } from './types'
 
 export const permissionGroupLoading: PermissionGroup[] = Array.from(
     Array(DEFAULT_SHIMMER_LOADING_TABLE_ROWS).keys(),
@@ -29,3 +32,14 @@ export const permissionGroupLoading: PermissionGroup[] = Array.from(
 export enum SortableKeys {
     name = 'name',
 }
+
+export const GROUP_EXPORT_HEADERS: ExportToCsvProps<keyof ExportPermissionGroupDataType>['headers'] = [
+    { label: 'Group Name', key: 'groupName' },
+    { label: 'Group ID', key: 'groupId' },
+    { label: 'Description', key: 'description' },
+    { label: 'Super admin', key: 'superAdmin' },
+    { label: 'Project', key: 'project' },
+    { label: 'Environment', key: 'environment' },
+    { label: 'Application', key: 'application' },
+    { label: 'Role', key: 'role' },
+]
