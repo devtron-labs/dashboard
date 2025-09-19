@@ -24,6 +24,7 @@ import {
     DeploymentAppTypes,
     getIsRequestAborted,
     abortPreviousRequests,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getArgoAppDetail } from '../external-apps/ExternalAppService'
 import { checkIfToRefetchData, deleteRefetchDataFromUrl } from '../util/URLUtil'
@@ -40,6 +41,8 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
     const [isLoading, setIsLoading] = useState(true)
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
+
+    const handledFirstCall = useRef(false)
 
     let isAPICallInProgress = false
 
@@ -114,7 +117,11 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
             .catch((errors: ServerErrors) => {
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    setErrorResponseCode(errors.code)
+
+                    if (!handledFirstCall.current || errors.code === API_STATUS_CODES.NOT_FOUND) {
+                        setErrorResponseCode(errors.code)
+                    }
+
                     isAPICallInProgress = false
                     handleInitiatePolling()
                 }
@@ -123,6 +130,7 @@ const ExternalArgoAppDetail = ({ appName, clusterId, isExternalApp, namespace }:
                 setIsLoading(false)
                 isAPICallInProgress = false
                 setIsReloadResourceTreeInProgress(false)
+                handledFirstCall.current = true
             })
     }
 

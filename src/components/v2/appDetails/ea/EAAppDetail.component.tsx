@@ -24,6 +24,7 @@ import {
     DeploymentAppTypes,
     getIsRequestAborted,
     abortPreviousRequests,
+    API_STATUS_CODES,
 } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { sortOptionsByValue } from '../../../common'
@@ -54,6 +55,7 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
 
     const abortControllerRef = useRef<AbortController>(new AbortController())
+    const handledFirstCall = useRef(false)
 
     let isAPICallInProgress = false
 
@@ -189,12 +191,15 @@ const ExternalAppDetail = ({ appId, appName, isExternalApp }) => {
 
                 if (!getIsRequestAborted(errors)) {
                     showError(errors)
-                    setErrorResponseCode(errors.code)
+                    if (!handledFirstCall.current || errors.code === API_STATUS_CODES.NOT_FOUND) {
+                        setErrorResponseCode(errors.code)
+                    }
                     handleInitiatePolling()
                 }
             })
             .finally(() => {
                 setIsReloadResourceTreeInProgress(false)
+                handledFirstCall.current = true
             })
     }
 

@@ -19,6 +19,7 @@ import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMa
 
 import {
     abortPreviousRequests,
+    API_STATUS_CODES,
     DetailsProgressing,
     ErrorScreenManager,
     getIsRequestAborted,
@@ -64,6 +65,7 @@ const RouterComponent = () => {
     const [isReloadResourceTreeInProgress, setIsReloadResourceTreeInProgress] = useState(false)
     const appDetailsRef = useRef({} as AppDetails)
     const isVirtualRef = useRef(false)
+    const handledFirstCall = useRef(false)
 
     useEffect(() => {
         IndexStore.setEnvDetails(EnvType.CHART, +params.appId, +params.envId)
@@ -126,8 +128,11 @@ const RouterComponent = () => {
             return
         }
 
-        setErrorResponseCode(e.code)
-        if (e.code === 404 && initTimer) {
+        if (!handledFirstCall.current || e.code === API_STATUS_CODES.NOT_FOUND) {
+            setErrorResponseCode(e.code)
+        }
+
+        if (e.code === API_STATUS_CODES.NOT_FOUND && initTimer) {
             clearTimeout(initTimer)
         }
     }
@@ -204,6 +209,8 @@ const RouterComponent = () => {
             if (!isAborted) {
                 handleInitiatePolling()
             }
+        }).finally(() => {
+            handledFirstCall.current = true
         })
     }
 
