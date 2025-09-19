@@ -212,7 +212,16 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     }
 
     const renderSideInfoColumn = () => {
-        const { appName, description, gitMaterials = [], createdOn, createdBy, projectName, chartUsed, templateConfig } = appMetaInfo
+        const {
+            appName,
+            description,
+            gitMaterials = [],
+            createdOn,
+            createdBy,
+            projectName,
+            chartUsed,
+            templateConfig,
+        } = appMetaInfo
 
         const handleSaveDescription = async (value: string) => {
             const payload: EditAppRequest = {
@@ -452,7 +461,13 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
-                {Catalog && <Catalog resourceId={appId} resourceType={getResourceKindFromAppType(appType)} />}
+                {Catalog && (
+                    <Catalog
+                        resourceId={appId}
+                        resourceType={getResourceKindFromAppType(appType)}
+                        catalogSchemaResourceId={appMetaInfo.catalogSchemaResourceId}
+                    />
+                )}
                 {DeploymentWindowOverview && (
                     <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
                 )}

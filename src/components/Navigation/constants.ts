@@ -52,13 +52,6 @@ export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems
         keywords: ['config'],
     },
     {
-        title: 'Catalog Frameworks',
-        dataTestId: 'click-on-configurations-catalog-frameworks',
-        id: 'application-management-configurations-catalog-frameworks',
-        href: COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CATALOG_FRAMEWORK,
-        keywords: ['config'],
-    },
-    {
         title: 'Scoped Variables',
         dataTestId: 'click-on-configurations-scoped-variables',
         id: 'application-management-configurations-scoped-variables',

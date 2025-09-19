@@ -14,7 +14,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import ChartRepo from '@Components/chartRepo/ChartRepo'
-import { importComponentFromFELibrary } from '@Components/common'
 import { APPLICATION_MANAGEMENT_CONFIGURATIONS } from '@Components/Navigation'
 import { AddNotification } from '@Components/notifications/AddNotification'
 import { URLS } from '@Config/routes'
@@ -30,8 +29,6 @@ const ScopedVariables = lazy(() => import('@Components/scopedVariables/ScopedVar
 const BuildInfra = lazy(() =>
     import('@Pages/GlobalConfigurations/BuildInfra').then((module) => ({ default: module.BuildInfra })),
 )
-
-const CatalogFramework = importComponentFromFELibrary('CatalogFramework')
 
 export const Configurations = () => {
     const { pathname } = useLocation()
@@ -115,14 +112,6 @@ export const Configurations = () => {
                         >
                             {(props) => <Notifications {...props} isSuperAdmin={isSuperAdmin} />}
                         </Route>
-                        {CatalogFramework && (
-                            <Route
-                                key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CATALOG_FRAMEWORK}
-                                path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CATALOG_FRAMEWORK}
-                            >
-                                <CatalogFramework isSuperAdmin={isSuperAdmin} />
-                            </Route>
-                        )}
                         {...serverMode !== SERVER_MODE.EA_ONLY &&
                             window._env_.ENABLE_SCOPED_VARIABLES && [
                                 <Route

@@ -107,8 +107,6 @@ interface GitMaterial {
 }
 
 export interface AppMetaInfo extends BaseAppMetaData, Partial<Pick<CreateAppFormStateType, 'templateConfig'>> {
-    appId: number
-    appName: string
     createdBy: string
     description: string
     createdOn: string
@@ -121,6 +119,7 @@ export interface AppMetaInfo extends BaseAppMetaData, Partial<Pick<CreateAppForm
     chartUsed?: ChartUsed
     note?: Note
     gitMaterials?: GitMaterial[]
+    catalogSchemaResourceId?: number
 }
 
 export interface ArtifactsCiJob {
