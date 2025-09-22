@@ -485,7 +485,7 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                         <Catalog
                             resourceId={clusterId}
                             resourceType={ResourceKindType.cluster}
-                            catalogSchemaResourceId={clusterDetails.catalogSchemaResourceId}
+                            catalogSchemaResourceId={clusterDetails?.catalogSchemaResourceId}
                         />
                     )}
                     <GenericDescription
