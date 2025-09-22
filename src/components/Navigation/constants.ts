@@ -273,14 +273,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
             },
             {
-                title: 'Catalog Framework',
-                dataTestId: 'catalog-framework',
-                id: 'infrastructure-management-catalog-framework',
-                icon: 'ic-file',
-                disabled: true,
-                href: '/dummy-url',
-            },
-            {
                 title: 'Resource Watcher',
                 dataTestId: 'resource-watcher',
                 id: 'infrastructure-management-resource-watcher',
