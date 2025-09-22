@@ -52,13 +52,6 @@ export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems
         keywords: ['config'],
     },
     {
-        title: 'Catalog Frameworks',
-        dataTestId: 'click-on-configurations-catalog-frameworks',
-        id: 'application-management-configurations-catalog-frameworks',
-        href: COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CATALOG_FRAMEWORK,
-        keywords: ['config'],
-    },
-    {
         title: 'Scoped Variables',
         dataTestId: 'click-on-configurations-scoped-variables',
         id: 'application-management-configurations-scoped-variables',
@@ -280,14 +273,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
             },
             {
-                title: 'Catalog Framework',
-                dataTestId: 'catalog-framework',
-                id: 'infrastructure-management-catalog-framework',
-                icon: 'ic-file',
-                disabled: true,
-                href: '/dummy-url',
-            },
-            {
                 title: 'Resource Watcher',
                 dataTestId: 'resource-watcher',
                 id: 'infrastructure-management-resource-watcher',
@@ -432,12 +417,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         title: 'Backup & Restore',
         id: 'backup-and-restore',
         icon: 'ic-database-backup',
+        disabled: true,
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'backup-and-restore-overview',
                 id: 'backup-and-restore-overview',
                 icon: 'ic-speedometer',
+                disabled: true,
                 href: COMMON_URLS.BACKUP_AND_RESTORE_OVERVIEW,
             },
             {
@@ -486,12 +473,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         id: 'ai-recommendations',
         title: 'AI Recommendations',
         icon: 'ic-openai',
+        disabled: true,
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
                 icon: 'ic-speedometer',
+                disabled: true,
                 href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
             },
         ],
