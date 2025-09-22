@@ -245,6 +245,7 @@ export const Navigation = ({
                             onClick={handleNavGroupClick(item)}
                             to={findActiveNavigationItemOfNavGroup(item.items)?.href}
                             onHover={handleNavGroupHover(item)}
+                            showTooltip={item.disabled}
                         />
                     ))}
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (

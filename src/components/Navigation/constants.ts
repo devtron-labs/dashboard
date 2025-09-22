@@ -417,12 +417,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         title: 'Backup & Restore',
         id: 'backup-and-restore',
         icon: 'ic-database-backup',
+        disabled: true,
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'backup-and-restore-overview',
                 id: 'backup-and-restore-overview',
                 icon: 'ic-speedometer',
+                disabled: true,
                 href: COMMON_URLS.BACKUP_AND_RESTORE_OVERVIEW,
             },
             {
@@ -471,12 +473,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         id: 'ai-recommendations',
         title: 'AI Recommendations',
         icon: 'ic-openai',
+        disabled: true,
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
                 icon: 'ic-speedometer',
+                disabled: true,
                 href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
             },
         ],
