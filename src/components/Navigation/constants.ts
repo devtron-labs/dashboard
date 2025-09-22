@@ -52,13 +52,6 @@ export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems
         keywords: ['config'],
     },
     {
-        title: 'Catalog Frameworks',
-        dataTestId: 'click-on-configurations-catalog-frameworks',
-        id: 'application-management-configurations-catalog-frameworks',
-        href: COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CATALOG_FRAMEWORK,
-        keywords: ['config'],
-    },
-    {
         title: 'Scoped Variables',
         dataTestId: 'click-on-configurations-scoped-variables',
         id: 'application-management-configurations-scoped-variables',
@@ -278,14 +271,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-resource-browser',
                 icon: 'ic-cube',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
-            },
-            {
-                title: 'Catalog Framework',
-                dataTestId: 'catalog-framework',
-                id: 'infrastructure-management-catalog-framework',
-                icon: 'ic-file',
-                disabled: true,
-                href: '/dummy-url',
             },
             {
                 title: 'Resource Watcher',

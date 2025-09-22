@@ -76,6 +76,8 @@ const EnvironmentSelectorComponent = ({
     const [forceDeleteDialogMessage, setForceDeleteDialogMessage] = useState<string>('')
     const [nonCascadeDeleteDialog, showNonCascadeDeleteDialog] = useState<boolean>(false)
     const [clusterName, setClusterName] = useState<string>('')
+    const [isDeleteLoading, setIsDeleteLoading] = useState<boolean>(false)
+
     const isGitops = appDetails?.deploymentAppType === DeploymentAppTypes.ARGO
     const isExternalArgo = appDetails.appType === AppType.EXTERNAL_ARGO_APP
     const isExternalFlux = appDetails.appType === AppType.EXTERNAL_FLUX_APP
@@ -150,6 +152,7 @@ const EnvironmentSelectorComponent = ({
 
     async function deleteResourceAction(deleteAction: DELETE_ACTION) {
         try {
+            setIsDeleteLoading(true)
             const response = await getDeleteApplicationApi(deleteAction)
             if (response.result.deleteResponse?.deleteInitiated || (isExternalApp && response.result?.success)) {
                 setShowDeleteConfirmation(false)
@@ -179,6 +182,8 @@ const EnvironmentSelectorComponent = ({
                 showForceDeleteDialog(true)
             }
             showError(error)
+        } finally {
+            setIsDeleteLoading(false)
         }
     }
 
@@ -376,6 +381,7 @@ const EnvironmentSelectorComponent = ({
                                     handleDelete={handleDelete}
                                     toggleConfirmation={setShowDeleteConfirmation}
                                     isCreateValueView={false}
+                                    disableButton={isDeleteLoading}
                                 />
                             )}
                         </div>
@@ -387,6 +393,7 @@ const EnvironmentSelectorComponent = ({
                             subtitle={forceDeleteDialogMessage}
                             onDelete={handleForceDelete}
                             closeConfirmationModal={closeForceConfirmationModal}
+                            isDeleting={isDeleteLoading}
                         />
                     )}
 
@@ -395,6 +402,7 @@ const EnvironmentSelectorComponent = ({
                             clusterName={clusterName}
                             onClickCancel={onClickHideNonCascadeDeletePopup}
                             onClickDelete={onClickNonCascadeDelete}
+                            isDeleting={isDeleteLoading}
                         />
                     )}
                 </div>
