@@ -19,7 +19,12 @@ import { ForceDeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-li
 import { NON_CASCADE_DELETE_DIALOG_INTERNAL_MESSAGE } from '../../../config/constantMessaging'
 import { ClusterNotReachableDialogType } from './ClusterNotReachableDialog.type'
 
-const ClusterNotReachableDialog = ({ clusterName, onClickCancel, onClickDelete }: ClusterNotReachableDialogType) => {
+const ClusterNotReachableDialog = ({
+    clusterName,
+    onClickCancel,
+    onClickDelete,
+    isDeleting,
+}: ClusterNotReachableDialogType) => {
     if (!clusterName) {
         return null
     }
@@ -34,6 +39,7 @@ const ClusterNotReachableDialog = ({ clusterName, onClickCancel, onClickDelete }
                 </p>
             }
             onDelete={onClickDelete}
+            isDeleting={isDeleting}
             closeConfirmationModal={onClickCancel}
         />
     )

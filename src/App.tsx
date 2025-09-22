@@ -23,6 +23,7 @@ import {
     BreadcrumbStore,
     DevtronProgressing,
     ErrorScreenManager,
+    setGlobalAPITimeout,
     showError,
     URLS as CommonURLS,
     useUserEmail,
@@ -147,6 +148,8 @@ const App = () => {
             setValidating(false)
             defaultRedirection()
         }
+
+        setGlobalAPITimeout(window._env_.GLOBAL_API_TIMEOUT)
     }, [])
 
     const renderRoutesWithErrorBoundary = () =>
