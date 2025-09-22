@@ -16,7 +16,7 @@
 
 import { MutableRefObject } from 'react'
 
-import { ClusterDetail } from '@devtron-labs/devtron-fe-common-lib'
+import { BulkSelectionIdentifiersType, ClusterDetail } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ClusterViewType {
     clusterOptions: ClusterDetail[]
@@ -24,6 +24,7 @@ export interface ClusterViewType {
     initialLoading: boolean
     refreshData: () => void
     parentRef: MutableRefObject<HTMLDivElement>
+    isClusterDetailListLoading: boolean
 }
 
 export interface ClusterListTypes {
@@ -39,4 +40,5 @@ export interface ClusterListRowTypes extends Omit<ClusterListTypes, 'filteredLis
 
 export interface ClusterSelectionBodyTypes extends ClusterViewType {
     filteredList: ClusterDetail[]
+    identifierMap: BulkSelectionIdentifiersType<ClusterDetail>
 }
