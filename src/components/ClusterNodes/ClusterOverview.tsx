@@ -481,7 +481,13 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
                     )}
                     {renderClusterError()}
                     {ClusterAddOns && <ClusterAddOns clusterId={clusterId} getAvailableCharts={getAvailableCharts} />}
-                    {Catalog && <Catalog resourceId={clusterId} resourceType={ResourceKindType.cluster} />}
+                    {Catalog && (
+                        <Catalog
+                            resourceId={clusterId}
+                            resourceType={ResourceKindType.cluster}
+                            catalogSchemaResourceId={clusterDetails?.catalogSchemaResourceId}
+                        />
+                    )}
                     <GenericDescription
                         isClusterTerminal
                         clusterId={clusterId}
