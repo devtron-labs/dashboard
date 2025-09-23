@@ -655,6 +655,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
                                                 CommonURLS.AI_RECOMMENDATIONS,
+                                                CommonURLS.DATA_PROTECTION,
                                             ]}
                                         >
                                             <EnterpriseRouter
