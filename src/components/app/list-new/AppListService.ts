@@ -30,6 +30,7 @@ import { Moment12HourFormat, Routes } from '../../../config'
 import {
     AppListFilterConfig,
     AppListPayloadType,
+    ExportAppListDataType,
     FluxCDTemplateType,
     GenericAppListResponse,
     GenericAppType,
@@ -67,7 +68,8 @@ export const getDevtronAppListDataToExport = (
     clusterList: Cluster[],
     projectList: Teams[],
     appCount: number,
-) => {
+    signal: AbortSignal,
+): Promise<ExportAppListDataType[]> => {
     const appListPayload: AppListPayloadType = {
         ...getDevtronAppListPayload(filterConfig, environmentList, namespaceList),
         offset: 0,
@@ -75,9 +77,9 @@ export const getDevtronAppListDataToExport = (
     } // Over riding size and offset as we need all list (no pagination)
     const clusterMap = new Map<string, number>()
     clusterList.forEach((cluster) => clusterMap.set(cluster.cluster_name, cluster.id))
-    return getAppList(appListPayload).then(({ result }) => {
+    return getAppList(appListPayload, { signal }).then(({ result }) => {
         if (result.appContainers) {
-            const _appDataList = []
+            const _appDataList: ExportAppListDataType[] = []
             for (const _app of result.appContainers) {
                 if (_app.environments) {
                     for (const _env of _app.environments) {
@@ -104,7 +106,7 @@ export const getDevtronAppListDataToExport = (
                         appId: _app.appId,
                         appName: _app.appName,
                         projectId: _app.projectId,
-                        projectName: projectList.find((project) => project.id === +_app.projectId) || '-',
+                        projectName: projectList.find((project) => project.id === +_app.projectId)?.name || '-',
                         environmentId: '-',
                         environmentName: '-',
                         clusterId: '-',

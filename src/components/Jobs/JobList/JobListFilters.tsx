@@ -15,18 +15,19 @@
  */
 
 import {
+    ExportToCsv,
+    ExportToCsvProps,
     FilterSelectPicker,
     SearchBar,
     SelectPickerOptionType,
     useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
-import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
-
 import { getAppListDataToExport } from '../Service'
 import { JobListFilterProps, JobListUrlFilters } from '../Types'
 import { getJobStatusLabelFromValue } from '../Utils'
+import { JOB_LIST_EXPORT_HEADERS } from './constants'
+import { ExportJobDataType } from './types'
 
 const JobListFilters = ({
     masterFilters,
@@ -40,7 +41,8 @@ const JobListFilters = ({
 }: JobListFilterProps) => {
     const { isSuperAdmin } = useGetUserRoles()
     const { searchKey, status, environment, project } = filterConfig
-    const getJobsDataToExport = async () => getAppListDataToExport(payload, searchKey, jobListCount)
+    const getJobsDataToExport: ExportToCsvProps<keyof ExportJobDataType>['apiPromise'] = async ({ signal }) =>
+        getAppListDataToExport(payload, searchKey, jobListCount, signal)
 
     const handleUpdateFilters = (filterKey: JobListUrlFilters) => (selectedOptions: SelectPickerOptionType[]) => {
         updateSearchParams({ [filterKey]: selectedOptions.map((option) => String(option.value)) })
@@ -108,10 +110,11 @@ const JobListFilters = ({
                 {isSuperAdmin && (
                     <>
                         <div className="dc__border-right h-16" />
-                        <ExportToCsv
+                        <ExportToCsv<keyof ExportJobDataType>
                             apiPromise={getJobsDataToExport}
-                            fileName={FILE_NAMES.Jobs}
+                            fileName="Devtron Jobs Data"
                             disabled={!jobListCount}
+                            headers={JOB_LIST_EXPORT_HEADERS}
                         />
                     </>
                 )}
