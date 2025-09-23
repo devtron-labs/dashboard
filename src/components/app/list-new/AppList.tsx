@@ -29,13 +29,14 @@ import {
 
 import {
     AppListConstants,
+    CoreAPI,
     FeatureTitleWithInfo,
     FilterChips,
-    get,
     getNamespaceListMin,
     handleUTCTime,
     HeaderWithCreateButton,
     ModuleNameMap,
+    noop,
     Progressing,
     TabGroup,
     TabProps,
@@ -85,9 +86,14 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const { serverMode, isSuperAdmin } = useMainContext()
     const { setCurrentAppName } = useAppContext()
 
+    const customGet = new CoreAPI({
+        host: '/proxy',
+        handleLogout: noop,
+    })
+
     useQuery({
         queryKey: ['proxy-kubelink-service'],
-        queryFn: () => get('/proxy/kubelink/sample'),
+        queryFn: () => customGet.get('kubelink/sample'),
     })
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
