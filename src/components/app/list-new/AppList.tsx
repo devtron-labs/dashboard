@@ -31,6 +31,7 @@ import {
     AppListConstants,
     FeatureTitleWithInfo,
     FilterChips,
+    get,
     getNamespaceListMin,
     handleUTCTime,
     HeaderWithCreateButton,
@@ -40,6 +41,7 @@ import {
     TabProps,
     useAsync,
     useMainContext,
+    useQuery,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -82,6 +84,11 @@ const AppList = ({ isArgoInstalled }: AppListPropType) => {
     const params = useParams<{ appType: string }>()
     const { serverMode, isSuperAdmin } = useMainContext()
     const { setCurrentAppName } = useAppContext()
+
+    useQuery({
+        queryKey: ['proxy-kubelink-service'],
+        queryFn: () => get('/proxy/kubelink/sample'),
+    })
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
