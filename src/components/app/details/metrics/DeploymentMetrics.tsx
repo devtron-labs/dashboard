@@ -19,7 +19,7 @@ import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import type { SimpleDataset, ChartColorKey } from '@devtron-labs/devtron-fe-common-lib'
+import type { SimpleDataset, ChartColorKey, ChartProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     EMPTY_STATE_STATUS,
@@ -378,16 +378,16 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
     private renderDeploymentFrequencyChart() {
         const freqData = this.state.frequencyAndLeadTimeGraph
         const xAxisLabels = freqData.map((d) => d.xAxisLabel)
-        const datasets: SimpleDataset[] = [
+        const datasets: (ChartProps & { type: 'stackedBar' })['datasets'] = [
             {
                 datasetName: 'Failures',
                 yAxisValues: freqData.map((d) => d.failures ?? 0),
-                backgroundColor: 'CoralRed300' as ChartColorKey,
+                color: 'CoralRed300' as ChartColorKey,
             },
             {
                 datasetName: 'Success',
                 yAxisValues: freqData.map((d) => d.success ?? 0),
-                backgroundColor: 'LimeGreen300' as ChartColorKey,
+                color: 'LimeGreen300' as ChartColorKey,
             },
         ]
         return (
@@ -409,9 +409,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                             : []),
                         { value: this.state.avgFrequency },
                     ]}
-                    onChartClick={(_evt, elements) => {
-                        if (!elements || elements.length === 0) return
-                        const index = elements[0].index
+                    onChartClick={(_, index) => {
                         const d = freqData[index]
                         if (!d) return
                         this.setState({
@@ -429,11 +427,11 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
     private renderRecoveryAndLeadTimeGraph() {
         const data = this.state.frequencyAndLeadTimeGraph
         const xAxisLabels = data.map((d) => d.xAxisLabel)
-        const datasets: SimpleDataset[] = [
+        const datasets: (ChartProps & { type: 'stackedBar' })['datasets'] = [
             {
                 datasetName: 'Max Lead Time',
                 yAxisValues: data.map((d) => d.maxLeadTime ?? 0),
-                backgroundColor: 'SkyBlue300' as ChartColorKey,
+                color: 'SkyBlue300' as ChartColorKey,
             },
         ]
         return (
@@ -455,9 +453,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                             : []),
                         { value: this.state.meanLeadTime },
                     ]}
-                    onChartClick={(_evt, elements) => {
-                        if (!elements || elements.length === 0) return
-                        const index = elements[0].index
+                    onChartClick={(_, index) => {
                         const d = data[index]
                         if (!d) return
                         this.setState({
@@ -476,11 +472,11 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         type RecoveryPoint = { xAxisLabel?: string; recoveryTime: number; releaseTime?: number }
         const data = this.state.recoveryTimeGraph as unknown as RecoveryPoint[]
         const xAxisLabels = data.map((d) => d.xAxisLabel ?? '')
-        const datasets: SimpleDataset[] = [
+        const datasets: (ChartProps & { type: 'stackedBar' })['datasets'] = [
             {
                 datasetName: 'Recovery Time for Failed Deployments',
                 yAxisValues: data.map((d) => d.recoveryTime ?? 0),
-                backgroundColor: 'GoldenYellow300' as ChartColorKey,
+                color: 'GoldenYellow300' as ChartColorKey,
             },
         ]
 
@@ -503,9 +499,7 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                             : []),
                         { value: this.state.meanRecoveryTime },
                     ]}
-                    onChartClick={(_evt, elements) => {
-                        if (!elements || elements.length === 0) return
-                        const index = elements[0].index
+                    onChartClick={(_, index) => {
                         const d = data[index]
                         if (!d) return
                         // NOTE: startDate, and endDate [releaseTime-2, releaseTime+2]

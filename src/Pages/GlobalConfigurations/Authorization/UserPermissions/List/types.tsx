@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+
 import {
     SearchBarProps,
+    SelectPickerOptionType,
     ServerError,
     UserListFilterParams,
     UserListSortableKeys,
@@ -23,8 +26,6 @@ import {
     UserTypeToFetchType,
     UseUrlFiltersReturnType,
 } from '@devtron-labs/devtron-fe-common-lib'
-
-import { ExportToCsvProps } from '@Components/common/ExportToCsv/types'
 
 import { getUserList } from '../../authorization.service'
 import { BulkSelectionActionWidgetProps, BulkSelectionModalConfig } from '../../Shared/components/BulkSelection'
@@ -47,7 +48,8 @@ export interface UserPermissionListHeaderProps {
     handleSearch: SearchBarProps['handleEnter']
     initialSearchText: SearchBarProps['initialSearchText']
     getDataToExport: (
-        ...params: Parameters<ExportToCsvProps<UserTypeToFetchType>['apiPromise']>
+        selectedConfig: Record<UserTypeToFetchType, boolean>,
+        signal: AbortSignal,
     ) => ReturnType<typeof getUserList>
     status: UserStatus[]
     handleStatusFilterChange: (status: UserStatus[]) => void
@@ -76,4 +78,33 @@ export interface UserPermissionTableProps
     isLoading: boolean
     showPagination: boolean
     isActionsDisabled: boolean
+}
+
+export interface ExportUserPermissionCSVDataType {
+    emailId: string
+    userId: number
+    status?: string
+    isDeleted?: boolean
+    lastLoginTime: string
+    superAdmin: boolean
+    group: string
+    project: string
+    environment: string
+    application: string
+    role: string
+    permissionStatus?: string
+    createdOn?: string
+    updatedOn?: string
+    deletedOn?: string
+}
+
+export interface ExportConfigurationDialogProps {
+    selectedConfig: Record<UserTypeToFetchType, boolean>
+    setSelectedConfig: Dispatch<SetStateAction<Record<UserTypeToFetchType, boolean>>>
+    initialConfig: Record<UserTypeToFetchType, boolean>
+    exportConfiguration: {
+        title: string
+        options: SelectPickerOptionType<UserTypeToFetchType>[]
+    }
+    proceed: (shouldProceed: boolean) => void
 }

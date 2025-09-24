@@ -23,7 +23,8 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    ClusterStatusType,
+    ClusterDetailListType,
+    ClusterStatusIcon,
     ComponentSizeType,
     Drawer,
     FiltersTypeEnum,
@@ -43,41 +44,18 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import {
-    Cluster,
     ClusterEnvTabs,
     ClusterListFields,
     ClusterRowData,
     DEFAULT_CLUSTER_ID,
     EditDeleteClusterProps,
 } from './cluster.type'
-import { getBulletColorAccToStatus } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
 import DeleteClusterConfirmationModal from './DeleteClusterConfirmationModal'
 import EditClusterDrawerContent from './EditClusterDrawerContent'
 
 const HibernationRulesModal = importComponentFromFELibrary('HibernationRulesModal', null, 'function')
 const VirtualClusterForm = importComponentFromFELibrary('VirtualClusterForm', null, 'function')
-
-export const ClusterIconWithStatus = ({
-    clusterStatus,
-    isVirtualCluster,
-}: {
-    clusterStatus: ClusterStatusType
-    isVirtualCluster: boolean
-}) => {
-    const statusColor = getBulletColorAccToStatus(clusterStatus)
-    return (
-        <span className="dc__position-rel dc__overflow-hidden icon-dim-24">
-            <Icon name="ic-bg-cluster" color={null} size={24} />
-            {!isVirtualCluster && (
-                <span
-                    className={`dc__position-abs dc__top-16 icon-dim-10 dc__border-radius-50-per dc__right-2--neg ${statusColor}`}
-                    style={{ border: '2px solid var(--N0)' }}
-                />
-            )}
-        </span>
-    )
-}
 
 export const ClusterActions = ({ clusterId, isVirtualCluster }: { clusterId: number; isVirtualCluster: boolean }) => {
     const { push } = useHistory()
@@ -241,7 +219,7 @@ export const ClusterListCellComponent: FunctionComponent<
         case ClusterListFields.ICON:
             return (
                 <div className="flex left py-10">
-                    <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
+                    <ClusterStatusIcon clusterStatus={status} isVirtualCluster={isVirtualCluster} />
                 </div>
             )
         case ClusterListFields.CLUSTER_NAME:
@@ -314,7 +292,7 @@ export const AddEnvironmentFromClusterName = ({
     handleClose,
     clusterList,
 }: {
-    clusterList: Cluster[]
+    clusterList: ClusterDetailListType[]
     reloadEnvironments: () => void
     handleClose: () => void
 }) => {
