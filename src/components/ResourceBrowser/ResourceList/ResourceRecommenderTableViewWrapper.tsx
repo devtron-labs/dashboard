@@ -26,7 +26,6 @@ export const ResourceRecommenderTableViewWrapper = ({
     searchKey,
     handleSearch,
     filteredRows,
-    isResourceListLoading,
     selectedResource,
     gvkFilterConfig,
     updateSearchParams,
@@ -42,7 +41,6 @@ export const ResourceRecommenderTableViewWrapper = ({
             setSearchText={handleSearch}
             searchPlaceholder="Search"
             filteredRows={filteredRows}
-            isResourceListLoading={isResourceListLoading}
             selectedResource={selectedResource}
             gvkFilterConfig={gvkFilterConfig}
             updateSearchParams={updateSearchParams}
