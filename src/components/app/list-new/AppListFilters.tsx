@@ -20,6 +20,8 @@ import ReactGA from 'react-ga4'
 import {
     AppListConstants,
     ComponentSizeType,
+    ExportToCsv,
+    ExportToCsvProps,
     FilterSelectPicker,
     GroupedFilterSelectPicker,
     GroupedFilterSelectPickerProps,
@@ -30,12 +32,14 @@ import {
     useGetUserRoles,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { FILE_NAMES } from '@Components/common/ExportToCsv/constants'
-import ExportToCsv from '@Components/common/ExportToCsv/ExportToCsv'
-
 import { getDevtronAppListDataToExport } from './AppListService'
 import { AppListFiltersProps, AppListUrlFilters, AppStatuses } from './AppListType'
-import { APP_STATUS_FILTER_OPTIONS, SELECT_CLUSTER_TIPPY, TEMPLATE_TYPE_FILTER_OPTIONS } from './Constants'
+import {
+    APP_STATUS_FILTER_OPTIONS,
+    APPLIST_EXPORT_HEADERS,
+    SELECT_CLUSTER_TIPPY,
+    TEMPLATE_TYPE_FILTER_OPTIONS,
+} from './Constants'
 import { getAppListFilters, getAppTabNameFromAppType, useFilterOptions } from './list.utils'
 
 const AppListFilters = ({
@@ -203,6 +207,34 @@ const AppListFilters = ({
             },
         }
 
+    const getExportToCsvApiPromise: ExportToCsvProps<(typeof APPLIST_EXPORT_HEADERS)[number]['key']>['apiPromise'] = ({
+        signal,
+    }) =>
+        getDevtronAppListDataToExport(
+            filterConfig,
+            appListFiltersResponse?.appListFilters.result.environments,
+            namespaceListResponse?.result,
+            appListFiltersResponse?.appListFilters.result.clusters,
+            appListFiltersResponse?.appListFilters.result.teams,
+            appCount,
+            signal,
+        )
+
+    const renderExportToCSV = () => {
+        if (!showExportCsvButton) {
+            return null
+        }
+
+        return (
+            <ExportToCsv<(typeof APPLIST_EXPORT_HEADERS)[number]['key']>
+                headers={APPLIST_EXPORT_HEADERS}
+                apiPromise={getExportToCsvApiPromise}
+                fileName="Devtron Apps"
+                disabled={!appCount}
+            />
+        )
+    }
+
     return (
         <div className="search-filter-section">
             <div className="flex left dc__gap-8">
@@ -251,22 +283,7 @@ const AppListFilters = ({
                 )}
             </div>
 
-            {window._env_.FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE && showExportCsvButton && (
-                <ExportToCsv
-                    apiPromise={() =>
-                        getDevtronAppListDataToExport(
-                            filterConfig,
-                            appListFiltersResponse?.appListFilters.result.environments,
-                            namespaceListResponse?.result,
-                            appListFiltersResponse?.appListFilters.result.clusters,
-                            appListFiltersResponse?.appListFilters.result.teams,
-                            appCount,
-                        )
-                    }
-                    fileName={FILE_NAMES.Apps}
-                    disabled={!appCount}
-                />
-            )}
+            {window._env_.FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE && renderExportToCSV()}
 
             {!window._env_.FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE && (
                 <div className="flexbox dc__gap-8 dc__align-items-center">
@@ -384,20 +401,7 @@ const AppListFilters = ({
                     {showExportCsvButton && (
                         <>
                             <div className="dc__border-right h-16" />
-                            <ExportToCsv
-                                apiPromise={() =>
-                                    getDevtronAppListDataToExport(
-                                        filterConfig,
-                                        appListFiltersResponse?.appListFilters.result.environments,
-                                        namespaceListResponse?.result,
-                                        appListFiltersResponse?.appListFilters.result.clusters,
-                                        appListFiltersResponse?.appListFilters.result.teams,
-                                        appCount,
-                                    )
-                                }
-                                fileName={FILE_NAMES.Apps}
-                                disabled={!appCount}
-                            />
+                            {renderExportToCSV()}
                         </>
                     )}
                 </div>
