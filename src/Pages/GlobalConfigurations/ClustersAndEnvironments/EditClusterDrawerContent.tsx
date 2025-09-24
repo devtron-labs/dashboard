@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { APIResponseHandler, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    APIResponseHandler,
+    ClusterProviderType,
+    noop,
+    ResponseType,
+    useAsync,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
@@ -27,6 +33,12 @@ const getSSHConfig: (
     ...props
 ) => Pick<EditClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
     importComponentFromFELibrary('getSSHConfig', noop, 'function')
+
+const getCloudProviderForCluster: (clusterId: number) => Promise<ClusterProviderType> = importComponentFromFELibrary(
+    'getCloudProviderForCluster',
+    null,
+    'function',
+)
 
 const EditClusterDrawerContent = ({
     handleModalClose,
@@ -42,23 +54,44 @@ const EditClusterDrawerContent = ({
     installationId,
     category,
     insecureSkipTlsVerify,
+    costModuleConfig,
 }: EditClusterDrawerContentProps) => {
-    const [isPrometheusAuthLoading, prometheusAuthResult, prometheusAuthError, reloadPrometheusAuth] = useAsync(
-        () => getCluster(+clusterId),
+    const getClusterMetadata = async (): Promise<{
+        prometheusAuthResult: ResponseType
+        clusterProvider: ClusterProviderType
+    }> => {
+        if (!clusterId) {
+            return { prometheusAuthResult: null, clusterProvider: null }
+        }
+
+        const [prometheusAuthResult, clusterProvider] = await Promise.all([
+            getCluster(+clusterId),
+            getCloudProviderForCluster ? getCloudProviderForCluster(+clusterId) : null,
+        ])
+        return { prometheusAuthResult, clusterProvider }
+    }
+
+    const [isMetadataLoading, metadata, metadataError, reloadMetadata] = useAsync(
+        () => getClusterMetadata(),
         [clusterId],
         !!clusterId,
     )
 
+    const { prometheusAuthResult, clusterProvider } = metadata || {
+        prometheusAuthResult: null,
+        cloudProvider: null,
+    }
+
     return (
         <APIResponseHandler
-            isLoading={isPrometheusAuthLoading}
+            isLoading={isMetadataLoading}
             progressingProps={{
                 pageLoader: true,
             }}
-            error={prometheusAuthError?.code}
+            error={metadataError?.code}
             errorScreenManagerProps={{
                 redirectURL: URLS.GLOBAL_CONFIG_CLUSTER,
-                reload: reloadPrometheusAuth,
+                reload: reloadMetadata,
             }}
         >
             <ClusterForm
@@ -76,6 +109,8 @@ const EditClusterDrawerContent = ({
                 isTlsConnection={!insecureSkipTlsVerify}
                 installationId={installationId}
                 category={category}
+                clusterProvider={clusterProvider}
+                costModuleConfig={costModuleConfig}
             />
         </APIResponseHandler>
     )

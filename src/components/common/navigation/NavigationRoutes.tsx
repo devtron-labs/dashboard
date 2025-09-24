@@ -526,6 +526,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             installationId={clusterDetails.installationId}
             category={clusterDetails.category}
             insecureSkipTlsVerify={clusterDetails.insecureSkipTlsVerify}
+            costModuleConfig={clusterDetails.costModuleConfig}
         />
     )
 

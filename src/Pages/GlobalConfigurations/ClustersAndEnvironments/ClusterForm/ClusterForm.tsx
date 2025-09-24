@@ -15,12 +15,15 @@
  */
 
 import { useEffect, useState } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
     AuthenticationType,
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ClusterCostModuleConfigDTO,
+    ClusterDetailListType,
     DEFAULT_SECRET_PLACEHOLDER,
     Icon,
     ModalSidebarPanel,
@@ -32,6 +35,7 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -76,10 +80,29 @@ const ClusterForm = ({
     isTlsConnection: initialIsTlsConnection = false,
     installationId,
     category,
+    clusterProvider,
+    costModuleConfig,
 }: ClusterFormProps) => {
-    const [clusterConfigTab, setClusterConfigTab] = useState<ClusterConfigTabEnum>(ClusterConfigTabEnum.CLUSTER_CONFIG)
+    const location = useLocation()
 
-    const [costModuleEnabled, setCostModuleEnabled] = useState(false)
+    const [clusterConfigTab, setClusterConfigTab] = useState<ClusterConfigTabEnum>(
+        id && location.pathname.includes(URLS.COST_VISIBILITY)
+            ? ClusterConfigTabEnum.COST_VISIBILITY
+            : ClusterConfigTabEnum.CLUSTER_CONFIG,
+    )
+
+    const [costModuleState, setCostModuleState] = useState<
+        Pick<ClusterDetailListType['costModuleConfig'], 'config' | 'enabled'>
+    >({
+        enabled: costModuleConfig?.enabled || false,
+        config: {
+            cloudProviderApiKey: costModuleConfig?.config?.cloudProviderApiKey || '',
+        },
+    })
+
+    const [costModuleErrorState, setCostModuleErrorState] = useState<{ cloudProviderApiKey: string }>({
+        cloudProviderApiKey: '',
+    })
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -159,6 +182,27 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
+    const getCostModulePayload = (): ClusterCostModuleConfigDTO | null => {
+        if (!costModuleState.enabled) {
+            return {
+                enabled: false,
+            }
+        }
+
+        if (clusterProvider === 'GCP' && costModuleState.config.cloudProviderApiKey) {
+            return {
+                enabled: true,
+                config: {
+                    cloudProviderApiKey: costModuleState.config.cloudProviderApiKey,
+                },
+            }
+        }
+
+        return {
+            enabled: true,
+        }
+    }
+
     const getClusterPayload = (state) => ({
         id,
         insecureSkipTlsVerify: !isTlsConnection,
@@ -189,6 +233,7 @@ const ClusterForm = ({
         },
         server_url: '',
         ...(getCategoryPayload ? getCategoryPayload(selectedCategory) : null),
+        ...(clusterProvider ? { costModuleConfig: getCostModulePayload() } : null),
     })
 
     const onValidation = async (state) => {
@@ -199,6 +244,19 @@ const ClusterForm = ({
         } else {
             payload.server_url = urlValue
         }
+
+        if (clusterProvider === 'GCP' && costModuleState.enabled && !costModuleState.config.cloudProviderApiKey) {
+            setCostModuleErrorState((prev) => ({
+                ...prev,
+                cloudProviderApiKey: 'Cloud Provider API Key is required',
+            }))
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Please provide Cloud Provider API Key to enable cost tracking',
+            })
+            return
+        }
+
         if (remoteConnectionMethod === RemoteConnectionType.Proxy) {
             let proxyUrlValue = state.proxyUrl?.value?.trim() ?? ''
             if (proxyUrlValue.endsWith('/')) {
@@ -404,6 +462,27 @@ const ClusterForm = ({
         setClusterConfigTab(tab)
     }
 
+    const toggleCostModule = () => {
+        setCostModuleState((prev) => ({
+            ...prev,
+            enabled: !prev.enabled,
+        }))
+    }
+
+    const handleProviderAPIKeyChange = (apiKey: string) => {
+        setCostModuleState((prev) => ({
+            ...prev,
+            config: {
+                cloudProviderApiKey: apiKey,
+            },
+        }))
+
+        setCostModuleErrorState((prev) => ({
+            ...prev,
+            cloudProviderApiKey: apiKey ? '' : 'Cloud Provider API Key is required',
+        }))
+    }
+
     const renderFooter = () => (
         <div className={`border__primary--top flexbox py-12 px-20 ${id ? 'dc__content-space' : 'dc__content-end'}`}>
             {id && (
@@ -490,8 +569,14 @@ const ClusterForm = ({
                             handleOnChange={handleOnChange}
                             onPrometheusAuthTypeChange={onPrometheusAuthTypeChange}
                             isGrafanaModuleInstalled={isGrafanaModuleInstalled}
-                            costModuleEnabled={costModuleEnabled}
-                            setCostModuleEnabled={setCostModuleEnabled}
+                            costModuleEnabled={costModuleState.enabled}
+                            toggleCostModule={toggleCostModule}
+                            installationStatus={costModuleConfig.installationStatus}
+                            installationError={costModuleConfig.installationError}
+                            clusterProvider={clusterProvider}
+                            handleProviderAPIKeyChange={handleProviderAPIKeyChange}
+                            providerAPIKey={costModuleState.config.cloudProviderApiKey || ''}
+                            providerAPIKeyError={costModuleErrorState.cloudProviderApiKey}
                         />
                     </div>
                 ) : null
@@ -517,7 +602,7 @@ const ClusterForm = ({
                             title="Cluster Configurations"
                             onClick={getTabSwitchHandler(ClusterConfigTabEnum.CLUSTER_CONFIG)}
                         />
-                        <div className="divder__secondary--horizontal" />
+                        <div className="divider__secondary--horizontal" />
                         <div className="flexbox-col">
                             <div className="px-8 py-4 fs-12 fw-6 lh-20 cn-7">INTEGRATIONS</div>
                             <ClusterFormNavButton
@@ -526,11 +611,11 @@ const ClusterForm = ({
                                 subtitle={prometheusToggleEnabled ? 'Enabled' : 'Off'}
                                 onClick={getTabSwitchHandler(ClusterConfigTabEnum.APPLICATION_MONITORING)}
                             />
-                            {ClusterCostConfig && (
+                            {ClusterCostConfig && id && (
                                 <ClusterFormNavButton
                                     isActive={clusterConfigTab === ClusterConfigTabEnum.COST_VISIBILITY}
                                     title="Cost Visibility"
-                                    subtitle={costModuleEnabled ? 'Enabled' : 'Off'}
+                                    subtitle={costModuleState.enabled ? 'Enabled' : 'Off'}
                                     onClick={getTabSwitchHandler(ClusterConfigTabEnum.COST_VISIBILITY)}
                                 />
                             )}

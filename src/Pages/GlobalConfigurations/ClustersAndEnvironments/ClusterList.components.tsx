@@ -348,6 +348,7 @@ export const EditCluster = ({ clusterList, reloadClusterList, handleClose }: Edi
                 installationId={cluster.installationId}
                 category={cluster.category}
                 insecureSkipTlsVerify={cluster.insecureSkipTlsVerify}
+                costModuleConfig={cluster.costModuleConfig}
             />
         )
     }
