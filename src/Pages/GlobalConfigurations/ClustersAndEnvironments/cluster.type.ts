@@ -24,6 +24,7 @@ import {
     EnvListMinDTO,
     FiltersTypeEnum,
     OptionType,
+    ResponseType,
     SelectPickerOptionType,
     TableProps,
     UseUrlFiltersReturnType,
@@ -369,4 +370,9 @@ export interface EditDeleteClusterProps {
     clusterList: ClusterDetailListType[]
     reloadClusterList: () => void
     handleClose: () => void
+}
+
+export interface EditClusterDrawerMetadataType {
+    prometheusAuthResult: ResponseType
+    clusterProvider: ClusterProviderType
 }

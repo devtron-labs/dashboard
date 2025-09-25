@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-import {
-    APIResponseHandler,
-    ClusterProviderType,
-    noop,
-    ResponseType,
-    useAsync,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { APIResponseHandler, ClusterProviderType, noop, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import ClusterForm from './ClusterForm/ClusterForm'
 import { getCluster } from './cluster.service'
-import { EditClusterDrawerContentProps, EditClusterFormProps } from './cluster.type'
+import { EditClusterDrawerContentProps, EditClusterDrawerMetadataType, EditClusterFormProps } from './cluster.type'
 
 const getSSHConfig: (
     ...props
@@ -56,10 +50,7 @@ const EditClusterDrawerContent = ({
     insecureSkipTlsVerify,
     costModuleConfig,
 }: EditClusterDrawerContentProps) => {
-    const getClusterMetadata = async (): Promise<{
-        prometheusAuthResult: ResponseType
-        clusterProvider: ClusterProviderType
-    }> => {
+    const getClusterMetadata = async (): Promise<EditClusterDrawerMetadataType> => {
         if (!clusterId) {
             return { prometheusAuthResult: null, clusterProvider: null }
         }
@@ -71,11 +62,16 @@ const EditClusterDrawerContent = ({
         return { prometheusAuthResult, clusterProvider }
     }
 
-    const [isMetadataLoading, metadata, metadataError, reloadMetadata] = useAsync(
-        () => getClusterMetadata(),
-        [clusterId],
-        !!clusterId,
-    )
+    const {
+        isFetching: isMetadataLoading,
+        data: metadata,
+        error: metadataError,
+        refetch: reloadMetadata,
+    } = useQuery<EditClusterDrawerMetadataType, EditClusterDrawerMetadataType, [string, number], false>({
+        queryKey: ['get-cluster-metadata', clusterId],
+        queryFn: () => getClusterMetadata(),
+        enabled: !!clusterId,
+    })
 
     const { prometheusAuthResult, clusterProvider } = metadata || {
         prometheusAuthResult: null,
@@ -88,8 +84,9 @@ const EditClusterDrawerContent = ({
             progressingProps={{
                 pageLoader: true,
             }}
-            error={metadataError?.code}
+            error={metadataError}
             errorScreenManagerProps={{
+                code: metadataError?.code,
                 redirectURL: URLS.GLOBAL_CONFIG_CLUSTER,
                 reload: reloadMetadata,
             }}
