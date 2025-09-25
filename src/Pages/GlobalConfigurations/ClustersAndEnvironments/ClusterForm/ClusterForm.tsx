@@ -22,7 +22,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    ClusterCostModuleConfigDTO,
+    ClusterCostModuleConfigPayload,
     ClusterDetailListType,
     DEFAULT_SECRET_PLACEHOLDER,
     Icon,
@@ -35,6 +35,7 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    Tooltip,
     URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -182,7 +183,7 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
-    const getCostModulePayload = (): ClusterCostModuleConfigDTO | null => {
+    const getCostModulePayload = (): ClusterCostModuleConfigPayload | null => {
         if (!costModuleState.enabled) {
             return {
                 enabled: false,
@@ -585,6 +586,31 @@ const ClusterForm = ({
         }
     }
 
+    const getCostNavSubtitle = () => {
+        if (!costModuleState.enabled) {
+            return 'Off'
+        }
+
+        if (costModuleConfig.installationStatus === 'Installing') {
+            return <span className="cy-7 fs-12">Installing...</span>
+        }
+
+        if (costModuleConfig.installationStatus === 'Failed') {
+            return (
+                <div className="flexbox dc__gap-4 dc__align-items-center">
+                    <Icon name="ic-error" size={14} color="R500" />
+                    <Tooltip content={costModuleConfig.installationError}>
+                        <span className="dc__truncate cr-5 fs-12">
+                            Installation Error: {costModuleConfig.installationError}
+                        </span>
+                    </Tooltip>
+                </div>
+            )
+        }
+
+        return 'Enabled'
+    }
+
     return (
         <>
             <div className="flexbox mh-0 flex-grow-1 dc__overflow-hidden">
@@ -615,7 +641,7 @@ const ClusterForm = ({
                                 <ClusterFormNavButton
                                     isActive={clusterConfigTab === ClusterConfigTabEnum.COST_VISIBILITY}
                                     title="Cost Visibility"
-                                    subtitle={costModuleState.enabled ? 'Enabled' : 'Off'}
+                                    subtitle={getCostNavSubtitle()}
                                     onClick={getTabSwitchHandler(ClusterConfigTabEnum.COST_VISIBILITY)}
                                 />
                             )}
