@@ -144,12 +144,8 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     const handleActionMenuClick: ActionMenuProps['onClick'] = (
         item: ActionMenuItemType<ClusterActionMenuOptionIdEnum>,
     ) => {
-        switch (item.id) {
-            case ClusterActionMenuOptionIdEnum.DELETE:
-                handleOpenDeleteModal()
-                break
-            default:
-                break
+        if (item.id === ClusterActionMenuOptionIdEnum.DELETE) {
+            handleOpenDeleteModal()
         }
     }
 

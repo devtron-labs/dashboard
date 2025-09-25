@@ -229,12 +229,8 @@ const EnvironmentSelectorComponent = ({
     const closeForceConfirmationModal = () => showForceDeleteDialog(false)
 
     const handleActionMenuClick: ActionMenuProps['onClick'] = (item) => {
-        switch (item.id) {
-            case ClusterActionMenuOptionIdEnum.DELETE:
-                showDeleteConfirmationPopup()
-                break
-            default:
-                break
+        if (item.id === ClusterActionMenuOptionIdEnum.DELETE) {
+            handleDelete()
         }
     }
 

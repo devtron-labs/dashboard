@@ -79,7 +79,6 @@ import BulkSourceChange from './BulkSourceChange'
 import { getSelectedNodeAndAppId } from './utils'
 
 import './EnvTriggerView.scss'
-import { ActionMenuItemIconType } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist/Shared/Components/TrailingItem'
 import { EnvTriggerViewActionKey } from './types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
