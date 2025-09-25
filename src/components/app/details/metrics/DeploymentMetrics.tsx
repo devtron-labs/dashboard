@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -196,8 +196,11 @@ const RecoveryAndLeadTimeGraphLegend = ({
     )
 }
 
-const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => {
-    const { match, history, filteredEnvIds } = props
+const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) => {
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
+
+    const history = useHistory()
+
     const [state, setState] = useState<DeploymentMetricsState>({
         code: 0,
         view: ViewType.LOADING,
@@ -231,7 +234,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
         deploymentTableView: ViewType.FORM,
     })
 
-    const callGetDeploymentMetricsAPI = (appId, envId) => {
+    const callGetDeploymentMetricsAPI = () => {
         if (!state.startDate?.isValid() || !state.endDate?.isValid()) {
             return
         }
@@ -239,22 +242,21 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
         const endTime = state.endDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
         getDeploymentMetrics(startTime, endTime, appId, envId)
             .then((metricsResponse) => {
-                const selectedEnv = state.environments.find((env) => String(env.value) === match.params.envId)
-                setState({
-                    ...state,
+                setState((prev) => ({
+                    ...prev,
                     view: ViewType.FORM,
-                    selectedEnvironment: selectedEnv,
+                    selectedEnvironment: prev.environments.find((env) => String(env.value) === envId),
                     ...metricsResponse.result,
-                })
+                }))
             })
             .catch((error) => {
                 showError(error)
-                setState({ ...state, code: error.code, view: ViewType.ERROR })
+                setState((prev) => ({ ...prev, code: error.code, view: ViewType.ERROR }))
             })
     }
 
-    const callGetAppOtherEnv = (prevEnvId: string | undefined) => {
-        getAppOtherEnvironmentMin(match.params.appId, false)
+    const callGetAppOtherEnv = () => {
+        getAppOtherEnvironmentMin(appId, false)
             .then((envResponse) => {
                 const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
                 const allEnv =
@@ -270,31 +272,19 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                             value: env.environmentId,
                             deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
                         })) || []
-                const isEnvExist = prevEnvId && allEnv.find((e) => Number(e.value) === Number(prevEnvId))
-                const redirectToNewUrl = allEnv.length && prevEnvId && (prevEnvId !== match.params.envId || !isEnvExist)
-                setState({
-                    ...state,
+                setState((prev) => ({
+                    ...prev,
+                    view: ViewType.FORM,
                     environments: allEnv,
-                    view: match.params.envId || redirectToNewUrl ? ViewType.LOADING : ViewType.FORM,
-                })
-                if (redirectToNewUrl) {
-                    const url = generatePath(match.path, {
-                        appId: match.params.appId,
-                        envId: isEnvExist ? prevEnvId : allEnv[0].value,
-                    })
-                    history.push(url)
-                } else if (match.params.envId) {
-                    callGetDeploymentMetricsAPI(match.params.appId, match.params.envId)
-                }
+                }))
             })
             .catch((error) => {
                 showError(error)
-                setState({ ...state, code: error.code, view: ViewType.ERROR })
+                setState((prev) => ({ ...prev, code: error.code, view: ViewType.ERROR }))
             })
     }
 
     useEffect(() => {
-        callGetAppOtherEnv(undefined)
         ReactGA.event({
             category: 'Deployment Metrics',
             action: 'First Land',
@@ -303,20 +293,16 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
     }, [])
 
     useEffect(() => {
-        callGetDeploymentMetricsAPI(match.params.appId, match.params.envId)
-    }, [state.startDate, state.endDate, match.params.appId, match.params.envId])
-
-    useEffect(() => {
         setState((prev) => ({ ...prev, view: ViewType.LOADING, selectedEnvironment: undefined }))
-        callGetAppOtherEnv(undefined)
-    }, [match.params.appId, filteredEnvIds])
+        callGetAppOtherEnv()
+    }, [appId, filteredEnvIds])
 
     useEffect(() => {
-        if (match.params.envId) {
+        if (envId) {
             setState((prev) => ({ ...prev, view: ViewType.LOADING }))
-            callGetDeploymentMetricsAPI(match.params.appId, match.params.envId)
+            callGetDeploymentMetricsAPI()
         }
-    }, [match.params.envId, match.params.appId])
+    }, [envId, appId, state.startDate, state.endDate])
 
     const closeDeploymentTableModal = (): void => {
         setState((prev) => ({
@@ -329,7 +315,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
     }
 
     const handleEnvironmentChange = (selected): void => {
-        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${match.params.appId}/deployment-metrics/${selected.value}`
+        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/deployment-metrics/${selected.value}`
         history.push(URL)
         ReactGA.event({
             category: 'Deployment Metrics',
@@ -467,6 +453,10 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
         [state.recoveryTimeBenchmark, state.meanRecoveryTime],
     )
 
+    const onEnvironmentChange = (selected) => {
+        handleEnvironmentChange(selected)
+    }
+
     const renderInputs = () => (
         <div className="deployment-metrics__inputs bg__primary">
             <div className="w-180" data-testid="select-environment">
@@ -476,9 +466,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                     classNamePrefix="deployment-metrics-select-environment"
                     value={state.selectedEnvironment}
                     placeholder="Select Environment"
-                    onChange={(selected) => {
-                        handleEnvironmentChange(selected)
-                    }}
+                    onChange={onEnvironmentChange}
                     options={state.environments}
                 />
             </div>
@@ -496,6 +484,18 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
         </div>
     )
 
+    const onDeploymentFrequencyChartClick = (_: string, index: number): void => {
+        const d = freqData[index]
+        if (!d) return
+        setState((prev) => ({
+            ...prev,
+            filterBy: {
+                startDate: moment(d.startTime),
+                endDate: moment(d.endTime),
+            },
+        }))
+    }
+
     const renderDeploymentFrequencyChart = () => (
         <div className="flex dc__no-shrink">
             <Chart
@@ -505,20 +505,22 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                 hideXAxisLabels
                 datasets={freqGraphDatasets}
                 referenceLines={freqGraphReferenceLines}
-                onChartClick={(_, index) => {
-                    const d = freqData[index]
-                    if (!d) return
-                    setState((prev) => ({
-                        ...prev,
-                        filterBy: {
-                            startDate: moment(d.startTime),
-                            endDate: moment(d.endTime),
-                        },
-                    }))
-                }}
+                onChartClick={onDeploymentFrequencyChartClick}
             />
         </div>
     )
+
+    const onRecoveryAndLeadTimeChartClick = (_: string, index: number): void => {
+        const d = leadTimeData[index]
+        if (!d) return
+        setState((prev) => ({
+            ...prev,
+            filterBy: {
+                startDate: moment(d.startTime),
+                endDate: moment(d.endTime),
+            },
+        }))
+    }
 
     const renderRecoveryAndLeadTimeGraph = () => (
         <div className="flex dc__no-shrink">
@@ -529,20 +531,23 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                 hideXAxisLabels
                 datasets={leadTimeGraphDatasets}
                 referenceLines={leadTimeGraphReferenceLines}
-                onChartClick={(_, index) => {
-                    const d = leadTimeData[index]
-                    if (!d) return
-                    setState((prev) => ({
-                        ...prev,
-                        filterBy: {
-                            startDate: moment(d.startTime),
-                            endDate: moment(d.endTime),
-                        },
-                    }))
-                }}
+                onChartClick={onRecoveryAndLeadTimeChartClick}
             />
         </div>
     )
+
+    const onMeanTimeToRecoveryChartClick = (_: string, index: number): void => {
+        const d = recoveryTimeData[index]
+        if (!d) return
+        // NOTE: startDate, and endDate [releaseTime-2, releaseTime+2]
+        setState((prev) => ({
+            ...prev,
+            filterBy: {
+                startDate: d.releaseTime ? moment(d.releaseTime) : undefined,
+                endDate: d.releaseTime ? moment(d.releaseTime).add(2, 'seconds') : undefined,
+            },
+        }))
+    }
 
     const renderMeanTimeToRecoveryChart = () => (
         <div className="flex dc__no-shrink">
@@ -553,22 +558,73 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                 hideXAxisLabels
                 datasets={recoveryTimeGraphDatasets}
                 referenceLines={recoveryTimeGraphReferenceLines}
-                onChartClick={(_, index) => {
-                    const d = recoveryTimeData[index]
-                    if (!d) return
-                    // NOTE: startDate, and endDate [releaseTime-2, releaseTime+2]
-                    setState((prev) => ({
-                        ...prev,
-                        filterBy: {
-                            startDate: d.releaseTime ? moment(d.releaseTime) : undefined,
-                            endDate: d.releaseTime ? moment(d.releaseTime).add(2, 'seconds') : undefined,
-                        },
-                    }))
-                }}
+                onChartClick={onMeanTimeToRecoveryChartClick}
             />
         </div>
     )
 
+    const setFrequencyMetric = () => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'Graph Bar Clicked',
+            label: 'Deployment Frequency',
+        })
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'DEPLOYMENT_FREQUENCY',
+                valueLabel: `${state.avgFrequency} /day`,
+                catgory: state.frequencyBenchmark.name,
+                value: state.avgFrequency,
+            },
+        }))
+    }
+
+    const setFailureMetric = () => {
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'FAILURE_RATE',
+                valueLabel: `${state.failureRate} %`,
+                catgory: state.failureRateBenchmark.name,
+                value: state.failureRate,
+            },
+        }))
+    }
+
+    const setMeanLeadTimeMetric = () => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'Graph Bar Clicked',
+            label: 'Mean Lead Time',
+        })
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'LEAD_TIME',
+                valueLabel: `${state.meanLeadTimeLabel}`,
+                catgory: state.leadTimeBenchmark.name,
+                value: state.meanLeadTime,
+            },
+        }))
+    }
+
+    const setRecoveryAndLeadTimeGraphMetric = () => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'Graph Bar Clicked',
+            label: 'Mean Time To Recovery',
+        })
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'RECOVERY_TIME',
+                valueLabel: `${state.meanRecoveryTimeLabel}`,
+                catgory: state.recoveryTimeBenchmark.name,
+                value: state.meanRecoveryTime,
+            },
+        }))
+    }
     const renderGraphs = () => (
         <>
             {renderInputs()}
@@ -582,33 +638,8 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                             failureRateBenchmark={state.failureRateBenchmark}
                             frequency={`${state.avgFrequency} / day`}
                             failureRate={`${state.failureRate} %`}
-                            setFrequencyMetric={() => {
-                                ReactGA.event({
-                                    category: 'Deployment Metrics',
-                                    action: 'Graph Bar Clicked',
-                                    label: 'Deployment Frequency',
-                                })
-                                setState((prev) => ({
-                                    ...prev,
-                                    benchmarkModalData: {
-                                        metric: 'DEPLOYMENT_FREQUENCY',
-                                        valueLabel: `${state.avgFrequency} /day`,
-                                        catgory: state.frequencyBenchmark.name,
-                                        value: state.avgFrequency,
-                                    },
-                                }))
-                            }}
-                            setFailureMetric={() => {
-                                setState((prev) => ({
-                                    ...prev,
-                                    benchmarkModalData: {
-                                        metric: 'FAILURE_RATE',
-                                        valueLabel: `${state.failureRate} %`,
-                                        catgory: state.failureRateBenchmark.name,
-                                        value: state.failureRate,
-                                    },
-                                }))
-                            }}
+                            setFrequencyMetric={setFrequencyMetric}
+                            setFailureMetric={setFailureMetric}
                         />
                     </div>
                     {renderDeploymentFrequencyChart()}
@@ -621,22 +652,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                             benchmark={state.leadTimeBenchmark}
                             tooltipText="How long it takes to deliver a change to production?"
                             valueLabel={`${state.meanLeadTimeLabel}`}
-                            setMetric={() => {
-                                ReactGA.event({
-                                    category: 'Deployment Metrics',
-                                    action: 'Graph Bar Clicked',
-                                    label: 'Mean Lead Time',
-                                })
-                                setState((prev) => ({
-                                    ...prev,
-                                    benchmarkModalData: {
-                                        metric: 'LEAD_TIME',
-                                        valueLabel: `${state.meanLeadTimeLabel}`,
-                                        catgory: state.leadTimeBenchmark.name,
-                                        value: state.meanLeadTime,
-                                    },
-                                }))
-                            }}
+                            setMetric={setMeanLeadTimeMetric}
                         />
                     </div>
                     {renderRecoveryAndLeadTimeGraph()}
@@ -646,22 +662,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
                         <RecoveryAndLeadTimeGraphLegend
                             noFailures={state.recoveryTimeGraph.length === 0}
                             label="Mean Time to Recovery"
-                            setMetric={() => {
-                                ReactGA.event({
-                                    category: 'Deployment Metrics',
-                                    action: 'Graph Bar Clicked',
-                                    label: 'Mean Time To Recovery',
-                                })
-                                setState((prev) => ({
-                                    ...prev,
-                                    benchmarkModalData: {
-                                        metric: 'RECOVERY_TIME',
-                                        valueLabel: `${state.meanRecoveryTimeLabel}`,
-                                        catgory: state.recoveryTimeBenchmark.name,
-                                        value: state.meanRecoveryTime,
-                                    },
-                                }))
-                            }}
+                            setMetric={setRecoveryAndLeadTimeGraphMetric}
                             benchmark={state.recoveryTimeBenchmark}
                             tooltipText="How long does it take to fix a failed pipeline?"
                             valueLabel={`${state.meanRecoveryTimeLabel}`}
@@ -674,7 +675,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
     )
 
     const renderEmptyState = () => {
-        const env = state.environments.find((e) => e.value === Number(match.params.envId))
+        const env = state.environments.find((e) => e.value === Number(envId))
         const envName = env ? env.label : ''
         return (
             <div className="flexbox-col flex-grow-1">
@@ -755,10 +756,7 @@ const DeploymentMetricsComponent: React.FC<DeploymentMetricsProps> = (props) => 
     if (state.view === ViewType.FORM && state.environments.length === 0) {
         return renderNoEnvironmentView()
     }
-    if (
-        state.view === ViewType.FORM &&
-        (!match.params.envId || !(state.environments ?? []).find((env) => env.value === +match.params.envId))
-    ) {
+    if (state.view === ViewType.FORM && (!envId || !(state.environments ?? []).find((env) => env.value === +envId))) {
         return renderSelectEnvironmentView()
     }
     if (state.view === ViewType.FORM && state.frequencyAndLeadTimeGraph.length === 0) {

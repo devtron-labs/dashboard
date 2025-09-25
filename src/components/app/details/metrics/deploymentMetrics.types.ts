@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
 import { Moment } from 'moment'
 
-import { ChartColorKey } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { ChartColorKey } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface GraphType {
     xAxisLabel: string
@@ -35,7 +34,7 @@ export interface StatisticsType {
     meanRecoveryTime: string
 }
 
-export interface DeploymentMetricsProps extends RouteComponentProps<{ appId: string; envId: string }> {
+export interface DeploymentMetricsProps {
     filteredEnvIds?: string
 }
 
