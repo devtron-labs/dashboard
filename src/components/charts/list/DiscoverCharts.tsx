@@ -336,9 +336,9 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
                                 <InfoIconTippy
                                     infoText={CHART_STORE_TIPPY_CONTENT}
-                                    heading={'Chart Store'}
+                                    heading="Chart Store"
                                     iconClassName="icon-dim-20 ml-8 fcn-5"
-                                    documentationLink={'CHART_STORE'}
+                                    documentationLink="CHART_STORE"
                                     documentationLinkText="View Documentation"
                                 />
                             </div>
