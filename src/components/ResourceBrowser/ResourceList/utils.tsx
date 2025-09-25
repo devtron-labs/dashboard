@@ -524,7 +524,7 @@ export const getNodeSearchKeysOptionsList = (rows: NodeListSearchFilterType['row
         nodeGroups: Map<string, NodeSearchListOptionType>
     }>(
         (acc, curr) => {
-            ;(curr.data.labels as { key: string; value: string }[]).forEach(({ key, value }) => {
+            ;((curr.data.labels ?? []) as { key: string; value: string }[]).forEach(({ key, value }) => {
                 if (!acc.labels.has(`${key}/${value}`)) {
                     acc.labels.set(`${key}/${value}`, {
                         label: `${key}=${value}`,
