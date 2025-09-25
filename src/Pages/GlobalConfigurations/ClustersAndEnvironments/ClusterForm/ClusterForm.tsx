@@ -93,17 +93,13 @@ const ClusterForm = ({
     )
 
     const [costModuleState, setCostModuleState] = useState<
-        Pick<ClusterDetailListType['costModuleConfig'], 'config' | 'enabled'>
+        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & { config: string }
     >({
         enabled: costModuleConfig?.enabled || false,
-        config: {
-            cloudProviderApiKey: costModuleConfig?.config?.cloudProviderApiKey || '',
-        },
+        config: costModuleConfig?.config ? JSON.stringify(costModuleConfig.config) : '',
     })
+    const [costModuleConfigErrorState, setCostModuleErrorState] = useState<string>('')
 
-    const [costModuleErrorState, setCostModuleErrorState] = useState<{ cloudProviderApiKey: string }>({
-        cloudProviderApiKey: '',
-    })
     const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
@@ -183,6 +179,30 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
+    const validateCostModuleConfig = (requiredConfig: string = costModuleState.config): string => {
+        try {
+            if (requiredConfig) {
+                JSON.parse(requiredConfig)
+            }
+
+            return ''
+        } catch (e) {
+            return e.message || 'Invalid JSON'
+        }
+    }
+
+    const getParsedConfigValue = (): ClusterCostModuleConfigPayload['config'] => {
+        if (costModuleState.config) {
+            try {
+                const parsedConfig = JSON.parse(costModuleState.config)
+                return parsedConfig
+            } catch {
+                return {}
+            }
+        }
+        return null
+    }
+
     const getCostModulePayload = (): ClusterCostModuleConfigPayload | null => {
         if (!costModuleState.enabled) {
             return {
@@ -190,12 +210,10 @@ const ClusterForm = ({
             }
         }
 
-        if (clusterProvider === 'GCP' && costModuleState.config.cloudProviderApiKey) {
+        if (costModuleState.config) {
             return {
                 enabled: true,
-                config: {
-                    cloudProviderApiKey: costModuleState.config.cloudProviderApiKey,
-                },
+                config: getParsedConfigValue(),
             }
         }
 
@@ -246,16 +264,16 @@ const ClusterForm = ({
             payload.server_url = urlValue
         }
 
-        if (clusterProvider === 'GCP' && costModuleState.enabled && !costModuleState.config.cloudProviderApiKey) {
-            setCostModuleErrorState((prev) => ({
-                ...prev,
-                cloudProviderApiKey: 'Cloud Provider API Key is required',
-            }))
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Please provide Cloud Provider API Key to enable cost tracking',
-            })
-            return
+        if (costModuleState.enabled) {
+            const costConfigError = validateCostModuleConfig()
+            if (costConfigError) {
+                setCostModuleErrorState(costConfigError)
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: 'Invalid cost visibility configuration',
+                })
+                return
+            }
         }
 
         if (remoteConnectionMethod === RemoteConnectionType.Proxy) {
@@ -470,18 +488,14 @@ const ClusterForm = ({
         }))
     }
 
-    const handleProviderAPIKeyChange = (apiKey: string) => {
+    const handleCostConfigChange = (newConfig: string) => {
         setCostModuleState((prev) => ({
             ...prev,
-            config: {
-                cloudProviderApiKey: apiKey,
-            },
+            config: newConfig,
         }))
 
-        setCostModuleErrorState((prev) => ({
-            ...prev,
-            cloudProviderApiKey: apiKey ? '' : 'Cloud Provider API Key is required',
-        }))
+        const error = validateCostModuleConfig(newConfig)
+        setCostModuleErrorState(error)
     }
 
     const renderFooter = () => (
@@ -573,11 +587,10 @@ const ClusterForm = ({
                             costModuleEnabled={costModuleState.enabled}
                             toggleCostModule={toggleCostModule}
                             installationStatus={costModuleConfig.installationStatus}
-                            installationError={costModuleConfig.installationError}
                             clusterProvider={clusterProvider}
-                            handleProviderAPIKeyChange={handleProviderAPIKeyChange}
-                            providerAPIKey={costModuleState.config.cloudProviderApiKey || ''}
-                            providerAPIKeyError={costModuleErrorState.cloudProviderApiKey}
+                            handleCostConfigChange={handleCostConfigChange}
+                            config={costModuleState.config || ''}
+                            configError={costModuleConfigErrorState}
                         />
                     </div>
                 ) : null
@@ -593,6 +606,10 @@ const ClusterForm = ({
 
         if (costModuleConfig.installationStatus === 'Installing') {
             return <span className="cy-7 fs-12">Installing...</span>
+        }
+
+        if (costModuleConfig.installationStatus === 'Upgrading') {
+            return <span className="cy-7 fs-12">Upgrading...</span>
         }
 
         if (costModuleConfig.installationStatus === 'Failed') {
