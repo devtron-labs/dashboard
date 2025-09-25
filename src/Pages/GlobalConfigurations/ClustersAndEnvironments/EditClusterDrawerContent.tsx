@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-import { APIResponseHandler, ClusterProviderType, noop, useQuery } from '@devtron-labs/devtron-fe-common-lib'
+import { APIResponseHandler, noop, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import ClusterForm from './ClusterForm/ClusterForm'
-import { getCluster } from './cluster.service'
+import { getEditClusterDrawerMetadata } from './cluster.service'
 import { EditClusterDrawerContentProps, EditClusterDrawerMetadataType, EditClusterFormProps } from './cluster.type'
 
 const getSSHConfig: (
     ...props
 ) => Pick<EditClusterFormProps, 'sshUsername' | 'sshPassword' | 'sshAuthKey' | 'sshServerAddress'> =
     importComponentFromFELibrary('getSSHConfig', noop, 'function')
-
-const getCloudProviderForCluster: (clusterId: number) => Promise<ClusterProviderType> = importComponentFromFELibrary(
-    'getCloudProviderForCluster',
-    null,
-    'function',
-)
 
 const EditClusterDrawerContent = ({
     handleModalClose,
@@ -50,18 +44,6 @@ const EditClusterDrawerContent = ({
     insecureSkipTlsVerify,
     costModuleConfig,
 }: EditClusterDrawerContentProps) => {
-    const getClusterMetadata = async (): Promise<EditClusterDrawerMetadataType> => {
-        if (!clusterId) {
-            return { prometheusAuthResult: null, clusterProvider: null }
-        }
-
-        const [prometheusAuthResult, clusterProvider] = await Promise.all([
-            getCluster(+clusterId),
-            getCloudProviderForCluster ? getCloudProviderForCluster(+clusterId) : null,
-        ])
-        return { prometheusAuthResult, clusterProvider }
-    }
-
     const {
         isFetching: isMetadataLoading,
         data: metadata,
@@ -69,7 +51,7 @@ const EditClusterDrawerContent = ({
         refetch: reloadMetadata,
     } = useQuery<EditClusterDrawerMetadataType, EditClusterDrawerMetadataType, [string, number], false>({
         queryKey: ['get-cluster-metadata', clusterId],
-        queryFn: () => getClusterMetadata(),
+        queryFn: () => getEditClusterDrawerMetadata(clusterId),
         enabled: !!clusterId,
     })
 
