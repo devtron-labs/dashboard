@@ -68,7 +68,7 @@ export interface DeploymentMetricsState {
         maxLeadTime: number
         xAxisLabel: string
     }[]
-    recoveryTimeGraph: { recoveryTime: number }[]
+    recoveryTimeGraph: { recoveryTime: number; xAxisLabel: string; yAxisLabel: string; releaseTime: Moment }[]
     rows: any[]
     avgFrequency: number
     maxFrequency: number
@@ -106,4 +106,23 @@ export interface DeploymentMetricsState {
         endDate: undefined | Moment
     }
     deploymentTableView: string
+}
+export interface RecoveryAndLeadTimeGraphLegendProps {
+    noFailures: boolean
+    valueLabel: string
+    label: string
+    tooltipText: string
+    benchmark: undefined | any
+    setMetric: (...args) => void
+}
+
+export interface FrequencyGraphLegendProps {
+    noFailures: boolean
+    label: string
+    frequency: string
+    failureRate: string
+    frequencyBenchmark: undefined | any
+    failureRateBenchmark: undefined | any
+    setFrequencyMetric: (...args) => void
+    setFailureMetric: (...args) => void
 }
