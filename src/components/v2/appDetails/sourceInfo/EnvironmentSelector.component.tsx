@@ -124,19 +124,6 @@ const EnvironmentSelectorComponent = ({
         setShowDeleteConfirmation(true)
     }
 
-    const Popup = () => {
-        return (
-            <div className="pod-info__popup-container">
-                <span
-                    className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                    onClick={showDeleteConfirmationPopup}
-                >
-                    <span data-testid="delete-helm-app-button">Delete application</span>
-                    <Trash className="icon-dim-20 scr-5" />
-                </span>
-            </div>
-        )
-    }
     const setForceDeleteDialogData = (serverError) => {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
@@ -230,7 +217,7 @@ const EnvironmentSelectorComponent = ({
 
     const handleActionMenuClick: ActionMenuProps['onClick'] = (item) => {
         if (item.id === ClusterActionMenuOptionIdEnum.DELETE) {
-            handleDelete()
+            showDeleteConfirmationPopup()
         }
     }
 

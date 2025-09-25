@@ -90,7 +90,6 @@ const PodPopup = ({
                                   {
                                       id: NodeActionMenuOptionsIdEnum.CHECK_VULNERABILITY,
                                       label: 'Check vulnerabilities',
-                                      //   startIcon: { name: 'ic-bug' },
                                   },
                               ]
                             : []),
