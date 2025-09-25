@@ -40,7 +40,7 @@ const DeployedCommitCard = ({ cardLoading, showCommitInfoDrawer, envId, ciArtifa
         return <LoadingCard />
     }
 
-    if (materials.length === 0 || !materials[0].history[0]?.commit?.slice(0, 7)) {
+    if (!materials?.length || !materials[0].history[0]?.commit?.slice(0, 7)) {
         return null
     }
 
