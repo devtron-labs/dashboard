@@ -113,7 +113,7 @@ const FrequencyGraphLegend = ({
                                 <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                             </span>
                         </Tippy>
-                        <span className="cursor" onClick={setFailureMetric}>
+                        <button className="cursor" onClick={setFailureMetric}>
                             {renderCategoryTag(failureRateBenchmark?.name)}{' '}
                         </span>
                     </p>
