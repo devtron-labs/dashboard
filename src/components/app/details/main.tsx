@@ -432,12 +432,9 @@ export default function AppDetailsPage() {
                                 <CIDetails key={appId} filteredEnvIds={_filteredEnvIds} />
                             </AIAgentContextSetterWrapper>
                         </Route>
-                        <Route
-                            path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}
-                            render={() => {
-                                return <DeploymentMetrics filteredEnvIds={_filteredEnvIds} />
-                            }}
-                        />
+                        <Route path={`${path}/${URLS.APP_DEPLOYMENT_METRICS}/:envId(\\d+)?`}>
+                            <DeploymentMetrics filteredEnvIds={_filteredEnvIds} />
+                        </Route>
                         <Route
                             path={`${path}/${URLS.APP_CD_DETAILS}/:envId(\\d+)?/:pipelineId(\\d+)?/:triggerId(\\d+)?`}
                         >

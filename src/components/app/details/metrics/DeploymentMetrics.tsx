@@ -17,7 +17,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import moment from 'moment'
 
 import {
@@ -30,6 +29,7 @@ import {
     Progressing,
     SelectPicker,
     showError,
+    Tooltip,
     URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -77,11 +77,11 @@ const FrequencyGraphLegend = ({
         <div className="w-50 dc__inline-block">
             <p className="graph-legend__primary-label">
                 Deployment Frequency
-                <Tippy className="default-tt" arrow={false} content="How often this app is deployed to production?">
+                <Tooltip content="How often this app is deployed to production?" alwaysShowTippyOnHover>
                     <span>
                         <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                     </span>
-                </Tippy>
+                </Tooltip>
                 <span className="cursor" onClick={setFrequencyMetric}>
                     {renderCategoryTag(frequencyBenchmark.name)}{' '}
                 </span>
@@ -108,11 +108,11 @@ const FrequencyGraphLegend = ({
                 <>
                     <p className="graph-legend__primary-label">
                         Change Failure Rate
-                        <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
+                        <Tooltip alwaysShowTippyOnHover content="How often does the pipeline fail?">
                             <span>
                                 <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                             </span>
-                        </Tippy>
+                        </Tooltip>
                         <span className="cursor" onClick={setFailureMetric}>
                             {renderCategoryTag(failureRateBenchmark?.name)}{' '}
                         </span>
@@ -149,11 +149,11 @@ const RecoveryAndLeadTimeGraphLegend = ({
             <div className="graph-legend">
                 <p className="graph-legend__primary-label">
                     {label}
-                    <Tippy className="default-tt" arrow={false} content={tooltipText}>
+                    <Tooltip alwaysShowTippyOnHover content={tooltipText}>
                         <span>
                             <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                         </span>
-                    </Tippy>
+                    </Tooltip>
                 </p>
                 <p className="graph-legend__primary-value">
                     <ReferenceLineLegend />
@@ -167,11 +167,11 @@ const RecoveryAndLeadTimeGraphLegend = ({
         <div className="graph-legend">
             <p className="graph-legend__primary-label">
                 {label}
-                <Tippy className="default-tt" arrow={false} content={tooltipText}>
+                <Tooltip alwaysShowTippyOnHover content={tooltipText}>
                     <span>
                         <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                     </span>
-                </Tippy>
+                </Tooltip>
                 <span className="cursor" onClick={setMetric}>
                     {renderCategoryTag(benchmark?.name)}{' '}
                 </span>
@@ -489,13 +489,13 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     )
 
     const onDeploymentFrequencyChartClick = (_: string, index: number): void => {
-        const d = freqData[index]
-        if (!d) return
+        const deploymentFrequencyData = freqData[index]
+        if (!deploymentFrequencyData) return
         setState((prev) => ({
             ...prev,
             filterBy: {
-                startDate: moment(d.startTime),
-                endDate: moment(d.endTime),
+                startDate: moment(deploymentFrequencyData.startTime),
+                endDate: moment(deploymentFrequencyData.endTime),
             },
         }))
     }
@@ -515,13 +515,13 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     )
 
     const onRecoveryAndLeadTimeChartClick = (_: string, index: number): void => {
-        const d = leadTimeData[index]
-        if (!d) return
+        const leadTimeEntry = leadTimeData[index]
+        if (!leadTimeEntry) return
         setState((prev) => ({
             ...prev,
             filterBy: {
-                startDate: moment(d.startTime),
-                endDate: moment(d.endTime),
+                startDate: moment(leadTimeEntry.startTime),
+                endDate: moment(leadTimeEntry.endTime),
             },
         }))
     }
@@ -541,14 +541,16 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     )
 
     const onMeanTimeToRecoveryChartClick = (_: string, index: number): void => {
-        const d = recoveryTimeData[index]
-        if (!d) return
+        const recoveryTimeMetric = recoveryTimeData[index]
+        if (!recoveryTimeMetric) return
         // NOTE: startDate, and endDate [releaseTime-2, releaseTime+2]
         setState((prev) => ({
             ...prev,
             filterBy: {
-                startDate: d.releaseTime ? moment(d.releaseTime) : undefined,
-                endDate: d.releaseTime ? moment(d.releaseTime).add(2, 'seconds') : undefined,
+                startDate: recoveryTimeMetric.releaseTime ? moment(recoveryTimeMetric.releaseTime) : undefined,
+                endDate: recoveryTimeMetric.releaseTime
+                    ? moment(recoveryTimeMetric.releaseTime).add(2, 'seconds')
+                    : undefined,
             },
         }))
     }
@@ -606,7 +608,7 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
             ...prev,
             benchmarkModalData: {
                 metric: 'LEAD_TIME',
-                valueLabel: `${state.meanLeadTimeLabel}`,
+                valueLabel: state.meanLeadTimeLabel,
                 catgory: state.leadTimeBenchmark.name,
                 value: state.meanLeadTime,
             },
@@ -623,7 +625,7 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
             ...prev,
             benchmarkModalData: {
                 metric: 'RECOVERY_TIME',
-                valueLabel: `${state.meanRecoveryTimeLabel}`,
+                valueLabel: state.meanRecoveryTimeLabel,
                 catgory: state.recoveryTimeBenchmark.name,
                 value: state.meanRecoveryTime,
             },
@@ -780,9 +782,9 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                         Deployments
                     </p>
                     <div className="flex right">
-                        <label className="dc__tertiary-tab__radio" htmlFor="status-all">
+                        <label className="dc__tertiary-tab__radio" htmlFor="deployment-metric__status-all">
                             <input
-                                id="status-all"
+                                id="deployment-metric__status-all"
                                 type="radio"
                                 name="status"
                                 checked={state.statusFilter === -1}
@@ -794,10 +796,10 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                         <label
                             className="dc__tertiary-tab__radio"
                             data-testid="success-deployment-status"
-                            htmlFor="status-success"
+                            htmlFor="deployment-metric__status-success"
                         >
                             <input
-                                id="status-success"
+                                id="deployment-metric__status-success"
                                 type="radio"
                                 name="status"
                                 checked={state.statusFilter === 0}
@@ -812,10 +814,10 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                         <label
                             className="dc__tertiary-tab__radio"
                             data-testid="failed-deployment-status"
-                            htmlFor="status-failed"
+                            htmlFor="deployment-metric__status-failed"
                         >
                             <input
-                                id="status-failed"
+                                id="deployment-metric__status-failed"
                                 type="radio"
                                 name="status"
                                 checked={state.statusFilter === 1}

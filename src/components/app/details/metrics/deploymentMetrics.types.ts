@@ -52,6 +52,13 @@ export interface BenchmarkType {
     targetValue: number
 }
 
+type RecoveryTimeGraphType = {
+    recoveryTime: number
+    xAxisLabel: string
+    yAxisLabel: string
+    releaseTime: Moment
+}
+
 export interface DeploymentMetricsState {
     code: number
     view: string
@@ -65,7 +72,7 @@ export interface DeploymentMetricsState {
         maxLeadTime: number
         xAxisLabel: string
     }[]
-    recoveryTimeGraph: { recoveryTime: number; xAxisLabel: string; yAxisLabel: string; releaseTime: Moment }[]
+    recoveryTimeGraph: RecoveryTimeGraphType[]
     rows: any[]
     avgFrequency: number
     maxFrequency: number
