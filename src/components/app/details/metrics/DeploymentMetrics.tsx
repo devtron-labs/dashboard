@@ -606,7 +606,7 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
             ...prev,
             benchmarkModalData: {
                 metric: 'LEAD_TIME',
-                valueLabel: `${state.meanLeadTimeLabel}`,
+                valueLabel: state.meanLeadTimeLabel,
                 catgory: state.leadTimeBenchmark.name,
                 value: state.meanLeadTime,
             },
