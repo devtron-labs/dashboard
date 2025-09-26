@@ -92,7 +92,6 @@ src/components/app/details/cdDetails/CDDetails.tsx
 src/components/app/details/cicdHistory/History.components.tsx
 src/components/app/details/main.tsx
 src/components/app/details/metrics/BenchmarkModal.tsx
-src/components/app/details/metrics/DeploymentMetrics.tsx
 src/components/app/details/metrics/DeploymentTable.tsx
 src/components/app/details/metrics/DeploymentTableModal.tsx
 src/components/app/details/metrics/deploymentMetrics.service.ts
