@@ -82,9 +82,13 @@ const FrequencyGraphLegend = ({
                         <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                     </span>
                 </Tooltip>
-                <span className="cursor" onClick={setFrequencyMetric}>
+                <button
+                    type="button"
+                    className="dc__no-border p-0 m-0 dc__transparent--unstyled"
+                    onClick={setFrequencyMetric}
+                >
                     {renderCategoryTag(frequencyBenchmark.name)}{' '}
-                </span>
+                </button>
             </p>
             <p className="graph-legend__primary-value">
                 <span className="mr-10">{frequency}</span>
@@ -93,14 +97,18 @@ const FrequencyGraphLegend = ({
             {failureRateBenchmark?.targetName === 'ELITE' ? (
                 <EliteCategoryMessage onClick={setFrequencyMetric} />
             ) : (
-                <div className="cursor" onClick={setFrequencyMetric}>
+                <button
+                    type="button"
+                    className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+                    onClick={setFrequencyMetric}
+                >
                     <p className="graph-legend__secondary-label">
                         {frequencyBenchmark?.targetName} (Target Benchmark)
                         <span className="mr-5" />
                         <BenchmarkLine category={frequencyBenchmark.targetName} />
                     </p>
                     <p className="graph-legend__secondary-value">{frequencyBenchmark?.targetValue} / day</p>
-                </div>
+                </button>
             )}
         </div>
         <div className="w-50 dc__inline-block" style={{ verticalAlign: 'top' }}>
@@ -113,18 +121,26 @@ const FrequencyGraphLegend = ({
                                 <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                             </span>
                         </Tooltip>
-                        <span className="cursor" onClick={setFailureMetric}>
+                        <button
+                            type="button"
+                            className="dc__no-border p-0 m-0 dc__transparent--unstyled"
+                            onClick={setFailureMetric}
+                        >
                             {renderCategoryTag(failureRateBenchmark?.name)}{' '}
-                        </span>
+                        </button>
                     </p>
                     <p className="graph-legend__primary-value">{failureRate}</p>
                     {failureRateBenchmark?.name !== 'ELITE' ? (
-                        <div className="cursor" onClick={setFailureMetric}>
+                        <button
+                            type="button"
+                            className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+                            onClick={setFailureMetric}
+                        >
                             <p className="graph-legend__secondary-label">
                                 {failureRateBenchmark?.targetName} (Target Benchmark)
                             </p>
                             <p className="graph-legend__secondary-value">{failureRateBenchmark?.targetValue}%</p>
-                        </div>
+                        </button>
                     ) : (
                         <EliteCategoryMessage onClick={setFailureMetric} />
                     )}
@@ -172,23 +188,27 @@ const RecoveryAndLeadTimeGraphLegend = ({
                         <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
                     </span>
                 </Tooltip>
-                <span className="cursor" onClick={setMetric}>
+                <button type="button" className="dc__no-border p-0 m-0 dc__transparent--unstyled" onClick={setMetric}>
                     {renderCategoryTag(benchmark?.name)}{' '}
-                </span>
+                </button>
             </p>
             <p className="graph-legend__primary-value">
                 <span className="mr-10">{valueLabel}</span>
                 <ReferenceLineLegend />
             </p>
             {benchmark?.name !== 'ELITE' ? (
-                <div className="cursor" onClick={setMetric}>
+                <button
+                    type="button"
+                    className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+                    onClick={setMetric}
+                >
                     <p className="graph-legend__secondary-label">
                         {benchmark?.targetName} (Target Benchmark)
                         <span className="mr-5" />
                         <BenchmarkLine category={benchmark.targetName} />
                     </p>
                     <p className="graph-legend__secondary-value">{benchmark?.targetLabel}</p>
-                </div>
+                </button>
             ) : (
                 <EliteCategoryMessage className="cursor" onClick={setMetric} />
             )}
