@@ -228,7 +228,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
 
     return {
         name: 'ELITE',
-        color: null,
+        color: '',
         targetName: '',
         targetValue: 0,
     }
