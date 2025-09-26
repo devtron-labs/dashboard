@@ -11,6 +11,7 @@ const ApplicationMonitoring = ({
     handleOnChange,
     onPrometheusAuthTypeChange,
     isGrafanaModuleInstalled,
+    isCostVisibilityEnabled,
 }: ApplicationMonitoringProps) => (
     <div className="flexbox-col flex-grow-1 dc__gap-20 p-20">
         <div className="flexbox-col">
@@ -31,7 +32,12 @@ const ApplicationMonitoring = ({
                 ariaLabel="Toggle configure prometheus"
                 isChecked={isAppMetricsEnabled}
                 onChange={toggleAppMetrics}
-                isDisabled={!isGrafanaModuleInstalled}
+                isDisabled={!isGrafanaModuleInstalled || (isAppMetricsEnabled && isCostVisibilityEnabled)}
+                tooltipContent={
+                    isAppMetricsEnabled && isCostVisibilityEnabled
+                        ? 'To disable application metrics, first disable cost visibility from cluster cost configuration.'
+                        : ''
+                }
             />
         </div>
         {!isAppMetricsEnabled && prometheusUrl && <PrometheusWarningInfo />}

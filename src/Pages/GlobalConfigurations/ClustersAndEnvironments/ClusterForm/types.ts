@@ -40,6 +40,7 @@ export interface ApplicationMonitoringProps {
     handleOnChange: (event: SyntheticEvent) => void
     onPrometheusAuthTypeChange: (event: SyntheticEvent) => void
     isGrafanaModuleInstalled: boolean
+    isCostVisibilityEnabled: boolean
 }
 
 export enum ClusterConfigTabEnum {

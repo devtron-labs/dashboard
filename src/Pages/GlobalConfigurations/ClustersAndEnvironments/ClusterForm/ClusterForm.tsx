@@ -597,6 +597,7 @@ const ClusterForm = ({
                             handleOnChange={handleOnChange}
                             onPrometheusAuthTypeChange={onPrometheusAuthTypeChange}
                             isGrafanaModuleInstalled={isGrafanaModuleInstalled}
+                            isCostVisibilityEnabled={costModuleState.enabled}
                         />
                     </div>
                 )
