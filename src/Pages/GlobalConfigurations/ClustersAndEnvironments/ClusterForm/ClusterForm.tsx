@@ -24,6 +24,7 @@ import {
     ButtonVariantType,
     ClusterCostModuleConfigPayload,
     ClusterDetailListType,
+    ClusterProviderType,
     DEFAULT_SECRET_PLACEHOLDER,
     Icon,
     ModalSidebarPanel,
@@ -31,6 +32,7 @@ import {
     ModuleStatus,
     noop,
     RemoteConnectionType,
+    SCHEMA_07_VALIDATOR,
     SelectPickerOptionType,
     showError,
     ToastManager,
@@ -83,6 +85,7 @@ const ClusterForm = ({
     category,
     clusterProvider,
     costModuleConfig,
+    costModuleSchema,
 }: ClusterFormProps) => {
     const location = useLocation()
 
@@ -93,12 +96,17 @@ const ClusterForm = ({
     )
 
     const [costModuleState, setCostModuleState] = useState<
-        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & { config: string }
+        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & {
+            config: ClusterDetailListType['costModuleConfig']['config'] & { provider: ClusterProviderType }
+        }
     >({
         enabled: costModuleConfig?.enabled || false,
-        config: costModuleConfig?.config ? JSON.stringify(costModuleConfig.config) : '',
+        config: {
+            ...costModuleConfig?.config,
+            // Adding provider here to make the form work, it won't be sent to backend
+            provider: clusterProvider,
+        },
     })
-    const [costModuleConfigErrorState, setCostModuleErrorState] = useState<string>('')
 
     const [isAppMetricsEnabled, setIsAppMetricsEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -181,28 +189,20 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
-    const validateCostModuleConfig = (requiredConfig: string = costModuleState.config): string => {
+    const validateCostModuleConfig = (): boolean => {
+        if (!costModuleSchema || !costModuleState.enabled) {
+            return true
+        }
+
         try {
-            if (requiredConfig) {
-                JSON.parse(requiredConfig)
-            }
-
-            return ''
-        } catch (e) {
-            return e.message || 'Invalid JSON'
+            const validationResult = SCHEMA_07_VALIDATOR.validateFormData(
+                { ...costModuleState.config },
+                costModuleSchema,
+            )
+            return !validationResult?.errors?.length
+        } catch {
+            return true
         }
-    }
-
-    const getParsedConfigValue = (): ClusterCostModuleConfigPayload['config'] => {
-        if (costModuleState.config) {
-            try {
-                const parsedConfig = JSON.parse(costModuleState.config)
-                return parsedConfig
-            } catch {
-                return {}
-            }
-        }
-        return null
     }
 
     const getCostModulePayload = (): ClusterCostModuleConfigPayload | null => {
@@ -213,9 +213,12 @@ const ClusterForm = ({
         }
 
         if (costModuleState.config) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { provider, ...sanitizedConfig } = costModuleState.config
+
             return {
                 enabled: true,
-                config: getParsedConfigValue(),
+                config: sanitizedConfig,
             }
         }
 
@@ -250,18 +253,14 @@ const ClusterForm = ({
         },
         server_url: '',
         ...(getCategoryPayload ? getCategoryPayload(selectedCategory) : null),
-        ...(clusterProvider ? { costModuleConfig: getCostModulePayload() } : null),
+        ...(costModuleSchema ? { costModuleConfig: getCostModulePayload() } : null),
     })
 
     const additionalValidations = (): boolean => {
         let hasError = false
 
-        if (costModuleState.enabled) {
-            const costConfigError = validateCostModuleConfig()
-            if (costConfigError) {
-                setCostModuleErrorState(costConfigError)
-                hasError = true
-            }
+        if (!validateCostModuleConfig()) {
+            hasError = true
         }
 
         return hasError
@@ -512,14 +511,11 @@ const ClusterForm = ({
         }))
     }
 
-    const handleCostConfigChange = (newConfig: string) => {
+    const handleCostConfigChange = (newConfig: typeof costModuleState.config) => {
         setCostModuleState((prev) => ({
             ...prev,
             config: newConfig,
         }))
-
-        const error = validateCostModuleConfig(newConfig)
-        setCostModuleErrorState(error)
     }
 
     const renderFooter = () => (
@@ -612,10 +608,9 @@ const ClusterForm = ({
                             costModuleEnabled={costModuleState.enabled}
                             toggleCostModule={toggleCostModule}
                             installationStatus={costModuleConfig.installationStatus}
-                            clusterProvider={clusterProvider}
                             handleCostConfigChange={handleCostConfigChange}
-                            config={costModuleState.config || ''}
-                            configError={costModuleConfigErrorState}
+                            config={costModuleState.config}
+                            costModuleSchema={costModuleSchema || {}}
                         />
                     </div>
                 ) : null

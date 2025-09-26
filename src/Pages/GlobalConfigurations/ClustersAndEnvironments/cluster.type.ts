@@ -25,6 +25,7 @@ import {
     FiltersTypeEnum,
     OptionType,
     ResponseType,
+    RJSFFormSchema,
     SelectPickerOptionType,
     TableProps,
     UseUrlFiltersReturnType,
@@ -213,6 +214,7 @@ export type EditClusterFormProps = {
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
     clusterProvider: ClusterProviderType
+    costModuleSchema: RJSFFormSchema
 } & Pick<EditClusterDrawerContentProps, 'costModuleConfig'>
 
 export type ClusterFormProps = { reload: () => void; handleModalClose: () => void } & Pick<
@@ -375,4 +377,5 @@ export interface EditDeleteClusterProps {
 export interface EditClusterDrawerMetadataType {
     prometheusAuthResult: ResponseType
     clusterProvider: ClusterProviderType
+    costModuleSchema: RJSFFormSchema
 }

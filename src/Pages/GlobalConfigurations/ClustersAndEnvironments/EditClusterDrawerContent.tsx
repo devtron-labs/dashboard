@@ -55,9 +55,10 @@ const EditClusterDrawerContent = ({
         enabled: !!clusterId,
     })
 
-    const { prometheusAuthResult, clusterProvider } = metadata || {
+    const { prometheusAuthResult, clusterProvider, costModuleSchema } = metadata || {
         prometheusAuthResult: null,
-        cloudProvider: null,
+        clusterProvider: null,
+        costModuleSchema: null,
     }
 
     return (
@@ -89,6 +90,7 @@ const EditClusterDrawerContent = ({
                 installationId={installationId}
                 category={category}
                 clusterProvider={clusterProvider}
+                costModuleSchema={costModuleSchema}
                 costModuleConfig={costModuleConfig}
             />
         </APIResponseHandler>
