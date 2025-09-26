@@ -55,8 +55,6 @@ export interface BenchmarkType {
 export interface DeploymentMetricsState {
     code: number
     view: string
-    // used by ReactSelect Menu
-    selectedEnvironment: undefined | { label: string; value: number }
     environments: Array<Environment>
     frequencyAndLeadTimeGraph: {
         startTime: number

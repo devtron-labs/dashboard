@@ -204,7 +204,6 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     const [state, setState] = useState<DeploymentMetricsState>({
         code: 0,
         view: ViewType.LOADING,
-        selectedEnvironment: undefined,
         environments: [],
         frequencyAndLeadTimeGraph: [],
         recoveryTimeGraph: [],
@@ -240,12 +239,12 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         }
         const startTime = state.startDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
         const endTime = state.endDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
+        setState((prev) => ({ ...prev, view: ViewType.LOADING }))
         getDeploymentMetrics(startTime, endTime, appId, envId)
             .then((metricsResponse) => {
                 setState((prev) => ({
                     ...prev,
                     view: ViewType.FORM,
-                    selectedEnvironment: prev.environments.find((env) => String(env.value) === envId),
                     ...metricsResponse.result,
                 }))
             })
@@ -256,6 +255,7 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     }
 
     const callGetAppOtherEnv = () => {
+        setState((prev) => ({ ...prev, view: ViewType.LOADING, selectedEnvironment: undefined }))
         getAppOtherEnvironmentMin(appId, false)
             .then((envResponse) => {
                 const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
@@ -275,6 +275,7 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                 setState((prev) => ({
                     ...prev,
                     view: ViewType.FORM,
+                    selectedEnvironment: allEnv.find((env) => String(env.value) === envId),
                     environments: allEnv,
                 }))
             })
@@ -293,16 +294,19 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
     }, [])
 
     useEffect(() => {
-        setState((prev) => ({ ...prev, view: ViewType.LOADING, selectedEnvironment: undefined }))
         callGetAppOtherEnv()
     }, [appId, filteredEnvIds])
 
     useEffect(() => {
         if (envId) {
-            setState((prev) => ({ ...prev, view: ViewType.LOADING }))
             callGetDeploymentMetricsAPI()
         }
     }, [envId, appId, state.startDate, state.endDate])
+
+    const selectedEnvironment = useMemo(
+        () => state.environments?.find((env) => String(env.value) === envId) ?? null,
+        [envId, state.environments],
+    )
 
     const closeDeploymentTableModal = (): void => {
         setState((prev) => ({
@@ -464,14 +468,14 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                     inputId="deployment-metrics-select-environment"
                     name="deployment-metrics-select-environment"
                     classNamePrefix="deployment-metrics-select-environment"
-                    value={state.selectedEnvironment}
+                    value={selectedEnvironment}
                     placeholder="Select Environment"
                     onChange={onEnvironmentChange}
                     options={state.environments}
                 />
             </div>
             <div className="dc__align-right ">
-                {state.selectedEnvironment ? (
+                {selectedEnvironment ? (
                     <DatePicker
                         startDate={state.startDate}
                         endDate={state.endDate}
