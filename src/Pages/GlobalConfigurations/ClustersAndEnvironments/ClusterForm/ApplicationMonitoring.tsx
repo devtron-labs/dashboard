@@ -6,8 +6,8 @@ import { ApplicationMonitoringProps } from './types'
 const ApplicationMonitoring = ({
     prometheusConfig,
     prometheusUrl,
-    prometheusToggleEnabled,
-    setPrometheusToggle,
+    isAppMetricsEnabled,
+    toggleAppMetrics,
     handleOnChange,
     onPrometheusAuthTypeChange,
     isGrafanaModuleInstalled,
@@ -29,13 +29,13 @@ const ApplicationMonitoring = ({
             <DTSwitch
                 name="toggle-configure-prometheus"
                 ariaLabel="Toggle configure prometheus"
-                isChecked={prometheusToggleEnabled}
-                onChange={setPrometheusToggle}
+                isChecked={isAppMetricsEnabled}
+                onChange={toggleAppMetrics}
                 isDisabled={!isGrafanaModuleInstalled}
             />
         </div>
-        {!prometheusToggleEnabled && prometheusUrl && <PrometheusWarningInfo />}
-        {prometheusToggleEnabled && (
+        {!isAppMetricsEnabled && prometheusUrl && <PrometheusWarningInfo />}
+        {isAppMetricsEnabled && (
             <PromoetheusConfigCard
                 prometheusConfig={prometheusConfig}
                 handleOnChange={handleOnChange}
