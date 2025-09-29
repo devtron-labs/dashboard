@@ -25,6 +25,12 @@ import {
     ToastManager,
     ToastVariantType,
     ForceDeleteConfirmationModal,
+    ActionMenu,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    ActionMenuProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import './sourceInfo.css'
 import { useParams, useHistory, useRouteMatch } from 'react-router-dom'
@@ -49,6 +55,7 @@ import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog
 import { getEnvironmentName } from './utils'
 import { getAppId } from '../k8Resource/nodeDetail/nodeDetail.api'
 import { DeleteChartDialog } from '@Components/v2/values/chartValuesDiff/DeleteChartDialog'
+import { ClusterActionMenuOptionIdEnum } from '@Components/ResourceBrowser/ResourceList/constants'
 
 const EnvironmentSelectorComponent = ({
     isExternalApp,
@@ -113,23 +120,10 @@ const EnvironmentSelectorComponent = ({
         showUrlInfo(true)
     }
 
-    const showDeleteConfitmationPopup = () => {
+    const showDeleteConfirmationPopup = () => {
         setShowDeleteConfirmation(true)
     }
 
-    const Popup = () => {
-        return (
-            <div className="pod-info__popup-container">
-                <span
-                    className="flex pod-info__popup-row pod-info__popup-row--red cr-5"
-                    onClick={showDeleteConfitmationPopup}
-                >
-                    <span data-testid="delete-helm-app-button">Delete application</span>
-                    <Trash className="icon-dim-20 scr-5" />
-                </span>
-            </div>
-        )
-    }
     const setForceDeleteDialogData = (serverError) => {
         if (serverError instanceof ServerErrors && Array.isArray(serverError.errors)) {
             serverError.errors.map(({ userMessage, internalMessage }) => {
@@ -221,6 +215,12 @@ const EnvironmentSelectorComponent = ({
 
     const closeForceConfirmationModal = () => showForceDeleteDialog(false)
 
+    const handleActionMenuClick: ActionMenuProps['onClick'] = (item) => {
+        if (item.id === ClusterActionMenuOptionIdEnum.DELETE) {
+            showDeleteConfirmationPopup()
+        }
+    }
+
     return (
         <div className="flexbox flex-justify px-20 py-16">
             <div>
@@ -309,12 +309,10 @@ const EnvironmentSelectorComponent = ({
                             )}
                         </div>
                     </div>
-                    {(appDetails?.deploymentAppType) && (
-                            <div className={`flex ${!isVirtualEnvironment ? 'ml-16' : ''}`}>
-                                <DeploymentTypeIcon
-                                    deploymentAppType={appDetails.deploymentAppType}
-                                />
-                            </div>
+                    {appDetails?.deploymentAppType && (
+                        <div className={`flex ${!isVirtualEnvironment ? 'ml-16' : ''}`}>
+                            <DeploymentTypeIcon deploymentAppType={appDetails.deploymentAppType} />
+                        </div>
                     )}
                     {appDetails?.deploymentAppDeleteRequest && (
                         <>
@@ -362,18 +360,33 @@ const EnvironmentSelectorComponent = ({
                     ) && (
                         <div
                             data-testid="dot-button-app-details"
-                            className="helm-delete-wrapper flex ml-8 mw-none cta cancel small"
+                            className="ml-8"
                         >
-                            <PopupMenu autoClose>
-                                <PopupMenu.Button rootClassName="flex" isKebab>
-                                    <Dots className="pod-info__dots icon-dim-20 fcn-6" />
-                                </PopupMenu.Button>
-                                <PopupMenu.Body>
-                                    <div className="helm-delete-pop-up bg__primary br-4">
-                                        <Popup />
-                                    </div>
-                                </PopupMenu.Body>
-                            </PopupMenu>
+                            <ActionMenu
+                                id="cluster-action-menu"
+                                onClick={handleActionMenuClick}
+                                options={[
+                                    {
+                                        items: [
+                                            {
+                                                id: ClusterActionMenuOptionIdEnum.DELETE,
+                                                label: 'Delete application',
+                                                startIcon: { name: 'ic-delete' },
+                                                type: 'negative',
+                                            },
+                                        ],
+                                    },
+                                ]}
+                                buttonProps={{
+                                    icon: <Icon name="ic-more-vertical" color={null} />,
+                                    ariaLabel: 'additional-options',
+                                    dataTestId: 'additional-options',
+                                    showAriaLabelInTippy: false,
+                                    style: ButtonStyleType.neutral,
+                                    variant: ButtonVariantType.secondary,
+                                    size: ComponentSizeType.medium,
+                                }}
+                            />
 
                             {showDeleteConfirmation && (
                                 <DeleteChartDialog

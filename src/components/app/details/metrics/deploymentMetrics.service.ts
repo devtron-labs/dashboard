@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { get } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartColorKey, get } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes } from '../../../../config'
+import { BenchmarkType } from './deploymentMetrics.types'
 
 export function getDeploymentMetrics(startTime, endTime, appId: string | number, envId: string | number): Promise<any> {
     startTime += 'Z'
@@ -199,21 +200,13 @@ function createDeploymentTableRows(responseResult, startTime: string, endTime: s
     return rows
 }
 
-export interface BenchmarkType {
-    color: string
-    name: string
-    targetName: string
-    targetLabel?: string
-    targetValue: number
-}
-
 export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
     if (frequencyInDays >= 0 && frequencyInDays < 0.06) {
         return {
             name: 'LOW',
             targetName: 'MEDIUM',
             targetValue: 0.06,
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (frequencyInDays >= 0.06 && frequencyInDays < 0.13) {
@@ -221,7 +214,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
             name: 'MEDIUM',
             targetName: 'HIGH',
             targetValue: 0.13,
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (frequencyInDays >= 0.13 && frequencyInDays < 1) {
@@ -229,7 +222,7 @@ export function getFrequencyBenchmark(frequencyInDays: number): BenchmarkType {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 1,
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 
@@ -256,7 +249,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'LOW',
             targetName: 'MEDIUM',
             targetValue: 46,
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (failureRate <= 46 && failureRate > 30) {
@@ -264,7 +257,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'MEDIUM',
             targetName: 'HIGH',
             targetValue: 30,
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (failureRate <= 30 && failureRate > 15) {
@@ -272,7 +265,7 @@ export function getFailureRateBenchmark(failureRate: number): BenchmarkType {
             name: 'HIGH',
             targetName: 'ELITE',
             targetValue: 15,
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 
@@ -302,7 +295,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'MEDIUM',
             targetValue: 14 * 60 * 24,
             targetLabel: createTimestamp(14 * 60 * 24),
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (leadTimeInDays <= 14 && leadTimeInDays > 7) {
@@ -311,7 +304,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'HIGH',
             targetValue: 7 * 60 * 24,
             targetLabel: createTimestamp(7 * 60 * 24),
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (leadTimeInDays <= 7 && leadTimeInDays > 2) {
@@ -320,7 +313,7 @@ export function getLeadTimeBenchmark(leadTimeInMinutes: number): BenchmarkType {
             targetName: 'ELITE',
             targetValue: 2 * 60 * 24,
             targetLabel: createTimestamp(2 * 60 * 24),
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 
@@ -341,7 +334,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'MEDIUM',
             targetLabel: createTimestamp(8 * 60),
             targetValue: 8 * 60,
-            color: 'var(--Y500)',
+            color: 'GoldenYellow500' as ChartColorKey,
         }
     }
     if (recoveryTimeInHours <= 8 && recoveryTimeInHours > 4) {
@@ -350,7 +343,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'HIGH',
             targetValue: 4 * 60,
             targetLabel: createTimestamp(4 * 60),
-            color: 'var(--G500)',
+            color: 'LimeGreen500' as ChartColorKey,
         }
     }
     if (recoveryTimeInHours <= 4 && recoveryTimeInHours > 1) {
@@ -359,7 +352,7 @@ export function getRecoveryTimeBenchmark(recoveryTimeInMinutes: number): Benchma
             targetName: 'ELITE',
             targetValue: 1 * 60,
             targetLabel: createTimestamp(1 * 60),
-            color: 'var(--V500)',
+            color: 'Lavender500' as ChartColorKey,
         }
     }
 

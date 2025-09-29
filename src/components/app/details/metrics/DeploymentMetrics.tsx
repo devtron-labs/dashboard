@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import React, { Component, useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import moment from 'moment'
-import { Bar, BarChart, Label, Legend, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
 import {
+    Chart,
+    ChartColorKey,
+    ChartProps,
     EMPTY_STATE_STATUS,
     ErrorScreenManager,
     GenericEmptyState,
     Progressing,
     SelectPicker,
     showError,
+    Tooltip,
     URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -35,26 +37,25 @@ import { ReactComponent as Success } from '@Icons/appstatus/healthy.svg'
 import { ReactComponent as Fail } from '@Icons/ic-error-exclamation.svg'
 import { ReactComponent as ICHelpOutline } from '@Icons/ic-help-outline.svg'
 import { ReactComponent as Deploy } from '@Icons/ic-nav-rocket.svg'
-
 import AppNotDeployed from '@Images/app-not-deployed.svg'
 import SelectEnvImage from '@Images/ic-empty-dep-metrics@2x.png'
+
 import { ViewType } from '../../../../config'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
 import { DatePicker, useAppContext } from '../../../common'
 import { BenchmarkModal } from './BenchmarkModal'
 import { getDeploymentMetrics } from './deploymentMetrics.service'
-import { DeploymentMetricsProps, DeploymentMetricsState } from './deploymentMetrics.types'
+import {
+    DeploymentMetricsProps,
+    DeploymentMetricsState,
+    FrequencyGraphLegendProps,
+    RecoveryAndLeadTimeGraphLegendProps,
+} from './deploymentMetrics.types'
 import {
     BenchmarkLine,
     EliteCategoryMessage,
     FailureLegendEmptyState,
-    FrequencyTooltip,
-    frequencyXAxisLabel,
     getGALabel,
-    LeadTimeTooltip,
-    leadTimeXAxisLabel,
-    recoveryTimeLabel,
-    RecoveryTimeTooltip,
     ReferenceLineLegend,
     renderCategoryTag,
 } from './deploymentMetrics.util'
@@ -63,109 +64,221 @@ import { DeploymentTableModal } from './DeploymentTableModal'
 
 import './deploymentMetrics.scss'
 
-class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, DeploymentMetricsState> {
-    constructor(props) {
-        super(props)
+const FrequencyGraphLegend = ({
+    noFailures,
+    frequency,
+    failureRate,
+    frequencyBenchmark,
+    failureRateBenchmark,
+    setFrequencyMetric,
+    setFailureMetric,
+}: FrequencyGraphLegendProps) => (
+    <div className="graph-legend">
+        <div className="w-50 dc__inline-block">
+            <p className="graph-legend__primary-label">
+                Deployment Frequency
+                <Tooltip content="How often this app is deployed to production?" alwaysShowTippyOnHover>
+                    <span>
+                        <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                    </span>
+                </Tooltip>
+                <button
+                    type="button"
+                    className="dc__no-border p-0 m-0 dc__transparent--unstyled"
+                    onClick={setFrequencyMetric}
+                >
+                    {renderCategoryTag(frequencyBenchmark.name)}{' '}
+                </button>
+            </p>
+            <p className="graph-legend__primary-value">
+                <span className="mr-10">{frequency}</span>
+                <ReferenceLineLegend />
+            </p>
+            {failureRateBenchmark?.targetName === 'ELITE' ? (
+                <EliteCategoryMessage onClick={setFrequencyMetric} />
+            ) : (
+                <button
+                    type="button"
+                    className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+                    onClick={setFrequencyMetric}
+                >
+                    <p className="graph-legend__secondary-label">
+                        {frequencyBenchmark?.targetName} (Target Benchmark)
+                        <span className="mr-5" />
+                        <BenchmarkLine category={frequencyBenchmark.targetName} />
+                    </p>
+                    <p className="graph-legend__secondary-value">{frequencyBenchmark?.targetValue} / day</p>
+                </button>
+            )}
+        </div>
+        <div className="w-50 dc__inline-block" style={{ verticalAlign: 'top' }}>
+            {!noFailures ? (
+                <>
+                    <p className="graph-legend__primary-label">
+                        Change Failure Rate
+                        <Tooltip alwaysShowTippyOnHover content="How often does the pipeline fail?">
+                            <span>
+                                <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                            </span>
+                        </Tooltip>
+                        <button
+                            type="button"
+                            className="dc__no-border p-0 m-0 dc__transparent--unstyled"
+                            onClick={setFailureMetric}
+                        >
+                            {renderCategoryTag(failureRateBenchmark?.name)}{' '}
+                        </button>
+                    </p>
+                    <p className="graph-legend__primary-value">{failureRate}</p>
+                    {failureRateBenchmark?.name !== 'ELITE' ? (
+                        <button
+                            type="button"
+                            className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+                            onClick={setFailureMetric}
+                        >
+                            <p className="graph-legend__secondary-label">
+                                {failureRateBenchmark?.targetName} (Target Benchmark)
+                            </p>
+                            <p className="graph-legend__secondary-value">{failureRateBenchmark?.targetValue}%</p>
+                        </button>
+                    ) : (
+                        <EliteCategoryMessage onClick={setFailureMetric} />
+                    )}
+                </>
+            ) : (
+                <FailureLegendEmptyState />
+            )}
+        </div>
+    </div>
+)
 
-        this.state = {
-            code: 0,
-            view: ViewType.LOADING,
-            // used by ReactSelect Menu
-            selectedEnvironment: undefined,
-            environments: [],
-            frequencyAndLeadTimeGraph: [],
-            recoveryTimeGraph: [],
-            rows: [],
-            avgFrequency: 0,
-            totalDeployments: 0,
-            failedDeployments: 0,
-            failureRateBenchmark: undefined,
-            frequencyBenchmark: undefined,
-            failureRate: 0,
-            meanLeadTime: 0,
-            meanRecoveryTime: 0,
-            benchmarkModalData: undefined,
-            startDate: moment().set({ hour: 0, minute: 0, seconds: 0 }).subtract(6, 'months'),
-            endDate: moment().set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
-            focusedInput: null,
-            meanLeadTimeLabel: '',
-            leadTimeBenchmark: undefined,
-            meanRecoveryTimeLabel: '',
-            recoveryTimeBenchmark: undefined,
-            maxFrequency: 0,
-            statusFilter: -1,
-            filterBy: {
-                startDate: undefined,
-                endDate: undefined,
-            },
-            deploymentTableView: ViewType.FORM,
-        }
-        this.handleDatesChange = this.handleDatesChange.bind(this)
-        this.handleFocusChange = this.handleFocusChange.bind(this)
-        this.handleTableFilter = this.handleTableFilter.bind(this)
-        this.closeDeploymentTableModal = this.closeDeploymentTableModal.bind(this)
+const RecoveryAndLeadTimeGraphLegend = ({
+    noFailures,
+    valueLabel,
+    label,
+    tooltipText,
+    benchmark,
+    setMetric,
+}: RecoveryAndLeadTimeGraphLegendProps) => {
+    if (noFailures) {
+        return (
+            <div className="graph-legend">
+                <p className="graph-legend__primary-label">
+                    {label}
+                    <Tooltip alwaysShowTippyOnHover content={tooltipText}>
+                        <span>
+                            <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                        </span>
+                    </Tooltip>
+                </p>
+                <p className="graph-legend__primary-value">
+                    <ReferenceLineLegend />
+                </p>
+                <p className="graph-legend__secondary-label">No recoveries were required during this period.</p>
+            </div>
+        )
     }
 
-    componentDidMount() {
-        this.callGetAppOtherEnv(undefined)
-        ReactGA.event({
-            category: 'Deployment Metrics',
-            action: 'First Land',
-            label: '',
-        })
-    }
+    return (
+        <div className="graph-legend">
+            <p className="graph-legend__primary-label">
+                {label}
+                <Tooltip alwaysShowTippyOnHover content={tooltipText}>
+                    <span>
+                        <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
+                    </span>
+                </Tooltip>
+                <button type="button" className="dc__no-border p-0 m-0 dc__transparent--unstyled" onClick={setMetric}>
+                    {renderCategoryTag(benchmark?.name)}{' '}
+                </button>
+            </p>
+            <p className="graph-legend__primary-value">
+                <span className="mr-10">{valueLabel}</span>
+                <ReferenceLineLegend />
+            </p>
+            {benchmark?.name !== 'ELITE' ? (
+                <button
+                    type="button"
+                    className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column"
+                    onClick={setMetric}
+                >
+                    <p className="graph-legend__secondary-label">
+                        {benchmark?.targetName} (Target Benchmark)
+                        <span className="mr-5" />
+                        <BenchmarkLine category={benchmark.targetName} />
+                    </p>
+                    <p className="graph-legend__secondary-value">{benchmark?.targetLabel}</p>
+                </button>
+            ) : (
+                <EliteCategoryMessage className="cursor" onClick={setMetric} />
+            )}
+        </div>
+    )
+}
 
-    componentDidUpdate(prevProps, prevState) {
-        if (
-            prevProps.match.params.appId !== this.props.match.params.appId ||
-            prevProps.filteredEnvIds !== this.props.filteredEnvIds
-        ) {
-            this.setState({ view: ViewType.LOADING, selectedEnvironment: undefined })
-            this.callGetAppOtherEnv(prevProps.match.params.envId)
-        }
-        if (this.props.match.params.envId && prevProps.match.params.envId !== this.props.match.params.envId) {
-            this.setState({ view: ViewType.LOADING })
-            this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
-        }
-        if (
-            (!prevState.startDate && this.state.startDate) ||
-            (!prevState.endDate && this.state.endDate) ||
-            prevState.startDate?.valueOf() !== this.state.startDate?.valueOf() ||
-            prevState.endDate?.valueOf() !== this.state.endDate?.valueOf()
-        ) {
-            this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
-        }
-    }
+const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) => {
+    const { appId, envId } = useParams<{ appId: string; envId: string }>()
 
-    callGetDeploymentMetricsAPI(appId, envId) {
-        if (!this.state.startDate?.isValid() || !this.state.endDate?.isValid()) {
+    const history = useHistory()
+
+    const [state, setState] = useState<DeploymentMetricsState>({
+        code: 0,
+        view: ViewType.LOADING,
+        environments: [],
+        frequencyAndLeadTimeGraph: [],
+        recoveryTimeGraph: [],
+        rows: [],
+        avgFrequency: 0,
+        totalDeployments: 0,
+        failedDeployments: 0,
+        failureRateBenchmark: undefined,
+        frequencyBenchmark: undefined,
+        failureRate: 0,
+        meanLeadTime: 0,
+        meanRecoveryTime: 0,
+        benchmarkModalData: undefined,
+        startDate: moment().set({ hour: 0, minute: 0, seconds: 0 }).subtract(6, 'months'),
+        endDate: moment().set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+        focusedInput: null,
+        meanLeadTimeLabel: '',
+        leadTimeBenchmark: undefined,
+        meanRecoveryTimeLabel: '',
+        recoveryTimeBenchmark: undefined,
+        maxFrequency: 0,
+        statusFilter: -1,
+        filterBy: {
+            startDate: undefined,
+            endDate: undefined,
+        },
+        deploymentTableView: ViewType.FORM,
+    })
+
+    const callGetDeploymentMetricsAPI = () => {
+        if (!state.startDate?.isValid() || !state.endDate?.isValid()) {
             return
         }
-        const startTime = this.state.startDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
-        const endTime = this.state.endDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
+        const startTime = state.startDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
+        const endTime = state.endDate.format('YYYY-MM-DDTHH:mm:ss.SSS')
+        setState((prev) => ({ ...prev, view: ViewType.LOADING }))
         getDeploymentMetrics(startTime, endTime, appId, envId)
             .then((metricsResponse) => {
-                const selectedEnvironment = this.state.environments.find(
-                    (env) => String(env.value) === this.props.match.params.envId,
-                )
-                this.setState({
+                setState((prev) => ({
+                    ...prev,
                     view: ViewType.FORM,
-                    selectedEnvironment,
                     ...metricsResponse.result,
-                })
+                }))
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ code: error.code, view: ViewType.ERROR })
+                setState((prev) => ({ ...prev, code: error.code, view: ViewType.ERROR }))
             })
     }
 
-    callGetAppOtherEnv(prevEnvId: string | undefined) {
-        getAppOtherEnvironmentMin(this.props.match.params.appId, false)
+    const callGetAppOtherEnv = () => {
+        setState((prev) => ({ ...prev, view: ViewType.LOADING, selectedEnvironment: undefined }))
+        getAppOtherEnvironmentMin(appId, false)
             .then((envResponse) => {
-                const filteredEnvMap = this.props.filteredEnvIds
-                    ?.split(',')
-                    .reduce((agg, curr) => agg.set(+curr, true), new Map())
+                const filteredEnvMap = filteredEnvIds?.split(',').reduce((agg, curr) => agg.set(+curr, true), new Map())
                 const allEnv =
                     envResponse.result
                         ?.filter(
@@ -174,48 +287,60 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
                                 !env.deploymentAppDeleteRequest &&
                                 (!filteredEnvMap || filteredEnvMap.get(env.environmentId)),
                         )
-                        .map((env) => {
-                            return {
-                                label: env.environmentName,
-                                value: env.environmentId,
-                                deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
-                            }
-                        }) || []
-                const isEnvExist = prevEnvId && allEnv.find((e) => Number(e.value) === Number(prevEnvId))
-                const redirectToNewUrl =
-                    allEnv.length && prevEnvId && (prevEnvId !== this.props.match.params.envId || !isEnvExist)
-                this.setState({
+                        .map((env) => ({
+                            label: env.environmentName,
+                            value: env.environmentId,
+                            deploymentAppDeleteRequest: env.deploymentAppDeleteRequest,
+                        })) || []
+                setState((prev) => ({
+                    ...prev,
+                    view: ViewType.FORM,
+                    selectedEnvironment: allEnv.find((env) => String(env.value) === envId),
                     environments: allEnv,
-                    view: this.props.match.params.envId || redirectToNewUrl ? ViewType.LOADING : ViewType.FORM,
-                })
-                if (redirectToNewUrl) {
-                    const url = generatePath(this.props.match.path, {
-                        appId: this.props.match.params.appId,
-                        envId: isEnvExist ? prevEnvId : allEnv[0].value,
-                    })
-                    this.props.history.push(url)
-                } else if (this.props.match.params.envId) {
-                    this.callGetDeploymentMetricsAPI(this.props.match.params.appId, this.props.match.params.envId)
-                }
+                }))
             })
             .catch((error) => {
                 showError(error)
-                this.setState({ code: error.code, view: ViewType.ERROR })
+                setState((prev) => ({ ...prev, code: error.code, view: ViewType.ERROR }))
             })
     }
 
-    closeDeploymentTableModal(): void {
-        this.setState({
+    useEffect(() => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'First Land',
+            label: '',
+        })
+    }, [])
+
+    useEffect(() => {
+        callGetAppOtherEnv()
+    }, [appId, filteredEnvIds])
+
+    useEffect(() => {
+        if (envId) {
+            callGetDeploymentMetricsAPI()
+        }
+    }, [envId, appId, state.startDate, state.endDate])
+
+    const selectedEnvironment = useMemo(
+        () => state.environments?.find((env) => String(env.value) === envId) ?? null,
+        [envId, state.environments],
+    )
+
+    const closeDeploymentTableModal = (): void => {
+        setState((prev) => ({
+            ...prev,
             filterBy: {
                 startDate: undefined,
                 endDate: undefined,
             },
-        })
+        }))
     }
 
-    handleEnvironmentChange(selected): void {
-        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}/deployment-metrics/${selected.value}`
-        this.props.history.push(URL)
+    const handleEnvironmentChange = (selected): void => {
+        const URL = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/deployment-metrics/${selected.value}`
+        history.push(URL)
         ReactGA.event({
             category: 'Deployment Metrics',
             action: 'Environment Selection Changed',
@@ -223,323 +348,364 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         })
     }
 
-    handleDatesChange({ startDate, endDate }): void {
-        this.setState({
-            startDate: startDate?.set({ hour: 0, minute: 0, seconds: 0 }),
-            endDate: endDate?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
-        })
+    const handleDatesChange = ({ startDate: newStartDate, endDate: newEndDate }): void => {
+        setState((prev) => ({
+            ...prev,
+            startDate: newStartDate?.set({ hour: 0, minute: 0, seconds: 0 }),
+            endDate: newEndDate?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+        }))
     }
 
-    handleFocusChange(focusedInput): void {
-        this.setState({ focusedInput })
+    const handleFocusChange = (focusedInput): void => {
+        setState((prev) => ({ ...prev, focusedInput }))
     }
 
-    handleTableFilter(event): void {
+    const handleTableFilter = (event): void => {
         ReactGA.event({
             category: 'Deployment Metrics',
             action: 'Deployment Status Filter Clicked',
             label: getGALabel(event.target.value),
         })
-        this.setState({ statusFilter: Number(event.target.value), deploymentTableView: ViewType.LOADING }, () => {
-            setTimeout(() => {
-                this.setState({ deploymentTableView: ViewType.FORM })
-            }, 500)
-        })
+        setState((prev) => ({
+            ...prev,
+            statusFilter: Number(event.target.value),
+            deploymentTableView: ViewType.LOADING,
+        }))
+        setTimeout(() => {
+            setState((prev) => ({ ...prev, deploymentTableView: ViewType.FORM }))
+        }, 500)
     }
 
-    renderInputs() {
-        return (
-            <div className="deployment-metrics__inputs bg__primary">
-                <div className="w-180" data-testid="select-environment">
-                    <SelectPicker
-                        inputId="deployment-metrics-select-environment"
-                        name="deployment-metrics-select-environment"
-                        classNamePrefix="deployment-metrics-select-environment"
-                        value={this.state.selectedEnvironment}
-                        placeholder="Select Environment"
-                        onChange={(selected) => {
-                            this.handleEnvironmentChange(selected)
-                        }}
-                        options={this.state.environments}
+    const freqData = state.frequencyAndLeadTimeGraph
+    const freqGraphXAxisLabels = useMemo(() => freqData.map((d) => d.xAxisLabel), [freqData])
+
+    const freqGraphDatasets: (ChartProps & { type: 'stackedBar' })['datasets'] = useMemo(
+        () => [
+            {
+                datasetName: 'Failures',
+                yAxisValues: freqData.map((d) => d.failures ?? 0),
+                color: 'CoralRed300' as ChartColorKey,
+                isClickable: true,
+            },
+            {
+                datasetName: 'Success',
+                yAxisValues: freqData.map((d) => d.success ?? 0),
+                color: 'LimeGreen300' as ChartColorKey,
+                isClickable: true,
+            },
+        ],
+        [JSON.stringify(freqData)],
+    )
+
+    const freqGraphReferenceLines = useMemo(
+        () => [
+            ...(state.frequencyBenchmark
+                ? [
+                      {
+                          value: state.frequencyBenchmark.targetValue,
+                          color: state.frequencyBenchmark.color as ChartColorKey,
+                      },
+                  ]
+                : []),
+            { value: state.avgFrequency },
+        ],
+        [state.frequencyBenchmark, state.avgFrequency],
+    )
+
+    // Lead Time Graph memoized values
+    const leadTimeData = state.frequencyAndLeadTimeGraph
+    const leadTimeGraphXAxisLabels = useMemo(() => leadTimeData.map((d) => d.xAxisLabel), [leadTimeData])
+
+    const leadTimeGraphDatasets: (ChartProps & { type: 'stackedBar' })['datasets'] = useMemo(
+        () => [
+            {
+                datasetName: 'Max Lead Time',
+                yAxisValues: leadTimeData.map((d) => d.maxLeadTime ?? 0),
+                color: 'SkyBlue300' as ChartColorKey,
+                isClickable: true,
+            },
+        ],
+        [leadTimeData],
+    )
+
+    const leadTimeGraphReferenceLines = useMemo(
+        () => [
+            ...(state.leadTimeBenchmark
+                ? [
+                      {
+                          value: state.leadTimeBenchmark.targetValue,
+                          color: state.leadTimeBenchmark.color as ChartColorKey,
+                      },
+                  ]
+                : []),
+            { value: state.meanLeadTime },
+        ],
+        [state.leadTimeBenchmark, state.meanLeadTime],
+    )
+
+    // Recovery Time Graph memoized values
+    const recoveryTimeData = state.recoveryTimeGraph
+    const recoveryTimeGraphXAxisLabels = useMemo(
+        () => recoveryTimeData.map((d) => d.xAxisLabel ?? ''),
+        [recoveryTimeData],
+    )
+
+    const recoveryTimeGraphDatasets: (ChartProps & { type: 'stackedBar' })['datasets'] = useMemo(
+        () => [
+            {
+                datasetName: 'Recovery Time for Failed Deployments',
+                yAxisValues: recoveryTimeData.map((d) => d.recoveryTime ?? 0),
+                color: 'GoldenYellow300' as ChartColorKey,
+                isClickable: true,
+            },
+        ],
+        [recoveryTimeData],
+    )
+
+    const recoveryTimeGraphReferenceLines = useMemo(
+        () => [
+            ...(state.recoveryTimeBenchmark
+                ? [
+                      {
+                          value: state.recoveryTimeBenchmark.targetValue,
+                          color: state.recoveryTimeBenchmark.color as ChartColorKey,
+                      },
+                  ]
+                : []),
+            { value: state.meanRecoveryTime },
+        ],
+        [state.recoveryTimeBenchmark, state.meanRecoveryTime],
+    )
+
+    const onEnvironmentChange = (selected) => {
+        handleEnvironmentChange(selected)
+    }
+
+    const renderInputs = () => (
+        <div className="deployment-metrics__inputs bg__primary">
+            <div className="w-180" data-testid="select-environment">
+                <SelectPicker
+                    inputId="deployment-metrics-select-environment"
+                    name="deployment-metrics-select-environment"
+                    classNamePrefix="deployment-metrics-select-environment"
+                    value={selectedEnvironment}
+                    placeholder="Select Environment"
+                    onChange={onEnvironmentChange}
+                    options={state.environments}
+                />
+            </div>
+            <div className="dc__align-right ">
+                {selectedEnvironment ? (
+                    <DatePicker
+                        startDate={state.startDate}
+                        endDate={state.endDate}
+                        focusedInput={state.focusedInput}
+                        handleDatesChange={handleDatesChange}
+                        handleFocusChange={handleFocusChange}
                     />
-                </div>
-                <div className="dc__align-right ">
-                    {this.state.selectedEnvironment ? (
-                        <DatePicker
-                            startDate={this.state.startDate}
-                            endDate={this.state.endDate}
-                            focusedInput={this.state.focusedInput}
-                            handleDatesChange={this.handleDatesChange}
-                            handleFocusChange={this.handleFocusChange}
+                ) : null}
+            </div>
+        </div>
+    )
+
+    const onDeploymentFrequencyChartClick = (_: string, index: number): void => {
+        const deploymentFrequencyData = freqData[index]
+        if (!deploymentFrequencyData) return
+        setState((prev) => ({
+            ...prev,
+            filterBy: {
+                startDate: moment(deploymentFrequencyData.startTime),
+                endDate: moment(deploymentFrequencyData.endTime),
+            },
+        }))
+    }
+
+    const renderDeploymentFrequencyChart = () => (
+        <div className="flex dc__no-shrink">
+            <Chart
+                id="deployment-frequency"
+                type="stackedBar"
+                xAxisLabels={freqGraphXAxisLabels}
+                hideXAxisLabels
+                datasets={freqGraphDatasets}
+                referenceLines={freqGraphReferenceLines}
+                onChartClick={onDeploymentFrequencyChartClick}
+            />
+        </div>
+    )
+
+    const onRecoveryAndLeadTimeChartClick = (_: string, index: number): void => {
+        const leadTimeEntry = leadTimeData[index]
+        if (!leadTimeEntry) return
+        setState((prev) => ({
+            ...prev,
+            filterBy: {
+                startDate: moment(leadTimeEntry.startTime),
+                endDate: moment(leadTimeEntry.endTime),
+            },
+        }))
+    }
+
+    const renderRecoveryAndLeadTimeGraph = () => (
+        <div className="flex dc__no-shrink">
+            <Chart
+                id="mean-lead-time"
+                type="stackedBar"
+                xAxisLabels={leadTimeGraphXAxisLabels}
+                hideXAxisLabels
+                datasets={leadTimeGraphDatasets}
+                referenceLines={leadTimeGraphReferenceLines}
+                onChartClick={onRecoveryAndLeadTimeChartClick}
+            />
+        </div>
+    )
+
+    const onMeanTimeToRecoveryChartClick = (_: string, index: number): void => {
+        const recoveryTimeMetric = recoveryTimeData[index]
+        if (!recoveryTimeMetric) return
+        // NOTE: startDate, and endDate [releaseTime-2, releaseTime+2]
+        setState((prev) => ({
+            ...prev,
+            filterBy: {
+                startDate: recoveryTimeMetric.releaseTime ? moment(recoveryTimeMetric.releaseTime) : undefined,
+                endDate: recoveryTimeMetric.releaseTime
+                    ? moment(recoveryTimeMetric.releaseTime).add(2, 'seconds')
+                    : undefined,
+            },
+        }))
+    }
+
+    const renderMeanTimeToRecoveryChart = () => (
+        <div className="flex dc__no-shrink">
+            <Chart
+                id="mean-time-to-recovery"
+                type="stackedBar"
+                xAxisLabels={recoveryTimeGraphXAxisLabels}
+                hideXAxisLabels
+                datasets={recoveryTimeGraphDatasets}
+                referenceLines={recoveryTimeGraphReferenceLines}
+                onChartClick={onMeanTimeToRecoveryChartClick}
+            />
+        </div>
+    )
+
+    const setFrequencyMetric = () => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'Graph Bar Clicked',
+            label: 'Deployment Frequency',
+        })
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'DEPLOYMENT_FREQUENCY',
+                valueLabel: `${state.avgFrequency} /day`,
+                catgory: state.frequencyBenchmark.name,
+                value: state.avgFrequency,
+            },
+        }))
+    }
+
+    const setFailureMetric = () => {
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'FAILURE_RATE',
+                valueLabel: `${state.failureRate} %`,
+                catgory: state.failureRateBenchmark.name,
+                value: state.failureRate,
+            },
+        }))
+    }
+
+    const setMeanLeadTimeMetric = () => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'Graph Bar Clicked',
+            label: 'Mean Lead Time',
+        })
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'LEAD_TIME',
+                valueLabel: state.meanLeadTimeLabel,
+                catgory: state.leadTimeBenchmark.name,
+                value: state.meanLeadTime,
+            },
+        }))
+    }
+
+    const setRecoveryAndLeadTimeGraphMetric = () => {
+        ReactGA.event({
+            category: 'Deployment Metrics',
+            action: 'Graph Bar Clicked',
+            label: 'Mean Time To Recovery',
+        })
+        setState((prev) => ({
+            ...prev,
+            benchmarkModalData: {
+                metric: 'RECOVERY_TIME',
+                valueLabel: state.meanRecoveryTimeLabel,
+                catgory: state.recoveryTimeBenchmark.name,
+                value: state.meanRecoveryTime,
+            },
+        }))
+    }
+    const renderGraphs = () => (
+        <>
+            {renderInputs()}
+            <div className="deployment-metrics__graphs dc__gap-12">
+                <div className="deployment-metrics__frequency-graph dc__grid">
+                    <div className="mb-12">
+                        <FrequencyGraphLegend
+                            noFailures={state.recoveryTimeGraph.length === 0}
+                            label="Deployment Frequency"
+                            frequencyBenchmark={state.frequencyBenchmark}
+                            failureRateBenchmark={state.failureRateBenchmark}
+                            frequency={`${state.avgFrequency} / day`}
+                            failureRate={`${state.failureRate} %`}
+                            setFrequencyMetric={setFrequencyMetric}
+                            setFailureMetric={setFailureMetric}
                         />
-                    ) : null}
+                    </div>
+                    {renderDeploymentFrequencyChart()}
+                </div>
+                <div className="deployment-metrics__lead-graph dc__grid">
+                    <div className="mb-12">
+                        <RecoveryAndLeadTimeGraphLegend
+                            noFailures={false}
+                            label="Mean Lead Time"
+                            benchmark={state.leadTimeBenchmark}
+                            tooltipText="How long it takes to deliver a change to production?"
+                            valueLabel={`${state.meanLeadTimeLabel}`}
+                            setMetric={setMeanLeadTimeMetric}
+                        />
+                    </div>
+                    {renderRecoveryAndLeadTimeGraph()}
+                </div>
+                <div className="deployment-metrics__recovery-graph dc__grid">
+                    <div className="mb-12">
+                        <RecoveryAndLeadTimeGraphLegend
+                            noFailures={state.recoveryTimeGraph.length === 0}
+                            label="Mean Time to Recovery"
+                            setMetric={setRecoveryAndLeadTimeGraphMetric}
+                            benchmark={state.recoveryTimeBenchmark}
+                            tooltipText="How long does it take to fix a failed pipeline?"
+                            valueLabel={`${state.meanRecoveryTimeLabel}`}
+                        />
+                    </div>
+                    {renderMeanTimeToRecoveryChart()}
                 </div>
             </div>
-        )
-    }
+        </>
+    )
 
-    renderGraphs() {
-        return (
-            <>
-                {this.renderInputs()}
-                <div className="deployment-metrics__graphs">
-                    <div className="deployment-metrics__frequency-graph">
-                        <ResponsiveContainer>
-                            <BarChart data={this.state.frequencyAndLeadTimeGraph}>
-                                <Tooltip cursor={{ fill: 'var(--G100)' }} content={<FrequencyTooltip />} />
-                                <Legend
-                                    verticalAlign="top"
-                                    align="left"
-                                    height={134}
-                                    content={
-                                        <FrequencyGraphLegend
-                                            noFailures={this.state.recoveryTimeGraph.length === 0}
-                                            label="Deployment Frequency"
-                                            frequencyBenchmark={this.state.frequencyBenchmark}
-                                            failureRateBenchmark={this.state.failureRateBenchmark}
-                                            frequency={`${this.state.avgFrequency} / day`}
-                                            failureRate={`${this.state.failureRate} %`}
-                                            setFrequencyMetric={() => {
-                                                ReactGA.event({
-                                                    category: 'Deployment Metrics',
-                                                    action: 'Graph Bar Clicked',
-                                                    label: 'Deployment Frequency',
-                                                })
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'DEPLOYMENT_FREQUENCY',
-                                                        valueLabel: `${this.state.avgFrequency} /day`,
-                                                        catgory: this.state.frequencyBenchmark.name,
-                                                        value: this.state.avgFrequency,
-                                                    },
-                                                })
-                                            }}
-                                            setFailureMetric={() => {
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'FAILURE_RATE',
-                                                        valueLabel: `${this.state.failureRate} %`,
-                                                        catgory: this.state.failureRateBenchmark.name,
-                                                        value: this.state.failureRate,
-                                                    },
-                                                })
-                                            }}
-                                        />
-                                    }
-                                />
-                                <YAxis type="number" dataKey="frequency" domain={[0, this.state.maxFrequency]} hide />
-                                <XAxis
-                                    dataKey="xAxisLabel"
-                                    tickLine={false}
-                                    tick={false}
-                                    axisLine={{ stroke: 'var(--G300)' }}
-                                >
-                                    <Label position="insideBottomLeft" content={frequencyXAxisLabel} />
-                                </XAxis>
-                                <Bar
-                                    dataKey="failures"
-                                    stackId="deployment"
-                                    fill="var(--R300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: data.startTime,
-                                                endDate: data.endTime,
-                                            },
-                                        })
-                                    }}
-                                />
-                                <Bar
-                                    dataKey="success"
-                                    stackId="deployment"
-                                    fill="var(--G300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: data.startTime,
-                                                endDate: data.endTime,
-                                            },
-                                        })
-                                    }}
-                                />
-                                {this.state.frequencyBenchmark ? (
-                                    <ReferenceLine
-                                        y={this.state.frequencyBenchmark.targetValue}
-                                        stroke={this.state.frequencyBenchmark.color}
-                                        strokeWidth="0.5"
-                                        label=""
-                                    />
-                                ) : null}
-                                <ReferenceLine
-                                    y={this.state.avgFrequency}
-                                    stroke="var(--N900)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="3 3"
-                                    label=""
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                    <div className="deployment-metrics__lead-graph">
-                        <ResponsiveContainer>
-                            <BarChart data={this.state.frequencyAndLeadTimeGraph}>
-                                <Tooltip cursor={{ fill: 'var(--B100)' }} content={<LeadTimeTooltip />} />
-                                <Legend
-                                    verticalAlign="top"
-                                    align="left"
-                                    height={134}
-                                    content={
-                                        <RecoveryAndLeadTimeGraphLegend
-                                            noFailures={false}
-                                            label="Mean Lead Time"
-                                            benchmark={this.state.leadTimeBenchmark}
-                                            tooltipText="How long it takes to deliver a change to production?"
-                                            valueLabel={`${this.state.meanLeadTimeLabel}`}
-                                            setMetric={() => {
-                                                ReactGA.event({
-                                                    category: 'Deployment Metrics',
-                                                    action: 'Graph Bar Clicked',
-                                                    label: 'Mean Lead Time',
-                                                })
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'LEAD_TIME',
-                                                        valueLabel: `${this.state.meanLeadTimeLabel}`,
-                                                        catgory: this.state.leadTimeBenchmark.name,
-                                                        value: this.state.meanLeadTime,
-                                                    },
-                                                })
-                                            }}
-                                        />
-                                    }
-                                />
-                                <XAxis
-                                    dataKey="xAxisLabel"
-                                    tickLine={false}
-                                    tick={false}
-                                    axisLine={{ stroke: 'var(--B300)' }}
-                                >
-                                    <Label position="insideBottomLeft" offset={15} content={leadTimeXAxisLabel} />
-                                </XAxis>
-                                <YAxis type="number" dataKey="maxLeadTime" hide />
-                                <Bar
-                                    dataKey="maxLeadTime"
-                                    fill="var(--B300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: data.startTime,
-                                                endDate: data.endTime,
-                                            },
-                                        })
-                                    }}
-                                />
-                                {this.state.leadTimeBenchmark ? (
-                                    <ReferenceLine
-                                        y={this.state.leadTimeBenchmark.targetValue}
-                                        stroke={this.state.leadTimeBenchmark.color}
-                                        strokeWidth="0.5"
-                                        label=""
-                                    />
-                                ) : null}
-                                <ReferenceLine
-                                    y={this.state.meanLeadTime}
-                                    stroke="var(--N900)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="3 3"
-                                    label=""
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                    <div className="deployment-metrics__recovery-graph">
-                        <ResponsiveContainer>
-                            <BarChart data={this.state.recoveryTimeGraph}>
-                                <Tooltip cursor={{ fill: 'var(--Y100)' }} content={<RecoveryTimeTooltip />} />
-                                <Legend
-                                    verticalAlign="top"
-                                    align="left"
-                                    height={134}
-                                    content={
-                                        <RecoveryAndLeadTimeGraphLegend
-                                            noFailures={this.state.recoveryTimeGraph.length === 0}
-                                            label="Mean Time to Recovery"
-                                            setMetric={() => {
-                                                ReactGA.event({
-                                                    category: 'Deployment Metrics',
-                                                    action: 'Graph Bar Clicked',
-                                                    label: 'Mean Time To Recovery',
-                                                })
-                                                this.setState({
-                                                    benchmarkModalData: {
-                                                        metric: 'RECOVERY_TIME',
-                                                        valueLabel: `${this.state.meanRecoveryTimeLabel}`,
-                                                        catgory: this.state.recoveryTimeBenchmark.name,
-                                                        value: this.state.meanRecoveryTime,
-                                                    },
-                                                })
-                                            }}
-                                            benchmark={this.state.recoveryTimeBenchmark}
-                                            tooltipText="How long does it take to fix a failed pipeline?"
-                                            valueLabel={`${this.state.meanRecoveryTimeLabel}`}
-                                        />
-                                    }
-                                />
-                                <XAxis
-                                    dataKey="xAxisLabel"
-                                    tickLine={false}
-                                    tick={false}
-                                    axisLine={{ stroke: 'var(--Y300)' }}
-                                >
-                                    <Label position="insideBottomLeft" offset={15} content={recoveryTimeLabel} />
-                                </XAxis>
-                                <YAxis type="number" dataKey="recoveryTime" hide />
-                                <Bar
-                                    dataKey="recoveryTime"
-                                    fill="var(--Y300)"
-                                    style={{ cursor: 'pointer' }}
-                                    onClick={(data) => {
-                                        // NOTE: startDate, and endDate [releasetTime-2, releaseTime+2]
-                                        this.setState({
-                                            filterBy: {
-                                                startDate: moment(data.releaseTime),
-                                                endDate: moment(data.releaseTime).add(2, 'seconds'),
-                                            },
-                                        })
-                                    }}
-                                />
-                                {this.state.recoveryTimeBenchmark ? (
-                                    <ReferenceLine
-                                        y={this.state.recoveryTimeBenchmark.targetValue}
-                                        stroke={this.state.recoveryTimeBenchmark.color}
-                                        strokeWidth="0.5"
-                                        label=""
-                                    />
-                                ) : null}
-                                <ReferenceLine
-                                    y={this.state.meanRecoveryTime}
-                                    stroke="var(--N900)"
-                                    strokeWidth="0.5"
-                                    strokeDasharray="3 3"
-                                    label=""
-                                />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-            </>
-        )
-    }
-
-    renderEmptyState() {
-        const env = this.state.environments.find((e) => e.value === Number(this.props.match.params.envId))
+    const renderEmptyState = () => {
+        const env = state.environments.find((e) => e.value === Number(envId))
         const envName = env ? env.label : ''
         return (
             <div className="flexbox-col flex-grow-1">
-                {this.renderInputs()}
+                {renderInputs()}
                 <div className="dc__position-rel bg__primary flex-grow-1">
                     <GenericEmptyState
                         image={AppNotDeployed}
@@ -551,148 +717,146 @@ class DeploymentMetricsComponent extends Component<DeploymentMetricsProps, Deplo
         )
     }
 
-    renderNoEnvironmentView() {
-        return (
-            <div className="flex-grow-1">
+    const renderNoEnvironmentView = () => (
+        <div className="flex-grow-1">
+            <GenericEmptyState
+                image={SelectEnvImage}
+                title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
+                subTitle={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.SUBTITLE}
+            />
+        </div>
+    )
+
+    const renderSelectEnvironmentView = () => (
+        <div className="flexbox-col flex-grow-1">
+            {renderInputs()}
+            <div className="dc__position-rel flex-grow-1 bg__primary">
                 <GenericEmptyState
                     image={SelectEnvImage}
-                    title={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.TITLE}
-                    subTitle={EMPTY_STATE_STATUS.RENDER_NO_ENVIORNMENT_STATE.SUBTITLE}
+                    title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
+                    subTitle={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.SUBTITLE}
                 />
             </div>
-        )
-    }
+        </div>
+    )
 
-    renderSelectEnvironmentView() {
-        return (
-            <div className="flexbox-col flex-grow-1">
-                {this.renderInputs()}
-                <div className="dc__position-rel flex-grow-1 bg__primary">
-                    <GenericEmptyState
-                        image={SelectEnvImage}
-                        title={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.TITLE}
-                        subTitle={EMPTY_STATE_STATUS.RENDER_SELECT_ENVIRONMENT_VIEW.SUBTITLE}
-                    />
-                </div>
-            </div>
-        )
-    }
-
-    renderModal() {
-        if (this.state.filterBy.startDate && this.state.filterBy.endDate) {
-            const rows = this.state.rows.filter((deployment) => {
-                if (
-                    deployment.releaseTime.value >= this.state.filterBy.startDate.valueOf() &&
-                    deployment.releaseTime.value < this.state.filterBy.endDate.valueOf()
-                ) {
-                    return deployment
-                }
-            })
-            return <DeploymentTableModal rows={rows} close={this.closeDeploymentTableModal} />
+    const renderModal = () => {
+        if (state.filterBy.startDate && state.filterBy.endDate) {
+            const filteredRows = state.rows.filter(
+                (deployment) =>
+                    deployment.releaseTime.value >= state.filterBy.startDate.valueOf() &&
+                    deployment.releaseTime.value < state.filterBy.endDate.valueOf(),
+            )
+            return <DeploymentTableModal rows={filteredRows} close={closeDeploymentTableModal} />
         }
+        return null
     }
 
-    renderBenchmarkModal() {
-        if (this.state.benchmarkModalData) {
+    const renderBenchmarkModal = () => {
+        if (state.benchmarkModalData) {
             return (
                 <BenchmarkModal
-                    valueLabel={this.state.benchmarkModalData.valueLabel}
-                    value={this.state.benchmarkModalData.value}
-                    metric={this.state.benchmarkModalData.metric}
-                    category={this.state.benchmarkModalData.catgory}
-                    close={(event) => {
-                        this.setState({ benchmarkModalData: undefined })
+                    valueLabel={state.benchmarkModalData.valueLabel}
+                    value={state.benchmarkModalData.value}
+                    metric={state.benchmarkModalData.metric}
+                    category={state.benchmarkModalData.catgory}
+                    close={() => {
+                        setState((prev) => ({ ...prev, benchmarkModalData: undefined }))
                     }}
                 />
             )
         }
+        return null
     }
 
-    render() {
-        if (this.state.view === ViewType.LOADING) {
-            return (
-                <div className="flex-grow-1">
-                    <Progressing pageLoader />
-                </div>
-            )
-        }
-        if (this.state.view === ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.code} />
-        }
-        if (this.state.view === ViewType.FORM && this.state.environments.length === 0) {
-            return this.renderNoEnvironmentView()
-        }
-        if (this.state.view === ViewType.FORM && (!this.props.match.params.envId || !(this.state.environments ?? []).find((env) => env.value === +this.props.match.params.envId))) {
-            return this.renderSelectEnvironmentView()
-        }
-        if (this.state.view === ViewType.FORM && this.state.frequencyAndLeadTimeGraph.length === 0) {
-            return this.renderEmptyState()
-        }
-
-        const deploymentTableRows =
-            this.state.statusFilter > -1
-                ? this.state.rows.filter((row) => {
-                      if (row.releaseStatus === this.state.statusFilter) {
-                          return row
-                      }
-                  })
-                : this.state.rows
-
+    if (state.view === ViewType.LOADING) {
         return (
-            <div>
-                {this.renderGraphs()}
-                <div className="deployment-metrics__body">
-                    <div className="deployment-table__header mb-16">
-                        <p className="deployment-table__title m-0">
-                            <Deploy className="icon-dim-20 dc__vertical-align-middle mr-5 scn-7 fcn-7" />
-                            Deployments
-                        </p>
-                        <div className="flex right">
-                            <label className="dc__tertiary-tab__radio">
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    checked={this.state.statusFilter === -1}
-                                    value={-1}
-                                    onClick={this.handleTableFilter}
-                                />
-                                <span className="dc__tertiary-tab">All ({this.state.totalDeployments})</span>
-                            </label>
-                            <label className="dc__tertiary-tab__radio" data-testid="success-deployment-status">
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    checked={this.state.statusFilter === 0}
-                                    value={0}
-                                    onClick={this.handleTableFilter}
-                                />
-                                <span className="dc__tertiary-tab">
-                                    <Success className="icon-dim-16 dc__vertical-align-middle mr-4" />
-                                    Success ({this.state.totalDeployments - this.state.failedDeployments})
-                                </span>
-                            </label>
-                            <label className="dc__tertiary-tab__radio" data-testid="failed-deployment-status">
-                                <input
-                                    type="radio"
-                                    name="status"
-                                    checked={this.state.statusFilter === 1}
-                                    value={1}
-                                    onClick={this.handleTableFilter}
-                                />
-                                <span className="dc__tertiary-tab">
-                                    <Fail className="icon-dim-16 dc__vertical-align-middle mr-4" />
-                                    Failed ({this.state.failedDeployments})
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                    <DeploymentTable rows={deploymentTableRows} deploymentTableView={this.state.deploymentTableView} />
-                </div>
-                {this.renderModal()}
-                {this.renderBenchmarkModal()}
+            <div className="flex-grow-1">
+                <Progressing pageLoader />
             </div>
         )
     }
+    if (state.view === ViewType.ERROR) {
+        return <ErrorScreenManager code={state.code} />
+    }
+    if (state.view === ViewType.FORM && state.environments.length === 0) {
+        return renderNoEnvironmentView()
+    }
+    if (state.view === ViewType.FORM && (!envId || !(state.environments ?? []).find((env) => env.value === +envId))) {
+        return renderSelectEnvironmentView()
+    }
+    if (state.view === ViewType.FORM && state.frequencyAndLeadTimeGraph.length === 0) {
+        return renderEmptyState()
+    }
+
+    const deploymentTableRows =
+        state.statusFilter > -1 ? state.rows.filter((row) => row.releaseStatus === state.statusFilter) : state.rows
+
+    return (
+        <div>
+            {renderGraphs()}
+            <div className="deployment-metrics__body">
+                <div className="deployment-table__header mb-16">
+                    <p className="deployment-table__title m-0">
+                        <Deploy className="icon-dim-20 dc__vertical-align-middle mr-5 scn-7 fcn-7" />
+                        Deployments
+                    </p>
+                    <div className="flex right">
+                        <label className="dc__tertiary-tab__radio" htmlFor="deployment-metric__status-all">
+                            <input
+                                id="deployment-metric__status-all"
+                                type="radio"
+                                name="status"
+                                checked={state.statusFilter === -1}
+                                value={-1}
+                                onClick={handleTableFilter}
+                            />
+                            <span className="dc__tertiary-tab">All ({state.totalDeployments})</span>
+                        </label>
+                        <label
+                            className="dc__tertiary-tab__radio"
+                            data-testid="success-deployment-status"
+                            htmlFor="deployment-metric__status-success"
+                        >
+                            <input
+                                id="deployment-metric__status-success"
+                                type="radio"
+                                name="status"
+                                checked={state.statusFilter === 0}
+                                value={0}
+                                onClick={handleTableFilter}
+                            />
+                            <span className="dc__tertiary-tab">
+                                <Success className="icon-dim-16 dc__vertical-align-middle mr-4" />
+                                Success ({state.totalDeployments - state.failedDeployments})
+                            </span>
+                        </label>
+                        <label
+                            className="dc__tertiary-tab__radio"
+                            data-testid="failed-deployment-status"
+                            htmlFor="deployment-metric__status-failed"
+                        >
+                            <input
+                                id="deployment-metric__status-failed"
+                                type="radio"
+                                name="status"
+                                checked={state.statusFilter === 1}
+                                value={1}
+                                onClick={handleTableFilter}
+                            />
+                            <span className="dc__tertiary-tab">
+                                <Fail className="icon-dim-16 dc__vertical-align-middle mr-4" />
+                                Failed ({state.failedDeployments})
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <DeploymentTable rows={deploymentTableRows} deploymentTableView={state.deploymentTableView} />
+            </div>
+            {renderModal()}
+            {renderBenchmarkModal()}
+        </div>
+    )
 }
 
 const DeploymentMetrics = (props: DeploymentMetricsProps) => {
@@ -714,152 +878,3 @@ const DeploymentMetrics = (props: DeploymentMetricsProps) => {
 }
 
 export default DeploymentMetrics
-
-interface FrequencyGraphLegendProps {
-    noFailures: boolean
-    label: string
-    frequency: string
-    failureRate: string
-    frequencyBenchmark: undefined | any
-    failureRateBenchmark: undefined | any
-    setFrequencyMetric: (...args) => void
-    setFailureMetric: (...args) => void
-}
-class FrequencyGraphLegend extends React.Component<FrequencyGraphLegendProps, {}> {
-    render() {
-        return (
-            <div className="graph-legend">
-                <div className="w-50 dc__inline-block">
-                    <p className="graph-legend__primary-label">
-                        Deployment Frequency
-                        <Tippy
-                            className="default-tt"
-                            arrow={false}
-                            content="How often this app is deployed to production?"
-                        >
-                            <span>
-                                <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
-                            </span>
-                        </Tippy>
-                        <span className="cursor" onClick={this.props.setFrequencyMetric}>
-                            {renderCategoryTag(this.props.frequencyBenchmark.name)}{' '}
-                        </span>
-                    </p>
-                    <p className="graph-legend__primary-value">
-                        <span className="mr-10">{this.props.frequency}</span>
-                        <ReferenceLineLegend />
-                    </p>
-                    {this.props.failureRateBenchmark?.targetName === 'ELITE' ? (
-                        <EliteCategoryMessage onClick={this.props.setFrequencyMetric} />
-                    ) : (
-                        <div className="cursor" onClick={this.props.setFrequencyMetric}>
-                            <p className="graph-legend__secondary-label">
-                                {this.props.frequencyBenchmark?.targetName} (Target Benchmark)
-                                <span className="mr-5" />
-                                <BenchmarkLine category={this.props.frequencyBenchmark.targetName} />
-                            </p>
-                            <p className="graph-legend__secondary-value">
-                                {this.props.frequencyBenchmark?.targetValue} / day
-                            </p>
-                        </div>
-                    )}
-                </div>
-                <div className="w-50 dc__inline-block" style={{ verticalAlign: 'top' }}>
-                    {!this.props.noFailures ? (
-                        <>
-                            <p className="graph-legend__primary-label">
-                                Change Failure Rate
-                                <Tippy className="default-tt" arrow={false} content="How often does the pipeline fail?">
-                                    <span>
-                                        <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
-                                    </span>
-                                </Tippy>
-                                <span className="cursor" onClick={this.props.setFailureMetric}>
-                                    {renderCategoryTag(this.props.failureRateBenchmark?.name)}{' '}
-                                </span>
-                            </p>
-                            <p className="graph-legend__primary-value">{this.props.failureRate}</p>
-                            {this.props.failureRateBenchmark?.name !== 'ELITE' ? (
-                                <div className="cursor" onClick={this.props.setFailureMetric}>
-                                    <p className="graph-legend__secondary-label">
-                                        {this.props.failureRateBenchmark?.targetName} (Target Benchmark)
-                                    </p>
-                                    <p className="graph-legend__secondary-value">
-                                        {this.props.failureRateBenchmark?.targetValue}%
-                                    </p>
-                                </div>
-                            ) : (
-                                <EliteCategoryMessage onClick={this.props.setFailureMetric} />
-                            )}
-                        </>
-                    ) : (
-                        <FailureLegendEmptyState />
-                    )}
-                </div>
-            </div>
-        )
-    }
-}
-
-interface RecoveryAndLeadTimeGraphLegendProps {
-    noFailures: boolean
-    valueLabel: string
-    label: string
-    tooltipText: string
-    benchmark: undefined | any
-    setMetric: (...args) => void
-}
-class RecoveryAndLeadTimeGraphLegend extends React.Component<RecoveryAndLeadTimeGraphLegendProps, {}> {
-    render() {
-        if (this.props.noFailures) {
-            return (
-                <div className="graph-legend">
-                    <p className="graph-legend__primary-label">
-                        {this.props.label}
-                        <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                            <span>
-                                <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
-                            </span>
-                        </Tippy>
-                    </p>
-                    <p className="graph-legend__primary-value">
-                        <ReferenceLineLegend />
-                    </p>
-                    <p className="graph-legend__secondary-label">No recoveries were required during this period.</p>
-                </div>
-            )
-        }
-
-        return (
-            <div className="graph-legend">
-                <p className="graph-legend__primary-label">
-                    {this.props.label}
-                    <Tippy className="default-tt" arrow={false} content={this.props.tooltipText}>
-                        <span>
-                            <ICHelpOutline className="icon-dim-20 ml-8 dc__vertical-align-middle mr-5" />
-                        </span>
-                    </Tippy>
-                    <span className="cursor" onClick={this.props.setMetric}>
-                        {renderCategoryTag(this.props.benchmark?.name)}{' '}
-                    </span>
-                </p>
-                <p className="graph-legend__primary-value">
-                    <span className="mr-10">{this.props.valueLabel}</span>
-                    <ReferenceLineLegend />
-                </p>
-                {this.props.benchmark?.name !== 'ELITE' ? (
-                    <div className="cursor" onClick={this.props.setMetric}>
-                        <p className="graph-legend__secondary-label">
-                            {this.props.benchmark?.targetName} (Target Benchmark)
-                            <span className="mr-5" />
-                            <BenchmarkLine category={this.props.benchmark.targetName} />
-                        </p>
-                        <p className="graph-legend__secondary-value">{this.props.benchmark?.targetLabel}</p>
-                    </div>
-                ) : (
-                    <EliteCategoryMessage className="cursor" onClick={this.props.setMetric} />
-                )}
-            </div>
-        )
-    }
-}

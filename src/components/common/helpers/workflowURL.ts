@@ -54,7 +54,7 @@ export function getCIPipelineURL(
                 ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                       appId,
                   })
-                : `/${isJobView ? CommonURLS.AUTOMATION_AND_ENABLEMENT_JOB : CommonURLS.APPLICATION_MANAGEMENT_APP}/${appId}`
+                : `${isJobView ? CommonURLS.AUTOMATION_AND_ENABLEMENT_JOB : CommonURLS.APPLICATION_MANAGEMENT_APP}/${appId}`
         }/edit/workflow/`
     }
     const ciPipelineSuffix = ciPipelineId ? `/${ciPipelineId}` : ''

@@ -2382,44 +2382,6 @@ fieldset[disabled] .navbar-inverse .btn-link:focus {
     border-top-right-radius: 1px;
     border-bottom-right-radius: 1px;
 }
-.pager {
-    padding-left: 0;
-    margin: 20px 0;
-    text-align: center;
-    list-style: none;
-}
-.pager li {
-    display: inline;
-}
-.pager li > a,
-.pager li > span {
-    display: inline-block;
-    padding: 5px 14px;
-    background-color: var(--N100);
-    border: 1px solid var(--N200);
-    border-radius: 0;
-}
-.pager li > a:hover,
-.pager li > a:focus {
-    text-decoration: none;
-    background-color: var(--N100);
-}
-.pager .next > a,
-.pager .next > span {
-    float: right;
-}
-.pager .previous > a,
-.pager .previous > span {
-    float: left;
-}
-.pager .disabled > a,
-.pager .disabled > a:hover,
-.pager .disabled > a:focus,
-.pager .disabled > span {
-    color: #8b8d8f;
-    cursor: not-allowed;
-    background-color: var(--N100);
-}
 .label {
     display: inline;
     padding: 0.2em 0.6em 0.3em;
