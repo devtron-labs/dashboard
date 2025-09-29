@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { NavLink, Prompt, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { Prompt, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
 import {
@@ -28,6 +28,7 @@ import {
     FeatureTitleWithInfo,
     getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
+    InfoIconTippy,
     PageHeader,
     Progressing,
     showError,
@@ -327,12 +328,30 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
                 'chart-store': null,
-                discover: { component: 'Chart Store', linked: false },
+                discover: {
+                    component: (
+                        <div className="flex left dc__gap-16">
+                            <div className="flex">
+                                <span>Chart Store</span>
+
+                                <InfoIconTippy
+                                    infoText={CHART_STORE_TIPPY_CONTENT}
+                                    heading="Chart Store"
+                                    iconClassName="icon-dim-20 ml-8 fcn-5"
+                                    documentationLink="CHART_STORE"
+                                    documentationLinkText="View Documentation"
+                                />
+                            </div>
+
+                            {isSuperAdmin && <ChartsList isLoading={isLoading} chartsList={chartsList} />}
+                        </div>
+                    ),
+                    linked: false,
+                },
             },
         },
         [],
     )
-
 
     const renderBreadcrumbs = () => {
         if (typeof state.configureChartIndex === 'number') {

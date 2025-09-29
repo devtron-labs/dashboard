@@ -18,8 +18,8 @@ import { Dispatch, SetStateAction } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
+    ClusterDetailListType,
     ClusterEnvironmentCategoryType,
-    ClusterStatusType,
     EnvListMinDTO,
     FiltersTypeEnum,
     OptionType,
@@ -216,7 +216,7 @@ export interface AddClusterFormPrefilledInfoType {
 export interface AddEnvironmentFormPrefilledInfoType {
     namespace: string
 }
-export interface DeleteClusterConfirmationModalProps extends Pick<Cluster, 'clusterName'> {
+export interface DeleteClusterConfirmationModalProps extends Pick<ClusterDetailListType, 'clusterName'> {
     clusterId: string
     handleClose: () => void
     installationId: string
@@ -236,7 +236,7 @@ export interface UserNameDropDownListProps {
 
 export interface EditClusterDrawerContentProps
     extends Pick<
-        Cluster,
+        ClusterDetailListType,
         | 'sshTunnelConfig'
         | 'insecureSkipTlsVerify'
         | 'category'
@@ -280,35 +280,8 @@ export interface Environment
     clusterName: EnvironmentDTO['cluster_name']
 }
 
-export interface ClusterDTO {
-    category: ClusterEnvironmentCategoryType
-    cluster_name: string
-    description: string
-    id: number
-    insecureSkipTlsVerify: boolean
-    installationId: number
-    isProd: boolean
-    isVirtualCluster: boolean
-    server_url: string
-    sshTunnelConfig: any
-    prometheus_url: string
-    proxyUrl: string
-    toConnectWithSSHTunnel: boolean
-    clusterStatus: ClusterStatusType
-}
-
-export interface Cluster
-    extends Omit<ClusterDTO, 'server_url' | 'cluster_name' | 'prometheus_url' | 'id' | 'category' | 'clusterStatus'> {
-    serverUrl: ClusterDTO['server_url']
-    clusterName: ClusterDTO['cluster_name']
-    prometheusUrl: ClusterDTO['prometheus_url']
-    clusterId: ClusterDTO['id']
-    category: SelectPickerOptionType
-    status: ClusterStatusType
-}
-
 export interface ClusterRowData
-    extends Pick<Cluster, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
+    extends Pick<ClusterDetailListType, 'clusterId' | 'clusterName' | 'serverUrl' | 'isVirtualCluster' | 'status'> {
     envCount: number
     clusterType: string
     clusterCategory: string
@@ -358,7 +331,7 @@ export type EnvNamespaceRowType = {
 
 export interface EnvironmentListProps {
     isLoading: boolean
-    clusterList: Cluster[]
+    clusterList: ClusterDetailListType[]
     clusterIdVsEnvMap: Record<number, Environment[]>
     showUnmappedEnvs: boolean
     filterConfig: Pick<UseUrlFiltersReturnType<EnvListSortableKeys>, 'sortBy' | 'sortOrder' | 'searchKey'>
@@ -373,7 +346,7 @@ export type EditEnvConfigType = Pick<EnvNamespaceRowType, 'envId' | 'clusterId'>
 
 export interface ClusterEnvListProps
     extends Pick<EnvironmentListProps, 'filterConfig' | 'showUnmappedEnvs' | 'filterClusterId'> {
-    clusterDetails: Cluster
+    clusterDetails: ClusterDetailListType
     environments: Environment[]
     setDeleteEnvConfig: Dispatch<SetStateAction<DeleteEnvConfigType>>
     setEditEnvConfig: Dispatch<SetStateAction<EditEnvConfigType>>
@@ -390,7 +363,7 @@ export interface EditEnvProps {
 export interface DeleteEnvProps extends Omit<EditEnvProps, 'isVirtualCluster'> {}
 
 export interface EditDeleteClusterProps {
-    clusterList: Cluster[]
+    clusterList: ClusterDetailListType[]
     reloadClusterList: () => void
     handleClose: () => void
 }

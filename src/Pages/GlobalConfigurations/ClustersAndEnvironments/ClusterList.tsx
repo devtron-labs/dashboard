@@ -31,6 +31,7 @@ import {
     FiltersTypeEnum,
     GenericEmptyState,
     GenericFilterEmptyState,
+    getDetailedClusterList,
     getSelectPickerOptionByValue,
     Icon,
     numberComparatorBySortOrder,
@@ -54,7 +55,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 import AddClusterButton from '@Pages/Shared/AddEditCluster/AddClusterButton'
 
-import { getClusterList, getEnvironmentList } from './cluster.service'
+import { getEnvironmentList } from './cluster.service'
 import {
     ClusterEnvFilterType,
     ClusterEnvTabs,
@@ -103,7 +104,7 @@ const ClusterList = () => {
     })
 
     const [clusterListLoading, clusterListResult, clusterListError, reloadClusterList] = useAsync(
-        getClusterList,
+        getDetailedClusterList,
         [],
         isSuperAdmin,
     )
