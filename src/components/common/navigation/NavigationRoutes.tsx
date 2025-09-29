@@ -26,6 +26,7 @@ import {
     AppThemeType,
     BaseConfirmationModal,
     ConfirmationModalProvider,
+    CostVisibilityRenderProviderProps,
     DEVTRON_BASE_MAIN_ID,
     DevtronLicenseInfo,
     DevtronProgressing,
@@ -67,6 +68,7 @@ import {
 import { Navigation } from '@Components/Navigation'
 import AppConfig from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authorization.service'
+import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EditClusterDrawerContent'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { Configurations } from '@Pages/Releases/Detail'
 import { ApplicationManagementConfigurationsRouter } from '@PagesDevtron2.0/ApplicationManagement'
@@ -131,6 +133,8 @@ const ViewIsPipelineRBACConfigured: FunctionComponent<{
 const LicenseInfoDialog = importComponentFromFELibrary('LicenseInfoDialog', null, 'function')
 const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 'function')
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
+const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
+    importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
@@ -503,6 +507,29 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         )
     }
 
+    const renderClusterForm: CostVisibilityRenderProviderProps['renderClusterForm'] = ({
+        clusterDetails,
+        handleClose,
+        handleSuccess,
+    }) => (
+        <EditClusterDrawerContent
+            handleModalClose={handleClose}
+            sshTunnelConfig={clusterDetails.sshTunnelConfig}
+            clusterId={clusterDetails.clusterId}
+            clusterName={clusterDetails.clusterName}
+            serverUrl={clusterDetails.serverUrl}
+            reload={handleSuccess}
+            prometheusUrl={clusterDetails.prometheusUrl}
+            proxyUrl={clusterDetails.proxyUrl}
+            toConnectWithSSHTunnel={clusterDetails.toConnectWithSSHTunnel}
+            isProd={clusterDetails.isProd}
+            installationId={clusterDetails.installationId}
+            category={clusterDetails.category}
+            insecureSkipTlsVerify={clusterDetails.insecureSkipTlsVerify}
+            costModuleConfig={clusterDetails.costModuleConfig}
+        />
+    )
+
     const renderMainContent = () => {
         if (pageState === ViewType.LOADING) {
             return <DevtronProgressing parentClasses="flex flex-grow-1 bg__primary" classes="icon-dim-80" />
@@ -649,7 +676,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             </AppContext.Provider>
                                         </Route>
                                     )}
-                                    {EnterpriseRouter && (
+                                    {EnterpriseRouter && CostVisibilityRenderProvider && (
                                         <Route
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
@@ -658,10 +685,12 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                 CommonURLS.DATA_PROTECTION,
                                             ]}
                                         >
-                                            <EnterpriseRouter
-                                                AppConfig={AppConfig}
-                                                OfflinePipelineModalAppView={OffendingPipelineModalAppView}
-                                            />
+                                            <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>
+                                                <EnterpriseRouter
+                                                    AppConfig={AppConfig}
+                                                    OfflinePipelineModalAppView={OffendingPipelineModalAppView}
+                                                />
+                                            </CostVisibilityRenderProvider>
                                         </Route>
                                     )}
                                     <RedirectUserWithSentry

@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-import { get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
+import { ClusterProviderDetailsType, get, post, put, trash } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 
-import { DeleteClusterPayload, Environment, EnvironmentDTO } from './cluster.type'
+import { DeleteClusterPayload, EditClusterDrawerMetadataType, Environment, EnvironmentDTO } from './cluster.type'
+
+const getCloudProviderForCluster: (clusterId: number) => Promise<ClusterProviderDetailsType> =
+    importComponentFromFELibrary('getCloudProviderForCluster', null, 'function')
 
 export const getEnvironmentList = async (): Promise<Environment[]> => {
     const { result } = await get<EnvironmentDTO[]>(Routes.ENVIRONMENT)
@@ -85,4 +89,21 @@ export function deleteCluster(payload: DeleteClusterPayload): Promise<any> {
 
 export function deleteEnvironment(request): Promise<any> {
     return trash(Routes.ENVIRONMENT, request)
+}
+
+export const getEditClusterDrawerMetadata = async (clusterId: number): Promise<EditClusterDrawerMetadataType> => {
+    if (!clusterId) {
+        return { prometheusAuthResult: null, clusterProvider: null, costModuleSchema: null }
+    }
+
+    const [prometheusAuthResult, clusterProviderDetails] = await Promise.all([
+        getCluster(+clusterId),
+        getCloudProviderForCluster ? getCloudProviderForCluster(+clusterId) : null,
+    ])
+
+    return {
+        prometheusAuthResult,
+        clusterProvider: clusterProviderDetails.clusterProvider,
+        costModuleSchema: clusterProviderDetails.costModuleSchema,
+    }
 }
