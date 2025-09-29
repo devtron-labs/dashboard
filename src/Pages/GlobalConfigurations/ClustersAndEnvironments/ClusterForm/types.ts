@@ -35,11 +35,12 @@ export interface KubeConfigEditorProps {
 export interface ApplicationMonitoringProps {
     prometheusConfig: PromoetheusConfig
     prometheusUrl: string
-    prometheusToggleEnabled: boolean
-    setPrometheusToggle: () => void
+    isAppMetricsEnabled: boolean
+    toggleAppMetrics: () => void
     handleOnChange: (event: SyntheticEvent) => void
     onPrometheusAuthTypeChange: (event: SyntheticEvent) => void
     isGrafanaModuleInstalled: boolean
+    isCostVisibilityEnabled: boolean
 }
 
 export enum ClusterConfigTabEnum {

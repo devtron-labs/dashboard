@@ -24,6 +24,7 @@ import {
     ButtonVariantType,
     ClusterCostModuleConfigPayload,
     ClusterDetailListType,
+    ClusterProviderType,
     DEFAULT_SECRET_PLACEHOLDER,
     Icon,
     ModalSidebarPanel,
@@ -31,6 +32,7 @@ import {
     ModuleStatus,
     noop,
     RemoteConnectionType,
+    SCHEMA_07_VALIDATOR,
     SelectPickerOptionType,
     showError,
     ToastManager,
@@ -83,6 +85,7 @@ const ClusterForm = ({
     category,
     clusterProvider,
     costModuleConfig,
+    costModuleSchema,
 }: ClusterFormProps) => {
     const location = useLocation()
 
@@ -93,14 +96,19 @@ const ClusterForm = ({
     )
 
     const [costModuleState, setCostModuleState] = useState<
-        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & { config: string }
+        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & {
+            config: ClusterDetailListType['costModuleConfig']['config'] & { provider: ClusterProviderType }
+        }
     >({
         enabled: costModuleConfig?.enabled || false,
-        config: costModuleConfig?.config ? JSON.stringify(costModuleConfig.config) : '',
+        config: {
+            ...costModuleConfig?.config,
+            // Adding provider here to make the form work, it won't be sent to backend
+            provider: clusterProvider,
+        },
     })
-    const [costModuleConfigErrorState, setCostModuleErrorState] = useState<string>('')
 
-    const [prometheusToggleEnabled, setPrometheusToggleEnabled] = useState(!!prometheusUrl)
+    const [isAppMetricsEnabled, setIsAppMetricsEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
         type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
     })
@@ -110,6 +118,8 @@ const ClusterForm = ({
     const [loader, setLoadingState] = useState<boolean>(false)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(!!proxyUrl)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
+
+    const isPrometheusEnabled = costModuleState.enabled || isAppMetricsEnabled
 
     const getRemoteConnectionConfigType = () => {
         if (isConnectedViaProxyTemp) {
@@ -179,28 +189,20 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
-    const validateCostModuleConfig = (requiredConfig: string = costModuleState.config): string => {
+    const validateCostModuleConfig = (): boolean => {
+        if (!costModuleSchema || !costModuleState.enabled) {
+            return true
+        }
+
         try {
-            if (requiredConfig) {
-                JSON.parse(requiredConfig)
-            }
-
-            return ''
-        } catch (e) {
-            return e.message || 'Invalid JSON'
+            const validationResult = SCHEMA_07_VALIDATOR.validateFormData(
+                { ...costModuleState.config },
+                costModuleSchema,
+            )
+            return !validationResult?.errors?.length
+        } catch {
+            return true
         }
-    }
-
-    const getParsedConfigValue = (): ClusterCostModuleConfigPayload['config'] => {
-        if (costModuleState.config) {
-            try {
-                const parsedConfig = JSON.parse(costModuleState.config)
-                return parsedConfig
-            } catch {
-                return {}
-            }
-        }
-        return null
     }
 
     const getCostModulePayload = (): ClusterCostModuleConfigPayload | null => {
@@ -211,9 +213,12 @@ const ClusterForm = ({
         }
 
         if (costModuleState.config) {
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { provider, ...sanitizedConfig } = costModuleState.config
+
             return {
                 enabled: true,
-                config: getParsedConfigValue(),
+                config: sanitizedConfig,
             }
         }
 
@@ -236,24 +241,30 @@ const ClusterForm = ({
         isProd: state.isProd.value === 'true',
         active: true,
         remoteConnectionConfig: getRemoteConnectionConfig(state, remoteConnectionMethod, SSHConnectionType),
-        prometheus_url: prometheusToggleEnabled ? state.endpoint.value : '',
+        prometheus_url: isPrometheusEnabled ? state.endpoint.value : '',
         prometheusAuth: {
             userName:
-                prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC
-                    ? state.userName.value
-                    : '',
+                isPrometheusEnabled && state.authType.value === AuthenticationType.BASIC ? state.userName.value : '',
             password:
-                prometheusToggleEnabled && state.authType.value === AuthenticationType.BASIC
-                    ? state.password.value
-                    : '',
-            tlsClientKey: prometheusToggleEnabled ? state.prometheusTlsClientKey.value : '',
-            tlsClientCert: prometheusToggleEnabled ? state.prometheusTlsClientCert.value : '',
+                isPrometheusEnabled && state.authType.value === AuthenticationType.BASIC ? state.password.value : '',
+            tlsClientKey: isPrometheusEnabled ? state.prometheusTlsClientKey.value : '',
+            tlsClientCert: isPrometheusEnabled ? state.prometheusTlsClientCert.value : '',
             isAnonymous: state.authType.value === AuthenticationType.ANONYMOUS,
         },
         server_url: '',
         ...(getCategoryPayload ? getCategoryPayload(selectedCategory) : null),
-        ...(clusterProvider ? { costModuleConfig: getCostModulePayload() } : null),
+        ...(costModuleSchema ? { costModuleConfig: getCostModulePayload() } : null),
     })
+
+    const additionalValidations = (): boolean => {
+        let hasError = false
+
+        if (!validateCostModuleConfig()) {
+            hasError = true
+        }
+
+        return hasError
+    }
 
     const onValidation = async (state) => {
         const payload = getClusterPayload(state)
@@ -264,16 +275,15 @@ const ClusterForm = ({
             payload.server_url = urlValue
         }
 
-        if (costModuleState.enabled) {
-            const costConfigError = validateCostModuleConfig()
-            if (costConfigError) {
-                setCostModuleErrorState(costConfigError)
-                ToastManager.showToast({
-                    variant: ToastVariantType.error,
-                    description: 'Invalid cost visibility configuration',
-                })
-                return
-            }
+        const hasAdditionalError = additionalValidations()
+
+        if (hasAdditionalError) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some fields are invalid. Please correct them and try again.',
+            })
+
+            return
         }
 
         if (remoteConnectionMethod === RemoteConnectionType.Proxy) {
@@ -286,7 +296,9 @@ const ClusterForm = ({
             }
         }
 
-        if (state.authType.value === AuthenticationType.BASIC && prometheusToggleEnabled) {
+        // Not adding this block in additionalValidations since there seems to be no state its error
+        // They are both required in useForm so don't know why we have checked it here
+        if (state.authType.value === AuthenticationType.BASIC && isPrometheusEnabled) {
             const isValid = state.userName?.value && state.password?.value
             if (!isValid) {
                 ToastManager.showToast({
@@ -328,7 +340,7 @@ const ClusterForm = ({
         }
     }
 
-    const { state, handleOnChange, handleOnSubmit } = useForm(
+    const { state, handleOnChange, handleOnSubmit, validateAllAndSetErrors } = useForm(
         {
             cluster_name: { value: clusterName, error: '' },
             url: { value: !id ? getServerURLFromLocalStorage(serverUrl) : serverUrl, error: '' },
@@ -368,11 +380,11 @@ const ClusterForm = ({
                 validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
             },
             userName: {
-                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
+                required: !!(isPrometheusEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
                 validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
             },
             password: {
-                required: !!(prometheusToggleEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
+                required: !!(isPrometheusEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
                 validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
             },
             prometheusTlsClientKey: {
@@ -438,15 +450,16 @@ const ClusterForm = ({
                           validator: { error: 'token is required', regex: /[^]+/ },
                       },
             endpoint: {
-                required: !!prometheusToggleEnabled,
+                required: !!isPrometheusEnabled,
                 validator: { error: 'endpoint is required', regex: /^.*$/ },
             },
         },
         onValidation,
+        'Please resolve all the errors before submitting.',
     )
 
-    const setPrometheusToggle = () => {
-        setPrometheusToggleEnabled(!prometheusToggleEnabled)
+    const toggleAppMetrics = () => {
+        setIsAppMetricsEnabled((prev) => !prev)
     }
 
     const onPrometheusAuthTypeChange = (e) => {
@@ -478,6 +491,16 @@ const ClusterForm = ({
     const hideConfirmationModal = () => setConfirmation(false)
 
     const getTabSwitchHandler = (tab: ClusterConfigTabEnum) => () => {
+        // This works since there is no required field in any other tab except Cluster config tab, which on creation is the default tab
+        const hasError = validateAllAndSetErrors() || additionalValidations()
+        if (hasError) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: 'Some fields are invalid. Please correct them and try again.',
+            })
+            return
+        }
+
         setClusterConfigTab(tab)
     }
 
@@ -488,14 +511,11 @@ const ClusterForm = ({
         }))
     }
 
-    const handleCostConfigChange = (newConfig: string) => {
+    const handleCostConfigChange = (newConfig: typeof costModuleState.config) => {
         setCostModuleState((prev) => ({
             ...prev,
             config: newConfig,
         }))
-
-        const error = validateCostModuleConfig(newConfig)
-        setCostModuleErrorState(error)
     }
 
     const renderFooter = () => (
@@ -568,11 +588,12 @@ const ClusterForm = ({
                         <ApplicationMonitoring
                             prometheusConfig={prometheusConfig}
                             prometheusUrl={prometheusUrl}
-                            prometheusToggleEnabled={prometheusToggleEnabled}
-                            setPrometheusToggle={setPrometheusToggle}
+                            isAppMetricsEnabled={isAppMetricsEnabled}
+                            toggleAppMetrics={toggleAppMetrics}
                             handleOnChange={handleOnChange}
                             onPrometheusAuthTypeChange={onPrometheusAuthTypeChange}
                             isGrafanaModuleInstalled={isGrafanaModuleInstalled}
+                            isCostVisibilityEnabled={costModuleState.enabled}
                         />
                     </div>
                 )
@@ -587,10 +608,9 @@ const ClusterForm = ({
                             costModuleEnabled={costModuleState.enabled}
                             toggleCostModule={toggleCostModule}
                             installationStatus={costModuleConfig.installationStatus}
-                            clusterProvider={clusterProvider}
                             handleCostConfigChange={handleCostConfigChange}
-                            config={costModuleState.config || ''}
-                            configError={costModuleConfigErrorState}
+                            config={costModuleState.config}
+                            costModuleSchema={costModuleSchema || {}}
                         />
                     </div>
                 ) : null
@@ -651,7 +671,7 @@ const ClusterForm = ({
                             <ClusterFormNavButton
                                 isActive={clusterConfigTab === ClusterConfigTabEnum.APPLICATION_MONITORING}
                                 title="Application Monitoring"
-                                subtitle={prometheusToggleEnabled ? 'Enabled' : 'Off'}
+                                subtitle={isAppMetricsEnabled ? 'Enabled' : 'Off'}
                                 onClick={getTabSwitchHandler(ClusterConfigTabEnum.APPLICATION_MONITORING)}
                             />
                             {ClusterCostConfig && id && (
