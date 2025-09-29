@@ -26,12 +26,11 @@ import {
     ApiResourceGroupType,
     PluginDetailServiceParamsType,
     PipelineBuildStageType,
-    SeverityCount,
     useMainContext,
     SelectPickerOptionType,
     InfoBlock,
-    Badge,
-    SeveritiesDTO,
+    ToastManager,
+    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import { Link } from 'react-router-dom'
@@ -74,7 +73,7 @@ export function validateEmail(email) {
 /**
  * @deprecated use `useForm` from fe-common-lib.
  */
-export function useForm(stateSchema, validationSchema = {}, callback) {
+export function useForm(stateSchema, validationSchema = {}, callback, errorMessageOnSubmit = null) {
     const [state, setState] = useState(stateSchema)
     const [disable, setDisable] = useState(true)
     const [isDirty, setIsDirty] = useState(false)
@@ -163,6 +162,16 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         [validationSchema],
     )
 
+    const validateAllAndSetErrors = (): boolean => {
+        const newState = Object.keys(validationSchema).reduce((agg, curr) => {
+            agg[curr] = { ...state[curr], error: validateField(curr, state[curr].value) }
+            return agg
+        }, state)
+
+        setState({ ...newState })
+        return validateState(newState)
+    }
+
     const handleOnSubmit = (event) => {
         event.preventDefault()
         const newState = Object.keys(validationSchema).reduce((agg, curr) => {
@@ -172,10 +181,17 @@ export function useForm(stateSchema, validationSchema = {}, callback) {
         if (!validateState(newState)) {
             callback(state)
         } else {
+            if (errorMessageOnSubmit) {
+                ToastManager.showToast({
+                    variant: ToastVariantType.error,
+                    description: errorMessageOnSubmit,
+                })
+            }
+            
             setState({ ...newState })
         }
     }
-    return { state, disable, handleOnChange, handleOnSubmit }
+    return { state, disable, handleOnChange, handleOnSubmit, validateAllAndSetErrors }
 }
 
 /**

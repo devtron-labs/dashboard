@@ -6,11 +6,12 @@ import { ApplicationMonitoringProps } from './types'
 const ApplicationMonitoring = ({
     prometheusConfig,
     prometheusUrl,
-    prometheusToggleEnabled,
-    setPrometheusToggle,
+    isAppMetricsEnabled,
+    toggleAppMetrics,
     handleOnChange,
     onPrometheusAuthTypeChange,
     isGrafanaModuleInstalled,
+    isCostVisibilityEnabled,
 }: ApplicationMonitoringProps) => (
     <div className="flexbox-col flex-grow-1 dc__gap-20 p-20">
         <div className="flexbox-col">
@@ -29,13 +30,18 @@ const ApplicationMonitoring = ({
             <DTSwitch
                 name="toggle-configure-prometheus"
                 ariaLabel="Toggle configure prometheus"
-                isChecked={prometheusToggleEnabled}
-                onChange={setPrometheusToggle}
-                isDisabled={!isGrafanaModuleInstalled}
+                isChecked={isAppMetricsEnabled}
+                onChange={toggleAppMetrics}
+                isDisabled={!isGrafanaModuleInstalled || (isAppMetricsEnabled && isCostVisibilityEnabled)}
+                tooltipContent={
+                    isAppMetricsEnabled && isCostVisibilityEnabled
+                        ? 'To disable application metrics, first disable cost visibility from cluster cost configuration.'
+                        : ''
+                }
             />
         </div>
-        {!prometheusToggleEnabled && prometheusUrl && <PrometheusWarningInfo />}
-        {prometheusToggleEnabled && (
+        {!isAppMetricsEnabled && prometheusUrl && <PrometheusWarningInfo />}
+        {isAppMetricsEnabled && (
             <PromoetheusConfigCard
                 prometheusConfig={prometheusConfig}
                 handleOnChange={handleOnChange}

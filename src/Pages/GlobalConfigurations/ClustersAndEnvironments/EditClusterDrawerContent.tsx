@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { APIResponseHandler, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
+import { APIResponseHandler, noop, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { URLS } from '@Config/routes'
 
 import ClusterForm from './ClusterForm/ClusterForm'
-import { getCluster } from './cluster.service'
-import { EditClusterDrawerContentProps, EditClusterFormProps } from './cluster.type'
+import { getEditClusterDrawerMetadata } from './cluster.service'
+import { EditClusterDrawerContentProps, EditClusterDrawerMetadataType, EditClusterFormProps } from './cluster.type'
 
 const getSSHConfig: (
     ...props
@@ -42,23 +42,36 @@ const EditClusterDrawerContent = ({
     installationId,
     category,
     insecureSkipTlsVerify,
+    costModuleConfig,
 }: EditClusterDrawerContentProps) => {
-    const [isPrometheusAuthLoading, prometheusAuthResult, prometheusAuthError, reloadPrometheusAuth] = useAsync(
-        () => getCluster(+clusterId),
-        [clusterId],
-        !!clusterId,
-    )
+    const {
+        isFetching: isMetadataLoading,
+        data: metadata,
+        error: metadataError,
+        refetch: reloadMetadata,
+    } = useQuery<EditClusterDrawerMetadataType, EditClusterDrawerMetadataType, [string, number], false>({
+        queryKey: ['get-cluster-metadata', clusterId],
+        queryFn: () => getEditClusterDrawerMetadata(clusterId),
+        enabled: !!clusterId,
+    })
+
+    const { prometheusAuthResult, clusterProvider, costModuleSchema } = metadata || {
+        prometheusAuthResult: null,
+        clusterProvider: null,
+        costModuleSchema: null,
+    }
 
     return (
         <APIResponseHandler
-            isLoading={isPrometheusAuthLoading}
+            isLoading={isMetadataLoading}
             progressingProps={{
                 pageLoader: true,
             }}
-            error={prometheusAuthError?.code}
+            error={metadataError}
             errorScreenManagerProps={{
+                code: metadataError?.code,
                 redirectURL: URLS.GLOBAL_CONFIG_CLUSTER,
-                reload: reloadPrometheusAuth,
+                reload: reloadMetadata,
             }}
         >
             <ClusterForm
@@ -76,6 +89,9 @@ const EditClusterDrawerContent = ({
                 isTlsConnection={!insecureSkipTlsVerify}
                 installationId={installationId}
                 category={category}
+                clusterProvider={clusterProvider}
+                costModuleSchema={costModuleSchema}
+                costModuleConfig={costModuleConfig}
             />
         </APIResponseHandler>
     )
