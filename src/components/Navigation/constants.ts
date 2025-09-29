@@ -262,8 +262,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'infrastructure-management-overview',
                 id: 'infrastructure-management-overview',
                 icon: 'ic-speedometer',
-                href: '/dummy-url',
-                disabled: true,
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW,
             },
             {
                 title: 'Resource Browser',
