@@ -78,7 +78,6 @@ export type ClusterFormKeys =
     | 'token'
     | 'endpoint'
     | 'authType'
-    | 'isProd'
 
 export interface ClusterFormNavButtonProps {
     isActive: boolean
@@ -90,4 +89,13 @@ export interface ClusterFormNavButtonProps {
 
 export interface CostModuleStateType extends Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> {
     config: ClusterDetailListType['costModuleConfig']['config']
+}
+
+export interface GetClusterFormValidationSchemaProps {
+    isPrometheusEnabled: boolean
+    id: number
+    isDefaultCluster: boolean
+    isTlsConnection: boolean
+    remoteConnectionMethod: RemoteConnectionType
+    SSHConnectionType: SSHAuthenticationType
 }

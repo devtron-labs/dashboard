@@ -55,10 +55,10 @@ import ClusterConfigurations from './ClusterConfigurations'
 import { ClusterFormNavButton } from './ClusterForm.components'
 import { CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP } from './constants'
 import { ClusterConfigTabEnum, CostModuleStateType } from './types'
+import { getClusterFormValidationSchema } from './utils'
 
 import '../cluster.scss'
 
-const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 const ClusterCostConfig = importComponentFromFELibrary('ClusterCostConfig', null, 'function')
@@ -118,13 +118,10 @@ const ClusterForm = ({
     const [costModuleError, setCostModuleError] = useState<boolean>(!validateCostModuleConfig())
 
     const [isAppMetricsEnabled, setIsAppMetricsEnabled] = useState(!!prometheusUrl)
-    const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
-        type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
-    })
     const [isTlsConnection, setIsTlsConnection] = useState(initialIsTlsConnection)
     const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(category)
     const [confirmation, setConfirmation] = useState(false)
-    const [loader, setLoadingState] = useState<boolean>(false)
+    const [isUpdating, setIsUpdating] = useState<boolean>(false)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(!!proxyUrl)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
@@ -314,7 +311,7 @@ const ClusterForm = ({
 
         const api = id ? updateCluster : saveCluster
         try {
-            setLoadingState(true)
+            setIsUpdating(true)
             await api(payload)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
@@ -328,7 +325,7 @@ const ClusterForm = ({
         } catch (err) {
             showError(err)
         } finally {
-            setLoadingState(false)
+            setIsUpdating(false)
         }
     }
 
@@ -353,99 +350,14 @@ const ClusterForm = ({
             authType: { value: authenTicationType, error: '' },
             isProd: { value: isProd.toString(), error: '' },
         },
-        {
-            cluster_name: {
-                required: true,
-                validators: [
-                    { error: 'Name is required', regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-._]+$/ },
-                    { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
-                    { error: 'Minimum 3 and Maximum 63 characters required', regex: /^.{3,63}$/ },
-                ],
-            },
-            url: {
-                required: true,
-                validator: { error: 'URL is required', regex: /^.*$/ },
-            },
-            authType: {
-                required: false,
-                validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
-            },
-            userName: {
-                required: !!(isPrometheusEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
-                validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
-            },
-            password: {
-                required: !!(isPrometheusEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
-            },
-            prometheusTlsClientKey: {
-                required: false,
-            },
-            prometheusTlsClientCert: {
-                required: false,
-            },
-            proxyUrl: {
-                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.Proxy,
-                validator: {
-                    error: 'Please provide a valid URL. URL must start with http:// or https://',
-                    regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,
-                },
-            },
-            sshUsername: {
-                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.SSHTunnel,
-                validator: {
-                    error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
-                    regex: /^[A-Za-z0-9_-]+$/,
-                },
-            },
-            sshPassword: {
-                required:
-                    RemoteConnectionRadio &&
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel &&
-                    (SSHConnectionType === SSHAuthenticationType.Password ||
-                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
-            },
-            sshAuthKey: {
-                required:
-                    RemoteConnectionRadio &&
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel &&
-                    (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
-                validator: { error: 'private key is required', regex: /^(?!\s*$).+/ },
-            },
-            sshServerAddress: {
-                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.SSHTunnel,
-                validator:
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel
-                        ? {
-                              error: 'Please provide a valid URL. URL must start with http:// or https://',
-                              regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,
-                          }
-                        : { error: '', regex: /^(?!\s*$).+/ },
-            },
-            tlsClientKey: {
-                required: id ? false : isTlsConnection,
-            },
-            tlsClientCert: {
-                required: id ? false : isTlsConnection,
-            },
-            certificateAuthorityData: {
-                required: id ? false : isTlsConnection,
-            },
-            token:
-                isDefaultCluster || id
-                    ? {}
-                    : {
-                          required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ },
-                      },
-            endpoint: {
-                required: !!isPrometheusEnabled,
-                validator: { error: 'endpoint is required', regex: /^.*$/ },
-            },
-        },
+        getClusterFormValidationSchema({
+            isPrometheusEnabled,
+            id,
+            isDefaultCluster,
+            isTlsConnection,
+            remoteConnectionMethod,
+            SSHConnectionType,
+        }),
         onValidation,
         'Please resolve the errors before submitting.',
     )
@@ -463,11 +375,6 @@ const ClusterForm = ({
 
     const onPrometheusAuthTypeChange = (e) => {
         handleOnChange(e)
-        if (state.authType.value === AuthenticationType.BASIC) {
-            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS })
-        } else {
-            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC })
-        }
     }
 
     const changeRemoteConnectionType = (connectionType) => {
@@ -523,7 +430,7 @@ const ClusterForm = ({
                     variant={ButtonVariantType.secondary}
                     style={ButtonStyleType.negative}
                     startIcon={<Icon name="ic-delete" color={null} />}
-                    disabled={isDefaultCluster || loader}
+                    disabled={isDefaultCluster || isUpdating}
                     dataTestId="delete_cluster"
                     onClick={showConfirmationModal}
                 />
@@ -533,7 +440,7 @@ const ClusterForm = ({
                     text="Cancel"
                     variant={ButtonVariantType.secondary}
                     style={ButtonStyleType.neutral}
-                    disabled={loader}
+                    disabled={isUpdating}
                     dataTestId="cancel-create-cluster-button"
                     onClick={handleModalClose}
                 />
@@ -541,7 +448,7 @@ const ClusterForm = ({
                     dataTestId="save_cluster_after_entering_cluster_details"
                     onClick={handleSubmit}
                     text={id ? 'Update cluster' : 'Save Cluster'}
-                    isLoading={loader}
+                    isLoading={isUpdating}
                 />
             </div>
         </div>
@@ -645,6 +552,12 @@ const ClusterForm = ({
         return 'Enabled'
     }
 
+    const getIsClusterConfigTabValid = (tab: ClusterConfigTabEnum): boolean => {
+        const tabKeys = CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[tab]
+        const isTabValid = !tabKeys.some((key) => state[key]?.error)
+        return isTabValid && !(tab === ClusterConfigTabEnum.COST_VISIBILITY && costModuleError)
+    }
+
     return (
         <>
             <div className="flexbox mh-0 flex-grow-1 dc__overflow-hidden">
@@ -661,9 +574,7 @@ const ClusterForm = ({
                             isActive={clusterConfigTab === ClusterConfigTabEnum.CLUSTER_CONFIG}
                             title="Cluster Configurations"
                             onClick={getTabSwitchHandler(ClusterConfigTabEnum.CLUSTER_CONFIG)}
-                            hasError={CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[ClusterConfigTabEnum.CLUSTER_CONFIG].some(
-                                (key) => !!state[key].error,
-                            )}
+                            hasError={!getIsClusterConfigTabValid(ClusterConfigTabEnum.CLUSTER_CONFIG)}
                         />
                         <div className="divider__secondary--horizontal" />
                         <div className="flexbox-col">
@@ -673,9 +584,7 @@ const ClusterForm = ({
                                 title="Application Monitoring"
                                 subtitle={isAppMetricsEnabled ? 'Enabled' : 'Off'}
                                 onClick={getTabSwitchHandler(ClusterConfigTabEnum.APPLICATION_MONITORING)}
-                                hasError={CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[
-                                    ClusterConfigTabEnum.APPLICATION_MONITORING
-                                ].some((key) => !!state[key].error)}
+                                hasError={!getIsClusterConfigTabValid(ClusterConfigTabEnum.APPLICATION_MONITORING)}
                             />
                             {ClusterCostConfig && id && (
                                 <ClusterFormNavButton
@@ -683,12 +592,7 @@ const ClusterForm = ({
                                     title="Cost Visibility"
                                     subtitle={getCostNavSubtitle()}
                                     onClick={getTabSwitchHandler(ClusterConfigTabEnum.COST_VISIBILITY)}
-                                    hasError={
-                                        costModuleError ||
-                                        CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[ClusterConfigTabEnum.COST_VISIBILITY].some(
-                                            (key) => !!state[key].error,
-                                        )
-                                    }
+                                    hasError={!getIsClusterConfigTabValid(ClusterConfigTabEnum.COST_VISIBILITY)}
                                 />
                             )}
                         </div>

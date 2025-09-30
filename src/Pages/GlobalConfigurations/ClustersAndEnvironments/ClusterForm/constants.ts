@@ -23,7 +23,6 @@ export const CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP: Record<ClusterConfigTabEnum, C
         'tlsClientCert',
         'certificateAuthorityData',
         'token',
-        'isProd',
     ],
     [ClusterConfigTabEnum.COST_VISIBILITY]: PROMETHEUS_ERROR_KEYS,
 }
