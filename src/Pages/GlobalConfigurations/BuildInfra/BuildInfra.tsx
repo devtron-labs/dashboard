@@ -30,15 +30,15 @@ export const BuildInfra: FunctionComponent<BuildInfraProps> = ({ isSuperAdmin })
         return <ErrorScreenNotAuthorized />
     }
 
-    const content = BuildInfraRouter ? (
-        <BuildInfraUtilityProvider>
-            <BuildInfraRouter />
-        </BuildInfraUtilityProvider>
-    ) : (
-        <ProfileForm />
-    )
+    if (BuildInfraRouter) {
+        return (
+            <BuildInfraUtilityProvider>
+                <BuildInfraRouter />
+            </BuildInfraUtilityProvider>
+        )
+    }
 
-    return content
+    return <ProfileForm />
 }
 
 export default BuildInfra
