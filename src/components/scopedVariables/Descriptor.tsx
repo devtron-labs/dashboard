@@ -32,7 +32,7 @@ export default function Descriptor({ children, showUploadButton, readFile, searc
         }
     }
 
-    const additonalTippyContent = importComponentFromFELibrary('scopedVariablesHelpTippyText')
+    const additionalTippyContent = importComponentFromFELibrary('scopedVariablesHelpTippyText')
 
     return (
         <>
@@ -45,9 +45,9 @@ export default function Descriptor({ children, showUploadButton, readFile, searc
                     <FeatureTitleWithInfo
                         title={HEADER_TEXT.SCOPED_VARIABLES.title}
                         renderDescriptionContent={() =>
-                            additonalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description
+                            additionalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description
                         }
-                        additionalContent={additonalTippyContent?.()}
+                        additionalContent={additionalTippyContent?.()}
                         docLink={HEADER_TEXT.SCOPED_VARIABLES.docLink}
                         showInfoIconTippy
                     />
