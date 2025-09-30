@@ -455,7 +455,6 @@ const ClusterForm = ({
             },
         },
         onValidation,
-        'Please resolve all the errors before submitting.',
     )
 
     const toggleAppMetrics = () => {
@@ -491,16 +490,8 @@ const ClusterForm = ({
     const hideConfirmationModal = () => setConfirmation(false)
 
     const getTabSwitchHandler = (tab: ClusterConfigTabEnum) => () => {
-        // This works since there is no required field in any other tab except Cluster config tab, which on creation is the default tab
-        const hasError = validateAllAndSetErrors() || additionalValidations()
-        if (hasError) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Some fields are invalid. Please correct them and try again.',
-            })
-            return
-        }
-
+        validateAllAndSetErrors()
+        additionalValidations()
         setClusterConfigTab(tab)
     }
 

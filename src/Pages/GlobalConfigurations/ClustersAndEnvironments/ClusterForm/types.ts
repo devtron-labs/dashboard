@@ -54,3 +54,23 @@ export enum ClusterConfigPages {
     CONNECTION_PROTOCOL_CONFIG = 'connection-protocol-config',
     TLS_CONFIG = 'tls-config',
 }
+
+export type ClusterFormKeys =
+    | 'cluster_name'
+    | 'url'
+    | 'userName'
+    | 'password'
+    | 'prometheusTlsClientKey'
+    | 'prometheusTlsClientCert'
+    | 'proxyUrl'
+    | 'sshUsername'
+    | 'sshPassword'
+    | 'sshAuthKey'
+    | 'sshServerAddress'
+    | 'tlsClientKey'
+    | 'tlsClientCert'
+    | 'certificateAuthorityData'
+    | 'token'
+    | 'endpoint'
+    | 'authType'
+    | 'isProd'
