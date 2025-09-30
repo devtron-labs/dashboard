@@ -79,7 +79,6 @@ export const EnvSelector = ({ onChange, envId, envName }: EnvSelectorType) => {
             onInputChange={onInputChange}
             optionListError={error}
             reloadOptionList={reload}
-            resource="Application Group"
         />
     )
 }
