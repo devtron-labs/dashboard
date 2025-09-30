@@ -88,6 +88,7 @@ export default function ChartSelector({
             {...(filterOption ? { filterOption } : {})}
             optionListError={error}
             reloadOptionList={reload}
+            resource="Chart Store"
         />
     )
 }
