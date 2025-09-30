@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -23,8 +23,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ClusterCostModuleConfigPayload,
-    ClusterDetailListType,
-    ClusterProviderType,
     DEFAULT_SECRET_PLACEHOLDER,
     Icon,
     ModalSidebarPanel,
@@ -55,7 +53,8 @@ import DeleteClusterConfirmationModal from '../DeleteClusterConfirmationModal'
 import ApplicationMonitoring from './ApplicationMonitoring'
 import ClusterConfigurations from './ClusterConfigurations'
 import { ClusterFormNavButton } from './ClusterForm.components'
-import { ClusterConfigTabEnum } from './types'
+import { CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP } from './constants'
+import { ClusterConfigTabEnum, CostModuleStateType } from './types'
 
 import '../cluster.scss'
 
@@ -95,18 +94,28 @@ const ClusterForm = ({
             : ClusterConfigTabEnum.CLUSTER_CONFIG,
     )
 
-    const [costModuleState, setCostModuleState] = useState<
-        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & {
-            config: ClusterDetailListType['costModuleConfig']['config'] & { provider: ClusterProviderType }
-        }
-    >({
+    const [costModuleState, setCostModuleState] = useState<CostModuleStateType>({
         enabled: costModuleConfig?.enabled || false,
         config: {
             ...costModuleConfig?.config,
-            // Adding provider here to make the form work, it won't be sent to backend
-            provider: clusterProvider,
+            detectedProvider: costModuleConfig?.config?.detectedProvider || clusterProvider || 'Unknown',
         },
     })
+
+    const validateCostModuleConfig = (targetState = costModuleState): boolean => {
+        if (!costModuleSchema || !targetState.enabled) {
+            return true
+        }
+
+        try {
+            const validationResult = SCHEMA_07_VALIDATOR.validateFormData({ ...targetState.config }, costModuleSchema)
+            return !validationResult?.errors?.length
+        } catch {
+            return true
+        }
+    }
+
+    const [costModuleError, setCostModuleError] = useState<boolean>(!validateCostModuleConfig())
 
     const [isAppMetricsEnabled, setIsAppMetricsEnabled] = useState(!!prometheusUrl)
     const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
@@ -189,22 +198,6 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
-    const validateCostModuleConfig = (): boolean => {
-        if (!costModuleSchema || !costModuleState.enabled) {
-            return true
-        }
-
-        try {
-            const validationResult = SCHEMA_07_VALIDATOR.validateFormData(
-                { ...costModuleState.config },
-                costModuleSchema,
-            )
-            return !validationResult?.errors?.length
-        } catch {
-            return true
-        }
-    }
-
     const getCostModulePayload = (): ClusterCostModuleConfigPayload | null => {
         if (!costModuleState.enabled) {
             return {
@@ -213,12 +206,9 @@ const ClusterForm = ({
         }
 
         if (costModuleState.config) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { provider, ...sanitizedConfig } = costModuleState.config
-
             return {
                 enabled: true,
-                config: sanitizedConfig,
+                config: costModuleState.config,
             }
         }
 
@@ -256,6 +246,8 @@ const ClusterForm = ({
         ...(costModuleSchema ? { costModuleConfig: getCostModulePayload() } : null),
     })
 
+    // Could have returned validateCostModuleConfig but not doing intentionally since if we add other methods in future
+    // we can just add them here
     const additionalValidations = (): boolean => {
         let hasError = false
 
@@ -455,7 +447,15 @@ const ClusterForm = ({
             },
         },
         onValidation,
+        'Please resolve the errors before submitting.',
     )
+
+    const handleSubmit = (event: SyntheticEvent) => {
+        // Even though additionalValidations is called in onValidation but since we need all the errors to be visible as soon as user clicks on submit
+        // We are calling them here as well
+        additionalValidations()
+        handleOnSubmit(event)
+    }
 
     const toggleAppMetrics = () => {
         setIsAppMetricsEnabled((prev) => !prev)
@@ -496,17 +496,23 @@ const ClusterForm = ({
     }
 
     const toggleCostModule = () => {
-        setCostModuleState((prev) => ({
-            ...prev,
-            enabled: !prev.enabled,
-        }))
+        const newConfigState: typeof costModuleState = {
+            ...costModuleState,
+            enabled: !costModuleState.enabled,
+        }
+
+        setCostModuleError(newConfigState.enabled && !validateCostModuleConfig(newConfigState))
+        setCostModuleState(newConfigState)
     }
 
     const handleCostConfigChange = (newConfig: typeof costModuleState.config) => {
-        setCostModuleState((prev) => ({
-            ...prev,
+        const newConfigState: typeof costModuleState = {
+            ...costModuleState,
             config: newConfig,
-        }))
+        }
+
+        setCostModuleError(!validateCostModuleConfig(newConfigState))
+        setCostModuleState(newConfigState)
     }
 
     const renderFooter = () => (
@@ -533,7 +539,7 @@ const ClusterForm = ({
                 />
                 <Button
                     dataTestId="save_cluster_after_entering_cluster_details"
-                    onClick={handleOnSubmit}
+                    onClick={handleSubmit}
                     text={id ? 'Update cluster' : 'Save Cluster'}
                     isLoading={loader}
                 />
@@ -655,6 +661,9 @@ const ClusterForm = ({
                             isActive={clusterConfigTab === ClusterConfigTabEnum.CLUSTER_CONFIG}
                             title="Cluster Configurations"
                             onClick={getTabSwitchHandler(ClusterConfigTabEnum.CLUSTER_CONFIG)}
+                            hasError={CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[ClusterConfigTabEnum.CLUSTER_CONFIG].some(
+                                (key) => !!state[key].error,
+                            )}
                         />
                         <div className="divider__secondary--horizontal" />
                         <div className="flexbox-col">
@@ -664,6 +673,9 @@ const ClusterForm = ({
                                 title="Application Monitoring"
                                 subtitle={isAppMetricsEnabled ? 'Enabled' : 'Off'}
                                 onClick={getTabSwitchHandler(ClusterConfigTabEnum.APPLICATION_MONITORING)}
+                                hasError={CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[
+                                    ClusterConfigTabEnum.APPLICATION_MONITORING
+                                ].some((key) => !!state[key].error)}
                             />
                             {ClusterCostConfig && id && (
                                 <ClusterFormNavButton
@@ -671,6 +683,12 @@ const ClusterForm = ({
                                     title="Cost Visibility"
                                     subtitle={getCostNavSubtitle()}
                                     onClick={getTabSwitchHandler(ClusterConfigTabEnum.COST_VISIBILITY)}
+                                    hasError={
+                                        costModuleError ||
+                                        CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[ClusterConfigTabEnum.COST_VISIBILITY].some(
+                                            (key) => !!state[key].error,
+                                        )
+                                    }
                                 />
                             )}
                         </div>

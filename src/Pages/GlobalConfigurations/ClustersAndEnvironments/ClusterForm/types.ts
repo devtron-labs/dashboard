@@ -1,6 +1,11 @@
-import { Dispatch, SetStateAction, SyntheticEvent } from 'react'
+import { Dispatch, ReactNode, SetStateAction, SyntheticEvent } from 'react'
 
-import { PromoetheusConfig, RemoteConnectionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterDetailListType,
+    PromoetheusConfig,
+    RemoteConnectionType,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { SSHAuthenticationType } from '../cluster.type'
 
@@ -74,3 +79,15 @@ export type ClusterFormKeys =
     | 'endpoint'
     | 'authType'
     | 'isProd'
+
+export interface ClusterFormNavButtonProps {
+    isActive: boolean
+    title: string
+    subtitle?: ReactNode
+    onClick: () => void
+    hasError: boolean
+}
+
+export interface CostModuleStateType extends Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> {
+    config: ClusterDetailListType['costModuleConfig']['config']
+}
