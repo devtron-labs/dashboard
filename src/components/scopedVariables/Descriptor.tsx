@@ -21,7 +21,6 @@ import { DescriptorProps } from './types'
 import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { HEADER_TEXT } from '@Config/constants'
 
 export default function Descriptor({ children, showUploadButton, readFile, searchKey, onSearch }: DescriptorProps) {

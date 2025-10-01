@@ -29,8 +29,6 @@ import {
 
 import './styles.scss'
 
-const BuildInfraFeatureDescriptionModal = () => <FeatureTitleWithInfo title={BUILD_INFRA_TEXT.HEADING} />
-
 const ProfileForm: FunctionComponent = () => {
     const {
         isLoading,
@@ -68,7 +66,7 @@ const ProfileForm: FunctionComponent = () => {
             onSubmit={handleSubmit}
         >
             <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-auto">
-                <BuildInfraDescriptor tooltipNode={<BuildInfraFeatureDescriptionModal />} />
+                <BuildInfraDescriptor tooltipNode={<FeatureTitleWithInfo title={BUILD_INFRA_TEXT.HEADING} />} />
 
                 <APIResponseHandler
                     isLoading={isLoading}
