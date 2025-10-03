@@ -20,9 +20,12 @@ import { RouteComponentProps } from 'react-router-dom'
 import {
     ClusterDetailListType,
     ClusterEnvironmentCategoryType,
+    ClusterProviderType,
     EnvListMinDTO,
     FiltersTypeEnum,
     OptionType,
+    ResponseType,
+    RJSFFormSchema,
     SelectPickerOptionType,
     TableProps,
     UseUrlFiltersReturnType,
@@ -176,6 +179,26 @@ export interface ClusterTerminalParamsType {
 
 export const RemoteConnectionTypeCluster = 'cluster'
 
+export interface EditClusterDrawerContentProps
+    extends Pick<
+        ClusterDetailListType,
+        | 'sshTunnelConfig'
+        | 'insecureSkipTlsVerify'
+        | 'category'
+        | 'isProd'
+        | 'installationId'
+        | 'toConnectWithSSHTunnel'
+        | 'proxyUrl'
+        | 'prometheusUrl'
+        | 'serverUrl'
+        | 'clusterName'
+        | 'clusterId'
+        | 'costModuleConfig'
+    > {
+    reload: () => void
+    handleModalClose: () => void
+}
+
 export type EditClusterFormProps = {
     id: number
     isProd?: boolean
@@ -190,7 +213,9 @@ export type EditClusterFormProps = {
     sshServerAddress: string
     isConnectedViaSSHTunnel: boolean
     isTlsConnection: boolean
-}
+    clusterProvider: ClusterProviderType
+    costModuleSchema: RJSFFormSchema
+} & Pick<EditClusterDrawerContentProps, 'costModuleConfig'>
 
 export type ClusterFormProps = { reload: () => void; handleModalClose: () => void } & Pick<
     ClusterMetadataTypes,
@@ -232,25 +257,6 @@ export interface UserNameDropDownListProps {
     clusterDetail: DataListType
     selectedUserNameOptions: Record<string, any>
     onChangeUserName: (selectedOption: any, clusterDetail: DataListType) => void
-}
-
-export interface EditClusterDrawerContentProps
-    extends Pick<
-        ClusterDetailListType,
-        | 'sshTunnelConfig'
-        | 'insecureSkipTlsVerify'
-        | 'category'
-        | 'isProd'
-        | 'installationId'
-        | 'toConnectWithSSHTunnel'
-        | 'proxyUrl'
-        | 'prometheusUrl'
-        | 'serverUrl'
-        | 'clusterName'
-        | 'clusterId'
-    > {
-    reload: () => void
-    handleModalClose: () => void
 }
 
 export interface EnvironmentDTO {
@@ -366,4 +372,10 @@ export interface EditDeleteClusterProps {
     clusterList: ClusterDetailListType[]
     reloadClusterList: () => void
     handleClose: () => void
+}
+
+export interface EditClusterDrawerMetadataType {
+    prometheusAuthResult: ResponseType
+    clusterProvider: ClusterProviderType
+    costModuleSchema: RJSFFormSchema
 }

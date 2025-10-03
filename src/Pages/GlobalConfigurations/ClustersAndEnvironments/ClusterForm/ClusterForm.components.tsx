@@ -1,3 +1,5 @@
+import { ReactNode } from 'react'
+
 import { ButtonVariantType, ComponentSizeType, Icon, InfoBlock } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ClusterFormNavButton = ({
@@ -8,7 +10,7 @@ export const ClusterFormNavButton = ({
 }: {
     isActive: boolean
     title: string
-    subtitle?: string
+    subtitle?: ReactNode
     onClick: () => void
 }) => (
     <button
@@ -17,7 +19,7 @@ export const ClusterFormNavButton = ({
         onClick={onClick}
     >
         <span className={`fs-13 ${isActive ? 'cb-5 fw-6' : 'cn-9'}`}>{title}</span>
-        {subtitle && <span className="fs-12 cn-7">{subtitle}</span>}
+        {typeof subtitle === 'string' ? <span className="fs-12 cn-7">{subtitle}</span> : subtitle}
     </button>
 )
 
