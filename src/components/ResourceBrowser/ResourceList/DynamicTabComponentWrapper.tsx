@@ -53,7 +53,7 @@ export const DynamicTabComponentWrapper = ({
             .then((found) => {
                 if (!found && addTab) {
                     const [idPrefix, name, kind] = getTabIdParamsForPath(path, params) || []
-                    const targetK8sVersion = searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY)
+                    const targetK8sVersion = searchParams.get(TARGET_K8S_VERSION_SEARCH_KEY) || ''
 
                     addTab({
                         idPrefix,
