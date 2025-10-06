@@ -10,6 +10,7 @@ import {
     DEFAULT_SECRET_PLACEHOLDER,
     DTSwitch,
     Icon,
+    InfoBlock,
     RadioGroup,
     RadioGroupItem,
     REMOTE_CONNECTION_TYPE_LABEL_MAP,
@@ -42,6 +43,8 @@ const ClusterConfigurations = ({
     selectedCategory,
     setSelectedCategory,
     initialIsTlsConnection,
+    getIsConnectProtocolConfigInvalid,
+    getIsTLSConfigInvalid,
 }: ClusterConfigurationsProps) => {
     const [clusterConfigPage, setClusterConfigPage] = useState<ClusterConfigPages>(ClusterConfigPages.BASIC_CONFIG)
 
@@ -312,41 +315,85 @@ const ClusterConfigurations = ({
                 <div className="flexbox-col dc__gap-12">
                     <span className="fs-15 lh-1-5 cn-9 fw-6">Connection preferences</span>
                     {RemoteConnectionRadio && (
-                        <div className="py-12 px-16 flexbox dc__align-items-center br-8 border__secondary dc__content-space bg__primary">
+                        <div className="flexbox-col br-8 border__secondary dc__contain--paint">
+                            <div className="py-12 px-16 flexbox dc__align-items-center dc__content-space bg__primary">
+                                <div className="flexbox-col">
+                                    <span className="fs-13 fw-6 lh-1-5 cn-9">Select a connection protocol</span>
+                                    <span className="fs-12 fw-4 lh-1-5 cn-7">
+                                        Choose how Devtron connects with this cluster
+                                    </span>
+                                </div>
+                                <Button
+                                    dataTestId="connection-protocol-config"
+                                    text={REMOTE_CONNECTION_TYPE_LABEL_MAP[remoteConnectionMethod]}
+                                    endIcon={<Icon name="ic-caret-right" color={null} />}
+                                    variant={ButtonVariantType.text}
+                                    size={ComponentSizeType.medium}
+                                    style={ButtonStyleType.neutral}
+                                    onClick={handleConfigureConnectionProtocol}
+                                />
+                            </div>
+                            {getIsConnectProtocolConfigInvalid() && (
+                                <InfoBlock
+                                    variant="error"
+                                    description="Please resolve errors to continue"
+                                    borderRadiusConfig={{
+                                        top: false,
+                                        left: false,
+                                        right: false,
+                                        bottom: false,
+                                    }}
+                                    borderConfig={{
+                                        top: false,
+                                        bottom: false,
+                                        left: false,
+                                        right: false,
+                                    }}
+                                    size={ComponentSizeType.medium}
+                                />
+                            )}
+                        </div>
+                    )}
+
+                    <div className="flexbox-col br-8 border__secondary dc__contain--paint">
+                        <div className="py-12 px-16 flexbox dc__align-items-center dc__content-space bg__primary">
                             <div className="flexbox-col">
-                                <span className="fs-13 fw-6 lh-1-5 cn-9">Select a connection protocol</span>
+                                <span className="fs-13 fw-6 lh-1-5 cn-9">Secure TLS connection</span>
                                 <span className="fs-12 fw-4 lh-1-5 cn-7">
-                                    Choose how Devtron connects with this cluster
+                                    Enable a secure TLS connection to encrypt communication and authenticate with the
+                                    cluster
                                 </span>
                             </div>
                             <Button
-                                dataTestId="connection-protocol-config"
-                                text={REMOTE_CONNECTION_TYPE_LABEL_MAP[remoteConnectionMethod]}
+                                dataTestId="tls-connection-config"
+                                text={isTlsConnection ? 'On' : 'Off'}
                                 endIcon={<Icon name="ic-caret-right" color={null} />}
                                 variant={ButtonVariantType.text}
                                 size={ComponentSizeType.medium}
                                 style={ButtonStyleType.neutral}
-                                onClick={handleConfigureConnectionProtocol}
+                                onClick={handleConfigureTLSConnection}
                             />
                         </div>
-                    )}
-                    <div className="py-12 px-16 flexbox dc__align-items-center br-8 border__secondary dc__content-space bg__primary">
-                        <div className="flexbox-col">
-                            <span className="fs-13 fw-6 lh-1-5 cn-9">Secure TLS connection</span>
-                            <span className="fs-12 fw-4 lh-1-5 cn-7">
-                                Enable a secure TLS connection to encrypt communication and authenticate with the
-                                cluster
-                            </span>
-                        </div>
-                        <Button
-                            dataTestId="tls-connection-config"
-                            text={isTlsConnection ? 'On' : 'Off'}
-                            endIcon={<Icon name="ic-caret-right" color={null} />}
-                            variant={ButtonVariantType.text}
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.neutral}
-                            onClick={handleConfigureTLSConnection}
-                        />
+
+                        {getIsTLSConfigInvalid() && (
+                            <InfoBlock
+                                variant="error"
+                                description="Please resolve errors to continue"
+                                borderRadiusConfig={{
+                                    top: false,
+                                    left: false,
+                                    right: false,
+                                    bottom: false,
+                                }}
+                                borderConfig={{
+                                    top: false,
+                                    bottom: false,
+                                    left: false,
+                                    right: false,
+                                }}
+                                size={ComponentSizeType.medium}
+                            />
+                        )}
                     </div>
                 </div>
             )}

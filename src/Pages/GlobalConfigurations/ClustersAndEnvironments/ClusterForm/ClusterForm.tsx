@@ -98,7 +98,9 @@ const ClusterForm = ({
         enabled: costModuleConfig?.enabled || false,
         config: {
             ...costModuleConfig?.config,
-            detectedProvider: costModuleConfig?.config?.detectedProvider || clusterProvider || 'Unknown',
+            detectedProvider:
+                (clusterProvider === 'Unknown' ? costModuleConfig?.config?.detectedProvider : clusterProvider) ||
+                'Unknown',
         },
     })
 
@@ -454,6 +456,42 @@ const ClusterForm = ({
         </div>
     )
 
+    const getIsConnectProtocolConfigInvalid = (): boolean => {
+        switch (remoteConnectionMethod) {
+            case RemoteConnectionType.Proxy:
+                return !state.proxyUrl?.value || state.proxyUrl?.error
+            case RemoteConnectionType.SSHTunnel:
+                return (
+                    !state.sshUsername?.value ||
+                    state.sshUsername?.error ||
+                    !state.sshServerAddress?.value ||
+                    state.sshServerAddress?.error ||
+                    (SSHConnectionType === SSHAuthenticationType.Password ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? !state.sshPassword?.value || state.sshPassword?.error
+                        : false) ||
+                    (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? !state.sshAuthKey?.value || state.sshAuthKey?.error
+                        : false)
+                )
+            case RemoteConnectionType.Direct:
+            default:
+                return false
+        }
+    }
+
+    const getIsTLSConfigInvalid = (): boolean => {
+        const hasError = state.certificateAuthorityData.error || state.tlsClientKey.error || state.tlsClientCert.error
+
+        const hasAllValues =
+            id && initialIsTlsConnection
+                ? true
+                : state.certificateAuthorityData.value && state.tlsClientKey.value && state.tlsClientCert.value
+
+        return isTlsConnection && (hasError || !hasAllValues)
+    }
+
     const renderFormBody = () => {
         const prometheusConfig = {
             endpoint: state.endpoint,
@@ -483,6 +521,8 @@ const ClusterForm = ({
                             setSelectedCategory={setSelectedCategory}
                             SSHConnectionType={SSHConnectionType}
                             initialIsTlsConnection={initialIsTlsConnection}
+                            getIsConnectProtocolConfigInvalid={getIsConnectProtocolConfigInvalid}
+                            getIsTLSConfigInvalid={getIsTLSConfigInvalid}
                         />
                     </div>
                 )
@@ -564,42 +604,6 @@ const ClusterForm = ({
         }
 
         return true
-    }
-
-    const getIsConnectProtocolConfigInvalid = (): boolean => {
-        switch (remoteConnectionMethod) {
-            case RemoteConnectionType.Proxy:
-                return !state.proxyUrl?.value || state.proxyUrl?.error
-            case RemoteConnectionType.SSHTunnel:
-                return (
-                    !state.sshUsername?.value ||
-                    state.sshUsername?.error ||
-                    !state.sshServerAddress?.value ||
-                    state.sshServerAddress?.error ||
-                    (SSHConnectionType === SSHAuthenticationType.Password ||
-                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                        ? !state.sshPassword?.value || state.sshPassword?.error
-                        : false) ||
-                    (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                        ? !state.sshAuthKey?.value || state.sshAuthKey?.error
-                        : false)
-                )
-            case RemoteConnectionType.Direct:
-            default:
-                return false
-        }
-    }
-
-    const getIsTLSConfigInvalid = (): boolean => {
-        const hasError = state.certificateAuthorityData.error || state.tlsClientKey.error || state.tlsClientCert.error
-
-        const hasAllValues =
-            id && initialIsTlsConnection
-                ? true
-                : state.certificateAuthorityData.value && state.tlsClientKey.value && state.tlsClientCert.value
-
-        return isTlsConnection && (hasError || !hasAllValues)
     }
 
     const getIsClusterConfigTabValid = (tab: ClusterConfigTabEnum): boolean => {

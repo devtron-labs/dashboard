@@ -29,6 +29,8 @@ export interface ClusterConfigurationsProps {
     selectedCategory: SelectPickerOptionType
     setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
     initialIsTlsConnection: boolean
+    getIsConnectProtocolConfigInvalid: () => boolean
+    getIsTLSConfigInvalid: () => boolean
 }
 
 export interface KubeConfigEditorProps {
