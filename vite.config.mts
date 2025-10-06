@@ -96,7 +96,6 @@ const jsToBottomNoModule = () => {
 export default defineConfig(({ mode }) => {
     const secretsEnv = loadEnv('secrets', process.cwd(), '')
     const targetUrl = secretsEnv.VITE_TARGET_URL ?? TARGET_URL
-  const targetUrl1 = secretsEnv.VITE_TARGET_URL ?? TARGET_URL
     process.env = { ...process.env, ...loadEnv(mode, process.cwd(), ''), ...secretsEnv }
 
     const baseConfig: UserConfig = {
