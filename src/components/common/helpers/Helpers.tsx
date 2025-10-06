@@ -96,8 +96,8 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
 
     const isStateKeyInvalid = (schemaKeyData, stateKeyData) => {
         const isInputFieldRequired = getIsSchemaKeyRequired(schemaKeyData)
-        const stateValue = stateKeyData.value // state value
-        const stateError = stateKeyData.error // state error
+        const stateValue = stateKeyData?.value // state value
+        const stateError = stateKeyData?.error // state error
         return (isInputFieldRequired && !stateValue) || stateError
     }
 
