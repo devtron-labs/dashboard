@@ -35,7 +35,6 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
-    Tooltip,
     URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -205,9 +204,16 @@ const ClusterForm = ({
         }
 
         if (costModuleState.config) {
+            // Need to remove following keys from config if present: openCostServiceName, openCostServicePort, releaseName, namespace
+            const sanitizedConfig = { ...costModuleState.config }
+            delete sanitizedConfig.openCostServiceName
+            delete sanitizedConfig.openCostServicePort
+            delete sanitizedConfig.releaseName
+            delete sanitizedConfig.namespace
+
             return {
                 enabled: true,
-                config: costModuleState.config,
+                config: sanitizedConfig,
             }
         }
 
@@ -551,7 +557,7 @@ const ClusterForm = ({
                             isGrafanaModuleInstalled={isGrafanaModuleInstalled}
                             costModuleEnabled={costModuleState.enabled}
                             toggleCostModule={toggleCostModule}
-                            installationStatus={costModuleConfig.installationStatus}
+                            costModuleConfig={costModuleConfig}
                             handleCostConfigChange={handleCostConfigChange}
                             config={costModuleState.config}
                             costModuleSchema={costModuleSchema || {}}
@@ -568,28 +574,22 @@ const ClusterForm = ({
             return 'Off'
         }
 
-        if (costModuleConfig.installationStatus === 'Installing') {
-            return <span className="cy-7 fs-12">Installing...</span>
-        }
-
-        if (costModuleConfig.installationStatus === 'Upgrading') {
-            return <span className="cy-7 fs-12">Upgrading...</span>
+        if (
+            costModuleConfig.installationStatus === 'Installing' ||
+            costModuleConfig.installationStatus === 'Upgrading'
+        ) {
+            return <span className="cy-7 fs-12">{costModuleConfig.installationStatus} agent</span>
         }
 
         if (costModuleConfig.installationStatus === 'Failed') {
-            return (
-                <div className="flexbox dc__gap-4 dc__align-items-center">
-                    <Icon name="ic-error" size={14} color="R500" />
-                    <Tooltip content={costModuleConfig.installationError}>
-                        <span className="dc__truncate cr-5 fs-12">
-                            Installation Error: {costModuleConfig.installationError}
-                        </span>
-                    </Tooltip>
-                </div>
-            )
+            return <span className="dc__truncate cr-5 fs-12">Agent unavailable</span>
         }
 
-        return 'Enabled'
+        if (costModuleConfig.installationStatus === 'Success') {
+            return 'Enabled'
+        }
+
+        return `Agent status: ${costModuleConfig.installationStatus}`
     }
 
     const getIsPrometheusAuthValid = (): boolean => {
@@ -623,7 +623,11 @@ const ClusterForm = ({
                 return true
             }
             case ClusterConfigTabEnum.COST_VISIBILITY: {
-                if (costModuleError || !getIsPrometheusAuthValid()) {
+                if (
+                    (costModuleState.enabled && costModuleConfig?.installationError) ||
+                    costModuleError ||
+                    !getIsPrometheusAuthValid()
+                ) {
                     return false
                 }
 
