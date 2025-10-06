@@ -456,14 +456,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         id: 'ai-recommendations',
         title: 'AI Recommendations',
         icon: 'ic-openai',
-        disabled: true,
+        disabled: false,
         items: [
             {
                 title: 'Notifications',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
                 icon: 'ic-speedometer',
-                disabled: true,
+                disabled: false,
                 href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
             },
         ],
