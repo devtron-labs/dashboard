@@ -593,14 +593,13 @@ const ClusterForm = ({
     }
 
     const getIsPrometheusAuthValid = (): boolean => {
-        if (isPrometheusEnabled && state.authType?.value === AuthenticationType.BASIC) {
-            if (state.userName?.error || state.password?.error) {
+        if (isPrometheusEnabled) {
+            const isBasicError =
+                state.authType?.value === AuthenticationType.BASIC && (state.userName?.error || state.password?.error)
+
+            if (isBasicError || state.endpoint?.error) {
                 return false
             }
-        }
-
-        if (isPrometheusEnabled && state.endpoint?.error) {
-            return false
         }
 
         return true
