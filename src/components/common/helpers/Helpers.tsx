@@ -161,21 +161,9 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
 
             const { name, value } = event.target
             const error = validateField(name, value)
-            const emptyErrorKeys = validationSchema[name]?.onChangeClearErrorsKeys || []
-
             setState((prevState) => ({
                 ...prevState,
-                ...emptyErrorKeys.reduce(
-                    (agg, curr) => {
-                        if (prevState[curr]?.error) {
-                            return { ...agg, [curr]: { ...prevState[curr], error: '' } }
-                        }
-                        return agg
-                    },
-                    {
-                        [name]: { value, error },
-                    },
-                ),
+                [name]: { value, error },
             }))
         },
         [validationSchema],

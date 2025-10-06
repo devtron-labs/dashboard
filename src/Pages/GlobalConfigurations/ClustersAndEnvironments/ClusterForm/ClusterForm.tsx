@@ -552,10 +552,86 @@ const ClusterForm = ({
         return 'Enabled'
     }
 
+    const getIsPrometheusAuthValid = (): boolean => {
+        if (isPrometheusEnabled && state.authType?.value === AuthenticationType.BASIC) {
+            if (state.userName?.error || state.password?.error) {
+                return false
+            }
+        }
+
+        if (isPrometheusEnabled && state.endpoint?.error) {
+            return false
+        }
+
+        return true
+    }
+
+    const getIsConnectProtocolConfigInvalid = (): boolean => {
+        switch (remoteConnectionMethod) {
+            case RemoteConnectionType.Proxy:
+                return !state.proxyUrl?.value || state.proxyUrl?.error
+            case RemoteConnectionType.SSHTunnel:
+                return (
+                    !state.sshUsername?.value ||
+                    state.sshUsername?.error ||
+                    !state.sshServerAddress?.value ||
+                    state.sshServerAddress?.error ||
+                    (SSHConnectionType === SSHAuthenticationType.Password ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? !state.sshPassword?.value || state.sshPassword?.error
+                        : false) ||
+                    (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? !state.sshAuthKey?.value || state.sshAuthKey?.error
+                        : false)
+                )
+            case RemoteConnectionType.Direct:
+            default:
+                return false
+        }
+    }
+
+    const getIsTLSConfigInvalid = (): boolean => {
+        const hasError = state.certificateAuthorityData.error || state.tlsClientKey.error || state.tlsClientCert.error
+
+        const hasAllValues =
+            id && initialIsTlsConnection
+                ? true
+                : state.certificateAuthorityData.value && state.tlsClientKey.value && state.tlsClientCert.value
+
+        return isTlsConnection && (hasError || !hasAllValues)
+    }
+
     const getIsClusterConfigTabValid = (tab: ClusterConfigTabEnum): boolean => {
         const tabKeys = CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[tab]
         const isTabValid = !tabKeys.some((key) => state[key]?.error)
-        return isTabValid && !(tab === ClusterConfigTabEnum.COST_VISIBILITY && costModuleError)
+
+        if (!isTabValid) {
+            return false
+        }
+
+        switch (tab) {
+            case ClusterConfigTabEnum.APPLICATION_MONITORING: {
+                if (!getIsPrometheusAuthValid()) {
+                    return false
+                }
+
+                return true
+            }
+            case ClusterConfigTabEnum.COST_VISIBILITY: {
+                if (costModuleError || !getIsPrometheusAuthValid()) {
+                    return false
+                }
+
+                return true
+            }
+
+            case ClusterConfigTabEnum.CLUSTER_CONFIG:
+                return !getIsTLSConfigInvalid() && !getIsConnectProtocolConfigInvalid()
+
+            default:
+                return true
+        }
     }
 
     return (

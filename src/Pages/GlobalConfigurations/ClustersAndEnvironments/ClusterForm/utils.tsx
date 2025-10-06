@@ -40,7 +40,6 @@ export const getClusterFormValidationSchema = ({
     authType: {
         required: false,
         validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
-        onChangeClearErrorsKeys: ['userName', 'password'],
     },
     userName: {
         getIsRequired: (state) => !!(isPrometheusEnabled && state.authType?.value === AuthenticationType.BASIC),

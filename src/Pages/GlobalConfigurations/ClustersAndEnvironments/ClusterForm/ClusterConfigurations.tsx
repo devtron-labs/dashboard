@@ -59,67 +59,18 @@ const ClusterConfigurations = ({
         setClusterConfigPage(ClusterConfigPages.BASIC_CONFIG)
     }
 
-    const getIsBackDisabled = () => {
-        if (clusterConfigPage === ClusterConfigPages.CONNECTION_PROTOCOL_CONFIG) {
-            switch (remoteConnectionMethod) {
-                case RemoteConnectionType.Proxy:
-                    return !state.proxyUrl?.value || state.proxyUrl?.error
-                case RemoteConnectionType.SSHTunnel:
-                    return (
-                        !state.sshUsername?.value ||
-                        state.sshUsername?.error ||
-                        !state.sshServerAddress?.value ||
-                        state.sshServerAddress?.error ||
-                        (SSHConnectionType === SSHAuthenticationType.Password ||
-                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                            ? !state.sshPassword?.value || state.sshPassword?.error
-                            : false) ||
-                        (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
-                            ? !state.sshAuthKey?.value || state.sshAuthKey?.error
-                            : false)
-                    )
-                case RemoteConnectionType.Direct:
-                default:
-                    return false
-            }
-        }
-
-        if (clusterConfigPage === ClusterConfigPages.TLS_CONFIG) {
-            const hasError =
-                state.certificateAuthorityData.error || state.tlsClientKey.error || state.tlsClientCert.error
-
-            const hasAllValues =
-                id && initialIsTlsConnection
-                    ? true
-                    : state.certificateAuthorityData.value && state.tlsClientKey.value && state.tlsClientCert.value
-
-            return isTlsConnection && (hasError || !hasAllValues)
-        }
-
-        return false
-    }
-
-    const renderBackToBasicConfigButton = () => {
-        const isDisabled = getIsBackDisabled()
-        return (
-            <Button
-                dataTestId="back-to-config"
-                icon={<Icon name="ic-caret-down-small" color={null} rotateBy={90} />}
-                ariaLabel="back to configurations"
-                showAriaLabelInTippy={false}
-                size={ComponentSizeType.xxs}
-                variant={ButtonVariantType.secondary}
-                style={ButtonStyleType.neutral}
-                onClick={handleBackToBasicConfig}
-                disabled={isDisabled}
-                showTooltip={isDisabled}
-                tooltipProps={{
-                    content: 'Please resolve errors and fill all required values before proceeding.',
-                }}
-            />
-        )
-    }
+    const renderBackToBasicConfigButton = () => (
+        <Button
+            dataTestId="back-to-config"
+            icon={<Icon name="ic-caret-down-small" color={null} rotateBy={90} />}
+            ariaLabel="back to configurations"
+            showAriaLabelInTippy={false}
+            size={ComponentSizeType.xxs}
+            variant={ButtonVariantType.secondary}
+            style={ButtonStyleType.neutral}
+            onClick={handleBackToBasicConfig}
+        />
+    )
 
     const renderClusterInfo = () => {
         const k8sClusters = Object.values(CLUSTER_COMMAND)
