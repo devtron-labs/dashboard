@@ -54,7 +54,6 @@ export const getDataSourceDetailsFromEnvironment = async (envName: string): Prom
 
 export function isDatasourceHealthy(datasourceId: number | string) {
     const timestamp = new Date()
-    // const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
     const root = window.__ORCHESTRATOR_ROOT__.replace('/orchestrator', '')
     const URL = `${root}/grafana/api/datasources/proxy/${datasourceId}/api/v1/query?query=1&time=${timestamp.getTime()}`
     return fetchWithFullRoute(URL, 'GET')
