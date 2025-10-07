@@ -25,6 +25,8 @@ import {
     CodeEditor,
     ComponentSizeType,
     configMapSecretMountDataMap,
+    CONFIGURATION_TYPE_OPTIONS,
+    ConfigurationType,
     convertKeyValuePairToYAML,
     convertYAMLToKeyValuePair,
     KeyValueTable,
@@ -32,6 +34,7 @@ import {
     MODES,
     noop,
     OverrideMergeStrategyType,
+    SegmentedControl,
     SelectPickerOptionType,
     StyledRadioGroup,
     ToastManager,
@@ -162,11 +165,6 @@ export const ConfigMapSecretData = ({
         setValue('yamlMode', mode === VIEW_MODE.YAML)
     }
 
-    const handleGuiYamlSwitch = (e: ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target
-        toggleYamlMode(value as (typeof VIEW_MODE)[keyof typeof VIEW_MODE])
-    }
-
     const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) =>
         setCodeEditorRadio(e.target.value as CODE_EDITOR_RADIO_STATE)
 
@@ -211,6 +209,14 @@ export const ConfigMapSecretData = ({
         )
     }
 
+    const handleToggleEditMode = (selectedSegment: SelectPickerOptionType) => {
+        if (selectedSegment.value === ConfigurationType.YAML) {
+            toggleYamlMode(VIEW_MODE.YAML)
+        } else {
+            toggleYamlMode(VIEW_MODE.GUI)
+        }
+    }
+
     // USE-EFFECTS
     useEffect(() => {
         // Switch to YAML mode if the user is in the express edit comparison view.
@@ -246,22 +252,12 @@ export const ConfigMapSecretData = ({
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label className="m-0 fs-13 lh-20 dc__required-field">{isPatchMode ? 'Patch data' : 'Data'}</label>
                 {!isESO && !isHashiOrAWS && (
-                    <StyledRadioGroup
-                        className="gui-yaml-switch"
-                        disabled={false}
-                        initialTab={data.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
-                        name="yamlMode"
-                        /** @note Check comment inside `toggleYamlMode` to see why we haven't used register method from useForm */
-                        onChange={handleGuiYamlSwitch}
-                    >
-                        {Object.keys(VIEW_MODE).map((key) =>
-                            VIEW_MODE[key] !== VIEW_MODE.MANIFEST ? (
-                                <StyledRadioGroup.Radio key={key} value={VIEW_MODE[key]} canSelect={false}>
-                                    {VIEW_MODE[key].toUpperCase()}
-                                </StyledRadioGroup.Radio>
-                            ) : null,
-                        )}
-                    </StyledRadioGroup>
+                    <SegmentedControl
+                        segments={CONFIGURATION_TYPE_OPTIONS}
+                        value={data.yamlMode ? ConfigurationType.YAML : ConfigurationType.GUI}
+                        onChange={handleToggleEditMode}
+                        name="data-editor-selector"
+                    />
                 )}
             </div>
         )
