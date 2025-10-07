@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
     Button,
@@ -36,7 +36,6 @@ import {
     OverrideMergeStrategyType,
     SegmentedControl,
     SelectPickerOptionType,
-    StyledRadioGroup,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
@@ -47,9 +46,9 @@ import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import {
-    CODE_EDITOR_RADIO_STATE_VALUE,
     CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
     DATA_HEADER_MAP,
+    EXTERNAL_CODE_EDITOR_RADIO_STATE,
     sampleJSONs,
     VIEW_MODE,
 } from './constants'
@@ -165,9 +164,9 @@ export const ConfigMapSecretData = ({
         setValue('yamlMode', mode === VIEW_MODE.YAML)
     }
 
-    const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) =>
-        setCodeEditorRadio(e.target.value as CODE_EDITOR_RADIO_STATE)
-
+    const handleExternalCodeEditorRadioChange = (selectedSegment: SelectPickerOptionType) => {
+        setCodeEditorRadio(selectedSegment.value as CODE_EDITOR_RADIO_STATE)
+    }
     /**
      * Determines the key to be used for the code editor form based on the current configuration.
      * @returns The key in the `data` object corresponding to the selected mode (ESO, HashiCorp/AWS, or YAML).
@@ -341,18 +340,12 @@ export const ConfigMapSecretData = ({
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">
                             {!isHashiOrAWS && data.external ? (
-                                <StyledRadioGroup
+                                <SegmentedControl
                                     name="code-editor-radio"
-                                    className="gui-yaml-switch"
-                                    initialTab={codeEditorRadio}
-                                    onChange={handleCodeEditorRadioChange}
-                                >
-                                    {Object.keys(CODE_EDITOR_RADIO_STATE).map((key) => (
-                                        <StyledRadioGroup.Radio key={key} value={CODE_EDITOR_RADIO_STATE[key]}>
-                                            {CODE_EDITOR_RADIO_STATE_VALUE[key]}
-                                        </StyledRadioGroup.Radio>
-                                    ))}
-                                </StyledRadioGroup>
+                                    segments={EXTERNAL_CODE_EDITOR_RADIO_STATE}
+                                    value={codeEditorRadio}
+                                    onChange={handleExternalCodeEditorRadioChange}
+                                />
                             ) : null}
                             <div className="flex right dc__gap-8 ml-auto">
                                 {renderSecretShowHide()}
