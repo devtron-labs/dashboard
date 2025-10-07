@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import {
     showError,
@@ -27,7 +27,6 @@ import {
     ToastVariantType,
     ToastManager,
     getApplicationManagementBreadcrumb,
-    BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
