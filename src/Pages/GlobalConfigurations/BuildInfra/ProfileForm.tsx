@@ -23,6 +23,7 @@ import {
     BuildInfraDescriptor,
     BuildInfraFooter,
     DEFAULT_PROFILE_NAME,
+    FeatureTitleWithInfo,
     useBuildInfraForm,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -65,7 +66,7 @@ const ProfileForm: FunctionComponent = () => {
             onSubmit={handleSubmit}
         >
             <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-auto">
-                <BuildInfraDescriptor />
+                <BuildInfraDescriptor tooltipNode={<FeatureTitleWithInfo title={BUILD_INFRA_TEXT.HEADING} />} />
 
                 <APIResponseHandler
                     isLoading={isLoading}
