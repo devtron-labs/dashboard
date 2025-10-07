@@ -274,7 +274,7 @@ export default defineConfig(({ mode }) => {
                     target: targetUrl,
                     changeOrigin: true,
                 },
-                '/athena': {
+                '/proxy': {
                     target: targetUrl,
                     changeOrigin: true,
                 },
