@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { SyntheticEvent, useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import {
@@ -23,8 +23,6 @@ import {
     ButtonStyleType,
     ButtonVariantType,
     ClusterCostModuleConfigPayload,
-    ClusterDetailListType,
-    ClusterProviderType,
     DEFAULT_SECRET_PLACEHOLDER,
     Icon,
     ModalSidebarPanel,
@@ -37,7 +35,6 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
-    Tooltip,
     URLS,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -55,11 +52,12 @@ import DeleteClusterConfirmationModal from '../DeleteClusterConfirmationModal'
 import ApplicationMonitoring from './ApplicationMonitoring'
 import ClusterConfigurations from './ClusterConfigurations'
 import { ClusterFormNavButton } from './ClusterForm.components'
-import { ClusterConfigTabEnum } from './types'
+import { CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP } from './constants'
+import { ClusterConfigTabEnum, CostModuleStateType } from './types'
+import { getClusterFormValidationSchema } from './utils'
 
 import '../cluster.scss'
 
-const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const getCategoryPayload = importComponentFromFELibrary('getCategoryPayload', null, 'function')
 const ClusterCostConfig = importComponentFromFELibrary('ClusterCostConfig', null, 'function')
@@ -95,27 +93,36 @@ const ClusterForm = ({
             : ClusterConfigTabEnum.CLUSTER_CONFIG,
     )
 
-    const [costModuleState, setCostModuleState] = useState<
-        Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> & {
-            config: ClusterDetailListType['costModuleConfig']['config'] & { provider: ClusterProviderType }
-        }
-    >({
+    const [costModuleState, setCostModuleState] = useState<CostModuleStateType>({
         enabled: costModuleConfig?.enabled || false,
         config: {
             ...costModuleConfig?.config,
-            // Adding provider here to make the form work, it won't be sent to backend
-            provider: clusterProvider,
+            detectedProvider:
+                (clusterProvider === 'Unknown' ? costModuleConfig?.config?.detectedProvider : clusterProvider) ||
+                'Unknown',
         },
     })
 
+    const validateCostModuleConfig = (targetState = costModuleState): boolean => {
+        if (!costModuleSchema || !targetState.enabled) {
+            return true
+        }
+
+        try {
+            const validationResult = SCHEMA_07_VALIDATOR.validateFormData({ ...targetState.config }, costModuleSchema)
+            return !validationResult?.errors?.length
+        } catch {
+            return true
+        }
+    }
+
+    const [costModuleError, setCostModuleError] = useState<boolean>(!validateCostModuleConfig())
+
     const [isAppMetricsEnabled, setIsAppMetricsEnabled] = useState(!!prometheusUrl)
-    const [prometheusAuthenticationType, setPrometheusAuthenticationType] = useState({
-        type: prometheusAuth?.userName ? AuthenticationType.BASIC : AuthenticationType.ANONYMOUS,
-    })
     const [isTlsConnection, setIsTlsConnection] = useState(initialIsTlsConnection)
     const [selectedCategory, setSelectedCategory] = useState<SelectPickerOptionType>(category)
     const [confirmation, setConfirmation] = useState(false)
-    const [loader, setLoadingState] = useState<boolean>(false)
+    const [isUpdating, setIsUpdating] = useState<boolean>(false)
     const [isConnectedViaProxyTemp, setIsConnectedViaProxyTemp] = useState(!!proxyUrl)
     const [isConnectedViaSSHTunnelTemp, setIsConnectedViaSSHTunnelTemp] = useState(isConnectedViaSSHTunnel)
 
@@ -189,22 +196,6 @@ const ClusterForm = ({
         setIsConnectedViaSSHTunnelTemp(false)
     }
 
-    const validateCostModuleConfig = (): boolean => {
-        if (!costModuleSchema || !costModuleState.enabled) {
-            return true
-        }
-
-        try {
-            const validationResult = SCHEMA_07_VALIDATOR.validateFormData(
-                { ...costModuleState.config },
-                costModuleSchema,
-            )
-            return !validationResult?.errors?.length
-        } catch {
-            return true
-        }
-    }
-
     const getCostModulePayload = (): ClusterCostModuleConfigPayload | null => {
         if (!costModuleState.enabled) {
             return {
@@ -213,8 +204,12 @@ const ClusterForm = ({
         }
 
         if (costModuleState.config) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { provider, ...sanitizedConfig } = costModuleState.config
+            // Need to remove following keys from config if present: openCostServiceName, openCostServicePort, releaseName, namespace
+            const sanitizedConfig = { ...costModuleState.config }
+            delete sanitizedConfig.openCostServiceName
+            delete sanitizedConfig.openCostServicePort
+            delete sanitizedConfig.releaseName
+            delete sanitizedConfig.namespace
 
             return {
                 enabled: true,
@@ -256,6 +251,8 @@ const ClusterForm = ({
         ...(costModuleSchema ? { costModuleConfig: getCostModulePayload() } : null),
     })
 
+    // Could have returned validateCostModuleConfig but not doing intentionally since if we add other methods in future
+    // we can just add them here
     const additionalValidations = (): boolean => {
         let hasError = false
 
@@ -322,7 +319,7 @@ const ClusterForm = ({
 
         const api = id ? updateCluster : saveCluster
         try {
-            setLoadingState(true)
+            setIsUpdating(true)
             await api(payload)
             ToastManager.showToast({
                 variant: ToastVariantType.success,
@@ -336,7 +333,7 @@ const ClusterForm = ({
         } catch (err) {
             showError(err)
         } finally {
-            setLoadingState(false)
+            setIsUpdating(false)
         }
     }
 
@@ -361,102 +358,24 @@ const ClusterForm = ({
             authType: { value: authenTicationType, error: '' },
             isProd: { value: isProd.toString(), error: '' },
         },
-        {
-            cluster_name: {
-                required: true,
-                validators: [
-                    { error: 'Name is required', regex: /^.*$/ },
-                    { error: "Use only lowercase alphanumeric characters, '-', '_' or '.'", regex: /^[a-z0-9-._]+$/ },
-                    { error: "Cannot start/end with '-', '_' or '.'", regex: /^(?![-._]).*[^-._]$/ },
-                    { error: 'Minimum 3 and Maximum 63 characters required', regex: /^.{3,63}$/ },
-                ],
-            },
-            url: {
-                required: true,
-                validator: { error: 'URL is required', regex: /^.*$/ },
-            },
-            authType: {
-                required: false,
-                validator: { error: 'Authentication Type is required', regex: /^(?!\s*$).+/ },
-            },
-            userName: {
-                required: !!(isPrometheusEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
-                validator: { error: 'username is required', regex: /^(?!\s*$).+/ },
-            },
-            password: {
-                required: !!(isPrometheusEnabled && prometheusAuthenticationType.type === AuthenticationType.BASIC),
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
-            },
-            prometheusTlsClientKey: {
-                required: false,
-            },
-            prometheusTlsClientCert: {
-                required: false,
-            },
-            proxyUrl: {
-                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.Proxy,
-                validator: {
-                    error: 'Please provide a valid URL. URL must start with http:// or https://',
-                    regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,
-                },
-            },
-            sshUsername: {
-                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.SSHTunnel,
-                validator: {
-                    error: 'Username or User Identifier is required. Username cannot contain spaces or special characters other than _ and -',
-                    regex: /^[A-Za-z0-9_-]+$/,
-                },
-            },
-            sshPassword: {
-                required:
-                    RemoteConnectionRadio &&
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel &&
-                    (SSHConnectionType === SSHAuthenticationType.Password ||
-                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
-                validator: { error: 'password is required', regex: /^(?!\s*$).+/ },
-            },
-            sshAuthKey: {
-                required:
-                    RemoteConnectionRadio &&
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel &&
-                    (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
-                        SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key),
-                validator: { error: 'private key is required', regex: /^(?!\s*$).+/ },
-            },
-            sshServerAddress: {
-                required: RemoteConnectionRadio && remoteConnectionMethod === RemoteConnectionType.SSHTunnel,
-                validator:
-                    remoteConnectionMethod === RemoteConnectionType.SSHTunnel
-                        ? {
-                              error: 'Please provide a valid URL. URL must start with http:// or https://',
-                              regex: /^(http(s)?:\/\/)[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$&'()*+,;=.]+$/,
-                          }
-                        : { error: '', regex: /^(?!\s*$).+/ },
-            },
-            tlsClientKey: {
-                required: id ? false : isTlsConnection,
-            },
-            tlsClientCert: {
-                required: id ? false : isTlsConnection,
-            },
-            certificateAuthorityData: {
-                required: id ? false : isTlsConnection,
-            },
-            token:
-                isDefaultCluster || id
-                    ? {}
-                    : {
-                          required: true,
-                          validator: { error: 'token is required', regex: /[^]+/ },
-                      },
-            endpoint: {
-                required: !!isPrometheusEnabled,
-                validator: { error: 'endpoint is required', regex: /^.*$/ },
-            },
-        },
+        getClusterFormValidationSchema({
+            isPrometheusEnabled,
+            id,
+            isDefaultCluster,
+            isTlsConnection,
+            remoteConnectionMethod,
+            SSHConnectionType,
+        }),
         onValidation,
-        'Please resolve all the errors before submitting.',
+        'Please resolve the errors before submitting.',
     )
+
+    const handleSubmit = (event: SyntheticEvent) => {
+        // Even though additionalValidations is called in onValidation but since we need all the errors to be visible as soon as user clicks on submit
+        // We are calling them here as well
+        additionalValidations()
+        handleOnSubmit(event)
+    }
 
     const toggleAppMetrics = () => {
         setIsAppMetricsEnabled((prev) => !prev)
@@ -464,11 +383,6 @@ const ClusterForm = ({
 
     const onPrometheusAuthTypeChange = (e) => {
         handleOnChange(e)
-        if (state.authType.value === AuthenticationType.BASIC) {
-            setPrometheusAuthenticationType({ type: AuthenticationType.ANONYMOUS })
-        } else {
-            setPrometheusAuthenticationType({ type: AuthenticationType.BASIC })
-        }
     }
 
     const changeRemoteConnectionType = (connectionType) => {
@@ -491,31 +405,29 @@ const ClusterForm = ({
     const hideConfirmationModal = () => setConfirmation(false)
 
     const getTabSwitchHandler = (tab: ClusterConfigTabEnum) => () => {
-        // This works since there is no required field in any other tab except Cluster config tab, which on creation is the default tab
-        const hasError = validateAllAndSetErrors() || additionalValidations()
-        if (hasError) {
-            ToastManager.showToast({
-                variant: ToastVariantType.error,
-                description: 'Some fields are invalid. Please correct them and try again.',
-            })
-            return
-        }
-
+        validateAllAndSetErrors()
+        additionalValidations()
         setClusterConfigTab(tab)
     }
 
     const toggleCostModule = () => {
-        setCostModuleState((prev) => ({
-            ...prev,
-            enabled: !prev.enabled,
-        }))
+        const newConfigState: typeof costModuleState = {
+            ...costModuleState,
+            enabled: !costModuleState.enabled,
+        }
+
+        setCostModuleError(newConfigState.enabled && !validateCostModuleConfig(newConfigState))
+        setCostModuleState(newConfigState)
     }
 
     const handleCostConfigChange = (newConfig: typeof costModuleState.config) => {
-        setCostModuleState((prev) => ({
-            ...prev,
+        const newConfigState: typeof costModuleState = {
+            ...costModuleState,
             config: newConfig,
-        }))
+        }
+
+        setCostModuleError(!validateCostModuleConfig(newConfigState))
+        setCostModuleState(newConfigState)
     }
 
     const renderFooter = () => (
@@ -526,7 +438,7 @@ const ClusterForm = ({
                     variant={ButtonVariantType.secondary}
                     style={ButtonStyleType.negative}
                     startIcon={<Icon name="ic-delete" color={null} />}
-                    disabled={isDefaultCluster || loader}
+                    disabled={isDefaultCluster || isUpdating}
                     dataTestId="delete_cluster"
                     onClick={showConfirmationModal}
                 />
@@ -536,19 +448,55 @@ const ClusterForm = ({
                     text="Cancel"
                     variant={ButtonVariantType.secondary}
                     style={ButtonStyleType.neutral}
-                    disabled={loader}
+                    disabled={isUpdating}
                     dataTestId="cancel-create-cluster-button"
                     onClick={handleModalClose}
                 />
                 <Button
                     dataTestId="save_cluster_after_entering_cluster_details"
-                    onClick={handleOnSubmit}
+                    onClick={handleSubmit}
                     text={id ? 'Update cluster' : 'Save Cluster'}
-                    isLoading={loader}
+                    isLoading={isUpdating}
                 />
             </div>
         </div>
     )
+
+    const getIsConnectProtocolConfigInvalid = (): boolean => {
+        switch (remoteConnectionMethod) {
+            case RemoteConnectionType.Proxy:
+                return !state.proxyUrl?.value || state.proxyUrl?.error
+            case RemoteConnectionType.SSHTunnel:
+                return (
+                    !state.sshUsername?.value ||
+                    state.sshUsername?.error ||
+                    !state.sshServerAddress?.value ||
+                    state.sshServerAddress?.error ||
+                    (SSHConnectionType === SSHAuthenticationType.Password ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? !state.sshPassword?.value || state.sshPassword?.error
+                        : false) ||
+                    (SSHConnectionType === SSHAuthenticationType.SSH_Private_Key ||
+                    SSHConnectionType === SSHAuthenticationType.Password_And_SSH_Private_Key
+                        ? !state.sshAuthKey?.value || state.sshAuthKey?.error
+                        : false)
+                )
+            case RemoteConnectionType.Direct:
+            default:
+                return false
+        }
+    }
+
+    const getIsTLSConfigInvalid = (): boolean => {
+        const hasError = state.certificateAuthorityData.error || state.tlsClientKey.error || state.tlsClientCert.error
+
+        const hasAllValues =
+            id && initialIsTlsConnection
+                ? true
+                : state.certificateAuthorityData.value && state.tlsClientKey.value && state.tlsClientCert.value
+
+        return isTlsConnection && (hasError || !hasAllValues)
+    }
 
     const renderFormBody = () => {
         const prometheusConfig = {
@@ -579,6 +527,8 @@ const ClusterForm = ({
                             setSelectedCategory={setSelectedCategory}
                             SSHConnectionType={SSHConnectionType}
                             initialIsTlsConnection={initialIsTlsConnection}
+                            getIsConnectProtocolConfigInvalid={getIsConnectProtocolConfigInvalid}
+                            getIsTLSConfigInvalid={getIsTLSConfigInvalid}
                         />
                     </div>
                 )
@@ -607,7 +557,7 @@ const ClusterForm = ({
                             isGrafanaModuleInstalled={isGrafanaModuleInstalled}
                             costModuleEnabled={costModuleState.enabled}
                             toggleCostModule={toggleCostModule}
-                            installationStatus={costModuleConfig.installationStatus}
+                            costModuleConfig={costModuleConfig}
                             handleCostConfigChange={handleCostConfigChange}
                             config={costModuleState.config}
                             costModuleSchema={costModuleSchema || {}}
@@ -624,28 +574,71 @@ const ClusterForm = ({
             return 'Off'
         }
 
-        if (costModuleConfig.installationStatus === 'Installing') {
-            return <span className="cy-7 fs-12">Installing...</span>
-        }
-
-        if (costModuleConfig.installationStatus === 'Upgrading') {
-            return <span className="cy-7 fs-12">Upgrading...</span>
+        if (
+            costModuleConfig.installationStatus === 'Installing' ||
+            costModuleConfig.installationStatus === 'Upgrading'
+        ) {
+            return <span className="cy-7 fs-12">{costModuleConfig.installationStatus} agent</span>
         }
 
         if (costModuleConfig.installationStatus === 'Failed') {
-            return (
-                <div className="flexbox dc__gap-4 dc__align-items-center">
-                    <Icon name="ic-error" size={14} color="R500" />
-                    <Tooltip content={costModuleConfig.installationError}>
-                        <span className="dc__truncate cr-5 fs-12">
-                            Installation Error: {costModuleConfig.installationError}
-                        </span>
-                    </Tooltip>
-                </div>
-            )
+            return <span className="dc__truncate cr-5 fs-12">Agent unavailable</span>
         }
 
-        return 'Enabled'
+        if (costModuleConfig.installationStatus === 'Success') {
+            return 'Enabled'
+        }
+
+        return `Agent status: ${costModuleConfig.installationStatus}`
+    }
+
+    const getIsPrometheusAuthValid = (): boolean => {
+        if (isPrometheusEnabled) {
+            const isBasicError =
+                state.authType?.value === AuthenticationType.BASIC && (state.userName?.error || state.password?.error)
+
+            if (isBasicError || state.endpoint?.error) {
+                return false
+            }
+        }
+
+        return true
+    }
+
+    const getIsClusterConfigTabValid = (tab: ClusterConfigTabEnum): boolean => {
+        const tabKeys = CLUSTER_CONFIG_TAB_TO_ERROR_KEY_MAP[tab]
+        const isTabValid = !tabKeys.some((key) => state[key]?.error)
+
+        if (!isTabValid) {
+            return false
+        }
+
+        switch (tab) {
+            case ClusterConfigTabEnum.APPLICATION_MONITORING: {
+                if (!getIsPrometheusAuthValid()) {
+                    return false
+                }
+
+                return true
+            }
+            case ClusterConfigTabEnum.COST_VISIBILITY: {
+                if (
+                    (costModuleState.enabled && costModuleConfig?.installationError) ||
+                    costModuleError ||
+                    !getIsPrometheusAuthValid()
+                ) {
+                    return false
+                }
+
+                return true
+            }
+
+            case ClusterConfigTabEnum.CLUSTER_CONFIG:
+                return !getIsTLSConfigInvalid() && !getIsConnectProtocolConfigInvalid()
+
+            default:
+                return true
+        }
     }
 
     return (
@@ -664,6 +657,7 @@ const ClusterForm = ({
                             isActive={clusterConfigTab === ClusterConfigTabEnum.CLUSTER_CONFIG}
                             title="Cluster Configurations"
                             onClick={getTabSwitchHandler(ClusterConfigTabEnum.CLUSTER_CONFIG)}
+                            hasError={!getIsClusterConfigTabValid(ClusterConfigTabEnum.CLUSTER_CONFIG)}
                         />
                         <div className="divider__secondary--horizontal" />
                         <div className="flexbox-col">
@@ -673,6 +667,7 @@ const ClusterForm = ({
                                 title="Application Monitoring"
                                 subtitle={isAppMetricsEnabled ? 'Enabled' : 'Off'}
                                 onClick={getTabSwitchHandler(ClusterConfigTabEnum.APPLICATION_MONITORING)}
+                                hasError={!getIsClusterConfigTabValid(ClusterConfigTabEnum.APPLICATION_MONITORING)}
                             />
                             {ClusterCostConfig && id && (
                                 <ClusterFormNavButton
@@ -680,6 +675,7 @@ const ClusterForm = ({
                                     title="Cost Visibility"
                                     subtitle={getCostNavSubtitle()}
                                     onClick={getTabSwitchHandler(ClusterConfigTabEnum.COST_VISIBILITY)}
+                                    hasError={!getIsClusterConfigTabValid(ClusterConfigTabEnum.COST_VISIBILITY)}
                                 />
                             )}
                         </div>

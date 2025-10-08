@@ -91,6 +91,16 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
         }
     }, [state, isDirty])
 
+    const getIsSchemaKeyRequired = (schemaKeyData) =>
+        !!schemaKeyData?.required || !!schemaKeyData?.getIsRequired?.(state)
+
+    const isStateKeyInvalid = (schemaKeyData, stateKeyData) => {
+        const isInputFieldRequired = getIsSchemaKeyRequired(schemaKeyData)
+        const stateValue = stateKeyData?.value // state value
+        const stateError = stateKeyData?.error // state error
+        return (isInputFieldRequired && !stateValue) || stateError
+    }
+
     // Used to disable submit button if there's an error in state
     // or the required field in state has no value.
     // Wrapped in useCallback to cached the function to avoid intensive memory leaked
@@ -98,19 +108,16 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
     const validateState = useCallback(
         (state) => {
             // check errors in all fields
-            const hasErrorInState = Object.keys(validationSchema).some((key) => {
-                const isInputFieldRequired = validationSchema[key].required
-                const stateValue = state[key].value // state value
-                const stateError = state[key].error // state error
-                return (isInputFieldRequired && !stateValue) || stateError
-            })
+            const hasErrorInState = Object.keys(validationSchema).some((key) =>
+                isStateKeyInvalid(validationSchema[key], state[key]),
+            )
             return hasErrorInState
         },
         [state, validationSchema],
     )
 
     function validateField(name, value): string | string[] {
-        if (validationSchema[name]?.required) {
+        if (getIsSchemaKeyRequired(validationSchema[name])) {
             if (!value) {
                 return 'This is a required field.'
             }
@@ -187,7 +194,7 @@ export function useForm(stateSchema, validationSchema = {}, callback, errorMessa
                     description: errorMessageOnSubmit,
                 })
             }
-            
+
             setState({ ...newState })
         }
     }
