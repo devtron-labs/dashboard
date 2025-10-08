@@ -56,7 +56,7 @@ const EAHeaderComponent = ({
                     linked: false,
                 },
                 ':clusterId': null,
-                ':appId(\\d+)': null,
+                ':appId': null,
             },
         },
         [params.appName],

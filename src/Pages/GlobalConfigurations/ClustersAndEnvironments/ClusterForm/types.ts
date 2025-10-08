@@ -1,6 +1,11 @@
-import { Dispatch, SetStateAction, SyntheticEvent } from 'react'
+import { Dispatch, ReactNode, SetStateAction, SyntheticEvent } from 'react'
 
-import { PromoetheusConfig, RemoteConnectionType, SelectPickerOptionType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterDetailListType,
+    PromoetheusConfig,
+    RemoteConnectionType,
+    SelectPickerOptionType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { SSHAuthenticationType } from '../cluster.type'
 
@@ -24,6 +29,8 @@ export interface ClusterConfigurationsProps {
     selectedCategory: SelectPickerOptionType
     setSelectedCategory: Dispatch<SetStateAction<SelectPickerOptionType>>
     initialIsTlsConnection: boolean
+    getIsConnectProtocolConfigInvalid: () => boolean
+    getIsTLSConfigInvalid: () => boolean
 }
 
 export interface KubeConfigEditorProps {
@@ -53,4 +60,44 @@ export enum ClusterConfigPages {
     BASIC_CONFIG = 'basic-config',
     CONNECTION_PROTOCOL_CONFIG = 'connection-protocol-config',
     TLS_CONFIG = 'tls-config',
+}
+
+export type ClusterFormKeys =
+    | 'cluster_name'
+    | 'url'
+    | 'userName'
+    | 'password'
+    | 'prometheusTlsClientKey'
+    | 'prometheusTlsClientCert'
+    | 'proxyUrl'
+    | 'sshUsername'
+    | 'sshPassword'
+    | 'sshAuthKey'
+    | 'sshServerAddress'
+    | 'tlsClientKey'
+    | 'tlsClientCert'
+    | 'certificateAuthorityData'
+    | 'token'
+    | 'endpoint'
+    | 'authType'
+
+export interface ClusterFormNavButtonProps {
+    isActive: boolean
+    title: string
+    subtitle?: ReactNode
+    onClick: () => void
+    hasError: boolean
+}
+
+export interface CostModuleStateType extends Pick<ClusterDetailListType['costModuleConfig'], 'enabled'> {
+    config: ClusterDetailListType['costModuleConfig']['config']
+}
+
+export interface GetClusterFormValidationSchemaProps {
+    isPrometheusEnabled: boolean
+    id: number
+    isDefaultCluster: boolean
+    isTlsConnection: boolean
+    remoteConnectionMethod: RemoteConnectionType
+    SSHConnectionType: SSHAuthenticationType
 }

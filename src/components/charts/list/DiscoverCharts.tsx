@@ -350,7 +350,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
                 },
             },
         },
-        [],
+        [isLoading, chartsList],
     )
 
     const renderBreadcrumbs = () => {
