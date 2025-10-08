@@ -21,7 +21,6 @@ import { DescriptorProps } from './types'
 import { importComponentFromFELibrary, HiddenInput } from '../common'
 import { ReadFileAs } from '../common/hooks/types'
 import { ReactComponent as ICUpload } from '../../assets/icons/ic-upload-blue.svg'
-import { ReactComponent as ICSearch } from '../../assets/icons/ic-search.svg'
 import { HEADER_TEXT } from '@Config/constants'
 
 export default function Descriptor({ children, showUploadButton, readFile, searchKey, onSearch }: DescriptorProps) {
@@ -32,7 +31,7 @@ export default function Descriptor({ children, showUploadButton, readFile, searc
         }
     }
 
-    const additonalTippyContent = importComponentFromFELibrary('scopedVariablesHelpTippyText')
+    const additionalTippyContent = importComponentFromFELibrary('scopedVariablesHelpTippyText')
 
     return (
         <>
@@ -45,9 +44,9 @@ export default function Descriptor({ children, showUploadButton, readFile, searc
                     <FeatureTitleWithInfo
                         title={HEADER_TEXT.SCOPED_VARIABLES.title}
                         renderDescriptionContent={() =>
-                            additonalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description
+                            additionalTippyContent ? null : HEADER_TEXT.SCOPED_VARIABLES.description
                         }
-                        additionalContent={additonalTippyContent?.()}
+                        additionalContent={additionalTippyContent?.()}
                         docLink={HEADER_TEXT.SCOPED_VARIABLES.docLink}
                         showInfoIconTippy
                     />

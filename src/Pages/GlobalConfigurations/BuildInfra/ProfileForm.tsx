@@ -18,20 +18,18 @@ import React, { FunctionComponent, useMemo } from 'react'
 
 import {
     APIResponseHandler,
-    BUILD_INFRA_BREADCRUMB,
     BUILD_INFRA_TEXT,
     BuildInfraConfigForm,
     BuildInfraDescriptor,
     BuildInfraFooter,
     DEFAULT_PROFILE_NAME,
-    useBreadcrumb,
+    FeatureTitleWithInfo,
     useBuildInfraForm,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import './styles.scss'
 
 const ProfileForm: FunctionComponent = () => {
-    const { breadcrumbs } = useBreadcrumb(BUILD_INFRA_BREADCRUMB)
     const {
         isLoading,
         profileResponse,
@@ -68,7 +66,7 @@ const ProfileForm: FunctionComponent = () => {
             onSubmit={handleSubmit}
         >
             <div className="flexbox-col dc__gap-24 pt pr pb pl h-100 dc__overflow-auto">
-                <BuildInfraDescriptor breadCrumbs={breadcrumbs} />
+                <BuildInfraDescriptor tooltipNode={<FeatureTitleWithInfo title={BUILD_INFRA_TEXT.HEADING} />} />
 
                 <APIResponseHandler
                     isLoading={isLoading}
