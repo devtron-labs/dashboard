@@ -730,7 +730,10 @@ export default function CDPipeline({
             environmentId: formData.environmentId,
             namespace: formData.namespace,
             id: +cdPipelineId,
-            strategies: formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && formData.isCustomChart ? [] : formData.savedStrategies,
+            strategies:
+                formData.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && formData.isCustomChart
+                    ? []
+                    : formData.savedStrategies,
             parentPipelineType,
             parentPipelineId: +parentPipelineId,
             isClusterCdActive: formData.isClusterCdActive,
@@ -1504,6 +1507,7 @@ export default function CDPipeline({
                         envId={formData.environmentId}
                     />
                 )}
+                {(cdPipelineId || isAdvanced) && renderFloatingVariablesWidget()}
             </div>
         )
     }
@@ -1533,13 +1537,9 @@ export default function CDPipeline({
     }
 
     return cdPipelineId || isAdvanced ? (
-        <>
-            {renderFloatingVariablesWidget()}
-
-            <Drawer onEscape={closePipelineModal} position="right" width="75%" minWidth="1024px" maxWidth="1200px">
-                {renderCDPipelineModal()}
-            </Drawer>
-        </>
+        <Drawer onEscape={closePipelineModal} position="right" width="75%" minWidth="1024px" maxWidth="1200px">
+            {renderCDPipelineModal()}
+        </Drawer>
     ) : (
         <VisibleModal className="">{renderCDPipelineModal()}</VisibleModal>
     )

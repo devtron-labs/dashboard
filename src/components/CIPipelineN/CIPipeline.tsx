@@ -913,7 +913,6 @@ export default function CIPipeline({
 
     return (
         <>
-            {renderFloatingVariablesWidget()}
             {(ciPipelineId || isAdvanced) && (
                 <Drawer position="right" width="75%" minWidth="1024px" maxWidth="1200px" onEscape={handleClose}>
                     <div className="modal__body modal__body__ci_new_ui br-0 modal__body--p-0 advanced-option-container">
@@ -939,6 +938,7 @@ export default function CIPipeline({
                             </div>
                         )}
                     </div>
+                    {renderFloatingVariablesWidget()}
                 </Drawer>
             )}
             <GenericModal

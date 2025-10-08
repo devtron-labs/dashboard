@@ -89,6 +89,7 @@ const AppSelector = ({ onChange, appId, appName, isJobView }: AppSelectorType) =
             placeholder={appName}
             optionListError={error}
             reloadOptionList={reload}
+            resource={isJobView ? 'Job' : 'Application'}
         />
     )
 }
