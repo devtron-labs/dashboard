@@ -1722,9 +1722,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.20.3-pre-0":
-  version: 1.20.3-pre-0
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.20.3-pre-0"
+"@devtron-labs/devtron-fe-common-lib@npm:1.20.5-pre-8":
+  version: 1.20.5-pre-8
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.20.5-pre-8"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1774,7 +1774,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/c029c62898e896ca682067eb4d423c42ea5546ed9e7901461f1068c36b683e78a2c2ca59cc209375f5a8f06d1553a70bfcc38252f53905ec577f7f4b33404142
+  checksum: 10c0/dae65dae4a7b0d0068c1ee45516af9840b4614f92fd6195bb1a831663c3bb6867d179ef1fe32907b2fbcfecac13bec324506b3a3923f1057ddd4cb2cb17bdab5
   languageName: node
   linkType: hard
 
@@ -5721,7 +5721,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.20.3-pre-0"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.20.5-pre-8"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"

@@ -159,7 +159,7 @@ const NodeComponent = ({
             let _healthyNodeCount = 0
 
             _selectedNodes.forEach((node: Node) => {
-                if (node.health?.status.toLowerCase() === 'healthy') {
+                if (node.health?.status?.toLowerCase() === 'healthy') {
                     _healthyNodeCount += 1
                 }
             })
