@@ -282,6 +282,27 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         ],
     },
     {
+        id: 'observability',
+        title: 'Observability',
+        icon: 'ic-user-key',
+        items: [
+            {
+                title: 'Overview',
+                dataTestId: 'observability-overview',
+                id: 'infrastructure-management-overview',
+                icon: 'ic-speedometer',
+                href: COMMON_URLS.OBSERVABILITY_OVERVIEW,
+            },
+            {
+                title: 'VMs',
+                dataTestId: 'observability-vms',
+                id: 'observability-vms',
+                icon: 'ic-cluster',
+                href: COMMON_URLS.OBSERVABILITY_LIST,
+            },
+        ],
+    },
+    {
         id: 'software-release-management',
         title: 'Software Release Management',
         icon: 'ic-open-box',

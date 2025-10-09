@@ -112,6 +112,7 @@ const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
+const Observability = lazy(() => import('../../observability/ObservabilityRouter'))
 
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
@@ -559,6 +560,12 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
                                     >
                                         <ResourceBrowser />
+                                    </Route>
+                                    <Route
+                                        key={CommonURLS.OBSERVABILITY_OVERVIEW}
+                                        path={CommonURLS.OBSERVABILITY_OVERVIEW}
+                                    >
+                                        <Observability />
                                     </Route>
                                     <Route
                                         path={CommonURLS.GLOBAL_CONFIG}
