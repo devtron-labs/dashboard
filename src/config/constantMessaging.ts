@@ -215,7 +215,7 @@ export const DEPLOYMENT_HISTORY_TAB = {
 }
 
 export const API_COMPONENTS = {
-    TITLE: 'API tokens ',
+    TITLE: 'API Tokens ',
     QUESTION_ICON_INFO:
         'API tokens are like ordinary OAuth access tokens. They can be used instead of username and password for programmatic access to API.',
     NEW_API_TITLE: '/ New API token',

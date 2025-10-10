@@ -17,6 +17,7 @@ import {
     handleUTCTime,
     Icon,
     MaterialHistory,
+    OptionType,
     SearchBar,
     showError,
     SourceTypeMap,
@@ -354,8 +355,8 @@ const GitInfoMaterial = ({
         }
     }
 
-    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
+    const handleSidebarTabChange = (selectedSidebarTab: OptionType<CIMaterialSidebarType>) => {
+        setCurrentSidebarTab(selectedSidebarTab.value as CIMaterialSidebarType)
     }
 
     const toggleIncludeExcludeCommits = async () => {
