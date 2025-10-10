@@ -142,7 +142,10 @@ export const ChartDetailsPresetValues = () => {
                     filtersVariant={FiltersTypeEnum.STATE}
                     filter={filter}
                     ViewWrapper={PresetValuesTableViewWrapper}
-                    RowActionsOnHoverComponent={PresetValuesTableRowActionsOnHoverComponent}
+                    rowActionOnHoverConfig={{
+                        width: 100,
+                        Component: PresetValuesTableRowActionsOnHoverComponent,
+                    }}
                     additionalProps={{ showDeleteModal, chartValuesTemplateList }}
                     additionalFilterProps={{
                         initialSortKey: 'name',
