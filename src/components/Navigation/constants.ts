@@ -433,7 +433,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'data-protection-backup-and-schedule',
                 id: 'data-protection-backup-and-schedule',
                 icon: 'ic-floppy-disk',
-                href: COMMON_URLS.DATA_PROTECTION_BACKUP_AND_SCHEDULE,
+                href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_AND_SCHEDULE, { view: 'backups' }),
             },
             {
                 title: 'Restores',
