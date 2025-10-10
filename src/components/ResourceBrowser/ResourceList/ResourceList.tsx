@@ -221,7 +221,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
             />
             <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
                 <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                    <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
+                    <ClusterOverview selectedCluster={selectedCluster} />
                 </DynamicTabComponentWrapper>
             </Route>
             {MonitoringDashboard && (

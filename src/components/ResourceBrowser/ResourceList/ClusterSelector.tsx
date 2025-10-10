@@ -164,6 +164,7 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
                 )}
                 inputValue={inputValue}
                 onInputChange={onInputChange}
+                resource="Cluster"
             />
 
             {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
