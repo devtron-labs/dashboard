@@ -19,7 +19,7 @@ export type NavigationRootItemID =
     | 'cost-visibility'
     | 'security-center'
     | 'automation-and-enablement'
-    | 'backup-and-restore'
+    | 'data-protection-management'
     | 'global-configuration'
     | 'ai-recommendations'
 

@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { CMSecretComponentType, ConfigMapSecretUseFormProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CMSecretComponentType,
+    CODE_EDITOR_RADIO_STATE,
+    ConfigMapSecretUseFormProps,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { ConfigMapSecretNullStateProps } from './types'
 
@@ -72,8 +76,6 @@ export const getCMSecretNullStateText = (
         subTitle: CM_SECRET_EMPTY_STATE_TEXT[componentType].subtitle,
     },
 })
-
-export const CODE_EDITOR_RADIO_STATE_VALUE = { DATA: 'Data', SAMPLE: 'Sample' }
 
 export const DATA_HEADER_MAP = { DEFAULT: 'default' }
 
@@ -223,3 +225,8 @@ export const CONFIG_MAP_SECRET_DATA_KEYS: (keyof ConfigMapSecretUseFormProps)[] 
     'esoSecretYaml',
     'secretDataYaml',
 ]
+
+export const EXTERNAL_CODE_EDITOR_RADIO_STATE = Object.values(CODE_EDITOR_RADIO_STATE).map((value) => ({
+    label: value,
+    value,
+}))
