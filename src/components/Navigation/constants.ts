@@ -456,7 +456,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         id: 'ai-recommendations',
         title: 'AI Recommendations',
         icon: 'ic-openai',
-        disabled: false,
+        disabled: false, // Enable AI Recommendations section
         items: [
             {
                 title: 'Notifications',
@@ -465,6 +465,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-speedometer',
                 disabled: false,
                 href: COMMON_URLS.AI_RECOMMENDATIONS_NOTIFICATIONS,
+            },
+            {
+                title: 'Runbooks',
+                dataTestId: 'ai-recommendations-runbooks',
+                id: 'ai-recommendations-runbooks',
+                icon: 'ic-book-open',
+                disabled: false,
+                href: COMMON_URLS.AI_RECOMMENDATIONS_RUNBOOKS,
             },
         ],
     },
