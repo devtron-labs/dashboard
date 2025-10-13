@@ -5055,6 +5055,14 @@ details[open] {
                 top: -8px;
             }
         }
+
+        &-gap-12 {
+            gap: 24px;
+
+            &> :not(:first-child)::before {
+                top: -12px;
+            }
+        }
     }
 }
 
