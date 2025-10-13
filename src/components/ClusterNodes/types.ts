@@ -277,7 +277,6 @@ export interface ClusterErrorType {
 }
 export interface ClusterOverviewProps {
     selectedCluster: ClusterOptionType
-    addTab: UseTabsReturnType['addTab']
 }
 
 export enum TaintsTableHeaderKeys {
