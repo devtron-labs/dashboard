@@ -452,19 +452,27 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
             },
         ],
     },
-    {
+{
         id: 'ai-recommendations',
         title: 'AI Recommendations',
         icon: 'ic-openai',
-        disabled: false,
+        disabled: false, // Enable AI Recommendations section
         items: [
             {
                 title: 'Notifications',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
                 icon: 'ic-speedometer',
-                disabled: false,
+                disabled: false, // Enable notifications
                 href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
+            },
+            {
+                title: 'Runbooks',
+                dataTestId: 'ai-recommendations-runbooks',
+                id: 'ai-recommendations-runbooks',
+                icon: 'ic-book-open',
+                disabled: false,
+                href: COMMON_URLS.AI_RECOMMENDATIONS_RUNBOOKS,
             },
         ],
     },
