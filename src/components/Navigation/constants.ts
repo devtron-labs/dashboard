@@ -1,6 +1,6 @@
 import { generatePath } from 'react-router-dom'
 
-import { URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { BackupLocationsTypes, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
@@ -467,7 +467,9 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'backup-locations',
                 id: 'data-protection-backup-locations',
                 icon: 'ic-storage',
-                href: COMMON_URLS.DATA_PROTECTION_BACKUP_LOCATIONS,
+                href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_LOCATIONS, {
+                    type: BackupLocationsTypes.VOLUME_SNAPSHOT,
+                }),
             },
         ],
     },

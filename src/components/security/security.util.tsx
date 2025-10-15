@@ -65,8 +65,8 @@ export const getSecurityBreadcrumbAlias = (url: string): Parameters<typeof useBr
                     linkProps={{
                         to: URLS.SECURITY_SCANS,
                     }}
-                    ariaLabel="Redirect to Security Scans Overview"
-                    showAriaLabelInTippy={false}
+                    ariaLabel="Security Center"
+                    showAriaLabelInTippy
                 />
             ),
             linked: true,
