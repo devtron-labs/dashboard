@@ -460,8 +460,8 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         items: [
             {
                 title: 'Notifications',
-                dataTestId: 'ai-recommendations-overview',
-                id: 'ai-recommendations-overview',
+                dataTestId: 'ai-recommendations-notifications',
+                id: 'ai-recommendations-notifications',
                 icon: 'ic-speedometer',
                 disabled: false,
                 href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
