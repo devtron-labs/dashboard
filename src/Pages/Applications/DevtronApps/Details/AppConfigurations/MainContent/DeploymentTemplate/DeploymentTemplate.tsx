@@ -1103,13 +1103,13 @@ const DeploymentTemplate = ({
             const isReqAbortedError = getIsRequestAborted(error)
             if (!isReqAbortedError) {
                 showError(error)
+                dispatch({
+                    type: DeploymentTemplateActionType.INITIAL_DATA_ERROR,
+                    payload: {
+                        error,
+                    },
+                })
             }
-            dispatch({
-                type: DeploymentTemplateActionType.INITIAL_DATA_ERROR,
-                payload: {
-                    error,
-                },
-            })
         }
     }
 
@@ -1118,7 +1118,7 @@ const DeploymentTemplate = ({
         handleInitialDataLoad()
 
         return () => {
-            initialServiceAbortController.current?.abort()
+            initialServiceAbortController.current.abort()
         }
     }, [])
 
