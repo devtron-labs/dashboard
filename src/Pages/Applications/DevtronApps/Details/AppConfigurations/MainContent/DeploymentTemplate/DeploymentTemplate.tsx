@@ -227,6 +227,7 @@ const DeploymentTemplate = ({
         showExpressEditPromptTooltip,
     } = state
 
+    const initialServiceAbortController = useRef<AbortController>(new AbortController())
     const manifestAbortController = useRef<AbortController>(new AbortController())
     const loadMergedTemplateAbortController = useRef<AbortController>(new AbortController())
     const editorStateBeforeExpressEditView = useRef<DeploymentTemplateEditorDataStateType>(null)
@@ -1061,9 +1062,13 @@ const DeploymentTemplate = ({
         try {
             reloadEnvironments()
             const [chartRefsDataResponse, lockedKeysConfigResponse] = await Promise.allSettled([
-                getChartList({ appId, envId, isTemplateView }),
+                getChartList({ appId, envId, isTemplateView, signal: initialServiceAbortController.current?.signal }),
                 getJsonPath && !isTemplateView
-                    ? getJsonPath(appId, envId || BASE_CONFIGURATION_ENV_ID)
+                    ? getJsonPath(
+                          appId,
+                          envId || BASE_CONFIGURATION_ENV_ID,
+                          initialServiceAbortController.current?.signal,
+                      )
                     : Promise.resolve(null),
             ])
 
@@ -1071,6 +1076,13 @@ const DeploymentTemplate = ({
                 throw chartRefsDataResponse.reason
             }
             const chartRefsData = chartRefsDataResponse.value
+
+            if (
+                lockedKeysConfigResponse.status === 'rejected' &&
+                getIsRequestAborted(lockedKeysConfigResponse.reason)
+            ) {
+                throw lockedKeysConfigResponse.reason
+            }
 
             const isLockedConfigResponseValid =
                 lockedKeysConfigResponse.status === 'fulfilled' && !!lockedKeysConfigResponse.value?.result
@@ -1088,7 +1100,10 @@ const DeploymentTemplate = ({
 
             await handleInitializePublishedAndCurrentEditorData(chartRefsData, lockedKeysConfig)
         } catch (error) {
-            showError(error)
+            const isReqAbortedError = getIsRequestAborted(error)
+            if (!isReqAbortedError) {
+                showError(error)
+            }
             dispatch({
                 type: DeploymentTemplateActionType.INITIAL_DATA_ERROR,
                 payload: {
@@ -1101,6 +1116,10 @@ const DeploymentTemplate = ({
     useEffect(() => {
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
         handleInitialDataLoad()
+
+        return () => {
+            initialServiceAbortController.current?.abort()
+        }
     }, [])
 
     useEffect(() => {
