@@ -138,8 +138,7 @@ export const AppNotConfigured = ({
     const handleEditApp = () => {
         getAppConfigStatus(+appId, isJobView, false)
             .then(() => {
-                const url = `/${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`
-
+                const url = `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`
                 push(url)
             })
             .catch(noop)

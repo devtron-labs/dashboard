@@ -73,7 +73,7 @@ export const VariableDataTablePopupMenu = ({
             triggerElement={triggerElement}
             buttonProps={null}
         >
-            <div className="flexbox-col w-100 mxh-350 dc__overflow-auto">
+            <div className="flexbox-col w-100 mxh-350 dc__overflow-hidden">
                 <div className="px-12 py-8 flexbox dc__align-items-center dc__content-space dc__gap-8 dc__border-bottom-n1">
                     <div className="flexbox dc__align-items-center dc__gap-8">
                         {showHeaderIcon && <ICSlidersVertical className="icon-dim-16" />}
