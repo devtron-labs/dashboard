@@ -1,24 +1,22 @@
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, Switch } from 'react-router-dom'
+
+import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { Overview } from './Overview'
 import { VMList } from './VMList'
 
-const ObservabilityRouter: React.FC = () => {
-    const { path } = useRouteMatch()
+const ObservabilityRouter: React.FC = () => (
+    <Switch>
+        <Route exact path={URLS.OBSERVABILITY_LIST}>
+            <VMList />
+        </Route>
 
-    return (
-        <Switch>
-            <Route path={`${path}/list`}>
-                <VMList />
-            </Route>
+        <Route exact path={URLS.OBSERVABILITY_OVERVIEW}>
+            <Overview />
+        </Route>
 
-            <Route>
-                <Overview />
-            </Route>
-
-            <Redirect to={path} />
-        </Switch>
-    )
-}
+        <Redirect exact to={URLS.OBSERVABILITY_OVERVIEW} />
+    </Switch>
+)
 
 export default ObservabilityRouter

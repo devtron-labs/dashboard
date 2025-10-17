@@ -285,7 +285,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'observability',
         title: 'Observability',
-        icon: 'ic-user-key',
+        icon: 'ic-binoculars',
         items: [
             {
                 title: 'Overview',
@@ -295,7 +295,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: COMMON_URLS.OBSERVABILITY_OVERVIEW,
             },
             {
-                title: 'VMs',
+                title: 'Customers',
                 dataTestId: 'observability-vms',
                 id: 'observability-vms',
                 icon: 'ic-cluster',
