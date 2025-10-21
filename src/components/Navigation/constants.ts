@@ -1,6 +1,10 @@
 import { generatePath } from 'react-router-dom'
 
-import { BackupLocationsTypes, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BackupLocationsTypes,
+    InfrastructureManagementAppListType,
+    URLS as COMMON_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
@@ -187,7 +191,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'application-management',
         title: 'Application Management',
-        icon: 'ic-grid-view',
+        icon: 'ic-application-management',
         items: [
             {
                 title: 'Overview',
@@ -197,25 +201,18 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_OVERVIEW,
             },
             {
-                title: 'Applications',
-                dataTestId: 'click-on-application',
-                id: 'application-management-applications',
-                icon: 'ic-grid-view',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
+                title: 'Devtron Applications',
+                dataTestId: 'click-on-devtron-application',
+                id: 'application-management-devtron-applications',
+                icon: 'ic-application',
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
             },
             {
                 title: 'Application Groups',
                 dataTestId: 'click-on-application-groups',
                 id: 'application-management-application-groups',
-                icon: 'ic-app-group',
+                icon: 'ic-application-group',
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
-            },
-            {
-                title: 'Chart Store',
-                dataTestId: 'click-on-chart-store',
-                id: 'application-management-chart-store',
-                icon: 'ic-helm',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE,
             },
             {
                 title: 'Bulk Edit',
@@ -258,7 +255,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'infrastructure-management',
         title: 'Infrastructure Management',
-        icon: 'ic-cloud',
+        icon: 'ic-infrastructure-management',
         items: [
             {
                 title: 'Overview',
@@ -266,6 +263,22 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-overview',
                 icon: 'ic-speedometer',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW,
+            },
+            {
+                title: 'Applications',
+                dataTestId: 'click-on-application',
+                id: 'infrastructure-management-applications',
+                icon: 'ic-grid-view',
+                href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+                    appType: InfrastructureManagementAppListType.HELM,
+                }),
+            },
+            {
+                title: 'Chart Store',
+                dataTestId: 'click-on-chart-store',
+                id: 'infrastructure-management-chart-store',
+                icon: 'ic-helm',
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE,
             },
             {
                 title: 'Resource Browser',
@@ -293,7 +306,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'software-release-management',
         title: 'Software Release Management',
-        icon: 'ic-open-box',
+        icon: 'ic-software-release-management',
         items: [
             {
                 title: 'Overview',
@@ -322,7 +335,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'cost-visibility',
         title: 'Cost Visibility',
-        icon: 'ic-coins',
+        icon: 'ic-cost-visibility',
         items: [
             {
                 title: 'Overview',

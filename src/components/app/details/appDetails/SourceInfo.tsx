@@ -501,7 +501,7 @@ export const SourceInfo = ({
                                       <span className="mr-8 fs-12 cn-7">Chart:</span>
                                       <Link
                                           className="cb-5 fw-6"
-                                          to={`${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${appDetails.appStoreChartId}`}
+                                          to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${appDetails.appStoreChartId}`}
                                       >
                                           {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
                                           {appDetails.appStoreAppVersion})
