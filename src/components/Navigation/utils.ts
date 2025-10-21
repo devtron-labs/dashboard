@@ -4,7 +4,13 @@ import { NavigationItemType } from './types'
 
 const getNavigationTreeItems = (items: NavigationItemType['subItems']) =>
     items
-        .filter(({ forceHideEnvKey, hideNav }) => (forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav))
+        .filter(({ forceHideEnvKey, hideNav, href }) => {
+            // Filter out items with undefined href
+            if (!href) {
+                return false
+            }
+            return forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav
+        })
         .map<TreeNode>(({ title, id, href, disabled }) => ({
             id,
             title,
@@ -64,7 +70,7 @@ export const filterNavigationItems = (
 }
 
 // remove trailing slashes
-const normalize = (p: string) => p.replace(/\/+$/, '')
+const normalize = (p: string) => p?.replace(/\/+$/, '') || ''
 
 /**
  * Checks if a given path is under a base path
@@ -73,6 +79,11 @@ const normalize = (p: string) => p.replace(/\/+$/, '')
  * @returns True if the path is under the base path
  */
 const isSubPath = (basePath: string, targetPath: string) => {
+    // Return false if basePath is undefined or null
+    if (!basePath) {
+        return false
+    }
+    
     // Ensure both paths start with a single "/"
     const _basePath = normalize(basePath)
     const _targetPath = normalize(targetPath)
@@ -99,7 +110,7 @@ export const doesNavigationItemMatchPath = (
         return navItem.subItems.some((subItem) => !subItem.disabled && doesNavigationItemMatchPath(subItem, pathname))
     }
 
-    return !navItem.disabled && isSubPath(item.href, pathname)
+    return !navItem.disabled && item.href && isSubPath(item.href, pathname)
 }
 
 /**
