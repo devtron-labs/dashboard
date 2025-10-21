@@ -114,6 +114,7 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
+const AuditLogs = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
@@ -610,6 +611,16 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                       path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER}
                                                   >
                                                       <ResourceWatcherRouter />
+                                                  </Route>,
+                                              ]
+                                            : []),
+                                        ...(AuditLogs
+                                            ? [
+                                                  <Route
+                                                      key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS}
+                                                      path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS}
+                                                  >
+                                                      <AuditLogs />
                                                   </Route>,
                                               ]
                                             : []),

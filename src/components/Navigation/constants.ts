@@ -280,6 +280,13 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-monitoring',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
             },
+            {
+                title: 'Audit Logs',
+                dataTestId: 'audit-logs',
+                id: 'infrastructure-management-audit-logs',
+                icon: 'ic-monitoring',
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS,
+            }
         ],
     },
     {
