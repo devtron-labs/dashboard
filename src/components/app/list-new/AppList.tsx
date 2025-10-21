@@ -60,7 +60,7 @@ import {
     AppListUrlFiltersType,
     FluxCDTemplateType,
 } from './AppListType'
-import { APP_LIST_LOCAL_STORAGE_KEY, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
+import { APP_LIST_LOCAL_STORAGE_KEY, DEVTRON_APP_LIST_LOCAL_STORAGE_KEY, FLUX_CD_HELM_RELEASE_LABEL } from './Constants'
 import GenericAppList from './GenericAppList'
 import HelmAppList from './HelmAppList'
 import {
@@ -109,7 +109,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     const urlFilters = useUrlFilters<AppListSortableKeys, AppListUrlFiltersType>({
         initialSortKey: AppListSortableKeys.APP_NAME,
         parseSearchParams,
-        localStorageKey: APP_LIST_LOCAL_STORAGE_KEY,
+        localStorageKey: isDevtronAppList ? DEVTRON_APP_LIST_LOCAL_STORAGE_KEY : APP_LIST_LOCAL_STORAGE_KEY,
     })
     const {
         searchKey,
@@ -398,8 +398,8 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                 lastSyncTimeString={lastDataSyncTimeString}
                 showExportCsvButton={isSuperAdmin && isDevtronAppList}
             />
-            {!isDevtronAppList && renderAppTabs()}
             {renderAppliedFilters()}
+            {!isDevtronAppList && renderAppTabs()}
             {isDevtronAppList && serverMode === SERVER_MODE.FULL && renderAppCreateRouter()}
             {isDevtronAppList ? (
                 <DevtronAppList
@@ -421,31 +421,33 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             ) : (
                 <>
                     {params.appType === InfrastructureManagementAppListType.HELM && (
-                        <HelmAppList
-                            serverMode={serverMode}
-                            filterConfig={filterConfig}
-                            clusterList={getClusterList()}
-                            handleSorting={handleSorting}
-                            clearAllFilters={clearFilters}
-                            fetchingExternalApps={fetchingExternalApps}
-                            setFetchingExternalAppsState={setFetchingExternalAppsState}
-                            updateDataSyncing={updateDataSyncing}
-                            syncListData={syncListData}
-                            isArgoInstalled={isArgoInstalled}
-                            clusterIdsCsv={clusterIdsCsv}
-                            changePage={changePage}
-                            changePageSize={changePageSize}
-                            setShowPulsatingDot={setShowPulsatingDot}
-                            appListContainerRef={appListContainerRef}
-                        />
-                    )}
-                    {fetchingExternalApps && (
-                        <div className="mt-16">
-                            <Progressing size={32} />
-                        </div>
+                        <>
+                            <HelmAppList
+                                serverMode={serverMode}
+                                filterConfig={filterConfig}
+                                clusterList={getClusterList()}
+                                handleSorting={handleSorting}
+                                clearAllFilters={clearFilters}
+                                fetchingExternalApps={fetchingExternalApps}
+                                setFetchingExternalAppsState={setFetchingExternalAppsState}
+                                updateDataSyncing={updateDataSyncing}
+                                syncListData={syncListData}
+                                isArgoInstalled={isArgoInstalled}
+                                clusterIdsCsv={clusterIdsCsv}
+                                changePage={changePage}
+                                changePageSize={changePageSize}
+                                setShowPulsatingDot={setShowPulsatingDot}
+                                appListContainerRef={appListContainerRef}
+                            />
+                            {fetchingExternalApps && (
+                                <div className="mt-16">
+                                    <Progressing size={32} />
+                                </div>
+                            )}
+                        </>
                     )}
                     {/* Currently Generic App List is used for ArgoCD and FluxCD app listing and can be used
-                for further app lists too  */}
+                    for further app lists too  */}
                     {isGenericAppListView && (
                         <GenericAppList
                             key={params.appType}

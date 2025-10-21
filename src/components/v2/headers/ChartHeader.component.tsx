@@ -15,8 +15,16 @@
  */
 
 import ReactGA from 'react-ga4'
-import { useRouteMatch } from 'react-router-dom'
-import { BreadCrumb, BreadcrumbText, getInfrastructureManagementBreadcrumb, PageHeader, TabGroup, TabProps, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
+import { Link, useRouteMatch } from 'react-router-dom'
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
@@ -32,17 +40,19 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
                 app: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Helm Apps</span>,
-                    linked: true,
-                },
+                    component: (
+                    <Link to={URLS.HELM_APP_LIST} className="dc__devtron-breadcrumb__item">
+                        <div className="cb-5">Helm Apps</div>
+                    </Link>
+                )},
                 deployments: {
                     component: <BreadcrumbText heading={appDetails.appName} isActive />,
                     linked: false,
                 },
                 dc: null,
                 env: null,
-                ':appId(\\d+)':  null,
-                ':envId(\\d+)': null
+                ':appId(\\d+)': null,
+                ':envId(\\d+)': null,
             },
         },
         [appDetails.appName],
