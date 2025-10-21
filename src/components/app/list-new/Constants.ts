@@ -23,8 +23,6 @@ import {
     UseUrlFiltersProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
 import { AppStatuses, AppStatusesDTO, ExportAppListDataType, FluxCDTemplateType } from './AppListType'
 
 export const APP_LIST_HEADERS = {
@@ -98,8 +96,6 @@ export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
     label: 'Apps with no project',
     value: '0',
 }
-
-export const APP_LISTING_URLS = [URLS.DEVTRON_APP_LIST, URLS.HELM_APP_LIST, URLS.ARGO_APP_LIST, URLS.FLUX_APP_LIST]
 
 export const APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] = 'app-list__filters'
 
