@@ -270,7 +270,7 @@ const AppListFilters = ({
                         })}
                         filterSelectPickerPropsMap={appListFiltersSelectPickerMap}
                     />
-                    {showPulsatingDot && <div className="dc__position-abs dc__pulsating-dot-new" />}
+                    {showPulsatingDot && <div className="dc__position-abs dc__pulsating-dot" />}
                 </div>
             </div>
 
