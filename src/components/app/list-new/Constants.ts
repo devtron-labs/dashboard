@@ -97,6 +97,8 @@ export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
     value: '0',
 }
 
+export const DEVTRON_APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] =
+    'devtron-app-list__filters'
 export const APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] = 'app-list__filters'
 
 export const APPLIST_EXPORT_HEADERS: ExportToCsvProps<keyof ExportAppListDataType>['headers'] = [
