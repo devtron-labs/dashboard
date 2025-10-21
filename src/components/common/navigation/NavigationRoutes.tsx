@@ -561,6 +561,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         <ResourceBrowser />
                                     </Route>
                                     <Route
+                                        key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}
                                         path={[
                                             CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST,
                                             CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP,
@@ -574,6 +575,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     />
                                     {!window._env_.K8S_CLIENT && [
                                         <Route
+                                            key={CommonURLS.APPLICATION_MANAGEMENT_APP}
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT_APP_LIST,
                                                 URLS.APPLICATION_MANAGEMENT_APP,
