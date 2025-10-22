@@ -38,7 +38,7 @@ import { NavigationListItemType } from './types'
 const hideResourceWatcher = !importComponentFromFELibrary('ResourceWatcherRouter')
 const hideSoftwareDistributionHub = !importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const hideNetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
-const hideAuditLogs = !importComponentFromFELibrary('AuditLogs', null, 'function')
+const hideAuditLogs = !importComponentFromFELibrary('AuditLog')
 
 const NavigationList: NavigationListItemType[] = [
     {
@@ -114,7 +114,7 @@ const NavigationList: NavigationListItemType[] = [
         icon: 'ic-monitoring',
         isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_AUDIT_LOGS',
-        hideNav: hideResourceWatcher,
+        hideNav: hideAuditLogs,
     },
     {
         title: 'Chart Store',
