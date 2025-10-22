@@ -95,7 +95,7 @@ export const ERROR_MESSAGE_FOR_VALIDATION =
 export const CHARACTER_ERROR_MIN = 'At least 2 characters required'
 export const CHARACTER_ERROR_MAX = 'Max 50 characters allowed'
 export const PROJECT_EXIST_MSG = 'This Project already exists.'
-export const RESERVED_DIRECTORY_PATH_MSG = `Path cannot start with ${RESERVED_OUTPUT_DIRECTORY_PATH} as it is reserved.`
+export const RESERVED_DIRECTORY_PATH_MSG = `Path cannot start with '${RESERVED_OUTPUT_DIRECTORY_PATH}' as it is reserved.`
 
 export const CustomErrorMessage = {
     CUSTOM_TAG_ERROR_MSG:
