@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { CustomInput } from '@devtron-labs/devtron-fe-common-lib'
 import { TaskFieldDescription, TaskFieldLabel } from '../ciPipeline/types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -24,7 +24,7 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 const OutputDirectoryPath = () => {
-    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj, setFormDataErrorObj, validateTask } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
 
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }
@@ -49,9 +49,19 @@ const OutputDirectoryPath = () => {
     const handleStoreArtifact = (ev, index) => {
         const _formData = { ...formData }
         const value = ev.target.value
-        _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] = value
+
+        const currentOutputPaths = _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath
+        currentOutputPaths[index] = value
         setFormData(_formData)
+
         const updatedErrorObj = { ...formDataErrorObj }
+        const outputPathErrors = updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath
+
+        // If already saved, create valid error array of same length
+        if (!outputPathErrors?.length && currentOutputPaths?.length) {
+            updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = new Array(currentOutputPaths.length, {isValid: true, message: ''})
+        }
+
         updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] = new ValidationRules().outputDirectoryPath(value)
         setFormDataErrorObj(updatedErrorObj)
     }
