@@ -77,10 +77,7 @@ export const validateTask = (
         taskErrorObj.name = validationRules.requiredField(taskData.name)
         taskErrorObj.isValid = taskErrorObj.name.isValid
 
-        taskData.outputDirectoryPath?.forEach((_, idx) => {
-            taskErrorObj.isValid = taskErrorObj.isValid && (taskErrorObj.outputDirectoryPath?.[idx].isValid ?? true)
-
-        })
+        taskErrorObj.isValid = taskErrorObj.isValid && (taskErrorObj.outputDirectoryPath?.every(({isValid}) => isValid) ?? true)
 
         if (taskData.stepType) {
             const currentStepTypeVariable =

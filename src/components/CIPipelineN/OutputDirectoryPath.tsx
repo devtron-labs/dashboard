@@ -24,7 +24,8 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 const OutputDirectoryPath = () => {
-    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj, setFormDataErrorObj } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj, setFormDataErrorObj } =
+        useContext(pipelineContext)
 
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }
@@ -59,10 +60,14 @@ const OutputDirectoryPath = () => {
 
         // If already saved, create valid error array of same length
         if (!outputPathErrors?.length && currentOutputPaths?.length) {
-            updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = new Array(currentOutputPaths.length, {isValid: true, message: ''})
+            updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = new Array(
+                currentOutputPaths.length,
+                { isValid: true, message: '' },
+            )
         }
 
-        updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] = new ValidationRules().outputDirectoryPath(value)
+        updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] =
+            new ValidationRules().outputDirectoryPath(value)
         setFormDataErrorObj(updatedErrorObj)
     }
 
@@ -101,7 +106,10 @@ const OutputDirectoryPath = () => {
                             value={elm}
                             onChange={(e) => handleStoreArtifact(e, index)}
                             name="directory-path"
-                            error={formDataErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.[index]?.message}
+                            error={
+                                formDataErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.[index]
+                                    ?.message
+                            }
                         />
                         <Close
                             className="icon-dim-24 pointer mt-6 ml-6"
