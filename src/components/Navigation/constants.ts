@@ -9,6 +9,7 @@ import { URLS } from '@Config/routes'
 import { NavigationGroupType, NavigationItemType } from './types'
 
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
+const AuditLog = importComponentFromFELibrary('AuditLog')
 
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
