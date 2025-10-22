@@ -21,9 +21,10 @@ import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import TaskFieldTippyDescription from './TaskFieldTippyDescription'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { ValidationRules } from '@Components/ciPipeline/validationRules'
 
 const OutputDirectoryPath = () => {
-    const { selectedTaskIndex, formData, setFormData, activeStageName } = useContext(pipelineContext)
+    const { selectedTaskIndex, formData, setFormData, activeStageName, formDataErrorObj, setFormDataErrorObj, validateTask } = useContext(pipelineContext)
 
     const addOutputDirectoryPath = (): void => {
         const _formData = { ...formData }
@@ -33,18 +34,36 @@ const OutputDirectoryPath = () => {
         }
         _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.unshift('')
         setFormData(_formData)
+
+        const updatedErrorObj = { ...formDataErrorObj }
+        if (!updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath) {
+            updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath = []
+        }
+        updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.unshift({
+            isValid: true,
+            message: '',
+        })
+        setFormDataErrorObj(updatedErrorObj)
     }
 
     const handleStoreArtifact = (ev, index) => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] = ev.target.value
+        const value = ev.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] = value
         setFormData(_formData)
+        const updatedErrorObj = { ...formDataErrorObj }
+        updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath[index] = new ValidationRules().outputDirectoryPath(value)
+        setFormDataErrorObj(updatedErrorObj)
     }
 
     const deleteOutputDirectory = (index) => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.splice(index, 1)
         setFormData(_formData)
+
+        const updatedErrorObj = { ...formDataErrorObj }
+        updatedErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath.splice(index, 1)
+        setFormDataErrorObj(updatedErrorObj)
     }
 
     return (
@@ -72,6 +91,7 @@ const OutputDirectoryPath = () => {
                             value={elm}
                             onChange={(e) => handleStoreArtifact(e, index)}
                             name="directory-path"
+                            error={formDataErrorObj[activeStageName].steps[selectedTaskIndex].outputDirectoryPath?.[index]?.message}
                         />
                         <Close
                             className="icon-dim-24 pointer mt-6 ml-6"
