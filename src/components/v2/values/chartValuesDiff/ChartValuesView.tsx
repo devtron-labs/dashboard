@@ -45,6 +45,7 @@ import {
     handleAnalyticsEvent,
     Icon,
     AnimatedDeployButton,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -829,7 +830,7 @@ const ChartValuesView = ({
             })}/${appName}`
         }
 
-        return `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
+        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${newInstalledAppId}/env/${newEnvironmentId}/${URLS.APP_DETAILS}?newDeployment=true`
     }
 
     const isRequestDataValid = (validatedName: { isValid: boolean; message: string }): boolean => {
