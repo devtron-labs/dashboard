@@ -31,7 +31,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
-    getApplicationManagementBreadcrumb,
+    getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -74,7 +74,7 @@ export default function ChartGroupDetails() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ...getApplicationManagementBreadcrumb(),
+                ...getInfrastructureManagementBreadcrumb(),
                 'chart-store': {
                     component: <BreadcrumbText heading="Chart Store" />,
                     linked: true,
@@ -114,7 +114,7 @@ export default function ChartGroupDetails() {
     }
 
     function redirectToConfigure() {
-        const url = `${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}/edit`
+        const url = `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}/edit`
         push(url)
     }
 
@@ -155,7 +155,7 @@ export default function ChartGroupDetails() {
             installedChartData: chartGroupInstalled?.result?.installedChartData,
         }
         await deleteChartGroup(payload)
-        push(URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER)
+        push(URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER)
     }
 
     const renderDeleteComponent = () => {

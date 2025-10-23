@@ -565,7 +565,7 @@ const DockerForm = ({
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
     const [repositoryError, setRepositoryError] = useState<string>('')
-    const ChartStoreRedirectionUrl: string = id ? `${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}?registryId=${id}` : URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER
+    const ChartStoreRedirectionUrl: string = id ? `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?registryId=${id}` : URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER
 
     const customHandleChange = (e): void => {
         updateWithCustomStateValidation(e.target.name, e.target.value)

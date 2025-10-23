@@ -293,7 +293,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                                 <span>{chartUsed.appStoreChartName}/</span>
                                 <Link
                                     className="dc__ellipsis-right"
-                                    to={`${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/${URLS.CHART}/${chartUsed.appStoreChartId}`}
+                                    to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/${URLS.CHART}/${chartUsed.appStoreChartId}`}
                                 >
                                     {chartUsed.appStoreAppName} ({chartUsed.appStoreAppVersion})
                                 </Link>

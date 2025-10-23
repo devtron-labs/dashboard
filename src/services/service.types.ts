@@ -140,12 +140,6 @@ export interface LoginCount {
     value: string
 }
 
-export interface AppRouterType {
-    isSuperAdmin?: boolean
-    appListCount: number
-    loginCount: number
-}
-
 export interface ConfigOverrideWorkflowDetails {
     cdPipelines: string[]
     ciPipelineId: number

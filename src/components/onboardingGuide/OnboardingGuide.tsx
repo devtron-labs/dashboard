@@ -16,7 +16,7 @@
 
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { AppListConstants, ModuleNameMap, handlePostHogEventUpdate } from '@devtron-labs/devtron-fe-common-lib'
+import { ModuleNameMap, handlePostHogEventUpdate, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import HelmCluster from '../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
@@ -51,7 +51,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
 
     const redirectDeployCardToCICD = (): string => {
         return serverMode === SERVER_MODE.FULL
-            ? `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`
+            ? CommonURLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP
             : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`
     }
 
@@ -93,7 +93,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                 <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
                         <ContentCard
-                            redirectTo={URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}
+                            redirectTo={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}
                             onClick={onClickHelmChart}
                             imgSrc={HelmCollage}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.title}

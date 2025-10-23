@@ -84,7 +84,7 @@ export const ChartDetailsReadme = ({
                 errorScreenManagerProps={{
                     code: error?.code,
                     reload,
-                    redirectURL: URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER,
+                    redirectURL: URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER,
                 }}
             >
                 {!readme ? (

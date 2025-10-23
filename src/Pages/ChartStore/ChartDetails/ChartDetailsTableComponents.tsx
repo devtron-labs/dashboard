@@ -35,6 +35,7 @@ import {
     SearchBar,
     SERVER_MODE,
     stringComparatorBySortOrder,
+    URLS as CommonURLS,
     UserIdentifier,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -260,8 +261,8 @@ const DeploymentsTableLinkCellComponent = ({ row }: DeploymentsTableCellComponen
             className="flex left fs-13 lh-20 dc__truncate dc__w-fit-content"
             to={
                 appOfferingMode === SERVER_MODE.EA_ONLY
-                    ? `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
-                    : `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
+                    ? `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({ clusterId, namespace, appName })}/${appName}`
+                    : `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${installedAppId}/env/${environmentId}`
             }
         >
             {row.data.appName}

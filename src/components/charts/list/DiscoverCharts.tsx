@@ -26,7 +26,7 @@ import {
     DevtronProgressing,
     DocLink,
     FeatureTitleWithInfo,
-    getApplicationManagementBreadcrumb,
+    getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
     InfoIconTippy,
     PageHeader,
@@ -301,7 +301,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
 
     function handleViewAllCharts(): void {
         history.push(
-            `${match.url.split(URLS.APPLICATION_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`,
+            `${match.url.split(URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`,
         )
     }
 
@@ -326,7 +326,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ...getApplicationManagementBreadcrumb(),
+                ...getInfrastructureManagementBreadcrumb(),
                 'chart-store': null,
                 discover: {
                     component: (

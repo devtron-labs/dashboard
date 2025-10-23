@@ -228,7 +228,7 @@ export const Navigation = ({
                     />
                     <NavGroup
                         title="Overview"
-                        icon="ic-speedometer"
+                        icon="ic-global-overview"
                         to="/dummy-url"
                         isExpanded={isExpanded}
                         onHover={handleCloseExpandedNavigation(true)}

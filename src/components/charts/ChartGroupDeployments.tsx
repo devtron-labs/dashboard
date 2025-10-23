@@ -16,7 +16,12 @@
 
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { not, GenericEmptyState, DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    not,
+    GenericEmptyState,
+    DeleteConfirmationModal,
+    URLS as CommonURLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { ReactComponent as Delete } from '../../assets/icons/ic-delete.svg'
 import { ReactComponent as DownArrow } from '../../assets/icons/ic-chevron-down.svg'
@@ -119,7 +124,7 @@ const CollapsibleDeployment: React.FC<{
                 {props.installedChartGroup.installedCharts.map((chart: InstalledChart, index) => {
                     return (
                         <Link
-                            to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`}
+                            to={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${chart.installedAppId}/env/${chart.environmentId}`}
                             key={`${index} - ${chart.chartName}}`}
                             className="chart-group-deployment__row"
                             data-testid={`group-deployment-${props.index}`}

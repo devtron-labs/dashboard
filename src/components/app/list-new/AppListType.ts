@@ -17,6 +17,7 @@
 import {
     EnvironmentListHelmResponse,
     GroupedFilterSelectPickerProps,
+    InfrastructureManagementAppListType,
     ResponseType,
     SERVER_MODE,
     SortingOrder,
@@ -167,7 +168,7 @@ export interface GenericAppListProps
             | 'appListContainerRef'
         >,
         Pick<HelmAppListProps, 'clusterIdsCsv' | 'setShowPulsatingDot'> {
-    appType: string
+    appType: InfrastructureManagementAppListType
     clusterList: Cluster[]
 }
 
@@ -186,11 +187,15 @@ export interface AppListFiltersProps
     reloadAppListFilters: () => void
     showPulsatingDot: boolean
     serverMode: SERVER_MODE
-    appType: string
+    appType: InfrastructureManagementAppListType
     getFormattedFilterValue: (filterKey: AppListUrlFilters, filterValue: string) => string
     namespaceListError: any
     reloadNamespaceList: () => void
     namespaceListResponse: EnvironmentListHelmResponse
+    syncNow?: () => void
+    lastSyncTimeString?: string
+    isDataSyncing: boolean
+    showExportCsvButton: boolean
 }
 
 export interface useFilterOptionsProps

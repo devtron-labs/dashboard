@@ -97,7 +97,7 @@ import { importComponentFromFELibrary, setActionWithExpiry } from '../helpers/He
 import { SidePanel } from '../SidePanel'
 import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
-import { AppRouter, RedirectUserWithSentry } from './NavRoutes.components'
+import { AppRouter, InfraAppsRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
 
 import './navigation.scss'
@@ -561,20 +561,26 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         <ResourceBrowser />
                                     </Route>
                                     <Route
+                                        key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}
+                                        path={[
+                                            CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST,
+                                            CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP,
+                                        ]}
+                                    >
+                                        <InfraAppsRouter />
+                                    </Route>
+                                    <Route
                                         path={CommonURLS.GLOBAL_CONFIG}
                                         render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                     />
                                     {!window._env_.K8S_CLIENT && [
                                         <Route
-                                            key={URLS.APPLICATION_MANAGEMENT_APP}
-                                            path={URLS.APPLICATION_MANAGEMENT_APP}
-                                            render={() => (
-                                                <AppRouter
-                                                    isSuperAdmin={isSuperAdmin}
-                                                    appListCount={appListCount}
-                                                    loginCount={loginCount}
-                                                />
-                                            )}
+                                            key={CommonURLS.APPLICATION_MANAGEMENT_APP}
+                                            path={[
+                                                CommonURLS.APPLICATION_MANAGEMENT_APP_LIST,
+                                                URLS.APPLICATION_MANAGEMENT_APP,
+                                            ]}
+                                            render={() => <AppRouter />}
                                         />,
                                         <Route
                                             key={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
@@ -583,8 +589,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                         </Route>,
                                         <Route
-                                            key={URLS.APPLICATION_MANAGEMENT_CHART_STORE}
-                                            path={URLS.APPLICATION_MANAGEMENT_CHART_STORE}
+                                            key={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
+                                            path={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
                                         />,
                                         <Route

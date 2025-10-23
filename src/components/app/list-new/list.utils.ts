@@ -21,6 +21,7 @@ import {
     AppListConstants,
     GroupedFilterSelectPickerProps,
     GroupedOptionsType,
+    InfrastructureManagementAppListType,
     OptionType,
     SelectPickerOptionType,
     SERVER_MODE,
@@ -32,7 +33,6 @@ import ArgoCDAppIcon from '@Icons/ic-argocd-app.svg'
 import FluxCDAppIcon from '@Icons/ic-fluxcd-app.svg'
 import { Cluster } from '@Services/service.types'
 
-import { URLS } from '../../../config'
 import {
     AppListFilterMenuItemType,
     AppListUrlFilters,
@@ -44,34 +44,21 @@ import {
 } from './AppListType'
 import { APPS_WITH_NO_PROJECT_OPTION, SELECT_CLUSTER_TIPPY } from './Constants'
 
-export const getChangeAppTabURL = (appTabType) => {
-    switch (appTabType) {
-        case AppListConstants.AppTabs.HELM_APPS:
-            return URLS.HELM_APP_LIST
-        case AppListConstants.AppTabs.ARGO_APPS:
-            return URLS.ARGO_APP_LIST
-        case AppListConstants.AppTabs.FLUX_APPS:
-            return URLS.FLUX_APP_LIST
-        default:
-            return URLS.DEVTRON_APP_LIST
-    }
-}
-
-export const getAppTabNameFromAppType = (appType: string) => {
+export const getAppTabNameFromAppType = (appType: InfrastructureManagementAppListType) => {
     switch (appType) {
-        case AppListConstants.AppType.HELM_APPS:
+        case InfrastructureManagementAppListType.HELM:
             return AppListConstants.AppTabs.HELM_APPS
-        case AppListConstants.AppType.ARGO_APPS:
+        case InfrastructureManagementAppListType.ARGO_CD:
             return AppListConstants.AppTabs.ARGO_APPS
-        case AppListConstants.AppType.FLUX_APPS:
+        case InfrastructureManagementAppListType.FLUX_CD:
             return AppListConstants.AppTabs.FLUX_APPS
         default:
             return AppListConstants.AppTabs.DEVTRON_APPS
     }
 }
 
-export const renderIcon = (appType: string): string => {
-    if (appType === AppListConstants.AppType.FLUX_APPS) {
+export const renderIcon = (appType: InfrastructureManagementAppListType): string => {
+    if (appType === InfrastructureManagementAppListType.FLUX_CD) {
         return FluxCDAppIcon
     }
     return ArgoCDAppIcon
@@ -209,13 +196,13 @@ export const useFilterOptions = ({
 
 export const getFilterChipConfig = (
     filterConfig: AppListUrlFiltersType,
-    appType: string,
+    appType: InfrastructureManagementAppListType,
 ): Partial<AppListUrlFiltersType> => {
     const { cluster, namespace, templateType } = filterConfig
     switch (appType) {
-        case AppListConstants.AppType.ARGO_APPS:
+        case InfrastructureManagementAppListType.ARGO_CD:
             return { cluster, namespace }
-        case AppListConstants.AppType.FLUX_APPS:
+        case InfrastructureManagementAppListType.FLUX_CD:
             return { cluster, namespace, templateType }
         default:
             return { ...filterConfig, templateType: [] }

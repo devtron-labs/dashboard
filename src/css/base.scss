@@ -4839,21 +4839,6 @@ textarea::placeholder {
 }
 
 .dc__pulsating-dot {
-    width: 10px;
-    height: 10px;
-    border: solid 4px var(--O200);
-    background-color: var(--O500);
-    top: -5px;
-    right: -5px;
-    border-radius: 50%;
-    animation-name: pulse;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-}
-
-// TODO: rename this to `dc__pulsating-dot` and remove existing `dc__pulsating-dot`(above class) when removing `FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE` flag
-.dc__pulsating-dot-new {
     width: 12px;
     height: 12px;
     background-color: var(--O500);
