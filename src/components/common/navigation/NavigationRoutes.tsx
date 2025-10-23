@@ -593,10 +593,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                         />,
-                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
+                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS} path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
                                             {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
                                         </Route>,
-                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
+                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS} path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
                                             <ApplicationManagementConfigurationsRouter />
                                         </Route>,
                                         <Route
@@ -689,6 +689,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     )}
                                     {EnterpriseRouter && CostVisibilityRenderProvider && (
                                         <Route
+                                            key="enterprise-router"
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
