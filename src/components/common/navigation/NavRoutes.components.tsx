@@ -78,15 +78,13 @@ export const AppRouter = () => {
         <ErrorBoundary>
             <AppContext.Provider value={appContextValue}>
                 <Switch>
-                    <Route
-                        path={CommonURLS.APPLICATION_MANAGEMENT_APP_LIST}
-                        render={() => <NewAppList isDevtronAppList />}
-                    />
+                    <Route path={CommonURLS.APPLICATION_MANAGEMENT_APP_LIST}>
+                        <NewAppList isDevtronAppList />
+                    </Route>
 
-                    <Route
-                        path={`${CommonURLS.APPLICATION_MANAGEMENT_APP}/:appId(\\d+)`}
-                        render={() => <AppDetailsPage />}
-                    />
+                    <Route path={`${CommonURLS.APPLICATION_MANAGEMENT_APP}/:appId(\\d+)`}>
+                        <AppDetailsPage />
+                    </Route>
                     <Redirect to={CommonURLS.APPLICATION_MANAGEMENT_APP_LIST} />
                 </Switch>
             </AppContext.Provider>
