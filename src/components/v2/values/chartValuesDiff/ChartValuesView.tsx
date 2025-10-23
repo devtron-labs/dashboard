@@ -823,7 +823,7 @@ const ChartValuesView = ({
 
     const _buildAppDetailUrl = (newInstalledAppId: number, newEnvironmentId: number) => {
         if (serverMode === SERVER_MODE.EA_ONLY) {
-            return `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({
+            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${getAppId({
                 clusterId: commonState.selectedEnvironment.clusterId,
                 namespace: commonState.selectedEnvironment.namespace,
                 appName,
