@@ -14,26 +14,35 @@
  * limitations under the License.
  */
 
-import { ChartColorKey, get } from '@devtron-labs/devtron-fe-common-lib'
+import { ChartColorKey, get, getUrlWithSearchParams } from '@devtron-labs/devtron-fe-common-lib'
 import moment from 'moment'
 import { Routes } from '../../../../config'
 import { BenchmarkType } from './deploymentMetrics.types'
 
-export function getDeploymentMetrics(startTime, endTime, appId: string | number, envId: string | number): Promise<any> {
+export async function getDeploymentMetrics(
+    startTime: string,
+    endTime: string,
+    appId: string | number,
+    envId: string | number,
+): Promise<any> {
     startTime += 'Z'
     endTime += 'Z'
 
-    return get(`${Routes.DEPLOYMENT_METRICS}/?appId=${appId}&envId=${envId}&from=${startTime}&to=${endTime}`).then(
-        (response) => {
-            return {
-                code: response.code,
-                result: {
-                    ...createGraphs(response.result, startTime, endTime),
-                    rows: createDeploymentTableRows(response.result, startTime, endTime),
-                },
-            }
+    const url = getUrlWithSearchParams(Routes.DEPLOYMENT_METRICS, {
+        appId,
+        envId,
+        from: startTime,
+        to: endTime,
+    })
+
+    const response = await get(url)
+    return {
+        ...response,
+        result: {
+            ...createGraphs(response.result, startTime, endTime),
+            rows: createDeploymentTableRows(response.result, startTime, endTime),
         },
-    )
+    }
 }
 
 export function createGraphs(responseResult, startTime: string, endTime: string) {
@@ -140,20 +149,25 @@ export function createGraphs(responseResult, startTime: string, endTime: string)
     const frequencies = frequencyGraph.map((f) => f.frequency)
     const frequencyBenchmark = getFrequencyBenchmark(avgFrequency)
     const maxFrequency = Math.max(...frequencies, frequencyBenchmark.targetValue)
+
+    const meanLeadTime = responseResult.average_lead_time
+    const meanTimeToRecovery = responseResult.average_recovery_time
+    const changeFailureRate = responseResult.change_failure_rate
+    
     const stats = {
-        avgFrequency,
+        avgFrequency: responseResult.average_cycle_time?.toFixed(2) || 0,
         totalDeployments: allDeployments.length,
         failedDeployments: recoveryTimeGraph.length,
         maxFrequency,
         frequencyBenchmark,
-        meanLeadTimeLabel: `${createTimestamp(Math.floor(responseResult.average_lead_time))}`,
-        meanLeadTime: responseResult.average_lead_time,
-        leadTimeBenchmark: getLeadTimeBenchmark(responseResult.average_lead_time),
-        meanRecoveryTime: `${sumRecoveryTime / recoveryTimeGraph.length}`,
-        meanRecoveryTimeLabel: `${createTimestamp(sumRecoveryTime / recoveryTimeGraph.length)}`,
-        recoveryTimeBenchmark: getRecoveryTimeBenchmark(sumRecoveryTime / recoveryTimeGraph.length),
-        failureRate: Math.floor((100 * recoveryTimeGraph.length) / allDeployments.length) || 0,
-        failureRateBenchmark: getFailureRateBenchmark((100 * recoveryTimeGraph.length) / allDeployments.length),
+        meanLeadTimeLabel: `${createTimestamp(meanLeadTime)}`,
+        meanLeadTime,
+        leadTimeBenchmark: getLeadTimeBenchmark(meanLeadTime),
+        meanRecoveryTime: `${meanTimeToRecovery}`,
+        meanRecoveryTimeLabel: `${createTimestamp(meanTimeToRecovery)}`,
+        recoveryTimeBenchmark: getRecoveryTimeBenchmark(meanTimeToRecovery),
+        failureRate: changeFailureRate,
+        failureRateBenchmark: getFailureRateBenchmark(changeFailureRate),
     }
 
     return {
