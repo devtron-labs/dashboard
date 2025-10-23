@@ -248,7 +248,7 @@ export const parseHelmAppListToNavItems = (
                         fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
                     />
                 ),
-                href: `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
+                href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
                 keywords: [],
             })),
         },
