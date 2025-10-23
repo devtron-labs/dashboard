@@ -35,6 +35,10 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
+import {
+    getManifestResource,
+    updateManifestResourceHelmApps,
+} from '@Components/v2/appDetails/k8Resource/nodeDetail/nodeDetail.api'
 
 import { getShowResourceScanModal, importComponentFromFELibrary } from '../../common'
 import { NodeType } from '../../v2/appDetails/appDetails.type'
@@ -58,6 +62,8 @@ const getResourceScanDetails: ({
     'function',
 )
 
+const RBRestartWorkloadModal = importComponentFromFELibrary('RBRestartWorkloadModal', null, 'function')
+
 const ResourceBrowserActionMenu = forwardRef(
     (
         {
@@ -75,18 +81,20 @@ const ResourceBrowserActionMenu = forwardRef(
         const { installedModuleMap } = useMainContext()
 
         const [showDeleteDialog, setShowDeleteDialog] = useState(false)
+        const [showRestartModal, setShowRestartModal] = useState(false)
         const [showVulnerabilityModal, setShowVulnerabilityModal] = useState(false)
 
+        const resource = {
+            name: String(resourceData.name),
+            namespace: String(resourceData.namespace),
+            group: selectedResource?.gvk?.Group,
+            kind: selectedResource?.gvk?.Kind,
+            version: selectedResource?.gvk?.Version,
+            clusterId: +clusterId,
+        }
+
         const [resourceScanLoading, resourceScanResponse, resourceScanError] = useAsync(
-            () =>
-                getResourceScanDetails({
-                    name: String(resourceData.name),
-                    namespace: String(resourceData.namespace),
-                    group: selectedResource?.gvk?.Group,
-                    kind: selectedResource?.gvk?.Kind,
-                    version: selectedResource?.gvk?.Version,
-                    clusterId: +clusterId,
-                }),
+            () => getResourceScanDetails(resource),
             [],
             showVulnerabilityModal && !!getResourceScanDetails,
         )
@@ -125,6 +133,9 @@ const ResourceBrowserActionMenu = forwardRef(
                         },
                     })
                     return
+                case ResourceBrowserActionMenuEnum.restart:
+                    setShowRestartModal(true)
+                    return
                 case ResourceBrowserActionMenuEnum.delete:
                     toggleDeleteDialog()
                     return
@@ -138,6 +149,10 @@ const ResourceBrowserActionMenu = forwardRef(
         }
 
         const id = JSON.stringify(resourceData)
+
+        const onRestartWorkloadModalClose = () => {
+            setShowRestartModal(false)
+        }
 
         return (
             <>
@@ -158,6 +173,17 @@ const ResourceBrowserActionMenu = forwardRef(
                                     label: 'Events',
                                     startIcon: { name: 'ic-calendar' },
                                 },
+                                ...(window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.includes(
+                                    selectedResource?.gvk?.Kind.toLowerCase(),
+                                )
+                                    ? [
+                                          {
+                                              id: ResourceBrowserActionMenuEnum.restart,
+                                              label: 'Restart',
+                                              startIcon: { name: 'ic-arrows-clockwise' },
+                                          } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
+                                      ]
+                                    : []),
                                 ...(selectedResource?.gvk?.Kind === Nodes.Pod
                                     ? [
                                           {
@@ -225,6 +251,15 @@ const ResourceBrowserActionMenu = forwardRef(
                         error={resourceScanError}
                         responseData={resourceScanResponse?.result}
                         hidePolicy
+                    />
+                )}
+
+                {showRestartModal && (
+                    <RBRestartWorkloadModal
+                        resource={resource}
+                        getManifestResource={getManifestResource}
+                        updateManifestResourceHelmApps={updateManifestResourceHelmApps}
+                        onClose={onRestartWorkloadModalClose}
                     />
                 )}
             </>
