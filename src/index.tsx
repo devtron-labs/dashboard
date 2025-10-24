@@ -41,13 +41,15 @@ declare global {
         Worker: any
         __BASE_URL__: string
         __ORCHESTRATOR_ROOT__: string
+        __ATHENA_ROOT__: string
         __GRAFANA_ORG_ID__: number
     }
 }
 
-if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
+if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__ || !window.__ATHENA_ROOT__) {
     window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
     window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
+    window.__ATHENA_ROOT__ = import.meta.env.VITE_ATHENA_ROOT || 'athena'
     window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
 }
 
@@ -173,7 +175,7 @@ if (!window || !window._env_) {
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
         FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
-        FEATURE_ASK_DEVTRON_EXPERT: false,
+        FEATURE_ASK_DEVTRON_EXPERT: true,
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
         FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,
