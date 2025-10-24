@@ -1,6 +1,7 @@
 import { useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getObservabilityData } from './service'
+import { TabDetailsSearchParams, TabDetailsSegment } from './types'
 
 // Will be removing while importing to dashboard
 export const MetricsInfoLoadingCard = () => (
@@ -20,3 +21,7 @@ export const useGetGlanceConfig = () =>
         queryKey: ['observabilityGlanceConfig'],
         queryFn: () => getObservabilityData(),
     })
+
+export const parseChartDetailsSearchParams = (searchParams: URLSearchParams): TabDetailsSearchParams => ({
+    tab: (searchParams.get('tab') as TabDetailsSegment) || TabDetailsSegment.OVERVIEW,
+})

@@ -6,6 +6,8 @@ import ObservabilityIconComponent from "./ObservabilityIcon"
 import ProjectOverview from "./ProjectOverview"
 import './styles.scss'
 import { TabDetailsSearchParams, TabDetailsSegment } from "./types"
+import { parseChartDetailsSearchParams } from "./utils"
+import { TAB_DETAILS_SEGMENTS } from "./constants"
 let interval
 const Project = () => {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
@@ -70,21 +72,6 @@ const Project = () => {
     const renderProjectList = () => {
         return <ProjectList />
     }
-
-    const TAB_DETAILS_SEGMENTS: SegmentedControlProps['segments'] = [
-    {
-        label: 'Overview',
-        value: TabDetailsSegment.OVERVIEW,
-    },
-    {
-        label: 'Projects',
-        value: TabDetailsSegment.PROJECTS,
-    }
-]
-
-const parseChartDetailsSearchParams = (searchParams: URLSearchParams): TabDetailsSearchParams => ({
-    tab: (searchParams.get('tab') as TabDetailsSegment) || TabDetailsSegment.OVERVIEW,
-})
 
 const { tab, updateSearchParams } = useUrlFilters<void, TabDetailsSearchParams>({
         parseSearchParams: parseChartDetailsSearchParams,
