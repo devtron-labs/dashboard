@@ -1,4 +1,5 @@
-import { IconName } from '@devtron-labs/devtron-fe-common-lib'
+import { IconName, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+import { TabDetailsSegment } from './types'
 
 export enum GlanceMetricKeys {
     PROJECTS = 'projects',
@@ -30,3 +31,14 @@ export const GLANCE_METRICS_CARDS_CONFIG: Record<
         metricTitle: 'Environments',
     },
 }
+
+export const TAB_DETAILS_SEGMENTS: SegmentedControlProps['segments'] = [
+    {
+        label: 'Overview',
+        value: TabDetailsSegment.OVERVIEW,
+    },
+    {
+        label: 'Projects',
+        value: TabDetailsSegment.PROJECTS,
+    }
+]
