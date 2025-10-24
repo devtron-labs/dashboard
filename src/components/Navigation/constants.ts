@@ -464,7 +464,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'ai-recommendations-notifications',
                 icon: 'ic-speedometer',
                 disabled: false,
-                href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
+                href: COMMON_URLS.AI_RECOMMENDATIONS_NOTIFICATIONS,
             },
         ],
     },
