@@ -173,14 +173,15 @@ const ResourceBrowserActionMenu = forwardRef(
                                     label: 'Events',
                                     startIcon: { name: 'ic-calendar' },
                                 },
-                                ...(window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.includes(
+                                ...(RBRestartWorkloadModal &&
+                                window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.includes(
                                     selectedResource?.gvk?.Kind.toLowerCase(),
                                 )
                                     ? [
                                           {
                                               id: ResourceBrowserActionMenuEnum.restart,
                                               label: 'Restart',
-                                              startIcon: { name: 'ic-arrows-clockwise' },
+                                              startIcon: { name: 'ic-arrow-clockwise' },
                                           } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
                                       ]
                                     : []),
@@ -254,7 +255,7 @@ const ResourceBrowserActionMenu = forwardRef(
                     />
                 )}
 
-                {showRestartModal && (
+                {RBRestartWorkloadModal && showRestartModal && (
                     <RBRestartWorkloadModal
                         resource={resource}
                         getManifestResource={getManifestResource}
