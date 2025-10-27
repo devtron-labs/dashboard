@@ -181,7 +181,7 @@ const ResourceBrowserActionMenu = forwardRef(
                                           {
                                               id: ResourceBrowserActionMenuEnum.restart,
                                               label: 'Restart',
-                                              startIcon: { name: 'ic-arrow-clockwise' },
+                                              startIcon: { name: 'ic-arrows-clockwise' },
                                           } as ActionMenuItemType<ResourceBrowserActionMenuEnum>,
                                       ]
                                     : []),

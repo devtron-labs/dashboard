@@ -571,7 +571,7 @@ const NodeDetailComponent = ({
                                     dataTestId="restart-workload-button"
                                     variant={ButtonVariantType.text}
                                     size={ComponentSizeType.small}
-                                    startIcon={<Icon name="ic-arrow-clockwise" color={null} />}
+                                    startIcon={<Icon name="ic-arrows-clockwise" color={null} />}
                                     onClick={onRestartWorkloadButtonClick}
                                     text="Restart"
                                 />
