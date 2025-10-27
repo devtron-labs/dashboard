@@ -10,17 +10,18 @@
         grid-template-columns: 150px 1fr 1fr;
     }
 
-     .at-a-glance {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
+    .at-a-glance {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
 }
 
 .observability-table-wrapper {
+
     // Apply to every first child up to 4 levels deep
     > :first-child,
-    > :first-child > :first-child,
-    > :first-child > :first-child > :first-child,
-    > :first-child > :first-child > :first-child > :first-child {
+    > :first-child> :first-child,
+    > :first-child> :first-child> :first-child,
+    > :first-child> :first-child> :first-child> :first-child {
         overflow: visible !important;
     }
 }

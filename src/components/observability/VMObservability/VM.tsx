@@ -1,14 +1,29 @@
-import { useState,useEffect } from "react"
-import { BreadCrumb, BreadcrumbText, ComponentSizeType, handleUTCTime, PageHeader, SearchBar, TabGroup, TabProps, useBreadcrumb } from ".yalc/@devtron-labs/devtron-fe-common-lib/dist"
-import ObservabilityIconComponent from "./ObservabilityIcon"
-import './styles.scss'
-import VMOverview from "./VMOverview"
-import VMList from "./VMList"
+import { useEffect, useState } from 'react'
+
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    ComponentSizeType,
+    handleUTCTime,
+    PageHeader,
+    SearchBar,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib/dist'
+
+import ObservabilityIconComponent from '../ObservabilityIcon'
+import VMList from './VMList'
+import { VMOverview } from './VMOverview'
+
+import '../styles.scss'
+
 let interval
 const VM = () => {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
     const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const renderDataSyncingText = () => <span className="dc__loading-dots">Syncing</span>
@@ -28,16 +43,17 @@ const VM = () => {
             }
         }
     }, [isDataSyncing])
-            
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updateDataSyncing = (loading: boolean): void => {
         setDataSyncing(loading)
     }
-    const tabs: TabProps = [
+    const tabs: TabProps[] = [
         {
             id: 'vm_overview',
             label: 'Overview',
             tabType: 'button',
-            active: selectedTabIndex == 0,
+            active: selectedTabIndex === 0,
             props: {
                 onClick: () => {
                     setSelectedTabIndex(0)
@@ -48,31 +64,27 @@ const VM = () => {
             id: 'vm_list',
             label: 'VMs',
             tabType: 'button',
-            active: selectedTabIndex == 1,
+            active: selectedTabIndex === 1,
             props: {
                 onClick: () => {
                     setSelectedTabIndex(1)
                 },
             },
-        }
+        },
     ]
-            
+
     const syncNow = (): void => {
         setSyncListData(!syncListData)
     }
 
-    const renderVMOverview = () => {
-        return <VMOverview />
-    }
+    const renderVMOverview = () => <VMOverview />
 
-    const renderVMList = () => {
-        return <VMList />
-    }
+    const renderVMList = () => <VMList />
 
     const renderVMTabs = () => {
         const rightComponent = (
             <div className="flex fs-13">
-                {lastDataSyncTimeString &&
+                {lastDataSyncTimeString && (
                     <>
                         <span data-testid="sync-now-text">{lastDataSyncTimeString}</span>
                         {!isDataSyncing && (
@@ -89,22 +101,22 @@ const VM = () => {
                             </>
                         )}
                     </>
-                }
+                )}
                 {fetchingExternalApps && renderDataSyncingText()}
             </div>
         )
-        
+
         return (
             <div>
                 <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
                     <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
-                        <TabGroup tabs={tabs} rightComponent={rightComponent}/>
+                        <TabGroup tabs={tabs} rightComponent={rightComponent} />
                     </div>
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     <div className=" pr-20 pl-20 pt-12 pb-12">
-                        {selectedTabIndex == 0 && renderVMOverview()}
-                        {selectedTabIndex == 1 && renderVMList()}
+                        {selectedTabIndex === 0 && renderVMOverview()}
+                        {selectedTabIndex === 1 && renderVMList()}
                     </div>
                 </div>
             </div>
@@ -124,7 +136,7 @@ const VM = () => {
         },
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
-    const searchKey = ""
+    const searchKey = ''
     const handleSearch = () => {}
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto bg__secondary">
@@ -147,4 +159,4 @@ const VM = () => {
     )
 }
 
-export default VM;
+export default VM
