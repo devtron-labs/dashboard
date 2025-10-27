@@ -1,8 +1,9 @@
 import { FunctionComponent, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useRouteMatch } from 'react-router-dom'
 
 import {
     FiltersTypeEnum,
+    getUrlWithSearchParams,
     TableCellComponentProps,
     TableSignalEnum,
     Tooltip,
@@ -21,6 +22,8 @@ export const CustomerListCellComponent: FunctionComponent<
     signals,
 }: TableCellComponentProps<CustomerObservabilityDTO, FiltersTypeEnum.STATE, {}>) => {
     const linkRef = useRef<HTMLAnchorElement>(null)
+
+    const match = useRouteMatch()
 
     useEffect(() => {
         const handleEnter = ({ detail: { activeRowData } }) => {
@@ -41,7 +44,11 @@ export const CustomerListCellComponent: FunctionComponent<
     switch (field) {
         case ProjectListFields.PROJECT_NAME:
             return (
-                <Link ref={linkRef} to="test" className="flex left py-10">
+                <Link
+                    ref={linkRef}
+                    to={getUrlWithSearchParams(match.path, { customer: name })}
+                    className="flex left py-10"
+                >
                     <Tooltip content={name}>
                         <span className="dc__truncate">{name}</span>
                     </Tooltip>
