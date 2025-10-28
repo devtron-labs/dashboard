@@ -10,8 +10,8 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import ObservabilityIconComponent from '../ObservabilityIcon'
 import { CustomerList } from './CustomerList'
-import ObservabilityIconComponent from './ObservabilityIcon'
 
 let interval
 const Customers = () => {
@@ -84,6 +84,10 @@ const Customers = () => {
                 component: <BreadcrumbText heading="Customers" isActive />,
                 linked: false,
             },
+            ':customerId': {
+                component: <BreadcrumbText heading="test" isActive />,
+                linked: false,
+            },
         },
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
@@ -108,6 +112,7 @@ const Customers = () => {
                 </div>
                 {renderLastSyncComponent()}
             </div>
+
             <CustomerList />
         </div>
     )

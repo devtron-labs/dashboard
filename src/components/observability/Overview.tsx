@@ -26,6 +26,10 @@ export const Overview = () => {
                 component: <BreadcrumbText heading="Overview" isActive />,
                 linked: false,
             },
+            ':customerId': {
+                component: <BreadcrumbText heading="test" isActive />,
+                linked: false,
+            },
         },
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />

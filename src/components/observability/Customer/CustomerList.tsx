@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
 
-import { FiltersTypeEnum, PaginationEnum, Table, useAsync } from '@devtron-labs/devtron-fe-common-lib/dist'
+import { FiltersTypeEnum, PaginationEnum, Table, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
-import { CUSTOMER_TABLE_COLUMN } from './constants'
-import { getCustomerListData } from './service'
-import { CustomerObservabilityDTO, CustomerTableProps } from './types'
+import { CUSTOMER_TABLE_COLUMN } from '../constants'
+import { getCustomerListData } from '../service'
+import { CustomerObservabilityDTO, CustomerTableProps } from '../types'
 
 export const CustomerList = () => {
     // ASYNC CALLS

@@ -2,8 +2,9 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 
 import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 
+import Customers from './Customer/Customers'
 import Project from './ProjectObservability/Project'
-import Customers from './Customers'
+import { ProjectOverview } from './ProjectObservability/ProjectOverview'
 import { Overview } from './Overview'
 
 const ObservabilityRouter: React.FC = () => {
@@ -18,8 +19,12 @@ const ObservabilityRouter: React.FC = () => {
                 <Customers />
             </Route>
 
-            <Route exact path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customer`}>
+            <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId`}>
                 <Project />
+            </Route>
+
+            <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId/projects`}>
+                <ProjectOverview />
             </Route>
 
             <Redirect exact from={path} to={URLS.OBSERVABILITY_OVERVIEW} />

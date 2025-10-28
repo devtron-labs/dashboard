@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useRouteMatch } from 'react-router-dom'
+import { Redirect, Route, useRouteMatch } from 'react-router-dom'
 
 import {
     BreadCrumb,
@@ -10,7 +10,6 @@ import {
     SearchBar,
     TabGroup,
     TabProps,
-    URLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -28,8 +27,7 @@ const Project = () => {
     // TODO: Remove later
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
+
     const renderDataSyncingText = () => <span className="dc__loading-dots">Syncing</span>
     useEffect(() => {
         if (isDataSyncing) {
@@ -48,8 +46,6 @@ const Project = () => {
         }
     }, [isDataSyncing])
 
-    console.log(match)
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updateDataSyncing = (loading: boolean): void => {
         setDataSyncing(loading)
@@ -59,24 +55,16 @@ const Project = () => {
             id: 'project_overview',
             label: 'Overview',
             tabType: 'link',
-            active: selectedTabIndex === 0,
             props: {
-                to: `${match.url}/${URLS.OBSERVABILITY_OVERVIEW}`,
-                // onClick: () => {
-                //     setSelectedTabIndex(0)
-                // },
+                to: `${match.url}/overview`,
             },
         },
         {
             id: 'project_list',
             label: 'Projects',
             tabType: 'link',
-            active: selectedTabIndex === 1,
             props: {
                 to: `${match.url}/projects`,
-                // onClick: () => {
-                //     setSelectedTabIndex(1)
-                // },
             },
         },
     ]
@@ -109,28 +97,26 @@ const Project = () => {
         </div>
     )
 
-    const renderProjectTabs = () => {
-        const renderSegments = () => {
-            if (selectedTabIndex === 0) {
-                return <ProjectOverview />
-            }
-
-            return <ProjectList />
-        }
-
-        return (
-            <div>
-                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                    <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
-                        <TabGroup tabs={tabs} rightComponent={rightComponent} />
-                    </div>
-                </div>
-                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                    <div className=" pr-20 pl-20 pt-12 pb-12">{renderSegments()}</div>
+    const renderProjectTabs = () => (
+        <div>
+            <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
+                <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
+                    <TabGroup tabs={tabs} rightComponent={rightComponent} />
                 </div>
             </div>
-        )
-    }
+            <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
+                <div className=" pr-20 pl-20 pt-12 pb-12">
+                    <Route path={`${match.url}/overview`}>
+                        <ProjectOverview />
+                    </Route>
+                    <Route path={`${match.url}/projects`}>
+                        <ProjectList />
+                    </Route>
+                    <Redirect to={`${match.url}/overview`} />
+                </div>
+            </div>
+        </div>
+    )
 
     const { breadcrumbs } = useBreadcrumb({
         alias: {

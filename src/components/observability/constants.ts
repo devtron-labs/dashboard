@@ -5,9 +5,9 @@ import {
     stringComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { CustomerListCellComponent } from './Customer/CustomerListCellComponent'
 import { ProjectListCellComponent } from './ProjectObservability/ProjectListCellComponent'
 import { VMListCellComponent } from './VMObservability/VMListCellComponent'
-import { CustomerListCellComponent } from './CustomerListCellComponent'
 import { CustomerTableProps, ProjectTableProps, TabDetailsSegment, VMTableProps } from './types'
 
 export enum GlanceMetricKeys {
