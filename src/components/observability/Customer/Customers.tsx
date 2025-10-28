@@ -84,17 +84,13 @@ const Customers = () => {
                 component: <BreadcrumbText heading="Customers" isActive />,
                 linked: false,
             },
-            ':customerId': {
-                component: <BreadcrumbText heading="test" isActive />,
-                linked: false,
-            },
         },
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
     const searchKey = ''
     const handleSearch = () => {}
     return (
-        <div className="observability-overview flex-grow-1 dc__overflow-auto bg__secondary">
+        <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             <div className="flex dc__content-space  p-16 w-100 dc__gap-8 ">
                 <div className="flexbox dc__align-items-center dc__mxw-fit-content">

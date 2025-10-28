@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Redirect, Route, useRouteMatch } from 'react-router-dom'
+import { Route, useRouteMatch } from 'react-router-dom'
 
 import {
     BreadCrumb,
@@ -112,7 +112,6 @@ const Project = () => {
                     <Route path={`${match.url}/projects`}>
                         <ProjectList />
                     </Route>
-                    <Redirect to={`${match.url}/overview`} />
                 </div>
             </div>
         </div>
@@ -134,7 +133,7 @@ const Project = () => {
     const searchKey = ''
     const handleSearch = () => {}
     return (
-        <div className="observability-overview flex-grow-1 dc__overflow-auto bg__secondary">
+        <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             <div className="search-filter-section">
                 <SearchBar

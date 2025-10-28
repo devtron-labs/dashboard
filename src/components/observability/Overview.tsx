@@ -26,10 +26,6 @@ export const Overview = () => {
                 component: <BreadcrumbText heading="Overview" isActive />,
                 linked: false,
             },
-            ':customerId': {
-                component: <BreadcrumbText heading="test" isActive />,
-                linked: false,
-            },
         },
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
@@ -65,7 +61,7 @@ export const Overview = () => {
     }
 
     return (
-        <div className="observability-overview flex-grow-1 dc__overflow-auto bg__secondary">
+        <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
 
             <div className="flexbox-col dc__gap-32 dc__overflow-auto p-20 flex-grow-1">

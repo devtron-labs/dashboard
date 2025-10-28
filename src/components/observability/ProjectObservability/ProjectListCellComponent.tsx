@@ -1,5 +1,5 @@
 import { FunctionComponent, useEffect, useRef } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useRouteMatch } from 'react-router-dom'
 
 import {
     FiltersTypeEnum,
@@ -22,6 +22,8 @@ export const ProjectListCellComponent: FunctionComponent<
 }: TableCellComponentProps<ObservabilityProject, FiltersTypeEnum.STATE, {}>) => {
     const linkRef = useRef<HTMLAnchorElement>(null)
 
+    const match = useRouteMatch()
+
     useEffect(() => {
         const handleEnter = ({ detail: { activeRowData } }) => {
             if (activeRowData.data.id === id) {
@@ -41,7 +43,7 @@ export const ProjectListCellComponent: FunctionComponent<
     switch (field) {
         case ProjectListFields.PROJECT_NAME:
             return (
-                <Link ref={linkRef} to="test" className="flex left py-10">
+                <Link ref={linkRef} to={`${match.path}/${name}/overview`} className="flex left py-10">
                     <Tooltip content={name}>
                         <span className="dc__truncate">{name}</span>
                     </Tooltip>

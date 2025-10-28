@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Redirect, Route, useRouteMatch } from 'react-router-dom'
 
 import {
     BreadCrumb,
@@ -20,12 +21,13 @@ import '../styles.scss'
 
 let interval
 const VM = () => {
+    const match = useRouteMatch()
+
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
-    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const renderDataSyncingText = () => <span className="dc__loading-dots">Syncing</span>
     useEffect(() => {
         if (isDataSyncing) {
@@ -52,23 +54,17 @@ const VM = () => {
         {
             id: 'vm_overview',
             label: 'Overview',
-            tabType: 'button',
-            active: selectedTabIndex === 0,
+            tabType: 'link',
             props: {
-                onClick: () => {
-                    setSelectedTabIndex(0)
-                },
+                to: `${match.url}/overview`,
             },
         },
         {
             id: 'vm_list',
             label: 'VMs',
-            tabType: 'button',
-            active: selectedTabIndex === 1,
+            tabType: 'link',
             props: {
-                onClick: () => {
-                    setSelectedTabIndex(1)
-                },
+                to: `${match.url}/vms`,
             },
         },
     ]
@@ -76,10 +72,6 @@ const VM = () => {
     const syncNow = (): void => {
         setSyncListData(!syncListData)
     }
-
-    const renderVMOverview = () => <VMOverview />
-
-    const renderVMList = () => <VMList />
 
     const renderVMTabs = () => {
         const rightComponent = (
@@ -115,8 +107,14 @@ const VM = () => {
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
                     <div className=" pr-20 pl-20 pt-12 pb-12">
-                        {selectedTabIndex === 0 && renderVMOverview()}
-                        {selectedTabIndex === 1 && renderVMList()}
+                        <Route path={`${match.url}/overview`}>
+                            <VMOverview />
+                        </Route>
+                        <Route path={`${match.url}/vms`}>
+                            <VMList />
+                        </Route>
+
+                        <Redirect to={`${match.url}/overview`} />
                     </div>
                 </div>
             </div>
@@ -139,7 +137,7 @@ const VM = () => {
     const searchKey = ''
     const handleSearch = () => {}
     return (
-        <div className="observability-overview flex-grow-1 dc__overflow-auto bg__secondary">
+        <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
             <div className="search-filter-section">
                 <SearchBar

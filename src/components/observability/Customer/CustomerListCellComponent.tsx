@@ -23,8 +23,6 @@ export const CustomerListCellComponent: FunctionComponent<
     const linkRef = useRef<HTMLAnchorElement>(null)
     const match = useRouteMatch()
 
-    console.log(match)
-
     useEffect(() => {
         const handleEnter = ({ detail: { activeRowData } }) => {
             if (activeRowData.data.id === id) {
@@ -44,7 +42,7 @@ export const CustomerListCellComponent: FunctionComponent<
     switch (field) {
         case ProjectListFields.PROJECT_NAME:
             return (
-                <Link ref={linkRef} to={`${match.path}/${name}`} className="flex left py-10">
+                <Link ref={linkRef} to={`${match.path}/${name}/overview`} className="flex left py-10">
                     <Tooltip content={name}>
                         <span className="dc__truncate">{name}</span>
                     </Tooltip>
