@@ -1,4 +1,4 @@
-import { FiltersTypeEnum, TableProps } from ".yalc/@devtron-labs/devtron-fe-common-lib/dist"
+import { FiltersTypeEnum, TableProps } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
 
 export enum GlanceMetricsKeys {
     REACHABLE_CUSTOMERS = 'customers',
@@ -7,48 +7,50 @@ export enum GlanceMetricsKeys {
     HEALTH_STATUS = 'healthStatus',
 }
 
+export type ObservabilityStatus = 'ACTIVE' | 'INACTIVE'
 
-export interface ObservabilityProject {
-    id: string,
-    name: string,
-    description: string,
-    status: string,
-    totalVms: number,
-    activeVms: number,
+export interface BaseObservability {
+    id: number
+    name: string
+    status: ObservabilityStatus
+}
+
+export interface CustomerObservabilityDTO extends BaseObservability {
+    project: number
+    totalVms: number
+    activeVms: number
     healthStatus: string
 }
 
-export type ProjectTableProps = TableProps<
-    ObservabilityProject,
-    FiltersTypeEnum.STATE,
-    {}
->
+export type CustomerTableProps = TableProps<CustomerObservabilityDTO, FiltersTypeEnum.STATE, {}>
+
+export interface ObservabilityProject
+    extends BaseObservability,
+        Pick<CustomerObservabilityDTO, 'activeVms' | 'totalVms' | 'healthStatus'> {
+    description: string
+}
+
+export type ProjectTableProps = TableProps<ObservabilityProject, FiltersTypeEnum.STATE, {}>
+
+export interface ObservabilityVM extends BaseObservability {
+    ipAddress: string
+    cpu: number
+    memory: number
+    disk: number
+}
+
+export type VMTableProps = TableProps<ObservabilityVM, FiltersTypeEnum.STATE, {}>
 
 export enum ProjectListFields {
     PROJECT_ID = 'id',
     PROJECT_NAME = 'name',
     PROJECT_DESCRIPTION = 'description',
-    PROJECT_STATUS = 'status',
+    STATUS = 'status',
     TOTAL_VMS = 'totalVms',
     ACTIVE_VMS = 'activeVms',
     HEALTH_STATUS = 'healthStatus',
+    PROJECTS = 'projects',
 }
-
-export interface ObservabilityVM {
-    id: string,
-    name: string,
-    ipAddress: string,
-    status: string,
-    cpu: number,
-    memory: number,
-    disk: number
-}
-
-export type VMTableProps = TableProps<
-    ObservabilityVM,
-    FiltersTypeEnum.STATE,
-    {}
->
 
 export enum VMListFields {
     VM_ID = 'id',
@@ -68,7 +70,7 @@ export enum ObservabilityFilters {
 
 export enum TabDetailsSegment {
     'OVERVIEW' = 'Overview',
-    'PROJECTS' = 'Projects'
+    'PROJECTS' = 'Projects',
 }
 
 export interface TabDetailsSearchParams {

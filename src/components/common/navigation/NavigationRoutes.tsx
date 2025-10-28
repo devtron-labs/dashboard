@@ -561,10 +561,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     >
                                         <ResourceBrowser />
                                     </Route>
-                                    <Route
-                                        key={CommonURLS.OBSERVABILITY_OVERVIEW}
-                                        path={CommonURLS.OBSERVABILITY_OVERVIEW}
-                                    >
+                                    <Route key={CommonURLS.OBSERVABILITY} path={CommonURLS.OBSERVABILITY}>
                                         <Observability />
                                     </Route>
                                     <Route
