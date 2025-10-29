@@ -42,7 +42,6 @@ export const VMListCellComponent: FunctionComponent<
 
         switch (field) {
             case VMListFields.VM_NAME:
-                debugger;
                 return (
                     <Link ref={linkRef} to={`${match.path}/${name}`} className="flex left py-10">
                         <Tooltip content={name}>
