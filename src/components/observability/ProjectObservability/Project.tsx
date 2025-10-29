@@ -54,7 +54,7 @@ const Project = () => {
         {
             id: 'project_overview',
             label: 'Overview',
-            tabType: 'link',
+            tabType: 'navLink',
             props: {
                 to: `${match.url}/overview`,
             },
@@ -62,7 +62,7 @@ const Project = () => {
         {
             id: 'project_list',
             label: 'Projects',
-            tabType: 'link',
+            tabType: 'navLink',
             props: {
                 to: `${match.url}/projects`,
             },
@@ -131,7 +131,7 @@ const Project = () => {
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
     const searchKey = ''
-    const handleSearch = () => {}
+    const handleSearch = () => { }
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />

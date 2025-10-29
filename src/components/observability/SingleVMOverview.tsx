@@ -1,10 +1,14 @@
-import { GenericSectionErrorState } from '@devtron-labs/devtron-fe-common-lib'
 
-import { MetricsInfoCard } from '../MetricsInfoCard'
-import { GlanceMetricsKeys } from '../types'
-import { MetricsInfoLoadingCard, useGetGlanceConfig } from '../utils'
 
-export const ProjectOverview = () => {
+
+import { GenericSectionErrorState } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { MetricsInfoCard } from './MetricsInfoCard'
+import './styles.scss'
+import { GlanceMetricsKeys } from './types'
+import { MetricsInfoLoadingCard, useGetGlanceConfig } from './utils'
+
+let interval
+const SingleVMOverview = () => {
     const { isFetching, data, isError, refetch } = useGetGlanceConfig()
     console.log(data)
 
@@ -52,4 +56,4 @@ export const ProjectOverview = () => {
     )
 }
 
-export default ProjectOverview
+export default SingleVMOverview;

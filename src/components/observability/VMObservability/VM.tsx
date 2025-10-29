@@ -54,7 +54,7 @@ const VM = () => {
         {
             id: 'vm_overview',
             label: 'Overview',
-            tabType: 'link',
+            tabType: 'navLink',
             props: {
                 to: `${match.url}/overview`,
             },
@@ -62,7 +62,7 @@ const VM = () => {
         {
             id: 'vm_list',
             label: 'VMs',
-            tabType: 'link',
+            tabType: 'navLink',
             props: {
                 to: `${match.url}/vms`,
             },
@@ -135,7 +135,7 @@ const VM = () => {
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
     const searchKey = ''
-    const handleSearch = () => {}
+    const handleSearch = () => { }
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />

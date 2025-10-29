@@ -101,3 +101,35 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
             activeVms: 1,
         },
     ])
+
+export const getProjectOverViewCards: () => Promise<any> = () =>
+    Promise.resolve([
+        {
+            tooltipContent: "",
+            dataTestId: "cpu_id",
+            metricValue: "16",
+            metricTitle: "CPU",
+            iconName: "ic-bg-cpu"
+        },
+        {
+            tooltipContent: "",
+            dataTestId: "disk_id",
+            metricValue: "400",
+            metricTitle: "DISK",
+            iconName: "ic-bg-cpu"
+        },
+        {
+            tooltipContent: "",
+            dataTestId: "memory_id",
+            metricValue: "1000",
+            metricTitle: "MEMORY",
+            iconName: "ic-bg-cpu"
+        },
+        {
+            tooltipContent: "",
+            dataTestId: "running_id",
+            metricValue: "10",
+            metricTitle: "RUNNING VMs",
+            iconName: "ic-bg-cpu"
+        }
+    ])

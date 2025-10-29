@@ -8,7 +8,8 @@ import { MetricsInfoLoadingCard, useGetGlanceConfig } from '../utils'
 import '../styles.scss'
 
 export const VMOverview = () => {
-    const { isFetching, isError, refetch } = useGetGlanceConfig()
+    const { isFetching, data, isError, refetch } = useGetGlanceConfig()
+    console.log(data)
 
     const renderBody = () => {
         if (isFetching) {
@@ -32,16 +33,10 @@ export const VMOverview = () => {
         }
         // alert(JSON.stringify(data))
         return (
-            <div className="dc__grid glance-cards-wrapper">
-                <MetricsInfoCard
-                    tooltipContent="paliwal"
-                    dataTestId="id"
-                    metricValue="value"
-                    metricTitle="title"
-                    metricUnit="unit"
-                    valueOutOf="valueof"
-                    iconName="ic-bg-cpu"
-                />
+            <div className="dc__grid workflow-overview-cards-wrapper">
+                {data.map((value) => {
+                    return <MetricsInfoCard key={value.metricTitle} {...value} />
+                })}
             </div>
         )
     }
@@ -53,7 +48,9 @@ export const VMOverview = () => {
                     <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
                 </div>
             </div>
-            {renderBody()}
+            <div className="flexbox-col dc__gap-12">
+                {renderBody()}
+            </div>
         </div>
     )
 }

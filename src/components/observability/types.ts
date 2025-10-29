@@ -1,4 +1,4 @@
-import { FiltersTypeEnum, TableProps } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
+import { FiltersTypeEnum, IconName, TableProps } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist'
 
 export enum GlanceMetricsKeys {
     REACHABLE_CUSTOMERS = 'customers',
@@ -26,7 +26,7 @@ export type CustomerTableProps = TableProps<CustomerObservabilityDTO, FiltersTyp
 
 export interface ObservabilityProject
     extends BaseObservability,
-        Pick<CustomerObservabilityDTO, 'activeVms' | 'totalVms' | 'healthStatus'> {
+    Pick<CustomerObservabilityDTO, 'activeVms' | 'totalVms' | 'healthStatus'> {
     description: string
 }
 
@@ -75,4 +75,15 @@ export enum TabDetailsSegment {
 
 export interface TabDetailsSearchParams {
     tab: TabDetailsSegment
+}
+
+export interface MetricsInfoCardProps {
+    dataTestId: string
+    metricTitle: string
+    metricValue: string
+    metricUnit?: string
+    valueOutOf?: string
+    iconName: IconName
+    tooltipContent: string
+    redirectionLink?: string
 }
