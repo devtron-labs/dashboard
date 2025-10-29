@@ -299,7 +299,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'observability-vms',
                 id: 'observability-vms',
                 icon: 'ic-cluster',
-                href: COMMON_URLS.OBSERVABILITY_LIST,
+                href: COMMON_URLS.OBSERVABILITY_CUSTOMER_LIST,
             },
         ],
     },
