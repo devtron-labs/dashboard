@@ -1,7 +1,8 @@
 import { useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getProjectOverViewCards } from './service'
-import { TabDetailsSearchParams, TabDetailsSegment } from './types'
+import { GLANCE_METRICS_CARDS_CONFIG, ObservabilityGlanceMetricKeys } from './constants'
+import { getObservabilityData } from './service'
+import { MetricsInfoCardProps, ObservabilityOverviewDTO, TabDetailsSearchParams, TabDetailsSegment } from './types'
 
 // Will be removing while importing to dashboard
 export const MetricsInfoLoadingCard = () => (
@@ -16,10 +17,34 @@ export const MetricsInfoLoadingCard = () => (
     </div>
 )
 
+export const getObservabilityGlanceConfig = (result: Partial<ObservabilityOverviewDTO>) =>
+    Object.entries(GLANCE_METRICS_CARDS_CONFIG).map(
+        ([key, config]: [ObservabilityGlanceMetricKeys, MetricsInfoCardProps]) => {
+            const entry = result?.[key]
+            const isNumber = typeof entry === 'number'
+            const metricValue = isNumber ? entry : (entry as any)?.value
+            const metricTitle = config?.metricTitle
+
+            return {
+                ...config,
+                dataTestId: key,
+                metricValue,
+                metricTitle,
+            }
+        },
+    )
+
 export const useGetGlanceConfig = () =>
     useQuery({
         queryKey: ['observabilityGlanceConfig'],
-        queryFn: () => getProjectOverViewCards(),
+        // queryFn: () => getProjectOverViewCards(), // Mukesh has to update this
+        queryFn: async () => ({
+            code: 200,
+            status: 'SUCCESS',
+            result: await getObservabilityData(),
+        }),
+        // queryFn: () => get<ObservabilityOverviewDTO>(ROUTES.OBSERVABILITY_OVERVIEW), // Will be replacing later
+        select: ({ result }) => getObservabilityGlanceConfig(result),
     })
 
 export const parseChartDetailsSearchParams = (searchParams: URLSearchParams): TabDetailsSearchParams => ({

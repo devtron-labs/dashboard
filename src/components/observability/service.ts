@@ -1,12 +1,13 @@
-import { CustomerObservabilityDTO } from './types'
+import { ObservabilityGlanceMetricKeys } from './constants'
+import { CustomerObservabilityDTO, ObservabilityOverviewDTO } from './types'
 
-export const getObservabilityData: () => Promise<any> = () =>
+export const getObservabilityData: () => Promise<Partial<ObservabilityOverviewDTO>> = () =>
     Promise.resolve({
-        totalClusters: 10,
-        totalVMs: 20,
-        totalProjects: 30,
-        totalCustomers: 40,
-        healthStatus: 50,
+        [ObservabilityGlanceMetricKeys.TOTAL_CUSTOMERS]: 10,
+        [ObservabilityGlanceMetricKeys.TOTAL_VMS]: 20,
+        [ObservabilityGlanceMetricKeys.PROJECTS]: 30,
+        [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: 50,
+        [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 40,
     })
 
 export const getProjectList: () => Promise<any> = () =>
@@ -105,31 +106,31 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
 export const getProjectOverViewCards: () => Promise<any> = () =>
     Promise.resolve([
         {
-            tooltipContent: "",
-            dataTestId: "cpu_id",
-            metricValue: "16",
-            metricTitle: "CPU",
-            iconName: "ic-bg-cpu"
+            tooltipContent: '',
+            dataTestId: 'cpu_id',
+            metricValue: '16',
+            metricTitle: 'CPU',
+            iconName: 'ic-bg-cpu',
         },
         {
-            tooltipContent: "",
-            dataTestId: "disk_id",
-            metricValue: "400",
-            metricTitle: "DISK",
-            iconName: "ic-bg-cpu"
+            tooltipContent: '',
+            dataTestId: 'disk_id',
+            metricValue: '400',
+            metricTitle: 'DISK',
+            iconName: 'ic-bg-cpu',
         },
         {
-            tooltipContent: "",
-            dataTestId: "memory_id",
-            metricValue: "1000",
-            metricTitle: "MEMORY",
-            iconName: "ic-bg-cpu"
+            tooltipContent: '',
+            dataTestId: 'memory_id',
+            metricValue: '1000',
+            metricTitle: 'MEMORY',
+            iconName: 'ic-bg-cpu',
         },
         {
-            tooltipContent: "",
-            dataTestId: "running_id",
-            metricValue: "10",
-            metricTitle: "RUNNING VMs",
-            iconName: "ic-bg-cpu"
-        }
+            tooltipContent: '',
+            dataTestId: 'running_id',
+            metricValue: '10',
+            metricTitle: 'RUNNING VMs',
+            iconName: 'ic-bg-cpu',
+        },
     ])

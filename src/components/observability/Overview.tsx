@@ -6,6 +6,7 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { MetricsInfoCard } from './MetricsInfoCard'
 import ObservabilityIconComponent from './ObservabilityIcon'
 import { GlanceMetricsKeys } from './types'
 import { MetricsInfoLoadingCard, useGetGlanceConfig } from './utils'
@@ -53,9 +54,9 @@ export const Overview = () => {
 
         return (
             <div className="dc__grid glance-cards-wrapper">
-                {/* {data.map(({ metricTitle }) => (
-                    // <MetricsInfoCard key={metricTitle} />
-                {/* ))} */}
+                {data.map((config) => (
+                    <MetricsInfoCard {...config} key={config.metricTitle} />
+                ))}
             </div>
         )
     }

@@ -1,5 +1,4 @@
 import {
-    IconName,
     numberComparatorBySortOrder,
     SegmentedControlProps,
     stringComparatorBySortOrder,
@@ -8,36 +7,38 @@ import {
 import { CustomerListCellComponent } from './Customer/CustomerListCellComponent'
 import { ProjectListCellComponent } from './ProjectObservability/ProjectListCellComponent'
 import { VMListCellComponent } from './VMObservability/VMListCellComponent'
-import { CustomerTableProps, ProjectTableProps, TabDetailsSegment, VMTableProps } from './types'
+import { CustomerTableProps, MetricsInfoCardProps, ProjectTableProps, TabDetailsSegment, VMTableProps } from './types'
 
-export enum GlanceMetricKeys {
-    PROJECTS = 'projects',
+export enum ObservabilityGlanceMetricKeys {
+    PROJECTS = 'totalProjects',
     TOTAL_VMS = 'totalVms',
     RUNNING_VMS = 'runningVms',
     HEALTH_STATUS = 'healthStatus',
+    TOTAL_CLUSTER = 'totalClusters',
+    TOTAL_CUSTOMERS = 'totalCustomers',
 }
-export const GLANCE_METRICS_CARDS_CONFIG: Record<
-    GlanceMetricKeys,
-    {
-        iconName: IconName
-        metricTitle: string
-    }
-> = {
-    [GlanceMetricKeys.PROJECTS]: {
+
+export const GLANCE_METRICS_CARDS_CONFIG: Partial<Record<ObservabilityGlanceMetricKeys, MetricsInfoCardProps>> = {
+    [ObservabilityGlanceMetricKeys.TOTAL_CUSTOMERS]: {
+        iconName: 'ic-users',
+        metricTitle: 'Total Customers',
+        tooltipContent: 'Number of all Customers',
+    },
+    [ObservabilityGlanceMetricKeys.PROJECTS]: {
         iconName: 'ic-bg-project',
         metricTitle: 'Projects',
+        tooltipContent: 'Number of all projects',
     },
-    [GlanceMetricKeys.TOTAL_VMS]: {
-        iconName: 'ic-devtron-app',
-        metricTitle: 'Devtron Applications',
+    [ObservabilityGlanceMetricKeys.TOTAL_VMS]: {
+        iconName: 'ic-bg-cluster',
+        metricTitle: 'Total VMs',
+        tooltipContent: 'Number of all Vms',
     },
-    [GlanceMetricKeys.RUNNING_VMS]: {
-        iconName: 'ic-helm-app',
-        metricTitle: 'Helm Applications',
-    },
-    [GlanceMetricKeys.HEALTH_STATUS]: {
-        iconName: 'ic-bg-environment',
-        metricTitle: 'Environments',
+
+    [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: {
+        iconName: 'ic-check',
+        metricTitle: 'Status',
+        tooltipContent: 'Percentage of all health status',
     },
 }
 
