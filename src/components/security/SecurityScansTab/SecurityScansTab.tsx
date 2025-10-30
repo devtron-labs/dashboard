@@ -25,16 +25,20 @@ import {
     EMPTY_STATE_STATUS,
     ErrorScreenManager,
     FilterChips,
-    FilterSelectPicker,
     GenericEmptyState,
     GenericFilterEmptyState,
     getIsRequestAborted,
+    GroupedFilterSelectPicker,
+    GroupedFilterSelectPickerProps,
+    Icon,
     OptionType,
     Pagination,
     SearchBar,
     SecurityModal,
     SelectPicker,
     SelectPickerOptionType,
+    Severity,
+    SEVERITY_LABEL_MAP,
     SortableTableHeaderCell,
     useAsync,
     useUrlFilters,
@@ -44,12 +48,11 @@ import {
 import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-app.svg'
 import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import { SecurityScanType } from '../security.types'
 import { SecurityPageHeader } from '../SecurityPageHeader'
-import { INITIAL_SCAN_DETAILS, SEARCH_TYPE_OPTIONS } from './constants'
+import { INITIAL_SCAN_DETAILS, SCAN_LIST_GROUP_FILTER_OPTIONS, SEARCH_TYPE_OPTIONS } from './constants'
 import {
     ScanDetailsType,
     ScanListPayloadType,
@@ -59,12 +62,7 @@ import {
     SecurityScansTabMultiFilterKeys,
     SeverityFilterValues,
 } from './types'
-import {
-    getSearchLabelFromValue,
-    getSeverityFilterLabelFromValue,
-    getSeverityWithCount,
-    parseSearchParams,
-} from './utils'
+import { getSearchLabelFromValue, getSeverityWithCount, parseSearchParams } from './utils'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
@@ -124,7 +122,8 @@ export const SecurityScansTab = () => {
         ],
     )
 
-    const areFiltersActive = searchKey || severity.length || cluster.length || environment.length
+    const areGroupedFiltersActive = !!severity.length || !!cluster.length || !!environment.length
+    const areFiltersActive = searchKey || areGroupedFiltersActive
 
     const [clusterEnvListLoading, clusterEnvListResult] = useAsync(() => getVulnerabilityFilterData())
 
@@ -141,7 +140,7 @@ export const SecurityScansTab = () => {
         if (filterLabel === SecurityScansTabMultiFilterKeys.cluster) {
             return getClusterLabelFromId(filterValue)
         }
-        return getSeverityFilterLabelFromValue(filterValue)
+        return SEVERITY_LABEL_MAP[filterValue as Severity]
     }
 
     const abortControllerRef = useRef(new AbortController())
@@ -156,24 +155,17 @@ export const SecurityScansTab = () => {
 
     const isLoading = scanListLoading || getIsRequestAborted(scanListError)
 
-    const updateSeverityFilters = (selectedOptions: SelectPickerOptionType[]) => {
-        updateSearchParams({ severity: selectedOptions.map((severityOption) => String(severityOption.value)) })
-    }
-
-    const updateEnvironmentFilters = (selectedOptions: SelectPickerOptionType[]) => {
-        updateSearchParams({ environment: selectedOptions.map((envOption) => String(envOption.value)) })
-    }
-
-    const updateClusterFilters = (selectedOptions: SelectPickerOptionType[]) => {
-        updateSearchParams({ cluster: selectedOptions.map((clusterOption) => String(clusterOption.value)) })
-    }
+    const getFilterUpdateHandler =
+        (filterKey: SecurityScansTabMultiFilterKeys) => (selectedOption: SelectPickerOptionType[]) => {
+            updateSearchParams({ [filterKey]: selectedOption.map((option) => String(option.value)) })
+        }
 
     const updateSearchType = (selectedOption: OptionType) => {
         updateSearchParams({ searchType: selectedOption.value })
     }
 
     const selectedSeverities = severity.map((severityId) => ({
-        label: getSeverityFilterLabelFromValue(severityId),
+        label: SEVERITY_LABEL_MAP[severityId as Severity],
         value: severityId,
     }))
 
@@ -187,9 +179,7 @@ export const SecurityScansTab = () => {
         value: clusterId,
     }))
 
-    const handleAppNameSorting = () => handleSorting(SecurityListSortableKeys.APP_NAME)
-    const handleEnvNameSorting = () => handleSorting(SecurityListSortableKeys.ENV_NAME)
-    const handleLastCheckedSorting = () => handleSorting(SecurityListSortableKeys.LAST_CHECKED)
+    const getSortingHandler = (key: SecurityListSortableKeys) => () => handleSorting(key)
 
     const handleCloseScanDetailsModal = () => {
         setScanDetails(INITIAL_SCAN_DETAILS)
@@ -203,31 +193,40 @@ export const SecurityScansTab = () => {
         })
     }
 
-    if (!isLoading && scanListError) {
-        return (
-            <>
-                <SecurityPageHeader />
-                <div className="flexbox-col flex-grow-1 dc__content-center">
-                    <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
-                </div>
-            </>
-        )
-    }
-
     const isScanListEmpty = !isLoading && !securityScansResult?.result.securityScans.length
 
-    if (isScanListEmpty && !areFiltersActive) {
-        return (
-            <>
-                <SecurityPageHeader />
-                <GenericEmptyState
-                    image={AppNotDeployed}
-                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
-                    classname="flex-grow-1"
-                />
-            </>
-        )
-    }
+    const groupedFiltersPropsMap: GroupedFilterSelectPickerProps['filterSelectPickerPropsMap'] = useMemo(
+        () => ({
+            [SecurityScansTabMultiFilterKeys.cluster]: {
+                inputId: 'scan-list-cluster-filter',
+                placeholder: 'Cluster',
+                isDisabled: clusterEnvListLoading,
+                isLoading: clusterEnvListLoading,
+                appliedFilterOptions: selectedClusters,
+                handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.cluster),
+                options: clusterEnvListResult?.filters?.clusters ?? [],
+            },
+            [SecurityScansTabMultiFilterKeys.environment]: {
+                inputId: 'scan-list-environment-filter',
+                placeholder: 'Environment',
+                isDisabled: clusterEnvListLoading,
+                isLoading: clusterEnvListLoading,
+                appliedFilterOptions: selectedEnvironments,
+                handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.environment),
+                options: clusterEnvListResult?.filters?.environments ?? [],
+            },
+            [SecurityScansTabMultiFilterKeys.severity]: {
+                inputId: 'scan-list-severity-filter',
+                placeholder: 'Severity',
+                isDisabled: clusterEnvListLoading,
+                isLoading: clusterEnvListLoading,
+                appliedFilterOptions: selectedSeverities,
+                handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.severity),
+                options: clusterEnvListResult?.filters?.severity ?? [],
+            },
+        }),
+        [clusterEnvListLoading, clusterEnvListResult, selectedClusters, selectedEnvironments, selectedSeverities],
+    )
 
     const renderHeader = () => (
         <div className="table__row-grid display-grid dc__align-items-center dc__border-bottom dc__gap-16 px-20 w-100-imp py-4 dc__position-sticky dc__top-48 bg__primary">
@@ -239,7 +238,7 @@ export const SecurityScansTab = () => {
                     sortOrder={sortOrder}
                     isSortable
                     disabled={false}
-                    triggerSorting={handleAppNameSorting}
+                    triggerSorting={getSortingHandler(SecurityListSortableKeys.APP_NAME)}
                 />
             </div>
             <div className="fs-12 lh-20 fw-6 cn-7">
@@ -249,10 +248,10 @@ export const SecurityScansTab = () => {
                     sortOrder={sortOrder}
                     isSortable
                     disabled={false}
-                    triggerSorting={handleEnvNameSorting}
+                    triggerSorting={getSortingHandler(SecurityListSortableKeys.ENV_NAME)}
                 />
             </div>
-            <div className="fs-12 lh-20 fw-6 cn-7">SECURITY SCAN</div>
+            <div className="fs-12 lh-20 fw-6 cn-7">IMAGE SCAN</div>
             <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell
                     title="SCANNED ON"
@@ -260,7 +259,7 @@ export const SecurityScansTab = () => {
                     sortOrder={sortOrder}
                     isSortable
                     disabled={false}
-                    triggerSorting={handleLastCheckedSorting}
+                    triggerSorting={getSortingHandler(SecurityListSortableKeys.LAST_CHECKED)}
                 />
             </div>
         </div>
@@ -268,60 +267,40 @@ export const SecurityScansTab = () => {
 
     const renderFilters = () => (
         <div className="flexbox dc__content-space px-20 py-12">
-            <div className="flexbox">
-                <div className="w-120">
-                    <SelectPicker
-                        value={{ label: getSearchLabelFromValue(searchType), value: searchType }}
-                        options={SEARCH_TYPE_OPTIONS}
-                        classNamePrefix="search-type__select-picker"
-                        inputId="search-type__select-picker"
-                        name="search-type__select-picker"
+            <div className="flex dc__gap-8">
+                {/* <SegmentedControl /> */}
+                <div className="flexbox">
+                    <div className="w-120">
+                        <SelectPicker
+                            value={{ label: getSearchLabelFromValue(searchType), value: searchType }}
+                            options={SEARCH_TYPE_OPTIONS}
+                            classNamePrefix="search-type__select-picker"
+                            inputId="search-type__select-picker"
+                            name="search-type__select-picker"
+                            size={ComponentSizeType.large}
+                            onChange={updateSearchType}
+                            isDisabled={isLoading}
+                        />
+                    </div>
+                    <SearchBar
+                        containerClassName="security-scan-search w-250"
+                        initialSearchText={searchKey}
+                        inputProps={{
+                            placeholder: `Search ${getSearchLabelFromValue(searchType)}`,
+                            disabled: isLoading,
+                        }}
+                        handleEnter={handleSearch}
                         size={ComponentSizeType.large}
-                        onChange={updateSearchType}
-                        isDisabled={isLoading}
+                        keyboardShortcut="/"
                     />
                 </div>
-                <SearchBar
-                    containerClassName="security-scan-search w-250"
-                    initialSearchText={searchKey}
-                    inputProps={{
-                        placeholder: `Search ${getSearchLabelFromValue(searchType)}`,
-                        disabled: isLoading,
-                    }}
-                    handleEnter={handleSearch}
-                    size={ComponentSizeType.large}
-                />
             </div>
-            <div className="flexbox dc__gap-8">
-                <FilterSelectPicker
-                    inputId="security-severity-filter"
-                    placeholder="Severity"
-                    isDisabled={clusterEnvListLoading}
-                    isLoading={clusterEnvListLoading}
-                    appliedFilterOptions={selectedSeverities}
-                    handleApplyFilter={updateSeverityFilters}
-                    options={clusterEnvListResult?.filters.severity}
-                />
-                <FilterSelectPicker
-                    inputId="security-cluster-filter"
-                    placeholder="Cluster"
-                    isDisabled={clusterEnvListLoading}
-                    isLoading={clusterEnvListLoading}
-                    appliedFilterOptions={selectedClusters}
-                    handleApplyFilter={updateClusterFilters}
-                    options={clusterEnvListResult?.filters.clusters}
-                />
-                <FilterSelectPicker
-                    inputId="security-environment-filter"
-                    placeholder="Environment"
-                    isDisabled={clusterEnvListLoading}
-                    isLoading={clusterEnvListLoading}
-                    appliedFilterOptions={selectedEnvironments}
-                    handleApplyFilter={updateEnvironmentFilters}
-                    options={clusterEnvListResult?.filters.environments}
-                    shouldMenuAlignRight
-                />
-            </div>
+            <GroupedFilterSelectPicker<SecurityScansTabMultiFilterKeys>
+                id="grouped-scan-list-filters"
+                options={SCAN_LIST_GROUP_FILTER_OPTIONS}
+                filterSelectPickerPropsMap={groupedFiltersPropsMap}
+                isFilterApplied={areGroupedFiltersActive}
+            />
         </div>
     )
 
@@ -371,7 +350,7 @@ export const SecurityScansTab = () => {
                         role="button"
                         tabIndex={0}
                     >
-                        <ICDevtron className="icon-dim-24 dc__no-shrink" />
+                        <Icon name="ic-devtron-app" color={null} size={24} />
                         <span className="cb-5 dc__ellipsis-right lh-20" data-testid={`scanned-app-list-${scan.name}`}>
                             {scan.name}
                         </span>
@@ -427,12 +406,38 @@ export const SecurityScansTab = () => {
         )
     }
 
+    const renderMainContent = () => {
+        if (!isLoading && scanListError) {
+            return (
+                <div className="flexbox-col flex-grow-1 dc__content-center">
+                    <ErrorScreenManager code={scanListError.code} reload={reloadScansList} />
+                </div>
+            )
+        }
+
+        if (isScanListEmpty && !areFiltersActive) {
+            return (
+                <GenericEmptyState
+                    image={AppNotDeployed}
+                    title={EMPTY_STATE_STATUS.SECURITY_SCANS.TITLE}
+                    classname="flex-grow-1"
+                />
+            )
+        }
+
+        return (
+            <>
+                {renderFilters()}
+                {renderSavedFilters()}
+                {renderScanListContainer()}
+            </>
+        )
+    }
+
     return (
-        <>
+        <div className="security-scan-container bg__primary flexbox-col min-h-100">
             <SecurityPageHeader />
-            {renderFilters()}
-            {renderSavedFilters()}
-            {renderScanListContainer()}
-        </>
+            {renderMainContent()}
+        </div>
     )
 }

@@ -23,8 +23,7 @@ import { VulnerabilityExposure } from './AddCVEPolicy'
 import { SecurityPageHeader } from './SecurityPageHeader'
 
 export const SecurityPoliciesTab = () => {
-
-    const {path} = useRouteMatch()
+    const { path } = useRouteMatch()
     const renderRouter = () => {
         return (
             <Switch>
@@ -38,50 +37,50 @@ export const SecurityPoliciesTab = () => {
         )
     }
 
-        return (
-            <>
-                <SecurityPageHeader />
-                <div className="security-policy flex-grow-1">
-                    <div className="dc__secondary-nav">
-                        <NavLink
-                            to={`${path}/global`}
-                            className="dc__secondary-nav__item"
-                            data-testid="click-on-security-global"
-                        >
-                            Global
-                        </NavLink>
-                        <NavLink
-                            to={`${path}/clusters`}
-                            className="dc__secondary-nav__item"
-                            data-testid="click-on-security-clusters"
-                        >
-                            Cluster
-                        </NavLink>
-                        <NavLink
-                            to={`${path}/environments`}
-                            className="dc__secondary-nav__item"
-                            data-testid="click-on-security-environments"
-                        >
-                            Environments
-                        </NavLink>
-                        <NavLink
-                            to={`${path}/apps`}
-                            className="dc__secondary-nav__item"
-                            data-testid="click-on-security-application"
-                        >
-                            Applications
-                        </NavLink>
-                        <hr className="mt-8 mb-8" />
-                        <NavLink
-                            to={`${path}/vulnerability`}
-                            className="dc__secondary-nav__item"
-                            data-testid="click-on-security-vulnerability"
-                        >
-                            Check CVE Policy
-                        </NavLink>
-                    </div>
-                    <div className="flexbox-col security-policy__content">{renderRouter()}</div>
+    return (
+        <div className="security-scan-container bg__primary flexbox-col min-h-100">
+            <SecurityPageHeader />
+            <div className="security-policy flex-grow-1">
+                <div className="dc__secondary-nav">
+                    <NavLink
+                        to={`${path}/global`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-global"
+                    >
+                        Global
+                    </NavLink>
+                    <NavLink
+                        to={`${path}/clusters`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-clusters"
+                    >
+                        Cluster
+                    </NavLink>
+                    <NavLink
+                        to={`${path}/environments`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-environments"
+                    >
+                        Environments
+                    </NavLink>
+                    <NavLink
+                        to={`${path}/apps`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-application"
+                    >
+                        Applications
+                    </NavLink>
+                    <hr className="mt-8 mb-8" />
+                    <NavLink
+                        to={`${path}/vulnerability`}
+                        className="dc__secondary-nav__item"
+                        data-testid="click-on-security-vulnerability"
+                    >
+                        Check CVE Policy
+                    </NavLink>
                 </div>
-            </>
-        )
+                <div className="flexbox-col security-policy__content">{renderRouter()}</div>
+            </div>
+        </div>
+    )
 }

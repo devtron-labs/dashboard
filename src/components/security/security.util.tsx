@@ -15,16 +15,11 @@
  */
 
 import {
-    Button,
-    ButtonComponentType,
-    ComponentSizeType,
-    Icon,
-    ButtonVariantType,
     BreadcrumbText,
     useBreadcrumb,
+    getSecurityCenterBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
 import { SECURITY_BREADCRUMB_CONFIG } from './constants'
 import { VulnerabilityExposureFilterKeys, VulnerabilityExposureSearchParams } from './security.types'
 import { matchPath } from 'react-router-dom'
@@ -53,31 +48,13 @@ export const getTippyContent = () => (
 export const getSecurityBreadcrumbAlias = (url: string): Parameters<typeof useBreadcrumb>[0] => {
     const cleanUrl = url.split('?')[0].split('#')[0]
 
-    const alias = {
-        'security-center': {
-            component: (
-                <Button
-                    dataTestId="redirect-to-overview-btn"
-                    component={ButtonComponentType.link}
-                    size={ComponentSizeType.xs}
-                    icon={<Icon name="ic-shield-check" color={null} />}
-                    variant={ButtonVariantType.borderLess}
-                    linkProps={{
-                        to: URLS.SECURITY_SCANS,
-                    }}
-                    ariaLabel="Security Center"
-                    showAriaLabelInTippy
-                />
-            ),
-            linked: true,
-        },
-    }
+    const alias = getSecurityCenterBreadcrumb()
     SECURITY_BREADCRUMB_CONFIG.forEach(({ key, route, heading }) => {
         const isActive = !!matchPath(cleanUrl, { path: route, exact: false })
         alias[key] = {
             component: <BreadcrumbText isActive={isActive} heading={heading} />,
             linked: false
-        }
+    }
     })
 
     return { alias }
