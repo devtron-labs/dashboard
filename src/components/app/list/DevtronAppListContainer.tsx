@@ -264,7 +264,7 @@ const DevtronAppList = ({
         <div className="app-list" data-testid="app-list-container">
             <div
                 ref={stickyElementRef}
-                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
+                className={`app-list__header border__secondary--bottom ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
                     isHeaderStuck,
                     'dc__top-47',
                 )}`}
