@@ -4,6 +4,7 @@ import {
     Icon,
     ImageWithFallback,
     InfrastructureManagementAppListType,
+    NavigationItemID,
     SERVER_MODE,
     URL_FILTER_KEYS,
     URLS as COMMON_URLS,
@@ -11,7 +12,6 @@ import {
 
 import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
 import { NAVIGATION_LIST } from '@Components/Navigation/constants'
-import { NavigationRootItemID } from '@Components/Navigation/types'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 import { URLS } from '@Config/routes'
 
@@ -37,7 +37,7 @@ export const getNewSelectedIndex = (prevIndex: number, type: 'up' | 'down', tota
     return prevIndex === totalItems - 1 ? 0 : prevIndex + 1
 }
 
-const getAppManagementAdditionalNavItems = (serverMode: SERVER_MODE): CommandBarGroupType['items'] => [
+const getAppManagementNavItemsBreakdown = (serverMode: SERVER_MODE): CommandBarGroupType['items'] => [
     ...(serverMode === SERVER_MODE.FULL
         ? [
               {
@@ -52,7 +52,7 @@ const getAppManagementAdditionalNavItems = (serverMode: SERVER_MODE): CommandBar
         : []),
 ]
 
-const getInfraManagementAdditionalNavItems = (isSuperAdmin: boolean): CommandBarGroupType['items'] => [
+const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarGroupType['items'] => [
     {
         id: 'app-management-helm-app-list',
         title: 'Helm Applications',
@@ -93,16 +93,16 @@ const getInfraManagementAdditionalNavItems = (isSuperAdmin: boolean): CommandBar
         : []),
 ]
 
-const getAdditionalItems = (
-    groupId: NavigationRootItemID,
+const getNavItemBreakdownItems = (
+    rootId: NavigationItemID,
     serverMode: SERVER_MODE,
     isSuperAdmin: boolean,
 ): CommandBarGroupType['items'] => {
-    switch (groupId) {
-        case 'application-management':
-            return getAppManagementAdditionalNavItems(serverMode)
-        case 'infrastructure-management':
-            return getInfraManagementAdditionalNavItems(isSuperAdmin)
+    switch (rootId) {
+        case 'application-management-devtron-applications':
+            return getAppManagementNavItemsBreakdown(serverMode)
+        case 'infrastructure-management-applications':
+            return getInfraManagementNavItemsBreakdown(isSuperAdmin)
         default:
             return []
     }
@@ -110,8 +110,6 @@ const getAdditionalItems = (
 
 export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boolean): CommandBarGroupType[] =>
     NAVIGATION_LIST.map<CommandBarGroupType>((group) => {
-        const additionalItems = getAdditionalItems(group.id, serverMode, isSuperAdmin)
-
         const parsedItems = group.items.flatMap<CommandBarGroupType['items'][number]>(
             ({ hasSubMenu, subItems, title, href, id, icon, keywords }) => {
                 if (hasSubMenu && subItems?.length) {
@@ -124,6 +122,12 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
                         href: subItem.href ?? null,
                         keywords: subItem.keywords || [],
                     }))
+                }
+
+                const breakdownItems = getNavItemBreakdownItems(id, serverMode, isSuperAdmin)
+
+                if (breakdownItems.length) {
+                    return breakdownItems
                 }
 
                 return {
@@ -140,7 +144,7 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
         return {
             title: group.title,
             id: group.id,
-            items: [...additionalItems, ...parsedItems],
+            items: parsedItems,
         }
     })
 
