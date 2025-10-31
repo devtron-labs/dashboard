@@ -1,6 +1,10 @@
+import { generatePath } from 'react-router-dom'
+
 import {
     Icon,
     ImageWithFallback,
+    InfrastructureManagementAppListType,
+    NavigationItemID,
     SERVER_MODE,
     URL_FILTER_KEYS,
     URLS as COMMON_URLS,
@@ -33,10 +37,7 @@ export const getNewSelectedIndex = (prevIndex: number, type: 'up' | 'down', tota
     return prevIndex === totalItems - 1 ? 0 : prevIndex + 1
 }
 
-const getAppManagementAdditionalNavItems = (
-    serverMode: SERVER_MODE,
-    isSuperAdmin: boolean,
-): CommandBarGroupType['items'] => [
+const getAppManagementNavItemsBreakdown = (serverMode: SERVER_MODE): CommandBarGroupType['items'] => [
     ...(serverMode === SERVER_MODE.FULL
         ? [
               {
@@ -44,17 +45,22 @@ const getAppManagementAdditionalNavItems = (
                   title: 'Devtron Applications',
                   icon: 'ic-devtron-app',
                   iconColor: 'none',
-                  href: URLS.DEVTRON_APP_LIST,
+                  href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
                   keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
         : []),
+]
+
+const getInfraManagementNavItemsBreakdown = (isSuperAdmin: boolean): CommandBarGroupType['items'] => [
     {
         id: 'app-management-helm-app-list',
         title: 'Helm Applications',
         icon: 'ic-helm-app',
         iconColor: 'none',
-        href: URLS.HELM_APP_LIST,
+        href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+            appType: InfrastructureManagementAppListType.HELM,
+        }),
         keywords: [],
     },
     ...(window._env_?.ENABLE_EXTERNAL_ARGO_CD && isSuperAdmin
@@ -64,7 +70,9 @@ const getAppManagementAdditionalNavItems = (
                   title: 'ArgoCD Applications',
                   icon: 'ic-argocd-app',
                   iconColor: 'none',
-                  href: URLS.ARGO_APP_LIST,
+                  href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+                      appType: InfrastructureManagementAppListType.ARGO_CD,
+                  }),
                   keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
@@ -76,18 +84,32 @@ const getAppManagementAdditionalNavItems = (
                   title: 'FluxCD Applications',
                   icon: 'ic-fluxcd-app',
                   iconColor: 'none',
-                  href: URLS.FLUX_APP_LIST,
+                  href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+                      appType: InfrastructureManagementAppListType.FLUX_CD,
+                  }),
                   keywords: [],
               } satisfies CommandBarGroupType['items'][number],
           ]
         : []),
 ]
 
+const getNavItemBreakdownItems = (
+    rootId: NavigationItemID,
+    serverMode: SERVER_MODE,
+    isSuperAdmin: boolean,
+): CommandBarGroupType['items'] => {
+    switch (rootId) {
+        case 'application-management-devtron-applications':
+            return getAppManagementNavItemsBreakdown(serverMode)
+        case 'infrastructure-management-applications':
+            return getInfraManagementNavItemsBreakdown(isSuperAdmin)
+        default:
+            return []
+    }
+}
+
 export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boolean): CommandBarGroupType[] =>
     NAVIGATION_LIST.map<CommandBarGroupType>((group) => {
-        const isAppManagementBlock = group.id === 'application-management'
-        const additionalItems = isAppManagementBlock ? getAppManagementAdditionalNavItems(serverMode, isSuperAdmin) : []
-
         const parsedItems = group.items.flatMap<CommandBarGroupType['items'][number]>(
             ({ hasSubMenu, subItems, title, href, id, icon, keywords }) => {
                 if (hasSubMenu && subItems?.length) {
@@ -100,6 +122,12 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
                         href: subItem.href ?? null,
                         keywords: subItem.keywords || [],
                     }))
+                }
+
+                const breakdownItems = getNavItemBreakdownItems(id, serverMode, isSuperAdmin)
+
+                if (breakdownItems.length) {
+                    return breakdownItems
                 }
 
                 return {
@@ -116,7 +144,7 @@ export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boole
         return {
             title: group.title,
             id: group.id,
-            items: [...additionalItems, ...parsedItems],
+            items: parsedItems,
         }
     })
 
@@ -169,7 +197,7 @@ export const parseChartListToNavItems = (
                         fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
                     />
                 ),
-                href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
+                href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}${URLS.CHART}/${chart.id}`,
                 keywords: [],
             })),
         },
@@ -224,7 +252,7 @@ export const parseHelmAppListToNavItems = (
                         fallbackImage={<Icon name="ic-helm-app" color={null} size={20} />}
                     />
                 ),
-                href: `${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
+                href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail?.environmentId}`,
                 keywords: [],
             })),
         },
@@ -276,7 +304,7 @@ const getTopFiveAppListGroup = (
     return parsedAppList[0]
         ? topFiveGroupParser(parsedAppList[0], {
               id: 'search-app-list-view',
-              href: `${URLS.DEVTRON_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
+              href: `${COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
           })
         : parsedAppList
 }
@@ -294,7 +322,7 @@ const getTopFiveHelmAppListGroup = (
     return parsedHelmAppList[0]
         ? topFiveGroupParser(parsedHelmAppList[0], {
               id: 'search-helm-app-list-view',
-              href: `${URLS.HELM_APP_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
+              href: `${generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.HELM })}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(searchText)}`,
           })
         : parsedHelmAppList
 }
@@ -332,7 +360,7 @@ const getTopFiveChartListGroup = (
     return parsedChartList[0]
         ? topFiveGroupParser(parsedChartList[0], {
               id: 'search-chart-list-view',
-              href: `${COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
+              href: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?${ChartStoreQueryParams.AppStoreName}=${encodeURIComponent(
                   searchText,
               )}`,
           })

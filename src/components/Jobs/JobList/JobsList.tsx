@@ -155,7 +155,7 @@ const JobsList = () => {
             )}
             {dataStateType === JobListViewType.LIST && (
                 <>
-                    <HeaderWithCreateButton isJobView />
+                    <HeaderWithCreateButton viewType="jobs" />
                     {renderCreateJobRouter()}
                     <JobListContainer
                         masterFilters={masterFilters}

@@ -21,7 +21,6 @@ import moment from 'moment'
 
 import {
     abortPreviousRequests,
-    AppListConstants,
     AppStatus,
     DATE_TIME_FORMATS,
     DEFAULT_BASE_PAGE_SIZE,
@@ -32,6 +31,7 @@ import {
     handleUTCTime,
     Pagination,
     SortableTableHeaderCell,
+    URLS as CommonURLS,
     useAsync,
     useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -207,7 +207,7 @@ const DevtronAppList = ({
                 />
                 <ContentCard
                     datatestid="create-application"
-                    redirectTo={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}/${AppListConstants.AppType.DEVTRON_APPS}/${AppListConstants.CREATE_DEVTRON_APP_URL}`}
+                    redirectTo={CommonURLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
                     rootClassName="ev-5"
                     imgSrc={DeployCICD}
                     title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
@@ -264,7 +264,7 @@ const DevtronAppList = ({
         <div className="app-list" data-testid="app-list-container">
             <div
                 ref={stickyElementRef}
-                className={`app-list__header ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
+                className={`app-list__header border__secondary--bottom ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
                     isHeaderStuck,
                     'dc__top-47',
                 )}`}

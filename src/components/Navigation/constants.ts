@@ -1,6 +1,10 @@
 import { generatePath } from 'react-router-dom'
 
-import { BackupLocationsTypes, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BackupLocationsTypes,
+    InfrastructureManagementAppListType,
+    URLS as COMMON_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
@@ -186,35 +190,28 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'application-management',
         title: 'Application Management',
-        icon: 'ic-grid-view',
+        icon: 'ic-application-management',
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'application-management-overview',
                 id: 'application-management-overview',
-                icon: 'ic-speedometer',
+                icon: 'ic-chart-line-up',
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_OVERVIEW,
             },
             {
-                title: 'Applications',
-                dataTestId: 'click-on-application',
-                id: 'application-management-applications',
-                icon: 'ic-grid-view',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
+                title: 'Devtron Applications',
+                dataTestId: 'click-on-devtron-application',
+                id: 'application-management-devtron-applications',
+                icon: 'ic-application',
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
             },
             {
                 title: 'Application Groups',
                 dataTestId: 'click-on-application-groups',
                 id: 'application-management-application-groups',
-                icon: 'ic-app-group',
+                icon: 'ic-application-group',
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
-            },
-            {
-                title: 'Chart Store',
-                dataTestId: 'click-on-chart-store',
-                id: 'application-management-chart-store',
-                icon: 'ic-helm',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_CHART_STORE,
             },
             {
                 title: 'Bulk Edit',
@@ -227,7 +224,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Application Templates',
                 dataTestId: 'click-on-application-templates',
                 id: 'application-management-application-templates',
-                icon: 'ic-files',
+                icon: 'ic-application-template',
                 href: COMMON_URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP,
                 forceHideEnvKey: 'FEATURE_APPLICATION_TEMPLATES_ENABLE',
             },
@@ -257,27 +254,43 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'infrastructure-management',
         title: 'Infrastructure Management',
-        icon: 'ic-cloud',
+        icon: 'ic-infrastructure-management',
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'infrastructure-management-overview',
                 id: 'infrastructure-management-overview',
-                icon: 'ic-speedometer',
+                icon: 'ic-chart-line-up',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW,
+            },
+            {
+                title: 'Applications',
+                dataTestId: 'click-on-application',
+                id: 'infrastructure-management-applications',
+                icon: 'ic-grid-view',
+                href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+                    appType: InfrastructureManagementAppListType.HELM,
+                }),
+            },
+            {
+                title: 'Chart Store',
+                dataTestId: 'click-on-chart-store',
+                id: 'infrastructure-management-chart-store',
+                icon: 'ic-helm',
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE,
             },
             {
                 title: 'Resource Browser',
                 dataTestId: 'resource-browser',
                 id: 'infrastructure-management-resource-browser',
-                icon: 'ic-cube',
+                icon: 'ic-resource-browser',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
             },
             {
                 title: 'Resource Watcher',
                 dataTestId: 'resource-watcher',
                 id: 'infrastructure-management-resource-watcher',
-                icon: 'ic-monitoring',
+                icon: 'ic-resource-watcher',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
             },
         ],
@@ -285,13 +298,13 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'software-release-management',
         title: 'Software Release Management',
-        icon: 'ic-open-box',
+        icon: 'ic-software-release-management',
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'software-release-management-overview',
                 id: 'software-release-management-overview',
-                icon: 'ic-speedometer',
+                icon: 'ic-chart-line-up',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -299,14 +312,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Release Hub',
                 dataTestId: 'release-hub',
                 id: 'software-release-management-release-hub',
-                icon: 'ic-open-box',
+                icon: 'ic-release-hub',
                 href: FE_LIB_ROUTER_URLS.RELEASES,
             },
             {
                 title: 'Tenants',
                 dataTestId: 'tenants',
                 id: 'software-release-management-tenants',
-                icon: 'ic-building',
+                icon: 'ic-tenants',
                 href: FE_LIB_ROUTER_URLS.TENANTS,
             },
         ],
@@ -314,13 +327,13 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'cost-visibility',
         title: 'Cost Visibility',
-        icon: 'ic-coins',
+        icon: 'ic-cost-visibility',
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'cost-visibility-overview',
                 id: 'cost-visibility-overview',
-                icon: 'ic-speedometer',
+                icon: 'ic-chart-line-up',
                 href: COMMON_URLS.COST_VISIBILITY_OVERVIEW,
             },
             {
@@ -348,22 +361,22 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Overview',
                 dataTestId: 'security-center-overview',
                 id: 'security-center-overview',
-                icon: 'ic-speedometer',
                 href: COMMON_URLS.SECURITY_CENTER_OVERVIEW,
+                icon: 'ic-chart-line-up',
             },
             {
                 title: 'Security Scans',
                 dataTestId: 'security-scans',
                 id: 'security-center-security-scans',
-                icon: 'ic-bug',
                 href: COMMON_URLS.SECURITY_CENTER_SCANS,
+                icon: 'ic-security-scan',
             },
             {
                 title: 'Security Policy',
                 dataTestId: 'security-policy',
                 id: 'security-center-security-policy',
-                icon: 'ic-gavel',
                 href: COMMON_URLS.SECURITY_CENTER_POLICIES,
+                icon: 'ic-security-policy',
             },
         ],
     },
@@ -422,7 +435,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Overview',
                 dataTestId: 'data-protection-overview',
                 id: 'data-protection-overview',
-                icon: 'ic-speedometer',
+                icon: 'ic-chart-line-up',
                 disabled: true,
                 href: COMMON_URLS.DATA_PROTECTION_OVERVIEW,
             },
@@ -430,7 +443,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Backup & Schedule',
                 dataTestId: 'data-protection-backup-and-schedule',
                 id: 'data-protection-backup-and-schedule',
-                icon: 'ic-floppy-disk',
+                icon: 'ic-backup-and-schedule',
                 href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_AND_SCHEDULE, { view: 'backups' }),
             },
             {
@@ -444,7 +457,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 title: 'Backup Locations',
                 dataTestId: 'backup-locations',
                 id: 'data-protection-backup-locations',
-                icon: 'ic-storage',
+                icon: 'ic-backup-location',
                 href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_LOCATIONS, {
                     type: BackupLocationsTypes.VOLUME_SNAPSHOT,
                 }),
@@ -454,14 +467,14 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'ai-recommendations',
         title: 'AI Recommendations',
-        icon: 'ic-openai',
+        icon: 'ic-ai',
         disabled: true,
         items: [
             {
                 title: 'Overview',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
-                icon: 'ic-speedometer',
+                icon: 'ic-chart-line-up',
                 disabled: true,
                 href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
             },

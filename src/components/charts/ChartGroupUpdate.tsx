@@ -25,7 +25,7 @@ import {
     DetectBottom,
     ToastManager,
     ToastVariantType,
-    getApplicationManagementBreadcrumb,
+    getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ChartCard from './ChartCard'
@@ -83,7 +83,7 @@ export default function ChartGroupUpdate({}) {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ...getApplicationManagementBreadcrumb(),
+                ...getInfrastructureManagementBreadcrumb(),
                 'chart-store': null,
                 discover: {
                     component: <BreadcrumbText heading="Chart Store" />,
@@ -187,7 +187,7 @@ export default function ChartGroupUpdate({}) {
     }
 
     function redirectToGroupDetail(): void {
-        const url = `${URLS.APPLICATION_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}`
+        const url = `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}`
         history.push(url)
     }
 
@@ -264,13 +264,7 @@ export default function ChartGroupUpdate({}) {
         await applyFilterOnCharts(location.search, false)
     }
 
-    const renderBreadcrumbs = () => {
-        return (
-            <div className="flex left">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
-            </div>
-        )
-    }
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const renderChartGroupEditActionButton = () => {
         return (
