@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { Badge, SeveritiesDTO, Severity, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
+import { Badge, SeveritiesDTO, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys, SeverityMapping } from './types'
+import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],
@@ -32,21 +32,6 @@ export const getSearchLabelFromValue = (searchType: string) => {
     return 'Application'
 }
 
-export const getSeverityFilterLabelFromValue = (severity: string) => {
-    switch (severity) {
-        case Severity.CRITICAL:
-            return SeverityMapping.critical
-        case Severity.HIGH:
-            return SeverityMapping.high
-        case Severity.MEDIUM:
-            return SeverityMapping.medium
-        case Severity.LOW:
-            return SeverityMapping.low
-        default:
-            return SeverityMapping.unknown
-    }
-}
-
 const SEVERITY_ORDER = [
     { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
     { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
@@ -56,21 +41,32 @@ const SEVERITY_ORDER = [
 ] as const
 
 export const getSeverityWithCount = (severityCount: SeverityCount) => {
+    const badges = []
+
     // eslint-disable-next-line no-restricted-syntax
     for (const item of SEVERITY_ORDER) {
         if (severityCount[item.key]) {
             if (item.variant === 'custom') {
-                return (
+                badges.push(
                     <Badge
+                        key={item.key}
                         label={`${severityCount[item.key]} ${item.label}`}
                         variant="custom"
                         fontColor={item.fontColor}
                         bgColor={item.bgColor}
-                    />
+                    />,
+                )
+            } else {
+                badges.push(
+                    <Badge key={item.key} label={`${severityCount[item.key]} ${item.label}`} variant={item.variant} />,
                 )
             }
-            return <Badge label={`${severityCount[item.key]} ${item.label}`} variant={item.variant} />
         }
     }
-    return <Badge label="Passed" variant="positive" />
+
+    if (badges.length === 0) {
+        return <Badge label="Passed" variant="positive" />
+    }
+
+    return <div className="flex left dc__gap-4">{badges}</div>
 }

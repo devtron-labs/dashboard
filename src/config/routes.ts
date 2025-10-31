@@ -86,8 +86,6 @@ export const URLS = {
     GUIDE: 'guide',
     GETTING_STARTED: 'getting-started',
     LINKED_CI_DETAILS: 'linked-ci-details',
-    SECURITY_SCANS: `${COMMON_URLS.SECURITY_CENTER}/scans`,  
-    SECURITY_POLICIES: `${COMMON_URLS.SECURITY_CENTER}/policies`,  
     STACK_MANAGER: '/stack-manager',
     STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
     STACK_MANAGER_DISCOVER_MODULES_DETAILS: '/stack-manager/discover/details',

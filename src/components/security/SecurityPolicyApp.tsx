@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { RouteComponentProps, NavLink } from 'react-router-dom'
 import { showError, Progressing, sortCallback, Reload, SearchBar } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityPolicyEdit } from './SecurityPolicyEdit'
 import { getAppListMin } from '../../services/service'
 import { ViewType } from '../../config'
 import { SecurityPolicyAppState } from './security.types'
-import { ReactComponent as Search } from '../../assets/icons/ic-search.svg'
 
 export class SecurityPolicyApp extends Component<RouteComponentProps<{ appId: string }>, SecurityPolicyAppState> {
     constructor(props) {
