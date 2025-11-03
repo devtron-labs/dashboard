@@ -100,22 +100,20 @@ const VM = () => {
 
         return (
             <div>
-                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
+                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__secondary">
                     <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
                         <TabGroup tabs={tabs} rightComponent={rightComponent} />
                     </div>
                 </div>
-                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                    <div className=" pr-20 pl-20 pt-12 pb-12">
-                        <Route path={`${match.url}/overview`}>
-                            <VMOverview />
-                        </Route>
-                        <Route path={`${match.url}/vms`}>
-                            <VMList />
-                        </Route>
+                <div className="bg__secondary mb-20">
+                    <Route path={`${match.url}/overview`}>
+                        <VMOverview />
+                    </Route>
+                    <Route path={`${match.url}/vms`}>
+                        <VMList />
+                    </Route>
 
-                        <Redirect to={`${match.url}/overview`} />
-                    </div>
+                    <Redirect to={`${match.url}/overview`} />
                 </div>
             </div>
         )

@@ -41,7 +41,6 @@
 
     .workflow-overview-cards-wrapper {
         grid-template-columns: repeat(4, 1fr);
-        grid-template-rows: repeat(2, 1fr);
         gap: 8px;
     }
 }

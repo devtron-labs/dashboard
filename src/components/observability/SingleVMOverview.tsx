@@ -92,48 +92,51 @@ const SingleVMOverview = () => {
     const searchKey = ''
     const handleSearch = () => { }
     return (
-        <div className="observability-overview flex-grow-1 dc__overflow-auto">
+        <div className="observability-overview flex-grow-1 dc__overflow-auto bg__secondary">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-            <div className="flexbox-col dc__gap-32 dc__overflow-auto p-20 flex-grow-1 bg__secondary">
-                <div className="flexbox-col dc__gap-16">
+            <div className="flexbox-col dc__gap-32 bg__secondary p-20">
+                <div className="flexbox-col dc__gap-12">
                     <div className="flexbox dc__content-space dc__gap-16">
                         <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
                     </div>
-                </div>
-                <div className="flexbox-col dc__gap-12">
                     {renderBody()}
                 </div>
-                <div className="dc__grid workflow-overview-cards-wrapper">
-                    <div className="flexbox-col bg__primary br-8 border__secondary">
-                        <div className="flex left px-16 py-12 border__secondary--bottom">
-                            <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
-                        </div>
-                        <div className="flex h-200">
-                            <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
-                        </div>
+                <div className="flexbox-col dc__gap-12">
+                    <div className="flexbox dc__content-space dc__gap-16">
+                        <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">Statistics</h3>
                     </div>
-                    <div className="flexbox-col bg__primary br-8 border__secondary">
-                        <div className="flex left px-16 py-12 border__secondary--bottom">
-                            <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
+                    <div className="dc__grid workflow-overview-cards-wrapper">
+                        <div className="flexbox-col bg__primary br-8 border__secondary">
+                            <div className="flex left px-16 py-12 border__secondary--bottom">
+                                <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
+                            </div>
+                            <div className="flex h-200">
+                                <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
+                            </div>
                         </div>
-                        <div className="flex h-200">
-                            <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
+                        <div className="flexbox-col bg__primary br-8 border__secondary">
+                            <div className="flex left px-16 py-12 border__secondary--bottom">
+                                <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
+                            </div>
+                            <div className="flex h-200">
+                                <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
+                            </div>
                         </div>
-                    </div>
-                    <div className="flexbox-col bg__primary br-8 border__secondary">
-                        <div className="flex left px-16 py-12 border__secondary--bottom">
-                            <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
+                        <div className="flexbox-col bg__primary br-8 border__secondary">
+                            <div className="flex left px-16 py-12 border__secondary--bottom">
+                                <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
+                            </div>
+                            <div className="flex h-200">
+                                <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
+                            </div>
                         </div>
-                        <div className="flex h-200">
-                            <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
-                        </div>
-                    </div>
-                    <div className="flexbox-col bg__primary br-8 border__secondary">
-                        <div className="flex left px-16 py-12 border__secondary--bottom">
-                            <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
-                        </div>
-                        <div className="flex h-200">
-                            <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
+                        <div className="flexbox-col bg__primary br-8 border__secondary">
+                            <div className="flex left px-16 py-12 border__secondary--bottom">
+                                <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
+                            </div>
+                            <div className="flex h-200">
+                                <img src='https://community.grafana.com/t/drill-down-in-bar-graph/70193' />
+                            </div>
                         </div>
                     </div>
                 </div>

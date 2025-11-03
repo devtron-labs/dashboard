@@ -104,15 +104,13 @@ const Project = () => {
                     <TabGroup tabs={tabs} rightComponent={rightComponent} />
                 </div>
             </div>
-            <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                <div className=" pr-20 pl-20 pt-12 pb-12">
-                    <Route path={`${match.url}/overview`}>
-                        <ProjectOverview />
-                    </Route>
-                    <Route path={`${match.url}/projects`}>
-                        <ProjectList />
-                    </Route>
-                </div>
+            <div className="bg__primary mb-20">
+                <Route path={`${match.url}/overview`}>
+                    <ProjectOverview />
+                </Route>
+                <Route path={`${match.url}/projects`}>
+                    <ProjectList />
+                </Route>
             </div>
         </div>
     )
