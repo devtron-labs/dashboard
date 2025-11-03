@@ -125,7 +125,9 @@ export const SecurityScansTab = () => {
     const areGroupedFiltersActive = !!severity.length || !!cluster.length || !!environment.length
     const areFiltersActive = searchKey || areGroupedFiltersActive
 
-    const [clusterEnvListLoading, clusterEnvListResult] = useAsync(() => getVulnerabilityFilterData())
+    const [clusterEnvListLoading, clusterEnvListResult, clusterEnvListError, reloadClusterEnvOptions] = useAsync(() =>
+        getVulnerabilityFilterData(),
+    )
 
     const getClusterLabelFromId = (clusterId: string) =>
         clusterEnvListResult?.filters?.clusters.find((clusterOption) => clusterOption.value === clusterId).label
@@ -205,6 +207,8 @@ export const SecurityScansTab = () => {
                 appliedFilterOptions: selectedClusters,
                 handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.cluster),
                 options: clusterEnvListResult?.filters?.clusters ?? [],
+                optionListError: clusterEnvListError,
+                reloadOptions: reloadClusterEnvOptions,
             },
             [SecurityScansTabMultiFilterKeys.environment]: {
                 inputId: 'scan-list-environment-filter',
@@ -214,6 +218,8 @@ export const SecurityScansTab = () => {
                 appliedFilterOptions: selectedEnvironments,
                 handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.environment),
                 options: clusterEnvListResult?.filters?.environments ?? [],
+                optionListError: clusterEnvListError,
+                reloadOptions: reloadClusterEnvOptions,
             },
             [SecurityScansTabMultiFilterKeys.severity]: {
                 inputId: 'scan-list-severity-filter',
@@ -223,6 +229,8 @@ export const SecurityScansTab = () => {
                 appliedFilterOptions: selectedSeverities,
                 handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.severity),
                 options: clusterEnvListResult?.filters?.severity ?? [],
+                optionListError: clusterEnvListError,
+                reloadOptions: reloadClusterEnvOptions,
             },
         }),
         [clusterEnvListLoading, clusterEnvListResult, selectedClusters, selectedEnvironments, selectedSeverities],
@@ -268,7 +276,6 @@ export const SecurityScansTab = () => {
     const renderFilters = () => (
         <div className="flexbox dc__content-space px-20 py-12">
             <div className="flex dc__gap-8">
-                {/* <SegmentedControl /> */}
                 <div className="flexbox">
                     <div className="w-120">
                         <SelectPicker
