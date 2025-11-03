@@ -19,7 +19,7 @@ import { Link, useParams, useRouteMatch } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
-    getApplicationManagementBreadcrumb,
+    getInfrastructureManagementBreadcrumb,
     PageHeader,
     TabGroup,
     TabProps,
@@ -42,7 +42,7 @@ const EAHeaderComponent = ({
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                ...getApplicationManagementBreadcrumb(),
+                ...getInfrastructureManagementBreadcrumb(),
                 ...breadCrumbConfig,
                 app: {
                     component: (
