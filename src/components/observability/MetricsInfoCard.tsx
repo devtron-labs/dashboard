@@ -29,7 +29,7 @@ export const MetricsInfoCard = ({
     valueOutOf?: string
     iconName: IconName
     redirectionLink?: string
-    tooltipContent: string
+    tooltipContent?: string
 }) => {
     const [isHovering, setIsHovering] = useState(false)
 
