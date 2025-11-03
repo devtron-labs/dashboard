@@ -24,6 +24,7 @@ const Project = () => {
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
+
     // TODO: Remove later
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [fetchingExternalApps, setFetchingExternalApps] = useState<boolean>(false)
@@ -45,6 +46,8 @@ const Project = () => {
             }
         }
     }, [isDataSyncing])
+
+    console.log('match', match)
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updateDataSyncing = (loading: boolean): void => {
@@ -117,21 +120,24 @@ const Project = () => {
         </div>
     )
 
-    const { breadcrumbs } = useBreadcrumb({
-        alias: {
-            observability: {
-                component: <ObservabilityIconComponent />,
-                linked: true,
-            },
-            customer: {
-                component: <BreadcrumbText heading="Projects" isActive />,
-                linked: false,
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                observability: {
+                    component: <ObservabilityIconComponent />,
+                    linked: true,
+                },
+                ':customerId': {
+                    component: <BreadcrumbText heading="Projects7" isActive />,
+                    linked: false,
+                },
             },
         },
-    })
+        [],
+    )
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
     const searchKey = ''
-    const handleSearch = () => { }
+    const handleSearch = () => {}
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />

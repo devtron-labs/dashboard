@@ -20,8 +20,24 @@ import { VMOverview } from './VMOverview'
 import '../styles.scss'
 
 let interval
+
 const VM = () => {
     const match = useRouteMatch()
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                observability: {
+                    component: <ObservabilityIconComponent />,
+                    linked: true,
+                },
+                customerId: {
+                    component: <BreadcrumbText heading="VMs" isActive />,
+                    linked: false,
+                },
+            },
+        },
+        [],
+    )
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
@@ -121,21 +137,9 @@ const VM = () => {
         )
     }
 
-    const { breadcrumbs } = useBreadcrumb({
-        alias: {
-            observability: {
-                component: <ObservabilityIconComponent />,
-                linked: true,
-            },
-            customer: {
-                component: <BreadcrumbText heading="VMs" isActive />,
-                linked: false,
-            },
-        },
-    })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
     const searchKey = ''
-    const handleSearch = () => { }
+    const handleSearch = () => {}
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
