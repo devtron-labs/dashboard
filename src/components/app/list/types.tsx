@@ -79,7 +79,7 @@ export const SortBy = {
 }
 
 export interface AppListPropType {
-    isArgoInstalled: boolean
+    isDevtronAppList?: boolean
 }
 
 export interface TriggerURL {

@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AnimatePresence,
+    IS_PLATFORM_MAC_OS,
     KeyboardShortcut,
     ModuleNameMap,
     ModuleStatus,
@@ -219,7 +220,7 @@ export const Navigation = ({
                         tooltip={
                             <span className="flex dc__gap-2">
                                 Search&nbsp;
-                                <KeyboardShortcut keyboardKey="Meta" />
+                                <KeyboardShortcut keyboardKey={IS_PLATFORM_MAC_OS ? 'Meta' : 'Control'} />
                                 <KeyboardShortcut keyboardKey="K" />
                             </span>
                         }
@@ -227,7 +228,7 @@ export const Navigation = ({
                     />
                     <NavGroup
                         title="Overview"
-                        icon="ic-speedometer"
+                        icon="ic-global-overview"
                         to="/dummy-url"
                         isExpanded={isExpanded}
                         onHover={handleCloseExpandedNavigation(true)}

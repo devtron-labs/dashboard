@@ -112,21 +112,22 @@ export const Configurations = () => {
                         >
                             {(props) => <Notifications {...props} isSuperAdmin={isSuperAdmin} />}
                         </Route>
-                        {...serverMode !== SERVER_MODE.EA_ONLY &&
-                            window._env_.ENABLE_SCOPED_VARIABLES && [
-                                <Route
-                                    key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}
-                                    path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}
-                                >
-                                    <ScopedVariables isSuperAdmin={isSuperAdmin} />
-                                </Route>,
-                                <Route
-                                    key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA}
-                                    path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA}
-                                >
-                                    <BuildInfra isSuperAdmin={isSuperAdmin} />
-                                </Route>,
-                            ]}
+                        {...serverMode !== SERVER_MODE.EA_ONLY && window._env_.ENABLE_SCOPED_VARIABLES
+                            ? [
+                                  <Route
+                                      key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}
+                                      path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_SCOPED_VARIABLES}
+                                  >
+                                      <ScopedVariables isSuperAdmin={isSuperAdmin} />
+                                  </Route>,
+                                  <Route
+                                      key={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA}
+                                      path={COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA}
+                                  >
+                                      <BuildInfra isSuperAdmin={isSuperAdmin} />
+                                  </Route>,
+                              ]
+                            : []}
                         <Redirect to={getDefaultRoute()} />
                     </Switch>
                 </div>
