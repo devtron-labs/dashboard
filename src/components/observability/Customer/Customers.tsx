@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useRouteMatch } from 'react-router-dom'
 
 import {
     BreadCrumb,
@@ -7,6 +8,7 @@ import {
     handleUTCTime,
     PageHeader,
     SearchBar,
+    TabGroup,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -15,6 +17,7 @@ import { CustomerList } from './CustomerList'
 
 let interval
 const Customers = () => {
+    const { path } = useRouteMatch()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
@@ -45,6 +48,31 @@ const Customers = () => {
     const updateDataSyncing = (loading: boolean): void => {
         setDataSyncing(loading)
     }
+
+    const getObservabilityTabs = () => (
+        <TabGroup
+            tabs={[
+                {
+                    id: 'observability',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('customers', 'overview')}`,
+                    },
+                },
+                {
+                    id: 'customers',
+                    label: 'Tenants',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                        'data-testid': 'customers',
+                    },
+                },
+            ]}
+            hideTopPadding
+        />
+    )
 
     const syncNow = (): void => {
         setSyncListData(!syncListData)
@@ -87,11 +115,20 @@ const Customers = () => {
         },
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
+    const renderPageHeader = () => (
+        <PageHeader
+            headerName="Observability"
+            showTabs
+            renderHeaderTabs={getObservabilityTabs}
+            breadCrumbs={renderBreadcrumbs}
+        />
+    )
     const searchKey = ''
     const handleSearch = () => {}
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+            {renderPageHeader()}
             <div className="flex dc__content-space  p-16 w-100 dc__gap-8 ">
                 <div className="flexbox dc__align-items-center dc__mxw-fit-content">
                     <SearchBar

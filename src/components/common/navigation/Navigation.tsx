@@ -17,7 +17,7 @@
 import React, { Component } from 'react'
 import { NavLink, RouteComponentProps } from 'react-router-dom'
 import ReactGA from 'react-ga4'
-import { URLS as CommonURLS, Icon, MainContext } from '@devtron-labs/devtron-fe-common-lib'
+import { URLS as CommonURLS, Icon, MainContext, URLS as CommonUrls } from '@devtron-labs/devtron-fe-common-lib'
 import {
     ModuleNameMap,
     MODULE_STATUS_POLLING_INTERVAL,
@@ -93,6 +93,16 @@ const NavigationList: NavigationListItemType[] = [
         icon: 'ic-cube',
         href: URLS.RESOURCE_BROWSER,
         isAvailableInEA: true,
+        markAsBeta: false,
+        isAvailableInDesktop: true,
+    },
+    {
+        title: 'Observability',
+        dataTestId: 'click-on-observability',
+        type: 'link',
+        icon: 'ic-binoculars',
+        href: CommonUrls.OBSERVABILITY,
+        isAvailableInEA: false,
         markAsBeta: false,
         isAvailableInDesktop: true,
     },

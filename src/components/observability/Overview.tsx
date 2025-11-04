@@ -1,8 +1,11 @@
+import { useRouteMatch } from 'react-router-dom'
+
 import {
     BreadCrumb,
     BreadcrumbText,
     GenericSectionErrorState,
     PageHeader,
+    TabGroup,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -16,7 +19,6 @@ import './styles.scss'
 export const Overview = () => {
     const { isFetching, data, isError, refetch } = useGetGlanceConfig()
 
-    console.log(data)
     const { breadcrumbs } = useBreadcrumb({
         alias: {
             observability: {
@@ -29,7 +31,40 @@ export const Overview = () => {
             },
         },
     })
+    const { path } = useRouteMatch()
+    const getObservabilityTabs = () => (
+        <TabGroup
+            tabs={[
+                {
+                    id: 'observability',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'customers',
+                    label: 'Tenants',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'customers')}`,
+                        'data-testid': 'customers',
+                    },
+                },
+            ]}
+            hideTopPadding
+        />
+    )
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderPageHeader = () => (
+        <PageHeader
+            headerName="Observability"
+            showTabs
+            renderHeaderTabs={getObservabilityTabs}
+            breadCrumbs={renderBreadcrumbs}
+        />
+    )
 
     const renderBody = () => {
         if (isFetching) {
@@ -43,13 +78,7 @@ export const Overview = () => {
         }
 
         if (isError) {
-            return (
-                <GenericSectionErrorState
-                    subTitle=""
-                    reload={refetch}
-                    rootClassName="bg__primary br-8 border__secondary"
-                />
-            )
+            return <GenericSectionErrorState reload={refetch} rootClassName="bg__primary br-8 border__secondary" />
         }
 
         return (
@@ -63,8 +92,7 @@ export const Overview = () => {
 
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto flexbox-col">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-
+            {renderPageHeader()}
             <div className="flexbox-col dc__gap-32 bg__secondary p-20 flex-grow-1">
                 <div className="flexbox-col dc__gap-12">
                     <div className="flexbox dc__content-space">
