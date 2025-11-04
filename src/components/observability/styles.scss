@@ -1,0 +1,45 @@
+.observability-overview {
+flexbox-col dc__gap-32 bg__secondary p-20
+    .cards-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 8px;
+    }
+
+    .capacity-table-row {
+        grid-template-columns: 150px 1fr 1fr;
+    }
+
+    .at-a-glance {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+
+    .observability-table-wrapper {
+
+        // Apply to every first child up to 4 levels deep
+        > :first-child,
+        > :first-child> :first-child,
+        > :first-child> :first-child> :first-child,
+        > :first-child> :first-child> :first-child> :first-child {
+            overflow: visible !important;
+        }
+    }
+
+    .search-filter-section {
+        padding: 12px 20px;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        background-color: var(--bg-primary);
+        z-index: var(--filter-menu-index);
+    }
+
+    .glance-cards-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+        column-gap: 8px;
+    }
+
+    .workflow-overview-cards-wrapper {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+}
