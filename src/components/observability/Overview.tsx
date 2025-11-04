@@ -62,16 +62,19 @@ export const Overview = () => {
     }
 
     return (
-        <div className="observability-overview flex-grow-1 dc__overflow-auto">
+        <div className="observability-overview flex-grow-1 dc__overflow-auto flexbox-col">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
 
-            <div className="flexbox-col dc__gap-32 dc__overflow-auto p-20 flex-grow-1">
-                <div className="flexbox-col dc__gap-16">
-                    <div className="flexbox dc__content-space dc__gap-16">
+            <div className="flexbox-col dc__gap-32 bg__secondary p-20 flex-grow-1">
+                <div className="flexbox-col dc__gap-12">
+                    <div className="flexbox dc__content-space">
                         <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
                     </div>
+                    {renderBody()}
                 </div>
-                {renderBody()}
+                <div className="flexbox-col dc__gap-12">
+                    <h2 className="m-0 fs-20 lh-1-5 fw-4 cn-9">Observability Metrics</h2>
+                </div>
             </div>
         </div>
     )

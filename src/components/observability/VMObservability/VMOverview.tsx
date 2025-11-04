@@ -55,7 +55,7 @@ export const VMOverview = () => {
                         <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
                     </div>
                     <div className="flex h-200">
-                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" />
+                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" alt="" />
                     </div>
                 </div>
                 <div className="flexbox-col bg__primary br-8 border__secondary">
@@ -63,7 +63,7 @@ export const VMOverview = () => {
                         <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
                     </div>
                     <div className="flex h-200">
-                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" />
+                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" alt="" />
                     </div>
                 </div>
                 <div className="flexbox-col bg__primary br-8 border__secondary">
@@ -71,7 +71,7 @@ export const VMOverview = () => {
                         <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
                     </div>
                     <div className="flex h-200">
-                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" />
+                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" alt="" />
                     </div>
                 </div>
                 <div className="flexbox-col bg__primary br-8 border__secondary">
@@ -79,7 +79,7 @@ export const VMOverview = () => {
                         <span className="fs-14 fw-6 lh-1-5 cn-9">CPU</span>
                     </div>
                     <div className="flex h-200">
-                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" />
+                        <img src="https://community.grafana.com/t/drill-down-in-bar-graph/70193" alt="" />
                     </div>
                 </div>
             </div>

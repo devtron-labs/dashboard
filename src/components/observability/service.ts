@@ -7,7 +7,7 @@ export const getObservabilityData: () => Promise<Partial<ObservabilityOverviewDT
         [ObservabilityGlanceMetricKeys.TOTAL_VMS]: 20,
         [ObservabilityGlanceMetricKeys.PROJECTS]: 30,
         [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: 50,
-        [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 40,
+        // [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 40,
     })
 
 export const getProjectList: () => Promise<any> = () =>

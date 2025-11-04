@@ -103,19 +103,17 @@ const Project = () => {
     const renderProjectTabs = () => (
         <div>
             <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
+                <div className="en-2 bw-1 bg__primary dc__no-bottom-border px-20">
                     <TabGroup tabs={tabs} rightComponent={rightComponent} />
                 </div>
             </div>
             <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                <div className=" pr-20 pl-20 pt-12 pb-12">
-                    <Route path={`${match.url}/overview`}>
-                        <ProjectOverview />
-                    </Route>
-                    <Route path={`${match.url}/projects`}>
-                        <ProjectList />
-                    </Route>
-                </div>
+                <Route path={`${match.url}/overview`}>
+                    <ProjectOverview />
+                </Route>
+                <Route path={`${match.url}/projects`}>
+                    <ProjectList />
+                </Route>
             </div>
         </div>
     )
@@ -127,8 +125,8 @@ const Project = () => {
                     component: <ObservabilityIconComponent />,
                     linked: true,
                 },
-                ':customerId': {
-                    component: <BreadcrumbText heading="Projects7" isActive />,
+                ':projectId': {
+                    component: <BreadcrumbText heading={match.url.split('projects/')[1]} isActive />,
                     linked: false,
                 },
             },

@@ -30,8 +30,8 @@ const VM = () => {
                     component: <ObservabilityIconComponent />,
                     linked: true,
                 },
-                customerId: {
-                    component: <BreadcrumbText heading="VMs" isActive />,
+                ':projects': {
+                    component: <BreadcrumbText heading={match.url.split('projects/')[1]} isActive />,
                     linked: false,
                 },
             },
@@ -91,7 +91,7 @@ const VM = () => {
 
     const renderVMTabs = () => {
         const rightComponent = (
-            <div className="flex fs-13">
+            <div className="flex right fs-13">
                 {lastDataSyncTimeString && (
                     <>
                         <span data-testid="sync-now-text">{lastDataSyncTimeString}</span>
@@ -117,21 +117,19 @@ const VM = () => {
         return (
             <div>
                 <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                    <div className="en-2 bw-1 dc__top-radius-4 bg__primary dc__no-bottom-border px-20">
+                    <div className="en-2 bw-1 bg__primary dc__no-bottom-border dc__no-bottom-top px-20">
                         <TabGroup tabs={tabs} rightComponent={rightComponent} />
                     </div>
                 </div>
                 <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                    <div className=" pr-20 pl-20 pt-12 pb-12">
-                        <Route path={`${match.url}/overview`}>
-                            <VMOverview />
-                        </Route>
-                        <Route path={`${match.url}/vms`}>
-                            <VMList />
-                        </Route>
+                    <Route path={`${match.url}/overview`}>
+                        <VMOverview />
+                    </Route>
+                    <Route path={`${match.url}/vms`}>
+                        <VMList />
+                    </Route>
 
-                        <Redirect to={`${match.url}/overview`} />
-                    </div>
+                    <Redirect to={`${match.url}/overview`} />
                 </div>
             </div>
         )
