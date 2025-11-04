@@ -87,21 +87,23 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
             id: 1,
             name: 'Customer1',
             status: 'ACTIVE',
-            project: 2,
+            projects: 2,
             totalVms: 14,
             healthStatus: '80%',
             activeVms: 2,
+            icon: 'ic-devtron',
         },
         {
             id: 2,
             name: 'Customer2',
             status: 'INACTIVE',
-            project: 34,
+            projects: 34,
             totalVms: 4,
             healthStatus: '20%',
             activeVms: 1,
+            icon: 'ic-helm',
         },
-    ])
+    ] as unknown as CustomerObservabilityDTO[])
 
 export const getProjectOverViewCards: () => Promise<any> = () =>
     Promise.resolve([

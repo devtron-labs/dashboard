@@ -3,19 +3,20 @@ import { Link, useRouteMatch } from 'react-router-dom'
 
 import {
     FiltersTypeEnum,
+    Icon,
     TableCellComponentProps,
     TableSignalEnum,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib/dist'
 
-import { CustomerObservabilityDTO, ProjectListFields } from '../types'
+import { CustomerObservabilityDTO, ObservabilityListFields } from '../types'
 
 export const CustomerListCellComponent: FunctionComponent<
     TableCellComponentProps<CustomerObservabilityDTO, FiltersTypeEnum.STATE, {}>
 > = ({
     field,
     row: {
-        data: { id, name, status, project, totalVms, activeVms, healthStatus },
+        data: { id, name, status, projects, totalVms, activeVms, healthStatus, icon },
     },
     isRowActive,
     signals,
@@ -40,25 +41,40 @@ export const CustomerListCellComponent: FunctionComponent<
     }, [isRowActive])
 
     switch (field) {
-        case ProjectListFields.PROJECT_NAME:
+        case ObservabilityListFields.ICON:
             return (
-                <Link ref={linkRef} to={`${match.path}/${name}/overview`} className="flex left py-10">
+                <span className="flexbox dc__align-items-center dc__gap-6 py-10">
+                    <Icon name={icon as any} color={null} size={24} />
+                </span>
+            )
+        case ObservabilityListFields.PROJECT_NAME:
+            return (
+                <Link
+                    ref={linkRef}
+                    to={`${match.path}/${name}/overview`}
+                    className="flexbox dc__align-items-center dc__gap-6 py-10"
+                >
                     <Tooltip content={name}>
                         <span className="dc__truncate">{name}</span>
                     </Tooltip>
                 </Link>
             )
-        case ProjectListFields.STATUS:
-            return <span className="flex left py-10">{status}</span>
-        case ProjectListFields.PROJECTS:
-            return <span className="flex left py-10">{project}</span>
-        case ProjectListFields.TOTAL_VMS:
-            return <span className="flex left py-10">{totalVms}</span>
-        case ProjectListFields.ACTIVE_VMS:
-            return <span className="flex left py-10">{activeVms}</span>
-        case ProjectListFields.HEALTH_STATUS:
+        case ObservabilityListFields.STATUS:
             return (
-                <div className="flex left py-10">
+                <span className="flexbox dc__align-items-center dc__gap-6">
+                    <Icon name={status === 'ACTIVE' ? 'ic-success' : 'ic-error'} color={null} />
+                    {status}
+                </span>
+            )
+        case ObservabilityListFields.PROJECTS:
+            return <span className="flexbox dc__align-items-center dc__gap-6 py-10">{projects}</span>
+        case ObservabilityListFields.TOTAL_VMS:
+            return <span className="flexbox dc__align-items-center dc__gap-6 py-10">{totalVms}</span>
+        case ObservabilityListFields.ACTIVE_VMS:
+            return <span className="flexbox dc__align-items-center dc__gap-6 py-10">{activeVms}</span>
+        case ObservabilityListFields.HEALTH_STATUS:
+            return (
+                <div className="flexbox dc__align-items-center dc__gap-6 py-10">
                     <Tooltip content={healthStatus}>
                         <span className="dc__truncate">{healthStatus}</span>
                     </Tooltip>

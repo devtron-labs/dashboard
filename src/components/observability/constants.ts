@@ -82,7 +82,7 @@ export const CUSTOMER_TABLE_COLUMN: CustomerTableProps['columns'] = [
         comparator: stringComparatorBySortOrder,
     },
     {
-        field: 'project',
+        field: 'projects',
         label: 'Projects',
         size: {
             fixed: 250,

@@ -8,7 +8,7 @@ import {
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib/dist'
 
-import { ObservabilityProject, ProjectListFields } from '../types'
+import { ObservabilityListFields, ObservabilityProject } from '../types'
 
 export const ProjectListCellComponent: FunctionComponent<
     TableCellComponentProps<ObservabilityProject, FiltersTypeEnum.STATE, {}>
@@ -41,7 +41,7 @@ export const ProjectListCellComponent: FunctionComponent<
     }, [isRowActive])
 
     switch (field) {
-        case ProjectListFields.PROJECT_NAME:
+        case ObservabilityListFields.PROJECT_NAME:
             return (
                 <Link ref={linkRef} to={`${match.path}/${name}/overview`} className="flex left py-10">
                     <Tooltip content={name}>
@@ -49,13 +49,13 @@ export const ProjectListCellComponent: FunctionComponent<
                     </Tooltip>
                 </Link>
             )
-        case ProjectListFields.PROJECT_DESCRIPTION:
+        case ObservabilityListFields.PROJECT_DESCRIPTION:
             return <span className="flex left py-10">{description}</span>
-        case ProjectListFields.STATUS:
+        case ObservabilityListFields.STATUS:
             return <span className="flex left py-10">{status}</span>
-        case ProjectListFields.TOTAL_VMS:
+        case ObservabilityListFields.TOTAL_VMS:
             return <span className="flex left py-10">{totalVms}</span>
-        case ProjectListFields.ACTIVE_VMS:
+        case ObservabilityListFields.ACTIVE_VMS:
             return (
                 <div className="flex left py-10">
                     <Tooltip content={activeVms}>
@@ -63,7 +63,7 @@ export const ProjectListCellComponent: FunctionComponent<
                     </Tooltip>
                 </div>
             )
-        case ProjectListFields.HEALTH_STATUS:
+        case ObservabilityListFields.HEALTH_STATUS:
             return (
                 <div className="flex left py-10">
                     <Tooltip content={healthStatus}>

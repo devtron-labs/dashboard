@@ -18,10 +18,11 @@ export interface BaseObservability {
 }
 
 export interface CustomerObservabilityDTO extends BaseObservability {
-    project: number
+    projects: number
     totalVms: number
     activeVms: number
     healthStatus: string
+    icon: string
 }
 
 export type CustomerTableProps = TableProps<CustomerObservabilityDTO, FiltersTypeEnum.STATE, {}>
@@ -43,7 +44,7 @@ export interface ObservabilityVM extends BaseObservability {
 
 export type VMTableProps = TableProps<ObservabilityVM, FiltersTypeEnum.STATE, {}>
 
-export enum ProjectListFields {
+export enum ObservabilityListFields {
     PROJECT_ID = 'id',
     PROJECT_NAME = 'name',
     PROJECT_DESCRIPTION = 'description',
@@ -52,6 +53,7 @@ export enum ProjectListFields {
     ACTIVE_VMS = 'activeVms',
     HEALTH_STATUS = 'healthStatus',
     PROJECTS = 'projects',
+    ICON = 'icon',
 }
 
 export enum VMListFields {
