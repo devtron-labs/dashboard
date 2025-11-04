@@ -57,16 +57,16 @@ const Customers = () => {
                     label: 'Overview',
                     tabType: 'navLink',
                     props: {
-                        to: `${path.replace('customers', 'overview')}`,
+                        to: `${path.replace('tenants', 'overview')}`,
                     },
                 },
                 {
-                    id: 'customers',
+                    id: 'tenants',
                     label: 'Tenants',
                     tabType: 'navLink',
                     props: {
                         to: `${path}`,
-                        'data-testid': 'customers',
+                        'data-testid': 'tenants',
                     },
                 },
             ]}
@@ -108,8 +108,8 @@ const Customers = () => {
                 component: <ObservabilityIconComponent />,
                 linked: true,
             },
-            customers: {
-                component: <BreadcrumbText heading="Customers" isActive />,
+            tenants: {
+                component: <BreadcrumbText heading="Tenants" isActive />,
                 linked: false,
             },
         },

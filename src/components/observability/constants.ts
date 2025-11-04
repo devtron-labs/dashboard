@@ -63,7 +63,7 @@ export const CUSTOMER_TABLE_COLUMN: CustomerTableProps['columns'] = [
     },
     {
         field: 'name',
-        label: 'Customer',
+        label: 'Tenants',
         size: {
             fixed: 250,
         },

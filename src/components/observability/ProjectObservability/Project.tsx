@@ -47,8 +47,6 @@ const Project = () => {
         }
     }, [isDataSyncing])
 
-    console.log('match', match)
-
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const updateDataSyncing = (loading: boolean): void => {
         setDataSyncing(loading)
@@ -103,7 +101,7 @@ const Project = () => {
     const renderProjectTabs = () => (
         <div>
             <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                <div className="en-2 bw-1 bg__primary dc__no-bottom-border px-20">
+                <div className="px-20">
                     <TabGroup tabs={tabs} rightComponent={rightComponent} />
                 </div>
             </div>
@@ -139,7 +137,7 @@ const Project = () => {
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
             <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-            <div className="search-filter-section">
+            <div className="px-20 py-12">
                 <SearchBar
                     containerClassName="w-250"
                     dataTestId="search-project-env"

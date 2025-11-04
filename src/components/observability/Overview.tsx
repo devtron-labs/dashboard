@@ -44,12 +44,12 @@ export const Overview = () => {
                     },
                 },
                 {
-                    id: 'customers',
+                    id: 'tenants',
                     label: 'Tenants',
                     tabType: 'navLink',
                     props: {
-                        to: `${path.replace('overview', 'customers')}`,
-                        'data-testid': 'customers',
+                        to: `${path.replace('overview', 'tenants')}`,
+                        'data-testid': 'tenants',
                     },
                 },
             ]}
