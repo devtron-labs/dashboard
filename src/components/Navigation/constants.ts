@@ -438,7 +438,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'data-protection-overview',
                 icon: 'ic-chart-line-up',
                 disabled: true,
-                href: COMMON_URLS.DATA_PROTECTION_OVERVIEW,
+                href: '/dummy-url',
             },
             {
                 title: 'Backup & Schedule',
