@@ -16,7 +16,7 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
         false
     >({
         queryKey: ['commandBar__app-list'],
-        queryFn: () => getCommandBarResourceLists(),
+        queryFn: ({ signal }) => getCommandBarResourceLists(signal),
         refetchInterval: (+window._env_.COMMAND_BAR_REFETCH_INTERVAL || 3600) * 1000,
     })
 

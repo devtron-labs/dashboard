@@ -43,6 +43,7 @@ import { getDevtronAppListPayload } from '../list/appList.modal'
 export const getDevtronInstalledHelmApps = (
     clusterIdsCsv: string,
     appStatuses: string,
+    signal?: AbortSignal
 ): Promise<HelmAppListResponse> => {
     const baseUrl = Routes.CHART_INSTALLED
     const params: GetDevtronHelmAppListParamsType = {
@@ -50,7 +51,7 @@ export const getDevtronInstalledHelmApps = (
         appStatuses,
     }
     const url = getUrlWithSearchParams(baseUrl, params)
-    return get(url)
+    return get(url, { signal })
 }
 
 export const getArgoInstalledExternalApps = (
