@@ -465,7 +465,6 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
                     <Catalog
                         resourceId={appId}
                         resourceType={getResourceKindFromAppType(appType)}
-                        catalogSchemaResourceId={appMetaInfo.catalogSchemaResourceId}
                     />
                 )}
                 {DeploymentWindowOverview && (
