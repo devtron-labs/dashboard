@@ -6,10 +6,10 @@ export const getObservabilityData: () => Promise<ObservabilityOverviewDTO> = () 
         glanceConfig: {
             [ObservabilityGlanceMetricKeys.TOTAL_CUSTOMERS]: 4,
             [ObservabilityGlanceMetricKeys.TOTAL_VMS]: 20,
-            [ObservabilityGlanceMetricKeys.PROJECTS]: 2,
+            [ObservabilityGlanceMetricKeys.PROJECTS]: 5,
             [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: 50,
             [ObservabilityGlanceMetricKeys.TOTAL_CLUSTER]: 2,
-            [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 40,
+            [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 2,
         },
         metrics: [
             {
@@ -144,6 +144,7 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
             totalVms: 4,
             healthStatus: '20%',
             activeVms: 1,
+            icon: 'ic-helm',
         },
         {
             id: 4,
@@ -153,6 +154,7 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
             totalVms: 4,
             healthStatus: '30%',
             activeVms: 1,
+            icon: 'ic-devtron',
         },
     ] as unknown as CustomerObservabilityDTO[])
 
