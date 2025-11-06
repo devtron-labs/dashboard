@@ -6,11 +6,12 @@ import {
     ButtonVariantType,
     ConditionalWrap,
     Icon,
-    IconName,
     motion,
     noop,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { MetricsInfoCardProps } from './types'
 
 export const MetricsInfoCard = ({
     dataTestId,
@@ -21,16 +22,7 @@ export const MetricsInfoCard = ({
     iconName,
     redirectionLink,
     tooltipContent,
-}: {
-    dataTestId: string
-    metricTitle: string
-    metricValue: string
-    metricUnit?: string
-    valueOutOf?: string
-    iconName: IconName
-    redirectionLink?: string
-    tooltipContent?: string
-}) => {
+}: MetricsInfoCardProps) => {
     const [isHovering, setIsHovering] = useState(false)
 
     const handleHoverStart = () => setIsHovering(true)

@@ -6,7 +6,6 @@ import { MetricsInfoLoadingCard, useGetGlanceConfig } from '../utils'
 
 export const ProjectOverview = () => {
     const { isFetching, data, isError, refetch } = useGetGlanceConfig()
-    console.log(data)
 
     const renderBody = () => {
         if (isFetching) {
@@ -31,7 +30,7 @@ export const ProjectOverview = () => {
         // alert(JSON.stringify(data))
         return (
             <div className="dc__grid workflow-overview-cards-wrapper">
-                {data.map((value) => (
+                {data.glanceConfig.map((value) => (
                     <MetricsInfoCard key={value.metricTitle} {...value} />
                 ))}
             </div>

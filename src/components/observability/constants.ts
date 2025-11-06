@@ -248,3 +248,17 @@ export const VM_TABLE_COLUMNS: VMTableProps['columns'] = [
         CellComponent: VMListCellComponent,
     },
 ]
+
+export enum ObservabilityUtilizationKeys {
+    VM_RUNNING_STATUS = 'vmRUnningStatus',
+    CPU_UTILIZATION = 'cpuUtilization',
+    MEMORY_UTILIZATION = 'memoryUtilization',
+    DISK_UTILIZATION = 'diskUtilization',
+}
+
+export const OBSERVABILITY_UTILIZATION_CARDS_TITLE: Record<ObservabilityUtilizationKeys, string> = {
+    [ObservabilityUtilizationKeys.VM_RUNNING_STATUS]: 'VMS Running Status',
+    [ObservabilityUtilizationKeys.CPU_UTILIZATION]: 'CPU Utilization',
+    [ObservabilityUtilizationKeys.MEMORY_UTILIZATION]: 'Memory Utilization',
+    [ObservabilityUtilizationKeys.DISK_UTILIZATION]: 'Disk Utilization',
+}

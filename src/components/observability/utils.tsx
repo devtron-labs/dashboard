@@ -1,8 +1,15 @@
-import { useQuery } from '@devtron-labs/devtron-fe-common-lib'
+import { SelectPickerOptionType, Tooltip, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import { GLANCE_METRICS_CARDS_CONFIG, ObservabilityGlanceMetricKeys } from './constants'
 import { getObservabilityData } from './service'
-import { MetricsInfoCardProps, ObservabilityOverviewDTO, TabDetailsSearchParams, TabDetailsSegment } from './types'
+import {
+    MetricsInfoCardProps,
+    ObservabilityMetricsDTO,
+    ObservabilityOverviewDTO,
+    ResourceCapacityDistributionTypes,
+    TabDetailsSearchParams,
+    TabDetailsSegment,
+} from './types'
 
 // Will be removing while importing to dashboard
 export const MetricsInfoLoadingCard = () => (
@@ -17,22 +24,27 @@ export const MetricsInfoLoadingCard = () => (
     </div>
 )
 
-export const getObservabilityGlanceConfig = (result: Partial<ObservabilityOverviewDTO>) =>
-    Object.entries(GLANCE_METRICS_CARDS_CONFIG).map(
+export const getObservabilityGlanceConfig = (result: Partial<ObservabilityOverviewDTO>) => {
+    const glanceConfig = Object.entries(GLANCE_METRICS_CARDS_CONFIG).map(
         ([key, config]: [ObservabilityGlanceMetricKeys, MetricsInfoCardProps]) => {
-            const entry = result?.[key]
+            const entry = result.glanceConfig?.[key]
             const isNumber = typeof entry === 'number'
             const metricValue = isNumber ? entry : (entry as any)?.value
             const metricTitle = config?.metricTitle
 
             return {
                 ...config,
-                dataTestId: key,
+                dataTestId: key as string,
                 metricValue,
                 metricTitle,
             }
         },
     )
+    return {
+        metrics: result?.metrics,
+        glanceConfig,
+    }
+}
 
 export const useGetGlanceConfig = () =>
     useQuery({
@@ -50,3 +62,48 @@ export const useGetGlanceConfig = () =>
 export const parseChartDetailsSearchParams = (searchParams: URLSearchParams): TabDetailsSearchParams => ({
     tab: (searchParams.get('tab') as TabDetailsSegment) || TabDetailsSegment.OVERVIEW,
 })
+
+const AllocatedResource = ({ label, value }: SelectPickerOptionType<string>) => (
+    <div className="flex left flex-grow-1 dc__gap-4 fs-11 fw-4 lh-1-5 cn-7 var(--B500)">
+        <span>{label}</span>
+        <span className="fw-5 cn-9 font-ibm-plex-sans">{value}</span>
+    </div>
+)
+
+export const ResourceAllocationBar = ({
+    capacity,
+    utilization,
+    bgColor = 'B500',
+}: ResourceCapacityDistributionTypes & { bgColor? }) => (
+    <div className="flexbox-col dc__gap-8">
+        <div className="h-8 br-4 dc__position-rel dc__overflow-hidden" style={{ backgroundColor: 'var(--N100)' }}>
+            {/* Fill div up to utilisation percentage */}
+            <Tooltip content="Utilisation" alwaysShowTippyOnHover>
+                <div
+                    className="h-8 br-4 dc__position-abs"
+                    style={{
+                        width: `${utilization}%`,
+                        backgroundColor: `var(--${bgColor})`,
+                    }}
+                />
+            </Tooltip>
+        </div>
+        <div className="flex left dc__gap-8">
+            <AllocatedResource label="Capacity" value={`${capacity}`} />
+            <div className="divider__secondary" />
+            <AllocatedResource label="Utilisation" value={`${utilization}%`} />
+        </div>
+    </div>
+)
+
+export const CPUCapacityCellComponent = ({ cpu }: Pick<ObservabilityMetricsDTO, 'cpu'>) => (
+    <ResourceAllocationBar {...cpu} bgColor="G500" />
+)
+
+export const MemoryCapacityCellComponent = ({ memory }: Pick<ObservabilityMetricsDTO, 'memory'>) => (
+    <ResourceAllocationBar {...memory} />
+)
+
+export const DiskCapacityCellComponent = ({ disk }: Pick<ObservabilityMetricsDTO, 'disk'>) => (
+    <ResourceAllocationBar {...disk} bgColor="Y500" />
+)

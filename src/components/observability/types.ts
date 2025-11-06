@@ -81,14 +81,6 @@ export interface TabDetailsSearchParams {
     tab: TabDetailsSegment
 }
 
-export interface ObservabilityOverviewDTO {
-    [ObservabilityGlanceMetricKeys.TOTAL_CLUSTER]: number
-    [ObservabilityGlanceMetricKeys.TOTAL_VMS]: number
-    [ObservabilityGlanceMetricKeys.PROJECTS]: number
-    [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: number
-    [ObservabilityGlanceMetricKeys.RUNNING_VMS]: number
-}
-
 export interface MetricsInfoCardProps {
     iconName: IconName
     metricTitle: string
@@ -98,4 +90,38 @@ export interface MetricsInfoCardProps {
     valueOutOf?: string
     tooltipContent?: string
     redirectionLink?: string
+}
+
+export interface GlanceConfigDTO {
+    [ObservabilityGlanceMetricKeys.TOTAL_CLUSTER]: number
+    [ObservabilityGlanceMetricKeys.TOTAL_VMS]: number
+    [ObservabilityGlanceMetricKeys.PROJECTS]: number
+    [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: number
+    [ObservabilityGlanceMetricKeys.RUNNING_VMS]: number
+}
+
+export interface CPUMemoryDiskUtilization {
+    capacity: number
+    utilization: string
+}
+
+export interface ObservabilityMetricsDTO {
+    id: number
+    name: string
+    cpu: CPUMemoryDiskUtilization
+    memory: CPUMemoryDiskUtilization
+    disk: CPUMemoryDiskUtilization
+}
+
+export interface ObservabilityOverviewDTO {
+    glanceConfig: Partial<GlanceConfigDTO>
+    metrics: ObservabilityMetricsDTO[]
+}
+
+export interface BarMetricsProps {
+    data: ObservabilityOverviewDTO['metrics']
+}
+
+export interface ResourceCapacityDistributionTypes extends CPUMemoryDiskUtilization {
+    bgColor?: string
 }

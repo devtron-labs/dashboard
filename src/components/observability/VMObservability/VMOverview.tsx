@@ -34,7 +34,7 @@ export const VMOverview = () => {
         // alert(JSON.stringify(data))
         return (
             <div className="dc__grid workflow-overview-cards-wrapper">
-                {data.map((value) => (
+                {data.glanceConfig.map((value) => (
                     <MetricsInfoCard key={value.metricTitle} {...value} />
                 ))}
             </div>

@@ -1,13 +1,46 @@
 import { ObservabilityGlanceMetricKeys } from './constants'
 import { CustomerObservabilityDTO, ObservabilityOverviewDTO } from './types'
 
-export const getObservabilityData: () => Promise<Partial<ObservabilityOverviewDTO>> = () =>
+export const getObservabilityData: () => Promise<ObservabilityOverviewDTO> = () =>
     Promise.resolve({
-        [ObservabilityGlanceMetricKeys.TOTAL_CUSTOMERS]: 10,
-        [ObservabilityGlanceMetricKeys.TOTAL_VMS]: 20,
-        [ObservabilityGlanceMetricKeys.PROJECTS]: 30,
-        [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: 50,
-        // [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 40,
+        glanceConfig: {
+            [ObservabilityGlanceMetricKeys.TOTAL_CUSTOMERS]: 4,
+            [ObservabilityGlanceMetricKeys.TOTAL_VMS]: 20,
+            [ObservabilityGlanceMetricKeys.PROJECTS]: 2,
+            [ObservabilityGlanceMetricKeys.HEALTH_STATUS]: 50,
+            [ObservabilityGlanceMetricKeys.TOTAL_CLUSTER]: 2,
+            [ObservabilityGlanceMetricKeys.RUNNING_VMS]: 40,
+        },
+        metrics: [
+            {
+                id: 1,
+                name: 'Tenants1',
+                cpu: { capacity: 36, utilization: '10.75' },
+                memory: { capacity: 141, utilization: '22.75' },
+                disk: { capacity: 50, utilization: '32.75' },
+            },
+            {
+                id: 2,
+                name: 'Tenant2',
+                cpu: { capacity: 36, utilization: '20.75' },
+                memory: { capacity: 121, utilization: '40.75' },
+                disk: { capacity: 50, utilization: '60.75' },
+            },
+            {
+                id: 3,
+                name: 'Tenants3',
+                cpu: { capacity: 36, utilization: '6.75' },
+                memory: { capacity: 141, utilization: '2.75' },
+                disk: { capacity: 50, utilization: '22.75' },
+            },
+            {
+                id: 4,
+                name: 'Tenants4',
+                cpu: { capacity: 36, utilization: '6.75' },
+                memory: { capacity: 141, utilization: '22.75' },
+                disk: { capacity: 50, utilization: '22.75' },
+            },
+        ],
     })
 
 export const getProjectList: () => Promise<any> = () =>
@@ -85,7 +118,7 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
     Promise.resolve([
         {
             id: 1,
-            name: 'Customer1',
+            name: 'Tenants1',
             status: 'ACTIVE',
             projects: 2,
             totalVms: 14,
@@ -95,13 +128,31 @@ export const getCustomerListData: () => Promise<CustomerObservabilityDTO[]> = ()
         },
         {
             id: 2,
-            name: 'Customer2',
+            name: 'Tenant2',
             status: 'INACTIVE',
             projects: 34,
             totalVms: 4,
             healthStatus: '20%',
             activeVms: 1,
             icon: 'ic-helm',
+        },
+        {
+            id: 3,
+            name: 'Tenants3',
+            status: 'INACTIVE',
+            project: 34,
+            totalVms: 4,
+            healthStatus: '20%',
+            activeVms: 1,
+        },
+        {
+            id: 4,
+            name: 'tenants4',
+            status: 'ACTIVE',
+            project: 34,
+            totalVms: 4,
+            healthStatus: '30%',
+            activeVms: 1,
         },
     ] as unknown as CustomerObservabilityDTO[])
 
