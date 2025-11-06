@@ -31,9 +31,9 @@ export const ProjectOverview = () => {
         // alert(JSON.stringify(data))
         return (
             <div className="dc__grid workflow-overview-cards-wrapper">
-                {data.map((value) => {
-                    return <MetricsInfoCard key={value.metricTitle} {...value} />
-                })}
+                {data.glanceConfig.map((value) => (
+                    <MetricsInfoCard key={value.metricTitle} {...value} />
+                ))}
             </div>
         )
     }
@@ -45,9 +45,7 @@ export const ProjectOverview = () => {
                     <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
                 </div>
             </div>
-            <div className="flexbox-col dc__gap-12">
-                {renderBody()}
-            </div>
+            <div className="flexbox-col dc__gap-12">{renderBody()}</div>
         </div>
     )
 }

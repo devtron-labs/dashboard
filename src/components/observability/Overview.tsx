@@ -6,6 +6,7 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { BarMetrics } from './Metrics/BarMetrics'
 import { MetricsInfoCard } from './MetricsInfoCard'
 import ObservabilityIconComponent from './ObservabilityIcon'
 import { GlanceMetricsKeys } from './types'
@@ -16,7 +17,6 @@ import './styles.scss'
 export const Overview = () => {
     const { isFetching, data, isError, refetch } = useGetGlanceConfig()
 
-    console.log(data)
     const { breadcrumbs } = useBreadcrumb({
         alias: {
             observability: {
@@ -31,7 +31,7 @@ export const Overview = () => {
     })
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
-    const renderBody = () => {
+    const renderGlanceConfig = () => {
         if (isFetching) {
             return (
                 <div className="dc__grid glance-cards-wrapper">
@@ -54,9 +54,7 @@ export const Overview = () => {
 
         return (
             <div className="dc__grid glance-cards-wrapper">
-                {data.map((config) => (
-                    <MetricsInfoCard {...config} key={config.metricTitle} />
-                ))}
+                {data?.glanceConfig.map((config) => <MetricsInfoCard {...config} key={config.metricTitle} />)}
             </div>
         )
     }
@@ -70,10 +68,12 @@ export const Overview = () => {
                     <div className="flexbox dc__content-space">
                         <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
                     </div>
-                    {renderBody()}
+                    {renderGlanceConfig()}
                 </div>
                 <div className="flexbox-col dc__gap-12">
                     <h2 className="m-0 fs-20 lh-1-5 fw-4 cn-9">Observability Metrics</h2>
+
+                    <BarMetrics data={data?.metrics} />
                 </div>
             </div>
         </div>
