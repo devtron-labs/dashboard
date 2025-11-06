@@ -16,21 +16,30 @@
 
 import { Redirect, Route, Switch } from 'react-router-dom'
 
-import { URLS } from '@Config/routes'
+import { URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 
 import './security.scss'
 
+const SecurityCenterOverview = importComponentFromFELibrary('SecurityCenterOverview', null, 'function')
+
 export const Security = () => (
-    <div className="security-scan-container bg__primary flexbox-col min-h-100">
-        <div className="security-scan flexbox-col flex-grow-1">
-            <Switch>
-                <Route path={URLS.SECURITY_SCANS} component={SecurityScansTab} />
-                <Route path={URLS.SECURITY_POLICIES} component={SecurityPoliciesTab} />
-                <Redirect to={URLS.SECURITY_SCANS} />
-            </Switch>
-        </div>
-    </div>
+    <Switch>
+        {SecurityCenterOverview && (
+            <Route exact path={URLS.SECURITY_CENTER_OVERVIEW}>
+                <SecurityCenterOverview />
+            </Route>
+        )}
+        <Route exact path={URLS.SECURITY_CENTER_SCANS}>
+            <SecurityScansTab />
+        </Route>
+        <Route path={URLS.SECURITY_CENTER_POLICIES}>
+            <SecurityPoliciesTab />
+        </Route>
+        <Redirect to={SecurityCenterOverview ? URLS.SECURITY_CENTER_OVERVIEW : URLS.SECURITY_CENTER_SCANS} />
+    </Switch>
 )
