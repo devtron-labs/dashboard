@@ -15,16 +15,18 @@
  */
 
 /* eslint-disable jsx-a11y/label-has-associated-control */
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
 import moment from 'moment'
 
 import {
+    API_STATUS_CODES,
     Button,
     ButtonStyleType,
     ButtonVariantType,
     ClipboardButton,
     CustomInput,
+    ErrorScreenManager,
     Icon,
     InfoBlock,
     noop,
@@ -293,11 +295,14 @@ const EditAPIToken = ({
 
 const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
     const params = useParams<{ id: string }>()
-    const [isLoading, setLoading] = useState(true)
+    const [isLoading, setLoading] = useState(false)
     const [userData, setUserData] = useState<User>()
     const [editData, setEditData] = useState<EditDataType>()
 
+    const tokenDetails = useMemo(() => tokenList?.find((list) => list.id === +params.id), [tokenList, params.id])
+
     const getUserData = async (userId: number) => {
+        setLoading(true)
         try {
             const user = await getUserById(userId)
             setUserData(user)
@@ -309,15 +314,16 @@ const EditAPITokenContainer = ({ tokenList, ...props }: EditTokenType) => {
     }
 
     useEffect(() => {
-        // eslint-disable-next-line radix
-        const _editData = tokenList?.find((list) => list.id === parseInt(params.id))
-
-        if (_editData) {
-            setEditData(_editData)
+        if (tokenDetails) {
+            setEditData(tokenDetails)
             // eslint-disable-next-line @typescript-eslint/no-floating-promises
-            getUserData(_editData.userId)
+            getUserData(tokenDetails.userId)
         }
     }, [])
+
+    if (!tokenDetails) {
+        return <ErrorScreenManager code={API_STATUS_CODES.NOT_FOUND} />
+    }
 
     return (
         <PermissionConfigurationFormProvider data={userData} showStatus={showStatus}>
