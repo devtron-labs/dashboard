@@ -259,7 +259,7 @@ export const SecurityScansTab = () => {
                     triggerSorting={getSortingHandler(SecurityListSortableKeys.ENV_NAME)}
                 />
             </div>
-            <div className="fs-12 lh-20 fw-6 cn-7">IMAGE SCAN</div>
+            <div className="fs-12 lh-20 fw-6 cn-7">IMAGE VULNERABILITY SCAN</div>
             <div className="fs-12 lh-20 fw-6 cn-7">
                 <SortableTableHeaderCell
                     title="SCANNED ON"
