@@ -66,14 +66,6 @@ export enum SeverityFilterValues {
     'unknown' = 5,
 }
 
-export enum SeverityMapping {
-    'critical' = 'Critical',
-    'high' = 'High',
-    'medium' = 'Medium',
-    'low' = 'Low',
-    'unknown' = 'Unknown',
-}
-
 export interface SearchTypeOptionType {
     label: string
     value: SearchType

@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { ScanDetailsType, SearchType, SearchTypeOptionType } from './types'
+import { GroupedFilterSelectPickerProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ScanDetailsType, SearchType, SearchTypeOptionType, SecurityScansTabMultiFilterKeys } from './types'
 
 export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     appId: 0,
@@ -25,3 +27,23 @@ export const SEARCH_TYPE_OPTIONS: SearchTypeOptionType[] = [
     { label: 'Application', value: SearchType.APPLICATION },
     { label: 'Vulnerability', value: SearchType.VULNERABILITY },
 ]
+
+export const SCAN_LIST_GROUP_FILTER_OPTIONS: GroupedFilterSelectPickerProps<SecurityScansTabMultiFilterKeys>['options'] =
+    [
+        {
+            items: [
+                {
+                    id: SecurityScansTabMultiFilterKeys.cluster,
+                    label: 'Cluster',
+                },
+                {
+                    id: SecurityScansTabMultiFilterKeys.environment,
+                    label: 'Environment',
+                },
+                {
+                    id: SecurityScansTabMultiFilterKeys.severity,
+                    label: 'Severity',
+                },
+            ],
+        },
+    ]

@@ -66,7 +66,7 @@ export const NewClusterButton = ({
     const { isSuperAdmin } = useMainContext()
 
     return (
-        isSuperAdmin && (
+        !!isSuperAdmin && (
             <div>
                 <AddClusterButton clusterCount={clusterCount} handleReloadClusterList={handleReloadClusterList} />
                 <span className="dc__divider" />
