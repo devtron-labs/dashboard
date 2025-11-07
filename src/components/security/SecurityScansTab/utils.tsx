@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Badge, SeveritiesDTO, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
+import { Badge, ComponentSizeType, SeveritiesDTO, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
 
@@ -54,11 +54,17 @@ export const getSeverityWithCount = (severityCount: SeverityCount) => {
                         variant="custom"
                         fontColor={item.fontColor}
                         bgColor={item.bgColor}
+                        size={ComponentSizeType.xxxs}
                     />,
                 )
             } else {
                 badges.push(
-                    <Badge key={item.key} label={`${severityCount[item.key]} ${item.label}`} variant={item.variant} />,
+                    <Badge
+                        key={item.key}
+                        label={`${severityCount[item.key]} ${item.label}`}
+                        variant={item.variant}
+                        size={ComponentSizeType.xxxs}
+                    />,
                 )
             }
         }
