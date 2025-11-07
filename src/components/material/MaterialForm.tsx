@@ -26,7 +26,7 @@ const MaterialForm = ({
     const [formMaterial, setFormMaterial] = useState(getInitialMaterialFormState(material))
     const [isCollapsed, setIsCollapsed] = useState(!!material || !!isMultiGit)
     const [isChecked, setIsChecked] = useState(!!material)
-    const [isLearnHowClicked, setIsLearnHowClicked] = useState(false)
+    const [isLearnHowClicked, setIsLearnHowClicked] = useState(true)
     const [isLoading, setIsLoading] = useState(false)
     const [isError, setIsError] = useState({
         gitProvider: undefined,

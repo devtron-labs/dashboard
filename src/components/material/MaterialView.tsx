@@ -757,7 +757,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <div className="mt-8 ml-35">
                                         <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
                                             <p className="fw-4 fs-13 mb-0-imp">
-                                                Enter file or folder paths to be included or excluded.
+                                                Use following pattern to include/exclude specific files/folder in this repo.
                                                 <a
                                                     data-testid={`${
                                                         !this.props.isLearnHowClicked

@@ -63,7 +63,7 @@ export interface CommandGroupProps extends CommandBarGroupType {
 export interface CommandBarResourceListType {
     appList: AppListMinDTO[]
     chartList: Chart[]
-    clusterList: ClusterType[]
+    clusterList: Omit<ClusterType, 'isVirtual'>[]
     helmAppList: HelmApp[]
 }
 
