@@ -3,7 +3,6 @@ import { useRouteMatch } from 'react-router-dom'
 
 import {
     BreadCrumb,
-    BreadcrumbText,
     ComponentSizeType,
     handleUTCTime,
     PageHeader,
@@ -12,12 +11,12 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import ObservabilityIconComponent from '../ObservabilityIcon'
+import { getBreadCrumbObj } from '../utils'
 import { CustomerList } from './CustomerList'
 
 let interval
 const Customers = () => {
-    const { path } = useRouteMatch()
+    const { url, path } = useRouteMatch()
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
     const [syncListData, setSyncListData] = useState<boolean>()
@@ -102,27 +101,12 @@ const Customers = () => {
         </div>
     )
 
-    const { breadcrumbs } = useBreadcrumb({
-        alias: {
-            observability: {
-                component: <ObservabilityIconComponent />,
-                linked: true,
-            },
-            tenants: {
-                component: <BreadcrumbText heading="Tenants" isActive />,
-                linked: false,
-            },
-        },
-    })
+    const { breadcrumbs } = useBreadcrumb(getBreadCrumbObj('project', url))
+
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const renderPageHeader = () => (
-        <PageHeader
-            headerName="Observability"
-            showTabs
-            renderHeaderTabs={getObservabilityTabs}
-            breadCrumbs={renderBreadcrumbs}
-        />
+        <PageHeader showTabs renderHeaderTabs={getObservabilityTabs} breadCrumbs={renderBreadcrumbs} isBreadcrumbs />
     )
     const searchKey = ''
     const handleSearch = () => {}

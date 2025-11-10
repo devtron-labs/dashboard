@@ -4,25 +4,22 @@ import { Redirect, Route, useRouteMatch } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
-    ComponentSizeType,
     handleUTCTime,
-    PageHeader,
-    SearchBar,
     TabGroup,
     TabProps,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib/dist'
 
 import ObservabilityIconComponent from '../ObservabilityIcon'
+import { Overview } from '../Overview'
 import VMList from './VMList'
-import { VMOverview } from './VMOverview'
 
 import '../styles.scss'
 
 let interval
 
 const VM = () => {
-    const match = useRouteMatch()
+    const { url } = useRouteMatch()
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
@@ -31,7 +28,7 @@ const VM = () => {
                     linked: true,
                 },
                 ':projects': {
-                    component: <BreadcrumbText heading={match.url.split('projects/')[1]} isActive />,
+                    component: <BreadcrumbText heading={url.split('projects/')[1]} isActive />,
                     linked: false,
                 },
             },
@@ -72,7 +69,7 @@ const VM = () => {
             label: 'Overview',
             tabType: 'navLink',
             props: {
-                to: `${match.url}/overview`,
+                to: `${url}/overview`,
             },
         },
         {
@@ -80,7 +77,7 @@ const VM = () => {
             label: 'VMs',
             tabType: 'navLink',
             props: {
-                to: `${match.url}/vms`,
+                to: `${url}/vms`,
             },
         },
     ]
@@ -89,72 +86,46 @@ const VM = () => {
         setSyncListData(!syncListData)
     }
 
-    const renderVMTabs = () => {
-        const rightComponent = (
-            <div className="flex right fs-13">
-                {lastDataSyncTimeString && (
-                    <>
-                        <span data-testid="sync-now-text">{lastDataSyncTimeString}</span>
-                        {!isDataSyncing && (
-                            <>
-                                &nbsp;
-                                <button
-                                    className="btn btn-link p-0 fw-6 cb-5 mb-2"
-                                    type="button"
-                                    onClick={syncNow}
-                                    data-testid="sync-now-button"
-                                >
-                                    Sync now
-                                </button>
-                            </>
-                        )}
-                    </>
-                )}
-                {fetchingExternalApps && renderDataSyncingText()}
-            </div>
-        )
-
-        return (
-            <div>
-                <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                    <div className="en-2 bw-1 bg__primary dc__no-bottom-border dc__no-bottom-top px-20">
-                        <TabGroup tabs={tabs} rightComponent={rightComponent} />
-                    </div>
-                </div>
-                <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                    <Route path={`${match.url}/overview`}>
-                        <VMOverview />
-                    </Route>
-                    <Route path={`${match.url}/vms`}>
-                        <VMList />
-                    </Route>
-
-                    <Redirect to={`${match.url}/overview`} />
-                </div>
-            </div>
-        )
-    }
+    const rightComponent = (
+        <div className="flex right fs-13">
+            {lastDataSyncTimeString && (
+                <>
+                    <span data-testid="sync-now-text">{lastDataSyncTimeString}</span>
+                    {!isDataSyncing && (
+                        <>
+                            &nbsp;
+                            <button
+                                className="btn btn-link p-0 fw-6 cb-5 mb-2"
+                                type="button"
+                                onClick={syncNow}
+                                data-testid="sync-now-button"
+                            >
+                                Sync now
+                            </button>
+                        </>
+                    )}
+                </>
+            )}
+            {fetchingExternalApps && renderDataSyncingText()}
+        </div>
+    )
 
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
-    const searchKey = ''
-    const handleSearch = () => {}
+
+    const renderVmTabs = () => <TabGroup tabs={tabs} rightComponent={rightComponent} hideTopPadding />
+
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-            <div className="search-filter-section">
-                <SearchBar
-                    containerClassName="w-250"
-                    dataTestId="search-vm-env"
-                    initialSearchText={searchKey}
-                    inputProps={{
-                        placeholder: 'Search vm',
-                    }}
-                    handleEnter={handleSearch}
-                    size={ComponentSizeType.medium}
-                    keyboardShortcut="/"
-                />
+            <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
+                <Route path={`${url}/overview`}>
+                    <Overview view="vm" url={url} />
+                </Route>
+                <Route path={`${url}/vms`}>
+                    <VMList renderBreadcrumbs={renderBreadcrumbs} renderTabs={renderVmTabs} />
+                </Route>
+
+                <Redirect to={`${url}/overview`} />
             </div>
-            {renderVMTabs()}
         </div>
     )
 }

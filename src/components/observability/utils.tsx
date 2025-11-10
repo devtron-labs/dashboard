@@ -1,11 +1,19 @@
-import { SelectPickerOptionType, Tooltip, useQuery } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BreadcrumbText,
+    SelectPickerOptionType,
+    TabProps,
+    Tooltip,
+    useQuery,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { GLANCE_METRICS_CARDS_CONFIG, ObservabilityGlanceMetricKeys } from './constants'
+import ObservabilityIconComponent from './ObservabilityIcon'
 import { getObservabilityData } from './service'
 import {
     MetricsInfoCardProps,
     ObservabilityMetricsDTO,
     ObservabilityOverviewDTO,
+    ObservabilityViewType,
     ResourceCapacityDistributionTypes,
     TabDetailsSearchParams,
     TabDetailsSegment,
@@ -107,3 +115,143 @@ export const MemoryCapacityCellComponent = ({ memory }: Pick<ObservabilityMetric
 export const DiskCapacityCellComponent = ({ disk }: Pick<ObservabilityMetricsDTO, 'disk'>) => (
     <ResourceAllocationBar {...disk} bgColor="Y500" />
 )
+
+export const getBreadCrumbObj = (view: ObservabilityViewType, url) => {
+    switch (view) {
+        case 'project':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    tenants: {
+                        component: <BreadcrumbText heading="Tenants" />,
+                        linked: true,
+                    },
+
+                    ':customerId': {
+                        component: <BreadcrumbText heading="Customer1" />,
+                        linked: true,
+                    },
+                    overview: {
+                        component: <BreadcrumbText heading="Overview" isActive />,
+                    },
+                    projects: {
+                        component: <BreadcrumbText heading="Projects" isActive />,
+                        linked: false,
+                    },
+                },
+            }
+        case 'tenants':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    overview: {
+                        component: <BreadcrumbText heading="Overview" isActive />,
+                    },
+                    tenants: {
+                        component: <BreadcrumbText heading="Tenants" isActive />,
+                    },
+                },
+            }
+        case 'singleVm':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    customer: {
+                        component: <BreadcrumbText heading="VMs" isActive />,
+                        linked: false,
+                    },
+                },
+            }
+
+        case 'vm':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    ':projects': {
+                        component: <BreadcrumbText heading={url.split('projects/')[1]} isActive />,
+                        linked: false,
+                    },
+                },
+                overview: {
+                    component: <BreadcrumbText heading="Overview" isActive />,
+                },
+            }
+        default:
+            return null
+    }
+}
+
+export const getTabsObj = (view: ObservabilityViewType, path): TabProps[] => {
+    switch (view) {
+        case 'project':
+            return [
+                {
+                    id: 'project_overview',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'project_list',
+                    label: 'Projects',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'projects')}`,
+                    },
+                },
+            ]
+        case 'vm':
+            return [
+                {
+                    id: 'vm_overview',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'vm_list',
+                    label: 'VMs',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'vms')}`,
+                    },
+                },
+            ]
+        default:
+            return [
+                {
+                    id: 'observability',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'tenants',
+                    label: 'Tenants',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'tenants')}`,
+                        'data-testid': 'tenants',
+                    },
+                },
+            ]
+    }
+}

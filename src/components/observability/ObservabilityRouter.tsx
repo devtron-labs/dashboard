@@ -4,23 +4,19 @@ import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import Customers from './Customer/Customers'
 import Project from './ProjectObservability/Project'
-import { ProjectOverview } from './ProjectObservability/ProjectOverview'
 import VM from './VMObservability/VM'
-import VMList from './VMObservability/VMList'
-import { VMOverview } from './VMObservability/VMOverview'
 import { Overview } from './Overview'
-import SingleVMOverview from './SingleVMOverview'
 
 const ObservabilityRouter: React.FC = () => {
-    const { path } = useRouteMatch()
+    const { path, url } = useRouteMatch()
     return (
         <Switch>
             <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId/projects/:projectId/vms/:vmId`}>
-                <SingleVMOverview />
+                <Overview view="singleVm" url={url} />
             </Route>
 
             <Route exact path={URLS.OBSERVABILITY_OVERVIEW}>
-                <Overview />
+                <Overview view="tenants" url={url} />
             </Route>
 
             <Route exact path={URLS.OBSERVABILITY_CUSTOMER_LIST}>
@@ -31,12 +27,8 @@ const ObservabilityRouter: React.FC = () => {
                 <VM />
             </Route>
 
-            <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId/projects/:projectId/vms`}>
-                <VMList />
-            </Route>
-
             <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId/projects/:projectId/vms/overview`}>
-                <VMOverview />
+                <Overview view="vm" url={url} />
             </Route>
 
             <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId`}>
@@ -44,7 +36,7 @@ const ObservabilityRouter: React.FC = () => {
             </Route>
 
             <Route path={`${URLS.OBSERVABILITY_CUSTOMER_LIST}/:customerId/overview`}>
-                <ProjectOverview />
+                <Overview view="project" url={url} />
             </Route>
 
             <Redirect from={path} to={URLS.OBSERVABILITY_OVERVIEW} />

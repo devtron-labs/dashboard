@@ -125,3 +125,9 @@ export interface BarMetricsProps {
 export interface ResourceCapacityDistributionTypes extends CPUMemoryDiskUtilization {
     bgColor?: string
 }
+
+export type ObservabilityViewType = 'singleVm' | 'vm' | 'project' | 'tenants'
+export interface OverviewProps {
+    view: ObservabilityViewType
+    url: string
+}

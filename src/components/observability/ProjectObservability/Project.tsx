@@ -1,25 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Route, useRouteMatch } from 'react-router-dom'
 
-import {
-    BreadCrumb,
-    BreadcrumbText,
-    ComponentSizeType,
-    handleUTCTime,
-    PageHeader,
-    SearchBar,
-    TabGroup,
-    TabProps,
-    useBreadcrumb,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, handleUTCTime, TabGroup, useBreadcrumb } from '@devtron-labs/devtron-fe-common-lib'
 
-import ObservabilityIconComponent from '../ObservabilityIcon'
+import { Overview } from '../Overview'
+import { getBreadCrumbObj, getTabsObj } from '../utils'
 import ProjectList from './ProjectList'
-import { ProjectOverview } from './ProjectOverview'
 
 let interval
 const Project = () => {
-    const match = useRouteMatch()
+    const { url } = useRouteMatch()
 
     const [lastDataSyncTimeString, setLastDataSyncTimeString] = useState<React.ReactNode>('')
     const [isDataSyncing, setDataSyncing] = useState(false)
@@ -51,24 +41,6 @@ const Project = () => {
     const updateDataSyncing = (loading: boolean): void => {
         setDataSyncing(loading)
     }
-    const tabs: TabProps[] = [
-        {
-            id: 'project_overview',
-            label: 'Overview',
-            tabType: 'navLink',
-            props: {
-                to: `${match.url}/overview`,
-            },
-        },
-        {
-            id: 'project_list',
-            label: 'Projects',
-            tabType: 'navLink',
-            props: {
-                to: `${match.url}/projects`,
-            },
-        },
-    ]
 
     const syncNow = (): void => {
         setSyncListData(!syncListData)
@@ -99,58 +71,23 @@ const Project = () => {
     )
 
     const renderProjectTabs = () => (
-        <div>
-            <div className="dc__border-bottom dc__position-sticky dc__top-0 dc__zi-1 bg__primary">
-                <div className="px-20">
-                    <TabGroup tabs={tabs} rightComponent={rightComponent} />
-                </div>
-            </div>
-            <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
-                <Route path={`${match.url}/overview`}>
-                    <ProjectOverview />
-                </Route>
-                <Route path={`${match.url}/projects`}>
-                    <ProjectList />
-                </Route>
-            </div>
-        </div>
+        <TabGroup tabs={getTabsObj('project', url)} rightComponent={rightComponent} hideTopPadding />
     )
 
-    const { breadcrumbs } = useBreadcrumb(
-        {
-            alias: {
-                observability: {
-                    component: <ObservabilityIconComponent />,
-                    linked: true,
-                },
-                ':projectId': {
-                    component: <BreadcrumbText heading={match.url.split('projects/')[1]} isActive />,
-                    linked: false,
-                },
-            },
-        },
-        [],
-    )
+    const { breadcrumbs } = useBreadcrumb(getBreadCrumbObj('project', url))
+
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
-    const searchKey = ''
-    const handleSearch = () => {}
+
     return (
         <div className="observability-overview flex-grow-1 dc__overflow-auto">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
-            <div className="px-20 py-12">
-                <SearchBar
-                    containerClassName="w-250"
-                    dataTestId="search-project-env"
-                    initialSearchText={searchKey}
-                    inputProps={{
-                        placeholder: 'Search project',
-                    }}
-                    handleEnter={handleSearch}
-                    size={ComponentSizeType.medium}
-                    keyboardShortcut="/"
-                />
+            <div className="en-2 bw-1 br-4 dc__no-top-radius dc__no-top-border bg__primary mb-20">
+                <Route path={`${url}/overview`}>
+                    <Overview view="project" url={url} />
+                </Route>
+                <Route path={`${url}/projects`}>
+                    <ProjectList renderTabs={renderProjectTabs} renderBreadcrumbs={renderBreadcrumbs} />
+                </Route>
             </div>
-            {renderProjectTabs()}
         </div>
     )
 }

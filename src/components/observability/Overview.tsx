@@ -2,7 +2,6 @@ import { useRouteMatch } from 'react-router-dom'
 
 import {
     BreadCrumb,
-    BreadcrumbText,
     GenericSectionErrorState,
     PageHeader,
     TabGroup,
@@ -10,63 +9,31 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { BarMetrics } from './Metrics/BarMetrics'
+import { ObservabilityGraphMetrics } from './Metrics/ObservabilityGraphMetrics'
 import { MetricsInfoCard } from './MetricsInfoCard'
-import ObservabilityIconComponent from './ObservabilityIcon'
-import { GlanceMetricsKeys } from './types'
-import { MetricsInfoLoadingCard, useGetGlanceConfig } from './utils'
+import { GlanceMetricsKeys, OverviewProps } from './types'
+import { getBreadCrumbObj, getTabsObj, MetricsInfoLoadingCard, useGetGlanceConfig } from './utils'
 
 import './styles.scss'
 
-export const Overview = () => {
+export const Overview = ({ view = 'tenants', url }: OverviewProps) => {
     const { isFetching, data, isError, refetch } = useGetGlanceConfig()
 
-    const { breadcrumbs } = useBreadcrumb({
-        alias: {
-            observability: {
-                component: <ObservabilityIconComponent />,
-                linked: true,
-            },
-            overview: {
-                component: <BreadcrumbText heading="Overview" isActive />,
-                linked: false,
-            },
-        },
-    })
     const { path } = useRouteMatch()
-    const getObservabilityTabs = () => (
-        <TabGroup
-            tabs={[
-                {
-                    id: 'observability',
-                    label: 'Overview',
-                    tabType: 'navLink',
-                    props: {
-                        to: `${path}`,
-                    },
-                },
-                {
-                    id: 'tenants',
-                    label: 'Tenants',
-                    tabType: 'navLink',
-                    props: {
-                        to: `${path.replace('overview', 'tenants')}`,
-                        'data-testid': 'tenants',
-                    },
-                },
-            ]}
-            hideTopPadding
-        />
-    )
+
+    const getObservabilityTabs = () => <TabGroup tabs={getTabsObj(view, path)} hideTopPadding />
+
+    const { breadcrumbs } = useBreadcrumb(getBreadCrumbObj(view, url), [])
+
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
     const renderPageHeader = () => (
         <PageHeader
-            headerName="Observability"
-            showTabs
+            showTabs={view !== 'singleVm'}
             renderHeaderTabs={getObservabilityTabs}
             breadCrumbs={renderBreadcrumbs}
+            isBreadcrumbs
         />
     )
-
     const renderGlanceConfig = () => {
         if (isFetching) {
             return (
@@ -93,14 +60,17 @@ export const Overview = () => {
         <div className="observability-overview flex-grow-1 dc__overflow-auto flexbox-col">
             {renderPageHeader()}
             <div className="flexbox-col dc__gap-32 bg__secondary p-20 flex-grow-1">
-                <div className="flexbox-col dc__gap-12">
-                    <div className="flexbox dc__content-space">
-                        <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
+                {view !== 'singleVm' && (
+                    <div className="flexbox-col dc__gap-12">
+                        <div className="flexbox dc__content-space">
+                            <h3 className="m-0 cn-9 fs-20 fw-4 lh-1-5">At a Glance</h3>
+                        </div>
+                        {renderGlanceConfig()}
                     </div>
-                    {renderGlanceConfig()}
-                </div>
+                )}
                 <div className="flexbox-col dc__gap-12">
                     <h2 className="m-0 fs-20 lh-1-5 fw-4 cn-9">Observability Metrics</h2>
+                    <ObservabilityGraphMetrics />
 
                     <BarMetrics data={data?.metrics} />
                 </div>
