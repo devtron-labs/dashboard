@@ -13,7 +13,6 @@ import { URLS } from '@Config/routes'
 import { NavigationGroupType, NavigationItemType } from './types'
 
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
-const AuditLog = importComponentFromFELibrary('AuditLog')
 
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
@@ -300,7 +299,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-audit-logs',
                 icon: 'ic-monitoring',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS,
-            }
+            },
         ],
     },
     {
@@ -401,6 +400,13 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: URLS.AUTOMATION_AND_ENABLEMENT_JOB,
             },
             {
+                title: 'Runbook Automation',
+                dataTestId: 'runbook-automation',
+                id: 'automation-and-enablement-runbook-automation',
+                icon: 'ic-book-open',
+                href: COMMON_URLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
+            },
+            {
                 title: 'Alerting',
                 dataTestId: 'alerting',
                 id: 'automation-and-enablement-alerting',
@@ -421,14 +427,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'api-portal',
                 id: 'automation-and-enablement-api-portal',
                 icon: 'ic-code',
-                href: '/dummy-url',
-                disabled: true,
-            },
-            {
-                title: 'Runbook Automation',
-                dataTestId: 'runbook-automation',
-                id: 'automation-and-enablement-runbook-automation',
-                icon: 'ic-book-open',
                 href: '/dummy-url',
                 disabled: true,
             },
@@ -469,30 +467,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_LOCATIONS, {
                     type: BackupLocationsTypes.VOLUME_SNAPSHOT,
                 }),
-            },
-        ],
-    },
-{
-        id: 'ai-recommendations',
-        title: 'AI Recommendations',
-        icon: 'ic-openai',
-        disabled: false, // Enable AI Recommendations section
-        items: [
-            {
-                title: 'Notifications',
-                dataTestId: 'ai-recommendations-notifications',
-                id: 'ai-recommendations-notifications',
-                icon: 'ic-speedometer',
-                disabled: false,
-                href: COMMON_URLS.AI_RECOMMENDATIONS_NOTIFICATIONS,
-            },
-            {
-                title: 'Runbooks',
-                dataTestId: 'ai-recommendations-runbooks',
-                id: 'ai-recommendations-runbooks',
-                icon: 'ic-book-open',
-                disabled: false,
-                href: COMMON_URLS.AI_RECOMMENDATIONS_RUNBOOKS,
             },
         ],
     },

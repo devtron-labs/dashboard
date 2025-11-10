@@ -21,7 +21,6 @@ export type NavigationRootItemID =
     | 'automation-and-enablement'
     | 'data-protection-management'
     | 'global-configuration'
-    | 'ai-recommendations'
 
 type CommonNavigationItemType = {
     title: string
