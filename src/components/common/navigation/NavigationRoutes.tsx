@@ -136,6 +136,7 @@ const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
     importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
+const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
@@ -599,10 +600,16 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                         />,
-                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS} path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
+                                        <Route
+                                            key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
+                                            path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
+                                        >
                                             {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
                                         </Route>,
-                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS} path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
+                                        <Route
+                                            key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}
+                                            path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}
+                                        >
                                             <ApplicationManagementConfigurationsRouter />
                                         </Route>,
                                         <Route
@@ -699,9 +706,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.AI_RECOMMENDATIONS,
                                                 CommonURLS.INFRASTRUCTURE_MANAGEMENT,
                                                 CommonURLS.DATA_PROTECTION,
+                                                CommonURLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
                                             ]}
                                         >
                                             <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>
@@ -776,6 +783,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
                 tempAppWindowConfig,
                 setTempAppWindowConfig,
+                AIRecommendations,
             }}
         >
             <ConfirmationModalProvider>

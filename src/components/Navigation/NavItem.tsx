@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-import { Icon, preventDefault, TreeView } from '@devtron-labs/devtron-fe-common-lib'
+import { Icon, TreeView } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavItemProps } from './types'
 import { doesNavigationItemMatchPath, getNavigationTreeNodes } from './utils'
@@ -67,8 +67,8 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
         return (
             <div
                 data-testid={dataTestId}
-                className={`nav-item flex left dc__gap-8 px-8 py-6 br-4 dc__disabled`}
-                aria-disabled={true}
+                className="nav-item flex left dc__gap-8 px-8 py-6 br-4 dc__disabled"
+                aria-disabled
             >
                 <Icon name={icon} color="white" />
                 <span className="fs-13 lh-20 text__sidenav">{title}</span>
@@ -80,7 +80,7 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
         <NavLink
             to={href}
             data-testid={dataTestId}
-            className={`nav-item flex left dc__gap-8 px-8 py-6 br-4`}
+            className="nav-item flex left dc__gap-8 px-8 py-6 br-4"
             activeClassName="is-selected fw-6"
             aria-disabled={disabled}
         >
