@@ -69,7 +69,7 @@ export const SidePanelDocumentation = ({ SidePanelHeaderActions }: SidePanelCont
     const iframeKeyRef = useRef<string | null>(`${docLink}-${getUniqueId()}`)
 
     // CONSTANTS
-    const iframeSrc = `${docLink}${docLink.includes('?') ? `&theme=${appTheme}` : `?theme=${appTheme}`}`
+    const iframeSrc = `${docLink}${docLink.includes('?') ? `&docusaurus-theme=${appTheme}` : `?docusaurus-theme=${appTheme}`}`
 
     useEffect(() => {
         /**
