@@ -15,6 +15,7 @@ import { ViewType } from '@Config/constants'
 export type NavigationRootItemID =
     | 'application-management'
     | 'infrastructure-management'
+    | 'observability'
     | 'software-release-management'
     | 'cost-visibility'
     | 'security-center'

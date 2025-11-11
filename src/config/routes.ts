@@ -104,6 +104,8 @@ export const URLS = {
     HELM_APP_LIST: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.HELM }),
     ARGO_APP_LIST: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.ARGO_CD }),
     FLUX_APP_LIST: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.FLUX_CD }),
+    PROJECT_OVERVIEW: `${COMMON_URLS.OBSERVABILITY_OVERVIEW}/project-overview`,
+    PROJECT_LIST: `${COMMON_URLS.OBSERVABILITY_OVERVIEW}/project-list`,
     BUILD: '/build',
     WEBHOOK_MODAL: 'webhook',
     MONITORING_DASHBOARD: 'monitoring-dashboard',
