@@ -61,7 +61,7 @@ export const Project = ({
 
     const saveProjectData = (event: React.SyntheticEvent) => {
         preventDefault(event)
-        saveProject(index)
+        saveProject(index, 'name')
     }
 
     const onDelete = async () => {
