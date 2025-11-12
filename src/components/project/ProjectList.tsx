@@ -90,9 +90,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             if (value.includes(' ')) {
                 isValid[key] = false
                 errorMessage[key] = `Do not use 'spaces' in name`
-            } else if (value.length < 2 || value.length > 16) {
+            } else if (value.length > 16) {
                 isValid[key] = false
-                errorMessage[key] = 'Minimum 2 and Maximum 16 characters required'
+                errorMessage[key] = 'Maximum 16 characters required'
             } else if (!/^[a-z0-9]+([-a-z0-9]*[a-z0-9])?$/i.test(value)) {
                 isValid[key] = false
                 errorMessage[key] = `Use only lowercase alphanumeric characters, '-' (Cannot start/end with '-')`
