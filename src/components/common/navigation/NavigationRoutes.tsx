@@ -104,6 +104,7 @@ const OnboardingGuide = lazy(() => import('../../onboardingGuide/OnboardingGuide
 const DevtronStackManager = lazy(() => import('../../v2/devtronStackManager/DevtronStackManager'))
 const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
+const Observability = lazy(() => import('../../observability/ObservabilityRouter'))
 
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
@@ -549,6 +550,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={URLS.SECURITY}
                                             render={(props) => <Security {...props} serverMode={serverMode} />}
                                         />,
+                                        <Route key={CommonURLS.OBSERVABILITY} path={CommonURLS.OBSERVABILITY}>
+                                            <Observability />
+                                        </Route>,
                                         ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
                                             ? [
                                                   <Route key={URLS.RESOURCE_WATCHER} path={URLS.RESOURCE_WATCHER}>

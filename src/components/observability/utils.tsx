@@ -1,0 +1,257 @@
+import {
+    BreadcrumbText,
+    SelectPickerOptionType,
+    TabProps,
+    Tooltip,
+    useQuery,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { GLANCE_METRICS_CARDS_CONFIG, ObservabilityGlanceMetricKeys } from './constants'
+import ObservabilityIconComponent from './ObservabilityIcon'
+import { getObservabilityData } from './service'
+import {
+    MetricsInfoCardProps,
+    ObservabilityMetricsDTO,
+    ObservabilityOverviewDTO,
+    ObservabilityViewType,
+    ResourceCapacityDistributionTypes,
+    TabDetailsSearchParams,
+    TabDetailsSegment,
+} from './types'
+
+// Will be removing while importing to dashboard
+export const MetricsInfoLoadingCard = () => (
+    <div className="flexbox-col br-8 bg__primary border__secondary">
+        <div className="flexbox dc__gap-12 p-16 dc__content-space">
+            <div className="flexbox-col">
+                <span className="h-12 mt-4 mb-4 w-40 shimmer" />
+                <span className="h-24 mt-6 mb-6 w-40 shimmer" />
+            </div>
+            <div className="h-24 w-24 m-6 shimmer" />
+        </div>
+    </div>
+)
+
+export const getObservabilityGlanceConfig = (result: Partial<ObservabilityOverviewDTO>) => {
+    const glanceConfig = Object.entries(GLANCE_METRICS_CARDS_CONFIG).map(
+        ([key, config]: [ObservabilityGlanceMetricKeys, MetricsInfoCardProps]) => {
+            const entry = result.glanceConfig?.[key]
+            const isNumber = typeof entry === 'number'
+            const metricValue = isNumber ? entry : (entry as any)?.value
+            const metricTitle = config?.metricTitle
+
+            return {
+                ...config,
+                dataTestId: key as string,
+                metricValue,
+                metricTitle,
+            }
+        },
+    )
+    return {
+        metrics: result?.metrics,
+        glanceConfig,
+    }
+}
+
+export const useGetGlanceConfig = () =>
+    useQuery({
+        queryKey: ['observabilityGlanceConfig'],
+        // queryFn: () => getProjectOverViewCards(), // Mukesh has to update this
+        queryFn: async () => ({
+            code: 200,
+            status: 'SUCCESS',
+            result: await getObservabilityData(),
+        }),
+        // queryFn: () => get<ObservabilityOverviewDTO>(ROUTES.OBSERVABILITY_OVERVIEW), // Will be replacing later
+        select: ({ result }) => getObservabilityGlanceConfig(result),
+    })
+
+export const parseChartDetailsSearchParams = (searchParams: URLSearchParams): TabDetailsSearchParams => ({
+    tab: (searchParams.get('tab') as TabDetailsSegment) || TabDetailsSegment.OVERVIEW,
+})
+
+const AllocatedResource = ({ label, value }: SelectPickerOptionType<string>) => (
+    <div className="flex left flex-grow-1 dc__gap-4 fs-11 fw-4 lh-1-5 cn-7 var(--B500)">
+        <span>{label}</span>
+        <span className="fw-5 cn-9 font-ibm-plex-sans">{value}</span>
+    </div>
+)
+
+export const ResourceAllocationBar = ({
+    capacity,
+    utilization,
+    bgColor = 'B500',
+}: ResourceCapacityDistributionTypes & { bgColor? }) => (
+    <div className="flexbox-col dc__gap-8">
+        <div className="h-8 br-4 dc__position-rel dc__overflow-hidden" style={{ backgroundColor: 'var(--N100)' }}>
+            {/* Fill div up to utilisation percentage */}
+            <Tooltip content="Utilisation" alwaysShowTippyOnHover>
+                <div
+                    className="h-8 br-4 dc__position-abs"
+                    style={{
+                        width: `${utilization}%`,
+                        backgroundColor: `var(--${bgColor})`,
+                    }}
+                />
+            </Tooltip>
+        </div>
+        <div className="flex left dc__gap-8">
+            <AllocatedResource label="Capacity" value={`${capacity}`} />
+            <div className="divider__secondary" />
+            <AllocatedResource label="Utilisation" value={`${utilization}%`} />
+        </div>
+    </div>
+)
+
+export const CPUCapacityCellComponent = ({ cpu }: Pick<ObservabilityMetricsDTO, 'cpu'>) => (
+    <ResourceAllocationBar {...cpu} bgColor="G500" />
+)
+
+export const MemoryCapacityCellComponent = ({ memory }: Pick<ObservabilityMetricsDTO, 'memory'>) => (
+    <ResourceAllocationBar {...memory} />
+)
+
+export const DiskCapacityCellComponent = ({ disk }: Pick<ObservabilityMetricsDTO, 'disk'>) => (
+    <ResourceAllocationBar {...disk} bgColor="Y500" />
+)
+
+export const getBreadCrumbObj = (view: ObservabilityViewType, url) => {
+    switch (view) {
+        case 'project':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    tenants: {
+                        component: <BreadcrumbText heading="Tenants" />,
+                        linked: true,
+                    },
+
+                    ':customerId': {
+                        component: <BreadcrumbText heading="Customer1" />,
+                        linked: true,
+                    },
+                    overview: {
+                        component: <BreadcrumbText heading="Overview" isActive />,
+                    },
+                    projects: {
+                        component: <BreadcrumbText heading="Projects" isActive />,
+                        linked: false,
+                    },
+                },
+            }
+        case 'tenants':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    overview: {
+                        component: <BreadcrumbText heading="Overview" isActive />,
+                    },
+                    tenants: {
+                        component: <BreadcrumbText heading="Tenants" isActive />,
+                    },
+                },
+            }
+        case 'singleVm':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    customer: {
+                        component: <BreadcrumbText heading="VMs" isActive />,
+                        linked: false,
+                    },
+                },
+            }
+
+        case 'vm':
+            return {
+                alias: {
+                    observability: {
+                        component: <ObservabilityIconComponent />,
+                        linked: true,
+                    },
+                    ':projects': {
+                        component: <BreadcrumbText heading={url.split('projects/')[1]} isActive />,
+                        linked: false,
+                    },
+                },
+                overview: {
+                    component: <BreadcrumbText heading="Overview" isActive />,
+                },
+            }
+        default:
+            return null
+    }
+}
+
+export const getTabsObj = (view: ObservabilityViewType, path): TabProps[] => {
+    switch (view) {
+        case 'project':
+            return [
+                {
+                    id: 'project_overview',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'project_list',
+                    label: 'Projects',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'projects')}`,
+                    },
+                },
+            ]
+        case 'vm':
+            return [
+                {
+                    id: 'vm_overview',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'vm_list',
+                    label: 'VMs',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'vms')}`,
+                    },
+                },
+            ]
+        default:
+            return [
+                {
+                    id: 'observability',
+                    label: 'Overview',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path}`,
+                    },
+                },
+                {
+                    id: 'tenants',
+                    label: 'Tenants',
+                    tabType: 'navLink',
+                    props: {
+                        to: `${path.replace('overview', 'tenants')}`,
+                        'data-testid': 'tenants',
+                    },
+                },
+            ]
+    }
+}

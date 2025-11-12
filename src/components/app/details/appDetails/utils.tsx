@@ -16,7 +16,7 @@
 
 import moment from 'moment'
 import { AggregationKeys } from '../../types'
-import { getVersionArr, isVersionLessThanOrEqualToTarget, DayPickerRangeControllerPresets } from '../../../common'
+import { getVersionArr, isVersionLessThanOrEqualToTarget } from '../../../common'
 import { ChartTypes, AppMetricsTabType, StatusType, StatusTypes } from './appDetails.type'
 import {
     ZERO_TIME_STRING,
@@ -31,6 +31,7 @@ import {
     AppEnvironment,
     SelectPickerOptionType,
     IconsProps,
+    DayPickerRangeControllerPresets,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
