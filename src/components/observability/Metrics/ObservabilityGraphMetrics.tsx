@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import moment, { Moment } from 'moment'
 
-import { useTheme } from '@devtron-labs/devtron-fe-common-lib/dist'
+import { useTheme } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     CalendarFocusInput,
@@ -12,13 +12,16 @@ import {
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from '@Components/app/details/appDetails/constants'
 import { GraphModalProps } from '@Components/app/details/appDetails/GraphsModal'
 import { AppInfo, getCalendarValue, getIframeSrc } from '@Components/app/details/appDetails/utils'
+import { DatePickerType2 } from '@Components/common'
 
 import { ReactComponent as Fullscreen } from '../../../assets/icons/ic-fullscreen-2.svg'
-import { DatePickerType2 as DateRangePicker } from '../../common'
+
+import '../styles.scss'
 
 export const ObservabilityGraphMetrics = () => {
     const { appTheme } = useTheme()
-    const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
+
+    const [dateRange, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
     })
@@ -113,51 +116,78 @@ export const ObservabilityGraphMetrics = () => {
     }
 
     return (
-        <div className="flexbox bg__primary border__secondary br-8 dc__content-space">
+        <div className="bg__primary border__secondary br-8 dc__content-space">
             <div className="flex dc__content-space py-12 px-16">
                 <span className="fs-14 fw-6 lh-1-5 cn-9">Observability Metrics </span>
+                <DatePickerType2
+                    calendar={dateRange}
+                    calendarInputs={calendarInputs}
+                    focusedInput={focusedInput}
+                    calendarValue={calendarValue}
+                    handlePredefinedRange={handlePredefinedRange}
+                    handleDatesChange={handleDatesChange}
+                    handleFocusChange={handleFocusChange}
+                    handleDateInput={handleDateInput}
+                    handleApply={handleApply}
+                />
             </div>
-            <DateRangePicker
-                calendar={calendar}
-                calendarInputs={calendarInputs}
-                focusedInput={focusedInput}
-                calendarValue={calendarValue}
-                handlePredefinedRange={handlePredefinedRange}
-                handleDatesChange={handleDatesChange}
-                handleFocusChange={handleFocusChange}
-                handleDateInput={handleDateInput}
-                handleApply={handleApply}
-            />
-            <div className="chart-containers">
-                <div>
-                    <div data-testid="app-metrics-cpu-usage" className="app-metrics-graph chart">
-                        <div className="app-metrics-graph__title flexbox flex-justify">
-                            CPU Usage
-                            <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                <div className="flex">
-                                    <Fullscreen
-                                        className="icon-dim-16 cursor fcn-5"
-                                        // onClick={openTempAppWindow(ChartType.Cpu)}
-                                    />
-                                </div>
-                            </Tippy>
-                        </div>
-                        <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
+
+            <div className="chart-containers px-16">
+                <div data-testid="app-metrics-memory-usage" className="app-metrics-graph chart">
+                    <div className="app-metrics-graph__title flexbox flex-justify">
+                        VMs Usage
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                            <div className="flex">
+                                <Fullscreen
+                                    className="icon-dim-16 cursor fcn-5"
+                                    // onClick={openTempAppWindow(ChartType.Status)}
+                                />
+                            </div>
+                        </Tippy>
                     </div>
-                    <div data-testid="app-metrics-memory-usage" className="app-metrics-graph chart">
-                        <div className="app-metrics-graph__title flexbox flex-justify">
-                            Memory Usage
-                            <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
-                                <div className="flex">
-                                    <Fullscreen
-                                        className="icon-dim-16 cursor fcn-5"
-                                        // onClick={openTempAppWindow(ChartType.Status)}
-                                    />
-                                </div>
-                            </Tippy>
-                        </div>
-                        <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
+                    <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
+                </div>
+                <div data-testid="app-metrics-cpu-usage" className="app-metrics-graph chart">
+                    <div className="app-metrics-graph__title flexbox flex-justify">
+                        CPU Usage
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                            <div className="flex">
+                                <Fullscreen
+                                    className="icon-dim-16 cursor fcn-5"
+                                    // onClick={openTempAppWindow(ChartType.Cpu)}
+                                />
+                            </div>
+                        </Tippy>
                     </div>
+                    <iframe title={ChartType.Cpu} src={graphs.cpu} className="app-metrics-graph__iframe" />
+                </div>
+                <div data-testid="app-metrics-memory-usage" className="app-metrics-graph chart">
+                    <div className="app-metrics-graph__title flexbox flex-justify">
+                        Memory Usage
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                            <div className="flex">
+                                <Fullscreen
+                                    className="icon-dim-16 cursor fcn-5"
+                                    // onClick={openTempAppWindow(ChartType.Status)}
+                                />
+                            </div>
+                        </Tippy>
+                    </div>
+                    <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
+                </div>
+                <div data-testid="app-metrics-memory-usage" className="app-metrics-graph chart">
+                    <div className="app-metrics-graph__title flexbox flex-justify">
+                        Disk Usage
+                        <Tippy className="default-tt" arrow={false} placement="bottom" content="Fullscreen">
+                            <div className="flex">
+                                <Fullscreen
+                                    className="icon-dim-16 cursor fcn-5"
+                                    // onClick={openTempAppWindow(ChartType.Status)}
+                                />
+                            </div>
+                        </Tippy>
+                    </div>
+                    <iframe title={ChartType.Ram} src={graphs.ram} className="app-metrics-graph__iframe" />
                 </div>
             </div>
         </div>

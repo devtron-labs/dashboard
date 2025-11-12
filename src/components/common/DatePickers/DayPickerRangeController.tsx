@@ -24,101 +24,11 @@ import { isInclusivelyBeforeDay, DayPickerRangeController } from 'react-dates'
 import './calendar.css'
 import { ReactComponent as ArrowDown } from '../../../assets/icons/ic-chevron-down.svg'
 import { DA_APP_DETAILS_GA_EVENTS } from '@Components/app/details/appDetails/constants'
+import { Button, customDayStyles, DatePickerRangeControllerProps, DayPickerCalendarInfoHorizontal, DayPickerRangeControllerPresets } from '@devtron-labs/devtron-fe-common-lib/dist'
+import { customStyles } from './constants'
 
-interface DatePickerType2Props {
-    calendar
-    calendarInputs
-    focusedInput
-    handleFocusChange
-    handleDatesChange
-    handleCalendarInputs?
-    calendarValue: string
-    handlePredefinedRange: (start: Moment, end: Moment, endStr: string) => void
-    handleDateInput: (key: 'startDate' | 'endDate', value: string) => void
-    handleApply: (...args) => void
-}
 
-const hoveredSpanStyles = {
-    background: 'var(--B100)',
-    color: 'var(--B500)',
-}
-
-const selectedStyles = {
-    background: 'var(--B100)',
-    color: 'var(--B500)',
-    hover: {
-        background: 'var(--B500)',
-        color: 'var(--N0)',
-    },
-}
-
-const selectedSpanStyles = {
-    background: 'var(--B100)',
-    color: 'var(--B500)',
-
-    hover: {
-        background: 'var(--B500)',
-        color: 'var(--N0)',
-    },
-}
-
-const customDayStyles = {
-    selectedStartStyles: selectedStyles,
-    selectedEndStyles: selectedStyles,
-    hoveredSpanStyles,
-    selectedSpanStyles,
-    selectedStyles,
-    border: 'none',
-}
-
-const styless = {
-    PresetDateRangePicker_panel: {
-        padding: '0px',
-        width: '200px',
-        height: '100%',
-    },
-    PresetDateRangePicker_button: {
-        width: '188px',
-        background: 'var(--transparent)',
-        border: 'none',
-        color: 'var(--N900)',
-        padding: '8px',
-        font: 'inherit',
-        fontWeight: 500,
-        lineHeight: 'normal',
-        overflow: 'visible',
-        cursor: 'pointer',
-        ':active': {
-            outline: 0,
-        },
-    },
-    DayPicker__horizontal: {
-        borderRadius: '4px',
-    },
-    PresetDateRangePicker_button__selected: {
-        color: 'var(--B500)',
-        fontWeight: 600,
-        background: 'var(--B100)',
-        outline: 'none',
-    },
-}
-
-const DayPicker_calendarInfo__horizontal = {
-    width: '532px',
-    boxShadow: 'none',
-}
-
-export const DayPickerRangeControllerPresets = [
-    { text: 'Last 5 minutes', endDate: moment(), startDate: moment().subtract(5, 'minutes'), endStr: 'now-5m' },
-    { text: 'Last 30 minutes', endDate: moment(), startDate: moment().subtract(30, 'minutes'), endStr: 'now-30m' },
-    { text: 'Last 1 hour', endDate: moment(), startDate: moment().subtract(1, 'hours'), endStr: 'now-1h' },
-    { text: 'Last 24 hours', endDate: moment(), startDate: moment().subtract(24, 'hours'), endStr: 'now-24h' },
-    { text: 'Last 7 days', endDate: moment(), startDate: moment().subtract(7, 'days'), endStr: 'now-7d' },
-    { text: 'Last 1 month', endDate: moment(), startDate: moment().subtract(1, 'months'), endStr: 'now-1M' },
-    { text: 'Last 6 months', endDate: moment(), startDate: moment().subtract(6, 'months'), endStr: 'now-6M' },
-]
-
-export class DatePickerType2 extends Component<DatePickerType2Props, any> {
+export class DatePickerType2 extends Component<DatePickerRangeControllerProps, any> {
     constructor(props) {
         super(props)
         this.state = {
@@ -144,15 +54,15 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
             <div
                 className="flex left top"
                 style={{
-                    ...styless.PresetDateRangePicker_panel,
-                    ...DayPicker_calendarInfo__horizontal,
+                    ...customStyles.PresetDateRangePicker_panel,
+                    ...DayPickerCalendarInfoHorizontal,
                     ...{
                         PresetDateRangePicker_panel: {
                             padding: '0px',
                             width: '200px',
                             height: '100%',
                         },
-                        ...styless.DayPicker__horizontal,
+                        ...customStyles.DayPicker__horizontal,
                     },
                 }}
             >
@@ -181,12 +91,10 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                                 }}
                             />
                         </label>
-                        <button type="button" className="cta small" onClick={this.onClickApplyTimeChange}>
-                            Apply Time Range
-                        </button>
+                        <Button text="Apply Time Range" onClick={this.onClickApplyTimeChange} dataTestId="apply-time-range" />
                     </div>
                 </div>
-                <div style={{ width: '220px', padding: '16px', borderLeft: 'solid 1px var(--N200)', height: '304px' }}>
+                <div className='w-200 p-16 h-300'>
                     {DayPickerRangeControllerPresets.map(({ text, startDate, endDate, endStr }) => {
                         const isSelected =
                             startDate.isSame(this.props.calendar.startDate, 'minute') &&
@@ -194,12 +102,12 @@ export class DatePickerType2 extends Component<DatePickerType2Props, any> {
                             startDate.isSame(this.props.calendar.startDate, 'day') &&
                             endDate.isSame(this.props.calendar.endDate, 'day')
                         let buttonStyles = {
-                            ...styless.PresetDateRangePicker_button,
+                            ...customStyles.PresetDateRangePicker_button,
                         }
                         if (isSelected) {
                             buttonStyles = {
                                 ...buttonStyles,
-                                ...styless.PresetDateRangePicker_button__selected,
+                                ...customStyles.PresetDateRangePicker_button__selected,
                             }
                         }
                         return (
