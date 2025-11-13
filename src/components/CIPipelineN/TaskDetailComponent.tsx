@@ -30,6 +30,7 @@ import {
     PluginDataStoreType,
     getUpdatedPluginStore,
     SegmentedControl,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginDetailHeader } from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
@@ -263,6 +264,7 @@ export const TaskDetailComponent = () => {
                                     }
                                     name="task-type"
                                     onChange={handleSegmentedControlChange}
+                                    size={ComponentSizeType.xs}
                                 />
                             </div>
                         </div>
