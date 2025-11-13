@@ -50,7 +50,7 @@ export const ChartSourceAccordion = ({ header, options, value, onChange, dataTes
             {collapsed && (
                 <div>
                     <div className="flex left">
-                        <AddChartSource text="Add chart source" />{' '}
+                        <AddChartSource text="Add chart source" />
                     </div>
                     {options.map((option) => (
                         <div
