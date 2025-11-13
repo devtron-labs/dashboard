@@ -17,6 +17,7 @@
 import React, { useState, useEffect } from 'react'
 import {
     ComponentSizeType,
+    DatePickerRangeController,
     DocLink,
     not,
     Progressing,
@@ -393,7 +394,7 @@ export const AppMetrics: React.FC<{
                                 <span className="dc__tertiary-tab">Per Pod</span>
                             </label>
                         </div>
-                        <DateRangePicker
+                        <DatePickerRangeController
                             calendar={calendar}
                             calendarInputs={calendarInputs}
                             focusedInput={focusedInput}
