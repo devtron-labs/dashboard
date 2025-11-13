@@ -26,14 +26,15 @@ import {
     stopPropagation,
     useAsync,
     getRandomColor,
-    noop,
-    StyledRadioGroup as RadioGroup,
     EditableTextArea,
     ToastManager,
     ToastVariantType,
     URLS as CommonUrls,
     AppStatus,
     StatusType,
+    SegmentedControl,
+    Button,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -49,11 +50,12 @@ import { environmentName } from '../../Jobs/Utils'
 import { DEFAULT_ENV } from '../details/triggerView/Constants'
 import GenericDescription from '../../common/Description/GenericDescription'
 import { editApp } from '../service'
-import { getAppConfig, getResourceKindFromAppType } from './utils'
+import { getAppConfig, getOverviewSegmentControlOptions, getResourceKindFromAppType } from './utils'
 import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
+import { SegmentType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')
@@ -461,12 +463,7 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
     function renderAppDescription() {
         return (
             <div>
-                {Catalog && (
-                    <Catalog
-                        resourceId={appId}
-                        resourceType={getResourceKindFromAppType(appType)}
-                    />
-                )}
+                {Catalog && <Catalog resourceId={appId} resourceType={getResourceKindFromAppType(appType)} />}
                 {DeploymentWindowOverview && (
                     <DeploymentWindowOverview appId={Number(appId)} filteredEnvIds={filteredEnvIds} />
                 )}
@@ -484,6 +481,19 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         )
     }
 
+    const handleOverviewViewTypeChange = (selectedSegment: SegmentType) => {
+        setActiveTab(selectedSegment.value as AvailableTabs)
+    }
+
+    const renderSegmentControlTabs = () => (
+        <SegmentedControl
+            segments={getOverviewSegmentControlOptions(appType)}
+            value={activeTab}
+            onChange={handleOverviewViewTypeChange}
+            name="overview-view-type"
+        />
+    )
+
     function renderOverviewContent() {
         if (isJobOverview) {
             const contentToRender = {
@@ -492,19 +502,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
             }
 
             return (
-                <div className="app-overview-wrapper flexbox-col dc__gap-12">
-                    <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
-                        name="overview-tabs"
-                        initialTab={OVERVIEW_TABS.ABOUT}
-                        disabled={false}
-                        onChange={(e) => {
-                            setActiveTab(e.target.value)
-                        }}
-                    >
-                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
-                        <RadioGroup.Radio value={OVERVIEW_TABS.JOB_PIPELINES}>Job Pipelines</RadioGroup.Radio>
-                    </RadioGroup>
+                <div className="flexbox-col dc__gap-12">
+                    <div>{renderSegmentControlTabs()}</div>
                     <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>
                 </div>
             )
@@ -533,30 +532,16 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         return (
             <div className="app-overview-wrapper flexbox-col dc__gap-12">
                 <div className="flex flex-justify dc__gap-8">
-                    <RadioGroup
-                        className="gui-yaml-switch gui-yaml-switch--lg gui-yaml-switch-window-bg flex-justify-start dc__no-background-imp"
-                        name="overview-tabs"
-                        initialTab={activeTab}
-                        disabled={false}
-                        onChange={(e) => {
-                            setActiveTab(e.target.value)
-                        }}
-                    >
-                        <RadioGroup.Radio value={OVERVIEW_TABS.ABOUT}>About</RadioGroup.Radio>
-                        <RadioGroup.Radio value={OVERVIEW_TABS.ENVIRONMENTS}>Environments</RadioGroup.Radio>
-                        {DependencyList && (
-                            <RadioGroup.Radio value={OVERVIEW_TABS.DEPENDENCIES}>Dependencies</RadioGroup.Radio>
-                        )}
-                    </RadioGroup>
+                    {renderSegmentControlTabs()}
                     {activeTab === OVERVIEW_TABS.DEPENDENCIES && (
-                        <button
-                            type="button"
-                            className={`cta flex h-28 dc__gap-4 ${isEditDependencyButtonDisabled ? 'disabled-opacity' : ''}`}
-                            onClick={isEditDependencyButtonDisabled ? noop : handleEditDependencyClick}
-                        >
-                            <EditIcon className="mw-14 icon-dim-14 scn-0 dc__no-svg-fill" />
-                            Edit Dependency
-                        </button>
+                        <Button
+                            dataTestId="edit-dependency-btn"
+                            startIcon={<EditIcon className="icon-dim-16" />}
+                            text="Edit Dependency"
+                            onClick={handleEditDependencyClick}
+                            size={ComponentSizeType.small}
+                            disabled={isEditDependencyButtonDisabled}
+                        />
                     )}
                 </div>
                 <div className="flexbox-col dc__gap-12">{contentToRender[activeTab]?.()}</div>

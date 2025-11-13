@@ -26,7 +26,6 @@ import {
     GenericEmptyState,
     ResponseType,
     DeploymentAppTypes,
-    StyledRadioGroup as RadioGroup,
     useMainContext,
     YAMLStringify,
     usePrompt,
@@ -46,6 +45,8 @@ import {
     Icon,
     AnimatedDeployButton,
     URLS as CommonURLS,
+    SegmentedControl,
+    ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -138,6 +139,7 @@ import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 import { DeleteChartDialog } from './DeleteChartDialog'
+import { SegmentType } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
@@ -1127,9 +1129,10 @@ const ChartValuesView = ({
         handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_NEW_PRESET_VALUE' })
     }
 
-    const handleTabSwitch = (e) => {
-        if (e?.target && e.target.value !== commonState.activeTab) {
-            if (e.target.value === 'manifest') {
+    const handleTabSwitch = (selectedTab: SegmentType) => {
+        const value = selectedTab.value
+        if (commonState.activeTab !== value) {
+            if (value === 'manifest') {
                 handleAnalyticsEvent({ category: 'Chart Store', action: 'CS_CHART_CONFIGURE_&_DEPLOY_MANIFEST' })
                 const validatedName = validateAppName(isCreateValueView ? valueName : appName)
                 if (isCreateValueView && !validatedName.isValid) {
@@ -1169,7 +1172,7 @@ const ChartValuesView = ({
             }
 
             let _payload = {}
-            if (e.target.value === 'gui' && commonState.schemaJson) {
+            if (value === 'gui' && commonState.schemaJson) {
                 getAndUpdateSchemaValue(commonState.modifiedValuesYaml, commonState.schemaJson, dispatch)
             }
 
@@ -1191,7 +1194,7 @@ const ChartValuesView = ({
             dispatch({
                 type: ChartValuesViewActionTypes.multipleOptions,
                 payload: {
-                    activeTab: e.target.value,
+                    activeTab: value,
                     openReadMe: false,
                     openComparison: false,
                     ..._payload,
@@ -1282,31 +1285,34 @@ const ChartValuesView = ({
                 : ConfigurationType.YAML
 
         return (
-            <RadioGroup
-                className="gui-yaml-switch"
-                name="yaml-mode"
-                initialTab={initialSelectedTab.toLowerCase()}
-                disabled={false}
+            <SegmentedControl
+                segments={[
+                    ...(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson
+                        ? [
+                              {
+                                  label: ConfigurationType.GUI,
+                                  value: ConfigurationType.GUI.toLowerCase(),
+                              },
+                          ]
+                        : []),
+                    {
+                        label: ConfigurationType.YAML,
+                        value: ConfigurationType.YAML.toLowerCase(),
+                        icon: 'ic-pencil',
+                    },
+                    {
+                        label: 'Manifest output',
+                        value: 'manifest',
+                        tooltipProps: {
+                            content: MANIFEST_INFO.InfoText,
+                        },
+                    },
+                ]}
+                value={commonState.activeTab}
                 onChange={handleTabSwitch}
-            >
-                {(initialSelectedTab === ConfigurationType.GUI || !!commonState.schemaJson) && (
-                    <RadioGroup.Radio value={ConfigurationType.GUI.toLowerCase()}>
-                        {ConfigurationType.GUI}
-                    </RadioGroup.Radio>
-                )}
-                <RadioGroup.Radio value={ConfigurationType.YAML.toLowerCase()} dataTestId="yaml-radio-button">
-                    <Edit className="icon-dim-12 mr-6" />
-                    {ConfigurationType.YAML}
-                </RadioGroup.Radio>
-                <RadioGroup.Radio
-                    value="manifest"
-                    canSelect={isValidData()}
-                    tippyContent={MANIFEST_INFO.InfoText}
-                    dataTestId="manifest-radio-button"
-                >
-                    Manifest output
-                </RadioGroup.Radio>
-            </RadioGroup>
+                name="chart-values-view-tabs"
+                size={ComponentSizeType.xs}
+            />
         )
     }
 
