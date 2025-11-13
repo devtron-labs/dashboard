@@ -43,7 +43,7 @@ import {
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
-import { DatePickerType2 as DateRangePicker, InValidHostUrlWarningBlock } from '../../../common'
+import { InValidHostUrlWarningBlock } from '../../../common'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
