@@ -20,8 +20,8 @@ import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { SecurityScansTab } from './SecurityScansTab/SecurityScansTab'
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
+import { VulnerabilitiesRouter } from './Vulnerabilities'
 
 import './security.scss'
 
@@ -34,12 +34,12 @@ export const Security = () => (
                 <SecurityCenterOverview />
             </Route>
         )}
-        <Route exact path={URLS.SECURITY_CENTER_SCANS}>
-            <SecurityScansTab />
+        <Route path={URLS.SECURITY_CENTER_VULNERABILITIES}>
+            <VulnerabilitiesRouter />
         </Route>
         <Route path={URLS.SECURITY_CENTER_POLICIES}>
             <SecurityPoliciesTab />
         </Route>
-        <Redirect to={SecurityCenterOverview ? URLS.SECURITY_CENTER_OVERVIEW : URLS.SECURITY_CENTER_SCANS} />
+        <Redirect to={SecurityCenterOverview ? URLS.SECURITY_CENTER_OVERVIEW : URLS.SECURITY_CENTER_VULNERABILITIES} />
     </Switch>
 )

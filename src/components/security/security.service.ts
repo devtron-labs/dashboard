@@ -74,12 +74,12 @@ export function getVulnerabilityFilterData() {
 export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: AbortSignal): Promise<SecurityScanListResponseType> {
     const URL = 'security/scan/list'
     return post(URL, payload, {signal: abortSignal}).then((response) => {
-        const securityScans = response.result.scanList || []
+        const securityScans = response.result?.scanList || []
         return {
             result: {
-                offset: response.result.offset,
-                totalCount: response.result.total,
-                pageSize: response.result.size || 20,
+                offset: response.result?.offset,
+                totalCount: response.result?.total,
+                pageSize: response.result?.size || 20,
                 securityScans: securityScans.map((scan) => {
                     return {
                         appId: scan.appId,
@@ -95,6 +95,7 @@ export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: A
                             unknown: scan.severityCount.unknown,
                         },
                         lastExecution: scan.lastChecked || '-',
+                        fixableVulnerabilities: scan.fixableVulnerabilities,
                     }
                 }),
             },

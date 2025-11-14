@@ -23,16 +23,11 @@ export enum SecurityScansTabMultiFilterKeys {
 }
 
 export enum SecurityScansTabSingleFilterKeys {
-    searchType = 'searchType',
+    scanStatus = 'scanStatus',
 }
 
-export interface ScanListUrlFiltersType
-    extends Record<SecurityScansTabMultiFilterKeys, string[]>,
-        Record<SecurityScansTabSingleFilterKeys, string> {}
-
-export enum SearchType {
-    APPLICATION = 'appName',
-    VULNERABILITY = 'cveName',
+export interface ScanListUrlFiltersType extends Record<SecurityScansTabMultiFilterKeys, string[]> {
+    [SecurityScansTabSingleFilterKeys.scanStatus]: ScanStatus
 }
 
 export interface ScanDetailsType {
@@ -50,12 +45,12 @@ export interface ScanListPayloadType {
     offset: number
     size: number
     appName: string
-    cveName: string
     severity: number[]
     clusterIds: number[]
     envIds: number[]
     sortBy: SecurityListSortableKeys
     sortOrder: SortingOrder
+    scanStatus: ScanStatus
 }
 
 export enum SeverityFilterValues {
@@ -66,7 +61,8 @@ export enum SeverityFilterValues {
     'unknown' = 5,
 }
 
-export interface SearchTypeOptionType {
-    label: string
-    value: SearchType
+export enum ScanStatus {
+    SCANNED = 'scanned',
+    NOT_SCANNED = 'not-scanned',
+    ALL = 'all',
 }
