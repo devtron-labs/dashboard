@@ -26,6 +26,7 @@ import { VulnerabilitiesRouter } from './Vulnerabilities'
 import './security.scss'
 
 const SecurityCenterOverview = importComponentFromFELibrary('SecurityCenterOverview', null, 'function')
+const SecurityEnablement = importComponentFromFELibrary('SecurityEnablement', null, 'function')
 
 export const Security = () => (
     <Switch>
@@ -37,6 +38,11 @@ export const Security = () => (
         <Route path={URLS.SECURITY_CENTER_VULNERABILITIES}>
             <VulnerabilitiesRouter />
         </Route>
+        {SecurityEnablement && (
+            <Route path={URLS.SECURITY_CENTER_SECURITY_ENABLEMENT}>
+                <SecurityEnablement />
+            </Route>
+        )}
         <Route path={URLS.SECURITY_CENTER_POLICIES}>
             <SecurityPoliciesTab />
         </Route>

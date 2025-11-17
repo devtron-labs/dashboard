@@ -56,6 +56,7 @@ const CVETableWrapper = ({
     severity,
     cluster,
     clearFilters,
+    searchKey,
 }: TableViewWrapperProps<CVEDetails, FiltersTypeEnum.URL, Record<CVEListFilters, string[]>>) => {
     const { isFetching, data, refetch, error } = useQuery<CVEListFilterData, CVEListFilterData, string[], false>({
         queryKey: ['cveListFilters'],
@@ -174,6 +175,7 @@ const CVETableWrapper = ({
                             keyboardShortcut="/"
                             size={ComponentSizeType.large}
                             handleEnter={handleSearch}
+                            initialSearchText={searchKey || ''}
                         />
                     </div>
                     <GroupedFilterSelectPicker<CVEListFilters>
