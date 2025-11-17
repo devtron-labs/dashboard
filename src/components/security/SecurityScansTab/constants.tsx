@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+import { ScanTypeOptions, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ScanDetailsType, ScanStatus } from './types'
+import { ScanDetailsType } from './types'
 
 export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     appId: 0,
@@ -24,6 +24,6 @@ export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
 }
 
 export const SCANNED_UNSCANNED_CONTROL_SEGMENTS: SegmentedControlProps['segments'] = [
-    { label: 'Scanned', value: ScanStatus.SCANNED },
-    { label: 'Not scanned', value: ScanStatus.NOT_SCANNED },
+    { label: 'Scanned', value: ScanTypeOptions.SCANNED },
+    { label: 'Not scanned', value: ScanTypeOptions.NOT_SCANNED },
 ]

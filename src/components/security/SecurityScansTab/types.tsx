@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { ScanTypeOptions, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 
 export enum SecurityScansTabMultiFilterKeys {
     severity = 'severity',
@@ -27,7 +27,7 @@ export enum SecurityScansTabSingleFilterKeys {
 }
 
 export interface ScanListUrlFiltersType extends Record<SecurityScansTabMultiFilterKeys, string[]> {
-    [SecurityScansTabSingleFilterKeys.scanStatus]: ScanStatus
+    [SecurityScansTabSingleFilterKeys.scanStatus]: ScanTypeOptions
 }
 
 export interface ScanDetailsType {
@@ -50,7 +50,7 @@ export interface ScanListPayloadType {
     envIds: number[]
     sortBy: SecurityListSortableKeys
     sortOrder: SortingOrder
-    scanStatus: ScanStatus
+    scanStatus: ScanTypeOptions
 }
 
 export enum SeverityFilterValues {
@@ -59,10 +59,4 @@ export enum SeverityFilterValues {
     'medium' = 1,
     'low' = 0,
     'unknown' = 5,
-}
-
-export enum ScanStatus {
-    SCANNED = 'scanned',
-    NOT_SCANNED = 'not-scanned',
-    ALL = 'all',
 }

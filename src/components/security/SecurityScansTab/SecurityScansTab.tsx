@@ -34,6 +34,7 @@ import {
     Icon,
     noop,
     Pagination,
+    ScanTypeOptions,
     SearchBar,
     SecurityModal,
     SegmentedControl,
@@ -60,7 +61,6 @@ import {
     ScanDetailsType,
     ScanListPayloadType,
     ScanListUrlFiltersType,
-    ScanStatus,
     SecurityListSortableKeys,
     SecurityScansTabMultiFilterKeys,
     SeverityFilterValues,
@@ -164,7 +164,7 @@ const SecurityScansTab = () => {
     )
 
     const isLoading = scanListLoading || getIsRequestAborted(scanListError)
-    const isNotScannedList = scanStatus === ScanStatus.NOT_SCANNED
+    const isNotScannedList = scanStatus === ScanTypeOptions.NOT_SCANNED
 
     const getFilterUpdateHandler =
         (filterKey: SecurityScansTabMultiFilterKeys) => (selectedOption: SelectPickerOptionType[]) => {
@@ -175,7 +175,7 @@ const SecurityScansTab = () => {
         // Clear all filters and set only scanStatus in a single operation
         // This ensures scanStatus is the only param in the URL
         updateSearchParams({
-            scanStatus: selectedSegment.value as ScanStatus,
+            scanStatus: selectedSegment.value as ScanTypeOptions,
             severity: [],
             cluster: [],
             environment: [],
@@ -316,7 +316,7 @@ const SecurityScansTab = () => {
                     containerClassName="w-250"
                     initialSearchText={searchKey}
                     inputProps={{
-                        placeholder: `Search applcation`,
+                        placeholder: `Search application`,
                         disabled: isLoading,
                     }}
                     handleEnter={handleSearch}

@@ -18,12 +18,13 @@ import {
     Badge,
     ComponentSizeType,
     GroupedFilterSelectPickerProps,
+    ScanTypeOptions,
     SeveritiesDTO,
     SeverityChip,
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ScanStatus, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
+import { SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],
@@ -31,7 +32,7 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
         searchParams.getAll(SecurityScansTabMultiFilterKeys.environment) || [],
     [SecurityScansTabMultiFilterKeys.cluster]: searchParams.getAll(SecurityScansTabMultiFilterKeys.cluster) || [],
     [SecurityScansTabSingleFilterKeys.scanStatus]:
-        (searchParams.get(SecurityScansTabSingleFilterKeys.scanStatus) as ScanStatus) || ScanStatus.SCANNED,
+        (searchParams.get(SecurityScansTabSingleFilterKeys.scanStatus) as ScanTypeOptions) || ScanTypeOptions.SCANNED,
 })
 
 const SEVERITY_ORDER = [
@@ -60,7 +61,7 @@ export const getSeverityWithCount = (severityCount: SeverityCount) => {
 }
 
 export const getGroupFilterItems: (
-    scanStatus: ScanStatus,
+    scanStatus: ScanTypeOptions,
 ) => GroupedFilterSelectPickerProps<SecurityScansTabMultiFilterKeys>['options'] = (scanStatus) => [
     {
         items: [
@@ -72,7 +73,7 @@ export const getGroupFilterItems: (
                 id: SecurityScansTabMultiFilterKeys.environment,
                 label: 'Environment',
             },
-            ...(scanStatus === ScanStatus.SCANNED
+            ...(scanStatus === ScanTypeOptions.SCANNED
                 ? [
                       {
                           id: SecurityScansTabMultiFilterKeys.severity,

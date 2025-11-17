@@ -171,7 +171,8 @@ const CVETableWrapper = ({
                     <div className="flex dc__gap-8">
                         <VulnerabilityViewTypeSelect />
                         <SearchBar
-                            inputProps={{ placeholder: 'Seach vulnerability' }}
+                            containerClassName="w-250"
+                            inputProps={{ placeholder: 'Search vulnerability' }}
                             keyboardShortcut="/"
                             size={ComponentSizeType.large}
                             handleEnter={handleSearch}
@@ -182,6 +183,14 @@ const CVETableWrapper = ({
                         id="cve-list-filters"
                         filterSelectPickerPropsMap={groupedFilterOptionsMap}
                         options={CVE_LIST_GROUP_FILTER_OPTIONS}
+                        isFilterApplied={
+                            severity.length > 0 ||
+                            cluster.length > 0 ||
+                            fixAvailability.length > 0 ||
+                            application.length > 0 ||
+                            environment.length > 0 ||
+                            ageOfDiscovery.length > 0
+                        }
                     />
                 </div>
             </div>
@@ -261,7 +270,7 @@ const CVEList = () => {
             getRows={getCVEList}
             emptyStateConfig={{
                 noRowsConfig: {
-                    title: 'NO CVEs FOUND',
+                    title: 'No CVEs Found',
                 },
             }}
             paginationVariant={PaginationEnum.PAGINATED}
