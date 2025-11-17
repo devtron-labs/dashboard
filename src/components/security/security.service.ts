@@ -20,60 +20,56 @@ import {
     getEnvironmentListMinPublic,
     post,
     ResponseType,
+    SelectPickerOptionType,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config'
-import { SecurityScanListResponseType, ResourceLevel, GetVulnerabilityPolicyResponse, CVEControlList, CVEControlListPayload } from './security.types'
-import { ScanListPayloadType } from './SecurityScansTab/types'
+import {
+    SecurityScanListResponseType,
+    ResourceLevel,
+    GetVulnerabilityPolicyResponse,
+    CVEControlList,
+    CVEControlListPayload,
+} from './security.types'
+import { ScanListPayloadType, SecurityScansTabMultiFilterKeys } from './SecurityScansTab/types'
+import { SEVERITY_FILTER_OPTIONS } from './Vulnerabilities/constants'
 
 export function getClusterListMinNoAuth() {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
     return get(URL)
 }
 
-export function getVulnerabilityFilterData() {
-    return Promise.all([getEnvironmentListMinPublic(), getClusterListMin()]).then(([envResponse, clusterResponse]) => {
-        let environments = envResponse.result
-            ? envResponse.result.map((env) => {
-                  return {
-                      label: env.environment_name,
-                      value: `${env.id}`,
-                  }
-              })
-            : []
-        let clusters = clusterResponse
-            ? clusterResponse.result.map((cluster) => {
-                  return {
-                      label: cluster.cluster_name,
-                      value: `${cluster.id}`,
-                  }
-              })
-            : []
-        environments = environments.sort((a, b) => {
-            return sortCallback('label', a, b)
-        })
-        clusters = clusters.sort((a, b) => {
-            return sortCallback('label', a, b)
-        })
-        return {
-            filters: {
-                severity: [
-                    { label: 'Critical', value: 'critical' },
-                    { label: 'High', value: 'high' },
-                    { label: 'Medium', value: 'medium' },
-                    { label: 'Low', value: 'low' },
-                    { label: 'Unknown', value: 'unknown' },
-                ],
-                clusters,
-                environments,
-            },
-        }
-    })
+export const getVulnerabilityFilterData = async (): Promise<Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>> => {
+    const envResponse = await getEnvironmentListMinPublic()
+    const clusterResponse = await getClusterListMin()
+
+    const environment = (envResponse?.result ?? [])
+        .map((env) => ({
+            label: env.environment_name,
+            value: `${env.id}`,
+        }))
+        .sort((a, b) => sortCallback('label', a, b))
+
+    const cluster = (clusterResponse?.result ?? [])
+        .map((cluster) => ({
+            label: cluster.cluster_name,
+            value: `${cluster.id}`,
+        }))
+        .sort((a, b) => sortCallback('label', a, b))
+
+    return {
+        severity: SEVERITY_FILTER_OPTIONS,
+        cluster: cluster,
+        environment: environment,
+    }
 }
 
-export function getSecurityScanList(payload: ScanListPayloadType, abortSignal: AbortSignal): Promise<SecurityScanListResponseType> {
+export function getSecurityScanList(
+    payload: ScanListPayloadType,
+    abortSignal: AbortSignal,
+): Promise<SecurityScanListResponseType> {
     const URL = 'security/scan/list'
-    return post(URL, payload, {signal: abortSignal}).then((response) => {
+    return post(URL, payload, { signal: abortSignal }).then((response) => {
         const securityScans = response.result?.scanList || []
         return {
             result: {
@@ -157,83 +153,5 @@ export function getCVEControlList(payload: CVEControlListPayload): Promise<Respo
                     : [],
             },
         }
-    })
-}
-// mock api
-export function getCVEPolicies(cve: string): Promise<ResponseType> {
-    return new Promise((resolve, reject) => {
-        setTimeout(() => {
-            resolve({
-                code: 200,
-                status: 'ok',
-                result: {
-                    clusters: [
-                        {
-                            id: 1,
-                            name: 'default_cluster',
-                            policy: 'INHERIT',
-                            isCollapsed: false,
-                            environments: [
-                                {
-                                    id: 1,
-                                    name: 'prod',
-                                    policy: 'INHERIT',
-                                    isCollapsed: false,
-                                    applications: [
-                                        {
-                                            id: 1,
-                                            name: 'dashoard',
-                                            policy: 'INHERIT',
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                        {
-                            id: 2,
-                            name: 'stage',
-                            policy: 'INHERIT',
-                            isCollapsed: true,
-                            environments: [
-                                {
-                                    id: 1,
-                                    name: 'devtron-prod',
-                                    policy: 'INHERIT',
-                                    isCollapsed: false,
-                                    applications: [
-                                        {
-                                            id: 3,
-                                            name: 'blobs',
-                                            policy: 'INHERIT',
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                        {
-                            id: 3,
-                            name: 'prod',
-                            policy: 'INHERIT',
-                            isCollapsed: true,
-                            environments: [
-                                {
-                                    id: 1,
-                                    name: 'prod',
-                                    policy: 'INHERIT',
-                                    isCollapsed: false,
-                                    applications: [
-                                        {
-                                            id: 1,
-                                            name: 'orch',
-                                            policy: 'INHERIT',
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
-                    ],
-                },
-            })
-        }, 500)
     })
 }

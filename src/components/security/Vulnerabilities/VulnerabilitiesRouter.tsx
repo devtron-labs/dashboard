@@ -11,6 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScansTab } from '../SecurityScansTab'
+import { CVEList } from './CVEList'
 
 const VulnerabilitiesRouter = () => {
     const { breadcrumbs } = useBreadcrumb({
@@ -41,7 +42,7 @@ const VulnerabilitiesRouter = () => {
                     <SecurityScansTab />
                 </Route>
                 <Route path={URLS.SECURITY_CENTER_VULNERABILITY_CVES} exact>
-                    <div />
+                    <CVEList />
                 </Route>
                 <Redirect to={URLS.SECURITY_CENTER_VULNERABILITY_DEPLOYMENTS} />
             </Switch>

@@ -133,11 +133,15 @@ const SecurityScansTab = () => {
         getVulnerabilityFilterData(),
     )
 
-    const getClusterLabelFromId = (clusterId: string) =>
-        clusterEnvListResult?.filters?.clusters.find((clusterOption) => clusterOption.value === clusterId).label
+    const getClusterLabelFromId = (clusterId: string) => {
+        const option = clusterEnvListResult?.cluster.find((clusterOption) => clusterOption.value === clusterId)
+        return `${option?.label || ''}`
+    }
 
-    const getEnvLabelFromId = (envId: string) =>
-        clusterEnvListResult?.filters?.environments.find((envOption) => envOption.value === envId).label
+    const getEnvLabelFromId = (envId: string) => {
+        const option = clusterEnvListResult?.environment.find((envOption) => envOption.value === envId)
+        return `${option?.label || ''}`
+    }
 
     const getLabelFromValue = (filterLabel: string, filterValue: string): string => {
         if (filterLabel === SecurityScansTabMultiFilterKeys.environment) {
@@ -223,7 +227,7 @@ const SecurityScansTab = () => {
                 isLoading: clusterEnvListLoading,
                 appliedFilterOptions: selectedClusters,
                 handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.cluster),
-                options: clusterEnvListResult?.filters?.clusters ?? [],
+                options: clusterEnvListResult?.cluster ?? [],
                 optionListError: clusterEnvListError,
                 reloadOptions: reloadClusterEnvOptions,
             },
@@ -234,7 +238,7 @@ const SecurityScansTab = () => {
                 isLoading: clusterEnvListLoading,
                 appliedFilterOptions: selectedEnvironments,
                 handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.environment),
-                options: clusterEnvListResult?.filters?.environments ?? [],
+                options: clusterEnvListResult?.environment ?? [],
                 optionListError: clusterEnvListError,
                 reloadOptions: reloadClusterEnvOptions,
             },
@@ -245,7 +249,7 @@ const SecurityScansTab = () => {
                 isLoading: clusterEnvListLoading,
                 appliedFilterOptions: selectedSeverities,
                 handleApplyFilter: getFilterUpdateHandler(SecurityScansTabMultiFilterKeys.severity),
-                options: clusterEnvListResult?.filters?.severity ?? [],
+                options: clusterEnvListResult?.severity ?? [],
                 optionListError: clusterEnvListError,
                 reloadOptions: reloadClusterEnvOptions,
             },
@@ -305,7 +309,7 @@ const SecurityScansTab = () => {
     )
 
     const renderFilters = () => (
-        <div className="flexbox dc__content-space px-20 py-12">
+        <div className="flexbox dc__content-space px-20 py-16">
             <div className="flex dc__gap-8">
                 <VulnerabilityViewTypeSelect />
                 <SearchBar

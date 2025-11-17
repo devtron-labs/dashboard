@@ -19,6 +19,7 @@ import {
     ComponentSizeType,
     GroupedFilterSelectPickerProps,
     SeveritiesDTO,
+    SeverityChip,
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -34,45 +35,25 @@ export const parseSearchParams = (searchParams: URLSearchParams) => ({
 })
 
 const SEVERITY_ORDER = [
-    { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
-    { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
-    { key: SeveritiesDTO.MEDIUM, label: 'Medium', variant: 'custom', fontColor: 'O600', bgColor: 'O100' },
-    { key: SeveritiesDTO.LOW, label: 'Low', variant: 'warning' },
-    { key: SeveritiesDTO.UNKNOWN, label: 'Unknown', variant: 'neutral' },
-] as const
+    SeveritiesDTO.CRITICAL,
+    SeveritiesDTO.HIGH,
+    SeveritiesDTO.MEDIUM,
+    SeveritiesDTO.LOW,
+    SeveritiesDTO.UNKNOWN,
+]
 
 export const getSeverityWithCount = (severityCount: SeverityCount) => {
     const badges = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const item of SEVERITY_ORDER) {
-        if (severityCount[item.key]) {
-            if (item.variant === 'custom') {
-                badges.push(
-                    <Badge
-                        key={item.key}
-                        label={`${severityCount[item.key]} ${item.label}`}
-                        variant="custom"
-                        fontColor={item.fontColor}
-                        bgColor={item.bgColor}
-                        size={ComponentSizeType.xxxs}
-                    />,
-                )
-            } else {
-                badges.push(
-                    <Badge
-                        key={item.key}
-                        label={`${severityCount[item.key]} ${item.label}`}
-                        variant={item.variant}
-                        size={ComponentSizeType.xxxs}
-                    />,
-                )
-            }
+        const count = severityCount[item]
+        if (count) {
+            badges.push(<SeverityChip severity={item} count={count} />)
         }
     }
-
     if (badges.length === 0) {
-        return <Badge label="Passed" variant="positive" />
+        return <Badge label="Passed" variant="positive" size={ComponentSizeType.xxs} />
     }
 
     return <div className="flex left dc__gap-4">{badges}</div>
