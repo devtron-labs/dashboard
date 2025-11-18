@@ -1,10 +1,6 @@
 import { generatePath } from 'react-router-dom'
 
-import {
-    BackupLocationsTypes,
-    InfrastructureManagementAppListType,
-    URLS as COMMON_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { BackupLocationsTypes, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
@@ -204,7 +200,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-devtron-application',
                 id: 'application-management-devtron-applications',
                 icon: 'ic-application',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
             },
             {
                 title: 'Application Groups',
@@ -268,9 +264,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-application',
                 id: 'infrastructure-management-applications',
                 icon: 'ic-grid-view',
-                href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
-                    appType: InfrastructureManagementAppListType.HELM,
-                }),
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP,
             },
             {
                 title: 'Chart Store',

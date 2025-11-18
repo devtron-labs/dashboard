@@ -15,10 +15,15 @@
  */
 
 import { lazy, useEffect, useMemo, useState } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
-import { SERVER_MODE, URLS as CommonURLS, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    InfrastructureManagementAppListType,
+    SERVER_MODE,
+    URLS as CommonURLS,
+    useMainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
 
@@ -92,26 +97,32 @@ export const AppRouter = () => {
     )
 }
 
-export const InfraAppsRouter = () => {
-    const { path } = useRouteMatch()
-    return (
-        <Switch>
-            <Route path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST} render={() => <NewAppList />} />
-            <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
+export const InfraAppsRouter = () => (
+    <Switch>
+        <Route path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST} render={() => <NewAppList />} />
+        <Route
+            path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/:appId/:appName`}
+            render={() => <ExternalApps />}
+        />
+        <Route
+            path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
+            render={() => <ExternalArgoApps />}
+        />
+        {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
             <Route
-                path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
-                render={() => <ExternalArgoApps />}
-            />
-            {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
-                <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
-                    <ExternalFluxAppDetailsRoute />
-                </Route>
-            )}
-            <Route
-                path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                render={() => <DevtronChartRouter />}
-            />
-            <Redirect to={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST} />
-        </Switch>
-    )
-}
+                path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}
+            >
+                <ExternalFluxAppDetailsRoute />
+            </Route>
+        )}
+        <Route
+            path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
+            render={() => <DevtronChartRouter />}
+        />
+        <Redirect
+            to={generatePath(CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+                appType: InfrastructureManagementAppListType.HELM,
+            })}
+        />
+    </Switch>
+)
