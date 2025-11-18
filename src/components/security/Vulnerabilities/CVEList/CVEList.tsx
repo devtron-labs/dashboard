@@ -4,6 +4,7 @@ import {
     FiltersTypeEnum,
     getCVEUrlFromCVEName,
     getSelectPickerOptionByValue,
+    getSelectPickerOptionsByValue,
     GroupedFilterSelectPicker,
     GroupedFilterSelectPickerProps,
     PaginationEnum,
@@ -25,7 +26,7 @@ import VulnerabilityViewTypeSelect from '../VulnerabilityViewTypeSelect'
 import { CVE_LIST_GROUP_FILTER_OPTIONS } from './constants'
 import { getCVEList, getCVEListFilters } from './service'
 import { CVEDetails, CVEListFilterData, CVEListFilters } from './types'
-import { getFilterChipLabel, getSelectPickerOptionsByValue, parseSearchParams } from './utils'
+import { getFilterChipLabel, parseSearchParams } from './utils'
 
 const SeverityCellComponent = ({ row }: TableCellComponentProps<CVEDetails, FiltersTypeEnum.URL, {}>) => {
     const { data } = row
