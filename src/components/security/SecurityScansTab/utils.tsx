@@ -18,13 +18,12 @@ import {
     Badge,
     ComponentSizeType,
     GroupedFilterSelectPickerProps,
-    ScanTypeOptions,
     SeveritiesDTO,
     SeverityChip,
     SeverityCount,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
+import { ScanTypeOptions, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],

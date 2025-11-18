@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-import { ScanTypeOptions, SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+
+export enum ScanTypeOptions {
+    SCANNED = 'scanned',
+    NOT_SCANNED = 'not-scanned',
+    ALL = 'all',
+}
 
 export enum SecurityScansTabMultiFilterKeys {
     severity = 'severity',

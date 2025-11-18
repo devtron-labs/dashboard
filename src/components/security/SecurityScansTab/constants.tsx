@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ScanTypeOptions, SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+import { SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ScanDetailsType } from './types'
+import { ScanDetailsType, ScanTypeOptions } from './types'
 
 export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     appId: 0,

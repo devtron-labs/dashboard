@@ -34,7 +34,6 @@ import {
     Icon,
     noop,
     Pagination,
-    ScanTypeOptions,
     SearchBar,
     SecurityModal,
     SegmentedControl,
@@ -61,6 +60,7 @@ import {
     ScanDetailsType,
     ScanListPayloadType,
     ScanListUrlFiltersType,
+    ScanTypeOptions,
     SecurityListSortableKeys,
     SecurityScansTabMultiFilterKeys,
     SeverityFilterValues,
@@ -180,6 +180,7 @@ const SecurityScansTab = () => {
             cluster: [],
             environment: [],
         })
+        handleSearch('')
         changePage(1)
     }
 
