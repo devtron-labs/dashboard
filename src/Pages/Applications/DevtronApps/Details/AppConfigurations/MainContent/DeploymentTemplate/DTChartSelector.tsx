@@ -88,8 +88,8 @@ const ChartSelectorDropdown = ({
         }
     }
 
-    const changeSelectedTab = (selectedTab: SegmentType): void => {
-        setSelectedChartTypeTab(selectedTab.value as string)
+    const changeSelectedTab = (selectedTab: SegmentType<CHART_TYPE_TAB_KEYS>): void => {
+        setSelectedChartTypeTab(selectedTab.value)
     }
 
     const setPopupState = (isOpen: boolean): void => {

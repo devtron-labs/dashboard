@@ -328,8 +328,8 @@ const ManageRegistry = ({
         }
     }
 
-    const onHandleCredentialTypeChange = (selectedSegment: SegmentType) => {
-        setCredentialType(selectedSegment.value as CredentialType)
+    const onHandleCredentialTypeChange = (selectedSegment: SegmentType<CredentialType>) => {
+        setCredentialType(selectedSegment.value)
     }
 
     const onClickSpecifyImagePullSecret = (e) => {

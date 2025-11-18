@@ -481,8 +481,8 @@ export default function AppOverview({ appMetaInfo, getAppMetaInfoRes, filteredEn
         )
     }
 
-    const handleOverviewViewTypeChange = (selectedSegment: SegmentType) => {
-        setActiveTab(selectedSegment.value as AvailableTabs)
+    const handleOverviewViewTypeChange = (selectedSegment: SegmentType<AvailableTabs>) => {
+        setActiveTab(selectedSegment.value)
     }
 
     const renderSegmentControlTabs = () => (

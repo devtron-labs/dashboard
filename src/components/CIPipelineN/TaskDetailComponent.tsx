@@ -88,10 +88,10 @@ export const TaskDetailComponent = () => {
         setFormData(_formData)
     }
 
-    const handleSegmentedControlChange = (selectedSegment: SegmentType) => {
+    const handleSegmentedControlChange = (selectedSegment: SegmentType<ScriptType>) => {
         const _formData = { ...formData }
         _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType =
-            selectedSegment.value as ScriptType
+            selectedSegment.value
         setFormData(_formData)
     }
 
