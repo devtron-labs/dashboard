@@ -139,7 +139,7 @@ import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
 import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 import { DeleteChartDialog } from './DeleteChartDialog'
-import { SegmentType } from '.yalc/@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
+import { SegmentType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')
 const getDownloadManifestUrl = importComponentFromFELibrary('getDownloadManifestUrl', null, 'function')
