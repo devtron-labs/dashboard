@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useContext, useState } from 'react'
+import { useContext, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { BuildStageVariable } from '../../config'
 import { ConditionContainerType, PluginVariableType, VariableType } from '../ciPipeline/types'
@@ -24,12 +24,14 @@ import {
     CustomInput,
     PluginType,
     ScriptType,
-    StyledRadioGroup as RadioGroup,
     Progressing,
     getPluginsDetail,
     StepType,
     PluginDataStoreType,
     getUpdatedPluginStore,
+    SegmentedControl,
+    ComponentSizeType,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginDetailHeader } from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
@@ -86,9 +88,10 @@ export const TaskDetailComponent = () => {
         setFormData(_formData)
     }
 
-    const handleTaskScriptTypeChange = (ev: any): void => {
+    const handleSegmentedControlChange = (selectedSegment: SegmentType<ScriptType>) => {
         const _formData = { ...formData }
-        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType = ev.target.value
+        _formData[activeStageName].steps[selectedTaskIndex].inlineStepDetail.scriptType =
+            selectedSegment.value
         setFormData(_formData)
     }
 
@@ -243,31 +246,27 @@ export const TaskDetailComponent = () => {
                     {selectedStep.stepType === PluginType.INLINE && (
                         <div className="row-container mb-12">
                             <div className="fw-6 fs-13 lh-32 cn-7 ">Task type</div>
-                            <RadioGroup
-                                className="configuration-container justify-start"
-                                disabled={false}
-                                initialTab={
-                                    formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
-                                        .scriptType
-                                }
-                                name="task-type"
-                                onChange={handleTaskScriptTypeChange}
-                            >
-                                <RadioGroup.Radio
-                                    className="left-radius"
-                                    value={ScriptType.SHELL}
-                                    dataTestId="custom-script-task-name-shell"
-                                >
-                                    Shell
-                                </RadioGroup.Radio>
-                                <RadioGroup.Radio
-                                    className="right-radius dc__no-left-border"
-                                    value={ScriptType.CONTAINERIMAGE}
-                                    dataTestId="custom-script-task-name-container-image"
-                                >
-                                    Container Image
-                                </RadioGroup.Radio>
-                            </RadioGroup>
+                            <div>
+                                <SegmentedControl
+                                    segments={[
+                                        {
+                                            label: 'Shell',
+                                            value: ScriptType.SHELL,
+                                        },
+                                        {
+                                            label: 'Container Image',
+                                            value: ScriptType.CONTAINERIMAGE,
+                                        },
+                                    ]}
+                                    value={
+                                        formData[activeStageName].steps[selectedTaskIndex][currentStepTypeVariable]
+                                            .scriptType
+                                    }
+                                    name="task-type"
+                                    onChange={handleSegmentedControlChange}
+                                    size={ComponentSizeType.xs}
+                                />
+                            </div>
                         </div>
                     )}
                 </div>
