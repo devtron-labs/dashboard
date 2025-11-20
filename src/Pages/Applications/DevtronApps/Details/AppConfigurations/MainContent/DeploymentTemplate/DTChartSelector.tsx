@@ -24,13 +24,13 @@ import {
     PipelineMigratedFromType,
     PopupMenu,
     SegmentedControl,
+    SegmentType,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
     stopPropagation,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { SegmentType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 import { ReactComponent as Dropdown } from '@Icons/ic-chevron-down.svg'
 import { sortObjectArrayAlphabetically } from '@Components/common'

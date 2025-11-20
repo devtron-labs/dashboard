@@ -36,9 +36,9 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { SegmentType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 export const DropdownIndicator = (props) => {
     return (

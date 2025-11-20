@@ -35,6 +35,7 @@ import {
     SegmentedControl,
     Button,
     ComponentSizeType,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ReactGA from 'react-ga4'
 import { getGitProviderIcon, handleUTCTime, importComponentFromFELibrary } from '../../common'
@@ -55,7 +56,6 @@ import { EnvironmentList } from './EnvironmentList'
 import { MAX_LENGTH_350 } from '../../../config/constantMessaging'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import { MODAL_STATE, OVERVIEW_TABS, TAB_SEARCH_KEY } from './constants'
-import { SegmentType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 const MandatoryTagWarning = importComponentFromFELibrary('MandatoryTagWarning')
 const Catalog = importComponentFromFELibrary('Catalog', null, 'function')

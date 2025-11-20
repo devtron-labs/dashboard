@@ -31,6 +31,7 @@ import {
     getUpdatedPluginStore,
     SegmentedControl,
     ComponentSizeType,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PluginDetailHeader } from './PluginDetailHeader'
 import { TaskTypeDetailComponent } from './TaskTypeDetailComponent'
@@ -39,7 +40,6 @@ import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { PluginDetailHeaderProps, TaskDetailComponentParamsType } from './types'
 import { filterInvalidConditionDetails } from '@Components/cdPipeline/cdpipeline.util'
 import { VariableDataTable } from './VariableDataTable'
-import { SegmentType } from '@devtron-labs/devtron-fe-common-lib/dist/Common/SegmentedControl/types'
 
 export const TaskDetailComponent = () => {
     const {
