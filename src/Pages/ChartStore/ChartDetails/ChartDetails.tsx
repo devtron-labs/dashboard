@@ -20,6 +20,7 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import {
     APIResponseHandler,
     BreadCrumb,
+    ComponentSizeType,
     getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
@@ -192,6 +193,7 @@ export const ChartDetails = () => {
                                         segments={CHART_DETAILS_SEGMENTS}
                                         value={tab}
                                         onChange={handleSegmentChange}
+                                        size={ComponentSizeType.xs}
                                     />
                                 </div>
                                 {renderSegments()}

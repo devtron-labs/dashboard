@@ -15,11 +15,6 @@
  */
 
 import { useState } from 'react'
-import { ReactComponent as Close } from '../../assets/icons/ic-cross.svg'
-import { ReactComponent as Bulb } from '../../assets/icons/ic-slant-bulb.svg'
-import { ReactComponent as Check } from '../../assets/icons/misc/checkGreen.svg'
-import { ReactComponent as Document } from '../../assets/icons/ic-document.svg'
-import { ReactComponent as Edit } from '../../assets/icons/ic-pencil.svg'
 import Select, { components } from 'react-select'
 import { ReactComponent as DropDownIcon } from '../../assets/icons/appstatus/ic-chevron-down.svg'
 import { CredentialType, ManageRegistryType } from './dockerType'
@@ -31,11 +26,17 @@ import {
     Option,
     CustomInput,
     ReactSelectInputAction,
-    StyledRadioGroup as RadioGroup,
     InfoIconTippy,
     InfoBlock,
     DocLink,
     stopPropagation,
+    SegmentedControl,
+    ComponentSizeType,
+    Icon,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
@@ -55,7 +56,7 @@ const ManageRegistry = ({
     setWhiteList,
     blackListEnabled,
     setBlackListEnabled,
-    credentialsType,
+    credentialsType = CredentialType.SAME_AS_REGISTRY,
     setCredentialType,
     credentialValue,
     setCredentialValue,
@@ -106,13 +107,23 @@ const ManageRegistry = ({
     }
 
     const renderActionButton = (): JSX.Element => {
-        return <Close className="cursor icon-dim-16 flex" onClick={onClickHideAlertInfo} />
+        return (
+            <Button
+                icon={<Icon name="ic-close-small" color={null} />}
+                onClick={onClickHideAlertInfo}
+                dataTestId="close-alert-info"
+                ariaLabel="close"
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.xs}
+                style={ButtonStyleType.neutral}
+            />
+        )
     }
 
     const renderAlertMessage = (): JSX.Element => {
         return (
-            <div className="flexbox dc__content-space center">
-                <div>
+            <div className="flex dc__content-space center">
+                <div className="flexbox">
                     If you want to edit this, {blackListEnabled ? 'above' : 'below'} selection will not be applicable.
                     <span className="cb-5 cursor ml-4 fw-6" onClick={onClickAlertEditConfirmation}>
                         Confirm to edit
@@ -131,7 +142,15 @@ const ManageRegistry = ({
         return (
             <div className="flex dc__content-space en-2 bw-1 bcn-1 br-4 pl-10 pr-10 pt-8 pb-8">
                 <div className="bcn-1 cursor-not-allowed">{getPlaceholder()}</div>
-                <Edit className="cursor icon-dim-16" onClick={onClickShowAlertInfo} />
+                <Button
+                    icon={<Icon name="ic-pencil" color={null} />}
+                    onClick={onClickShowAlertInfo}
+                    dataTestId="edit-cluster-selection"
+                    ariaLabel="Edit"
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.neutral}
+                />
             </div>
         )
     }
@@ -140,7 +159,15 @@ const ManageRegistry = ({
         return (
             <div className="flex dc__content-space en-2 bw-1 bcn-1 br-4 pl-10 pr-10 pt-8 pb-8">
                 <div className="bcn-1 cursor-not-allowed">Not defined</div>
-                <Edit className="cursor icon-dim-16" onClick={toggleBlackListEnabled} />
+                <Button
+                    icon={<Icon name="ic-pencil" color={null} />}
+                    onClick={toggleBlackListEnabled}
+                    dataTestId="edit-cluster-selection"
+                    ariaLabel="Edit"
+                    variant={ButtonVariantType.borderLess}
+                    size={ComponentSizeType.xs}
+                    style={ButtonStyleType.neutral}
+                />
             </div>
         )
     }
@@ -234,6 +261,10 @@ const ManageRegistry = ({
                         ...base,
                         display: blackList.length > 0 ? 'block' : 'none',
                     }),
+                    menu: (base) => ({
+                        ...base,
+                        zIndex: 2
+                    }),
                 }}
                 closeMenuOnSelect={false}
                 isMulti
@@ -280,6 +311,10 @@ const ManageRegistry = ({
                             ...base,
                             display: whiteList.length > 0 ? 'block' : 'none',
                         }),
+                        menu: (base) => ({
+                            ...base,
+                            zIndex: 2
+                        }),
                     }}
                     closeMenuOnSelect={false}
                     isMulti
@@ -293,8 +328,8 @@ const ManageRegistry = ({
         }
     }
 
-    const onHandleCredentialTypeChange = (e) => {
-        setCredentialType(e.target.value)
+    const onHandleCredentialTypeChange = (selectedSegment: SegmentType<CredentialType>) => {
+        setCredentialType(selectedSegment.value)
     }
 
     const onClickSpecifyImagePullSecret = (e) => {
@@ -349,46 +384,50 @@ const ManageRegistry = ({
                 </div>
                 <DropDownIcon className="icon-dim-24 rotate pointer" />
             </div>
-            <div className="p-16">
-                <div className="flex left cr-5 mb-6">
-                    <Close className="icon-dim-16 fcr-5 mr-4" /> Do not inject credentials to clusters
+            <div className="flexbox-col p-16 dc__gap-16">
+                <div className="flexbox-col left dc__gap-6">
+                    <div className="flex left cr-5 dc__gap-4">
+                        <Icon name="ic-close-small" color="R500" /> Do not inject credentials to clusters
+                    </div>
+                    {showAlertBar && !blackListEnabled && whiteList.length > 0
+                        ? renderEditAlert()
+                        : renderIgnoredCluster()}
                 </div>
-                {showAlertBar && !blackListEnabled && whiteList.length > 0 ? renderEditAlert() : renderIgnoredCluster()}
-
-                <div className="flex left cg-5 mt-16 mb-6">
-                    <Check className="icon-dim-16 mr-4" /> Auto-inject credentials to clusters
+                <div className="flexbox-col left dc__gap-6">
+                    <div className="flex left dc__gap-4 cg-5">
+                        <Icon name="ic-check" color="G500" />
+                        <span> Auto-inject credentials to clusters</span>
+                    </div>
+                    {showAlertBar && blackListEnabled && blackList.length > 0
+                        ? renderEditAlert()
+                        : renderAppliedCluster()}
                 </div>
 
-                {showAlertBar && blackListEnabled && blackList.length > 0 ? renderEditAlert() : renderAppliedCluster()}
+                <div className="dc__border-top" />
 
-                <div className="dc__border-top mb-20 mt-20" />
-
-                <div className="flex left mb-16 cn-7">
-                    <Bulb className="icon-dim-16 mr-8" />
+                <div className="flex left cn-7 dc__gap-8">
+                    <Icon name="ic-key" color={null} />
                     Define credentials
                 </div>
-                <div className="flex left mb-16">
-                    <RadioGroup
-                        className="gui-yaml-switch"
-                        name="credentials"
-                        initialTab={credentialsType || CredentialType.SAME_AS_REGISTRY}
-                        disabled={false}
+                <div className="flex left">
+                    <SegmentedControl
+                        segments={[
+                            {
+                                label: 'Use Registry Credentials',
+                                value: CredentialType.SAME_AS_REGISTRY,
+                                icon: 'ic-file',
+                            },
+                            {
+                                label: 'Specify image pull secret',
+                                value: CredentialType.NAME,
+                                icon: 'ic-key',
+                            },
+                        ]}
+                        value={credentialsType}
                         onChange={onHandleCredentialTypeChange}
-                    >
-                        <RadioGroup.Radio
-                            value={CredentialType.SAME_AS_REGISTRY}
-                            canSelect={credentialValue !== CredentialType.SAME_AS_REGISTRY}
-                        >
-                            <Document className="mr-8" />
-                            Use Registry Credentials
-                        </RadioGroup.Radio>
-                        <RadioGroup.Radio
-                            value={CredentialType.NAME}
-                            canSelect={credentialValue !== CredentialType.NAME}
-                        >
-                            <Bulb className="icon-dim-12 mr-8" /> Specify Image Pull Secret
-                        </RadioGroup.Radio>
-                    </RadioGroup>
+                        name="credentials"
+                        size={ComponentSizeType.small}
+                    />
                 </div>
                 {credentialsType === CredentialType.SAME_AS_REGISTRY && (
                     <InfoBlock description="Clusters will be auto-injected with the provided registry credentials." />
