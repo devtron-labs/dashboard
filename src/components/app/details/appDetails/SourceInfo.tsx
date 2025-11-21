@@ -415,7 +415,7 @@ export const SourceInfo = ({
                 ? shimmerLoaderBlocks()
                 : !isdeploymentAppDeleting &&
                   environment && (
-                      <div className="app-details-info-card-container flex left w-100 dc__row-gap-12 pb-16 dc__overflow-auto">
+                      <div className="app-details-info-card-container flex left w-100 dc__gap-12 pb-16 dc__overflow-auto">
                           {status && (
                               <AppStatusCard
                                   // TODO: Fix and remove

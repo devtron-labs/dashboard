@@ -80,7 +80,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
         <div
             data-testid="app-status-card"
             onClick={showApplicationDetailedModal}
-            className="app-details-info-card pointer flex left bg__primary br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card pointer flex left bg__primary br-8 lh-20 w-200"
         >
             <div className="app-details-info-card__top-container flex">
                 <div className="app-details-info-card__top-container__content">
