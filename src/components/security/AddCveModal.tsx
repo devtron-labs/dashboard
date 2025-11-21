@@ -16,7 +16,6 @@
 
 import React, { Component } from 'react'
 import { Progressing, VisibleModal, CustomInput } from '@devtron-labs/devtron-fe-common-lib'
-import { getCVEPolicies } from './security.service'
 import { CVE_ID_NOT_FOUND, ViewType } from '../../config'
 import { AddCveModalProps, AddCveModalState, ClusterEnvironment, VulnerabilityAction } from './security.types'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
@@ -33,7 +32,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         }
         this.handleCveChange = this.handleCveChange.bind(this)
         this.handlePolicyChange = this.handlePolicyChange.bind(this)
-        this.searchCVE = this.searchCVE.bind(this)
     }
 
     handleCveChange(event: React.ChangeEvent<HTMLInputElement>): void {
@@ -52,21 +50,6 @@ export class AddCveModal extends Component<AddCveModalProps, AddCveModalState> {
         } else {
             this.setState({ isCveError: true })
         }
-    }
-
-    searchCVE(event): void {
-        this.setState({ view: ViewType.LOADING })
-        getCVEPolicies(this.state.cve)
-            .then((response) => {
-                this.setState({
-                    cve: this.state.cve,
-                    clusters: response.result.clusters,
-                    view: ViewType.FORM,
-                })
-            })
-            .catch((error) => {
-                this.setState({ view: ViewType.FORM, isCveError: true })
-            })
     }
 
     renderHeader() {

@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/* eslint-disable react/no-danger */
+import DOMPurify from 'dompurify'
 import { Component } from 'react'
 import { Link, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -43,6 +44,7 @@ import {
     ConditionalWrap,
     ChangeCIPayloadType,
     URLS as CommonURLS,
+    highlightSearchText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -778,7 +780,19 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         }
                         data-testid="workflow-header"
                     >
-                        <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
+                        <span
+                            className={'m-0 cn-9 fs-13 fw-6 lh-20'}
+                            // eslint-disable-next-line react/no-danger
+                            dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                    highlightSearchText({
+                                        searchText: this.props.searchText || '',
+                                        text: String(this.props.name),
+                                        highlightClasses: 'bcy-3',
+                                    }),
+                                ),
+                            }}
+                        />
                         {!this.props.isOffendingPipelineView && !configDiffView && (
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />
