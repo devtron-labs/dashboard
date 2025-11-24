@@ -1,3 +1,5 @@
+import { SeveritiesDTO } from '@devtron-labs/devtron-fe-common-lib'
+
 export enum VulnerabilityViewTypes {
     DEPLOYMENTS = 'DEPLOYMENTS',
     VULNERABILITIES = 'VULNERABILITIES',
@@ -13,4 +15,11 @@ export enum VulnerabilityDiscoveryAgeOptions {
 export enum FixAvailabilityOptions {
     FIX_AVAILABLE = 'fixAvailable',
     FIX_NOT_AVAILABLE = 'fixNotAvailable',
+}
+
+export interface VulnerabilitySummaryDTO {
+    totalVulnerabilities: number
+    severityCount: Record<SeveritiesDTO, number>
+    fixableVulnerabilities: number
+    notFixableVulnerabilities: number
 }

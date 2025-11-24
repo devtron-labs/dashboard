@@ -54,7 +54,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import AppNotDeployed from '../../../assets/img/app-not-deployed.svg'
 import { getSecurityScanList, getVulnerabilityFilterData } from '../security.service'
 import { SecurityScanType } from '../security.types'
-import { VulnerabilityViewTypeSelect } from '../Vulnerabilities'
+import { VulnerabilitySummary, VulnerabilityViewTypeSelect } from '../Vulnerabilities'
 import { INITIAL_SCAN_DETAILS, SCANNED_UNSCANNED_CONTROL_SEGMENTS } from './constants'
 import {
     ScanDetailsType,
@@ -310,7 +310,7 @@ const SecurityScansTab = () => {
     )
 
     const renderFilters = () => (
-        <div className="flexbox dc__content-space px-20 py-16">
+        <div className="flex dc__content-space">
             <div className="flex dc__gap-8">
                 <VulnerabilityViewTypeSelect />
                 <SearchBar
@@ -350,7 +350,6 @@ const SecurityScansTab = () => {
             getFormattedValue={getLabelFromValue}
             onRemoveFilter={updateSearchParams}
             clearFilters={clearFilters}
-            className="w-100 pb-12-imp pt-0-imp px-20"
             clearButtonClassName="dc__no-background-imp dc__no-border-imp dc__tab-focus"
         />
     )
@@ -483,8 +482,19 @@ const SecurityScansTab = () => {
 
         return (
             <>
-                {renderFilters()}
-                {renderSavedFilters()}
+                <div className="flexbox-col dc__gap-20 px-20 py-16 ">
+                    {renderFilters()}
+                    {renderSavedFilters()}
+                    {!isNotScannedList && (
+                        <VulnerabilitySummary
+                            filters={{
+                                severity,
+                                cluster,
+                                environment,
+                            }}
+                        />
+                    )}
+                </div>
                 {renderScanListContainer()}
             </>
         )

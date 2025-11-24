@@ -263,6 +263,7 @@ export const Routes = {
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
     ENV_DATA_SOURCE_NAME: 'env/data-source-name',
+    VULNERABILITY_SUMMARY: 'security/scan/summary',
 }
 
 export enum ViewType {

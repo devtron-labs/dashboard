@@ -22,6 +22,7 @@ import {
 
 import { DISCOVERY_AGE_FILTER_OPTIONS } from '../constants'
 import { FixAvailabilityOptions } from '../types'
+import VulnerabilitySummary from '../VulnerabilitySummary'
 import VulnerabilityViewTypeSelect from '../VulnerabilityViewTypeSelect'
 import { CVE_LIST_GROUP_FILTER_OPTIONS } from './constants'
 import { getCVEList, getCVEListFilters } from './service'
@@ -167,7 +168,7 @@ const CVETableWrapper = ({
 
     return (
         <>
-            <div className="flexbox-col px-20 py-16">
+            <div className="flexbox-col px-20 py-16 dc__gap-20">
                 <div className="flex dc__content-space">
                     <div className="flex dc__gap-8">
                         <VulnerabilityViewTypeSelect />
@@ -194,22 +195,32 @@ const CVETableWrapper = ({
                         }
                     />
                 </div>
+                <FilterChips<Record<CVEListFilters, string[]>>
+                    filterConfig={{
+                        severity,
+                        cluster,
+                        fixAvailability,
+                        application,
+                        environment,
+                        ageOfDiscovery,
+                    }}
+                    onRemoveFilter={updateSearchParams}
+                    clearFilters={clearFilters}
+                    getFormattedLabel={getFilterChipLabel}
+                    getFormattedValue={getFormattedFilterValue}
+                />
+                <VulnerabilitySummary
+                    filters={{
+                        severity,
+                        cluster,
+                        fixAvailability,
+                        application,
+                        environment,
+                        ageOfDiscovery,
+                    }}
+                />
             </div>
-            <FilterChips<Record<CVEListFilters, string[]>>
-                filterConfig={{
-                    severity,
-                    cluster,
-                    fixAvailability,
-                    application,
-                    environment,
-                    ageOfDiscovery,
-                }}
-                onRemoveFilter={updateSearchParams}
-                clearFilters={clearFilters}
-                className="px-20"
-                getFormattedLabel={getFilterChipLabel}
-                getFormattedValue={getFormattedFilterValue}
-            />
+
             {children}
         </>
     )
