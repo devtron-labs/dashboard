@@ -2,6 +2,7 @@ import {
     ComponentSizeType,
     FilterChips,
     FiltersTypeEnum,
+    FixAvailabilityOptions,
     getCVEUrlFromCVEName,
     getSelectPickerOptionByValue,
     getSelectPickerOptionsByValue,
@@ -21,7 +22,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DISCOVERY_AGE_FILTER_OPTIONS } from '../constants'
-import { FixAvailabilityOptions } from '../types'
 import VulnerabilitySummary from '../VulnerabilitySummary'
 import VulnerabilityViewTypeSelect from '../VulnerabilityViewTypeSelect'
 import { CVE_LIST_GROUP_FILTER_OPTIONS } from './constants'
@@ -240,6 +240,7 @@ const CVEList = () => {
             field: 'severity',
             size: { fixed: 100 },
             CellComponent: SeverityCellComponent,
+            isSortable: true,
         },
         {
             label: 'Application',
@@ -255,6 +256,7 @@ const CVEList = () => {
             label: 'Discovered 1st Time',
             field: 'discoveredAt',
             size: { fixed: 150 },
+            isSortable: true,
         },
         {
             label: 'Package',

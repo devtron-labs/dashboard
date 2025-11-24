@@ -1,6 +1,11 @@
-import { SelectPickerOptionType, Severity } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FixAvailabilityOptions,
+    SelectPickerOptionType,
+    Severity,
+    VulnerabilityDiscoveryAgeOptions,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { FixAvailabilityOptions, VulnerabilityDiscoveryAgeOptions, VulnerabilityViewTypes } from './types'
+import { VulnerabilityViewTypes } from './types'
 
 export const VULNERABILITY_VIEW_TYPE_SELECT_OPTIONS: SelectPickerOptionType<VulnerabilityViewTypes>[] = [
     { label: 'Deployments', value: VulnerabilityViewTypes.DEPLOYMENTS },
