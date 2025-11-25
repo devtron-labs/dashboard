@@ -23,7 +23,7 @@ export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     envId: 0,
 }
 
-export const SCANNED_UNSCANNED_CONTROL_SEGMENTS: SegmentedControlProps['segments'] = [
+export const SCANNED_UNSCANNED_CONTROL_SEGMENTS: SegmentedControlProps<ScanTypeOptions>['segments'] = [
     { label: 'Scanned', value: ScanTypeOptions.SCANNED },
     { label: 'Not scanned', value: ScanTypeOptions.NOT_SCANNED },
 ]

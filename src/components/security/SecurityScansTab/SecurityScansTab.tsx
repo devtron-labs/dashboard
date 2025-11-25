@@ -133,24 +133,23 @@ const SecurityScansTab = () => {
         getVulnerabilityFilterData(),
     )
 
-    const getClusterLabelFromId = (clusterId: string) => {
-        const option = clusterEnvListResult?.cluster.find((clusterOption) => clusterOption.value === clusterId)
-        return `${option?.label || ''}`
-    }
-
-    const getEnvLabelFromId = (envId: string) => {
-        const option = clusterEnvListResult?.environment.find((envOption) => envOption.value === envId)
-        return `${option?.label || ''}`
-    }
-
-    const getLabelFromValue = (filterLabel: string, filterValue: string): string => {
-        if (filterLabel === SecurityScansTabMultiFilterKeys.environment) {
-            return getEnvLabelFromId(filterValue)
+    const getLabelFromValue = (filterLabel: SecurityScansTabMultiFilterKeys, filterValue: string): string => {
+        switch (filterLabel) {
+            case SecurityScansTabMultiFilterKeys.cluster:
+                return (
+                    (clusterEnvListResult?.cluster.find((clusterOption) => clusterOption.value === filterValue)
+                        ?.label as string) || filterValue
+                )
+            case SecurityScansTabMultiFilterKeys.environment:
+                return (
+                    (clusterEnvListResult?.environment.find((envOption) => envOption.value === filterValue)
+                        ?.label as string) || filterValue
+                )
+            case SecurityScansTabMultiFilterKeys.severity:
+                return SEVERITY_LABEL_MAP[filterValue as Severity]
+            default:
+                return filterValue
         }
-        if (filterLabel === SecurityScansTabMultiFilterKeys.cluster) {
-            return getClusterLabelFromId(filterValue)
-        }
-        return SEVERITY_LABEL_MAP[filterValue as Severity]
     }
 
     const abortControllerRef = useRef(new AbortController())
@@ -317,7 +316,7 @@ const SecurityScansTab = () => {
                     containerClassName="w-250"
                     initialSearchText={searchKey}
                     inputProps={{
-                        placeholder: `Search application`,
+                        placeholder: 'Search application',
                         disabled: isLoading,
                     }}
                     handleEnter={handleSearch}
@@ -380,43 +379,38 @@ const SecurityScansTab = () => {
         return (
             <>
                 <div className="flexbox-col flex-grow-1 mh-0 dc__overflow-auto">
-                    {securityScansResult.result.securityScans.map((scan) => {
-                        const totalSeverities = Object.values(scan.severityCount).reduce((acc, curr) => acc + curr, 0)
-                        return (
-                            <div
-                                className="dc__grid table__row-grid cursor border__secondary--bottom fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
-                                onClick={
-                                    isNotScannedList
-                                        ? () => redirectToAppEnv(scan.appId, scan.envId)
-                                        : (event) => handleOpenScanDetailsModal(event, scan)
-                                }
-                                key={`${scan.name}-${scan.environment}`}
-                                role="button"
-                                tabIndex={0}
-                            >
-                                <Icon name="ic-devtron-app" color={null} size={24} />
-                                <span className="cb-5 dc__truncate lh-20" data-testid={`scanned-app-list-${scan.name}`}>
-                                    {scan.name}
-                                </span>
-                                <span className="dc__truncate lh-20">{scan.environment}</span>
-                                <div>{isNotScannedList ? 'Not Scanned' : getSeverityWithCount(scan.severityCount)}</div>
-                                {!isNotScannedList && (
-                                    <>
-                                        <span className="dc__truncate">
-                                            {scan.fixableVulnerabilities} out of {totalSeverities}
-                                        </span>
-                                        <span data-testid="image-scan-security-check lh-20">
-                                            {scan.lastExecution && scan.lastExecution !== ZERO_TIME_STRING
-                                                ? dayjs(scan.lastExecution).format(
-                                                      DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
-                                                  )
-                                                : ''}
-                                        </span>
-                                    </>
-                                )}
-                            </div>
-                        )
-                    })}
+                    {securityScansResult.result.securityScans.map((scan) => (
+                        <div
+                            className="dc__grid table__row-grid cursor border__secondary--bottom fs-13 dc__gap-16 px-20 w-100-imp py-12 dc__align-items-center dc__hover-n50"
+                            onClick={
+                                isNotScannedList
+                                    ? () => redirectToAppEnv(scan.appId, scan.envId)
+                                    : (event) => handleOpenScanDetailsModal(event, scan)
+                            }
+                            key={`${scan.name}-${scan.environment}`}
+                            role="button"
+                            tabIndex={0}
+                        >
+                            <Icon name="ic-devtron-app" color={null} size={24} />
+                            <span className="cb-5 dc__truncate lh-20" data-testid={`scanned-app-list-${scan.name}`}>
+                                {scan.name}
+                            </span>
+                            <span className="dc__truncate lh-20">{scan.environment}</span>
+                            <div>{isNotScannedList ? 'Not Scanned' : getSeverityWithCount(scan.severityCount)}</div>
+                            {!isNotScannedList && (
+                                <>
+                                    <span className="dc__truncate">
+                                        {scan.fixableVulnerabilities} out of {scan.totalSeverities}
+                                    </span>
+                                    <span data-testid="image-scan-security-check lh-20">
+                                        {scan.lastExecution && scan.lastExecution !== ZERO_TIME_STRING
+                                            ? dayjs(scan.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)
+                                            : ''}
+                                    </span>
+                                </>
+                            )}
+                        </div>
+                    ))}
                 </div>
                 {securityScansResult.result.totalCount > DEFAULT_BASE_PAGE_SIZE && (
                     <Pagination

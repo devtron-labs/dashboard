@@ -43,6 +43,7 @@ export interface SecurityScanType {
     type: string
     environment: string
     severityCount: SeverityCount
+    totalSeverities: number
     fixableVulnerabilities: number
 }
 

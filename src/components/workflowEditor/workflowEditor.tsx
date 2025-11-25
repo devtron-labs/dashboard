@@ -45,6 +45,7 @@ import {
     handleAnalyticsEvent,
     GenericEmptyState,
     SearchBar,
+    URL_FILTER_KEYS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType } from '../../config'
@@ -772,7 +773,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     getSearchKey = (): string => {
-        return new URLSearchParams(this.props.location.search).get('searchKey') || ''
+        return new URLSearchParams(this.props.location.search).get(URL_FILTER_KEYS.SEARCH_KEY) || ''
     }
 
     getWorkflowNameToMatch = (): string => {
@@ -816,7 +817,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
     handleUpdateSearch = (updatedSearchKey: string) => {
         const updatedParams = new URLSearchParams({
-            searchKey: updatedSearchKey,
+            [URL_FILTER_KEYS.SEARCH_KEY]: updatedSearchKey,
         })
         this.props.history.push({
             search: updatedParams.toString(),

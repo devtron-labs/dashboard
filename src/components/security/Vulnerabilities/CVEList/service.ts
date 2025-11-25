@@ -11,16 +11,24 @@ import { DISCOVERY_AGE_FILTER_OPTIONS, FIX_AVAILABLE_FILTER_OPTIONS } from '../c
 import { CVEDetails, CVEListFilterData, CVEListFilters, VulnerabilityDTO } from './types'
 
 export const getCVEListFilters = async (): Promise<CVEListFilterData> => {
-    const [appListResponse, filtersResponse] = await Promise.all([getAppListMin(), getVulnerabilityFilterData()])
+    const [appListResponse, filtersResponse] = await Promise.allSettled([getAppListMin(), getVulnerabilityFilterData()])
+
+    const emptyFiltersResponse = {
+        severity: [],
+        environment: [],
+        cluster: [],
+    }
 
     return {
-        application: (appListResponse?.result || [])
+        application: (appListResponse.status === 'fulfilled' ? appListResponse?.value?.result ?? [] : [])
             .map((app) => ({
                 label: app.name,
                 value: `${app.id}`,
             }))
             .sort((a, b) => stringComparatorBySortOrder(a.label, b.label)),
-        ...filtersResponse,
+        ...(filtersResponse.status === 'fulfilled'
+            ? filtersResponse?.value ?? emptyFiltersResponse
+            : emptyFiltersResponse),
         ageOfDiscovery: DISCOVERY_AGE_FILTER_OPTIONS,
         fixAvailability: FIX_AVAILABLE_FILTER_OPTIONS,
     }
@@ -61,7 +69,7 @@ export const getCVEList: TableProps<CVEDetails>['getRows'] = async (
                 ...cve,
                 discoveredAt: dayjs(cve.discoveredAt).format(DATE_TIME_FORMATS.WEEKDAY_WITH_DATE_MONTH_AND_YEAR),
             },
-            id: Object.values(cve).join('-'),
+            id: [...Object.values(cve)].join('-'),
         })),
         totalRows: response.result?.total ?? 0,
     }

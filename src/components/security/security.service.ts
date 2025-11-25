@@ -23,23 +23,26 @@ import {
     SelectPickerOptionType,
     sortCallback,
 } from '@devtron-labs/devtron-fe-common-lib'
+
 import { Routes } from '../../config'
-import {
-    SecurityScanListResponseType,
-    ResourceLevel,
-    GetVulnerabilityPolicyResponse,
-    CVEControlList,
-    CVEControlListPayload,
-} from './security.types'
 import { ScanListPayloadType, SecurityScansTabMultiFilterKeys } from './SecurityScansTab/types'
 import { SEVERITY_FILTER_OPTIONS } from './Vulnerabilities/constants'
+import {
+    CVEControlList,
+    CVEControlListPayload,
+    GetVulnerabilityPolicyResponse,
+    ResourceLevel,
+    SecurityScanListResponseType,
+} from './security.types'
 
 export function getClusterListMinNoAuth() {
     const URL = `${Routes.CLUSTER}/autocomplete?auth=false`
     return get(URL)
 }
 
-export const getVulnerabilityFilterData = async (): Promise<Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>> => {
+export const getVulnerabilityFilterData = async (): Promise<
+    Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>
+> => {
     const envResponse = await getEnvironmentListMinPublic()
     const clusterResponse = await getClusterListMin()
 
@@ -51,16 +54,16 @@ export const getVulnerabilityFilterData = async (): Promise<Record<SecurityScans
         .sort((a, b) => sortCallback('label', a, b))
 
     const cluster = (clusterResponse?.result ?? [])
-        .map((cluster) => ({
-            label: cluster.cluster_name,
-            value: `${cluster.id}`,
+        .map((clusterDetails) => ({
+            label: clusterDetails.cluster_name,
+            value: `${clusterDetails.id}`,
         }))
         .sort((a, b) => sortCallback('label', a, b))
 
     return {
         severity: SEVERITY_FILTER_OPTIONS,
-        cluster: cluster,
-        environment: environment,
+        cluster,
+        environment,
     }
 }
 
@@ -76,24 +79,26 @@ export function getSecurityScanList(
                 offset: response.result?.offset,
                 totalCount: response.result?.total,
                 pageSize: response.result?.size || 20,
-                securityScans: securityScans.map((scan) => {
-                    return {
-                        appId: scan.appId,
-                        envId: scan.envId,
-                        name: scan.name,
-                        imageScanDeployInfoId: scan.imageScanDeployInfoId,
-                        environment: scan.environment,
-                        severityCount: {
-                            critical: scan.severityCount.critical,
-                            high: scan.severityCount.high,
-                            medium: scan.severityCount.medium,
-                            low: scan.severityCount.low,
-                            unknown: scan.severityCount.unknown,
-                        },
-                        lastExecution: scan.lastChecked || '-',
-                        fixableVulnerabilities: scan.fixableVulnerabilities,
-                    }
-                }),
+                securityScans: securityScans.map((scan) => ({
+                    appId: scan.appId,
+                    envId: scan.envId,
+                    name: scan.name,
+                    imageScanDeployInfoId: scan.imageScanDeployInfoId,
+                    environment: scan.environment,
+                    severityCount: {
+                        critical: scan.severityCount.critical,
+                        high: scan.severityCount.high,
+                        medium: scan.severityCount.medium,
+                        low: scan.severityCount.low,
+                        unknown: scan.severityCount.unknown,
+                    },
+                    totalSeverities: Object.values(scan.severityCount ?? {}).reduce(
+                        (acc: number, curr: number) => acc + curr,
+                        0,
+                    ),
+                    lastExecution: scan.lastChecked || '-',
+                    fixableVulnerabilities: scan.fixableVulnerabilities,
+                })),
             },
         }
     })
@@ -105,24 +110,20 @@ export function getVulnerabilities(level: ResourceLevel, id?: number): Promise<G
     if (id) {
         qs = `&id=${id}`
     }
-    return get(`${URL}${qs}`).then((response) => {
-        return {
-            ...response,
-            result: {
-                ...response.result,
-                level: response.result.level,
-                policies: response.result.policies
-                    ? response.result.policies.map((p) => {
-                          return {
-                              ...p,
-                              severities: p.severities,
-                              cves: p.cves || [],
-                          }
-                      })
-                    : [],
-            },
-        }
-    })
+    return get(`${URL}${qs}`).then((response) => ({
+        ...response,
+        result: {
+            ...response.result,
+            level: response.result.level,
+            policies: response.result.policies
+                ? response.result.policies.map((p) => ({
+                      ...p,
+                      severities: p.severities,
+                      cves: p.cves || [],
+                  }))
+                : [],
+        },
+    }))
 }
 
 export function savePolicy(payload): Promise<ResponseType> {
@@ -137,21 +138,17 @@ export function updatePolicy(payload): Promise<ResponseType> {
 
 export function getCVEControlList(payload: CVEControlListPayload): Promise<ResponseType<CVEControlList>> {
     const URL = Routes.SECURITY_SCAN_CVE_EXPOSURE
-    return post(URL, payload).then((response) => {
-        return {
-            ...response,
-            result: {
-                totalCount: response.result?.total ?? 0,
-                scanList: response.result?.list
-                    ? response.result.list.map((cve) => {
-                          return {
-                              appName: cve.appName ?? '',
-                              envName: cve.envName ?? '',
-                              policy: cve.blocked ? 'block' : 'whitelist',
-                          }
-                      })
-                    : [],
-            },
-        }
-    })
+    return post(URL, payload).then((response) => ({
+        ...response,
+        result: {
+            totalCount: response.result?.total ?? 0,
+            scanList: response.result?.list
+                ? response.result.list.map((cve) => ({
+                      appName: cve.appName ?? '',
+                      envName: cve.envName ?? '',
+                      policy: cve.blocked ? 'block' : 'whitelist',
+                  }))
+                : [],
+        },
+    }))
 }

@@ -781,7 +781,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         data-testid="workflow-header"
                     >
                         <span
-                            className={'m-0 cn-9 fs-13 fw-6 lh-20'}
+                            className="m-0 cn-9 fs-13 fw-6 lh-20"
                             // eslint-disable-next-line react/no-danger
                             dangerouslySetInnerHTML={{
                                 __html: DOMPurify.sanitize(
