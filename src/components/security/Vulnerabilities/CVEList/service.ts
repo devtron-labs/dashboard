@@ -69,7 +69,7 @@ export const getCVEList: TableProps<CVEDetails>['getRows'] = async (
                 ...cve,
                 discoveredAt: dayjs(cve.discoveredAt).format(DATE_TIME_FORMATS.WEEKDAY_WITH_DATE_MONTH_AND_YEAR),
             },
-            id: [...Object.values(cve)].join('-'),
+            id: Object.values(cve).join('-'),
         })),
         totalRows: response.result?.total ?? 0,
     }
