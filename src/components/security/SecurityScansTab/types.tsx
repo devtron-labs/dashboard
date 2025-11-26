@@ -16,6 +16,12 @@
 
 import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
 
+export enum ScanTypeOptions {
+    SCANNED = 'scanned',
+    NOT_SCANNED = 'not-scanned',
+    ALL = 'all',
+}
+
 export enum SecurityScansTabMultiFilterKeys {
     severity = 'severity',
     environment = 'environment',
@@ -23,16 +29,11 @@ export enum SecurityScansTabMultiFilterKeys {
 }
 
 export enum SecurityScansTabSingleFilterKeys {
-    searchType = 'searchType',
+    scanStatus = 'scanStatus',
 }
 
-export interface ScanListUrlFiltersType
-    extends Record<SecurityScansTabMultiFilterKeys, string[]>,
-        Record<SecurityScansTabSingleFilterKeys, string> {}
-
-export enum SearchType {
-    APPLICATION = 'appName',
-    VULNERABILITY = 'cveName',
+export interface ScanListUrlFiltersType extends Record<SecurityScansTabMultiFilterKeys, string[]> {
+    [SecurityScansTabSingleFilterKeys.scanStatus]: ScanTypeOptions
 }
 
 export interface ScanDetailsType {
@@ -50,12 +51,12 @@ export interface ScanListPayloadType {
     offset: number
     size: number
     appName: string
-    cveName: string
     severity: number[]
     clusterIds: number[]
     envIds: number[]
     sortBy: SecurityListSortableKeys
     sortOrder: SortingOrder
+    scanStatus: ScanTypeOptions
 }
 
 export enum SeverityFilterValues {
@@ -64,9 +65,4 @@ export enum SeverityFilterValues {
     'medium' = 1,
     'low' = 0,
     'unknown' = 5,
-}
-
-export interface SearchTypeOptionType {
-    label: string
-    value: SearchType
 }

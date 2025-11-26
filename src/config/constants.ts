@@ -258,10 +258,12 @@ export const Routes = {
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
+    SECURITY_SCAN_VULNERABILITIES: 'security/scan/vulnerabilities',
     CONFIG_MANIFEST: 'config/manifest',
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
     ENV_DATA_SOURCE_NAME: 'env/data-source-name',
+    VULNERABILITY_SUMMARY: 'security/scan/summary',
 }
 
 export enum ViewType {
