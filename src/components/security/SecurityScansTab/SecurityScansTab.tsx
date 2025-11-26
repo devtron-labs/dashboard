@@ -476,7 +476,7 @@ const SecurityScansTab = () => {
 
         return (
             <>
-                <div className="flexbox-col dc__gap-20 px-20 py-16 ">
+                <div className="flexbox-col dc__gap-12 px-20 py-16 ">
                     {renderFilters()}
                     {renderSavedFilters()}
                     {!isNotScannedList && (
