@@ -20,9 +20,11 @@ import { BrowserRouter } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
 import { BrowserTracing } from '@sentry/tracing'
+import { LingoProviderWrapper, loadDictionary } from 'lingo.dev/react/client'
 
 import {
     customEnv,
+    DevtronProgressing,
     OverrideMergeStrategyType,
     QueryClientProvider,
     ThemeProvider,
@@ -187,18 +189,20 @@ if (!window || !window._env_) {
 ReactDOM.render(
     <React.StrictMode>
         {window.top === window.self ? (
-            <QueryClientProvider>
-                <ThemeProvider>
-                    <BrowserRouter basename={window.__BASE_URL__}>
-                        <UseRegisterShortcutProvider>
-                            <UserEmailProvider>
-                                <App />
-                            </UserEmailProvider>
-                        </UseRegisterShortcutProvider>
-                        <ToastManagerContainer />
-                    </BrowserRouter>
-                </ThemeProvider>
-            </QueryClientProvider>
+            <LingoProviderWrapper loadDictionary={(locale) => loadDictionary(locale)} fallback={<DevtronProgressing />}>
+                <QueryClientProvider>
+                    <ThemeProvider>
+                        <BrowserRouter basename={window.__BASE_URL__}>
+                            <UseRegisterShortcutProvider>
+                                <UserEmailProvider>
+                                    <App />
+                                </UserEmailProvider>
+                            </UseRegisterShortcutProvider>
+                            <ToastManagerContainer />
+                        </BrowserRouter>
+                    </ThemeProvider>
+                </QueryClientProvider>
+            </LingoProviderWrapper>
         ) : null}
     </React.StrictMode>,
     root,

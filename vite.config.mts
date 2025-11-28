@@ -29,9 +29,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 // import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { compression, defineAlgorithm } from 'vite-plugin-compression2'
+import lingoCompiler from 'lingo.dev/compiler'
 
 const WRONG_CODE = `import { bpfrpt_proptype_WindowScroller } from "../WindowScroller.js";`
-const TARGET_URL = 'https://preview.devtron.ai/'
+const TARGET_URL = 'https://devtron-ent-3.devtron.info/'
 
 function reactVirtualized(): PluginOption {
     return {
@@ -287,5 +288,11 @@ export default defineConfig(({ mode }) => {
         }
     }
 
-    return baseConfig
+    return lingoCompiler.vite({
+        sourceRoot: 'src',
+        targetLocales: ['es', 'fr', 'de'],
+        models: {
+            "*:*": "google:gemini-2.0-flash",
+        }
+    })(baseConfig)
 })
