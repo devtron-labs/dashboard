@@ -16,6 +16,7 @@
 
 import { MouseEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
+import { LocaleSwitcher } from 'lingo.dev/react/client'
 
 import {
     AnimatePresence,
@@ -259,6 +260,7 @@ export const Navigation = ({
                             showTooltip
                         />
                     )}
+                    <LocaleSwitcher locales={['en', 'es', 'fr', 'de']} />
                 </nav>
                 <AnimatePresence>
                     {isExpanded && (
