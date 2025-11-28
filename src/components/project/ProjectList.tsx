@@ -90,7 +90,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             if (value.includes(' ')) {
                 isValid[key] = false
                 errorMessage[key] = `Do not use 'spaces' in name`
-            } else if (value.length > 20) {
+            } else if (value.length > 25) {
                 isValid[key] = false
                 errorMessage[key] = 'Maximum 16 characters required'
             } else if (!/^[a-z0-9]+([-a-z0-9]*[a-z0-9])?$/i.test(value)) {
