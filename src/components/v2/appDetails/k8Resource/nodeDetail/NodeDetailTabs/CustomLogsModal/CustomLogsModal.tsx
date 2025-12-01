@@ -23,13 +23,10 @@ import {
     ComponentSizeType,
     CustomInput,
     InfoBlock,
+    DateTimePicker,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Select from 'react-select'
-import { SingleDatePicker } from 'react-dates'
-import 'react-dates/initialize'
-import 'react-dates/lib/css/_datepicker.css'
 import moment from 'moment'
-import CustomizableCalendarDay from 'react-dates/lib/components/CustomizableCalendarDay'
 import { Option } from '../../../../../common/ReactSelect.utils'
 import { ReactComponent as Close } from '../../../../../../../assets/icons/ic-close.svg'
 import { ReactComponent as CalendarIcon } from '../../../../../../../assets/icons/ic-calendar.svg'
@@ -45,7 +42,6 @@ import {
     getTimeStamp,
 } from '../../nodeDetail.util'
 import { multiSelectStyles } from '../../../../../common/ReactSelectCustomization'
-import { customDayStyles } from '../../../../../../common'
 import { CustomLogFilterOptionsType, SelectedCustomLogFilterType } from '../node.type'
 
 const DropdownIndicator = () => {
@@ -88,20 +84,22 @@ export const InputForSelectedOption = ({
         }
     }, [])
 
-    const handleDatesChange = (selected) => {
-        if (!selected) {
+    const handleDatesChange = (selectedDate: Date) => {
+        if (!selectedDate) {
             return
         }
+
+        const momentDate = moment(selectedDate)
 
         setCustomLogFilterOptions({
             ...customLogFilterOptions,
             [filterTypeRadio]: {
                 ...customLogFilterOptions[filterTypeRadio],
-                date: selected,
-                value: getTimeStamp(selected, customLogFilterOptions[filterTypeRadio].time.value).toString(),
+                date: momentDate,
+                value: getTimeStamp(momentDate, customLogFilterOptions[filterTypeRadio].time.value).toString(),
             },
         })
-        if (selected.isSame(moment(), 'day')) {
+        if (momentDate.isSame(moment(), 'day')) {
             setUntilTimeOptionsWithExcluded()
         } else {
             setUntilTimeOptions(ALLOW_UNTIL_TIME_OPTIONS)
@@ -213,25 +211,14 @@ export const InputForSelectedOption = ({
                 <div className="flexbox-col cn-7">
                     <div className="dc__required-field mb-6 fs-13">View logs since</div>
                     <div className="flexbox-col">
-                        <div className="flex">
-                            <SingleDatePicker
-                                id="single_date_picker"
-                                placeholder="Select date"
-                                focused={focused}
-                                onFocusChange={handleFocusChange}
-                                date={customLogFilterOptions[filterTypeRadio].date}
-                                onDateChange={handleDatesChange}
-                                numberOfMonths={1}
-                                openDirection="down"
-                                renderCalendarDay={(props) => (
-                                    <CustomizableCalendarDay {...props} {...customDayStyles} />
-                                )}
-                                hideKeyboardShortcutsPanel
-                                withFullScreenPortal={false}
-                                orientation="horizontal"
-                                customInputIcon={<CalendarIcon className="icon-dim-16" />}
-                                isOutsideRange={(day) => moment().startOf('day').isBefore(day, 'day')}
-                                displayFormat="DD MMM YYYY"
+                        <div className="flex dc__gap-8">
+                            <DateTimePicker
+                                id="custom-logs-modal-date-picker"
+                                date={customLogFilterOptions[filterTypeRadio].date.toDate()}
+                                onChange={handleDatesChange}
+                                hideTimeSelect
+                                blockPreviousDates={false}
+                                isOutsideRange={(day) => moment().startOf('day').isBefore(moment(day), 'day')}
                             />
                             <div className="flex-grow-1">
                                 <Select
