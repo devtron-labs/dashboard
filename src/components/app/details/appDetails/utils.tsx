@@ -141,13 +141,13 @@ export const LatencySelect = (props) => {
 }
 
 export const getAppMetricsPresetOptions = (onClick: GrafanaPresetOptionHandlerType): DateTimePickerProps['rangeShortcutOptions'] => [
-    { label: 'Last 5 minutes', onClick: () => onClick('now - 5m', { magnitude: 5, unit: 'minutes' }) },
-    { label: 'Last 30 minutes', onClick: () => onClick('now - 30m', { magnitude: 30, unit: 'minutes' }) },
-    { label: 'Last 1 hour', onClick: () => onClick('now - 1h', { magnitude: 1, unit: 'hours' }) },
-    { label: 'Last 24 hours', onClick: () => onClick('now - 24h', { magnitude: 24, unit: 'hours' }) },
-    { label: 'Last 7 days', onClick: () => onClick('now - 7d', { magnitude: 7, unit: 'days' }) },
-    { label: 'Last 1 month', onClick: () => onClick('now - 1M', { magnitude: 1, unit: 'months' }) },
-    { label: 'Last 6 months', onClick: () => onClick('now - 6M', { magnitude: 6, unit: 'months' }) },
+    { label: 'Last 5 minutes', onClick: () => onClick('now-5m', { magnitude: 5, unit: 'minutes' }) },
+    { label: 'Last 30 minutes', onClick: () => onClick('now-30m', { magnitude: 30, unit: 'minutes' }) },
+    { label: 'Last 1 hour', onClick: () => onClick('now-1h', { magnitude: 1, unit: 'hours' }) },
+    { label: 'Last 24 hours', onClick: () => onClick('now-24h', { magnitude: 24, unit: 'hours' }) },
+    { label: 'Last 7 days', onClick: () => onClick('now-7d', { magnitude: 7, unit: 'days' }) },
+    { label: 'Last 1 month', onClick: () => onClick('now-1M', { magnitude: 1, unit: 'months' }) },
+    { label: 'Last 6 months', onClick: () => onClick('now-6M', { magnitude: 6, unit: 'months' }) },
 ]
 
 export function isK8sVersionValid(k8sVersion: string): boolean {

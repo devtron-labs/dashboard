@@ -226,16 +226,19 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
     }
 
     handlePredefinedRange: GrafanaPresetOptionHandlerType = (startStr, momentDiff) => {
-        this.setState({
-            calendar: {
-                startDate: moment().subtract(momentDiff.magnitude, momentDiff.unit),
-                endDate: moment(),
+        this.setState(
+            {
+                calendar: {
+                    startDate: moment().subtract(momentDiff.magnitude, momentDiff.unit),
+                    endDate: moment(),
+                },
+                calendarInputs: {
+                    startDate: startStr,
+                    endDate: 'now',
+                },
             },
-            calendarInputs: {
-                startDate: startStr,
-                endDate: 'now',
-            },
-        }, this.handleApply)
+            this.handleApply,
+        )
     }
 
     handleChartChange(chartName: ChartTypes, statusCode?: StatusTypes): void {
@@ -303,9 +306,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         })
     }
 
-    isOutsideRange = (date: Date) => 
-        moment(date).isAfter(moment(), 'day')
-    
+    isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
 
     render() {
         const iframeClasses = 'app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12'
