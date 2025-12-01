@@ -479,6 +479,8 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         handleEnvironmentChange(selected)
     }
 
+    const isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
+
     const renderInputs = () => (
         <div className="deployment-metrics__inputs bg__primary">
             <div className="w-180" data-testid="select-environment">
@@ -504,6 +506,7 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                         }}
                         onChange={handleDatesChange}
                         blockPreviousDates={false}
+                        isOutsideRange={isOutsideRange}
                         rangeShortcutOptions={getRangeShortcutOptions()}
                     />
                 ) : null}

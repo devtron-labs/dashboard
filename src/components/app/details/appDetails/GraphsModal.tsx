@@ -303,6 +303,10 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         })
     }
 
+    isOutsideRange = (date: Date) => 
+        moment(date).isAfter(moment(), 'day')
+    
+
     render() {
         const iframeClasses = 'app-details-graph__iframe app-details-graph__iframe--graph-modal pl-12'
 
@@ -445,6 +449,8 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                 }}
                                 onChange={this.handleDatesChange}
                                 rangeShortcutOptions={getAppMetricsPresetOptions(this.handlePredefinedRange)}
+                                blockPreviousDates={false}
+                                isOutsideRange={this.isOutsideRange}
                             />
                         </div>
                     </div>

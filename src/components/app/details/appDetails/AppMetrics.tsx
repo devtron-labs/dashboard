@@ -321,6 +321,8 @@ export const AppMetrics: React.FC<{
         })
     }
 
+    const isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
+
     useEffect(() => {
         if (grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED) {
             checkDatasource()
@@ -392,6 +394,8 @@ export const AppMetrics: React.FC<{
                             }}
                             onChange={handleDatesChange}
                             rangeShortcutOptions={getAppMetricsPresetOptions(handlePredefinedRange)}
+                            blockPreviousDates={false}
+                            isOutsideRange={isOutsideRange}
                         />
                     </div>
                 </div>
