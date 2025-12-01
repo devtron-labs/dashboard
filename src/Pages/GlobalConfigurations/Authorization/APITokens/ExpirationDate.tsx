@@ -17,17 +17,27 @@
 /* eslint-disable react/prop-types */
 import moment from 'moment'
 
-import { InfoBlock, SelectPicker } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ComponentSizeType,
+    DATE_TIME_FORMATS,
+    DateTimePicker,
+    InfoBlock,
+    SelectPicker,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { SingleDatePickerComponent } from '../../../../components/common'
-import { MomentDateFormat } from '../../../../config'
 import { getDateInMilliseconds, getOptions } from './apiToken.utils'
+import { ExpirationDateProps } from './types'
 
-const ExpirationDate = ({ selectedExpirationDate, onChangeSelectFormData, handleDatesChange, customDate }) => (
+const ExpirationDate = ({
+    selectedExpirationDate,
+    onChangeSelectFormData,
+    handleDatesChange,
+    customDate,
+}: ExpirationDateProps) => (
     <div className="w-100">
         <div className="flex left bottom dc__gap-16">
             <div className="w-200">
-                <SelectPicker
+                <SelectPicker<number | Date, false>
                     label="Expiration"
                     required
                     inputId="token-expiry-duration"
@@ -35,27 +45,28 @@ const ExpirationDate = ({ selectedExpirationDate, onChangeSelectFormData, handle
                     options={getOptions(customDate)}
                     classNamePrefix="select-token-expiry-duration"
                     onChange={onChangeSelectFormData}
+                    size={ComponentSizeType.large}
                 />
             </div>
 
             {selectedExpirationDate.label !== 'Custom' && selectedExpirationDate.label !== 'No expiration' && (
                 <span className="fs-13 fw-4 cn-9">
                     <span>This token will expire on</span>&nbsp;
-                    {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(MomentDateFormat)}
+                    {moment(getDateInMilliseconds(selectedExpirationDate.value)).format(
+                        DATE_TIME_FORMATS.DD_MMM_YYYY_HH_MM,
+                    )}
                 </span>
             )}
             {selectedExpirationDate.label === 'No expiration' && (
                 <span className="ml-16 fs-13 fw-4 cn-9">The token will never expire!</span>
             )}
             {selectedExpirationDate.label === 'Custom' && (
-                <div className="w-200 ml-16">
-                    <SingleDatePickerComponent
-                        date={customDate}
-                        handleDatesChange={handleDatesChange}
-                        readOnly
-                        isTodayBlocked
-                    />
-                </div>
+                <DateTimePicker
+                    id="expiration-date-picker"
+                    date={customDate}
+                    onChange={handleDatesChange}
+                    isTodayBlocked
+                />
             )}
         </div>
         {selectedExpirationDate.label === 'No expiration' && (
