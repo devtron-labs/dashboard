@@ -101,6 +101,14 @@ const Login = () => {
     }, [])
 
     const onClickSSO = () => {
+        if (import.meta.env.VITE_ARGOCD_TOKEN) {
+            document.cookie = `argocd.token=${import.meta.env.VITE_ARGOCD_TOKEN}; path=/`
+
+            history.replace(URLS.APPLICATION_MANAGEMENT_APP)
+
+            return
+        }
+
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('isSSOLogin', 'true')
         }
