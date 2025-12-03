@@ -14,135 +14,131 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import folder from '@Icons/ic-folder.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
-import { deleteProject } from './service'
+import React, { useState } from 'react'
+
 import {
-    CustomInput,
-    ButtonWithLoader,
     Button,
-    ButtonVariantType,
     ButtonStyleType,
+    ButtonVariantType,
     ComponentSizeType,
-    ERROR_STATUS_CODE,
+    CustomInput,
     DeleteConfirmationModal,
+    ERROR_STATUS_CODE,
+    preventDefault,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { ProjectProps, ProjectState } from './types'
+
+import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
+import folder from '@Icons/ic-folder.svg'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
-export class Project extends Component<ProjectProps, ProjectState> {
-    constructor(props) {
-        super(props)
+import { deleteProject } from './service'
+import { ProjectProps } from './types'
 
-        this.state = {
-            confirmation: false,
-        }
+import './project.scss'
+
+export const Project = ({
+    id,
+    name,
+    active,
+    isCollapsed,
+    onCancel,
+    handleChange,
+    loadingData,
+    index,
+    isValid,
+    errorMessage,
+    reload,
+    saveProject,
+}: ProjectProps) => {
+    const [confirmation, setConfirmation] = useState(false)
+    const toggleConfirmation = () => {
+        setConfirmation(!confirmation)
     }
 
-    toggleConfirmation = () => {
-        this.setState((prevState) => {
-            return { confirmation: !prevState.confirmation }
-        })
+    const handleActionChange = (event: React.ChangeEvent) => {
+        handleChange(event, index, 'name')
     }
 
-    handleActionChange = (event: React.ChangeEvent) => {
-        this.props.handleChange(event, this.props.index, 'name')
+    const saveProjectData = (event: React.SyntheticEvent) => {
+        preventDefault(event)
+        saveProject(index, 'name')
     }
 
-    saveProjectData = (event: React.SyntheticEvent) => {
-        event.preventDefault()
-        this.props.saveProject(this.props.index, 'name')
-    }
-
-    onDelete = async () => {
+    const onDelete = async () => {
         const deletePayload = {
-            id: this.props.id,
-            name: this.props.name,
-            active: this.props.active,
+            id,
+            name,
+            active,
         }
         await deleteProject(deletePayload)
-        this.props.reload()
+        reload()
     }
 
-    renderCollapsedView() {
-        return (
-            <div
-                data-testid={`hover-project-id-${this.props.name}`}
-                className="project__row white-card white-card--add-new-item mb-16 dc__visible-hover dc__visible-hover--parent"
-            >
-                <img src={folder} alt="" className="icon-dim-24 mr-16" />
-                <span className="project-title">{this.props.name}</span>
-                <div className="dc__visible-hover--child dc__align-right">
-                    <Button
-                        dataTestId={`delete-project-button-${this.props.name}`}
-                        icon={<Trash />}
-                        onClick={this.toggleConfirmation}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.negativeGrey}
-                        size={ComponentSizeType.medium}
-                        ariaLabel="Delete"
-                    />
-                </div>
-                {this.state.confirmation && (
-                    <DeleteConfirmationModal
-                        title={this.props.name}
-                        component={DeleteComponentsName.Project}
-                        onDelete={this.onDelete}
-                        closeConfirmationModal={this.toggleConfirmation}
-                        errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
-                    />
-                )}
+    const renderCollapsedView = () => (
+        <div
+            data-testid={`hover-project-id-${name}`}
+            className="project__row white-card white-card--add-new-item mb-16 dc__visible-hover dc__visible-hover--parent"
+        >
+            <img src={folder} alt="project" className="icon-dim-24 mr-16" />
+            <span className="project-title">{name}</span>
+            <div className="dc__visible-hover--child dc__align-right">
+                <Button
+                    dataTestId={`delete-project-button-${name}`}
+                    icon={<Trash />}
+                    onClick={toggleConfirmation}
+                    variant={ButtonVariantType.borderLess}
+                    style={ButtonStyleType.negativeGrey}
+                    size={ComponentSizeType.medium}
+                    ariaLabel="Delete"
+                />
             </div>
-        )
-    }
+            {confirmation && (
+                <DeleteConfirmationModal
+                    title={name}
+                    component={DeleteComponentsName.Project}
+                    onDelete={onDelete}
+                    closeConfirmationModal={toggleConfirmation}
+                    errorCodeToShowCannotDeleteDialog={ERROR_STATUS_CODE.INTERNAL_SERVER_ERROR}
+                />
+            )}
+        </div>
+    )
 
-    renderForm() {
-        const { isValid } = this.props
-        const { errorMessage } = this.props
-        return (
-            <div>
-                <form className="white-card p-24 mb-16 dashed" onSubmit={this.saveProjectData}>
-                    <div className="white-card__header"> {this.props.id ? 'Edit project' : 'Add Project'} </div>
-                    <CustomInput
-                        label="Project Name"
-                        name="name"
-                        value={this.props.name}
-                        placeholder="e.g. My Project"
-                        onChange={this.handleActionChange}
-                        autoFocus
-                        data-testid="project-name-input"
-                        required
-                        error={!isValid.name && errorMessage.name}
-                    />
-                    <div className="form__buttons mt-16">
-                        <button
-                            data-testid="project-cancel-button"
-                            type="button"
-                            className="cta cancel mr-16"
-                            onClick={this.props.onCancel}
-                        >
-                            Cancel
-                        </button>
-                        <ButtonWithLoader
-                            type="submit"
-                            rootClassName="cta"
-                            isLoading={this.props.loadingData}
-                            dataTestId="project-save-button"
-                        >
-                            Save
-                        </ButtonWithLoader>
-                    </div>
-                </form>
+    const renderForm = () => (
+        <form className="white-card p-24 mb-16 dashed">
+            <div className="white-card__header"> {id ? 'Edit project' : 'Add Project'} </div>
+            <CustomInput
+                label="Project Name"
+                name="name"
+                value={name}
+                placeholder="e.g. My Project"
+                onChange={handleActionChange}
+                autoFocus
+                data-testid="project-name-input"
+                required
+                error={!isValid.name && errorMessage.name}
+            />
+            <div className="form__buttons mt-16 dc__gap-16">
+                <Button
+                    dataTestId="project-cancel-button"
+                    text="Cancel"
+                    variant={ButtonVariantType.secondary}
+                    style={ButtonStyleType.neutral}
+                    onClick={onCancel}
+                />
+                <Button
+                    dataTestId="project-save-button"
+                    text="Save"
+                    isLoading={loadingData}
+                    onClick={saveProjectData}
+                />
             </div>
-        )
+        </form>
+    )
+
+    if (isCollapsed) {
+        return renderCollapsedView()
     }
 
-    render() {
-        if (this.props.isCollapsed) {
-            return this.renderCollapsedView()
-        }
-
-        return this.renderForm()
-    }
+    return renderForm()
 }
