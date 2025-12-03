@@ -262,7 +262,6 @@ src/components/notifications/notifications.util.tsx
 src/components/onboardingGuide/GuideCommonHeader.tsx
 src/components/onboardingGuide/OnboardingGuide.tsx
 src/components/onboardingGuide/onboarding.utils.ts
-src/components/project/Project.tsx
 src/components/project/ProjectList.tsx
 src/components/scopedVariables/Descriptor.tsx
 src/components/scopedVariables/DescriptorSearchBar.tsx
