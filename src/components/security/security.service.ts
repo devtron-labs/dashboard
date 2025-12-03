@@ -43,17 +43,19 @@ export function getClusterListMinNoAuth() {
 export const getVulnerabilityFilterData = async (): Promise<
     Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>
 > => {
-    const envResponse = await getEnvironmentListMinPublic()
-    const clusterResponse = await getClusterListMin()
+    const [envResponse, clusterResponse] = await Promise.allSettled([
+        getEnvironmentListMinPublic(),
+        getClusterListMin(),
+    ])
 
-    const environment = (envResponse?.result ?? [])
+    const environment = (envResponse?.status === 'fulfilled' ? envResponse.value.result : [])
         .map((env) => ({
             label: env.environment_name,
             value: `${env.id}`,
         }))
         .sort((a, b) => sortCallback('label', a, b))
 
-    const cluster = (clusterResponse?.result ?? [])
+    const cluster = (clusterResponse?.status === 'fulfilled' ? clusterResponse.value.result : [])
         .map((clusterDetails) => ({
             label: clusterDetails.cluster_name,
             value: `${clusterDetails.id}`,
