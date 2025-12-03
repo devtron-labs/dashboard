@@ -44,6 +44,8 @@ import {
     ButtonStyleType,
     handleAnalyticsEvent,
     GenericEmptyState,
+    SearchBar,
+    URL_FILTER_KEYS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType } from '../../config'
@@ -770,12 +772,20 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
+    getSearchKey = (): string => {
+        return new URLSearchParams(this.props.location.search).get(URL_FILTER_KEYS.SEARCH_KEY) || ''
+    }
+
+    getWorkflowNameToMatch = (): string => {
+        return new URLSearchParams(this.props.location.search).get('workflowName') || ''
+    }
+
     renderNewBuildPipelineButton() {
         return (
             <Button
                 dataTestId="new-workflow-button"
                 text="New Workflow"
-                disabled={!!this.props.filteredEnvIds}
+                disabled={!!this.props.filteredEnvIds || !!this.getSearchKey() || !!this.getWorkflowNameToMatch()}
                 onClick={this.handleNewPipelineModal}
                 startIcon={<Icon name="ic-add" color={null} />}
                 size={ComponentSizeType.medium}
@@ -788,7 +798,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
     }
 
     openCreateModal = () => {
-        this.props.history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
+        this.props.history.push(
+            `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`,
+        )
     }
 
     renderNewJobPipelineButton = () => {
@@ -801,6 +813,15 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 size={ComponentSizeType.medium}
             />
         )
+    }
+
+    handleUpdateSearch = (updatedSearchKey: string) => {
+        const updatedParams = new URLSearchParams({
+            [URL_FILTER_KEYS.SEARCH_KEY]: updatedSearchKey,
+        })
+        this.props.history.push({
+            search: updatedParams.toString(),
+        })
     }
 
     renderWorkflowControlButton = (): JSX.Element => {
@@ -828,7 +849,19 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         }
 
-        return this.renderNewBuildPipelineButton()
+        return (
+            <div className="flex dc__gap-8">
+                <SearchBar
+                    inputProps={{
+                        placeholder: 'Search Workflow',
+                    }}
+                    initialSearchText={this.getWorkflowNameToMatch() || this.getSearchKey()}
+                    handleEnter={this.handleUpdateSearch}
+                    keyboardShortcut="/"
+                />
+                {this.renderNewBuildPipelineButton()}
+            </div>
+        )
     }
 
     renderEmptyState() {
@@ -874,6 +907,12 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ workflows: _wf })
     }
 
+    filterWorkflow = (wf) => {
+        // If wfNameToMatch match full name, else match substring
+        const wfNameToMatch = this.getWorkflowNameToMatch()
+        return wfNameToMatch ? wf.name === wfNameToMatch : wf.name.includes(this.getSearchKey())
+    }
+
     renderWorkflows() {
         const handleModalClose = () => {
             this.props.history.push(this.props.match.url)
@@ -881,7 +920,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
 
         return (
             <>
-                {this.state.workflows.map((wf) => {
+                {this.state.workflows.filter(this.filterWorkflow).map((wf) => {
                     return (
                         <Workflow
                             id={wf.id}
@@ -917,6 +956,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             workflowPositionState={this.state.workflowPositionState}
                             handleDisplayLoader={this.handleDisplayLoader}
                             isTemplateView={this.props.isTemplateView}
+                            searchText={this.getWorkflowNameToMatch() || this.getSearchKey() || ''}
                         />
                     )
                 })}

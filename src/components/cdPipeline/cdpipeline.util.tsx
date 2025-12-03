@@ -77,6 +77,9 @@ export const validateTask = (
         taskErrorObj.name = validationRules.requiredField(taskData.name)
         taskErrorObj.isValid = taskErrorObj.name.isValid
 
+        taskErrorObj.isValid =
+            taskErrorObj.isValid && (taskErrorObj.outputDirectoryPath?.every(({ isValid }) => isValid) ?? true)
+
         if (taskData.stepType) {
             const currentStepTypeVariable =
                 taskData.stepType === PluginType.INLINE ? 'inlineStepDetail' : 'pluginRefStepDetail'
