@@ -27,11 +27,10 @@ import {
     SelectPicker,
     SelectPickerProps,
     SelectPickerVariantType,
-    prefixZeroIfSingleDigit,
     AppEnvironment,
     SelectPickerOptionType,
     IconsProps,
-    DayPickerRangeControllerPresets,
+    getTimestampFromDateIfAvailable,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { GetIFrameSrcParamsType } from './types'
 
@@ -138,19 +137,6 @@ export const LatencySelect = (props) => {
             menuPosition="absolute"
         />
     )
-}
-
-export function getCalendarValue(startDateStr: string, endDateStr: string): string {
-    let str: string = `${startDateStr} - ${endDateStr}`
-    if (endDateStr === 'now' && startDateStr.includes('now')) {
-        const range = DayPickerRangeControllerPresets.find((d) => d.endStr === startDateStr)
-        if (range) {
-            str = range.text
-        } else {
-            str = `${startDateStr} - ${endDateStr}`
-        }
-    }
-    return str
 }
 
 export function isK8sVersionValid(k8sVersion: string): boolean {
@@ -303,25 +289,6 @@ export function addChartNameExtensionToBaseURL(
             return ''
     }
     return url
-}
-
-// Need to send either the relative time like: now-5m or the timestamp to grafana
-// Assuming format is 'DD-MM-YYYY hh:mm:ss'
-const getTimestampFromDateIfAvailable = (dateString: string): string => {
-    try {
-        const [day, month, yearAndTime] = dateString.split('-')
-        const [year, time] = yearAndTime.split(' ')
-        const updatedTime = time
-            .split(':')
-            .map((item) => (['0', '00'].includes(item) ? '00' : prefixZeroIfSingleDigit(Number(item))))
-            .join(':')
-        const formattedDate = `${year}-${prefixZeroIfSingleDigit(Number(month))}-${prefixZeroIfSingleDigit(Number(day))}T${updatedTime}`
-        const parsedDate = new Date(formattedDate).getTime()
-
-        return isNaN(parsedDate) ? dateString : parsedDate.toString()
-    } catch {
-        return dateString
-    }
 }
 
 export function addQueryParamToGrafanaURL(
