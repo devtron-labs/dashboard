@@ -1722,9 +1722,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.20.6-alpha-88":
-  version: 1.20.6-alpha-88
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.20.6-alpha-88"
+"@datasert/cronjs-parser@npm:^1.4.0":
+  version: 1.4.0
+  resolution: "@datasert/cronjs-parser@npm:1.4.0"
+  checksum: 10c0/2fd82aab68e6300f8d94016ad83038a29a76423f41090b7d8f048f73a72a9ef43587367733fa5567d2c6313532bfdc364f2c2620120b022d572961d24f1fb2ab
+  languageName: node
+  linkType: hard
+
+"@devtron-labs/devtron-fe-common-lib@npm:1.20.6-alpha-72":
+  version: 1.20.6-alpha-72
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.20.6-alpha-72"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1734,6 +1741,7 @@ __metadata:
     "@codemirror/lint": "npm:6.8.4"
     "@codemirror/merge": "npm:^6.10.0"
     "@codemirror/search": "npm:6.5.8"
+    "@datasert/cronjs-parser": "npm:^1.4.0"
     "@lezer/highlight": "npm:1.2.1"
     "@replit/codemirror-indentation-markers": "npm:6.5.3"
     "@replit/codemirror-vscode-keymap": "npm:6.0.2"
@@ -1745,6 +1753,7 @@ __metadata:
     ansi_up: "npm:^5.2.1"
     chart.js: "npm:^4.5.0"
     codemirror-json-schema: "npm:0.8.0"
+    cronstrue: "npm:^3.9.0"
     dayjs: "npm:^1.11.13"
     fast-json-patch: "npm:^3.1.1"
     focus-trap-react: "npm:^10.3.1"
@@ -1776,7 +1785,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/f1838d3484bd8c82b18c4ff07240356c27485cfef7635303de25bed5a40a4fd25a7fae421d1a28d4e81fc6228e42cc4e9c550207c8c329ed112b19edc723569d
+  checksum: 10c0/82276486c15ff19ed7e7ebdc31394835f9af21972db0be28731456ff0f253fcea21d3b03de4cae3814ae90000ecc558b6424ab999b1adcfcfa070c1ba4236dad
   languageName: node
   linkType: hard
 
@@ -5407,6 +5416,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cronstrue@npm:^3.9.0":
+  version: 3.9.0
+  resolution: "cronstrue@npm:3.9.0"
+  bin:
+    cronstrue: bin/cli.js
+  checksum: 10c0/391ae21c28846ed5c17562f0a8b3ff696f7f34cb6222601281e58dd27e468b5a54a07cfe4f3d89f5d07453015057e6e02db1cb802276754a6de43eb4ba45b128
+  languageName: node
+  linkType: hard
+
 "cross-spawn@npm:^7.0.5":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
@@ -5581,7 +5599,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.20.6-alpha-88"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.20.6-alpha-72"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"
