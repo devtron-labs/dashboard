@@ -80,6 +80,7 @@ const EditAPIToken = ({
         userRoleGroups,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
     } = usePermissionConfiguration()
 
     const history = useHistory()
@@ -133,6 +134,7 @@ const EditAPIToken = ({
                     permissionType,
                     userGroups: [],
                     canManageAllAccess: allowManageAllAccess,
+                    observabilityPermission,
                     ...getDefaultUserStatusAndTimeout(),
                 })
 

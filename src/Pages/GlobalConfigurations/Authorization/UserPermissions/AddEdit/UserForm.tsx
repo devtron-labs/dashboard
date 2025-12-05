@@ -81,6 +81,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         showStatus,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -153,6 +154,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             permissionType,
             userGroups: selectedUserGroups,
             canManageAllAccess: allowManageAllAccess,
+            observabilityPermission,
             ...getDefaultUserStatusAndTimeout(),
         })
 

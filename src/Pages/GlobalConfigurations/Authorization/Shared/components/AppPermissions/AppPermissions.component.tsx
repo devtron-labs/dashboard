@@ -26,6 +26,7 @@ import {
     GenericSectionErrorState,
     logExceptionToSentry,
     mapByKey,
+    ObservabilityPermissionFilter,
     ReactSelectInputAction,
     showError,
     stringComparatorBySortOrder,
@@ -34,6 +35,7 @@ import {
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { importComponentFromFELibrary } from '@Components/common'
 import {
     getUserAccessAllWorkflows,
     getUserAccessChartGroups,
@@ -74,11 +76,15 @@ import {
     getRoleConfigForRoleFilter,
 } from './utils'
 
+const ObservabilityPermissions = importComponentFromFELibrary('ObservabilityPermissions', null, 'function')
+
 const AppPermissions = () => {
     const { serverMode } = useMainContext()
     const {
         directPermission,
         setDirectPermission,
+        observabilityPermission,
+        setObservabilityPermission,
         setChartPermission,
         setK8sPermission,
         currentK8sPermissionRef,
@@ -657,6 +663,21 @@ const AppPermissions = () => {
             setK8sPermission(_k8sPermission)
         }
 
+        // Observability Permissions
+        const _observabilityPermission: ObservabilityPermissionFilter[] = (roleFilters ?? [])
+            .filter((roleFilter) => roleFilter.entity === EntityTypes.OBSERVABILITY)
+            .map(({ action, entityName, tenant, status, timeToLive }) => ({
+                action: action as ActionTypes.ADMIN | ActionTypes.VIEW,
+                tenant: { label: tenant, value: tenant },
+                entityName: entityName?.split(',')?.map((entity) => ({ value: entity, label: entity })) || [],
+                status,
+                timeToLive,
+            }))
+
+        if (_observabilityPermission.length) {
+            setObservabilityPermission(_observabilityPermission)
+        }
+
         setIsLoading(false)
     }
 
@@ -1028,6 +1049,14 @@ const AppPermissions = () => {
                     {isNonEAMode && (
                         <Route path={`${path}/chart-groups`}>
                             <ChartPermission chartGroupsList={chartGroupsList} />
+                        </Route>
+                    )}
+                    {ObservabilityPermissions && (
+                        <Route path={`${path}/observability`}>
+                            <ObservabilityPermissions
+                                observabilityPermission={observabilityPermission}
+                                setObservabilityPermission={setObservabilityPermission}
+                            />
                         </Route>
                     )}
                     <Redirect

@@ -388,9 +388,15 @@ export const getRolesAndAccessRoles = ({
     chartPermission,
     serverMode,
     canManageAllAccess,
+    observabilityPermission,
 }: Pick<
     CreateUserPermissionPayloadParams,
-    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission' | 'canManageAllAccess'
+    | 'chartPermission'
+    | 'directPermission'
+    | 'serverMode'
+    | 'k8sPermission'
+    | 'canManageAllAccess'
+    | 'observabilityPermission'
 >) => {
     const filteredDirectPermissions = directPermission.filter(
         (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -410,6 +416,14 @@ export const getRolesAndAccessRoles = ({
             kind: permission.kind.value === SELECT_ALL_VALUE ? '' : permission.kind.label,
             namespace: getCommaSeparatedNamespaceList(permission.namespace),
             resource: getSelectedPermissionValues(permission.resource),
+        })),
+        ...observabilityPermission.map(({ action, entityName, tenant, status, timeToLive }) => ({
+            entity: EntityTypes.OBSERVABILITY as APIRoleFilter['entity'],
+            action,
+            entityName: entityName.map((entity) => entity.value).join(','),
+            tenant: tenant.value,
+            status,
+            timeToLive,
         })),
     ]
 
@@ -448,6 +462,7 @@ export const createUserPermissionPayload = ({
     timeToLive,
     userGroups,
     canManageAllAccess,
+    observabilityPermission,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => {
     const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
         directPermission,
@@ -455,6 +470,7 @@ export const createUserPermissionPayload = ({
         chartPermission,
         serverMode,
         canManageAllAccess,
+        observabilityPermission,
     })
 
     return {
