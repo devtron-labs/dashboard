@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-import { Progressing, BreadCrumb, useBreadcrumb, useAsync, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BreadcrumbText,
+    Progressing,
+    BreadCrumb,
+    useBreadcrumb,
+    useAsync,
+    PageHeader,
+    getInfrastructureManagementBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
-import{ ChartGroupCard} from '../ChartGroupCard'
+import { ChartGroupCard } from '../ChartGroupCard'
 import CreateChartGroup from '../modal/CreateChartGroup'
 import ChartGroupUpdate from '../ChartGroupUpdate'
 import ChartGroupDetails from '../ChartGroupDetails'
@@ -25,11 +34,16 @@ import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 
 const ChartGroupList = () => {
-    const [loading, result, error, reload] = useAsync(getChartGroups, [])
+    const [loading, result] = useAsync(getChartGroups, [])
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ...getInfrastructureManagementBreadcrumb(),
                 'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
                 group: { component: 'Chart Groups', linked: false },
             },
         },

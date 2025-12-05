@@ -28,7 +28,6 @@ import {
 // Fallback Icon
 import NavSprite from '../../../assets/icons/navigation-sprite.svg'
 import TextLogo from '../../../assets/icons/ic-nav-devtron.svg'
-import { Command, CommandErrorBoundary } from '../../command'
 import { ModuleStatus } from '../../v2/devtronStackManager/DevtronStackManager.type'
 import './navigation.scss'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
@@ -46,7 +45,7 @@ const NavigationList: NavigationListItemType[] = [
         dataTestId: 'click-on-application',
         type: 'link',
         icon: 'ic-grid-view',
-        href: URLS.APP,
+        href: URLS.APPLICATION_MANAGEMENT_APP,
         isAvailableInEA: true,
     },
     {
@@ -54,7 +53,7 @@ const NavigationList: NavigationListItemType[] = [
         dataTestId: 'click-on-job',
         type: 'link',
         icon: 'ic-k8s-job',
-        href: URLS.JOB,
+        href: URLS.AUTOMATION_AND_ENABLEMENT_JOB,
         isAvailableInEA: false,
         markOnlyForSuperAdmin: false,
     },
@@ -62,16 +61,16 @@ const NavigationList: NavigationListItemType[] = [
         title: 'Application Groups',
         dataTestId: 'click-on-application-groups',
         type: 'link',
-        icon: 'ic-app-group',
-        href: URLS.APPLICATION_GROUP,
+        icon: 'ic-application-group',
+        href: URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
         isAvailableInEA: false,
     },
     {
-        title: 'Software Distribution Hub',
+        title: 'Software Release Management',
         dataTestId: 'click-on-releases',
         type: 'link',
-        icon: 'ic-open-box',
-        href: URLS.SOFTWARE_DISTRIBUTION_HUB,
+        icon: 'ic-software-release-management',
+        href: CommonURLS.SOFTWARE_RELEASE_MANAGEMENT,
         isAvailableInEA: false,
         forceHideEnvKey: 'HIDE_RELEASES',
         hideNav: hideSoftwareDistributionHub,
@@ -91,7 +90,7 @@ const NavigationList: NavigationListItemType[] = [
         dataTestId: 'click-on-resource-browser',
         type: 'link',
         icon: 'ic-cube',
-        href: URLS.RESOURCE_BROWSER,
+        href: CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
         isAvailableInEA: true,
         markAsBeta: false,
         isAvailableInDesktop: true,
@@ -100,7 +99,7 @@ const NavigationList: NavigationListItemType[] = [
         title: 'Resource Watcher',
         dataTestId: 'click-on-resource-watcher',
         type: 'link',
-        href: URLS.RESOURCE_WATCHER,
+        href: CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
         icon: 'ic-monitoring',
         isAvailableInEA: true,
         forceHideEnvKey: 'HIDE_RESOURCE_WATCHER',
@@ -111,14 +110,14 @@ const NavigationList: NavigationListItemType[] = [
         dataTestId: 'click-on-chart-store',
         type: 'link',
         icon: 'ic-helm',
-        href: URLS.CHARTS,
+        href: URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE,
         isAvailableInEA: true,
     },
     {
         title: 'Security',
         dataTestId: 'click-on-security',
         type: 'link',
-        href: URLS.SECURITY,
+        href: CommonURLS.SECURITY_CENTER,
         icon: 'ic-shield-check',
         moduleName: ModuleNameMap.SECURITY_CLAIR,
         moduleNameTrivy: ModuleNameMap.SECURITY_TRIVY,
@@ -127,7 +126,7 @@ const NavigationList: NavigationListItemType[] = [
         title: 'Bulk Edit',
         dataTestId: 'click-on-bulk-edit',
         type: 'link',
-        href: URLS.BULK_EDITS,
+        href: URLS.APPLICATION_MANAGEMENT_BULK_EDIT,
         icon: 'ic-code',
         isAvailableInEA: false,
     },
@@ -165,7 +164,6 @@ export default class Navigation extends Component<
         showLogoutCard: boolean
         showHelpCard: boolean
         showMoreOptionCard: boolean
-        isCommandBarActive: boolean
         forceUpdateTime: number
     }
 > {
@@ -177,13 +175,11 @@ export default class Navigation extends Component<
             showLogoutCard: false,
             showHelpCard: false,
             showMoreOptionCard: false,
-            isCommandBarActive: false,
             forceUpdateTime: Date.now(),
         }
         this.onLogout = this.onLogout.bind(this)
         this.toggleLogoutCard = this.toggleLogoutCard.bind(this)
         this.toggleHelpCard = this.toggleHelpCard.bind(this)
-        this.toggleCommandBar = this.toggleCommandBar.bind(this)
         this.getSecurityModuleStatus(MODULE_STATUS_RETRY_COUNT)
     }
 
@@ -249,10 +245,6 @@ export default class Navigation extends Component<
 
     toggleHelpCard() {
         this.setState({ showHelpCard: !this.state.showHelpCard })
-    }
-
-    toggleCommandBar(flag: boolean): void {
-        this.setState({ isCommandBarActive: flag })
     }
 
     onLogout(): void {
@@ -347,7 +339,7 @@ export default class Navigation extends Component<
                 <nav>
                     <aside className="short-nav nav-grid nav-grid--collapsed">
                         <NavLink
-                            to={URLS.APP}
+                            to={URLS.APPLICATION_MANAGEMENT_APP}
                             onClick={(event) => {
                                 ReactGA.event({
                                     category: 'Main Navigation',
@@ -373,15 +365,6 @@ export default class Navigation extends Component<
                         )}
                     </aside>
                 </nav>
-                <CommandErrorBoundary toggleCommandBar={this.toggleCommandBar}>
-                    <Command
-                        location={this.props.location}
-                        match={this.props.match}
-                        history={this.props.history}
-                        isCommandBarActive={this.state.isCommandBarActive}
-                        toggleCommandBar={this.toggleCommandBar}
-                    />
-                </CommandErrorBoundary>
             </>
         )
     }

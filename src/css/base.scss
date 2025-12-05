@@ -370,12 +370,12 @@ a:focus {
     top: 47px;
 }
 
-.dc__top-49 {
-    top: 49px;
+.dc__top-48 {
+    top: 48px;
 }
 
-.dc__top-77 {
-    top: 77px;
+.dc__top-49 {
+    top: 49px;
 }
 
 .dc__top-80 {
@@ -1360,6 +1360,8 @@ button.anchor {
 
 .dc__devtron-breadcrumb__item__separator {
     margin: 0 4px;
+    font-weight: 400;
+    color: var(--N600);
 }
 
 .multi-chart-summary__values-select.popup-body,
@@ -2223,6 +2225,10 @@ button.anchor {
     max-width: 600px;
 }
 
+.dc__mxw-720 {
+    max-width: 720px;
+}
+
 .dc__mxw-800 {
     max-width: 800px;
 }
@@ -2376,6 +2382,11 @@ button.anchor {
 .dc__right-radius-4 {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
+}
+
+.dc__right-radius-8 {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
 
 .dc__no-border-radius {
@@ -3238,6 +3249,10 @@ button.anchor {
     height: 2px;
 }
 
+.h-6 {
+    height: 6px;
+}
+
 .h-8 {
     height: 8px;
 }
@@ -3382,6 +3397,10 @@ button.anchor {
     height: 132px;
 }
 
+.h-150 {
+    height: 150px;
+}
+
 .h-166 {
     height: 166px;
 }
@@ -3424,6 +3443,10 @@ button.anchor {
 
 .h-380 {
     height: 380px !important;
+}
+
+.h-400 {
+    height: 400px;
 }
 
 .h-500 {
@@ -4816,21 +4839,6 @@ textarea::placeholder {
 }
 
 .dc__pulsating-dot {
-    width: 10px;
-    height: 10px;
-    border: solid 4px var(--O200);
-    background-color: var(--O500);
-    top: -5px;
-    right: -5px;
-    border-radius: 50%;
-    animation-name: pulse;
-    animation-duration: 2s;
-    animation-iteration-count: infinite;
-    animation-timing-function: linear;
-}
-
-// TODO: rename this to `dc__pulsating-dot` and remove existing `dc__pulsating-dot`(above class) when removing `FEATURE_GROUPED_APP_LIST_FILTERS_ENABLE` flag
-.dc__pulsating-dot-new {
     width: 12px;
     height: 12px;
     background-color: var(--O500);
@@ -5023,6 +5031,22 @@ details[open] {
             // TODO: need to create a override for color as well
             background-color: var(--N100);
             transform: unset;
+        }
+
+        &-gap-8 {
+            gap: 16px;
+
+            &> :not(:first-child)::before {
+                top: -8px;
+            }
+        }
+
+        &-gap-12 {
+            gap: 24px;
+
+            &> :not(:first-child)::before {
+                top: -12px;
+            }
         }
     }
 }

@@ -22,7 +22,6 @@ import queryString from 'query-string'
 import {
     ApiResourceGroupType,
     DATE_TIME_FORMAT_STRING,
-    FeatureTitleWithInfo,
     getUrlWithSearchParams,
     GVK_FILTER_API_VERSION_QUERY_PARAM_KEY,
     GVK_FILTER_KIND_QUERY_PARAM_KEY,
@@ -410,21 +409,9 @@ export const parseNodeList = (response: ResponseType<NodeRowDetail[]>, idPrefix:
 
 export const getClusterChangeRedirectionUrl = (shouldRedirectToInstallationStatus: boolean, id: string) =>
     shouldRedirectToInstallationStatus
-        ? `${CommonURLS.RESOURCE_BROWSER}/installation-cluster/${id}`
+        ? `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/installation-cluster/${id}`
         : generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
               clusterId: id,
               group: K8S_EMPTY_GROUP,
               kind: 'node',
           })
-
-const renderAppGroupDescriptionContent = () =>
-    'Job allows execution of repetitive tasks in a manual or automated manner. Execute custom tasks or choose from a library of preset plugins in your job pipeline.'
-
-export const renderAdditionalBrowserHeaderInfo = () => (
-    <FeatureTitleWithInfo
-        title="Kubernetes Resource Browser"
-        docLink="RESOURCE_BROWSER"
-        renderDescriptionContent={renderAppGroupDescriptionContent}
-        showInfoIconTippy
-    />
-)

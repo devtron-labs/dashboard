@@ -50,7 +50,7 @@ const EnvironmentLink = ({
     return (
         <NavLink
             data-testid={`${namespace}-click-on-env`}
-            to={`${URLS.APPLICATION_GROUP}/${environmentId}`}
+            to={`${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${environmentId}`}
             data-noapp={!appCount}
             onClick={handleOnLinkRedirection}
         >

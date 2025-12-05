@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { RouteComponentProps } from 'react-router-dom'
 import { Moment } from 'moment'
+
+import { ChartColorKey } from '@devtron-labs/devtron-fe-common-lib'
 
 export interface GraphType {
     xAxisLabel: string
@@ -33,7 +34,7 @@ export interface StatisticsType {
     meanRecoveryTime: string
 }
 
-export interface DeploymentMetricsProps extends RouteComponentProps<{ appId: string; envId: string }> {
+export interface DeploymentMetricsProps {
     filteredEnvIds?: string
 }
 
@@ -43,11 +44,24 @@ export interface Environment {
     deploymentAppDeleteRequest?: boolean
 }
 
+export interface BenchmarkType {
+    color: ChartColorKey | ''
+    name: string
+    targetName: string
+    targetLabel?: string
+    targetValue: number
+}
+
+type RecoveryTimeGraphType = {
+    recoveryTime: number
+    xAxisLabel: string
+    yAxisLabel: string
+    releaseTime: Moment
+}
+
 export interface DeploymentMetricsState {
     code: number
     view: string
-    // used by ReactSelect Menu
-    selectedEnvironment: undefined | { label: string; value: number }
     environments: Array<Environment>
     frequencyAndLeadTimeGraph: {
         startTime: number
@@ -58,24 +72,24 @@ export interface DeploymentMetricsState {
         maxLeadTime: number
         xAxisLabel: string
     }[]
-    recoveryTimeGraph: { recoveryTime: number }[]
+    recoveryTimeGraph: RecoveryTimeGraphType[]
     rows: any[]
     avgFrequency: number
     maxFrequency: number
     totalDeployments: number
     failedDeployments: number
-    frequencyBenchmark: any
+    frequencyBenchmark: BenchmarkType
 
     failureRate: number
-    failureRateBenchmark: any
+    failureRateBenchmark: BenchmarkType
 
     meanLeadTime: number
     meanLeadTimeLabel: string
-    leadTimeBenchmark: any
+    leadTimeBenchmark: BenchmarkType
 
     meanRecoveryTime: number
     meanRecoveryTimeLabel: string
-    recoveryTimeBenchmark: any
+    recoveryTimeBenchmark: BenchmarkType
 
     statusFilter: number
 
@@ -96,4 +110,23 @@ export interface DeploymentMetricsState {
         endDate: undefined | Moment
     }
     deploymentTableView: string
+}
+export interface RecoveryAndLeadTimeGraphLegendProps {
+    noFailures: boolean
+    valueLabel: string
+    label: string
+    tooltipText: string
+    benchmark: undefined | any
+    setMetric: (...args) => void
+}
+
+export interface FrequencyGraphLegendProps {
+    noFailures: boolean
+    label: string
+    frequency: string
+    failureRate: string
+    frequencyBenchmark: undefined | any
+    failureRateBenchmark: undefined | any
+    setFrequencyMetric: (...args) => void
+    setFailureMetric: (...args) => void
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
     Button,
@@ -25,6 +25,8 @@ import {
     CodeEditor,
     ComponentSizeType,
     configMapSecretMountDataMap,
+    CONFIGURATION_TYPE_OPTIONS,
+    ConfigurationType,
     convertKeyValuePairToYAML,
     convertYAMLToKeyValuePair,
     KeyValueTable,
@@ -32,8 +34,8 @@ import {
     MODES,
     noop,
     OverrideMergeStrategyType,
+    SegmentedControl,
     SelectPickerOptionType,
-    StyledRadioGroup,
     ToastManager,
     ToastVariantType,
     YAMLStringify,
@@ -44,9 +46,9 @@ import { ReactComponent as HideIcon } from '@Icons/ic-visibility-off.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import {
-    CODE_EDITOR_RADIO_STATE_VALUE,
     CONFIG_MAP_SECRET_REQUIRED_FIELD_ERROR,
     DATA_HEADER_MAP,
+    EXTERNAL_CODE_EDITOR_RADIO_STATE,
     sampleJSONs,
     VIEW_MODE,
 } from './constants'
@@ -162,14 +164,9 @@ export const ConfigMapSecretData = ({
         setValue('yamlMode', mode === VIEW_MODE.YAML)
     }
 
-    const handleGuiYamlSwitch = (e: ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target
-        toggleYamlMode(value as (typeof VIEW_MODE)[keyof typeof VIEW_MODE])
+    const handleExternalCodeEditorRadioChange = (selectedSegment: SelectPickerOptionType) => {
+        setCodeEditorRadio(selectedSegment.value as CODE_EDITOR_RADIO_STATE)
     }
-
-    const handleCodeEditorRadioChange = (e: ChangeEvent<HTMLInputElement>) =>
-        setCodeEditorRadio(e.target.value as CODE_EDITOR_RADIO_STATE)
-
     /**
      * Determines the key to be used for the code editor form based on the current configuration.
      * @returns The key in the `data` object corresponding to the selected mode (ESO, HashiCorp/AWS, or YAML).
@@ -211,6 +208,14 @@ export const ConfigMapSecretData = ({
         )
     }
 
+    const handleToggleEditMode = (selectedSegment: SelectPickerOptionType) => {
+        if (selectedSegment.value === ConfigurationType.YAML) {
+            toggleYamlMode(VIEW_MODE.YAML)
+        } else {
+            toggleYamlMode(VIEW_MODE.GUI)
+        }
+    }
+
     // USE-EFFECTS
     useEffect(() => {
         // Switch to YAML mode if the user is in the express edit comparison view.
@@ -246,22 +251,12 @@ export const ConfigMapSecretData = ({
                 {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
                 <label className="m-0 fs-13 lh-20 dc__required-field">{isPatchMode ? 'Patch data' : 'Data'}</label>
                 {!isESO && !isHashiOrAWS && (
-                    <StyledRadioGroup
-                        className="gui-yaml-switch"
-                        disabled={false}
-                        initialTab={data.yamlMode ? VIEW_MODE.YAML : VIEW_MODE.GUI}
-                        name="yamlMode"
-                        /** @note Check comment inside `toggleYamlMode` to see why we haven't used register method from useForm */
-                        onChange={handleGuiYamlSwitch}
-                    >
-                        {Object.keys(VIEW_MODE).map((key) =>
-                            VIEW_MODE[key] !== VIEW_MODE.MANIFEST ? (
-                                <StyledRadioGroup.Radio key={key} value={VIEW_MODE[key]} canSelect={false}>
-                                    {VIEW_MODE[key].toUpperCase()}
-                                </StyledRadioGroup.Radio>
-                            ) : null,
-                        )}
-                    </StyledRadioGroup>
+                    <SegmentedControl
+                        segments={CONFIGURATION_TYPE_OPTIONS}
+                        value={data.yamlMode ? ConfigurationType.YAML : ConfigurationType.GUI}
+                        onChange={handleToggleEditMode}
+                        name="data-editor-selector"
+                    />
                 )}
             </div>
         )
@@ -345,18 +340,12 @@ export const ConfigMapSecretData = ({
                     <CodeEditor.Header>
                         <div className="flex dc__content-space">
                             {!isHashiOrAWS && data.external ? (
-                                <StyledRadioGroup
+                                <SegmentedControl
                                     name="code-editor-radio"
-                                    className="gui-yaml-switch"
-                                    initialTab={codeEditorRadio}
-                                    onChange={handleCodeEditorRadioChange}
-                                >
-                                    {Object.keys(CODE_EDITOR_RADIO_STATE).map((key) => (
-                                        <StyledRadioGroup.Radio key={key} value={CODE_EDITOR_RADIO_STATE[key]}>
-                                            {CODE_EDITOR_RADIO_STATE_VALUE[key]}
-                                        </StyledRadioGroup.Radio>
-                                    ))}
-                                </StyledRadioGroup>
+                                    segments={EXTERNAL_CODE_EDITOR_RADIO_STATE}
+                                    value={codeEditorRadio}
+                                    onChange={handleExternalCodeEditorRadioChange}
+                                />
                             ) : null}
                             <div className="flex right dc__gap-8 ml-auto">
                                 {renderSecretShowHide()}

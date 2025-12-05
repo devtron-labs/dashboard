@@ -92,7 +92,6 @@ src/components/app/details/cdDetails/CDDetails.tsx
 src/components/app/details/cicdHistory/History.components.tsx
 src/components/app/details/main.tsx
 src/components/app/details/metrics/BenchmarkModal.tsx
-src/components/app/details/metrics/DeploymentMetrics.tsx
 src/components/app/details/metrics/DeploymentTable.tsx
 src/components/app/details/metrics/DeploymentTableModal.tsx
 src/components/app/details/metrics/deploymentMetrics.service.ts
@@ -253,10 +252,7 @@ src/components/globalConfigurations/GlobalConfiguration.tsx
 src/components/globalConfigurations/GlobalConfigurationProvider.tsx
 src/components/hostURL/HostURL.tsx
 src/components/hyperion/EnvironmentSelect.tsx
-src/components/material/CreateMaterial.tsx
-src/components/material/MaterialList.tsx
 src/components/material/MaterialView.tsx
-src/components/material/UpdateMaterial.tsx
 src/components/notifications/AddNotification.tsx
 src/components/notifications/ModifyRecipientsModal.tsx
 src/components/notifications/NotificationTab.tsx
@@ -287,7 +283,6 @@ src/components/scopedVariables/__tests__/utils.test.tsx
 src/components/scopedVariables/utils.tsx
 src/components/security/AddCveModal.tsx
 src/components/security/DeleteCVEModal.tsx
-src/components/security/Security.tsx
 src/components/security/SecurityPoliciesTab.tsx
 src/components/security/SecurityPolicyApp.tsx
 src/components/security/SecurityPolicyCluster.tsx
@@ -295,7 +290,6 @@ src/components/security/SecurityPolicyEdit.tsx
 src/components/security/SecurityPolicyEnvironment.tsx
 src/components/security/SecurityPolicyGlobal.tsx
 src/components/security/UpdateSeverityModal.tsx
-src/components/security/security.service.ts
 src/components/security/security.util.tsx
 src/components/terminal/TerminalWrapper.tsx
 src/components/util/KeyValueFileInput.tsx

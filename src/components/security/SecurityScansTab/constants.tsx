@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { ScanDetailsType, SearchType, SearchTypeOptionType } from './types'
+import { SegmentedControlProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import { ScanDetailsType, ScanTypeOptions } from './types'
 
 export const INITIAL_SCAN_DETAILS: ScanDetailsType = {
     appId: 0,
     envId: 0,
 }
 
-export const SEARCH_TYPE_OPTIONS: SearchTypeOptionType[] = [
-    { label: 'Application', value: SearchType.APPLICATION },
-    { label: 'Vulnerability', value: SearchType.VULNERABILITY },
+export const SCANNED_UNSCANNED_CONTROL_SEGMENTS: SegmentedControlProps<ScanTypeOptions>['segments'] = [
+    { label: 'Scanned', value: ScanTypeOptions.SCANNED },
+    { label: 'Not scanned', value: ScanTypeOptions.NOT_SCANNED },
 ]

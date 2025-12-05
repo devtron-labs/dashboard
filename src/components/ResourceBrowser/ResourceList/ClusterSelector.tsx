@@ -18,28 +18,32 @@ import React, { useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
+    ActionMenu,
+    ActionMenuItemType,
+    ActionMenuProps,
     Badge,
+    ButtonStyleType,
+    ButtonVariantType,
     ComponentSizeType,
     ContextSwitcher,
     handleAnalyticsEvent,
     Icon,
-    PopupMenu,
     RecentlyVisitedOptions,
     ResourceKindType,
     SelectPickerProps,
     ToastManager,
     ToastVariantType,
+    URLS,
     useUserPreferences,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments'
 import DeleteClusterConfirmationModal from '@Pages/GlobalConfigurations/ClustersAndEnvironments/DeleteClusterConfirmationModal'
 
-import { URLS } from '../../../config'
 import { ResourceBrowserGAEvent } from '../Constants'
 import { ClusterSelectorType } from '../Types'
+import { ClusterActionMenuOptionIdEnum } from './constants'
 import { getClusterSelectOptions } from './utils'
 
 const RBPageHeaderPopup = importComponentFromFELibrary('RBPageHeaderPopup', null, 'function')
@@ -134,7 +138,15 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
     }
 
     const handleRedirectToClusterList = () => {
-        replace(URLS.RESOURCE_BROWSER)
+        replace(URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
+    }
+
+    const handleActionMenuClick: ActionMenuProps['onClick'] = (
+        item: ActionMenuItemType<ClusterActionMenuOptionIdEnum>,
+    ) => {
+        if (item.id === ClusterActionMenuOptionIdEnum.DELETE) {
+            handleOpenDeleteModal()
+        }
     }
 
     return (
@@ -157,32 +169,38 @@ const ClusterSelector: React.FC<ClusterSelectorType> = ({
 
             {defaultOption?.isProd && <Badge label="Production" size={ComponentSizeType.xxs} />}
 
-            {RBPageHeaderPopup && !isInstallationStatusView ? (
+            {RBPageHeaderPopup && isInstallationStatusView ? (
                 <RBPageHeaderPopup
                     handleDelete={handleOpenDeleteModal}
                     handleHibernationRules={handleOpenHibernationRulesModal}
                     handlePodSpread={handleOpenPodSpreadModal}
                 />
             ) : (
-                <PopupMenu autoClose>
-                    <PopupMenu.Button rootClassName="flex ml-auto p-4 border__secondary" isKebab>
-                        <MenuDots className="icon-dim-16 fcn-7" data-testid="popup-menu-button" />
-                    </PopupMenu.Button>
-
-                    <PopupMenu.Body rootClassName="dc__border p-4">
-                        <div className="w-150 flexbox-col">
-                            <button
-                                type="button"
-                                className="dc__outline-none flexbox dc__gap-8 dc__transparent dc__hover-n50 px-12 py-6 dc__align-items-center"
-                                onClick={handleOpenDeleteModal}
-                                data-testid="delete_cluster_button"
-                            >
-                                <Icon name="ic-delete" color="R500" />
-                                <span className="fs-14 lh-1-5 cr-5">Delete</span>
-                            </button>
-                        </div>
-                    </PopupMenu.Body>
-                </PopupMenu>
+                <ActionMenu<ClusterActionMenuOptionIdEnum>
+                    id={`cluster-actions-action-menu-${clusterId}`}
+                    onClick={handleActionMenuClick}
+                    options={[
+                        {
+                            items: [
+                                {
+                                    id: ClusterActionMenuOptionIdEnum.DELETE,
+                                    label: 'Delete cluster',
+                                    startIcon: { name: 'ic-delete' },
+                                    type: 'negative',
+                                },
+                            ],
+                        },
+                    ]}
+                    buttonProps={{
+                        icon: <Icon name="ic-more-vertical" color={null} />,
+                        ariaLabel: 'additional-options',
+                        dataTestId: 'delete_cluster_button',
+                        showAriaLabelInTippy: false,
+                        style: ButtonStyleType.neutral,
+                        variant: ButtonVariantType.borderLess,
+                        size: ComponentSizeType.medium,
+                    }}
+                />
             )}
 
             {PodSpreadModal && showEditPodSpreadModal && (

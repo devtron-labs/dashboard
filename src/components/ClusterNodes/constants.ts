@@ -302,6 +302,7 @@ export const manifestCommentsRegex = /^(.*?apiVersion:)/s
 export const ClusterStatusByFilter: Record<ClusterFiltersType, ClusterStatusType> = {
     [ClusterFiltersType.HEALTHY]: ClusterStatusType.HEALTHY,
     [ClusterFiltersType.UNHEALTHY]: ClusterStatusType.UNHEALTHY,
+    [ClusterFiltersType.CONNECTION_FAILED]: ClusterStatusType.CONNECTION_FAILED,
     [ClusterFiltersType.ALL_CLUSTERS]: null,
 }
 

@@ -53,7 +53,7 @@ import { AddLinkButton } from './AddLinkButton'
 import { Link } from 'react-router-dom'
 
 export const ExternalLinksLearnMore = (): JSX.Element => {
-    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight="normal" />
+    return <DocLink docLinkKey="EXTERNAL_LINKS" dataTestId="external-links-learn-more" fontWeight="normal" fullWidth />
 }
 
 export const NoExternalLinksView = ({
@@ -86,7 +86,7 @@ export const NoExternalLinksView = ({
 const redirectToGlobalConfig = (linkText) => {
     return (
         <Link
-            to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+            to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS}
             data-testid="info-bar-internal-link"
             className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
         >

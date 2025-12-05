@@ -19,6 +19,7 @@
     min-height: 100vh;
     display: grid;
     overflow: hidden;
+    background: var(--devtron-bg) center / 100vw 100vh no-repeat;
 }
 
 .main {
