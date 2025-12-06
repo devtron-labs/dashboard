@@ -243,6 +243,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
                     k8sPermission: [],
                     permissionType: PermissionType.SPECIFIC,
                     userGroups: [],
+                    observabilityPermission: [],
                     ...getDefaultUserStatusAndTimeout(),
                 })
                 const { result: userPermissionResponse } = await createOrUpdateUser({

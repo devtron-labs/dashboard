@@ -113,6 +113,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const Observability = importComponentFromFELibrary('Observability', null, 'function')
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -556,6 +557,12 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
+                                        !!Observability && (
+                                            <Route key={CommonURLS.OBSERVABILITY} path={CommonURLS.OBSERVABILITY}>
+                                                <Observability />
+                                            </Route>
+                                        ),
+
                                         ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
                                             ? [
                                                   <Route

@@ -17,11 +17,11 @@
 import { Component } from 'react'
 import { Moment } from 'moment'
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
-import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect, AppInfo } from './utils'
+import { getIframeSrc, isK8sVersionValid, ThroughputSelect, LatencySelect, AppInfo } from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
-import { DatePickerRangeController } from '@devtron-labs/devtron-fe-common-lib'
+import { getCalendarValue, CalendarFocusInputType, DatePickerRangeController } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ChartNames = {
     cpu: 'CPU Usage',
@@ -60,7 +60,7 @@ interface GraphModalState {
     status5xx: string
     statusCode: StatusTypes
     mainChartUrl: string
-    focusedInput: 'startDate' | 'endDate'
+    focusedInput: CalendarFocusInputType
     calendarValue: string
     calendar: {
         startDate
@@ -216,7 +216,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
         })
     }
 
-    handleFocusChange = (focusedInput: 'startDate' | 'endDate') => {
+    handleFocusChange = (focusedInput: CalendarFocusInputType) => {
         this.setState({ focusedInput: focusedInput || 'startDate' })
     }
 

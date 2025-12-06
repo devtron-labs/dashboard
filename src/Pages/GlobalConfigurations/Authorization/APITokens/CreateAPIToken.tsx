@@ -102,6 +102,7 @@ const CreateAPIToken = ({
         userRoleGroups,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
     } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
@@ -223,6 +224,7 @@ const CreateAPIToken = ({
                     k8sPermission,
                     permissionType,
                     userGroups: [],
+                    observabilityPermission,
                     canManageAllAccess: allowManageAllAccess,
                     ...getDefaultUserStatusAndTimeout(),
                 })

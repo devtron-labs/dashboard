@@ -60,6 +60,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         data: permissionGroup,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
     } = usePermissionConfiguration()
     const _permissionGroup = permissionGroup as PermissionGroup
 
@@ -114,6 +115,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
             directPermission,
             serverMode,
             chartPermission,
+            observabilityPermission,
         })
 
         const payload: PermissionGroupCreateOrUpdatePayload = {

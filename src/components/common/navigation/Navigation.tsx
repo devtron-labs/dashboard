@@ -97,6 +97,14 @@ const NavigationList: NavigationListItemType[] = [
         isAvailableInDesktop: true,
     },
     {
+        title: 'Observability',
+        dataTestId: 'click-on-observability',
+        type: 'link',
+        icon: 'ic-binoculars',
+        href: CommonURLS.OBSERVABILITY,
+        hideNav: false, // hideObservability
+    },
+    {
         title: 'Resource Watcher',
         dataTestId: 'click-on-resource-watcher',
         type: 'link',

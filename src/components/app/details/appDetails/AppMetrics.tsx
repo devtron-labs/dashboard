@@ -16,6 +16,7 @@
 
 import React, { useState, useEffect } from 'react'
 import {
+    CalendarFocusInputType,
     ComponentSizeType,
     DatePickerRangeController,
     DocLink,
@@ -26,11 +27,12 @@ import {
     useAsync,
     useMainContext,
     useTheme,
+    getCalendarValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useParams, Link, NavLink } from 'react-router-dom'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'
-import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect, AppInfo } from './utils'
+import { getIframeSrc, ThroughputSelect, isK8sVersionValid, LatencySelect, AppInfo } from './utils'
 import {
     ChartTypes,
     AppMetricsTab,
@@ -38,8 +40,6 @@ import {
     ChartType,
     StatusTypes,
     StatusType,
-    CalendarFocusInput,
-    CalendarFocusInputType,
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
@@ -86,7 +86,7 @@ export const AppMetrics: React.FC<{
         isHealthy: false,
         dataSourceName: '',
     })
-    const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
+    const [focusedInput, setFocusedInput] = useState<CalendarFocusInputType>('startDate')
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate)
     const { appId, envId } = useParams<AppDetailsPathParams>()
     const [calendarValue, setCalendarValue] = useState('')
@@ -131,7 +131,7 @@ export const AppMetrics: React.FC<{
     }
 
     function handleFocusChange(focusedInput): void {
-        setFocusedInput(focusedInput || CalendarFocusInput.StartDate)
+        setFocusedInput(focusedInput || 'startDate')
     }
 
     function handleApply(): void {
