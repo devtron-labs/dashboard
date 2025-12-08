@@ -46,8 +46,6 @@ import {
     ChartType,
     StatusTypes,
     StatusType,
-    CalendarFocusInput,
-    CalendarFocusInputType,
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
