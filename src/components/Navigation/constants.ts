@@ -1,10 +1,6 @@
 import { generatePath } from 'react-router-dom'
 
-import {
-    BackupLocationsTypes,
-    InfrastructureManagementAppListType,
-    URLS as COMMON_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { BackupLocationsTypes, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
@@ -204,7 +200,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-devtron-application',
                 id: 'application-management-devtron-applications',
                 icon: 'ic-application',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
             },
             {
                 title: 'Application Groups',
@@ -268,9 +264,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-application',
                 id: 'infrastructure-management-applications',
                 icon: 'ic-grid-view',
-                href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
-                    appType: InfrastructureManagementAppListType.HELM,
-                }),
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP,
             },
             {
                 title: 'Chart Store',
@@ -372,10 +366,17 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-chart-line-up',
             },
             {
-                title: 'Security Scans',
-                dataTestId: 'security-scans',
-                id: 'security-center-security-scans',
-                href: COMMON_URLS.SECURITY_CENTER_SCANS,
+                title: 'Vulnerabilities',
+                dataTestId: 'security-vulnerabilities',
+                id: 'security-center-security-vulnerabilities',
+                href: COMMON_URLS.SECURITY_CENTER_VULNERABILITIES,
+                icon: 'ic-bug',
+            },
+            {
+                title: 'Security Enablement',
+                dataTestId: 'security-enablement',
+                id: 'security-center-security-enablement',
+                href: COMMON_URLS.SECURITY_CENTER_SECURITY_ENABLEMENT,
                 icon: 'ic-security-scan',
             },
             {
@@ -482,8 +483,8 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
             },
             {
-                title: 'Host URLS',
-                dataTestId: 'host-urls',
+                title: 'Host URL',
+                dataTestId: 'host-url',
                 id: 'global-configuration-host-urls',
                 icon: 'ic-link',
                 href: URLS.GLOBAL_CONFIG_HOST_URL,

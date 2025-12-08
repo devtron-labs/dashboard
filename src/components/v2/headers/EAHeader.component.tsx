@@ -44,7 +44,7 @@ const EAHeaderComponent = ({
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
                 ...breadCrumbConfig,
-                app: {
+                apps: {
                     component: (
                         <Link to={redirectURL} className="dc__devtron-breadcrumb__item">
                             <div className="cb-5">{title}</div>
