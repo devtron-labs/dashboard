@@ -81,6 +81,7 @@ const EditAPIToken = ({
         isSaveDisabled,
         allowManageAllAccess,
         observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
 
     const history = useHistory()
@@ -105,7 +106,15 @@ const EditAPIToken = ({
     }
 
     const handleUpdatedToken = async (tokenId) => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid) {
+        if (
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
+        ) {
             return
         }
 

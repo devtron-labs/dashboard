@@ -89,7 +89,7 @@ export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean, 
             isHidden: serverMode === SERVER_MODE.EA_ONLY,
         },
         {
-            accessType: null,
+            accessType: 'observability',
             tabName: 'observability',
             label: 'Observability',
             isHidden: !getAccessManagerRoles, // Check for FE-LIB

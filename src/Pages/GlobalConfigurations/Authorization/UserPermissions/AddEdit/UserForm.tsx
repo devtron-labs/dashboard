@@ -82,6 +82,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         isSaveDisabled,
         allowManageAllAccess,
         observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -136,7 +137,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const handleSubmit = async () => {
         if (
             !validateForm() ||
-            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
         ) {
             return
         }

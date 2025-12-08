@@ -949,6 +949,8 @@ const AppPermissions = () => {
         const { accessTypeToErrorMap: _accessTypeToErrorMap } = validateDirectPermissionForm(
             directPermission,
             setDirectPermission,
+            observabilityPermission,
+            setObservabilityPermission,
             allowManageAllAccess,
             false,
         )

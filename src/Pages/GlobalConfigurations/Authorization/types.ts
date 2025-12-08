@@ -284,7 +284,7 @@ interface RoleFilter {
 
 export interface DirectPermissionsRoleFilter extends RoleFilter, PermissionStatusAndTimeout {
     entity: EntityTypes.DIRECT | EntityTypes.JOB
-    accessType: ACCESS_TYPE_MAP.DEVTRON_APPS | ACCESS_TYPE_MAP.HELM_APPS | ACCESS_TYPE_MAP.JOBS
+    accessType: ACCESS_TYPE_MAP
     team: OptionType
     entityName: OptionType[]
     entityNameError?: string

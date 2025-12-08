@@ -86,6 +86,6 @@ export interface PermissionConfigurationFormContext {
 }
 
 export type AccessTypeToErrorMapType = Record<
-    PermissionConfigurationFormContext['directPermission'][number]['accessType'],
+    PermissionConfigurationFormContext['directPermission'][number]['accessType'] | 'observability',
     boolean
 >

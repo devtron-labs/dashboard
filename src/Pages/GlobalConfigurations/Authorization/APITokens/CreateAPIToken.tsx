@@ -103,6 +103,7 @@ const CreateAPIToken = ({
         isSaveDisabled,
         allowManageAllAccess,
         observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
     const [customDate, setCustomDate] = useState<Moment>(null)
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
@@ -178,7 +179,15 @@ const CreateAPIToken = ({
     }
 
     const handleGenerateAPIToken = async () => {
-        if (!validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid) {
+        if (
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
+        ) {
             return
         }
 

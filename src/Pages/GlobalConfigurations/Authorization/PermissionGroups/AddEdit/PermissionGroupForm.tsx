@@ -61,6 +61,7 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         isSaveDisabled,
         allowManageAllAccess,
         observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
     const _permissionGroup = permissionGroup as PermissionGroup
 
@@ -104,7 +105,13 @@ const PermissionGroupForm = ({ isAddMode }: { isAddMode: boolean }) => {
         }
         if (
             !isSuperAdminPermission &&
-            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
         ) {
             return
         }
