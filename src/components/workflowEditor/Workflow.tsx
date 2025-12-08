@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/* eslint-disable react/no-danger */
+import DOMPurify from 'dompurify'
 import { Component } from 'react'
 import { Link, generatePath } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -43,6 +44,7 @@ import {
     ConditionalWrap,
     ChangeCIPayloadType,
     URLS as CommonURLS,
+    highlightSearchText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -405,10 +407,10 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 title={node.title}
                 redirectTo={`${
                     this.props.isTemplateView
-                        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                               appId: this.props.match.params.appId,
                           })
-                        : `${URLS.APP}/${this.props.match.params.appId}`
+                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
                 }/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
@@ -668,7 +670,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.history.push(
-            `${URLS.JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 
@@ -778,7 +780,19 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                         }
                         data-testid="workflow-header"
                     >
-                        <span className="m-0 cn-9 fs-13 fw-6 lh-20">{this.props.name}</span>
+                        <span
+                            className="m-0 cn-9 fs-13 fw-6 lh-20"
+                            // eslint-disable-next-line react/no-danger
+                            dangerouslySetInnerHTML={{
+                                __html: DOMPurify.sanitize(
+                                    highlightSearchText({
+                                        searchText: this.props.searchText || '',
+                                        text: String(this.props.name),
+                                        highlightClasses: 'bcy-3',
+                                    }),
+                                ),
+                            }}
+                        />
                         {!this.props.isOffendingPipelineView && !configDiffView && (
                             <div className="flexbox dc__align-items-center dc__gap-8">
                                 <ICMoreOption className="icon-dim-16 fcn-6 cursor workflow-header-menu-icon" />

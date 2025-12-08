@@ -448,7 +448,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
         saveNotification(selectedPipelines, selectedChannels)
             .then(() => {
-                this.props.history.push(`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`)
+                this.props.history.push(`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`)
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: 'Saved Successfully',
@@ -951,7 +951,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 </div>
                 <div className="form__button-group-bottom flex right">
                     <Link
-                        to={`${URLS.GLOBAL_CONFIG_NOTIFIER}/channels`}
+                        to={`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`}
                         className="cta cancel mr-16 dc__no-decor"
                         tabIndex={8}
                     >

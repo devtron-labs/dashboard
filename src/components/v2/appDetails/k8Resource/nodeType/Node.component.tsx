@@ -247,7 +247,10 @@ const NodeComponent = ({
 
                         if (idx > 0) {
                             return (
-                                <div className="flex left cn-9 m-0 dc__no-decore" key={node.name}>
+                                <div
+                                    className="flex left cn-9 m-0 dc__no-decore"
+                                    key={`${node.name}.${node.namespace}:${val}`}
+                                >
                                     <div>{text}</div>
                                     <div className="ml-0 fs-13 dc__truncate-text pt-4 pl-4">
                                         <ClipboardButton content={text} />

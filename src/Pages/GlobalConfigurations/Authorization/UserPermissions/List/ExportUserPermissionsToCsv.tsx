@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { getFormattedUTCTimeForExport, UserTypeToFetchType } from '@devtron-labs/devtron-fe-common-lib'
+import { useState } from 'react'
 
-import { ExportToCsvProps } from '@Components/common/ExportToCsv/types'
+import { ExportToCsv, ExportToCsvProps, getFormattedUTCTimeForExport } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../../components/common'
-import { FILE_NAMES, USER_EXPORT_HEADER_ROW } from '../../../../../components/common/ExportToCsv/constants'
-import ExportToCsv from '../../../../../components/common/ExportToCsv/ExportToCsv'
 import { useAuthorizationContext } from '../../AuthorizationProvider'
 import { getRoleFiltersToExport } from '../../utils'
 import { LAST_LOGIN_TIME_NULL_STATE } from '../constants'
-import { UserPermissionListHeaderProps } from './types'
+import { USER_EXPORT_HEADER_ROW, USER_EXPORT_HEADERS } from './constants'
+import ExportConfigurationDialog from './ExportConfigurationDialog'
+import { ExportConfigurationDialogProps, ExportUserPermissionCSVDataType, UserPermissionListHeaderProps } from './types'
 
 const getStatusExportText = importComponentFromFELibrary('getStatusExportText', null, 'function')
 const getUserExportToCsvConfiguration = importComponentFromFELibrary(
@@ -39,12 +39,29 @@ const ExportUserPermissionsToCsv = ({
     getDataToExport,
 }: Pick<UserPermissionListHeaderProps, 'disabled' | 'getDataToExport'>) => {
     const { customRoles } = useAuthorizationContext()
+    const exportConfiguration: ExportConfigurationDialogProps['exportConfiguration'] = getUserExportToCsvConfiguration
+        ? getUserExportToCsvConfiguration()
+        : null
+
+    const getInitialSelectedConfig = (): ExportConfigurationDialogProps['selectedConfig'] =>
+        exportConfiguration?.options.reduce<ExportConfigurationDialogProps['selectedConfig']>(
+            (acc, { value }) => {
+                acc[value] = true
+
+                return acc
+            },
+            {} as ExportConfigurationDialogProps['selectedConfig'],
+        ) ?? ({} as ExportConfigurationDialogProps['selectedConfig'])
+
+    const [selectedConfig, setSelectedConfig] = useState(getInitialSelectedConfig)
 
     /**
      * Returns the list of users which have permission to devtron applications
      */
-    const getUsersDataToExport: ExportToCsvProps<UserTypeToFetchType>['apiPromise'] = async (selectedConfig) => {
-        const { users } = await getDataToExport(selectedConfig)
+    const getUsersDataToExport: ExportToCsvProps<keyof ExportUserPermissionCSVDataType>['apiPromise'] = async ({
+        signal,
+    }) => {
+        const { users } = await getDataToExport(selectedConfig, signal)
         const userList = users.reduce((_usersList, _user) => {
             let isRowAdded = false
 
@@ -59,7 +76,7 @@ const ExportUserPermissionsToCsv = ({
 
             const updatedOn = getFormattedUTCTimeForExport(_user.updatedOn)
 
-            const _userData = {
+            const _userData: ExportUserPermissionCSVDataType = {
                 emailId: _user.emailId,
                 userId: _user.id,
                 ...(showStatus
@@ -130,15 +147,32 @@ const ExportUserPermissionsToCsv = ({
         return userList
     }
 
+    const renderConfigurationModal: ExportToCsvProps<
+        keyof ExportUserPermissionCSVDataType
+    >['modalConfig']['renderCustomModal'] = (proceed) => (
+        <ExportConfigurationDialog
+            selectedConfig={selectedConfig}
+            setSelectedConfig={setSelectedConfig}
+            initialConfig={getInitialSelectedConfig()}
+            exportConfiguration={exportConfiguration}
+            proceed={proceed}
+        />
+    )
+
     return (
-        <ExportToCsv
+        <ExportToCsv<keyof ExportUserPermissionCSVDataType>
             disabled={disabled}
             apiPromise={getUsersDataToExport}
-            fileName={FILE_NAMES.Users}
-            showOnlyIcon
-            {...(getUserExportToCsvConfiguration && {
-                configuration: getUserExportToCsvConfiguration(),
-            })}
+            fileName="Devtron Apps Users Data"
+            triggerElementConfig={{
+                showOnlyIcon: true,
+            }}
+            headers={USER_EXPORT_HEADERS}
+            modalConfig={
+                getUserExportToCsvConfiguration
+                    ? { renderCustomModal: renderConfigurationModal, hideDialog: false }
+                    : null
+            }
         />
     )
 }

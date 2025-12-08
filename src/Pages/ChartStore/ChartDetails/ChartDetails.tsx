@@ -20,6 +20,8 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import {
     APIResponseHandler,
     BreadCrumb,
+    ComponentSizeType,
+    getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
     SegmentedControl,
@@ -83,6 +85,11 @@ export const ChartDetails = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                discover: {
+                    component: 'Chart Store',
+                    linked: true,
+                },
                 ':chartSegment?': null,
                 ':chartId': {
                     component: (
@@ -186,6 +193,7 @@ export const ChartDetails = () => {
                                         segments={CHART_DETAILS_SEGMENTS}
                                         value={tab}
                                         onChange={handleSegmentChange}
+                                        size={ComponentSizeType.xs}
                                     />
                                 </div>
                                 {renderSegments()}

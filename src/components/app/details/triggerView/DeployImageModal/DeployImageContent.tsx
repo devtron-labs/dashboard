@@ -22,6 +22,7 @@ import {
     isNullOrUndefined,
     MaterialInfo,
     noop,
+    OptionType,
     Progressing,
     SearchBar,
     SegmentedControlProps,
@@ -150,10 +151,12 @@ const DeployImageContent = ({
 
     const showFiltersView = !!(ConfiguredFilters && (showConfiguredFilters || showAppliedFilters))
 
-    const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (e) => {
+    const handleSidebarTabChange: RuntimeParamsSidebarProps['handleSidebarTabChange'] = (
+        selectedSidebarTab: OptionType<CDMaterialSidebarType>,
+    ) => {
         setDeployViewState((prevState) => ({
             ...prevState,
-            currentSidebarTab: e.target.value as CDMaterialSidebarType,
+            currentSidebarTab: selectedSidebarTab.value as CDMaterialSidebarType,
         }))
     }
 

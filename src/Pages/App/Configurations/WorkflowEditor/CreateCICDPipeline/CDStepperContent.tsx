@@ -108,7 +108,7 @@ export const CDStepperContent = ({
             await getGitOpsRepoConfig(+appId)
 
             setGitopsConflictLoading(false)
-            push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+            push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
         } catch (err) {
             setGitopsConflictLoading(false)
             if (err.code === API_STATUS_CODES.CONFLICT) {

@@ -259,7 +259,7 @@ export default function BuildCD({
         setGitopsConflictLoading(true)
         getGitOpsRepoConfig(+appId)
             .then(() => {
-                history.push(`/app/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
+                history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit/${URLS.APP_GITOPS_CONFIG}`)
             })
             .catch((err) => {
                 if (err.code === 409) {

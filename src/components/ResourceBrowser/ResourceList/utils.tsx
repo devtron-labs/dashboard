@@ -26,6 +26,7 @@ import {
     RecentlyVisitedOptions,
     RESOURCE_BROWSER_ROUTES,
     stringComparatorBySortOrder,
+    TARGET_K8S_VERSION_SEARCH_KEY,
     TreeHeading,
     TreeItem,
     TreeNode,
@@ -46,7 +47,6 @@ import {
     NODE_SEARCH_KEYS_TO_OBJECT_KEYS,
     ResourceBrowserRouteToTabIdMap,
     SIDEBAR_KEYS,
-    TARGET_K8S_VERSION_SEARCH_KEY,
     UPGRADE_CLUSTER_CONSTANTS,
 } from '../Constants'
 import {

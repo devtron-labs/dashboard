@@ -27,6 +27,6 @@ export const getLinkedCITippyContent = (workflowCount: number = 0) =>
 
 export const getLinkedCIAppUrl = ({ appId, environmentId }: LinkedCIAppUrlProps): string => {
     const envId = environmentId ? `/${environmentId}` : ''
-    const link = `${URLS.APP}/${appId}/${URLS.APP_DETAILS}${envId}`
+    const link = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_DETAILS}${envId}`
     return link
 }

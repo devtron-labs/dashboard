@@ -115,7 +115,12 @@ export const generateMigrateAppOption = ({
 export const renderGitOpsNotConfiguredDescription = () => (
     <p className="m-0">
         GitOps credentials is required to deploy applications via GitOps.&nbsp;
-        <Link to={URLS.GLOBAL_CONFIG_GITOPS} data-testid="configure-gitops-button" target="_blank" className="anchor">
+        <Link
+            to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS}
+            data-testid="configure-gitops-button"
+            target="_blank"
+            className="anchor"
+        >
             Configure
         </Link>
         &nbsp;and try again.

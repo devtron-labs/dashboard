@@ -1,11 +1,10 @@
-import { ChangeEvent } from 'react'
-
 import {
     APIOptions,
     ApiQueuingWithBatchResponseItem,
     CIMaterialSidebarType,
     CIMaterialType,
     CommonNodeAttr,
+    OptionType,
     RuntimeParamsTriggerPayloadType,
     RuntimePluginVariables,
     WorkflowType,
@@ -27,7 +26,7 @@ import {
 
 export interface TriggerBuildSidebarProps {
     currentSidebarTab: CIMaterialSidebarType
-    handleSidebarTabChange: (e: ChangeEvent<HTMLInputElement>) => void
+    handleSidebarTabChange: (selectedSidebarTab: OptionType<CIMaterialSidebarType>) => void
     runtimeParamsErrorState: RuntimeParamsErrorState
     materialList: CIMaterialType[]
     clearSearch: () => void

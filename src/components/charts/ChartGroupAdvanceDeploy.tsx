@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useHistory, useLocation, useRouteMatch, Prompt } from 'react-router-dom'
 import {
     showError,
@@ -26,6 +26,8 @@ import {
     PageHeader,
     ToastVariantType,
     ToastManager,
+    getInfrastructureManagementBreadcrumb,
+    BreadcrumbText,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
@@ -62,7 +64,12 @@ export default function ChartGroupAdvanceDeploy() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'chart-store': 'Chart store',
+                ...getInfrastructureManagementBreadcrumb(),
+                'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
                 group: 'Chart groups',
                 ':groupId': {
                     component: state.name,
@@ -75,7 +82,7 @@ export default function ChartGroupAdvanceDeploy() {
     )
     const isLeavingPageAllowed = state.charts.every((chart) => chart.valuesYaml === chart.originalValuesYaml)
 
-    const { url, path } = useRouteMatch()
+    const { url } = useRouteMatch()
     const [deployed, setDeployed] = useState(false)
 
     useEffectAfterMount(() => {
@@ -153,7 +160,7 @@ export default function ChartGroupAdvanceDeploy() {
     const renderAdvanceBreadcrumb = () => {
         return (
             <div className="flex left">
-                <BreadCrumb sep="/" breadcrumbs={breadcrumbs.slice(1)} />
+                <BreadCrumb sep="/" breadcrumbs={breadcrumbs} />
             </div>
         )
     }

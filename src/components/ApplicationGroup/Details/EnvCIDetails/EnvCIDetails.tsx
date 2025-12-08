@@ -260,7 +260,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 <EmptyView
                     title={APP_GROUP_CI_DETAILS.linkedCI.title}
                     subTitle={APP_GROUP_CI_DETAILS.linkedCI.title}
-                    link={`${URLS.APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                    link={`${URLS.APPLICATION_MANAGEMENT_APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
                     linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
                 />
             )

@@ -15,22 +15,17 @@
  */
 
 import { lazy, useEffect, useMemo, useState } from 'react'
-import { Route, Switch, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 
 import {
-    AppListConstants,
-    ModuleNameMap,
-    ModuleStatus,
+    InfrastructureManagementAppListType,
     SERVER_MODE,
     URLS as CommonURLS,
-    useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { URLS } from '@Config/routes'
-import { AppRouterType } from '@Services/service.types'
 
 import { ExternalFluxAppDetailsRoute } from '../../../Pages/App/Details/ExternalFlux'
 import { AppContext } from '../Contexts'
@@ -63,54 +58,19 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser:
         }
 
         if (window._env_.K8S_CLIENT) {
-            push(URLS.RESOURCE_BROWSER)
+            push(CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
             push(URLS.GETTING_STARTED)
         } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
-            push(URLS.RESOURCE_BROWSER)
+            push(CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
         } else {
-            push(`${URLS.APP}/${URLS.APP_LIST}`)
+            push(CommonURLS.APPLICATION_MANAGEMENT_APP_LIST)
         }
     }, [])
     return null
 }
 
-const RedirectToAppList = () => {
-    const { replace } = useHistory()
-    const { serverMode } = useMainContext()
-    useEffect(() => {
-        const baseUrl = `${URLS.APP}/${URLS.APP_LIST}`
-        if (serverMode === SERVER_MODE.FULL) {
-            replace(`${baseUrl}/${AppListConstants.AppType.DEVTRON_APPS}`)
-        } else {
-            replace(`${baseUrl}/${AppListConstants.AppType.HELM_APPS}`)
-        }
-    }, [])
-    return null
-}
-
-const AppListRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
-    const { path } = useRouteMatch()
-    const [, argoInfoData] = useAsync(() => getModuleInfo(ModuleNameMap.ARGO_CD))
-    const isArgoInstalled: boolean = argoInfoData?.result?.status === ModuleStatus.INSTALLED
-
-    return (
-        <ErrorBoundary>
-            <Switch>
-                <Route path={`${path}/:appType`} render={() => <NewAppList isArgoInstalled={isArgoInstalled} />} />
-                <Route exact path="">
-                    <RedirectToAppList />
-                </Route>
-                <Route>
-                    <RedirectUserWithSentry isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0} />
-                </Route>
-            </Switch>
-        </ErrorBoundary>
-    )
-}
-
-export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterType) => {
-    const { path } = useRouteMatch()
+export const AppRouter = () => {
     const [environmentId, setEnvironmentId] = useState(null)
     const [currentAppName, setCurrentAppName] = useState<string>('')
 
@@ -123,42 +83,46 @@ export const AppRouter = ({ isSuperAdmin, appListCount, loginCount }: AppRouterT
         <ErrorBoundary>
             <AppContext.Provider value={appContextValue}>
                 <Switch>
-                    <Route
-                        path={`${path}/${URLS.APP_LIST}`}
-                        render={() => (
-                            <AppListRouter
-                                isSuperAdmin={isSuperAdmin}
-                                appListCount={appListCount}
-                                loginCount={loginCount}
-                            />
-                        )}
-                    />
-                    <Route path={`${path}/${URLS.EXTERNAL_APPS}/:appId/:appName`} render={() => <ExternalApps />} />
-                    <Route
-                        path={`${path}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
-                        render={() => <ExternalArgoApps />}
-                    />
-                    {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
-                        <Route path={`${path}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}>
-                            <ExternalFluxAppDetailsRoute />
-                        </Route>
-                    )}
-                    <Route
-                        path={`${path}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
-                        render={() => <DevtronChartRouter />}
-                    />
-                    <Route path={`${path}/:appId(\\d+)`} render={() => <AppDetailsPage />} />
+                    <Route path={CommonURLS.APPLICATION_MANAGEMENT_APP_LIST}>
+                        <NewAppList isDevtronAppList />
+                    </Route>
 
-                    <Route exact path="">
-                        <RedirectToAppList />
+                    <Route path={`${CommonURLS.APPLICATION_MANAGEMENT_APP}/:appId(\\d+)`}>
+                        <AppDetailsPage />
                     </Route>
-                    <Route>
-                        <RedirectUserWithSentry
-                            isFirstLoginUser={isSuperAdmin && loginCount === 0 && appListCount === 0}
-                        />
-                    </Route>
+                    <Redirect to={CommonURLS.APPLICATION_MANAGEMENT_APP_LIST} />
                 </Switch>
             </AppContext.Provider>
         </ErrorBoundary>
     )
 }
+
+export const InfraAppsRouter = () => (
+    <Switch>
+        <Route path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST} render={() => <NewAppList />} />
+        <Route
+            path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/:appId/:appName`}
+            render={() => <ExternalApps />}
+        />
+        <Route
+            path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_ARGO_APP}/:clusterId(\\d+)/:appName/:namespace`}
+            render={() => <ExternalArgoApps />}
+        />
+        {window._env_.FEATURE_EXTERNAL_FLUX_CD_ENABLE && (
+            <Route
+                path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/:clusterId/:appName/:namespace/:templateType`}
+            >
+                <ExternalFluxAppDetailsRoute />
+            </Route>
+        )}
+        <Route
+            path={`${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/:appId(\\d+)/env/:envId(\\d+)`}
+            render={() => <DevtronChartRouter />}
+        />
+        <Redirect
+            to={generatePath(CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
+                appType: InfrastructureManagementAppListType.HELM,
+            })}
+        />
+    </Switch>
+)

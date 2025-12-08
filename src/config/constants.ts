@@ -209,7 +209,6 @@ export const Routes = {
     UPLOAD_CUSTOM_CHART: 'deployment/template/upload',
     DOWNLOAD_CUSTOM_CHART: 'deployment/template/download',
     CLUSTER_LIST: 'k8s/capacity/cluster/list',
-    CLUSTER_LIST_MIN: 'k8s/capacity/cluster/list/raw',
     CLUSTER_CAPACITY: 'k8s/capacity/cluster',
     NODE_LIST: 'k8s/capacity/node/list',
     TAINTS_EDIT: 'k8s/capacity/node/taints/edit',
@@ -259,10 +258,12 @@ export const Routes = {
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
+    SECURITY_SCAN_VULNERABILITIES: 'security/scan/vulnerabilities',
     CONFIG_MANIFEST: 'config/manifest',
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
     ENV_DATA_SOURCE_NAME: 'env/data-source-name',
+    VULNERABILITY_SUMMARY: 'security/scan/summary',
 }
 
 export enum ViewType {
@@ -486,11 +487,6 @@ export const RegistryType = {
 export const RegistryTypeName = {
     OCI_PRIVATE: 'Private Registry',
     OCI_PUBLIC: 'Public Registry',
-}
-
-export const AppCreationType = {
-    Blank: 'BLANK',
-    Existing: 'EXISTING',
 }
 
 export const BuildStageVariable = {

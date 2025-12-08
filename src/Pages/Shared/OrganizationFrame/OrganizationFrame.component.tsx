@@ -21,7 +21,7 @@ import { ReactComponent as ICDevtron } from '../../../assets/icons/ic-devtron-bl
 import './organizationFrame.scss'
 
 const OrganizationFrame = () => (
-    <div className="w-36 h-42 dc__no-shrink flexbox dc__position-rel dc__content-center">
+    <div className="mt-16 w-36 h-42 dc__no-shrink flexbox dc__position-rel dc__content-center">
         <div
             className="icon-dim-28 dc__no-shrink dc__border--white flex py-3 px-1 br-4"
             style={{
