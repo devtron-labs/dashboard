@@ -43,6 +43,8 @@ import {
     MODES,
     noop,
     Progressing,
+    SegmentedControl,
+    SegmentType,
     showError,
     SSOProviderIcon,
     ToastManager,
@@ -53,14 +55,10 @@ import {
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import Check from '@Icons/ic-selected-corner.png'
 import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
-import {
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
-    importComponentFromFELibrary,
-} from '@Components/common'
+import { importComponentFromFELibrary } from '@Components/common'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-import { HEADER_TEXT, SwitchItemValues, URLS, ViewType } from '../../../../config'
+import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, URLS, ViewType } from '../../../../config'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
@@ -598,8 +596,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
         })
     }
 
-    handleCodeEditorTab(value: string): void {
-        this.setState({ configMap: value })
+    handleCodeEditorTab = (segment: SegmentType<SwitchItemValues>) => {
+        this.setState({ configMap: segment.value })
     }
 
     setDefaultSecretPlaceHolder(newConfig): void {
@@ -700,16 +698,12 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     <CodeEditor.Header>
                         <div className="flex dc__content-space dc__gap-6">
                             <div className="dc__no-shrink ml-auto">
-                                <Switch
+                                <SegmentedControl<SwitchItemValues>
+                                    segments={SWITCH_ITEM_SEGMENTS}
                                     value={this.state.configMap}
-                                    name="tab"
-                                    onChange={(event) => {
-                                        this.handleCodeEditorTab(event.target.value)
-                                    }}
-                                >
-                                    <SwitchItem value={SwitchItemValues.Configuration}> Configuration </SwitchItem>
-                                    <SwitchItem value={SwitchItemValues.Sample}> Sample Script</SwitchItem>
-                                </Switch>
+                                    onChange={this.handleCodeEditorTab}
+                                    name="sso-login-editor-tab"
+                                />
                             </div>
                         </div>
                     </CodeEditor.Header>

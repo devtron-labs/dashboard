@@ -772,7 +772,7 @@ const GitInfoMaterial = ({
                     title={node?.title}
                     onCloseBranchRegexModal={handleCloseBranchRegexModal}
                     appId={appId}
-                    workflowId={workflowId}
+                    ciPipelineId={node ? +node.id : null}
                     // This will ensure ciTriggerDetails are also updated
                     handleReload={handleReloadWithWorkflows}
                 />

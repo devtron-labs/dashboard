@@ -443,8 +443,8 @@ export interface BranchRegexModalProps {
     title: string
     onCloseBranchRegexModal: () => void
     appId: number
-    workflowId: string
     handleReload: () => Promise<void>
+    ciPipelineId: number
 }
 
 export interface TriggerViewDeploymentConfigType {
