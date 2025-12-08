@@ -88,6 +88,12 @@ export const getNavLinksConfig = (serverMode: SERVER_MODE, superAdmin: boolean, 
             label: 'Chart Groups',
             isHidden: serverMode === SERVER_MODE.EA_ONLY,
         },
+        {
+            accessType: 'observability',
+            tabName: 'observability',
+            label: 'Observability',
+            isHidden: !getAccessManagerRoles, // Check for FE-LIB
+        },
     ] as const
 
 export const getAppPermissionDetailConfig = (path: string, serverMode: SERVER_MODE) =>

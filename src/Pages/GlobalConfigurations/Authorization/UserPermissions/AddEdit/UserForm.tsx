@@ -81,6 +81,8 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
         showStatus,
         isSaveDisabled,
         allowManageAllAccess,
+        observabilityPermission,
+        setObservabilityPermission,
     } = usePermissionConfiguration()
     const _userData = userData as User
 
@@ -135,7 +137,13 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
     const handleSubmit = async () => {
         if (
             !validateForm() ||
-            !validateDirectPermissionForm(directPermission, setDirectPermission, allowManageAllAccess).isValid
+            !validateDirectPermissionForm(
+                directPermission,
+                setDirectPermission,
+                observabilityPermission,
+                setObservabilityPermission,
+                allowManageAllAccess,
+            ).isValid
         ) {
             return
         }
@@ -153,6 +161,7 @@ const UserForm = ({ isAddMode }: { isAddMode: boolean }) => {
             permissionType,
             userGroups: selectedUserGroups,
             canManageAllAccess: allowManageAllAccess,
+            observabilityPermission,
             ...getDefaultUserStatusAndTimeout(),
         })
 

@@ -16,6 +16,8 @@
 
 import React from 'react'
 
+import { ObservabilityPermissionFilter } from '@devtron-labs/devtron-fe-common-lib'
+
 import { PermissionType } from '../../../constants'
 import {
     ChartGroupPermissionsFilter,
@@ -52,6 +54,8 @@ export interface PermissionConfigurationFormContext {
     k8sPermission?: K8sPermissionFilter[]
     setK8sPermission?: React.Dispatch<React.SetStateAction<K8sPermissionFilter[]>>
     currentK8sPermissionRef?: React.MutableRefObject<K8sPermissionFilter[]>
+    observabilityPermission: ObservabilityPermissionFilter[]
+    setObservabilityPermission: React.Dispatch<React.SetStateAction<ObservabilityPermissionFilter[]>>
     /**
      * Flag to control if status should be shown in the form
      *
@@ -82,6 +86,6 @@ export interface PermissionConfigurationFormContext {
 }
 
 export type AccessTypeToErrorMapType = Record<
-    PermissionConfigurationFormContext['directPermission'][number]['accessType'],
+    PermissionConfigurationFormContext['directPermission'][number]['accessType'] | 'observability',
     boolean
 >

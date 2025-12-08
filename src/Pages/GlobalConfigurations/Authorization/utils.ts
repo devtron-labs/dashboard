@@ -77,6 +77,10 @@ const getPermissionActionValue: (roleConfig: UserRoleConfig) => string = importC
     'function',
 )
 
+const validateObservabilityPermissions: ({ observabilityPermission, setObservabilityPermission }) => {
+    isValid: boolean
+} = importComponentFromFELibrary('validateObservabilityPermissions', null, 'function')
+
 const DEPLOYMENT_APPROVER_ROLE_VALUE = importComponentFromFELibrary('DEPLOYMENT_APPROVER_ROLE_VALUE', null, 'function')
 
 const getKeyForRoleFilter = ({ entity, team, environment, accessType, entityName, workflow }: APIRoleFilterDto) =>
@@ -388,9 +392,15 @@ export const getRolesAndAccessRoles = ({
     chartPermission,
     serverMode,
     canManageAllAccess,
+    observabilityPermission,
 }: Pick<
     CreateUserPermissionPayloadParams,
-    'chartPermission' | 'directPermission' | 'serverMode' | 'k8sPermission' | 'canManageAllAccess'
+    | 'chartPermission'
+    | 'directPermission'
+    | 'serverMode'
+    | 'k8sPermission'
+    | 'canManageAllAccess'
+    | 'observabilityPermission'
 >) => {
     const filteredDirectPermissions = directPermission.filter(
         (permission) => permission.team?.value && permission.environment.length && permission.entityName.length,
@@ -411,6 +421,16 @@ export const getRolesAndAccessRoles = ({
             namespace: getCommaSeparatedNamespaceList(permission.namespace),
             resource: getSelectedPermissionValues(permission.resource),
         })),
+        ...observabilityPermission
+            .filter((permission) => !!permission.tenant?.value)
+            .map(({ action, entityName, tenant, status, timeToLive }) => ({
+                entity: EntityTypes.OBSERVABILITY as APIRoleFilter['entity'],
+                action,
+                entityName: entityName.map((entity) => entity.value).join(','),
+                tenant: tenant.value,
+                status,
+                timeToLive,
+            })),
     ]
 
     if (serverMode !== SERVER_MODE.EA_ONLY) {
@@ -448,6 +468,7 @@ export const createUserPermissionPayload = ({
     timeToLive,
     userGroups,
     canManageAllAccess,
+    observabilityPermission,
 }: CreateUserPermissionPayloadParams): UserCreateOrUpdateParamsType => {
     const { roleFilters, accessRoleFilters } = getRolesAndAccessRoles({
         directPermission,
@@ -455,6 +476,7 @@ export const createUserPermissionPayload = ({
         chartPermission,
         serverMode,
         canManageAllAccess,
+        observabilityPermission,
     })
 
     return {
@@ -475,6 +497,8 @@ export const createUserPermissionPayload = ({
 export const validateDirectPermissionForm = (
     directPermission: PermissionConfigurationFormContext['directPermission'],
     setDirectPermission: PermissionConfigurationFormContext['setDirectPermission'],
+    observabilityPermission: PermissionConfigurationFormContext['observabilityPermission'],
+    setObservabilityPermission: PermissionConfigurationFormContext['setObservabilityPermission'],
     allowManageAllAccess: boolean,
     showErrorToast: boolean = true,
 ): {
@@ -534,17 +558,27 @@ export const validateDirectPermissionForm = (
         [],
     )
 
-    const isFormValid = Object.values(accessTypeToErrorMap).every((val) => !val)
+    const { isValid: areObservabilityPermissionsValid } = validateObservabilityPermissions?.({
+        observabilityPermission,
+        setObservabilityPermission,
+    }) ?? { isValid: true }
 
-    if (!isFormValid && showErrorToast) {
-        ToastManager.showToast({
-            variant: ToastVariantType.error,
-            description: REQUIRED_FIELDS_MISSING,
-        })
+    const isFormValid = Object.values(accessTypeToErrorMap).every((val) => !val) && areObservabilityPermissionsValid
+
+    if (!isFormValid) {
         setDirectPermission(tempPermissions)
+        if (showErrorToast) {
+            ToastManager.showToast({
+                variant: ToastVariantType.error,
+                description: REQUIRED_FIELDS_MISSING,
+            })
+        }
     }
 
-    return { isValid: isFormValid, accessTypeToErrorMap }
+    return {
+        isValid: isFormValid,
+        accessTypeToErrorMap: { ...accessTypeToErrorMap, observability: !areObservabilityPermissionsValid },
+    }
 }
 
 export const getWorkflowOptions = (
