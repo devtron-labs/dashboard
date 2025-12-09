@@ -71,7 +71,10 @@ import { getUserRole } from '@Pages/GlobalConfigurations/Authorization/authoriza
 import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnvironments/EditClusterDrawerContent'
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { Configurations } from '@Pages/Releases/Detail'
-import { ApplicationManagementConfigurationsRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import {
+    ApplicationManagementConfigurationsRouter,
+    ApplicationManagementOverview,
+} from '@PagesDevtron2.0/ApplicationManagement'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
 import {
@@ -597,6 +600,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         </Route>,
                                         <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
                                             <ApplicationManagementConfigurationsRouter />
+                                        </Route>,
+                                        <Route path={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}>
+                                            <ApplicationManagementOverview />
                                         </Route>,
                                         <Route
                                             key={CommonURLS.SECURITY_CENTER}
