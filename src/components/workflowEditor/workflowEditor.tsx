@@ -812,7 +812,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             <Button
                 dataTestId="new-workflow-button"
                 text="New Workflow"
-                disabled={!!this.props.filteredEnvIds || !!this.getSearchKey() || !!this.getWorkflowNameToMatch()}
+                disabled={!!this.props.filteredEnvIds}
                 onClick={this.handleNewPipelineModal}
                 startIcon={<Icon name="ic-add" color={null} />}
                 size={ComponentSizeType.medium}
