@@ -262,7 +262,7 @@ const ClusterConfigurations = ({
                 <CustomInput
                     required
                     name="cluster_name"
-                    disabled={isDefaultCluster}
+                    disabled={isDefaultCluster || !!id}
                     value={state.cluster_name.value}
                     error={state.cluster_name.error}
                     onChange={handleOnChange}

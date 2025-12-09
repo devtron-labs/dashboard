@@ -17,12 +17,13 @@
 import React, { useState, useEffect } from 'react'
 import {
     ComponentSizeType,
-    DatePickerRangeController,
+    DateTimePicker,
     DocLink,
     not,
     Progressing,
     ToastManager,
     ToastVariantType,
+    UpdateDateRangeType,
     useAsync,
     useMainContext,
     useTheme,
@@ -30,7 +31,14 @@ import {
 import { useParams, Link, NavLink } from 'react-router-dom'
 import moment, { Moment } from 'moment'
 import Tippy from '@tippyjs/react'
-import { getIframeSrc, ThroughputSelect, getCalendarValue, isK8sVersionValid, LatencySelect, AppInfo } from './utils'
+import {
+    getIframeSrc,
+    ThroughputSelect,
+    isK8sVersionValid,
+    LatencySelect,
+    AppInfo,
+    getAppMetricsPresetOptions,
+} from './utils'
 import {
     ChartTypes,
     AppMetricsTab,
@@ -38,8 +46,6 @@ import {
     ChartType,
     StatusTypes,
     StatusType,
-    CalendarFocusInput,
-    CalendarFocusInputType,
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
@@ -56,6 +62,7 @@ import { ReactComponent as DropDownIcon } from '../../../../assets/icons/appstat
 import { getModuleInfo } from '../../../v2/devtronStackManager/DevtronStackManager.service'
 import { ModuleStatus } from '../../../v2/devtronStackManager/DevtronStackManager.type'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
+import { GrafanaPresetOptionHandlerType } from './types'
 
 export const AppMetrics: React.FC<{
     appName: string
@@ -67,7 +74,7 @@ export const AppMetrics: React.FC<{
     const { appTheme } = useTheme()
     const { setTempAppWindowConfig } = useMainContext()
     const { appMetrics, infraMetrics, environmentName } = environment
-    const [calendar, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
+    const [dateRange, setDateRange] = useState<{ startDate: Moment; endDate: Moment }>({
         startDate: moment().subtract(5, 'minute'),
         endDate: moment(),
     })
@@ -86,10 +93,8 @@ export const AppMetrics: React.FC<{
         isHealthy: false,
         dataSourceName: '',
     })
-    const [focusedInput, setFocusedInput] = useState(CalendarFocusInput.StartDate)
     const [tab, setTab] = useState<AppMetricsTabType>(AppMetricsTab.Aggregate)
     const { appId, envId } = useParams<AppDetailsPathParams>()
-    const [calendarValue, setCalendarValue] = useState('')
     const [statusCode, setStatusCode] = useState<StatusTypes>(StatusType.Throughput)
     const [selectedLatency, setLatency] = useState<number>(99.9)
     const [hostURLConfig, setHostURLConfig] = useState(undefined)
@@ -112,7 +117,10 @@ export const AppMetrics: React.FC<{
         getNewGraphs(tab)
     }
 
-    function handleDatesChange({ startDate, endDate }): void {
+    const handleDatesChange: UpdateDateRangeType = ({ from, to }) => {
+        const startDate = moment(from).startOf('day')
+        const endDate = moment(to)
+
         setDateRange({
             startDate,
             endDate,
@@ -121,22 +129,6 @@ export const AppMetrics: React.FC<{
             startDate: startDate?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT),
             endDate: endDate?.format(APP_METRICS_CALENDAR_INPUT_DATE_FORMAT) || '',
         })
-    }
-
-    function handleDateInput(key: CalendarFocusInputType, value: string): void {
-        setCalendarInput({
-            ...calendarInputs,
-            [key]: value,
-        })
-    }
-
-    function handleFocusChange(focusedInput): void {
-        setFocusedInput(focusedInput || CalendarFocusInput.StartDate)
-    }
-
-    function handleApply(): void {
-        const str = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
-        setCalendarValue(str)
     }
 
     async function checkDatasource() {
@@ -171,17 +163,15 @@ export const AppMetrics: React.FC<{
         }
     }
 
-    function handlePredefinedRange(start: Moment, end: Moment, startStr: string): void {
+    const handlePredefinedRange: GrafanaPresetOptionHandlerType = (startStr, momentDiff) => {
         setDateRange({
-            startDate: start,
-            endDate: end,
+            startDate: moment().subtract(momentDiff.magnitude, momentDiff.unit),
+            endDate: moment(),
         })
         setCalendarInput({
             startDate: startStr,
             endDate: 'now',
         })
-        const str = getCalendarValue(startStr, 'now')
-        setCalendarValue(str)
     }
 
     const getIframeSrcWrapper: GraphModalProps['getIframeSrcWrapper'] = (params) =>
@@ -318,7 +308,7 @@ export const AppMetrics: React.FC<{
                     dataSourceName={dataSourceName}
                     chartName={chartName}
                     newPodHash={newPodHash}
-                    calendar={calendar}
+                    calendar={dateRange}
                     calendarInputs={calendarInputs}
                     tab={tab}
                     k8sVersion={k8sVersion}
@@ -329,11 +319,9 @@ export const AppMetrics: React.FC<{
         })
     }
 
+    const isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
+
     useEffect(() => {
-        const inputCalendarValue: string = getCalendarValue(calendarInputs.startDate, calendarInputs.endDate)
-        if (inputCalendarValue !== calendarValue) {
-            setCalendarValue(inputCalendarValue)
-        }
         if (grafanaModuleStatus?.result?.status === ModuleStatus.INSTALLED) {
             checkDatasource()
         }
@@ -341,7 +329,7 @@ export const AppMetrics: React.FC<{
 
     useEffect(() => {
         getNewGraphs(tab)
-    }, [datasource, calendarValue, appTheme])
+    }, [datasource, calendarInputs, appTheme])
 
     if (grafanaModuleStatus?.result?.status !== ModuleStatus.INSTALLED) {
         return <MonitoringModuleNotInstalled addSpace={addSpace} />
@@ -394,16 +382,18 @@ export const AppMetrics: React.FC<{
                                 <span className="dc__tertiary-tab">Per Pod</span>
                             </label>
                         </div>
-                        <DatePickerRangeController
-                            calendar={calendar}
-                            calendarInputs={calendarInputs}
-                            focusedInput={focusedInput}
-                            calendarValue={calendarValue}
-                            handlePredefinedRange={handlePredefinedRange}
-                            handleDatesChange={handleDatesChange}
-                            handleFocusChange={handleFocusChange}
-                            handleDateInput={handleDateInput}
-                            handleApply={handleApply}
+                        <DateTimePicker
+                            id="date-range-picker-app-metrics"
+                            hideTimeSelect
+                            isRangePicker
+                            dateRange={{
+                                from: dateRange.startDate?.toDate(),
+                                to: dateRange.endDate?.toDate(),
+                            }}
+                            onChange={handleDatesChange}
+                            rangeShortcutOptions={getAppMetricsPresetOptions(handlePredefinedRange)}
+                            blockPreviousDates={false}
+                            isOutsideRange={isOutsideRange}
                         />
                     </div>
                 </div>
