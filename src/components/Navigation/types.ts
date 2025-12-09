@@ -22,7 +22,7 @@ export type NavigationRootItemID =
     | 'data-protection-management'
     | 'global-configuration'
 
-type CommonNavigationItemType = {
+export type CommonNavigationItemType = {
     title: string
     dataTestId: string
     icon: IconsProps['name']

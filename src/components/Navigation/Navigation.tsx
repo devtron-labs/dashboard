@@ -34,16 +34,15 @@ import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackMa
 import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, ViewType } from '@Config/constants'
 import { CommandBar } from '@Pages/Shared/CommandBar'
 
-import { NAVIGATION_LIST } from './constants'
+import { getNavigationList } from './constants'
 import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
 import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
 import {
     doesNavigationItemMatchPath,
-    filterNavGroup,
+    filterNavGroupAndItem,
     filterNavigationItems,
-    filterNavItem,
     findActiveNavigationItemOfNavGroup,
 } from './utils'
 
@@ -142,6 +141,8 @@ export const Navigation = ({
     }, [isSecurityClairLoading, isSecurityClairSuccess])
 
     // COMPUTED VALUES
+    const NAVIGATION_LIST = useMemo(() => getNavigationList(serverMode), [serverMode])
+
     const selectedNavGroup = useMemo(
         () => NAVIGATION_LIST.find(({ items }) => items.some((item) => doesNavigationItemMatchPath(item, pathname))),
         [pathname],
@@ -241,7 +242,7 @@ export const Navigation = ({
                         disabled
                         showTooltip
                     />
-                    {NAVIGATION_LIST.filter((item) => filterNavGroup(item, serverMode)).map((item) => (
+                    {NAVIGATION_LIST.map((item) => (
                         <NavGroup
                             key={item.id}
                             title={item.title}
@@ -298,7 +299,7 @@ export const Navigation = ({
                                         <div className="flex-grow-1 dc__overflow-auto">
                                             {navItems.length ? (
                                                 navItems
-                                                    .filter((item) => filterNavItem(item, serverMode))
+                                                    .filter((item) => filterNavGroupAndItem(item, serverMode))
                                                     .map((item) => (
                                                         <NavItem
                                                             key={item.title}

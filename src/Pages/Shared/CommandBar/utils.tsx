@@ -11,7 +11,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { QueryParams as ChartStoreQueryParams } from '@Components/charts/constants'
-import { NAVIGATION_LIST } from '@Components/Navigation/constants'
+import { getNavigationList } from '@Components/Navigation'
 import { getClusterChangeRedirectionUrl } from '@Components/ResourceBrowser/Utils'
 import { URLS } from '@Config/routes'
 
@@ -109,7 +109,7 @@ const getNavItemBreakdownItems = (
 }
 
 export const getNavigationGroups = (serverMode: SERVER_MODE, isSuperAdmin: boolean): CommandBarGroupType[] =>
-    NAVIGATION_LIST.map<CommandBarGroupType>((group) => {
+    getNavigationList(serverMode).map<CommandBarGroupType>((group) => {
         const parsedItems = group.items.flatMap<CommandBarGroupType['items'][number]>(
             ({ hasSubMenu, subItems, title, href, id, icon, keywords }) => {
                 if (hasSubMenu && subItems?.length) {
