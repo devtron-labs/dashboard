@@ -1,6 +1,6 @@
-import { TreeNode } from '@devtron-labs/devtron-fe-common-lib'
+import { SERVER_MODE, TreeNode } from '@devtron-labs/devtron-fe-common-lib'
 
-import { NavigationItemType } from './types'
+import { CommonNavigationItemType, NavigationItemType } from './types'
 
 const getNavigationTreeItems = (items: NavigationItemType['subItems']) =>
     items
@@ -109,3 +109,17 @@ export const doesNavigationItemMatchPath = (
  */
 export const findActiveNavigationItemOfNavGroup = (items: NavigationItemType[]) =>
     items.find(({ disabled }) => !disabled)
+
+export const filterNavGroupAndItem = (
+    item: Pick<CommonNavigationItemType, 'hideNav' | 'forceHideEnvKey' | 'isAvailableInEA'>,
+    serverMode: SERVER_MODE,
+) => {
+    const { forceHideEnvKey, hideNav, isAvailableInEA } = item
+    if (forceHideEnvKey) {
+        return window._env_[forceHideEnvKey]
+    }
+    if (serverMode === SERVER_MODE.EA_ONLY) {
+        return isAvailableInEA
+    }
+    return !hideNav
+}

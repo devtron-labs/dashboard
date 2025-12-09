@@ -603,7 +603,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={CommonURLS.SECURITY_CENTER}
                                             render={() => <Security />}
                                         />,
-                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
+                                        ...(window._env_.FEATURE_RESOURCE_WATCHER_ENABLE && ResourceWatcherRouter
                                             ? [
                                                   <Route
                                                       key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER}
@@ -613,7 +613,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
+                                        ...(window._env_.FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE &&
+                                        SoftwareDistributionHub
                                             ? [
                                                   <Route
                                                       key={CommonURLS.SOFTWARE_RELEASE_MANAGEMENT}
@@ -681,7 +682,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.AI_RECOMMENDATIONS,
                                                 CommonURLS.INFRASTRUCTURE_MANAGEMENT,
                                                 CommonURLS.DATA_PROTECTION,
                                             ]}

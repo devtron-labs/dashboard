@@ -21,9 +21,8 @@ export type NavigationRootItemID =
     | 'automation-and-enablement'
     | 'data-protection-management'
     | 'global-configuration'
-    | 'ai-recommendations'
 
-type CommonNavigationItemType = {
+export type CommonNavigationItemType = {
     title: string
     dataTestId: string
     icon: IconsProps['name']
@@ -32,19 +31,13 @@ type CommonNavigationItemType = {
     keywords?: string[]
     forceHideEnvKey?: keyof customEnv
     hideNav?: boolean
+    isAvailableInEA?: boolean
 }
 
 export type NavigationItemType = Pick<
     CommonNavigationItemType,
-    'dataTestId' | 'disabled' | 'keywords' | 'forceHideEnvKey' | 'hideNav'
+    'dataTestId' | 'title' | 'disabled' | 'keywords' | 'hideNav' | 'forceHideEnvKey' | 'isAvailableInEA'
 > & {
-    isAvailableInEA?: boolean
-    markOnlyForSuperAdmin?: boolean
-    title: string
-    markAsBeta?: boolean
-    isAvailableInDesktop?: boolean
-    moduleName?: string
-    moduleNameTrivy?: string
     id: NavigationItemID
 } & (
         | (Pick<CommonNavigationItemType, 'icon' | 'href'> & {
@@ -53,11 +46,12 @@ export type NavigationItemType = Pick<
           })
         | (Never<Pick<CommonNavigationItemType, 'icon' | 'href'>> & {
               hasSubMenu: true
-              subItems: (Omit<CommonNavigationItemType, 'icon'> & { id: NavigationSubMenuItemID })[]
+              subItems: (Omit<CommonNavigationItemType, 'icon' | 'isAvailableInEA'> & { id: NavigationSubMenuItemID })[]
           })
     )
 
-export interface NavigationGroupType extends Pick<CommonNavigationItemType, 'title' | 'icon'> {
+export interface NavigationGroupType
+    extends Pick<CommonNavigationItemType, 'title' | 'icon' | 'hideNav' | 'forceHideEnvKey' | 'isAvailableInEA'> {
     id: NavigationRootItemID
     items: NavigationItemType[]
     disabled?: boolean
