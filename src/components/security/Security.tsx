@@ -19,13 +19,13 @@ import { Redirect, Route, Switch } from 'react-router-dom'
 import { URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
+import { SecurityCenterOverview } from '@PagesDevtron2.0/SecurityCenter'
 
 import { SecurityPoliciesTab } from './SecurityPoliciesTab'
 import { VulnerabilitiesRouter } from './Vulnerabilities'
 
 import './security.scss'
 
-const SecurityCenterOverview = importComponentFromFELibrary('SecurityCenterOverview', null, 'function')
 const SecurityEnablement = importComponentFromFELibrary('SecurityEnablement', null, 'function')
 
 export const Security = () => (
@@ -46,6 +46,6 @@ export const Security = () => (
         <Route path={URLS.SECURITY_CENTER_POLICIES}>
             <SecurityPoliciesTab />
         </Route>
-        <Redirect to={SecurityCenterOverview ? URLS.SECURITY_CENTER_OVERVIEW : URLS.SECURITY_CENTER_VULNERABILITIES} />
+        <Redirect to={URLS.SECURITY_CENTER_OVERVIEW} />
     </Switch>
 )
