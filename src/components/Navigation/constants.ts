@@ -286,8 +286,10 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-resource-watcher',
                 icon: 'ic-resource-watcher',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
+                forceHideEnvKey: 'FEATURE_RESOURCE_WATCHER_ENABLE',
             },
         ],
+        isAvailableInEA: true,
     },
     {
         id: 'software-release-management',
@@ -317,6 +319,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: FE_LIB_ROUTER_URLS.TENANTS,
             },
         ],
+        forceHideEnvKey: 'FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE',
     },
     {
         id: 'cost-visibility',
@@ -463,22 +466,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 }),
             },
         ],
-    },
-    {
-        id: 'ai-recommendations',
-        title: 'AI Recommendations',
-        icon: 'ic-ai',
-        disabled: true,
-        items: [
-            {
-                title: 'Overview',
-                dataTestId: 'ai-recommendations-overview',
-                id: 'ai-recommendations-overview',
-                icon: 'ic-chart-line-up',
-                disabled: true,
-                href: COMMON_URLS.AI_RECOMMENDATIONS_OVERVIEW,
-            },
-        ],
+        forceHideEnvKey: 'FEATURE_STORAGE_ENABLE',
     },
     {
         id: 'global-configuration',
@@ -521,5 +509,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 subItems: GLOBAL_CONFIGURATION_AUTHORIZATION,
             },
         ],
+        isAvailableInEA: true,
     },
 ]

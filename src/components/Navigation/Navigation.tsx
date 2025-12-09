@@ -39,7 +39,13 @@ import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
 import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
-import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
+import {
+    doesNavigationItemMatchPath,
+    filterNavGroup,
+    filterNavigationItems,
+    filterNavItem,
+    findActiveNavigationItemOfNavGroup,
+} from './utils'
 
 import './styles.scss'
 
@@ -235,7 +241,7 @@ export const Navigation = ({
                         disabled
                         showTooltip
                     />
-                    {NAVIGATION_LIST.map((item) => (
+                    {NAVIGATION_LIST.filter((item) => filterNavGroup(item, serverMode)).map((item) => (
                         <NavGroup
                             key={item.id}
                             title={item.title}
@@ -292,9 +298,7 @@ export const Navigation = ({
                                         <div className="flex-grow-1 dc__overflow-auto">
                                             {navItems.length ? (
                                                 navItems
-                                                    .filter(({ forceHideEnvKey, hideNav }) =>
-                                                        forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav,
-                                                    )
+                                                    .filter((item) => filterNavItem(item, serverMode))
                                                     .map((item) => (
                                                         <NavItem
                                                             key={item.title}
