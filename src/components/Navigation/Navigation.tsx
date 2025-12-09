@@ -39,12 +39,7 @@ import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
 import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
-import {
-    doesNavigationItemMatchPath,
-    filterNavGroupAndItem,
-    filterNavigationItems,
-    findActiveNavigationItemOfNavGroup,
-} from './utils'
+import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
 
 import './styles.scss'
 
@@ -298,15 +293,9 @@ export const Navigation = ({
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
                                             {navItems.length ? (
-                                                navItems
-                                                    .filter((item) => filterNavGroupAndItem(item, serverMode))
-                                                    .map((item) => (
-                                                        <NavItem
-                                                            key={item.title}
-                                                            {...item}
-                                                            hasSearchText={!!searchText}
-                                                        />
-                                                    ))
+                                                navItems.map((item) => (
+                                                    <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
+                                                ))
                                             ) : (
                                                 <span className="fs-13 lh-20 text__sidenav">No matching results</span>
                                             )}

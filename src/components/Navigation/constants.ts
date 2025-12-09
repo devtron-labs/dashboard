@@ -515,4 +515,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
 ]
 
 export const getNavigationList = (serverMode: SERVER_MODE) =>
-    NAVIGATION_LIST.filter((item) => filterNavGroupAndItem(item, serverMode))
+    NAVIGATION_LIST.filter((item) => filterNavGroupAndItem(item, serverMode)).map((item) => ({
+        ...item,
+        items: (item.items ?? []).filter((subItem) => filterNavGroupAndItem(subItem, serverMode)),
+    }))
