@@ -38,7 +38,7 @@ export const Configurations = () => {
             return URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS
         }
 
-        return URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS
+        return URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS
     }
 
     const { breadcrumbs } = useBreadcrumb(

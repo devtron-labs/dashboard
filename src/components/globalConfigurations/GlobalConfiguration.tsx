@@ -221,13 +221,13 @@ const NavItem = ({ serverMode }) => {
             title: 'External Links',
             dataTestId: 'click-on-configurations-external-links',
             id: 'external-links',
-            href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS,
+            href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
         },
         {
             title: 'Chart Repository',
             dataTestId: 'click-on-configurations-chart-repository',
             id: 'chart-repository',
-            href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO,
+            href: URLS.GLOBAL_CONFIG_CHART_REPO,
         },
         {
             id: 'clusters-environments',
@@ -304,14 +304,14 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
     return (
         <Switch>
             <Route
-                key={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS}
-                path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS}
+                key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
             >
                 <ExternalLinks />
             </Route>
             <Route
-                key={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}
-                path={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}
+                key={URLS.GLOBAL_CONFIG_CHART_REPO}
+                path={URLS.GLOBAL_CONFIG_CHART_REPO}
             >
                 {(props) => <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />}
             </Route>

@@ -131,7 +131,7 @@ export const ChartRepoSelector = ({
                         description={
                             <div>
                                 {CONNECT_CHART_REPO_TEXTS.InfoText}
-                                <NavLink to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO} target="_blank" className="fw-6">
+                                <NavLink to={URLS.GLOBAL_CONFIG_CHART_REPO} target="_blank" className="fw-6">
                                     {CONNECT_CHART_REPO_TEXTS.LinkText}
                                 </NavLink>
                             </div>
