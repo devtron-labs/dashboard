@@ -11,31 +11,43 @@ import { URLS } from '@Config/routes'
 
 import { filterNavGroupAndItem } from './utils'
 
-const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM = importComponentFromFELibrary(
+const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
     'APPLICATION_MANAGEMENT_POLICIES_NAV_GROUP',
     null,
     'function',
 )
 
-const APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM = importComponentFromFELibrary(
+const APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
     'APPLICATION_MANAGEMENT_TEMPLATES_NAV_GROUP',
     null,
     'function',
 )
 
-const RESOURCE_WATCHER_NAV_ITEM = importComponentFromFELibrary('RESOURCE_WATCHER_NAV_GROUP', null, 'function')
+const RESOURCE_WATCHER_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'RESOURCE_WATCHER_NAV_ITEM',
+    null,
+    'function',
+)
 
-const SECURITY_ENABLEMENT_NAV_ITEM = importComponentFromFELibrary('SECURITY_ENABLEMENT_NAV_GROUP', null, 'function')
+const SECURITY_ENABLEMENT_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'SECURITY_ENABLEMENT_NAV_ITEM',
+    null,
+    'function',
+)
 
-const DATA_PROTECTION_MANAGEMENT_NAV_GROUP = importComponentFromFELibrary(
+const DATA_PROTECTION_MANAGEMENT_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary(
     'DATA_PROTECTION_MANAGEMENT_NAV_GROUP',
     null,
     'function',
 )
 
-const COST_VISIBILITY_NAV_GROUP = importComponentFromFELibrary('COST_VISIBILITY_NAV_GROUP', null, 'function')
+const COST_VISIBILITY_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary(
+    'COST_VISIBILITY_NAV_GROUP',
+    null,
+    'function',
+)
 
-const SDH_NAV_GROUP = importComponentFromFELibrary('SDH_NAV_GROUP', null, 'function')
+const SDH_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary('SDH_NAV_GROUP', null, 'function')
 
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
@@ -289,6 +301,20 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-host-urls',
                 icon: 'ic-link',
                 href: URLS.GLOBAL_CONFIG_HOST_URL,
+            },
+            {
+                title: 'External Links',
+                dataTestId: 'click-on-configurations-external-links',
+                id: 'global-configuration-external-links',
+                href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
+                icon: 'ic-link',
+            },
+            {
+                title: 'Chart Repository',
+                dataTestId: 'click-on-configurations-chart-repository',
+                id: 'global-configuration-chart-repository',
+                href: URLS.GLOBAL_CONFIG_CHART_REPO,
+                icon: 'ic-cube',
             },
             {
                 title: 'Cluster & Environments',
