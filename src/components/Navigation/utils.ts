@@ -1,6 +1,9 @@
-import { SERVER_MODE, TreeNode } from '@devtron-labs/devtron-fe-common-lib'
-
-import { CommonNavigationItemType, NavigationItemType } from './types'
+import {
+    CommonNavigationItemType,
+    NavigationItemType,
+    SERVER_MODE,
+    TreeNode,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 const getNavigationTreeItems = (items: NavigationItemType['subItems']) =>
     items

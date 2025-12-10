@@ -1,10 +1,14 @@
-import { SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    NavigationGroupType,
+    NavigationItemType,
+    SERVER_MODE,
+    URLS as COMMON_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
-import { NavigationGroupType, NavigationItemType } from './types'
 import { filterNavGroupAndItem } from './utils'
 
 const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM = importComponentFromFELibrary(
