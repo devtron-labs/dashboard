@@ -61,8 +61,12 @@ export const RedirectUserWithSentry = ({ isFirstLoginUser }: { isFirstLoginUser:
             push(CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
         } else if (isFirstLoginUser) {
             push(URLS.GETTING_STARTED)
-        } else if (serverMode === SERVER_MODE.EA_ONLY && window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE) {
-            push(CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER)
+        } else if (serverMode === SERVER_MODE.EA_ONLY) {
+            push(
+                window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE
+                    ? CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER
+                    : CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST,
+            )
         } else {
             push(CommonURLS.APPLICATION_MANAGEMENT_APP_LIST)
         }

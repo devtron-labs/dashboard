@@ -1,15 +1,53 @@
-import { generatePath } from 'react-router-dom'
-
-import { BackupLocationsTypes, SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    NavigationGroupType,
+    NavigationItemType,
+    SERVER_MODE,
+    URLS as COMMON_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
-import { NavigationGroupType, NavigationItemType } from './types'
 import { filterNavGroupAndItem } from './utils'
 
-const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
+const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'APPLICATION_MANAGEMENT_POLICIES_NAV_GROUP',
+    null,
+    'function',
+)
+
+const APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'APPLICATION_MANAGEMENT_TEMPLATES_NAV_GROUP',
+    null,
+    'function',
+)
+
+const RESOURCE_WATCHER_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'RESOURCE_WATCHER_NAV_ITEM',
+    null,
+    'function',
+)
+
+const SECURITY_ENABLEMENT_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
+    'SECURITY_ENABLEMENT_NAV_ITEM',
+    null,
+    'function',
+)
+
+const DATA_PROTECTION_MANAGEMENT_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary(
+    'DATA_PROTECTION_MANAGEMENT_NAV_GROUP',
+    null,
+    'function',
+)
+
+const COST_VISIBILITY_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary(
+    'COST_VISIBILITY_NAV_GROUP',
+    null,
+    'function',
+)
+
+const SDH_NAV_GROUP: NavigationGroupType = importComponentFromFELibrary('SDH_NAV_GROUP', null, 'function')
 
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
@@ -24,20 +62,6 @@ export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems
         dataTestId: 'click-on-configurations-git-accounts',
         id: 'application-management-configurations-git-accounts',
         href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
-        keywords: ['config'],
-    },
-    {
-        title: 'External Links',
-        dataTestId: 'click-on-configurations-external-links',
-        id: 'application-management-configurations-external-links',
-        href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS,
-        keywords: ['config'],
-    },
-    {
-        title: 'Chart Repository',
-        dataTestId: 'click-on-configurations-chart-repository',
-        id: 'application-management-configurations-chart-repository',
-        href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO,
         keywords: ['config'],
     },
     {
@@ -68,97 +92,6 @@ export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems
         id: 'application-management-configurations-build-infra',
         href: COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_BUILD_INFRA,
         keywords: ['config'],
-    },
-]
-
-const APPLICATION_MANAGEMENT_POLICIES: NavigationItemType['subItems'] = [
-    {
-        title: 'Deployment Window',
-        dataTestId: 'click-on-policies-deployment-window',
-        id: 'application-management-policies-deployment-window',
-        href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_DEPLOYMENT_WINDOW,
-        keywords: ['policy'],
-    },
-    {
-        title: 'Approval Policy',
-        dataTestId: 'click-on-policies-approval-policy',
-        id: 'application-management-policies-approval-policy',
-        href: FE_LIB_ROUTER_URLS.APPROVAL_POLICY_LIST,
-        keywords: ['policy'],
-    },
-    {
-        title: 'Plugin Policy',
-        dataTestId: 'click-on-policies-plugin-policy',
-        id: 'application-management-policies-plugin-policy',
-        href: FE_LIB_ROUTER_URLS.PLUGIN_POLICY_PROFILE_LIST,
-        keywords: ['policy'],
-    },
-    {
-        title: 'Pull Image Digest',
-        dataTestId: 'click-on-policies-pull-image-digest',
-        id: 'application-management-policies-pull-image-digest',
-        href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_PULL_IMAGE_DIGEST,
-        keywords: ['policy'],
-    },
-    {
-        title: 'Tag Policy',
-        dataTestId: 'click-on-policies-tag-policy',
-        id: 'application-management-policies-tag-policy',
-        href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_TAG_POLICY,
-        keywords: ['policy'],
-    },
-    {
-        title: 'Filter Conditions',
-        dataTestId: 'click-on-policies-filter-conditions',
-        id: 'application-management-policies-filter-conditions',
-        href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_FILTER_CONDITIONS,
-        keywords: ['policy'],
-    },
-    {
-        title: 'Image Promotion',
-        dataTestId: 'click-on-policies-image-promotion',
-        id: 'application-management-policies-image-promotion',
-        href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_IMAGE_PROMOTION,
-        keywords: ['policy'],
-        forceHideEnvKey: 'FEATURE_IMAGE_PROMOTION_ENABLE',
-    },
-    {
-        title: 'Lock Deployment Configuration',
-        dataTestId: 'click-on-policies-lock-deployment-configuration',
-        id: 'application-management-policies-lock-deployment-configuration',
-        href: FE_LIB_ROUTER_URLS.APPLICATION_MANAGEMENT_POLICIES_LOCK_DEPLOYMENT_CONFIGURATION,
-        keywords: ['policy'],
-    },
-]
-
-const COST_VISIBILITY_COST_BREAKDOWN: NavigationItemType['subItems'] = [
-    {
-        title: 'Clusters',
-        dataTestId: 'cost-breakdown-clusters',
-        id: 'cost-visibility-cost-breakdown-clusters',
-        href: COMMON_URLS.COST_BREAKDOWN_CLUSTERS,
-        keywords: ['cost'],
-    },
-    {
-        title: 'Environments',
-        dataTestId: 'cost-breakdown-environments',
-        id: 'cost-visibility-cost-breakdown-environments',
-        href: COMMON_URLS.COST_BREAKDOWN_ENVIRONMENTS,
-        keywords: ['cost'],
-    },
-    {
-        title: 'Projects',
-        dataTestId: 'cost-breakdown-projects',
-        id: 'cost-visibility-cost-breakdown-projects',
-        href: COMMON_URLS.COST_BREAKDOWN_PROJECTS,
-        keywords: ['cost'],
-    },
-    {
-        title: 'Applications',
-        dataTestId: 'cost-breakdown-applications',
-        id: 'cost-visibility-cost-breakdown-applications',
-        href: COMMON_URLS.COST_BREAKDOWN_APPLICATIONS,
-        keywords: ['cost'],
     },
 ]
 
@@ -217,14 +150,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-code',
                 href: URLS.APPLICATION_MANAGEMENT_BULK_EDIT,
             },
-            {
-                title: 'Application Templates',
-                dataTestId: 'click-on-application-templates',
-                id: 'application-management-application-templates',
-                icon: 'ic-application-template',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP,
-                forceHideEnvKey: 'FEATURE_APPLICATION_TEMPLATES_ENABLE',
-            },
+            ...(APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM ? [APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM] : []),
             {
                 title: 'Projects',
                 dataTestId: 'click-on-projects',
@@ -239,13 +165,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 hasSubMenu: true,
                 subItems: APPLICATION_MANAGEMENT_CONFIGURATIONS,
             },
-            {
-                title: 'Policies',
-                dataTestId: 'click-on-policies',
-                id: 'application-management-policies',
-                hasSubMenu: true,
-                subItems: APPLICATION_MANAGEMENT_POLICIES,
-            },
+            ...(APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM ? [APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM] : []),
         ],
     },
     {
@@ -259,6 +179,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-overview',
                 icon: 'ic-chart-line-up',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW,
+                isAvailableInEA: true,
             },
             {
                 title: 'Applications',
@@ -266,6 +187,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-applications',
                 icon: 'ic-grid-view',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP,
+                isAvailableInEA: true,
             },
             {
                 title: 'Chart Store',
@@ -273,6 +195,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-chart-store',
                 icon: 'ic-helm',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE,
+                isAvailableInEA: true,
             },
             {
                 title: 'Resource Browser',
@@ -280,76 +203,14 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-resource-browser',
                 icon: 'ic-resource-browser',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
+                isAvailableInEA: true,
             },
-            {
-                title: 'Resource Watcher',
-                dataTestId: 'resource-watcher',
-                id: 'infrastructure-management-resource-watcher',
-                icon: 'ic-resource-watcher',
-                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
-                forceHideEnvKey: 'FEATURE_RESOURCE_WATCHER_ENABLE',
-            },
+            ...(RESOURCE_WATCHER_NAV_ITEM ? [RESOURCE_WATCHER_NAV_ITEM] : []),
         ],
         isAvailableInEA: true,
     },
-    {
-        id: 'software-release-management',
-        title: 'Software Release Management',
-        icon: 'ic-software-release-management',
-        items: [
-            {
-                title: 'Overview',
-                dataTestId: 'software-release-management-overview',
-                id: 'software-release-management-overview',
-                icon: 'ic-chart-line-up',
-                href: '/dummy-url',
-                disabled: true,
-            },
-            {
-                title: 'Release Hub',
-                dataTestId: 'release-hub',
-                id: 'software-release-management-release-hub',
-                icon: 'ic-release-hub',
-                href: FE_LIB_ROUTER_URLS.RELEASES,
-            },
-            {
-                title: 'Tenants',
-                dataTestId: 'tenants',
-                id: 'software-release-management-tenants',
-                icon: 'ic-tenants',
-                href: FE_LIB_ROUTER_URLS.TENANTS,
-            },
-        ],
-        forceHideEnvKey: 'FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE',
-    },
-    {
-        id: 'cost-visibility',
-        title: 'Cost Visibility',
-        icon: 'ic-cost-visibility',
-        items: [
-            {
-                title: 'Overview',
-                dataTestId: 'cost-visibility-overview',
-                id: 'cost-visibility-overview',
-                icon: 'ic-chart-line-up',
-                href: COMMON_URLS.COST_VISIBILITY_OVERVIEW,
-            },
-            {
-                title: 'Cost Breakdown',
-                dataTestId: 'cost-breakdown',
-                id: 'cost-visibility-cost-breakdown',
-                hasSubMenu: true,
-                subItems: COST_VISIBILITY_COST_BREAKDOWN,
-            },
-            {
-                title: 'Configurations',
-                dataTestId: 'cost-visibility-configurations',
-                id: 'cost-visibility-configurations',
-                icon: 'ic-gear',
-                href: COMMON_URLS.COST_CONFIGURATIONS,
-            },
-        ],
-    },
+    ...(SDH_NAV_GROUP ? [SDH_NAV_GROUP] : []),
+    ...(COST_VISIBILITY_NAV_GROUP ? [COST_VISIBILITY_NAV_GROUP] : []),
     {
         id: 'security-center',
         title: 'Security Center',
@@ -361,6 +222,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-overview',
                 href: COMMON_URLS.SECURITY_CENTER_OVERVIEW,
                 icon: 'ic-chart-line-up',
+                isAvailableInEA: true,
             },
             {
                 title: 'Vulnerabilities',
@@ -368,22 +230,19 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-security-vulnerabilities',
                 href: COMMON_URLS.SECURITY_CENTER_VULNERABILITIES,
                 icon: 'ic-bug',
+                isAvailableInEA: true,
             },
-            {
-                title: 'Security Enablement',
-                dataTestId: 'security-enablement',
-                id: 'security-center-security-enablement',
-                href: COMMON_URLS.SECURITY_CENTER_SECURITY_ENABLEMENT,
-                icon: 'ic-security-scan',
-            },
+            ...(SECURITY_ENABLEMENT_NAV_ITEM ? [SECURITY_ENABLEMENT_NAV_ITEM] : []),
             {
                 title: 'Security Policy',
                 dataTestId: 'security-policy',
                 id: 'security-center-security-policy',
                 href: COMMON_URLS.SECURITY_CENTER_POLICIES,
                 icon: 'ic-security-policy',
+                isAvailableInEA: true,
             },
         ],
+        isAvailableInEA: true,
     },
     {
         id: 'automation-and-enablement',
@@ -431,44 +290,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
             },
         ],
     },
-    {
-        title: 'Data Protection Management',
-        id: 'data-protection-management',
-        icon: 'ic-database-backup',
-        items: [
-            {
-                title: 'Overview',
-                dataTestId: 'data-protection-overview',
-                id: 'data-protection-overview',
-                icon: 'ic-chart-line-up',
-                href: COMMON_URLS.DATA_PROTECTION_OVERVIEW,
-            },
-            {
-                title: 'Backup & Schedule',
-                dataTestId: 'data-protection-backup-and-schedule',
-                id: 'data-protection-backup-and-schedule',
-                icon: 'ic-backup-and-schedule',
-                href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_AND_SCHEDULE, { view: 'backups' }),
-            },
-            {
-                title: 'Restores',
-                dataTestId: 'data-protection-restores',
-                id: 'data-protection-restores',
-                icon: 'ic-clock-counterclockwise',
-                href: COMMON_URLS.DATA_PROTECTION_RESTORES,
-            },
-            {
-                title: 'Backup Locations',
-                dataTestId: 'backup-locations',
-                id: 'data-protection-backup-locations',
-                icon: 'ic-backup-location',
-                href: generatePath(COMMON_URLS.DATA_PROTECTION_BACKUP_LOCATIONS, {
-                    type: BackupLocationsTypes.VOLUME_SNAPSHOT,
-                }),
-            },
-        ],
-        forceHideEnvKey: 'FEATURE_STORAGE_ENABLE',
-    },
+    ...(DATA_PROTECTION_MANAGEMENT_NAV_GROUP ? [DATA_PROTECTION_MANAGEMENT_NAV_GROUP] : []),
     {
         id: 'global-configuration',
         title: 'Global Configuration',
@@ -480,6 +302,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-sso-login-services',
                 icon: 'ic-key',
                 href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
+                isAvailableInEA: true,
             },
             {
                 title: 'Host URL',
@@ -489,11 +312,28 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: URLS.GLOBAL_CONFIG_HOST_URL,
             },
             {
+                title: 'External Links',
+                dataTestId: 'click-on-configurations-external-links',
+                id: 'global-configuration-external-links',
+                href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
+                icon: 'ic-link',
+                isAvailableInEA: true,
+            },
+            {
+                title: 'Chart Repository',
+                dataTestId: 'click-on-configurations-chart-repository',
+                id: 'global-configuration-chart-repository',
+                href: URLS.GLOBAL_CONFIG_CHART_REPO,
+                icon: 'ic-cube',
+                isAvailableInEA: true,
+            },
+            {
                 title: 'Cluster & Environments',
                 dataTestId: 'cluster-and-environments',
                 id: 'global-configuration-cluster-and-environments',
                 icon: 'ic-cluster',
                 href: URLS.GLOBAL_CONFIG_CLUSTER,
+                isAvailableInEA: true,
             },
             {
                 title: 'Container/OCI Registry',
@@ -501,6 +341,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-container-oci-registry',
                 icon: 'ic-folder',
                 href: URLS.GLOBAL_CONFIG_DOCKER,
+                isAvailableInEA: true,
             },
             {
                 title: 'Authorization',
@@ -508,6 +349,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-authorization',
                 hasSubMenu: true,
                 subItems: GLOBAL_CONFIGURATION_AUTHORIZATION,
+                isAvailableInEA: true,
             },
         ],
         isAvailableInEA: true,
@@ -515,7 +357,21 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
 ]
 
 export const getNavigationList = (serverMode: SERVER_MODE) =>
-    NAVIGATION_LIST.filter((item) => filterNavGroupAndItem(item, serverMode)).map((item) => ({
-        ...item,
-        items: (item.items ?? []).filter((subItem) => filterNavGroupAndItem(subItem, serverMode)),
+    NAVIGATION_LIST.filter((group) =>
+        filterNavGroupAndItem(
+            { forceHideEnvKey: group.forceHideEnvKey, hideNav: group.hideNav, isAvailableInEA: group.isAvailableInEA },
+            serverMode,
+        ),
+    ).map((group) => ({
+        ...group,
+        items: (group.items ?? []).filter((item) =>
+            filterNavGroupAndItem(
+                {
+                    forceHideEnvKey: item.forceHideEnvKey,
+                    hideNav: item.hideNav,
+                    isAvailableInEA: item.isAvailableInEA,
+                },
+                serverMode,
+            ),
+        ),
     }))
