@@ -179,6 +179,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-overview',
                 icon: 'ic-chart-line-up',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW,
+                isAvailableInEA: true,
             },
             {
                 title: 'Applications',
@@ -186,6 +187,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-applications',
                 icon: 'ic-grid-view',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP,
+                isAvailableInEA: true,
             },
             {
                 title: 'Chart Store',
@@ -193,6 +195,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-chart-store',
                 icon: 'ic-helm',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE,
+                isAvailableInEA: true,
             },
             {
                 title: 'Resource Browser',
@@ -200,6 +203,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-resource-browser',
                 icon: 'ic-resource-browser',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
+                isAvailableInEA: true,
             },
             ...(RESOURCE_WATCHER_NAV_ITEM ? [RESOURCE_WATCHER_NAV_ITEM] : []),
         ],
@@ -218,6 +222,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-overview',
                 href: COMMON_URLS.SECURITY_CENTER_OVERVIEW,
                 icon: 'ic-chart-line-up',
+                isAvailableInEA: true,
             },
             {
                 title: 'Vulnerabilities',
@@ -225,6 +230,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-security-vulnerabilities',
                 href: COMMON_URLS.SECURITY_CENTER_VULNERABILITIES,
                 icon: 'ic-bug',
+                isAvailableInEA: true,
             },
             ...(SECURITY_ENABLEMENT_NAV_ITEM ? [SECURITY_ENABLEMENT_NAV_ITEM] : []),
             {
@@ -233,8 +239,10 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-security-policy',
                 href: COMMON_URLS.SECURITY_CENTER_POLICIES,
                 icon: 'ic-security-policy',
+                isAvailableInEA: true,
             },
         ],
+        isAvailableInEA: true,
     },
     {
         id: 'automation-and-enablement',
@@ -294,6 +302,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-sso-login-services',
                 icon: 'ic-key',
                 href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
+                isAvailableInEA: true,
             },
             {
                 title: 'Host URL',
@@ -308,6 +317,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-external-links',
                 href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
                 icon: 'ic-link',
+                isAvailableInEA: true,
             },
             {
                 title: 'Chart Repository',
@@ -315,6 +325,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-chart-repository',
                 href: URLS.GLOBAL_CONFIG_CHART_REPO,
                 icon: 'ic-cube',
+                isAvailableInEA: true,
             },
             {
                 title: 'Cluster & Environments',
@@ -322,6 +333,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-cluster-and-environments',
                 icon: 'ic-cluster',
                 href: URLS.GLOBAL_CONFIG_CLUSTER,
+                isAvailableInEA: true,
             },
             {
                 title: 'Container/OCI Registry',
@@ -329,6 +341,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-container-oci-registry',
                 icon: 'ic-folder',
                 href: URLS.GLOBAL_CONFIG_DOCKER,
+                isAvailableInEA: true,
             },
             {
                 title: 'Authorization',
@@ -336,6 +349,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-authorization',
                 hasSubMenu: true,
                 subItems: GLOBAL_CONFIGURATION_AUTHORIZATION,
+                isAvailableInEA: true,
             },
         ],
         isAvailableInEA: true,
@@ -343,7 +357,21 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
 ]
 
 export const getNavigationList = (serverMode: SERVER_MODE) =>
-    NAVIGATION_LIST.filter((item) => filterNavGroupAndItem(item, serverMode)).map((item) => ({
-        ...item,
-        items: (item.items ?? []).filter((subItem) => filterNavGroupAndItem(subItem, serverMode)),
+    NAVIGATION_LIST.filter((group) =>
+        filterNavGroupAndItem(
+            { forceHideEnvKey: group.forceHideEnvKey, hideNav: group.hideNav, isAvailableInEA: group.isAvailableInEA },
+            serverMode,
+        ),
+    ).map((group) => ({
+        ...group,
+        items: (group.items ?? []).filter((item) =>
+            filterNavGroupAndItem(
+                {
+                    forceHideEnvKey: item.forceHideEnvKey,
+                    hideNav: item.hideNav,
+                    isAvailableInEA: item.isAvailableInEA,
+                },
+                serverMode,
+            ),
+        ),
     }))

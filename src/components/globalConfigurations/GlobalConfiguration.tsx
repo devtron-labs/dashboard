@@ -211,12 +211,12 @@ const NavItem = ({ serverMode }) => {
     }
 
     const sideNavigationList: SideNavigationProps['list'] = [
-        {
+        ...(serverMode === SERVER_MODE.FULL ? [{
             id: 'host-url',
             title: 'Host URL',
             dataTestId: 'global-configurations-host-url',
             href: URLS.GLOBAL_CONFIG_HOST_URL,
-        },
+        }] : []),
         {
             title: 'External Links',
             dataTestId: 'click-on-configurations-external-links',
