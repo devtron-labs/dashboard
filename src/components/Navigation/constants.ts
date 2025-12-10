@@ -53,20 +53,6 @@ export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems
         keywords: ['config'],
     },
     {
-        title: 'External Links',
-        dataTestId: 'click-on-configurations-external-links',
-        id: 'application-management-configurations-external-links',
-        href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS,
-        keywords: ['config'],
-    },
-    {
-        title: 'Chart Repository',
-        dataTestId: 'click-on-configurations-chart-repository',
-        id: 'application-management-configurations-chart-repository',
-        href: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO,
-        keywords: ['config'],
-    },
-    {
         title: 'Deployment Charts',
         dataTestId: 'click-on-configurations-deployment-charts',
         id: 'application-management-configurations-deployment-charts',
