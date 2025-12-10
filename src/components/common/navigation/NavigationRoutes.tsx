@@ -585,11 +585,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                       <AppGroupRoute isSuperAdmin={isSuperAdmin} />
                                                   </Route>,
                                                   <Route
-                                                      key={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
-                                                      path={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
-                                                      render={() => <Charts isSuperAdmin={isSuperAdmin} />}
-                                                  />,
-                                                  <Route
                                                       key={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                                       path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                                       render={() => <BulkEdit />}
@@ -602,13 +597,18 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
                                                       <ApplicationManagementConfigurationsRouter />
                                                   </Route>,
-                                                  <Route
-                                                      key={CommonURLS.SECURITY_CENTER}
-                                                      path={CommonURLS.SECURITY_CENTER}
-                                                      render={() => <Security />}
-                                                  />,
                                               ]
                                             : []),
+                                        <Route
+                                            key={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
+                                            path={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
+                                            render={() => <Charts isSuperAdmin={isSuperAdmin} />}
+                                        />,
+                                        <Route
+                                            key={CommonURLS.SECURITY_CENTER}
+                                            path={CommonURLS.SECURITY_CENTER}
+                                            render={() => <Security />}
+                                        />,
                                         ...(window._env_.FEATURE_RESOURCE_WATCHER_ENABLE && ResourceWatcherRouter
                                             ? [
                                                   <Route
