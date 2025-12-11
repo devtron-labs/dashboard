@@ -119,5 +119,9 @@ export const filterNavGroupAndItem = (
 ) => {
     const { forceHideEnvKey, hideNav, isAvailableInEA } = item
 
-    return !hideNav && !window._env_[forceHideEnvKey] && (serverMode === SERVER_MODE.EA_ONLY ? isAvailableInEA : true)
+    return (
+        !hideNav &&
+        (forceHideEnvKey ? window._env_[forceHideEnvKey] : true) &&
+        (serverMode === SERVER_MODE.EA_ONLY ? isAvailableInEA : true)
+    )
 }
