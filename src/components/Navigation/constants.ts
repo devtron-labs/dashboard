@@ -12,13 +12,13 @@ import { URLS } from '@Config/routes'
 import { filterNavGroupAndItem } from './utils'
 
 const APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
-    'APPLICATION_MANAGEMENT_POLICIES_NAV_GROUP',
+    'APPLICATION_MANAGEMENT_POLICIES_NAV_ITEM',
     null,
     'function',
 )
 
 const APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM: NavigationItemType = importComponentFromFELibrary(
-    'APPLICATION_MANAGEMENT_TEMPLATES_NAV_GROUP',
+    'APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM',
     null,
     'function',
 )
