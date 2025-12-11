@@ -101,18 +101,21 @@ const GLOBAL_CONFIGURATION_AUTHORIZATION: NavigationItemType['subItems'] = [
         dataTestId: 'user-permissions',
         id: 'global-configuration-authorization-user-permissions',
         href: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+        isAvailableInEA: true,
     },
     {
         title: 'Permission Groups',
         dataTestId: 'permission-groups',
         id: 'global-configuration-authorization-permission-groups',
         href: URLS.GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS,
+        isAvailableInEA: true,
     },
     {
         title: 'API Tokens',
         dataTestId: 'authorization-api-tokens',
         id: 'global-configuration-authorization-api-tokens',
         href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.API_TOKEN}/list`,
+        isAvailableInEA: true,
     },
 ]
 
@@ -222,7 +225,6 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-overview',
                 href: COMMON_URLS.SECURITY_CENTER_OVERVIEW,
                 icon: 'ic-chart-line-up',
-                isAvailableInEA: true,
             },
             {
                 title: 'Vulnerabilities',
@@ -230,7 +232,6 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-security-vulnerabilities',
                 href: COMMON_URLS.SECURITY_CENTER_VULNERABILITIES,
                 icon: 'ic-bug',
-                isAvailableInEA: true,
             },
             ...(SECURITY_ENABLEMENT_NAV_ITEM ? [SECURITY_ENABLEMENT_NAV_ITEM] : []),
             {
@@ -239,10 +240,8 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'security-center-security-policy',
                 href: COMMON_URLS.SECURITY_CENTER_POLICIES,
                 icon: 'ic-security-policy',
-                isAvailableInEA: true,
             },
         ],
-        isAvailableInEA: true,
     },
     {
         id: 'automation-and-enablement',
@@ -356,15 +355,16 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
     },
 ]
 
-export const getNavigationList = (serverMode: SERVER_MODE) =>
-    NAVIGATION_LIST.filter((group) =>
+export const getNavigationList = (serverMode: SERVER_MODE): NavigationGroupType[] => {
+    const filteredNavGroup = NAVIGATION_LIST.filter((group) =>
         filterNavGroupAndItem(
             { forceHideEnvKey: group.forceHideEnvKey, hideNav: group.hideNav, isAvailableInEA: group.isAvailableInEA },
             serverMode,
         ),
-    ).map((group) => ({
-        ...group,
-        items: (group.items ?? []).filter((item) =>
+    )
+
+    const filteredNavItems = filteredNavGroup.map((group) => {
+        const filteredItems = group.items.filter((item) =>
             filterNavGroupAndItem(
                 {
                     forceHideEnvKey: item.forceHideEnvKey,
@@ -373,5 +373,27 @@ export const getNavigationList = (serverMode: SERVER_MODE) =>
                 },
                 serverMode,
             ),
-        ),
+        )
+        return { ...group, items: filteredItems }
+    })
+
+    return filteredNavItems.map((group) => ({
+        ...group,
+        items: group.items.map((item) => {
+            if (item.hasSubMenu && item.subItems) {
+                const filteredSubItems = item.subItems.filter((subItem) =>
+                    filterNavGroupAndItem(
+                        {
+                            forceHideEnvKey: subItem.forceHideEnvKey,
+                            hideNav: subItem.hideNav,
+                            isAvailableInEA: subItem.isAvailableInEA,
+                        },
+                        serverMode,
+                    ),
+                )
+                return { ...item, subItems: filteredSubItems }
+            }
+            return item
+        }),
     }))
+}
