@@ -24,7 +24,7 @@ const ClusterCounts = ({ clusterDistribution }: ClusterCountsProps) => {
         defaultPageSize: OVERVIEW_PAGE_SIZE_OPTIONS[0].value,
     })
     const [groupBy, setGroupBy] = useState<ClusterDistributionKeys>(ClusterDistributionKeys.BY_PROVIDER)
-    const [sortConfig, setSortingConfig] = useState<ClusterNodeCountSortConfigType>(
+    const [sortConfig, setSortConfig] = useState<ClusterNodeCountSortConfigType>(
         CLUSTER_NODE_COUNT_SORTING_OPTIONS[0].value,
     )
 
@@ -52,7 +52,7 @@ const ClusterCounts = ({ clusterDistribution }: ClusterCountsProps) => {
     }, [clusterDistribution, groupBy, isGroupedByProviders, sortConfig, offset, pageSize])
 
     const handleChangeSorting = (selectedSortOrder: SelectPickerOptionType<ClusterNodeCountSortConfigType>) => {
-        setSortingConfig(selectedSortOrder.value)
+        setSortConfig(selectedSortOrder.value)
         changePage(1)
     }
 

@@ -23,7 +23,7 @@ export const getReachableClusterCount = (result: InfraOverviewDTO) => {
     const reachableClusters =
         (result?.totalClusters ?? 0) - (result?.clusterStatusBreakdown?.[ClusterStatusKeys.CONNECTION_FAILED] ?? 0)
 
-    return reachableClusters < 0 ? 0 : reachableClusters
+    return Math.max(reachableClusters, 0)
 }
 
 export const getInfraGlanceConfig = (result: InfraOverviewDTO) =>

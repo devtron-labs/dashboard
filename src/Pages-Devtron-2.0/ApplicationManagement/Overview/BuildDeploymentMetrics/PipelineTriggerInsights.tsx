@@ -30,7 +30,7 @@ import { getPipelineInsightsChartTooltip } from './tooltipUtils'
 const PipelineTriggerInsights = () => {
     const [selectedWindowOption, setSelectedWindowOption] = useState(DEFAULT_TIME_WINDOW)
     const [pipelineType, setPipelineType] = useState<PipelineType>(PipelineType.BUILD)
-    const [sortOrder, setSortingOrder] = useState<SortingOrder>(SortingOrder.DESC)
+    const [sortOrder, setSortOrder] = useState<SortingOrder>(SortingOrder.DESC)
     const [maxTriggerCount, setMaxTriggerCount] = useState(MIN_X_AXIS_VALUE) // Using 1 for fallback value as it is max value of x axis in chart
 
     const { offset, pageSize, changePage, changePageSize, clearFilters } = useStateFilters({
@@ -85,7 +85,7 @@ const PipelineTriggerInsights = () => {
 
     const handleChangeSorting = (selectedSortOrder: SelectPickerOptionType<SortingOrder>) => {
         clearFilters()
-        setSortingOrder(selectedSortOrder.value)
+        setSortOrder(selectedSortOrder.value)
     }
 
     const getTabChangeHandler = (tabId: PipelineType) => () => {

@@ -10,8 +10,6 @@ import {
     VulnerabilityDiscoveryAgeOptions,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import {} from '@PagesDevtron2.0/ApplicationManagement/Overview/types'
-
 import { DeploymentSecurityStatusKeys, SecurityGlanceMetricKeys } from './types'
 
 export const SECURITY_AT_A_GLANCE_CARDS_CONFIG: Record<

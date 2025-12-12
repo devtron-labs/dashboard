@@ -16,7 +16,7 @@ export const getValueStringFromMetricItem = (item: MetricValueDTO): string => {
     const { total, percentage } = item ?? { total: 0, percentage: 0 }
 
     if (!isNullOrUndefined(percentage)) {
-        const parsedPercentage = parseFloat(percentage.toFixed(2))
+        const parsedPercentage = Number.parseFloat(percentage.toFixed(2))
         return `${parsedPercentage.toLocaleString()}%`
     }
 
@@ -35,7 +35,8 @@ export const parseMinutesInDayHourUnit = (minutes: number): string => {
     if (minutes < 60) {
         const baseMins = Math.floor(minutes)
         const seconds = Math.floor((minutes - baseMins) * 60)
-        return `${baseMins}m ${seconds ? `${seconds}s` : ''}`.trim()
+        const secondStr = seconds ? `${seconds}s` : ''
+        return `${baseMins}m ${secondStr}`.trim()
     }
 
     const hours = Math.floor(minutes / 60)
@@ -44,10 +45,12 @@ export const parseMinutesInDayHourUnit = (minutes: number): string => {
     if (hours > 24) {
         const days = Math.floor(hours / 24)
         const remainingHours = hours % 24
-        return `${days}d ${remainingHours ? `${remainingHours}h` : ''}`.trim()
+        const hourStr = remainingHours ? `${remainingHours}h` : ''
+        return `${days}d ${hourStr}`.trim()
     }
 
-    return `${hours}h ${remainingMinutes ? `${remainingMinutes}m` : ''}`.trim()
+    const minStr = remainingMinutes ? `${remainingMinutes}m` : ''
+    return `${hours}h ${minStr}`.trim()
 }
 
 export const getValueStringForDoraMetric = (overallAverage: DoraMetricAverage): string => {
