@@ -72,6 +72,8 @@ import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnv
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { Configurations } from '@Pages/Releases/Detail'
 import { ApplicationManagementConfigurationsRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import { ApplicationManagementOverview } from '@PagesDevtron2.0/ApplicationManagement/Overview'
+import { InfraOverview } from '@PagesDevtron2.0/InfrastructureManagement'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
 import {
@@ -567,12 +569,25 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         <InfraAppsRouter />
                                     </Route>
                                     <Route
+                                        key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW}
+                                        path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW}
+                                    >
+                                        <InfraOverview />
+                                    </Route>
+                                    <Route
                                         path={CommonURLS.GLOBAL_CONFIG}
                                         render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                     />
                                     {!window._env_.K8S_CLIENT && [
                                         ...(serverMode === SERVER_MODE.FULL
                                             ? [
+                                                  <Route
+                                                      key={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}
+                                                      path={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}
+                                                      exact
+                                                  >
+                                                      <ApplicationManagementOverview />
+                                                  </Route>,
                                                   <Route
                                                       key={CommonURLS.APPLICATION_MANAGEMENT_APP}
                                                       path={CommonURLS.APPLICATION_MANAGEMENT_APP}
@@ -597,17 +612,17 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
                                                       <ApplicationManagementConfigurationsRouter />
                                                   </Route>,
+                                                  <Route
+                                                      key={CommonURLS.SECURITY_CENTER}
+                                                      path={CommonURLS.SECURITY_CENTER}
+                                                      render={() => <Security />}
+                                                  />,
                                               ]
                                             : []),
                                         <Route
                                             key={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             path={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
-                                        />,
-                                        <Route
-                                            key={CommonURLS.SECURITY_CENTER}
-                                            path={CommonURLS.SECURITY_CENTER}
-                                            render={() => <Security />}
                                         />,
                                         ...(window._env_.FEATURE_RESOURCE_WATCHER_ENABLE && ResourceWatcherRouter
                                             ? [
@@ -689,7 +704,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.INFRASTRUCTURE_MANAGEMENT,
                                                 CommonURLS.DATA_PROTECTION,
                                             ]}
                                         >

@@ -1,1 +1,1 @@
-export * from './Overview'
+export { default as InfraOverview } from './Overview'
