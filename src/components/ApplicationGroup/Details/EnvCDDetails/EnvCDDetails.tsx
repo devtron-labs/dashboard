@@ -35,6 +35,7 @@ import {
     TRIGGER_STATUS_PROGRESSING,
     STAGE_TYPE,
     DeploymentStageType,
+    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -97,7 +98,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const { currentEnvironmentName } = useAppContext()
     useInterval(pollHistory, 30000)
 
-
     useEffect(() => {
         if (result?.[0]?.['value']?.result?.length) {
             const selectedPipelineExist = result[0]['value'].result.some((pipeline) => pipeline.id === +pipelineId)
@@ -133,13 +133,23 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
 
         let triggerIdToSet = cdWorkflows[0].id
         const queryString = new URLSearchParams(location.search)
-        const deploymentStageType =
-            queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+        const queryParam = queryString.get('type')
 
-        const triggeredHistoryResult = cdWorkflows.find((obj) => obj.stage === deploymentStageType)
+        if (
+            queryParam === STAGE_TYPE.PRECD ||
+            queryParam === STAGE_TYPE.POSTCD ||
+            queryParam === DeploymentNodeType.CD
+        ) {
+            const deploymentStageTypeForPrePostCD =
+                queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+            const deploymentStageType =
+                queryParam === DeploymentNodeType.CD ? DeploymentStageType.DEPLOY : deploymentStageTypeForPrePostCD
 
-        if (triggeredHistoryResult) {
-            triggerIdToSet = triggeredHistoryResult.id
+            const triggeredHistoryResult = cdWorkflows.find((obj) => obj.stage === deploymentStageType)
+
+            if (triggeredHistoryResult) {
+                triggerIdToSet = triggeredHistoryResult.id
+            }
         }
 
         if (!triggerId && appId && pipelineId) {

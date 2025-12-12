@@ -38,6 +38,7 @@ import {
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
     AppEnvironment,
+    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { useAppContext } from '@Components/common'
@@ -120,9 +121,16 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
         let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
         const queryString = new URLSearchParams(location.search)
         const queryParam = queryString.get('type')
-        if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
-            const deploymentStageType =
+        if (
+            queryParam === STAGE_TYPE.PRECD ||
+            queryParam === STAGE_TYPE.POSTCD ||
+            queryParam === DeploymentNodeType.CD
+        ) {
+            const deploymentStageTypeForPrePostCD =
                 queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+            const deploymentStageType =
+                queryParam === DeploymentNodeType.CD ? DeploymentStageType.DEPLOY : deploymentStageTypeForPrePostCD
+
             const requiredResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
                 return obj.stage === deploymentStageType
             })
