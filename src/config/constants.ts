@@ -264,6 +264,24 @@ export const Routes = {
     HEALTH: 'health',
     ENV_DATA_SOURCE_NAME: 'env/data-source-name',
     VULNERABILITY_SUMMARY: 'security/scan/summary',
+
+    // Infrastructure management overview
+    INFRA_OVERVIEW: 'overview/infra',
+    INFRA_OVERVIEW_REFRESH: 'overview/infra/refresh',
+    OVERVIEW_NODE_LIST: 'overview/infra/node-list',
+    // Application management overview
+    APPS_OVERVIEW: 'overview/apps-overview',
+    WORKFLOW_OVERVIEW: 'overview/workflow-overview',
+    DORA_METRICS: 'overview/dora-metrics',
+    BUILD_DEPLOYMENT_ACTIVITY: 'overview/build-deployment-activity',
+    BUILD_DEPLOYMENT_ACTIVITY_DETAILED: 'overview/build-deployment-activity/detailed',
+    PIPELINE_INSIGHTS: 'overview/pipeline-insights',
+    // Security Overview
+    SECURITY_OVERVIEW: 'overview/security/security-glance',
+    SECURITY_SEVERITY_INSIGHTS: 'overview/security/severity-insights',
+    SECURITY_VULNERABILITY_TREND: 'overview/security/vulnerability-trend',
+    SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
+    SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
 }
 
 export enum ViewType {
