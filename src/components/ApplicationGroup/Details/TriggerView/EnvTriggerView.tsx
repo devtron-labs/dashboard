@@ -625,7 +625,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
                         data-testid="bulk-deploy-button"
                         onClick={onShowBulkCDModal}
                     >
-                        <DeployIcon className="icon-dim-16 dc__no-svg-fill" />
+                        <DeployIcon className="icon-dim-16 dc__no-svg-fill scn-0" />
                         Deploy
                     </button>
                     {_showPopupMenu && renderDeployPopupMenu()}
