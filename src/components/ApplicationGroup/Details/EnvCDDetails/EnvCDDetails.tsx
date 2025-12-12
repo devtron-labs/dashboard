@@ -49,6 +49,7 @@ import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
 import {
+    getUpdatedTriggerId,
     processVirtualEnvironmentDeploymentData,
     renderCIListHeader,
     renderDeploymentApprovalInfo,
@@ -131,26 +132,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         setHasMore(cdWorkflows.length === pagination.size)
         setHasMoreLoading(cdWorkflows.length === pagination.size)
 
-        let triggerIdToSet = cdWorkflows[0].id
         const queryString = new URLSearchParams(location.search)
         const queryParam = queryString.get('type')
-
-        if (
-            queryParam === STAGE_TYPE.PRECD ||
-            queryParam === STAGE_TYPE.POSTCD ||
-            queryParam === DeploymentNodeType.CD
-        ) {
-            const deploymentStageTypeForPrePostCD =
-                queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
-            const deploymentStageType =
-                queryParam === DeploymentNodeType.CD ? DeploymentStageType.DEPLOY : deploymentStageTypeForPrePostCD
-
-            const triggeredHistoryResult = cdWorkflows.find((obj) => obj.stage === deploymentStageType)
-
-            if (triggeredHistoryResult) {
-                triggerIdToSet = triggeredHistoryResult.id
-            }
-        }
+        const triggerIdToSet = getUpdatedTriggerId(cdWorkflows[0].id, queryParam, cdWorkflows)
 
         if (!triggerId && appId && pipelineId) {
             replace(
