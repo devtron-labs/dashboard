@@ -14,65 +14,72 @@
  * limitations under the License.
  */
 
-import { Badge, ComponentSizeType, SeveritiesDTO, SeverityCount } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Badge,
+    ComponentSizeType,
+    GroupedFilterSelectPickerProps,
+    SeveritiesDTO,
+    SeverityChip,
+    SeverityCount,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { SearchType, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
+import { ScanTypeOptions, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],
     [SecurityScansTabMultiFilterKeys.environment]:
         searchParams.getAll(SecurityScansTabMultiFilterKeys.environment) || [],
     [SecurityScansTabMultiFilterKeys.cluster]: searchParams.getAll(SecurityScansTabMultiFilterKeys.cluster) || [],
-    [SecurityScansTabSingleFilterKeys.searchType]:
-        searchParams.get(SecurityScansTabSingleFilterKeys.searchType) || 'appName',
+    [SecurityScansTabSingleFilterKeys.scanStatus]:
+        (searchParams.get(SecurityScansTabSingleFilterKeys.scanStatus) as ScanTypeOptions) || ScanTypeOptions.SCANNED,
 })
 
-export const getSearchLabelFromValue = (searchType: string) => {
-    if (searchType === SearchType.VULNERABILITY) return 'Vulnerability'
-    return 'Application'
-}
-
 const SEVERITY_ORDER = [
-    { key: SeveritiesDTO.CRITICAL, label: 'Critical', variant: 'negative' },
-    { key: SeveritiesDTO.HIGH, label: 'High', variant: 'custom', fontColor: 'R500', bgColor: 'R100' },
-    { key: SeveritiesDTO.MEDIUM, label: 'Medium', variant: 'custom', fontColor: 'O600', bgColor: 'O100' },
-    { key: SeveritiesDTO.LOW, label: 'Low', variant: 'warning' },
-    { key: SeveritiesDTO.UNKNOWN, label: 'Unknown', variant: 'neutral' },
-] as const
+    SeveritiesDTO.CRITICAL,
+    SeveritiesDTO.HIGH,
+    SeveritiesDTO.MEDIUM,
+    SeveritiesDTO.LOW,
+    SeveritiesDTO.UNKNOWN,
+]
 
 export const getSeverityWithCount = (severityCount: SeverityCount) => {
     const badges = []
 
     // eslint-disable-next-line no-restricted-syntax
     for (const item of SEVERITY_ORDER) {
-        if (severityCount[item.key]) {
-            if (item.variant === 'custom') {
-                badges.push(
-                    <Badge
-                        key={item.key}
-                        label={`${severityCount[item.key]} ${item.label}`}
-                        variant="custom"
-                        fontColor={item.fontColor}
-                        bgColor={item.bgColor}
-                        size={ComponentSizeType.xxxs}
-                    />,
-                )
-            } else {
-                badges.push(
-                    <Badge
-                        key={item.key}
-                        label={`${severityCount[item.key]} ${item.label}`}
-                        variant={item.variant}
-                        size={ComponentSizeType.xxxs}
-                    />,
-                )
-            }
+        const count = severityCount[item]
+        if (count) {
+            badges.push(<SeverityChip severity={item} count={count} />)
         }
     }
-
     if (badges.length === 0) {
-        return <Badge label="Passed" variant="positive" />
+        return <Badge label="Passed" variant="positive" size={ComponentSizeType.xxs} />
     }
 
     return <div className="flex left dc__gap-4">{badges}</div>
 }
+
+export const getGroupFilterItems: (
+    scanStatus: ScanTypeOptions,
+) => GroupedFilterSelectPickerProps<SecurityScansTabMultiFilterKeys>['options'] = (scanStatus) => [
+    {
+        items: [
+            {
+                id: SecurityScansTabMultiFilterKeys.cluster,
+                label: 'Cluster',
+            },
+            {
+                id: SecurityScansTabMultiFilterKeys.environment,
+                label: 'Environment',
+            },
+            ...(scanStatus === ScanTypeOptions.SCANNED
+                ? [
+                      {
+                          id: SecurityScansTabMultiFilterKeys.severity,
+                          label: 'Severity',
+                      },
+                  ]
+                : []),
+        ],
+    },
+]

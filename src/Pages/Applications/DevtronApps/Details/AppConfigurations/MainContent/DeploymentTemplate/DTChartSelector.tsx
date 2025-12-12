@@ -23,11 +23,12 @@ import {
     InvalidYAMLTippyWrapper,
     PipelineMigratedFromType,
     PopupMenu,
+    SegmentedControl,
+    SegmentType,
     SelectPicker,
     SelectPickerOptionType,
     SelectPickerVariantType,
     stopPropagation,
-    StyledRadioGroup as RadioGroup,
     versionComparatorBySortOrder,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -87,8 +88,8 @@ const ChartSelectorDropdown = ({
         }
     }
 
-    const changeSelectedTab = (event): void => {
-        setSelectedChartTypeTab(event.target.value)
+    const changeSelectedTab = (selectedTab: SegmentType<CHART_TYPE_TAB_KEYS>): void => {
+        setSelectedChartTypeTab(selectedTab.value)
     }
 
     const setPopupState = (isOpen: boolean): void => {
@@ -127,27 +128,16 @@ const ChartSelectorDropdown = ({
                             className="pt-12 pr-12 pb-8 pl-12 dc__position-sticky bg__primary top-0 dc__top-radius-4"
                             onClick={stopPropagation}
                         >
-                            <RadioGroup
-                                className="gui-yaml-switch dc__content-start"
-                                name="chartTypeTab"
-                                initialTab={selectedChartTypeTab}
-                                disabled={false}
+                            <SegmentedControl
+                                segments={Object.values(CHART_TYPE_TAB_KEYS).map((key) => ({
+                                    label: CHART_TYPE_TAB[key],
+                                    value: key,
+                                }))}
+                                value={selectedChartTypeTab}
                                 onChange={changeSelectedTab}
-                            >
-                                <RadioGroup.Radio
-                                    value={CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
-                                    canSelect={selectedChartTypeTab !== CHART_TYPE_TAB_KEYS.DEVTRON_CHART}
-                                    dataTestId="select-chartversion-menu-list"
-                                >
-                                    {CHART_TYPE_TAB[CHART_TYPE_TAB_KEYS.DEVTRON_CHART]}
-                                </RadioGroup.Radio>
-                                <RadioGroup.Radio
-                                    value={CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS}
-                                    canSelect={selectedChartTypeTab !== CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS}
-                                >
-                                    {CHART_TYPE_TAB[CHART_TYPE_TAB_KEYS.CUSTOM_CHARTS]}
-                                </RadioGroup.Radio>
-                            </RadioGroup>
+                                name="chart-type-tabs"
+                                size={ComponentSizeType.xs}
+                            />
                         </div>
                     )}
                     <div className="pt-4 pb-4" data-testid="select-chart-type-menu-list">

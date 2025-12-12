@@ -23,6 +23,8 @@ import {
     CustomErrorMessage,
     MAX_LENGTH_30,
     REPO_NAME_VALIDATION,
+    RESERVED_DIRECTORY_PATH_MSG,
+    RESERVED_OUTPUT_DIRECTORY_PATH,
 } from '../../config/constantMessaging'
 import { validateInputOutputVariableCell } from '@Components/CIPipelineN/VariableDataTable/validations'
 import { validateConditionDataCell } from '@Components/CIPipelineN/ConditionDataTable/utils'
@@ -175,5 +177,12 @@ export class ValidationRules {
             return { isValid: false, message: CustomErrorMessage.USE_ONLY_NON_NEGATIVE_INTERGER }
         }
         return { isValid: true, message: '' }
+    }
+
+    outputDirectoryPath = (value: string): { message: string | null; isValid: boolean } => {
+        if (value.startsWith(RESERVED_OUTPUT_DIRECTORY_PATH)) {
+            return { isValid: false, message: RESERVED_DIRECTORY_PATH_MSG }
+        }
+        return { isValid: true, message: null }
     }
 }

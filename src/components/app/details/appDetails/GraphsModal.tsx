@@ -16,12 +16,12 @@
 
 import { Component } from 'react'
 import { Moment } from 'moment'
-import { DatePickerType2 as DateRangePicker } from '../../../common'
 import { AppMetricsTabType, ChartType, StatusType, ChartTypes, StatusTypes, AppMetricsTab } from './appDetails.type'
 import { getIframeSrc, isK8sVersionValid, ThroughputSelect, getCalendarValue, LatencySelect, AppInfo } from './utils'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { DEFAULTK8SVERSION } from '../../../../config'
 import { APP_METRICS_CALENDAR_INPUT_DATE_FORMAT } from './constants'
+import { DatePickerRangeController } from '@devtron-labs/devtron-fe-common-lib'
 
 export const ChartNames = {
     cpu: 'CPU Usage',
@@ -464,7 +464,7 @@ export class GraphModal extends Component<GraphModalProps, GraphModalState> {
                                     <span className="dc__tertiary-tab">Per Pod</span>
                                 </label>
                             </div>
-                            <DateRangePicker
+                            <DatePickerRangeController
                                 calendar={this.state.calendar}
                                 calendarInputs={this.state.calendarInputs}
                                 focusedInput={this.state.focusedInput}

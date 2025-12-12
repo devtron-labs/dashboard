@@ -18,6 +18,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import { Redirect, Route, Switch, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    Button,
+    ButtonVariantType,
     capitalizeFirstLetter,
     Checkbox,
     CHECKBOX_VALUE,
@@ -26,6 +28,7 @@ import {
     DeploymentAppTypes,
     FormProps,
     getAIAnalyticsEvents,
+    Icon,
     noop,
     OptionsBase,
     OptionType,
@@ -67,7 +70,7 @@ import LogsComponent from './NodeDetailTabs/Logs.component'
 import ManifestComponent from './NodeDetailTabs/Manifest.component'
 import TerminalComponent from './NodeDetailTabs/Terminal.component'
 import EphemeralContainerDrawer from './EphemeralContainerDrawer'
-import { getManifestResource } from './nodeDetail.api'
+import { getManifestResource, updateManifestResourceHelmApps } from './nodeDetail.api'
 import { NodeDetailTab, ParamsType } from './nodeDetail.type'
 import { getContainersData, getNodeDetailTabs } from './nodeDetail.util'
 
@@ -79,6 +82,7 @@ const ToggleManifestConfigurationMode = importComponentFromFELibrary(
     null,
     'function',
 )
+const RBRestartWorkloadModal = importComponentFromFELibrary('RBRestartWorkloadModal', null, 'function')
 
 const NodeDetailComponent = ({
     loadingResources,
@@ -106,6 +110,7 @@ const NodeDetailComponent = ({
     const [fetchingResource, setFetchingResource] = useState(
         isResourceBrowserView && nodeType === Nodes.Pod.toLowerCase(),
     )
+    const [showRestartModal, setShowRestartModal] = useState(false)
     const [selectedContainer, setSelectedContainer] = useState<Map<string, string>>(new Map())
     const [showEphemeralContainerDrawer, setShowEphemeralContainerDrawer] = useState<boolean>(false)
     const [ephemeralContainerType, setEphemeralContainerType] = useState<string>(EDITOR_VIEW.BASIC)
@@ -375,6 +380,10 @@ const NodeDetailComponent = ({
         setManifestCodeEditorMode(ManifestCodeEditorMode.REVIEW)
     }
 
+    const onRestartWorkloadModalClose = () => {
+        setShowRestartModal(false)
+    }
+
     const handleManifestCompareWithDesired = () => setShowManifestCompareView(true)
 
     const renderPodTerminal = (): JSX.Element => {
@@ -518,6 +527,10 @@ const NodeDetailComponent = ({
         },
     }))
 
+    const onRestartWorkloadButtonClick = () => {
+        setShowRestartModal(true)
+    }
+
     return (
         <>
             <div className="w-100 pr-20 pl-20 bg__primary flex border__secondary--bottom dc__content-space h-32">
@@ -550,6 +563,20 @@ const NodeDetailComponent = ({
                         </>
                     )}
                     {selectedTabName === NodeDetailTab.MANIFEST && renderManifestTabHeader()}
+                    {RBRestartWorkloadModal &&
+                        window._env_.FEATURE_BULK_RESTART_WORKLOADS_FROM_RB.includes(nodeType.toLowerCase()) && (
+                            <>
+                                <div className="ml-12 mr-12 tab-cell-border" />
+                                <Button
+                                    dataTestId="restart-workload-button"
+                                    variant={ButtonVariantType.text}
+                                    size={ComponentSizeType.small}
+                                    startIcon={<Icon name="ic-arrows-clockwise" color={null} />}
+                                    onClick={onRestartWorkloadButtonClick}
+                                    text="Restart"
+                                />
+                            </>
+                        )}
                 </div>
                 {isResourceBrowserView &&
                     !hideDeleteButton && ( // hide delete button if resource is deleted or user is not authorized
@@ -668,6 +695,14 @@ const NodeDetailComponent = ({
                     toggleDeleteDialog={toggleDeleteDialog}
                     removeTabByIdentifier={removeTabByIdentifier}
                     handleClearBulkSelection={noop}
+                />
+            )}
+            {RBRestartWorkloadModal && showRestartModal && (
+                <RBRestartWorkloadModal
+                    resource={selectedResource}
+                    getManifestResource={getManifestResource}
+                    updateManifestResourceHelmApps={updateManifestResourceHelmApps}
+                    onClose={onRestartWorkloadModalClose}
                 />
             )}
         </>

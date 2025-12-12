@@ -1,19 +1,15 @@
 import { generatePath } from 'react-router-dom'
 
-import {
-    BackupLocationsTypes,
-    InfrastructureManagementAppListType,
-    URLS as COMMON_URLS,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { BackupLocationsTypes, SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
 import { NavigationGroupType, NavigationItemType } from './types'
+import { filterNavGroupAndItem } from './utils'
 
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
-const AuditLog = importComponentFromFELibrary('AuditLog')
 
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
@@ -187,7 +183,7 @@ const GLOBAL_CONFIGURATION_AUTHORIZATION: NavigationItemType['subItems'] = [
     },
 ]
 
-export const NAVIGATION_LIST: NavigationGroupType[] = [
+const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'application-management',
         title: 'Application Management',
@@ -205,7 +201,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-devtron-application',
                 id: 'application-management-devtron-applications',
                 icon: 'ic-application',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
+                href: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
             },
             {
                 title: 'Application Groups',
@@ -269,9 +265,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-application',
                 id: 'infrastructure-management-applications',
                 icon: 'ic-grid-view',
-                href: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, {
-                    appType: InfrastructureManagementAppListType.HELM,
-                }),
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP,
             },
             {
                 title: 'Chart Store',
@@ -293,6 +287,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-resource-watcher',
                 icon: 'ic-resource-watcher',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
+                forceHideEnvKey: 'FEATURE_RESOURCE_WATCHER_ENABLE',
             },
             {
                 title: 'Audit Logs',
@@ -300,8 +295,9 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-audit-logs',
                 icon: 'ic-monitoring',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS,
-            }
+            },
         ],
+        isAvailableInEA: true,
     },
     {
         id: 'software-release-management',
@@ -331,6 +327,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: FE_LIB_ROUTER_URLS.TENANTS,
             },
         ],
+        forceHideEnvKey: 'FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE',
     },
     {
         id: 'cost-visibility',
@@ -373,10 +370,17 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-chart-line-up',
             },
             {
-                title: 'Security Scans',
-                dataTestId: 'security-scans',
-                id: 'security-center-security-scans',
-                href: COMMON_URLS.SECURITY_CENTER_SCANS,
+                title: 'Vulnerabilities',
+                dataTestId: 'security-vulnerabilities',
+                id: 'security-center-security-vulnerabilities',
+                href: COMMON_URLS.SECURITY_CENTER_VULNERABILITIES,
+                icon: 'ic-bug',
+            },
+            {
+                title: 'Security Enablement',
+                dataTestId: 'security-enablement',
+                id: 'security-center-security-enablement',
+                href: COMMON_URLS.SECURITY_CENTER_SECURITY_ENABLEMENT,
                 icon: 'ic-security-scan',
             },
             {
@@ -399,6 +403,13 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'automation-and-enablement-jobs',
                 icon: 'ic-k8s-job',
                 href: URLS.AUTOMATION_AND_ENABLEMENT_JOB,
+            },
+            {
+                title: 'Runbook Automation',
+                dataTestId: 'runbook-automation',
+                id: 'automation-and-enablement-runbook-automation',
+                icon: 'ic-book-open',
+                href: COMMON_URLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
             },
             {
                 title: 'Alerting',
@@ -424,14 +435,6 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: '/dummy-url',
                 disabled: true,
             },
-            {
-                title: 'Runbook Automation',
-                dataTestId: 'runbook-automation',
-                id: 'automation-and-enablement-runbook-automation',
-                icon: 'ic-book-open',
-                href: '/dummy-url',
-                disabled: true,
-            },
         ],
     },
     {
@@ -444,8 +447,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'data-protection-overview',
                 id: 'data-protection-overview',
                 icon: 'ic-chart-line-up',
-                disabled: true,
-                href: '/dummy-url',
+                href: COMMON_URLS.DATA_PROTECTION_OVERVIEW,
             },
             {
                 title: 'Backup & Schedule',
@@ -471,30 +473,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 }),
             },
         ],
-    },
-{
-        id: 'ai-recommendations',
-        title: 'AI Recommendations',
-        icon: 'ic-openai',
-        disabled: false, // Enable AI Recommendations section
-        items: [
-            {
-                title: 'Notifications',
-                dataTestId: 'ai-recommendations-notifications',
-                id: 'ai-recommendations-notifications',
-                icon: 'ic-speedometer',
-                disabled: false,
-                href: COMMON_URLS.AI_RECOMMENDATIONS_NOTIFICATIONS,
-            },
-            {
-                title: 'Runbooks',
-                dataTestId: 'ai-recommendations-runbooks',
-                id: 'ai-recommendations-runbooks',
-                icon: 'ic-book-open',
-                disabled: false,
-                href: COMMON_URLS.AI_RECOMMENDATIONS_RUNBOOKS,
-            },
-        ],
+        forceHideEnvKey: 'FEATURE_STORAGE_ENABLE',
     },
     {
         id: 'global-configuration',
@@ -509,8 +488,8 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: `${URLS.GLOBAL_CONFIG_AUTH}/${Routes.SSO_LOGIN_SERVICES}`,
             },
             {
-                title: 'Host URLS',
-                dataTestId: 'host-urls',
+                title: 'Host URL',
+                dataTestId: 'host-url',
                 id: 'global-configuration-host-urls',
                 icon: 'ic-link',
                 href: URLS.GLOBAL_CONFIG_HOST_URL,
@@ -537,5 +516,12 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 subItems: GLOBAL_CONFIGURATION_AUTHORIZATION,
             },
         ],
+        isAvailableInEA: true,
     },
 ]
+
+export const getNavigationList = (serverMode: SERVER_MODE) =>
+    NAVIGATION_LIST.filter((item) => filterNavGroupAndItem(item, serverMode)).map((item) => ({
+        ...item,
+        items: (item.items ?? []).filter((subItem) => filterNavGroupAndItem(subItem, serverMode)),
+    }))

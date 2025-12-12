@@ -114,7 +114,6 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const AuditLog = importComponentFromFELibrary('AuditLog')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
@@ -136,6 +135,7 @@ const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
     importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
+const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
@@ -563,10 +563,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     </Route>
                                     <Route
                                         key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}
-                                        path={[
-                                            CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST,
-                                            CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP,
-                                        ]}
+                                        path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}
                                     >
                                         <InfraAppsRouter />
                                     </Route>
@@ -577,10 +574,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     {!window._env_.K8S_CLIENT && [
                                         <Route
                                             key={CommonURLS.APPLICATION_MANAGEMENT_APP}
-                                            path={[
-                                                CommonURLS.APPLICATION_MANAGEMENT_APP_LIST,
-                                                URLS.APPLICATION_MANAGEMENT_APP,
-                                            ]}
+                                            path={CommonURLS.APPLICATION_MANAGEMENT_APP}
                                             render={() => <AppRouter />}
                                         />,
                                         <Route
@@ -599,10 +593,16 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                             render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
                                         />,
-                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS} path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
+                                        <Route
+                                            key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
+                                            path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
+                                        >
                                             {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
                                         </Route>,
-                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS} path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
+                                        <Route
+                                            key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}
+                                            path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}
+                                        >
                                             <ApplicationManagementConfigurationsRouter />
                                         </Route>,
                                         <Route
@@ -610,7 +610,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={CommonURLS.SECURITY_CENTER}
                                             render={() => <Security />}
                                         />,
-                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
+                                        ...(window._env_.FEATURE_RESOURCE_WATCHER_ENABLE && ResourceWatcherRouter
                                             ? [
                                                   <Route
                                                       key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER}
@@ -620,17 +620,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(!window._env_.HIDE_AUDIT_LOGS && AuditLog
-                                            ? [
-                                                  <Route
-                                                      key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS}
-                                                      path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS}
-                                                  >
-                                                      <AuditLog />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
+                                        ...(window._env_.FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE &&
+                                        SoftwareDistributionHub
                                             ? [
                                                   <Route
                                                       key={CommonURLS.SOFTWARE_RELEASE_MANAGEMENT}
@@ -699,9 +690,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.AI_RECOMMENDATIONS,
                                                 CommonURLS.INFRASTRUCTURE_MANAGEMENT,
                                                 CommonURLS.DATA_PROTECTION,
+                                                CommonURLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
                                             ]}
                                         >
                                             <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>
@@ -776,6 +767,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
                 tempAppWindowConfig,
                 setTempAppWindowConfig,
+                AIRecommendations,
             }}
         >
             <ConfirmationModalProvider>
