@@ -1,12 +1,13 @@
 import { generatePath } from 'react-router-dom'
 
-import { BackupLocationsTypes, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { BackupLocationsTypes, SERVER_MODE, URLS as COMMON_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 import { Routes } from '@Config/constants'
 import { URLS } from '@Config/routes'
 
 import { NavigationGroupType, NavigationItemType } from './types'
+import { filterNavGroupAndItem } from './utils'
 
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
 
@@ -182,7 +183,7 @@ const GLOBAL_CONFIGURATION_AUTHORIZATION: NavigationItemType['subItems'] = [
     },
 ]
 
-export const NAVIGATION_LIST: NavigationGroupType[] = [
+const NAVIGATION_LIST: NavigationGroupType[] = [
     {
         id: 'application-management',
         title: 'Application Management',
@@ -286,6 +287,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'infrastructure-management-resource-watcher',
                 icon: 'ic-resource-watcher',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
+                forceHideEnvKey: 'FEATURE_RESOURCE_WATCHER_ENABLE',
             },
             {
                 title: 'Audit Logs',
@@ -295,6 +297,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS,
             },
         ],
+        isAvailableInEA: true,
     },
     {
         id: 'software-release-management',
@@ -324,6 +327,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: FE_LIB_ROUTER_URLS.TENANTS,
             },
         ],
+        forceHideEnvKey: 'FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE',
     },
     {
         id: 'cost-visibility',
@@ -469,6 +473,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 }),
             },
         ],
+        forceHideEnvKey: 'FEATURE_STORAGE_ENABLE',
     },
     {
         id: 'global-configuration',
@@ -511,5 +516,12 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 subItems: GLOBAL_CONFIGURATION_AUTHORIZATION,
             },
         ],
+        isAvailableInEA: true,
     },
 ]
+
+export const getNavigationList = (serverMode: SERVER_MODE) =>
+    NAVIGATION_LIST.filter((item) => filterNavGroupAndItem(item, serverMode)).map((item) => ({
+        ...item,
+        items: (item.items ?? []).filter((subItem) => filterNavGroupAndItem(subItem, serverMode)),
+    }))

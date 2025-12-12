@@ -46,6 +46,7 @@ import {
     GenericEmptyState,
     SearchBar,
     URL_FILTER_KEYS,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType } from '../../config'
@@ -780,38 +781,9 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         return new URLSearchParams(this.props.location.search).get('workflowName') || ''
     }
 
-    renderNewBuildPipelineButton() {
-        return (
-            <Button
-                dataTestId="new-workflow-button"
-                text="New Workflow"
-                disabled={!!this.props.filteredEnvIds || !!this.getSearchKey() || !!this.getWorkflowNameToMatch()}
-                onClick={this.handleNewPipelineModal}
-                startIcon={<Icon name="ic-add" color={null} />}
-                size={ComponentSizeType.medium}
-                showTooltip={!!this.props.filteredEnvIds}
-                tooltipProps={{
-                    content: 'Cannot add new workflow or deployment pipelines when environment filter is applied.',
-                }}
-            />
-        )
-    }
-
     openCreateModal = () => {
         this.props.history.push(
             `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`,
-        )
-    }
-
-    renderNewJobPipelineButton = () => {
-        return (
-            <Button
-                dataTestId="job-pipeline-button"
-                onClick={this.openCreateModal}
-                text="Job pipeline"
-                startIcon={<Icon name="ic-add" color={null} />}
-                size={ComponentSizeType.medium}
-            />
         )
     }
 
@@ -824,12 +796,36 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         })
     }
 
-    renderWorkflowControlButton = (): JSX.Element => {
+    renderNewWorkflowButton = () => {
         if (this.props.isJobView) {
-            return this.renderNewJobPipelineButton()
+            return (
+                <Button
+                    dataTestId="job-pipeline-button"
+                    onClick={this.openCreateModal}
+                    text="Job pipeline"
+                    startIcon={<Icon name="ic-add" color={null} />}
+                    size={ComponentSizeType.medium}
+                />
+            )
         }
+        return (
+            <Button
+                dataTestId="new-workflow-button"
+                text="New Workflow"
+                disabled={!!this.props.filteredEnvIds}
+                onClick={this.handleNewPipelineModal}
+                startIcon={<Icon name="ic-add" color={null} />}
+                size={ComponentSizeType.medium}
+                showTooltip={!!this.props.filteredEnvIds}
+                tooltipProps={{
+                    content: 'Cannot add new workflow or deployment pipelines when environment filter is applied.',
+                }}
+            />
+        )
+    }
 
-        if (this.state.selectedNode) {
+    renderWorkflowControlButton = (): JSX.Element => {
+        if (!this.props.isJobView && this.state.selectedNode) {
             return (
                 <div className="flex dc__border-radius-4-imp bcv-5 ev-5">
                     <div className="flex pt-6 pb-6 pl-12 pr-12 dc__gap-8 h-100 fcn-0">
@@ -859,7 +855,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                     handleEnter={this.handleUpdateSearch}
                     keyboardShortcut="/"
                 />
-                {this.renderNewBuildPipelineButton()}
+                {this.renderNewWorkflowButton()}
             </div>
         )
     }
@@ -885,9 +881,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 }
                 image={this.props.isJobView ? nojobs : emptyWorkflow}
                 isButtonAvailable
-                renderButton={this.renderWorkflowControlButton}
+                renderButton={this.renderNewWorkflowButton}
             />
         )
+    }
+
+    renderEmptyFilterState = () => {
+        return <GenericFilterEmptyState handleClearFilters={() => this.handleUpdateSearch('')} />
     }
 
     renderHostErrorMessage() {
@@ -918,9 +918,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             this.props.history.push(this.props.match.url)
         }
 
-        return (
+        const filteredWorkflows = this.state.workflows.filter(this.filterWorkflow)
+
+        return filteredWorkflows.length === 0 ? (
+            this.renderEmptyFilterState()
+        ) : (
             <>
-                {this.state.workflows.filter(this.filterWorkflow).map((wf) => {
+                {filteredWorkflows.map((wf) => {
                     return (
                         <Workflow
                             id={wf.id}
