@@ -43,8 +43,6 @@ import {
 import { ReactComponent as Close } from '../../../assets/icons/ic-close.svg'
 import {
     convertToOptionsList,
-    DevtronSwitch as Switch,
-    DevtronSwitchItem as SwitchItem,
     filterImageList,
 } from '../../../../common'
 import sampleConfig from './sampleConfig.json'
