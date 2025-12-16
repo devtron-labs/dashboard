@@ -115,9 +115,7 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
                         subTitle={
                             <div>
                                 <span>Add a &nbsp;</span>
-                                <NavLink to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}>
-                                    Chart repositories
-                                </NavLink>
+                                <NavLink to={URLS.GLOBAL_CONFIG_CHART_REPO}>Chart repositories</NavLink>
                                 <span>&nbsp;or&nbsp;</span>
                                 <NavLink to={URLS.GLOBAL_CONFIG_DOCKER}>OCI Registries</NavLink>
                                 <span>to view and deploy helm charts.</span>
@@ -175,9 +173,7 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
                                             Showing Chart repositories and OCI Registries (used as chart repositories).
                                             You can add other&nbsp;
                                         </span>
-                                        <NavLink to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}>
-                                            Chart repositories
-                                        </NavLink>
+                                        <NavLink to={URLS.GLOBAL_CONFIG_CHART_REPO}>Chart repositories</NavLink>
                                         <span>&nbsp;or&nbsp;</span>
                                         <NavLink to={URLS.GLOBAL_CONFIG_DOCKER}>OCI Registries</NavLink>
                                         <span>&nbsp;as chart sources.</span>

@@ -53,7 +53,6 @@ import {
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { SERVER_MODE } from '../../config'
 import {
     OutputTabs,
     renderCMAndSecretImpObj,
@@ -103,12 +102,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     }
 
     componentDidMount() {
-        // eslint-disable-next-line react/prop-types
-        const { serverMode } = this.props
-
-        if (serverMode === SERVER_MODE.FULL) {
-            this.getInitialized()
-        }
+        this.getInitialized()
     }
 
     getInitialized() {
@@ -628,11 +622,11 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     }
 }
 
-const BulkEditsWithUseResizable = (props: Pick<BulkEditsProps, 'serverMode'>) => {
+const BulkEditsWithUseResizable = () => {
     const outputHeightMV = useMotionValue(INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE)
     const gridTemplateRows = useMotionTemplate`1fr 1px ${outputHeightMV}%`
 
-    return <BulkEdits {...{ ...props, outputHeightMV, gridTemplateRows }} />
+    return <BulkEdits {...{ outputHeightMV, gridTemplateRows }} />
 }
 
 export default BulkEditsWithUseResizable
