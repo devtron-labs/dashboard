@@ -18,6 +18,7 @@ import { useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
+    activateLicense,
     ActivateLicenseDialog,
     API_STATUS_CODES,
     Button,
@@ -31,10 +32,13 @@ import {
     ICDevtronWithBorder,
     Icon,
     InfoBlock,
+    LICENSE_KEY_QUERY_PARAM,
     LicensingErrorCodes,
     LoginBanner,
+    showError,
     URLS,
     useAsync,
+    useSearchString,
     useTheme,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -42,12 +46,28 @@ import { getDevtronLicenseInfo } from './service'
 
 const ActivateLicense = () => {
     const history = useHistory()
+    const { searchParams } = useSearchString()
     const [isLoading, licenseData, licenseDataError, reloadLicenseData] = useAsync(getDevtronLicenseInfo, [])
     const [showActivateDialog, setShowActivateDialog] = useState<boolean>(false)
     const { appTheme } = useTheme()
 
     const redirectToLogin = () => {
         history.replace(URLS.LOGIN_SSO)
+    }
+
+    const handleActivateLicense = async () => {
+        const license = searchParams[LICENSE_KEY_QUERY_PARAM]
+        if (license) {
+            try {
+                await activateLicense(license)
+                redirectToLogin()
+                return true
+            } catch (error) {
+                showError(error)
+            }
+        }
+
+        return false
     }
 
     useEffect(() => {
@@ -61,6 +81,9 @@ const ActivateLicense = () => {
             redirectToLogin()
             return
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        handleActivateLicense()
 
         if (licenseData?.licenseStatusError?.code === LicensingErrorCodes.LicKeyNotFound) {
             setShowActivateDialog(true)
@@ -133,6 +156,8 @@ const ActivateLicense = () => {
                     isFreemium={licenseData.isFreemium}
                     appTheme={appTheme}
                     licenseStatusError={licenseData.licenseStatusError}
+                    // FIXME: For now, need to set false until saas instance detection is implemented
+                    isSaasInstance={false}
                 />
             )}
             <div className="flex dc__content-space">
