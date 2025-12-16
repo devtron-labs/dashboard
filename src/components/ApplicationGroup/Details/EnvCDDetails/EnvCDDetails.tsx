@@ -35,6 +35,7 @@ import {
     TRIGGER_STATUS_PROGRESSING,
     STAGE_TYPE,
     DeploymentStageType,
+    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, Route } from 'react-router-dom'
 import { useAppContext } from '../../../common'
@@ -48,6 +49,7 @@ import { APP_GROUP_CD_DETAILS } from '../../../../config/constantMessaging'
 import '../../../app/details/appDetails/appDetails.scss'
 import '../../../app/details/cdDetails/cdDetail.scss'
 import {
+    getUpdatedTriggerId,
     processVirtualEnvironmentDeploymentData,
     renderCIListHeader,
     renderDeploymentApprovalInfo,
@@ -97,7 +99,6 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const { currentEnvironmentName } = useAppContext()
     useInterval(pollHistory, 30000)
 
-
     useEffect(() => {
         if (result?.[0]?.['value']?.result?.length) {
             const selectedPipelineExist = result[0]['value'].result.some((pipeline) => pipeline.id === +pipelineId)
@@ -131,16 +132,9 @@ export default function EnvCDDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         setHasMore(cdWorkflows.length === pagination.size)
         setHasMoreLoading(cdWorkflows.length === pagination.size)
 
-        let triggerIdToSet = cdWorkflows[0].id
         const queryString = new URLSearchParams(location.search)
-        const deploymentStageType =
-            queryString.get('type') === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
-
-        const triggeredHistoryResult = cdWorkflows.find((obj) => obj.stage === deploymentStageType)
-
-        if (triggeredHistoryResult) {
-            triggerIdToSet = triggeredHistoryResult.id
-        }
+        const queryParam = queryString.get('type')
+        const triggerIdToSet = getUpdatedTriggerId(cdWorkflows[0].id, queryParam, cdWorkflows)
 
         if (!triggerId && appId && pipelineId) {
             replace(
