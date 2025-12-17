@@ -47,9 +47,12 @@ import { getDevtronLicenseInfo } from './service'
 const ActivateLicense = () => {
     const history = useHistory()
     const { searchParams } = useSearchString()
-    const [isLoading, licenseData, licenseDataError, reloadLicenseData] = useAsync(getDevtronLicenseInfo, [])
-    const [showActivateDialog, setShowActivateDialog] = useState<boolean>(false)
     const { appTheme } = useTheme()
+
+    const [isLoading, licenseData, licenseDataError, reloadLicenseData] = useAsync(getDevtronLicenseInfo, [])
+
+    const [showActivateDialog, setShowActivateDialog] = useState<boolean>(false)
+    const [isActivatingLicense, setIsActivatingLicense] = useState<boolean>(false)
 
     const redirectToLogin = () => {
         history.replace(URLS.LOGIN_SSO)
@@ -58,16 +61,16 @@ const ActivateLicense = () => {
     const handleActivateLicense = async () => {
         const license = searchParams[LICENSE_KEY_QUERY_PARAM]
         if (license) {
+            setIsActivatingLicense(true)
             try {
                 await activateLicense(license)
+                setIsActivatingLicense(false)
                 redirectToLogin()
-                return true
             } catch (error) {
                 showError(error)
+                setIsActivatingLicense(false)
             }
         }
-
-        return false
     }
 
     useEffect(() => {
@@ -90,7 +93,7 @@ const ActivateLicense = () => {
         }
     }, [isLoading, licenseData])
 
-    if (isLoading) {
+    if (isLoading || isActivatingLicense) {
         return <DevtronProgressing parentClasses="bg__primary flex full-height-width" classes="icon-dim-80" />
     }
 
