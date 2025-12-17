@@ -156,8 +156,7 @@ const ActivateLicense = () => {
                     isFreemium={licenseData.isFreemium}
                     appTheme={appTheme}
                     licenseStatusError={licenseData.licenseStatusError}
-                    // FIXME: For now, need to set false until saas instance detection is implemented
-                    isSaasInstance={false}
+                    isSaasInstance={licenseData.isSaasInstance}
                 />
             )}
             <div className="flex dc__content-space">
