@@ -21,6 +21,7 @@ import {
     APIResponseHandler,
     BreadCrumb,
     ComponentSizeType,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
@@ -168,7 +169,7 @@ export const ChartDetails = () => {
 
     return (
         <div className="flex-grow-1 flexbox-col bg__secondary dc__overflow-hidden">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.CHART_STORE} />
 
             <APIResponseHandler
                 isLoading={isFetchingChartVersions}

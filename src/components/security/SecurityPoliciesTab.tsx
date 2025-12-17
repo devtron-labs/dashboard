@@ -19,6 +19,7 @@ import { Switch, Route, Redirect, NavLink, useRouteMatch } from 'react-router-do
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getSecurityCenterBreadcrumb,
     PageHeader,
     useBreadcrumb,
@@ -59,7 +60,7 @@ export const SecurityPoliciesTab = () => {
 
     return (
         <div className="security-scan-container bg__primary flexbox-col min-h-100">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.SECURITY} />
 
             <div className="security-policy flex-grow-1">
                 <div className="dc__secondary-nav">

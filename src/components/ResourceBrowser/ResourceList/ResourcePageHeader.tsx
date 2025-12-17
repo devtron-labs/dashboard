@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BreadCrumb, noop, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
+import { BreadCrumb, DOCUMENTATION, noop, PageHeader } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ResourcePageHeaderProps } from './types'
 
@@ -27,6 +27,7 @@ const ResourcePageHeader = ({ breadcrumbs, renderPageHeaderActionButtons }: Reso
             breadCrumbs={renderBreadcrumbs}
             headerName=""
             renderActionButtons={renderPageHeaderActionButtons ?? noop}
+            docPath={DOCUMENTATION.RESOURCE_BROWSER}
         />
     )
 }

@@ -28,6 +28,7 @@ import {
     ToastManager,
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import MultiChartSummary from './MultiChartSummary'
@@ -167,7 +168,11 @@ export default function ChartGroupAdvanceDeploy() {
 
     return (
         <div className="chart-group-advance-deploy-page">
-            <PageHeader isBreadcrumbs breadCrumbs={renderAdvanceBreadcrumb} />
+            <PageHeader
+                isBreadcrumbs
+                breadCrumbs={renderAdvanceBreadcrumb}
+                docPath={`${DOCUMENTATION.CHART_GROUP}#advanced-options`}
+            />
             <div className="chart-group-advance-deploy__body flexbox-col dc__overflow-auto">
                 {!deployed && (
                     <Prompt

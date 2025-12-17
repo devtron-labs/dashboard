@@ -38,6 +38,7 @@ import {
     URLS as CommonURLS,
     handleAnalyticsEvent,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
@@ -225,6 +226,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 isBreadcrumbs
                 showTabs
                 renderHeaderTabs={renderAppDetailsTabs}
+                docPath={DOCUMENTATION.JOBS}
             />
         </div>
     )

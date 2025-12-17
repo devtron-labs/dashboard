@@ -26,6 +26,7 @@ import {
     getComponentSpecificThemeClass,
     AppThemeType,
     SideNavigationProps,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary } from '../common'
@@ -136,7 +137,9 @@ export default function GlobalConfiguration(props) {
         <main
             className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}
         >
-            {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
+            {!shouldHidePageHeaderAndSidebar && (
+                <PageHeader headerName="Global Configurations" docPath={DOCUMENTATION.GLOBAL_CONFIGUDATIONS} />
+            )}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
                     {!shouldHidePageHeaderAndSidebar && (

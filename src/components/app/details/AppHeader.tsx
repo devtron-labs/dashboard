@@ -20,6 +20,7 @@ import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 
 
 import {
     BreadCrumb,
+    DOCUMENTATION,
     getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     noop,
@@ -256,5 +257,13 @@ export const AppHeader = ({
         </>
     )
 
-    return <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs showTabs renderHeaderTabs={renderAppDetailsTabs} />
+    return (
+        <PageHeader
+            breadCrumbs={renderBreadcrumbs}
+            isBreadcrumbs
+            showTabs
+            renderHeaderTabs={renderAppDetailsTabs}
+            docPath={DOCUMENTATION.APPLICATIONS}
+        />
+    )
 }
