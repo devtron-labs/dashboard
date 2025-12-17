@@ -315,7 +315,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-configurations-external-links',
                 id: 'global-configuration-external-links',
                 href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
-                icon: 'ic-link',
+                icon: 'ic-external-link',
                 isAvailableInEA: true,
             },
             {
@@ -323,7 +323,7 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 dataTestId: 'click-on-configurations-chart-repository',
                 id: 'global-configuration-chart-repository',
                 href: URLS.GLOBAL_CONFIG_CHART_REPO,
-                icon: 'ic-cube',
+                icon: 'ic-chart-repo',
                 isAvailableInEA: true,
             },
             {
