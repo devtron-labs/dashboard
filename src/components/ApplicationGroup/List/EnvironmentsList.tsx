@@ -232,7 +232,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
                     tippyMessage: APP_GROUP_TIPPY_CONTENT,
                     tippyHeader: 'Application Groups',
                 }}
-                docPath={DOCUMENTATION.APP_GROUP}
+                docPath={DOCUMENTATION.APP_MANAGEMENT}
             />
             {renderBody()}
         </div>

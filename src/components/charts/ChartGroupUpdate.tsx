@@ -298,7 +298,7 @@ export default function ChartGroupUpdate({}) {
                     isBreadcrumbs
                     breadCrumbs={renderBreadcrumbs}
                     renderActionButtons={renderChartGroupEditActionButton}
-                    docPath={DOCUMENTATION.CHART_GROUP}
+                    docPath={DOCUMENTATION.INFRA_MANAGEMENT}
                 />
                 <Prompt
                     when={isLeavingPageNotAllowed.current}

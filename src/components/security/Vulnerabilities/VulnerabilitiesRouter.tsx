@@ -31,7 +31,7 @@ const VulnerabilitiesRouter = () => {
 
     return (
         <div className="flexbox-col flex-grow-1 dc__overflow-hidden">
-            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs docPath={DOCUMENTATION.SECURITY} />
+            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs docPath={DOCUMENTATION.SECURITY_CENTER} />
             <InfoBlock
                 variant="neutral"
                 description="Showing vulnerabilities from active deployments. Data is limited to applications and environments you have access to."

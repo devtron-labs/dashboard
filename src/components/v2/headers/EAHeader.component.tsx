@@ -19,6 +19,7 @@ import { Link, useParams, useRouteMatch } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
     TabGroup,
@@ -126,6 +127,7 @@ const EAHeaderComponent = ({
                 showTabs
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

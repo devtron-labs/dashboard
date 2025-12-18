@@ -239,7 +239,7 @@ export default function ChartGroupDetails() {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 renderActionButtons={renderChartGroupActionButton}
-                docPath={DOCUMENTATION.CHART_GROUP}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             <div className="chart-group-details-page__body flexbox-col dc__overflow-auto">
                 {state.loading && <Progressing pageLoader />}

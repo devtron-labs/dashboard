@@ -616,7 +616,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         tippyRedirectLink: 'BULK_UPDATE',
                     }}
                     isBreadcrumbs
-                    docPath={DOCUMENTATION.BULK_UPDATE}
+                    docPath={DOCUMENTATION.APP_MANAGEMENT}
                 />
                 {this.renderBulkEditBody()}
             </div>

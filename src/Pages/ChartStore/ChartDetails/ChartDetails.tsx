@@ -169,7 +169,7 @@ export const ChartDetails = () => {
 
     return (
         <div className="flex-grow-1 flexbox-col bg__secondary dc__overflow-hidden">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.CHART_STORE} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
 
             <APIResponseHandler
                 isLoading={isFetchingChartVersions}

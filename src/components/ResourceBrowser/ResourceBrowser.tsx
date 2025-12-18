@@ -119,7 +119,7 @@ const ResourceBrowser: React.FC = () => {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumb}
                 renderActionButtons={renderNewClusterButton(reloadDetailClusterList, sortedClusterList.length)}
-                docPath={DOCUMENTATION.RESOURCE_BROWSER}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             {renderContent()}
         </div>

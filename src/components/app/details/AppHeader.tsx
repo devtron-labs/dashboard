@@ -263,7 +263,7 @@ export const AppHeader = ({
             isBreadcrumbs
             showTabs
             renderHeaderTabs={renderAppDetailsTabs}
-            docPath={DOCUMENTATION.APPLICATIONS}
+            docPath={DOCUMENTATION.APP_MANAGEMENT}
         />
     )
 }

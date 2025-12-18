@@ -138,7 +138,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
-                docPath={DOCUMENTATION.CHART_STORE}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

@@ -171,7 +171,7 @@ export default function ChartGroupAdvanceDeploy() {
             <PageHeader
                 isBreadcrumbs
                 breadCrumbs={renderAdvanceBreadcrumb}
-                docPath={`${DOCUMENTATION.CHART_GROUP}#advanced-options`}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             <div className="chart-group-advance-deploy__body flexbox-col dc__overflow-auto">
                 {!deployed && (

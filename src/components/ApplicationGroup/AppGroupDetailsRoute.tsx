@@ -713,7 +713,7 @@ export const EnvHeader = ({
             isBreadcrumbs
             showTabs={!showEmpty}
             renderHeaderTabs={renderEnvDetailsTabs}
-            docPath={DOCUMENTATION.APP_GROUP}
+            docPath={DOCUMENTATION.APP_MANAGEMENT}
         />
     )
 }

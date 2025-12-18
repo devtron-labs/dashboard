@@ -27,7 +27,7 @@ const ResourcePageHeader = ({ breadcrumbs, renderPageHeaderActionButtons }: Reso
             breadCrumbs={renderBreadcrumbs}
             headerName=""
             renderActionButtons={renderPageHeaderActionButtons ?? noop}
-            docPath={DOCUMENTATION.RESOURCE_BROWSER}
+            docPath={DOCUMENTATION.INFRA_MANAGEMENT}
         />
     )
 }

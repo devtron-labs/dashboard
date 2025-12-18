@@ -226,7 +226,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 isBreadcrumbs
                 showTabs
                 renderHeaderTabs={renderAppDetailsTabs}
-                docPath={DOCUMENTATION.JOBS}
+                docPath={DOCUMENTATION.AUTOMATION_AND_ENABLEMENT}
             />
         </div>
     )

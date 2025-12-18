@@ -233,7 +233,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 tippyMessage: HEADER_TEXT.PROJECTS.description,
                 tippyHeader: 'Projects',
             }}
-            docPath={DOCUMENTATION.GLOBAL_CONFIG_PROJECT}
+            docPath={DOCUMENTATION.APP_MANAGEMENT}
         />
     )
 

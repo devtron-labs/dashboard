@@ -389,7 +389,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         <>
             <div className={`discover-charts bg__primary ${state.charts.length > 0 ? 'summary-show' : ''}`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.CHART_STORE} />
+                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
                 </ConditionalWrap>
 
                 <Prompt

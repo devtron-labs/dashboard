@@ -76,7 +76,7 @@ const ChartGroupList = () => {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 renderActionButtons={renderCreateGroupButton}
-                docPath={DOCUMENTATION.CHART_GROUP}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             <div className="chart-group-list-page__body">
                 {loading ? (
