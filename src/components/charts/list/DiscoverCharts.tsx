@@ -301,9 +301,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     }
 
     function handleViewAllCharts(): void {
-        history.push(
-            `${match.url.split(URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`,
-        )
+        history.push(URLS.GLOBAL_CONFIG_CHART_REPO)
     }
 
     function renderCreateGroupButton() {

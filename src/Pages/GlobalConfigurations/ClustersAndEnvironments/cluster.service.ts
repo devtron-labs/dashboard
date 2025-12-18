@@ -103,7 +103,7 @@ export const getEditClusterDrawerMetadata = async (clusterId: number): Promise<E
 
     return {
         prometheusAuthResult,
-        clusterProvider: clusterProviderDetails.clusterProvider,
-        costModuleSchema: clusterProviderDetails.costModuleSchema,
+        clusterProvider: clusterProviderDetails?.clusterProvider,
+        costModuleSchema: clusterProviderDetails?.costModuleSchema,
     }
 }

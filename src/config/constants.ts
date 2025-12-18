@@ -21,6 +21,7 @@ import {
     EnvResourceType,
     RegistryCredentialsType,
     DOCUMENTATION,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -797,10 +798,15 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  */
 export const SELECT_ALL_VALUE = '*'
 
-export const SwitchItemValues = {
-    Sample: 'sample',
-    Configuration: 'configuration',
+export enum SwitchItemValues {
+    Sample = 'sample',
+    Configuration = 'configuration',
 }
+
+export const SWITCH_ITEM_SEGMENTS: SegmentType<SwitchItemValues>[] = [
+    { label: 'Sample', value: SwitchItemValues.Sample },
+    { label: 'Configuration', value: SwitchItemValues.Configuration },
+]
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',
