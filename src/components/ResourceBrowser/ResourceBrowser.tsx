@@ -15,22 +15,28 @@
  */
 
 import React, { useEffect, useMemo, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
+    BreadCrumb,
+    BreadcrumbText,
     ClusterDetail,
     DevtronProgressing,
+    DOCUMENTATION,
     ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
     PageHeader,
     useAsync,
+    useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ClusterListView } from '@Components/ClusterNodes/ClusterList'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
 import { sortObjectArrayAlphabetically } from '../common'
+import { KUBERNETES_RESOURCE_BROWSER_DESCRIPTION } from './Constants'
 import { renderNewClusterButton } from './PageHeader.buttons'
 import { getClusterListing } from './ResourceBrowser.service'
-import { renderAdditionalBrowserHeaderInfo } from './Utils'
 
 const ResourceBrowser: React.FC = () => {
     const parentRef = useRef<HTMLDivElement>(null)
@@ -41,6 +47,19 @@ const ResourceBrowser: React.FC = () => {
     )
     const [initialLoading, clusterListMinData, error, reloadMinClusterListing] = useAsync(() =>
         getClusterListing(true, abortControllerRef),
+    )
+
+    const { pathname } = useLocation()
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                'resource-browser': {
+                    component: <BreadcrumbText heading="Resource Browser" isActive />,
+                },
+            },
+        },
+        [pathname],
     )
 
     useEffect(
@@ -86,12 +105,21 @@ const ResourceBrowser: React.FC = () => {
         return <DevtronProgressing parentClasses="h-100 flex bg__primary" classes="icon-dim-80" />
     }
 
+    const renderBreadcrumb = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
     return (
         <div className="flexbox-col h-100 bg__primary" ref={parentRef}>
             <PageHeader
-                additionalHeaderInfo={renderAdditionalBrowserHeaderInfo}
-                isBreadcrumbs={false}
+                tippyProps={{
+                    isTippyCustomized: true,
+                    tippyRedirectLink: 'RESOURCE_BROWSER',
+                    tippyMessage: KUBERNETES_RESOURCE_BROWSER_DESCRIPTION,
+                    tippyHeader: 'Resource Browser',
+                }}
+                isBreadcrumbs
+                breadCrumbs={renderBreadcrumb}
                 renderActionButtons={renderNewClusterButton(reloadDetailClusterList, sortedClusterList.length)}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             {renderContent()}
         </div>

@@ -22,4 +22,5 @@ export interface EAHeaderComponentType {
     title: string
     redirectURL: string
     showAppDetailsOnly?: boolean
+    breadCrumbConfig?: Record<string, null | string | JSX.Element>
 }

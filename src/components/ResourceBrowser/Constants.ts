@@ -19,6 +19,7 @@ import {
     NO_MATCHING_RESULT,
     Nodes,
     RESOURCE_BROWSER_ROUTES,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import ICArrowUpCircle from '@Icons/ic-arrow-up-circle.svg'
@@ -275,8 +276,6 @@ export const CONNECTION_TIMEOUT_TIME = 10000
 
 export const DEFAULT_K8SLIST_PAGE_SIZE = 100
 
-export const TARGET_K8S_VERSION_SEARCH_KEY = 'targetK8sVersion'
-
 export const NODE_LIST_HEADERS = [
     'name',
     'status',
@@ -378,9 +377,12 @@ export const ResourceBrowserGAEvent = {
 export const ResourceBrowserRouteToTabIdMap: Partial<
     Record<(typeof RESOURCE_BROWSER_ROUTES)[keyof typeof RESOURCE_BROWSER_ROUTES], ResourceBrowserTabsId | string>
 > = {
-    '/resource-browser/:clusterId/:kind/:group': ResourceBrowserTabsId.k8s_Resources,
-    '/resource-browser/:clusterId/overview': ResourceBrowserTabsId.cluster_overview,
-    '/resource-browser/:clusterId/monitoring-dashboard': MONITORING_DASHBOARD_TAB_ID,
-    '/resource-browser/:clusterId/terminal': ResourceBrowserTabsId.terminal,
-    '/resource-browser/:clusterId/resource-recommender': RESOURCE_RECOMMENDER_TAB_ID,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/:kind/:group`]: ResourceBrowserTabsId.k8s_Resources,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/overview`]: ResourceBrowserTabsId.cluster_overview,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/monitoring-dashboard`]: MONITORING_DASHBOARD_TAB_ID,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/terminal`]: ResourceBrowserTabsId.terminal,
+    [`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/:clusterId/resource-recommender`]: RESOURCE_RECOMMENDER_TAB_ID,
 }
+
+export const KUBERNETES_RESOURCE_BROWSER_DESCRIPTION =
+    'The Resource Browser gives you a powerful, centralized view of all your Kubernetes objects across clusters. Effortlessly troubleshoot and manage resources with features like live manifest editing, log viewing, and direct resource creation or deletion—right from the UI. All in one place, across all your cluster'

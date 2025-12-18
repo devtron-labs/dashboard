@@ -57,10 +57,10 @@ export const CIContainerRegistryInfoBlock = ({
                             <Link
                                 to={`${
                                     isTemplateView
-                                        ? generatePath(URLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                                        ? generatePath(URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                                               appId,
                                           })
-                                        : `/${Routes.APP}/${appId}`
+                                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}`
                                 }/${Routes.WORKFLOW_EDITOR}`}
                                 onClick={onClickRedirectLink}
                             >

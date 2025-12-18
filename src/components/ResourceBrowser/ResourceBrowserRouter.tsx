@@ -43,17 +43,20 @@ const ResourceBrowserRouter: React.FC = () => {
             )}
 
             {isFeLibAvailable && window._env_.FEATURE_RB_SYNC_CLUSTER_ENABLE && (
-                <Route path={`${COMMON_URLS.RESOURCE_BROWSER}${COMMON_URLS.COMPARE_CLUSTERS}`} exact>
+                <Route
+                    path={`${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}${COMMON_URLS.COMPARE_CLUSTERS}`}
+                    exact
+                >
                     <CompareClusterViewWrapper />
                 </Route>
             )}
 
-            <Route path={[path, URLS.RESOURCE_BROWSER_CREATE_CLUSTER]} exact>
-                <ResourceBrowser />
+            <Route path={`${path}/:clusterId(\\d+)`}>
+                <ResourceList />
             </Route>
 
-            <Route path={`${path}/:clusterId`}>
-                <ResourceList />
+            <Route>
+                <ResourceBrowser />
             </Route>
 
             <Redirect to={path} />

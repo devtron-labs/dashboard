@@ -31,7 +31,7 @@ export default function ExpandedRow(props: ExpandedRowProps) {
     }
 
     const redirectToJobPipelineDetails = (job: Job, ciPipeline: JobCIPipeline): string => {
-        return `${URLS.JOB}/${job.id}/${URLS.APP_CI_DETAILS}/${ciPipeline.ciPipelineId}`
+        return `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${job.id}/${URLS.APP_CI_DETAILS}/${ciPipeline.ciPipelineId}`
     }
 
     const renderRows = () => {

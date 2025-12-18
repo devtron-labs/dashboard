@@ -123,8 +123,8 @@ export const getNavItems = ({
 
     let completedPercent = 0
     const basePath = isTemplateView
-        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, { appId })
-        : `/app/${appId}`
+        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, { appId })
+        : `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}`
 
     switch (resourceKind) {
         case ResourceKindType.job:
@@ -134,7 +134,7 @@ export const getNavItems = ({
                 navItems: [
                     {
                         title: 'Source code',
-                        href: `/job/${appId}/edit/materials`,
+                        href: `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${appId}/edit/materials`,
                         stage: STAGE_NAME.GIT_MATERIAL,
                         isLocked: !_isUnlocked.material,
                         supportDocumentURL: 'JOB_SOURCE_CODE',
@@ -144,7 +144,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Workflow Editor',
-                        href: `/job/${appId}/edit/workflow`,
+                        href: `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${appId}/edit/workflow`,
                         stage: STAGE_NAME.WORKFLOW,
                         isLocked: !_isUnlocked.workflowEditor,
                         supportDocumentURL: 'JOB_WORKFLOW_EDITOR',
@@ -186,7 +186,7 @@ export const getNavItems = ({
                     },
                     {
                         title: 'Environment Override',
-                        href: `/job/${appId}/edit/env-override`,
+                        href: `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${appId}/edit/env-override`,
                         stage: STAGE_NAME.ENV_OVERRIDE,
                         isLocked: !_isUnlocked.envOverride,
                     },

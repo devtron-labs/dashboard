@@ -16,7 +16,6 @@
 
 import { useState, useContext, Fragment, SyntheticEvent } from 'react'
 import {
-    PopupMenu,
     BuildStageVariable,
     PluginType,
     RefVariableStageType,
@@ -27,17 +26,21 @@ import {
     PipelineStageTaskActionModalType,
     PipelineStageTaskActionModalStateType,
     ResourceKindType,
+    ActionMenu,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    ActionMenuProps,
+    Icon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { importComponentFromFELibrary } from '@Components/common'
 import TaskTitle from './TaskTitle'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Drag } from '../../assets/icons/drag.svg'
-import { ReactComponent as Dots } from '@Icons/ic-more-vertical.svg'
-import { ReactComponent as Trash } from '../../assets/icons/ic-delete-interactive.svg'
 import { ReactComponent as AlertTriangle } from '../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as MoveToPre } from '../../assets/icons/ic-arrow-backward.svg'
 import { TaskListType } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
+import { TaskActionMenuOptionIdEnum } from './Constants'
 
 const getTaskActionPluginValidationStatus: (params) => ValidationResponseType = importComponentFromFELibrary(
     'getTaskActionPluginValidationStatus',
@@ -337,6 +340,23 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
 
     const currentStageText = isCdPipeline ? 'deploy' : 'build'
 
+    const handleDragging = () => {
+        setDragAllowed(true)
+    }
+
+    const handleActionMenuClick: ActionMenuProps<TaskActionMenuOptionIdEnum>['onClick'] = (item) => {
+        switch (item.id) {
+            case TaskActionMenuOptionIdEnum.DELETE:
+                handleTaskAction(selectedTaskIndex, PipelineStageTaskActionModalType.DELETE)
+                break
+            case TaskActionMenuOptionIdEnum.MOVE:
+                handleTaskAction(selectedTaskIndex, PipelineStageTaskActionModalType.MOVE_PLUGIN)
+                break
+            default:
+                break
+        }
+    }
+
     return (
         <>
             <div className={withWarning ? 'with-warning' : ''}>
@@ -355,7 +375,7 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                         >
                             <Drag
                                 className="dc__grabbable icon-dim-20 p-2 dc__no-shrink"
-                                onMouseDown={() => setDragAllowed(true)}
+                                onMouseDown={handleDragging}
                             />
                             <div className={`flex left dc__gap-6 dc__content-space w-100`}>
                                 <TaskTitle taskDetail={taskDetail} />
@@ -364,47 +384,39 @@ export const TaskList = ({ withWarning, setInputVariablesListFromPrevStep, isJob
                                 !formDataErrorObj[activeStageName].steps[index].isValid && (
                                     <AlertTriangle className="icon-dim-16 mr-5 ml-5 mt-2 mw-16" />
                                 )}
-                            <PopupMenu autoClose>
-                                <PopupMenu.Button isKebab>
-                                    <Dots
-                                        className="icon-dim-16 mt-2 rotate fcn-7"
-                                        style={{ ['--rotateBy' as any]: '90deg' }}
-                                    />
-                                </PopupMenu.Button>
-                                <PopupMenu.Body>
-                                    <button
-                                        className="dc__transparent cr-5 flex left p-8 pointer dc__hover-n50 w-100 dc__gap-10"
-                                        data-index={index}
-                                        onClick={handleTriggerDelete}
-                                        type="button"
-                                    >
-                                        <Trash className="icon-dim-16 scr-5 dc__no-shrink" />
-                                        Remove
-                                    </button>
-                                    {!isJobView && taskDetail.stepType && (
-                                        <button
-                                            className="dc__transparent flex left p-8 pointer dc__hover-n50 w-100 dc__gap-10"
-                                            data-index={index}
-                                            onClick={handleTriggerMoveToOtherStage}
-                                        >
-                                            {activeStageName === BuildStageVariable.PreBuild ? (
-                                                <>
-                                                    <MoveToPre
-                                                        className="rotate icon-dim-16 dc__no-shrink"
-                                                        style={{ ['--rotateBy' as any]: '180deg' }}
-                                                    />
-                                                    Move to post-{currentStageText} stage
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <MoveToPre className="icon-dim-16 dc__no-shrink" />
-                                                    Move to pre-{currentStageText} stage
-                                                </>
-                                            )}
-                                        </button>
-                                    )}
-                                </PopupMenu.Body>
-                            </PopupMenu>
+
+                            <ActionMenu<TaskActionMenuOptionIdEnum>
+                                id="task-item-action-menu"
+                                onClick={handleActionMenuClick}
+                                options={[
+                                    {
+                                        items: [
+                                            {
+                                                id: TaskActionMenuOptionIdEnum.DELETE,
+                                                label: 'Remove',
+                                                startIcon: { name: 'ic-delete' },
+                                                type: 'negative',
+                                            },
+                                            !isJobView &&
+                                                taskDetail.stepType && {
+                                                    id: TaskActionMenuOptionIdEnum.MOVE,
+                                                    label: `Move to ${
+                                                        activeStageName === BuildStageVariable.PreBuild ? 'post' : 'pre'
+                                                    }-${currentStageText} stage`,
+                                                    startIcon: { name: 'ic-arrow-right' },
+                                                },
+                                        ],
+                                    },
+                                ]}
+                                buttonProps={{
+                                    dataTestId: 'task-item-action-menu-button',
+                                    icon: <Icon name="ic-more-vertical" color={null} rotateBy={90} />,
+                                    variant: ButtonVariantType.borderLess,
+                                    ariaLabel: 'Open action menu',
+                                    style: ButtonStyleType.neutral,
+                                    size: ComponentSizeType.xs,
+                                }}
+                            />
                         </div>
                         <div className="vertical-line-connector" />
                     </Fragment>

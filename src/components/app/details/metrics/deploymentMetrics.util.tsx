@@ -114,10 +114,10 @@ export const ReferenceLineLegend = () => {
 
 export const EliteCategoryMessage = (props) => {
     return (
-        <div className="cursor" onClick={props.onClick}>
+        <button type='button' className="dc__no-border p-0 m-0 dc__transparent--unstyled flex left column" onClick={props.onClick}>
             <p className="graph-legend__secondary-label"> You are in elite category </p>
             <p className="graph-legend__secondary-value">Good job!</p>
-        </div>
+        </button>
     )
 }
 

@@ -21,6 +21,7 @@ import {
     Button,
     ButtonStyleType,
     ButtonVariantType,
+    ClusterStatusIcon,
     ComponentSizeType,
     DC_DELETE_SUBTITLES,
     DeleteConfirmationModal,
@@ -52,7 +53,7 @@ import {
 } from './cluster.type'
 import { environmentNameComparator, getNamespaceCount, getSelectParsedCategory } from './cluster.util'
 import { ClusterEnvironmentDrawer } from './ClusterEnvironmentDrawer'
-import { ClusterActions, ClusterEnvLoader, ClusterIconWithStatus } from './ClusterList.components'
+import { ClusterActions, ClusterEnvLoader } from './ClusterList.components'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from './constants'
 
 import './cluster.scss'
@@ -302,7 +303,7 @@ const ClustersEnvironmentsList = ({
                 className="dc__zi-1 px-20 py-6 bg__secondary dc__grid dc__align-items-center cluster-metadata-header dc__gap-16 dc__content-start fs-12 lh-20 cn-7 dc__position-sticky"
                 style={{ top: '37px' }}
             >
-                <ClusterIconWithStatus clusterStatus={status} isVirtualCluster={isVirtualCluster} />
+                <ClusterStatusIcon clusterStatus={status} isVirtualCluster={isVirtualCluster} />
                 <Tooltip
                     content={`${clusterName} (${environments.length} Environments)`}
                     alwaysShowTippyOnHover

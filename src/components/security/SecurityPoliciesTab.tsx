@@ -14,17 +14,38 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
-import { Switch, Route, Redirect, NavLink, RouteComponentProps } from 'react-router-dom'
+import { Switch, Route, Redirect, NavLink, useRouteMatch } from 'react-router-dom'
+
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
+    getSecurityCenterBreadcrumb,
+    PageHeader,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 import { SecurityPolicyCluster } from './SecurityPolicyCluster'
 import { SecurityPolicyApp } from './SecurityPolicyApp'
 import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
 import { VulnerabilityExposure } from './AddCVEPolicy'
 
-export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
-    renderRouter() {
-        const { path } = this.props.match
+export const SecurityPoliciesTab = () => {
+    const { path } = useRouteMatch()
+
+    const { breadcrumbs } = useBreadcrumb({
+        alias: {
+            ...getSecurityCenterBreadcrumb(),
+            policies: {
+                component: <BreadcrumbText heading="Security Policies" isActive />,
+            },
+        },
+    })
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
+    const renderRouter = () => {
         return (
             <Switch>
                 <Route path={`${path}/global`} component={SecurityPolicyGlobal} />
@@ -37,9 +58,10 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
         )
     }
 
-    render() {
-        const { path } = this.props.match
-        return (
+    return (
+        <div className="security-scan-container bg__primary flexbox-col min-h-100">
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.SECURITY_CENTER} />
+
             <div className="security-policy flex-grow-1">
                 <div className="dc__secondary-nav">
                     <NavLink
@@ -79,8 +101,8 @@ export class SecurityPoliciesTab extends Component<RouteComponentProps<{}>> {
                         Check CVE Policy
                     </NavLink>
                 </div>
-                <div className="flexbox-col security-policy__content">{this.renderRouter()}</div>
+                <div className="flexbox-col security-policy__content">{renderRouter()}</div>
             </div>
-        )
-    }
+        </div>
+    )
 }

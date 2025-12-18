@@ -62,7 +62,7 @@ export const getAddSourceActionMenuOptions = (): AddSourceMenuOptions['options']
                 id: CHART_SOURCE_TYPE.CHART_REPO,
                 label: 'Add Chart Repository',
                 componentType: 'link',
-                to: URLS.GLOBAL_CONFIG_CHART,
+                to: URLS.GLOBAL_CONFIG_CHART_REPO,
             },
             {
                 id: CHART_SOURCE_TYPE.OCI,

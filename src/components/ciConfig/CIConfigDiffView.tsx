@@ -147,14 +147,14 @@ export default function CIConfigDiffView({
         }
 
         if (ciNode.isLinkedCI) {
-            return `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
+            return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${getLinkedCIPipelineURL(
                 appId,
                 workflowId,
                 ciNode.id,
             )}`
         }
 
-        return `${URLS.APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
+        return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${workflowId}/${
             URLS.APP_CI_CONFIG
         }/${wfCIMap.get(workflowId)}/build`
     }

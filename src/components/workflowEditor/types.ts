@@ -394,6 +394,7 @@ export interface WorkflowProps
     workflowPositionState?: WorkflowPositionState
     handleDisplayLoader?: () => void
     isOffendingPipelineView?: boolean
+    searchText?: string
 }
 
 export interface WorkflowState {

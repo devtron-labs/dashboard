@@ -51,7 +51,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onCli
     return (
         <div
             data-testid="chart-used-card"
-            className="app-details-info-card flex left bg__primary br-8 mr-12 lh-20 w-200"
+            className="app-details-info-card flex left bg__primary br-8 lh-20 w-200"
             ref={chartRef}
         >
             <div className="app-details-info-card__top-container flex">
@@ -76,7 +76,7 @@ const ChartUsedCard = ({ appDetails, notes, onClickShowNotes, cardLoading, onCli
                     <div className="fs-13 fw-6 dc__ellipsis-right" data-testid="full-chart-name-with-version">
                         <Link
                             className={`fw-6 ${appDetails.appStoreChartId ? 'cb-5' : 'cn-9'}`}
-                            to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                            to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${appDetails.appStoreChartId}`}
                             style={{ pointerEvents: !appDetails.appStoreChartId ? 'none' : 'auto' }}
                         >
                             {appDetails.appStoreAppName}

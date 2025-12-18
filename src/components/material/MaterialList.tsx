@@ -13,124 +13,90 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useEffect } from 'react'
 
-import { Component } from 'react'
 import {
-    showError,
-    Progressing,
-    ErrorScreenManager,
-    sortCallback,
     AppListConstants,
-    DocLink,
     ComponentSizeType,
+    DocLink,
+    ErrorScreenManager,
+    Progressing,
+    sortCallback,
+    useQuery,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
-import { AppConfigStatus, ViewType, DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
-import { CreateMaterial } from './CreateMaterial'
-import { UpdateMaterial, UpdateMaterialProps } from './UpdateMaterial'
-import { GitMaterialType, MaterialListProps, MaterialListState } from './material.types'
-import { ReactComponent as GitHub } from '@Icons/ic-sample-app.svg'
-import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
+
 import { ReactComponent as Folder } from '@Icons/ic-folder-filled.svg'
+import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
+import { ReactComponent as GitHub } from '@Icons/ic-sample-app.svg'
+import { GitAccountDTO } from '@Services/service.types'
+
+import { DEVTRON_NODE_DEPLOY_VIDEO } from '../../config'
+import { getGitProviderListAuth, getSourceConfig } from '../../services/service'
+import { GitMaterialType, MaterialListProps } from './material.types'
+import MaterialForm from './MaterialForm'
+
 import './material.scss'
 
-class MaterialList extends Component<MaterialListProps, MaterialListState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            statusCode: 0,
-            view: ViewType.LOADING,
-            configStatus: AppConfigStatus.LOADING,
-            materials: [],
-            providers: [],
-        }
-        this.isGitProviderValid = this.isGitProviderValid.bind(this)
-        this.isCheckoutPathValid = this.isCheckoutPathValid.bind(this)
-        this.refreshMaterials = this.refreshMaterials.bind(this)
-        this.handleSingleGitMaterialUpdate = this.handleSingleGitMaterialUpdate.bind(this)
-    }
+const MaterialList = ({
+    appId,
+    isTemplateView,
+    isJobView,
+    isCreateAppView,
+    handleGitMaterialsChange,
+    respondOnSuccess,
+    toggleRepoSelectionTippy,
+    setRepo,
+}: MaterialListProps) => {
+    const getInitialData = () =>
+        Promise.all([getSourceConfig(appId, null, isTemplateView), getGitProviderListAuth(appId)])
 
-    getGitProviderConfig = () => {
-        Promise.all([
-            getSourceConfig(this.props.appId, null, this.props.isTemplateView),
-            getGitProviderListAuth(this.props.appId),
-        ])
-            .then(([sourceConfigRes, providersRes]) => {
-                let materials = sourceConfigRes.result.material || []
-                const providers = providersRes.result
-                materials = materials.map((mat) => {
-                    return {
-                        ...mat,
-                        includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
-                        gitProvider: providers.find((p) => mat.gitProviderId === p.id),
-                        isExcludeRepoChecked: !!mat.filterPattern?.length,
-                    }
-                })
-                this.setState({
-                    materials: materials.sort((a, b) => sortCallback('id', a, b)),
-                    providers: providersRes.result,
-                    view: ViewType.FORM,
-                })
-            })
-            .catch((error) => {
-                showError(error)
-                this.setState({ view: ViewType.ERROR, statusCode: error.code })
-            })
-    }
+    const {
+        isFetching: isLoadingInitialResponse,
+        data: initialResponse,
+        error: initialDataError,
+        refetch: refetchInitialData,
+    } = useQuery<
+        Awaited<ReturnType<typeof getInitialData>>,
+        { materials: GitMaterialType[]; providers: GitAccountDTO[] },
+        [string, string, boolean],
+        false
+    >({
+        queryKey: ['material-list-init-data', appId, isTemplateView],
+        queryFn: getInitialData,
+        select: ([sourceConfigRes, providersRes]) => {
+            const provs = structuredClone(providersRes?.result) || []
+            const mats = (sourceConfigRes.result.material || []).map<GitMaterialType>((mat) => ({
+                ...mat,
+                includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
+                gitProvider: provs.find((p) => mat.gitProviderId === p.id),
+                isExcludeRepoChecked: !!mat.filterPattern?.length,
+            }))
 
-    componentDidMount() {
-        this.getGitProviderConfig()
-    }
-
-    componentDidUpdate(_prevProps: MaterialListProps, prevState: MaterialListState) {
-        if (prevState.materials !== this.state.materials && this.props.handleGitMaterialsChange) {
-            // Sync state with parent state
-            this.props.handleGitMaterialsChange(this.state.materials, false)
-        }
-    }
-
-    handleSingleGitMaterialUpdate =
-        (id: GitMaterialType['id']): UpdateMaterialProps['handleSingleGitMaterialUpdate'] =>
-        (updatedMaterial, isError) => {
-            if (this.props.handleGitMaterialsChange) {
-                // Sync state with parent state
-                this.props.handleGitMaterialsChange(
-                    this.state.materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
-                    isError,
-                )
-            }
-        }
-
-    static getDerivedStateFromProps(props, state) {
-        if (props.configStatus !== state.configStatus) {
             return {
-                ...state,
-                configStatus: props.configStatus,
+                materials: mats.sort((a, b) => sortCallback('id', a, b)),
+                providers: providersRes?.result || [],
             }
+        },
+    })
+
+    const { materials, providers } = initialResponse || { materials: [], providers: [] }
+
+    useEffect(() => {
+        if (handleGitMaterialsChange) {
+            handleGitMaterialsChange(materials, false)
         }
-        return null
+    }, [materials])
+
+    const refreshMaterials = async () => {
+        if (materials.length < 1) {
+            respondOnSuccess()
+        }
+
+        await refetchInitialData()
     }
 
-    refreshMaterials() {
-        if (this.state.materials.length < 1) {
-            this.props.respondOnSuccess()
-        }
-        getSourceConfig(this.props.appId, null, this.props.isTemplateView).then((response) => {
-            const materials = response.result.material.map((mat) => {
-                return {
-                    ...mat,
-                    includeExcludeFilePath: mat.filterPattern?.length ? mat.filterPattern.join('\n') : '',
-                    gitProvider: this.state.providers.find((p) => mat.gitProviderId === p.id),
-                }
-            })
-            this.setState({
-                materials: materials.sort((a, b) => sortCallback('id', a, b)),
-            })
-        })
-    }
-
-    isCheckoutPathValid(checkoutPath: string) {
-        if (this.state.materials.length >= 1) {
+    const isCheckoutPathValid = (checkoutPath: string) => {
+        if (materials.length >= 1) {
             // Multi git
             if (!checkoutPath.length) {
                 return 'This is a required field'
@@ -138,129 +104,123 @@ class MaterialList extends Component<MaterialListProps, MaterialListState> {
             if (!checkoutPath.startsWith('./')) {
                 return "Invalid Path. Checkout path should start with './'"
             }
-        } else {
-            if (checkoutPath.length && !checkoutPath.startsWith('./')) {
-                return "Invalid Path. Checkout path should start with './'"
+            return undefined
+        }
+        if (checkoutPath.length && !checkoutPath.startsWith('./')) {
+            return "Invalid Path. Checkout path should start with './'"
+        }
+        return undefined
+    }
+
+    const handleSingleGitMaterialUpdate =
+        (id: GitMaterialType['id']) => (updatedMaterial: GitMaterialType, isError: boolean) => {
+            if (handleGitMaterialsChange) {
+                handleGitMaterialsChange(
+                    materials.map((mat) => (mat.id === id ? updatedMaterial : mat)),
+                    isError,
+                )
             }
-            return undefined
-        }
-    }
-
-    isGitProviderValid(provider) {
-        if (provider && provider.id) {
-            return undefined
         }
 
-        return 'This is required field'
-    }
-
-    renderPageHeader() {
-        return (
-            <>
-                <h2
-                    className="form__title form__title--artifacts"
-                    data-testid={`${this.props.isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}
-                >
-                    {this.props.isJobView ? 'Source code' : 'Git Repositories'}
-                </h2>
-                <p className="form__subtitle form__subtitle--artifacts">
-                    Manage source code repositories for this {this.props.isJobView ? 'job' : 'application'}.&nbsp;
-                    <DocLink
-                        dataTestId="git-repo-doc-link"
-                        docLinkKey={this.props.isJobView ? 'JOB_SOURCE_CODE' : 'GLOBAL_CONFIG_GIT'}
-                        fontWeight="normal"
-                        size={ComponentSizeType.small}
-                    />
+    const renderPageHeader = () => (
+        <>
+            <h2
+                className="form__title form__title--artifacts"
+                data-testid={`${isJobView ? 'source-code-heading' : 'git-repositories-heading'}`}
+            >
+                {isJobView ? 'Source code' : 'Git Repositories'}
+            </h2>
+            <div className="flexbox dc__gap-8 mb-16">
+                <p className="m-0 fs-12 lh-20 cn-6">
+                    Manage source code repositories for this {isJobView ? 'job' : 'application'}.
                 </p>
-            </>
-        )
-    }
+                <DocLink
+                    dataTestId="git-repo-doc-link"
+                    docLinkKey={isJobView ? 'JOB_SOURCE_CODE' : 'GLOBAL_CONFIG_GIT'}
+                    fontWeight="normal"
+                    size={ComponentSizeType.small}
+                />
+            </div>
+        </>
+    )
 
-    renderSampleApp() {
-        return (
-            <div className="sample-repo-container br-8 p-16 flexbox">
-                <span className="mr-16 icon-container">
-                    <GitHub />
-                </span>
-                <div>
-                    <h2 className="sample-title fs-14 fw-6">Looking to deploy a sample application?</h2>
-                    <div className="flex left cb-5 fs-13">
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="flex left dc__link mr-16"
-                            href={AppListConstants.SAMPLE_NODE_REPO_URL}
-                        >
-                            <Folder className="icon-dim-16 mr-4 scb-5" />
-                            View sample app git repository
-                        </a>
-                        <a
-                            rel="noreferrer noopener"
-                            target="_blank"
-                            className="flex left dc__link"
-                            href={DEVTRON_NODE_DEPLOY_VIDEO}
-                        >
-                            <PlayMedia className="icon-dim-16 scb-5 mr-4" />
-                            Watch how to configure sample application
-                        </a>
-                    </div>
+    const renderSampleApp = () => (
+        <div className="sample-repo-container br-8 p-16 flexbox">
+            <span className="mr-16 icon-container">
+                <GitHub />
+            </span>
+            <div>
+                <h2 className="sample-title fs-14 fw-6">Looking to deploy a sample application?</h2>
+                <div className="flex left cb-5 fs-13">
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="flex left dc__link mr-16"
+                        href={AppListConstants.SAMPLE_NODE_REPO_URL}
+                    >
+                        <Folder className="icon-dim-16 mr-4 scb-5" />
+                        View sample app git repository
+                    </a>
+                    <a
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        className="flex left dc__link"
+                        href={DEVTRON_NODE_DEPLOY_VIDEO}
+                    >
+                        <PlayMedia className="icon-dim-16 scb-5 mr-4" />
+                        Watch how to configure sample application
+                    </a>
                 </div>
             </div>
-        )
-    }
+        </div>
+    )
 
-    render() {
-        if (this.state.view == ViewType.LOADING) {
-            return <Progressing pageLoader />
-        }
-        if (this.state.view == ViewType.ERROR) {
-            return <ErrorScreenManager code={this.state.statusCode} />
-        }
-        return (
-            <div className={!this.props.isCreateAppView ? 'form__app-compose' : 'flexbox-col dc__gap-16'}>
-                {!this.props.isCreateAppView && (
-                    <>
-                        {this.renderPageHeader()}
-                        {!this.props.isJobView && !this.state.materials.length && this.renderSampleApp()}
-                        <CreateMaterial
-                            key={this.state.materials.length}
-                            appId={Number(this.props.appId)}
-                            isMultiGit={this.state.materials.length > 0}
-                            providers={this.state.providers}
-                            refreshMaterials={this.refreshMaterials}
-                            isGitProviderValid={this.isGitProviderValid}
-                            isCheckoutPathValid={this.isCheckoutPathValid}
-                            reload={this.getGitProviderConfig}
-                            isJobView={this.props.isJobView}
-                            isTemplateView={this.props.isTemplateView}
-                        />
-                    </>
-                )}
-                {this.state.materials.map((mat) => {
-                    return (
-                        <UpdateMaterial
-                            key={mat.id}
-                            appId={Number(this.props.appId)}
-                            isMultiGit={this.state.materials.length > 0}
-                            preventRepoDelete={this.state.materials.length === 1}
-                            providers={this.state.providers}
-                            material={mat}
-                            refreshMaterials={this.refreshMaterials}
-                            isGitProviderValid={this.isGitProviderValid}
-                            isCheckoutPathValid={this.isCheckoutPathValid}
-                            reload={this.getGitProviderConfig}
-                            toggleRepoSelectionTippy={this.props.toggleRepoSelectionTippy}
-                            setRepo={this.props.setRepo}
-                            isJobView={this.props.isJobView}
-                            isTemplateView={this.props.isTemplateView}
-                            isCreateAppView={this.props.isCreateAppView}
-                            handleSingleGitMaterialUpdate={this.handleSingleGitMaterialUpdate(mat.id)}
-                        />
-                    )
-                })}
-            </div>
-        )
+    if (isLoadingInitialResponse) {
+        return <Progressing pageLoader />
     }
+    if (initialDataError) {
+        return <ErrorScreenManager code={initialDataError?.code} reload={refetchInitialData} />
+    }
+    return (
+        <div className={!isCreateAppView ? 'form__app-compose' : 'flexbox-col dc__gap-16'}>
+            {!isCreateAppView && (
+                <>
+                    {renderPageHeader()}
+                    {!isJobView && !materials.length && renderSampleApp()}
+                    <MaterialForm
+                        key="create-material-form"
+                        appId={Number(appId)}
+                        isMultiGit={materials.length > 0}
+                        providers={providers}
+                        refreshMaterials={refreshMaterials}
+                        isCheckoutPathValid={isCheckoutPathValid}
+                        reload={refetchInitialData}
+                        isJobView={isJobView}
+                        isTemplateView={isTemplateView}
+                    />
+                </>
+            )}
+            {materials.map((mat) => (
+                <MaterialForm
+                    key={mat.id}
+                    appId={Number(appId)}
+                    isMultiGit={materials.length > 0}
+                    preventRepoDelete={materials.length === 1}
+                    providers={providers}
+                    material={mat}
+                    refreshMaterials={refreshMaterials}
+                    isCheckoutPathValid={isCheckoutPathValid}
+                    reload={refetchInitialData}
+                    toggleRepoSelectionTippy={toggleRepoSelectionTippy}
+                    setRepo={setRepo}
+                    isJobView={isJobView}
+                    isTemplateView={isTemplateView}
+                    isCreateAppView={isCreateAppView}
+                    handleSingleGitMaterialUpdate={handleSingleGitMaterialUpdate(mat.id)}
+                />
+            ))}
+        </div>
+    )
 }
 
 export default MaterialList
