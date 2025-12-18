@@ -31,6 +31,7 @@ import {
     ButtonVariantType,
     CodeEditor,
     ComponentSizeType,
+    DOCUMENTATION,
     GenericSectionErrorState,
     getApplicationManagementBreadcrumb,
     Icon,
@@ -615,6 +616,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
                         tippyRedirectLink: 'BULK_UPDATE',
                     }}
                     isBreadcrumbs
+                    docPath={DOCUMENTATION.APP_MANAGEMENT}
                 />
                 {this.renderBulkEditBody()}
             </div>

@@ -1,6 +1,7 @@
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getSecurityCenterBreadcrumb,
     PageHeader,
     useBreadcrumb,
@@ -46,6 +47,7 @@ const OverviewPageHeader = () => {
             }}
             isBreadcrumbs
             breadCrumbs={renderBreadcrumbs}
+            docPath={DOCUMENTATION.SECURITY_CENTER}
         />
     )
 }

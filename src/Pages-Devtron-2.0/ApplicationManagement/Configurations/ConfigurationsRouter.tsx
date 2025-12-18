@@ -3,6 +3,7 @@ import { Redirect, Route, Switch, useLocation } from 'react-router-dom'
 
 import {
     BreadCrumb,
+    DOCUMENTATION,
     getApplicationManagementBreadcrumb,
     noop,
     PageHeader,
@@ -57,7 +58,7 @@ export const Configurations = () => {
 
     return (
         <>
-            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs />
+            <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs docPath={DOCUMENTATION.APP_MANAGEMENT} />
             <div className="application-management-configurations dc__grid flex-grow-1 dc__overflow-auto">
                 <div className="py-12 pl-8 pr-7 border__primary--right">
                     <SideNavigation list={APPLICATION_MANAGEMENT_CONFIGURATIONS} />

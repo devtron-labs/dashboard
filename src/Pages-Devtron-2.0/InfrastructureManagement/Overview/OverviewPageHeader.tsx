@@ -1,6 +1,7 @@
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
     useBreadcrumb,
@@ -21,7 +22,7 @@ const OverviewPageHeader = () => {
 
     const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
-    return <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+    return <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
 }
 
 export default OverviewPageHeader
