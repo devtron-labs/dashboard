@@ -1,0 +1,21 @@
+.application-management-overview {
+
+    .glance-cards-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+        column-gap: 8px;
+    }
+
+    .workflow-overview-cards-wrapper {
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(2, 1fr);
+        gap: 8px;
+    }
+
+    .dora-metrics-wrapper {
+        grid-template-columns: repeat(4, minmax(200px, 1fr));
+
+        > *:not(:first-child) {
+            border-left: 1px solid var(--border-secondary);
+        }
+    }
+}
