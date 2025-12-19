@@ -86,7 +86,7 @@ export const NoExternalLinksView = ({
 const redirectToGlobalConfig = (linkText) => {
     return (
         <Link
-            to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_EXTERNAL_LINKS}
+            to={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
             data-testid="info-bar-internal-link"
             className="cursor dc__link dc__underline-onhover mr-5 dc__no-decor"
         >

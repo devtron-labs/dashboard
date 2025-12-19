@@ -20,7 +20,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
     PageHeader,
@@ -28,6 +27,7 @@ import {
     useBreadcrumb,
     getApplicationManagementBreadcrumb,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -96,9 +96,9 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             if (value.includes(' ')) {
                 isValid[key] = false
                 errorMessage[key] = `Do not use 'spaces' in name`
-            } else if (value.length > 16) {
+            } else if (value.length > 25) {
                 isValid[key] = false
-                errorMessage[key] = 'Maximum 16 characters required'
+                errorMessage[key] = 'Maximum 25 characters required'
             } else if (!/^[a-z0-9]+([-a-z0-9]*[a-z0-9])?$/i.test(value)) {
                 isValid[key] = false
                 errorMessage[key] = `Use only lowercase alphanumeric characters, '-' (Cannot start/end with '-')`
@@ -233,6 +233,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 tippyMessage: HEADER_TEXT.PROJECTS.description,
                 tippyHeader: 'Projects',
             }}
+            docPath={DOCUMENTATION.APP_MANAGEMENT}
         />
     )
 
