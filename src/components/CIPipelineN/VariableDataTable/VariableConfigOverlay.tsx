@@ -62,7 +62,7 @@ export const VariableConfigOverlay = ({ row, handleRowUpdateAction }: ConfigOver
         <VariableDataTablePopupMenu showHeaderIcon heading="Variable configuration" position="right">
             {({ scrollableRef }) => (
                 <>
-                    <div ref={scrollableRef} className="p-12 flexbox-col dc__gap-12">
+                    <div ref={scrollableRef} className="p-12 flexbox-col dc__gap-12 dc__overflow-auto">
                         <CustomInput
                             placeholder="Enter variable name"
                             name="variable-name"

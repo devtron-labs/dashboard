@@ -18,9 +18,12 @@
 
 import { Component, createRef } from 'react'
 import Draggable, { DraggableEventHandler } from 'react-draggable'
+import { useLocation } from 'react-router-dom'
 import yamlJsParser from 'yaml'
 
 import {
+    BreadCrumb,
+    BreadcrumbText,
     BulkEditConfigV2Type,
     BulkEditVersion,
     Button,
@@ -28,7 +31,9 @@ import {
     ButtonVariantType,
     CodeEditor,
     ComponentSizeType,
+    DOCUMENTATION,
     GenericSectionErrorState,
+    getApplicationManagementBreadcrumb,
     Icon,
     MarkDown,
     MODES,
@@ -42,13 +47,13 @@ import {
     showError,
     ToastManager,
     ToastVariantType,
+    useBreadcrumb,
     useMotionTemplate,
     useMotionValue,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { SERVER_MODE } from '../../config'
 import {
     OutputTabs,
     renderCMAndSecretImpObj,
@@ -98,12 +103,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     }
 
     componentDidMount() {
-        // eslint-disable-next-line react/prop-types
-        const { serverMode } = this.props
-
-        if (serverMode === SERVER_MODE.FULL) {
-            this.getInitialized()
-        }
+        this.getInitialized()
     }
 
     getInitialized() {
@@ -587,17 +587,36 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         return !showExamples ? this.renderBulkCodeEditor() : this.renderCodeEditorAndReadme()
     }
 
+    // eslint-disable-next-line class-methods-use-this
+    renderBreadcrumbs = () => {
+        const { pathname } = useLocation()
+
+        const { breadcrumbs } = useBreadcrumb(
+            {
+                alias: {
+                    ...getApplicationManagementBreadcrumb(),
+                    'bulk-edit': { component: <BreadcrumbText heading="Bulk Edits" isActive /> },
+                },
+            },
+            [pathname],
+        )
+
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
     render() {
         return (
             <div className="fs-13 flexbox-col flex-grow-1 h-100 dc__overflow-hidden">
                 <PageHeader
-                    headerName="Bulk Edit"
+                    breadCrumbs={this.renderBreadcrumbs}
                     tippyProps={{
                         isTippyCustomized: true,
                         tippyMessage:
                             'Execute payloads to perform bulk configuration changes across multiple Devtron components.',
                         tippyRedirectLink: 'BULK_UPDATE',
                     }}
+                    isBreadcrumbs
+                    docPath={DOCUMENTATION.APP_MANAGEMENT}
                 />
                 {this.renderBulkEditBody()}
             </div>
@@ -605,11 +624,11 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
     }
 }
 
-const BulkEditsWithUseResizable = (props: Pick<BulkEditsProps, 'serverMode'>) => {
+const BulkEditsWithUseResizable = () => {
     const outputHeightMV = useMotionValue(INITIAL_OUTPUT_PANEL_HEIGHT_PERCENTAGE)
     const gridTemplateRows = useMotionTemplate`1fr 1px ${outputHeightMV}%`
 
-    return <BulkEdits {...{ ...props, outputHeightMV, gridTemplateRows }} />
+    return <BulkEdits {...{ outputHeightMV, gridTemplateRows }} />
 }
 
 export default BulkEditsWithUseResizable

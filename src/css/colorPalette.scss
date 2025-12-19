@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+@use './themeTokens.scss' as *;
+
 $white: 255, 255, 255;
 $black: 0, 0, 0;
 
@@ -119,6 +121,25 @@ $black: 0, 0, 0;
     --divider-primary-translucent: var(--border-primary-translucent);
     --divider-secondary: var(--border-secondary);
     --divider-secondary-translucent: var(--border-secondary-translucent);
+
+    --sidenav-bg-section-collapsed-hover: rgba(#{$white}, 0.40);
+    --sidenav-bg-section-collapsed-selected: rgba(#{$white}, 0.40);
+    --sidenav-bg-section-expanded: rgba(#{$white}, 0.20);
+    --sidenav-bg-section-expanded-hover: rgba(#{$black}, 0.75);
+    --sidenav-bg-section-expanded-selected: rgba(#{$black}, 0.75);
+    --sidenav-bg-subsection: rgba(#{$black}, 0.75);
+    --sidenav-subsection-item-hover: rgba(#{$white}, 0.25);
+    --sidenav-subsection-item-selected: rgba(#{$white}, 0.25);
+    --sidenav-text: rgb(#{$white});
+    --sidenav-icon: rgb(#{$white});
+    --sidenav-border-primary: rgba(#{$white}, 0.15);
+    --sidenav-border-secondary: rgba(#{$white}, 0.10);
+
+    --sidenav-input-placeholder: rgb(118, 125, 132);
+    --sidenav-input-border: rgba(214, 227, 241, 0.25);
+    --sidenav-input-border-hover: rgba(214, 227, 241, 0.40);
+    --sidenav-input-border-focus: rgb(116, 181, 255);
+    --sidenav-input-icon: rgb(200, 203, 206);
 }
 
 @mixin theme-dark {
@@ -224,6 +245,25 @@ $black: 0, 0, 0;
     --divider-primary-translucent: var(--border-primary-translucent);
     --divider-secondary: var(--border-secondary);
     --divider-secondary-translucent: var(--border-secondary-translucent);
+
+    --sidenav-bg-section-collapsed-hover: rgba(#{$white}, 0.40);
+    --sidenav-bg-section-collapsed-selected: rgba(#{$white}, 0.40);
+    --sidenav-bg-section-expanded: rgba(#{$white}, 0.10);
+    --sidenav-bg-section-expanded-hover: rgba(#{$white}, 0.25);
+    --sidenav-bg-section-expanded-selected: rgba(#{$white}, 0.25);
+    --sidenav-bg-subsection: rgba(#{$black}, 0.50);
+    --sidenav-subsection-item-hover: rgba(#{$white}, 0.25);
+    --sidenav-subsection-item-selected: rgba(#{$white}, 0.25);
+    --sidenav-text: rgb(#{$white});
+    --sidenav-icon: rgb(#{$white});
+    --sidenav-border-primary: rgba(#{$white}, 0.15);
+    --sidenav-border-secondary: rgba(#{$white}, 0.10);
+
+    --sidenav-input-placeholder: rgb(118, 125, 132);
+    --sidenav-input-border: rgba(214, 227, 241, 0.25);
+    --sidenav-input-border-hover: rgba(214, 227, 241, 0.40);
+    --sidenav-input-border-focus: rgb(116, 181, 255);
+    --sidenav-input-icon: rgb(200, 203, 206);
 }
 
 :root {
@@ -268,10 +308,12 @@ $black: 0, 0, 0;
     &.theme {
         &__light {
             @include theme-light;
+            @include theme-light-tokens;
         }
 
         &__dark {
             @include theme-dark;
+            @include theme-dark-tokens;
         }
     }
 }
@@ -279,6 +321,7 @@ $black: 0, 0, 0;
 .component-specific-theme {
     &__light {
         @include theme-light;
+        @include theme-light-tokens;
 
         $code-editor-diff-red: 243, 62, 62;
         $code-editor-diff-green: 29, 173, 112;
@@ -308,11 +351,11 @@ $black: 0, 0, 0;
 
     &__dark {
         @include theme-dark;
+        @include theme-dark-tokens;
 
         $code-editor-diff-red: 255, 93, 96;
         $code-editor-diff-green: 122, 198, 128;
         $selection-color: 116, 181, 255;
-
 
         // CODE-EDITOR COLORS
         --fg-code-editor: #a5d6ff;

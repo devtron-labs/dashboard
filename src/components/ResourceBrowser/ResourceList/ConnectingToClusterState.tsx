@@ -17,8 +17,9 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useHistory, useParams } from 'react-router-dom'
 
+import { URLS } from '@devtron-labs/devtron-fe-common-lib'
+
 import CouldNotConnectImg from '../../../assets/img/app-not-deployed.svg'
-import { URLS } from '../../../config'
 import { StyledProgressBar } from '../../common/formFields/Widgets/Widgets'
 import { CONNECTION_TIMEOUT_TIME, TAKING_LONGER_TO_CONNECT, TRYING_TO_CONNECT } from '../Constants'
 import { ClusterDetailBaseParams, ConnectingToClusterStateProps } from '../Types'
@@ -76,7 +77,7 @@ const ConnectingToClusterState: React.FC<ConnectingToClusterStateProps> = ({
         requestAbortController?.abort()
         resetStates()
         replace({
-            pathname: URLS.RESOURCE_BROWSER,
+            pathname: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
         })
     }
 

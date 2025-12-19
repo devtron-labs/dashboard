@@ -54,7 +54,7 @@ export default function NoGitOpsConfiguredWarning({ closePopup }: NoGitOpsConfig
                     >
                         Continue with helm
                     </button>
-                    <NavLink className="cta sso__warn-button btn-confirm" to={URLS.GLOBAL_CONFIG_GITOPS}>
+                    <NavLink className="cta sso__warn-button btn-confirm" to={URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS}>
                         Configure GitOps
                     </NavLink>
                 </div>

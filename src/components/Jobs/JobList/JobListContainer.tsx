@@ -19,6 +19,8 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
 
 import { FilterChips, ServerErrors, showError } from '@devtron-labs/devtron-fe-common-lib'
 
+import { URLS } from '@Config/routes'
+
 import { JobListViewType } from '../Constants'
 import { getJobs } from '../Service'
 import {
@@ -169,7 +171,7 @@ const JobListContainer = ({
     }
 
     const handleEditJob = (jobId: number): void => {
-        history.push(`/job/${jobId}/edit`)
+        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${jobId}/edit`)
     }
 
     return (

@@ -81,7 +81,11 @@ export const ChartDetailsReadme = ({
                 isLoading={isLoading}
                 error={error}
                 progressingProps={{ size: 24 }}
-                errorScreenManagerProps={{ code: error?.code, reload, redirectURL: URLS.CHARTS_DISCOVER }}
+                errorScreenManagerProps={{
+                    code: error?.code,
+                    reload,
+                    redirectURL: URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER,
+                }}
             >
                 {!readme ? (
                     <GenericEmptyState

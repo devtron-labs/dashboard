@@ -25,6 +25,7 @@ import {
     getCVEUrlFromCVEName,
     ConditionalWrap,
     Icon,
+    URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { NavLink } from 'react-router-dom'
 import {
@@ -522,9 +523,9 @@ export class SecurityPolicyEdit extends Component<
             case 'global':
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
-                        <h1 className="form__title" data-testid="global-security-policy">
+                        <h2 className="form__title" data-testid="global-security-policy">
                             Global Security Policies
-                        </h1>
+                        </h2>
                         <p className="form__subtitle" data-testid="global-security-policy-subtitle">
                             Security policies defined at global level will be applicable to all deployments unless
                             overriden for specific clusters or environments.
@@ -534,32 +535,32 @@ export class SecurityPolicyEdit extends Component<
             case 'cluster':
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
-                        <h1 className="form__title">
-                            <NavLink to="/security/policies/clusters">Clusters</NavLink>
+                        <h2 className="form__title">
+                            <NavLink to={`${URLS.SECURITY_CENTER_POLICIES}/clusters`}>Clusters</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0].name}
-                        </h1>
+                        </h2>
                     </div>
                 )
             case 'environment':
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
-                        <h1 className="form__title">
-                            <NavLink to="/security/policies/environments">Environments</NavLink>
+                        <h2 className="form__title">
+                            <NavLink to={`${URLS.SECURITY_CENTER_POLICIES}/environments`}>Environments</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0].name}
-                        </h1>
+                        </h2>
                     </div>
                 )
             case 'application':
                 const i = this.state.result?.policies[0]?.name?.search('/')
                 return (
                     <div className="ml-24 mr-24 mt-20 mb-20">
-                        <h1 className="form__title">
-                            <NavLink to="/security/policies/apps">Applications</NavLink>
+                        <h2 className="form__title">
+                            <NavLink to={`${URLS.SECURITY_CENTER_POLICIES}/apps`}>Applications</NavLink>
                             <span className="ml-5 mr-5">/</span>
                             {this.state.result?.policies[0]?.name.substring(0, i)}
-                        </h1>
+                        </h2>
                     </div>
                 )
         }

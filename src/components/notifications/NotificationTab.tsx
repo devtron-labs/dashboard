@@ -382,7 +382,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 description: TOAST_ACCESS_DENIED.SUBTITLE,
             })
         } else {
-            this.props.history.push(URLS.GLOBAL_CONFIG_NOTIFIER_ADD_NEW)
+            this.props.history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
         }
     }
 
@@ -759,7 +759,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody() {
         return (
-            <div className="notification-tab flexbox-col flex-grow-1 dc__gap-16">
+            <div className="flexbox-col flex-grow-1 dc__gap-16">
                 <Button
                     variant={ButtonVariantType.primary}
                     text="Add New"
@@ -820,7 +820,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             )
         }
         return (
-            <div className="flexbox-col flex-grow-1 pt-16 dc__gap-16">
+            <div className="flexbox-col flex-grow-1 p-16 dc__gap-16">
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
                 {this.state.showDeleteDialog && this.renderDeleteDialog()}

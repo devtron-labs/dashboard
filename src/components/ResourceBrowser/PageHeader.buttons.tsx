@@ -15,25 +15,13 @@
  */
 
 import React, { useState } from 'react'
-import { generatePath, Route, useHistory } from 'react-router-dom'
 
-import {
-    Button,
-    ButtonComponentType,
-    ComponentSizeType,
-    handleAnalyticsEvent,
-    useMainContext,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Button, ComponentSizeType, handleAnalyticsEvent, useMainContext } from '@devtron-labs/devtron-fe-common-lib'
 
-import CreateCluster from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/CreateCluster.component'
-import {
-    CreateClusterProps,
-    CreateClusterTypeEnum,
-} from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
-import { UpgradeToEnterpriseDialog } from '@Pages/Shared/UpgradeToEnterprise'
+import { CreateClusterProps } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/CreateCluster/types'
+import { AddClusterButton } from '@Pages/Shared/AddEditCluster'
 
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
-import { URLS } from '../../config'
 import { CreateResource } from './ResourceList/CreateResource'
 import { CreateResourceButtonType, CreateResourceType } from './Types'
 
@@ -75,62 +63,14 @@ export const NewClusterButton = ({
     handleReloadClusterList,
     clusterCount,
 }: Pick<CreateClusterProps, 'handleReloadClusterList'> & { clusterCount: number }) => {
-    const { replace } = useHistory()
-    const { isSuperAdmin, licenseData } = useMainContext()
-    const isFreemium = licenseData?.isFreemium ?? false
-    const isClusterAdditionAllowed = !isFreemium || clusterCount < licenseData?.moduleLimits?.maxAllowedClusters
-
-    const [showUpgradeToEnterprise, setShowUpgradeToEnterprise] = useState(false)
-
-    const handleOpenUpgradeDialog = () => {
-        setShowUpgradeToEnterprise(true)
-    }
-
-    const handleCloseUpgradeDialog = () => {
-        setShowUpgradeToEnterprise(false)
-    }
-
-    const handleCloseCreateClusterModal = () => {
-        replace(URLS.RESOURCE_BROWSER)
-    }
+    const { isSuperAdmin } = useMainContext()
 
     return (
-        isSuperAdmin && (
-            <>
-                <div>
-                    <Button
-                        dataTestId="add_cluster_button"
-                        text="New Cluster"
-                        size={ComponentSizeType.small}
-                        startIcon={<Add />}
-                        {...(isClusterAdditionAllowed
-                            ? {
-                                  component: ButtonComponentType.link,
-                                  linkProps: {
-                                      to: generatePath(URLS.RESOURCE_BROWSER_CREATE_CLUSTER, {
-                                          type: CreateClusterTypeEnum.CONNECT_CLUSTER,
-                                      }),
-                                  },
-                              }
-                            : {
-                                  component: ButtonComponentType.button,
-                                  onClick: handleOpenUpgradeDialog,
-                              })}
-                    />
-                    <span className="dc__divider" />
-                </div>
-
-                {isClusterAdditionAllowed && (
-                    <Route path={URLS.RESOURCE_BROWSER_CREATE_CLUSTER} exact>
-                        <CreateCluster
-                            handleReloadClusterList={handleReloadClusterList}
-                            handleRedirectOnModalClose={handleCloseCreateClusterModal}
-                        />
-                    </Route>
-                )}
-
-                <UpgradeToEnterpriseDialog open={showUpgradeToEnterprise} handleClose={handleCloseUpgradeDialog} />
-            </>
+        !!isSuperAdmin && (
+            <div>
+                <AddClusterButton clusterCount={clusterCount} handleReloadClusterList={handleReloadClusterList} />
+                <span className="dc__divider" />
+            </div>
         )
     )
 }

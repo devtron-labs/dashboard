@@ -54,7 +54,7 @@ const CDSuccessModal = ({
             </div>
             {!isTemplateView && (
                 <NavLink
-                    to={`${URLS.APP}/${appId}/${URLS.APP_TRIGGER}`}
+                    to={`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_TRIGGER}`}
                     data-testid="go-to-build-deploy-link"
                     className="cb-5 dc__no-decor"
                 >
@@ -72,10 +72,10 @@ const CDSuccessModal = ({
             <NavLink
                 to={`${
                     isTemplateView
-                        ? generatePath(CommonURLS.GLOBAL_CONFIG_TEMPLATES_DEVTRON_APP_DETAIL, {
+                        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
                               appId,
                           })
-                        : `${URLS.APP}/${appId}`
+                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}`
                 }/${CommonURLS.APP_CONFIG}/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`}
                 data-testid="go-to-environmentOverride-link"
                 className="cb-5 dc__no-decor"

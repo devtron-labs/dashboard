@@ -51,6 +51,8 @@ import {
     ComponentSizeType,
     PasswordField,
     RegistryCredentialsType,
+    RemoteConnectionType,
+    AuthenticationType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { Link, useHistory, useParams, useRouteMatch } from 'react-router-dom'
@@ -82,19 +84,17 @@ import { ReactComponent as Info } from '../../assets/icons/ic-info-outlined.svg'
 import { ReactComponent as Error } from '../../assets/icons/ic-warning.svg'
 import { ReactComponent as InfoFilled } from '../../assets/icons/ic-info-filled.svg'
 import { DC_CONTAINER_REGISTRY_CONFIRMATION_MESSAGE, DeleteComponentsName } from '../../config/constantMessaging'
-import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import ManageRegistry from './ManageRegistry'
 import {
     CredentialType,
     CustomCredential,
-    RemoteConnectionType,
     RemoteConnectionTypeRegistry,
     SSHAuthenticationType,
 } from './dockerType'
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
-const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
+const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const AuthenticationTypeRadio = importComponentFromFELibrary('AuthenticationTypeRadio', null, 'function')
 
@@ -565,7 +565,7 @@ const DockerForm = ({
         VALIDATION_STATUS.DRY_RUN || VALIDATION_STATUS.FAILURE || VALIDATION_STATUS.LOADER || VALIDATION_STATUS.SUCCESS,
     )
     const [repositoryError, setRepositoryError] = useState<string>('')
-    const ChartStoreRedirectionUrl: string = id ? `${URLS.CHARTS_DISCOVER}?registryId=${id}` : URLS.CHARTS_DISCOVER
+    const ChartStoreRedirectionUrl: string = id ? `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}?registryId=${id}` : URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER
 
     const customHandleChange = (e): void => {
         updateWithCustomStateValidation(e.target.name, e.target.value)
