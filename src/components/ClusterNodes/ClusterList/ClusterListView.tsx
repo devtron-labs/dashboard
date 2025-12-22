@@ -31,15 +31,13 @@ import {
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { importComponentFromFELibrary } from '@Components/common'
 import Timer from '@Components/common/DynamicTabs/DynamicTabs.timer'
 
 import { ClusterMapListSortableKeys, ClusterStatusByFilter } from '../constants'
 import { getSortedClusterList, parseSearchParams } from '../utils'
+import { ClusterFilters } from './ClusterFilters'
 import ClusterSelectionBody from './ClusterSelectionBody'
 import { ClusterViewType } from './types'
-
-const ClusterFilters = importComponentFromFELibrary('ClusterFilters', null, 'function')
 
 const getSelectAllDialogStatus = () => SelectAllDialogStatus.CLOSED
 
@@ -127,9 +125,7 @@ const ClusterListView = (props: ClusterViewType) => {
                         }}
                         keyboardShortcut="/"
                     />
-                    {ClusterFilters && (
-                        <ClusterFilters clusterFilter={clusterFilter} setClusterFilter={setClusterFilter} />
-                    )}
+                    <ClusterFilters clusterFilter={clusterFilter} setClusterFilter={setClusterFilter} />
                 </div>
                 {clusterListLoader ? (
                     <span className="dc__loading-dots mr-20">Syncing</span>

@@ -24,6 +24,7 @@ import {
     ModuleNameMap,
     ModuleStatus,
     motion,
+    NavigationGroupType,
     SearchBar,
     URLS,
     useQuery,
@@ -38,7 +39,7 @@ import { getNavigationList } from './constants'
 import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
-import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
+import { NavGroupProps, NavigationProps } from './types'
 import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
 
 import './styles.scss'

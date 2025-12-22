@@ -72,6 +72,8 @@ import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnv
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { Configurations } from '@Pages/Releases/Detail'
 import { ApplicationManagementConfigurationsRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import { ApplicationManagementOverview } from '@PagesDevtron2.0/ApplicationManagement/Overview'
+import { InfraOverview } from '@PagesDevtron2.0/InfrastructureManagement'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
 import {
@@ -568,47 +570,60 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         <InfraAppsRouter />
                                     </Route>
                                     <Route
+                                        key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW}
+                                        path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW}
+                                    >
+                                        <InfraOverview />
+                                    </Route>
+                                    <Route
                                         path={CommonURLS.GLOBAL_CONFIG}
                                         render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                     />
                                     {!window._env_.K8S_CLIENT && [
-                                        <Route
-                                            key={CommonURLS.APPLICATION_MANAGEMENT_APP}
-                                            path={CommonURLS.APPLICATION_MANAGEMENT_APP}
-                                            render={() => <AppRouter />}
-                                        />,
-                                        <Route
-                                            key={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
-                                            path={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
-                                        >
-                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
-                                        </Route>,
+                                        ...(serverMode === SERVER_MODE.FULL
+                                            ? [
+                                                  <Route
+                                                      key={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}
+                                                      path={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}
+                                                      exact
+                                                  >
+                                                      <ApplicationManagementOverview />
+                                                  </Route>,
+                                                  <Route
+                                                      key={CommonURLS.APPLICATION_MANAGEMENT_APP}
+                                                      path={CommonURLS.APPLICATION_MANAGEMENT_APP}
+                                                      render={() => <AppRouter />}
+                                                  />,
+                                                  <Route
+                                                      key={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
+                                                      path={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
+                                                  >
+                                                      <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                                  </Route>,
+                                                  <Route
+                                                      key={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
+                                                      path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
+                                                      render={() => <BulkEdit />}
+                                                  />,
+                                                  <Route path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
+                                                      {(props) => (
+                                                          <ProjectList {...props} isSuperAdmin={isSuperAdmin} />
+                                                      )}
+                                                  </Route>,
+                                                  <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
+                                                      <ApplicationManagementConfigurationsRouter />
+                                                  </Route>,
+                                                  <Route
+                                                      key={CommonURLS.SECURITY_CENTER}
+                                                      path={CommonURLS.SECURITY_CENTER}
+                                                      render={() => <Security />}
+                                                  />,
+                                              ]
+                                            : []),
                                         <Route
                                             key={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             path={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
-                                        />,
-                                        <Route
-                                            key={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
-                                            path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
-                                            render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
-                                        />,
-                                        <Route
-                                            key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
-                                            path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}
-                                        >
-                                            {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
-                                        </Route>,
-                                        <Route
-                                            key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}
-                                            path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}
-                                        >
-                                            <ApplicationManagementConfigurationsRouter />
-                                        </Route>,
-                                        <Route
-                                            key={CommonURLS.SECURITY_CENTER}
-                                            path={CommonURLS.SECURITY_CENTER}
-                                            render={() => <Security />}
                                         />,
                                         ...(window._env_.FEATURE_RESOURCE_WATCHER_ENABLE && ResourceWatcherRouter
                                             ? [
@@ -620,7 +635,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(window._env_.FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE &&
+                                        ...(serverMode === SERVER_MODE.FULL &&
+                                        window._env_.FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE &&
                                         SoftwareDistributionHub
                                             ? [
                                                   <Route
@@ -674,7 +690,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         </Route>,
                                     ]}
                                     {/* TODO: Check why its coming as empty in case route is in other library */}
-                                    {!window._env_.K8S_CLIENT && (
+                                    {!window._env_.K8S_CLIENT && serverMode === SERVER_MODE.FULL && (
                                         <Route
                                             path={URLS.AUTOMATION_AND_ENABLEMENT_JOB}
                                             key={URLS.AUTOMATION_AND_ENABLEMENT_JOB}
@@ -690,7 +706,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.INFRASTRUCTURE_MANAGEMENT,
                                                 CommonURLS.DATA_PROTECTION,
                                                 CommonURLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
                                             ]}

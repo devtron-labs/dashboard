@@ -26,6 +26,7 @@ import {
     getComponentSpecificThemeClass,
     AppThemeType,
     SideNavigationProps,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../config'
 import { ErrorBoundary } from '../common'
@@ -51,6 +52,8 @@ import { UserPermissionsTooltipContent } from './UserPermissionsTooltipContent'
 const HostURLConfiguration = lazy(() => import('../hostURL/HostURL'))
 const Docker = lazy(() => import('../dockerRegistry/Docker'))
 const Clusters = lazy(() => import('@Pages/GlobalConfigurations/ClustersAndEnvironments/ClusterList'))
+const ChartRepo = lazy(() => import('@Components/chartRepo/ChartRepo'))
+const ExternalLinks = lazy(() => import('@Components/externalLinks/ExternalLinks'))
 const Authorization = lazy(() => import('@Pages/GlobalConfigurations/Authorization'))
 
 export default function GlobalConfiguration(props) {
@@ -136,7 +139,9 @@ export default function GlobalConfiguration(props) {
         <main
             className={`global-configuration ${shouldHidePageHeaderAndSidebar ? 'global-configuration--full-content' : ''}`}
         >
-            {!shouldHidePageHeaderAndSidebar && <PageHeader headerName="Global Configurations" />}
+            {!shouldHidePageHeaderAndSidebar && (
+                <PageHeader headerName="Global Configurations" docPath={DOCUMENTATION.GLOBAL_CONFIGUDATIONS} />
+            )}
             <Router history={useHistory()}>
                 <GlobalConfigurationProvider>
                     {!shouldHidePageHeaderAndSidebar && (
@@ -209,11 +214,23 @@ const NavItem = ({ serverMode }) => {
     }
 
     const sideNavigationList: SideNavigationProps['list'] = [
-        {
+        ...(serverMode === SERVER_MODE.FULL ? [{
             id: 'host-url',
             title: 'Host URL',
             dataTestId: 'global-configurations-host-url',
             href: URLS.GLOBAL_CONFIG_HOST_URL,
+        }] : []),
+        {
+            title: 'External Links',
+            dataTestId: 'click-on-configurations-external-links',
+            id: 'external-links',
+            href: URLS.GLOBAL_CONFIG_EXTERNAL_LINKS,
+        },
+        {
+            title: 'Chart Repository',
+            dataTestId: 'click-on-configurations-chart-repository',
+            id: 'chart-repository',
+            href: URLS.GLOBAL_CONFIG_CHART_REPO,
         },
         {
             id: 'clusters-environments',
@@ -289,6 +306,18 @@ const Body = ({ getHostURLConfig, serverMode, handleChecklistUpdate, isSuperAdmi
 
     return (
         <Switch>
+            <Route
+                key={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+                path={URLS.GLOBAL_CONFIG_EXTERNAL_LINKS}
+            >
+                <ExternalLinks />
+            </Route>
+            <Route
+                key={URLS.GLOBAL_CONFIG_CHART_REPO}
+                path={URLS.GLOBAL_CONFIG_CHART_REPO}
+            >
+                {(props) => <ChartRepo {...props} isSuperAdmin={isSuperAdmin} />}
+            </Route>
             <Route
                 path={URLS.GLOBAL_CONFIG_CLUSTER}
                 render={() => {
