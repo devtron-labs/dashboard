@@ -14,86 +14,205 @@
  * limitations under the License.
  */
 
+import moment from 'moment'
+
 import {
+    ACTION_STATE,
+    APIOptions,
+    ApiQueuingWithBatch,
+    AppDetails,
+    AppType,
+    CIMaterialType,
+    createGitCommitUrl,
+    DEPLOYMENT_STATUS,
+    DeploymentStatusDetailsType,
+    DeploymentWindowProfileMetaData,
     get,
+    getUrlWithSearchParams,
+    handleUTCTime,
+    History,
+    IndexStore,
+    noop,
+    numberComparatorBySortOrder,
     post,
-    trash,
-    ServerErrors,
+    PromiseAllStatusType,
+    put,
+    ReleaseMode,
     ResponseType,
     sortCallback,
-    put,
-    DATE_TIME_FORMAT_STRING,
-    History,
-    noop,
-    handleUTCTime,
-    createGitCommitUrl,
-    PromiseAllStatusType,
-    ApiQueuingWithBatch,
-    APIOptions,
-    CIMaterialType,
+    useQuery,
+    useQueryClient,
+    WFR_STATUS_DTO_TO_DEPLOYMENT_STATUS_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
-import moment from 'moment'
-import { Routes, Moment12HourFormat, NO_COMMIT_SELECTED } from '../../config'
-import { AppDetails, ArtifactsCiJob, EditAppRequest, AppMetaInfo } from './types'
-import { BulkResponseStatus, BULK_VIRTUAL_RESPONSE_STATUS } from '../ApplicationGroup/Constants'
+
+import { importComponentFromFELibrary } from '@Components/common'
+import { getExternalLinks } from '@Components/externalLinks/ExternalLinks.service'
+import {
+    ExternalLinkIdentifierType,
+    ExternalLinkResponse,
+    ExternalLinksAndToolsType,
+} from '@Components/externalLinks/ExternalLinks.type'
+import { sortByUpdatedOn } from '@Components/externalLinks/ExternalLinks.utils'
+
+import { Moment12HourFormat, NO_COMMIT_SELECTED, Routes } from '../../config'
+import { BULK_VIRTUAL_RESPONSE_STATUS, BulkResponseStatus } from '../ApplicationGroup/Constants'
+import { getDeploymentStatusDetail } from './details/appDetails/appDetails.service'
+import { DeploymentStatusCardType } from './details/appDetails/appDetails.type'
+import {
+    AppMetaInfo,
+    ArtifactsCiJob,
+    DeploymentWindowParsedMetaData,
+    EditAppRequest,
+    UseGetDTAppDetailsParams,
+    UseGetDTAppDetailsReturnType,
+} from './types'
+
+const getDeploymentWindowProfileMetaData: (appId: string, envId: string) => DeploymentWindowProfileMetaData =
+    importComponentFromFELibrary('getDeploymentWindowProfileMetaData', null, 'function')
 
 export const getAppList = (request, options?: APIOptions) => post(Routes.APP_LIST, request, options)
 
-export function deleteResource({ appName, env, name, kind, group, namespace, version, appId, envId }) {
-    if (!group) {
-        group = ''
+// Hook to fetch app details, resource tree and publish to IndexStore
+export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): UseGetDTAppDetailsReturnType => {
+    const queryClient = useQueryClient()
+    const resourceTreeQueryKey = 'dt-app-resource-tree'
+
+    const {
+        data: appDetails,
+        isFetching: isFetchingAppDetails,
+        error: appDetailsError,
+        refetch: refetchAppDetails,
+        status: appDetailsQueryStatus,
+    } = useQuery<AppDetails>({
+        queryKey: ['dt-app-details', appId, envId],
+        queryFn: ({ signal }) =>
+            get<AppDetails>(getUrlWithSearchParams(`${Routes.APP_DETAIL}/v2`, { 'app-id': appId, 'env-id': envId }), {
+                signal,
+            }),
+        select: ({ result }) => {
+            IndexStore.publishAppDetails(
+                {
+                    ...result,
+                },
+                AppType.DEVTRON_APP,
+            )
+
+            return result
+        },
+        enabled: !!appId && !!envId,
+        refetchInterval: (data, query) =>
+            // In case query failed and no data is available previously, stop polling and show error state
+            !data && query.state.status === 'error' ? false : window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL,
+        onSuccess: async () => {
+            await queryClient.invalidateQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
+        },
+    })
+
+    const {
+        data: resourceTree,
+        isFetching: isFetchingResourceTree,
+        error: resourceTreeError,
+        refetch: refetchResourceTree,
+        status: resourceTreeQueryStatus,
+    } = useQuery<AppDetails['resourceTree']>({
+        queryKey: [resourceTreeQueryKey, appId, envId],
+        queryFn: ({ signal }) =>
+            get<AppDetails['resourceTree']>(
+                getUrlWithSearchParams(`${Routes.APP_DETAIL}/resource-tree`, { 'app-id': appId, 'env-id': envId }),
+                { signal },
+            ),
+        select: ({ result }) => {
+            if (result) {
+                IndexStore.publishAppDetails(
+                    {
+                        ...appDetails,
+                        resourceTree: result,
+                    },
+                    AppType.DEVTRON_APP,
+                )
+            }
+
+            return result
+        },
+        enabled:
+            !!appId &&
+            !!envId &&
+            !!appDetails &&
+            (appDetails.isPipelineTriggered || appDetails.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS), // Fetch resource tree for pipelines which are not triggered only in case of migrate external apps
+    })
+
+    // Returning appDetails, resourceTree as null if it doesn't exist, to form loading and error states properly
+    const mergedAppDetails: AppDetails = appDetails
+        ? { ...appDetails, appType: AppType.DEVTRON_APP, resourceTree }
+        : appDetails
+
+    return {
+        appDetails: mergedAppDetails,
+        isFetchingAppDetails,
+        isFetchingResourceTree,
+        appDetailsError,
+        resourceTreeError,
+        refetchAppDetails,
+        refetchResourceTree,
+        appDetailsQueryStatus,
+        resourceTreeQueryStatus,
     }
-    const URL = `${Routes.APPLICATIONS}/${appName}-${env}/resource?name=${name}&namespace=${namespace}&resourceName=${name}&version=${version}&group=${group}&kind=${kind}&force=true&appId=${appId}&envId=${envId}`
-    return trash(URL)
 }
 
-interface AppDetailsResponse extends ResponseType {
-    result?: AppDetails
-}
-
-interface AppMetaInfoResponse extends ResponseType {
-    result?: AppMetaInfo
-}
-
-export interface ArtifactCiJobResponse extends ResponseType {
-    result?: ArtifactsCiJob
-}
-
-export function fetchAppDetails(appId: number | string, envId: number | string): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}?app-id=${appId}&env-id=${envId}`)
-}
-
-export function fetchAppDetailsInTime(
-    appId: number | string,
-    envId: number | string,
-    reloadTimeOut: APIOptions['timeout'],
-    abortControllerRef: APIOptions['abortControllerRef'],
-): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/v2?app-id=${appId}&env-id=${envId}`, {
-        timeout: reloadTimeOut,
-        abortControllerRef,
+export const useGetExternalLinksAndTools = (appId: string, clusterId: number) =>
+    useQuery<ExternalLinkResponse['result'], ExternalLinksAndToolsType>({
+        queryKey: ['dt-app-external-links', appId, clusterId],
+        queryFn: () => getExternalLinks(clusterId, appId, ExternalLinkIdentifierType.DevtronApp),
+        select: (data) => ({
+            externalLinks: (data.result?.ExternalLinks ?? []).sort(sortByUpdatedOn) || [],
+            monitoringTools:
+                (data.result?.Tools ?? [])
+                    .map((tool) => ({
+                        label: tool.name,
+                        value: tool.id,
+                        icon: tool.icon,
+                    }))
+                    .sort((a, b) => numberComparatorBySortOrder(a.value, b.value)) || [],
+        }),
+        enabled: !!appId && !!clusterId,
     })
-}
 
-export function fetchResourceTreeInTime(
-    appId: number | string,
-    envId: number | string,
-    reloadTimeOut: APIOptions['timeout'],
-    abortControllerRef: APIOptions['abortControllerRef'],
-): Promise<AppDetailsResponse> {
-    return get(`${Routes.APP_DETAIL}/resource-tree?app-id=${appId}&env-id=${envId}`, {
-        timeout: reloadTimeOut,
-        abortControllerRef,
+export const useGetDeploymentWindowProfileMetaData = (appId: string, envId: string) =>
+    useQuery<DeploymentWindowProfileMetaData, DeploymentWindowParsedMetaData, string[], false>({
+        queryKey: ['deployment-window-profile-metadata', appId, envId],
+        queryFn: () => getDeploymentWindowProfileMetaData(appId, envId),
+        enabled: !!appId && !!envId && !!getDeploymentWindowProfileMetaData,
+        select: (data) => {
+            const userActionState = data?.userActionState || ACTION_STATE.ALLOWED
+            const isDeploymentBlocked =
+                userActionState === ACTION_STATE.PARTIAL || userActionState === ACTION_STATE.BLOCKED
+
+            return {
+                isDeploymentBlocked,
+                userActionState,
+            }
+        },
     })
-}
 
-interface CIHistoricalStatus extends ResponseType {
-    result?: History
-}
+export const useGetDTAppDeploymentStatusDetail = (appId: string, envId: string, triggerId?: string) =>
+    useQuery<DeploymentStatusDetailsType, DeploymentStatusCardType['deploymentStatusDetailsBreakdownData']>({
+        queryKey: ['deployment-status-detail', appId, envId, triggerId],
+        queryFn: () => getDeploymentStatusDetail(appId, envId, triggerId),
+        select: ({ result }) => {
+            const { deploymentStartedOn, wfrStatus, triggeredBy } = result
+            return {
+                triggeredBy,
+                deploymentTriggerTime: deploymentStartedOn,
+                deploymentStatus: WFR_STATUS_DTO_TO_DEPLOYMENT_STATUS_MAP[wfrStatus] || DEPLOYMENT_STATUS.INPROGRESS,
+            }
+        },
+        enabled: !!appId && !!envId,
+        refetchInterval: (data) => (data?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 10000 : 30000),
+    })
 
-export const getCIHistoricalStatus = (params): Promise<CIHistoricalStatus> => {
+export const getCIHistoricalStatus = (params): Promise<ResponseType<History>> => {
     const URL = `${Routes.APP}/${params.appId}/ci-pipeline/${params.pipelineId}/workflow/${params.buildId}`
-    return get(URL)
+    return get<History>(URL)
 }
 
 export const getTagDetails = (params) => {
@@ -144,17 +263,19 @@ const processMaterialHistoryAndSelectionError = (material) => {
 const processCIMaterialResponse = (response): CIMaterialType[] => {
     if (Array.isArray(response?.result)) {
         const sortedCIMaterials = response.result.sort((a, b) => sortCallback('id', a, b))
-        return sortedCIMaterials.map((material, index) => {
-            return {
-                ...material,
-                isSelected: index == 0,
-                gitURL: material.gitMaterialUrl || '',
-                lastFetchTime: material.lastFetchTime ? handleUTCTime(material.lastFetchTime, true) : '',
-                isMaterialLoading: false,
-                showAllCommits: false,
-                ...processMaterialHistoryAndSelectionError(material),
-            } satisfies CIMaterialType
-        })
+        return sortedCIMaterials.map(
+            (material, index) =>
+                ({
+                    ...material,
+                    // eslint-disable-next-line eqeqeq
+                    isSelected: index == 0,
+                    gitURL: material.gitMaterialUrl || '',
+                    lastFetchTime: material.lastFetchTime ? handleUTCTime(material.lastFetchTime, true) : '',
+                    isMaterialLoading: false,
+                    showAllCommits: false,
+                    ...processMaterialHistoryAndSelectionError(material),
+                }) satisfies CIMaterialType,
+        )
     }
 
     return []
@@ -196,15 +317,15 @@ export const triggerCINode = (request, abortSignal?: AbortSignal) => {
     return post(URL, request, options)
 }
 
-export const triggerBranchChange = (appIds: number[], envId: number, value: string) => {
-    return new Promise((resolve) => {
+export const triggerBranchChange = (appIds: number[], envId: number, value: string) =>
+    new Promise((resolve) => {
         ApiQueuingWithBatch(
             appIds.map(
                 (appId) => () =>
                     put(Routes.CI_PIPELINE_SOURCE_BULK_PATCH, {
                         appIds: [appId],
                         environmentId: envId,
-                        value: value,
+                        value,
                     }),
             ),
         )
@@ -238,7 +359,6 @@ export const triggerBranchChange = (appIds: number[], envId: number, value: stri
             })
             .catch(noop)
     })
-}
 
 export const getWorkflowStatus = (appId: number, options: APIOptions) => {
     const URL = `${Routes.APP_WORKFLOW_STATUS}/${appId}/${Routes.APP_LIST_V2}`
@@ -268,16 +388,14 @@ export function refreshGitMaterial(gitMaterialId: string, abortSignal: AbortSign
     const URL = `${Routes.REFRESH_MATERIAL}/${gitMaterialId}`
     return get(URL, {
         signal: abortSignal,
-    }).then((response) => {
-        return {
-            code: response.code,
-            result: {
-                message: response.result.message || '',
-                errorMsg: response.result.errorMsg || '',
-                lastFetchTime: response.result.lastFetchTime ? handleUTCTime(response.result.lastFetchTime, true) : '',
-            },
-        }
-    })
+    }).then((response) => ({
+        code: response.code,
+        result: {
+            message: response.result.message || '',
+            errorMsg: response.result.errorMsg || '',
+            lastFetchTime: response.result.lastFetchTime ? handleUTCTime(response.result.lastFetchTime, true) : '',
+        },
+    }))
 }
 
 export function getGitMaterialByCommitHash(materialId: string, commitHash: string, abortSignal?: AbortSignal) {
@@ -288,54 +406,31 @@ export function getTriggerHistory(pipelineId, params) {
     const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflows?offset=${params.offset}&size=${params.size}`
     return get(URL)
 }
-export function setImageTags(request, pipelineId: number, artifactId: number) {
-    return post(`${Routes.IMAGE_TAGGING}/${pipelineId}/${artifactId}`, request)
-}
 
-
-export function getArtifactForJobCi(pipelineId, workflowId): Promise<ArtifactCiJobResponse> {
+export function getArtifactForJobCi(pipelineId, workflowId): Promise<ResponseType<ArtifactsCiJob>> {
     const URL = `${Routes.CI_CONFIG_GET}/${pipelineId}/workflow/${workflowId}/ci-job/artifacts`
-    return get(URL)
+    return get<ArtifactsCiJob>(URL)
 }
 
-export function getNodeStatus({ appName, envName, version, namespace, group, kind, name }) {
-    if (!group) {
-        group = ''
-    }
-    return get(
-        `api/v1/applications/${appName}-${envName}/resource?version=${version}&namespace=${namespace}&group=${group}&kind=${kind}&resourceName=${name}`,
-    )
+export function getAppMetaInfo(appId: number): Promise<ResponseType<AppMetaInfo>> {
+    return get<AppMetaInfo>(`${Routes.APP_META_INFO}/${appId}`)
 }
 
-export function getAppMetaInfo(appId: number): Promise<AppMetaInfoResponse> {
-    return get(`${Routes.APP_META_INFO}/${appId}`)
+export function getHelmAppMetaInfo(appId: string): Promise<ResponseType<AppMetaInfo>> {
+    return get<AppMetaInfo>(`${Routes.HELM_APP_META_INFO}/${appId}`)
 }
 
-export function getHelmAppMetaInfo(appId: string): Promise<AppMetaInfoResponse> {
-    return get(`${Routes.HELM_APP_META_INFO}/${appId}`)
+export function getHelmAppOverviewInfo(installedAppId: string): Promise<ResponseType<AppMetaInfo>> {
+    return get<AppMetaInfo>(`${Routes.HELM_APP_OVERVIEW}?installedAppId=${installedAppId}`)
 }
 
-export function getHelmAppOverviewInfo(installedAppId: string): Promise<AppMetaInfoResponse> {
-    return get(`${Routes.HELM_APP_OVERVIEW}?installedAppId=${installedAppId}`)
-}
-
-export const editApp = (request: EditAppRequest): Promise<ResponseType> => {
-    return post(Routes.APP_EDIT, request)
-}
+export const editApp = (request: EditAppRequest): Promise<ResponseType> => post(Routes.APP_EDIT, request)
 
 export const getIngressServiceUrls = (params: {
     appId?: string
     envId: string
     installedAppId?: string
-}): Promise<ResponseType> => {
-    const urlParams = Object.entries(params).map(([key, value]) => {
-        if (!value) {
-            return
-        }
-        return `${key}=${value}`
-    })
-    return get(`${Routes.INGRESS_SERVICE_MANIFEST}?${urlParams.filter((s) => s).join('&')}`)
-}
+}): Promise<ResponseType> => get(getUrlWithSearchParams(Routes.INGRESS_SERVICE_MANIFEST, params))
 
 export function getManualSync(params: { appId: string; envId: string }): Promise<ResponseType> {
     return get(`${Routes.MANUAL_SYNC}/${params.appId}/${params.envId}`)

@@ -16,7 +16,7 @@
 
 import { MultiValue } from 'react-select'
 
-import { EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
+import { AppDetails, EMPTY_STATE_STATUS, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 
 import CloudwatchlIcon from '@Icons/ic-cloudwatch.png'
 import CoralogixlIcon from '@Icons/ic-coralogix.png'
@@ -39,9 +39,7 @@ import WebpageIcon from '@Icons/tools/ic-link-webpage.png'
 import { UserRoleType } from '@Pages/GlobalConfigurations/Authorization/constants'
 
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'
-import { AppDetails } from '../app/types'
 import { tempMultiSelectStyles } from '../ciConfig/CIConfig.utils'
-import { AppDetails as HelmAppDetails } from '../v2/appDetails/appDetails.type'
 import { AddLinkButton } from './AddLinkButton'
 import { ExternalLinksLearnMore, RoleBasedInfoNote } from './ExternalLinks.component'
 import { ExternalLink, ExternalLinkScopeType, OptionTypeWithIcon } from './ExternalLinks.type'
@@ -153,7 +151,7 @@ export const availableVariables = ['{appName}', '{appId}', '{envId}', '{namespac
 export const getParsedURL = (
     isAppLevel: boolean,
     url: string,
-    appDetails: AppDetails | HelmAppDetails,
+    appDetails: AppDetails,
     podName?: string,
     containerName?: string,
 ): string => {

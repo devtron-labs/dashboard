@@ -185,16 +185,16 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
     if (!workflows.length) {
         return (
             <div className="flex-grow-1">
-                {isJobView ? (
-                    <AppNotConfigured
-                        title={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title}
-                        subtitle={<JobNotConfiguredSubtitle />}
-                        buttonTitle={APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.buttonTitle}
-                        isJobView={isJobView}
-                    />
-                ) : (
-                    <AppNotConfigured />
-                )}
+                <AppNotConfigured
+                    {...(isJobView
+                        ? {
+                              title: APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.title,
+                              subtitle: <JobNotConfiguredSubtitle />,
+                              buttonTitle: APP_DETAILS.JOB_FULLY_NOT_CONFIGURED.buttonTitle,
+                              isJobView: true,
+                          }
+                        : {})}
+                />
             </div>
         )
     }
