@@ -899,7 +899,6 @@ export default function CIPipeline({
 
         return (
             <FloatingVariablesSuggestions
-                zIndex={21}
                 appId={appId}
                 envId={selectedEnv?.id ? String(selectedEnv.id) : null}
                 clusterId={selectedEnv?.clusterId}

@@ -1294,7 +1294,6 @@ export const ConfigMapSecretContainer = ({
                 )}
                 {window._env_.ENABLE_SCOPED_VARIABLES && (
                     <FloatingVariablesSuggestions
-                        zIndex={100}
                         appId={appId}
                         envId={envId}
                         clusterId={clusterId}

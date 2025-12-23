@@ -2033,7 +2033,6 @@ const DeploymentTemplate = ({
         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
                 <FloatingVariablesSuggestions
-                    zIndex={100}
                     appId={appId}
                     hideObjectVariables={false}
                     {...(envId && { envId })}
