@@ -1524,7 +1524,6 @@ export default function CDPipeline({
 
         return (
             <FloatingVariablesSuggestions
-                zIndex={21}
                 appId={appId}
                 envId={formData?.environmentId ? String(formData.environmentId) : null}
                 clusterId={formData?.clusterId}
