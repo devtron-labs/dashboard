@@ -73,6 +73,7 @@ import deleteOverrideEmptyStateImage from '@Images/no-artifact.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackManager.service'
 import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
+import { CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP } from '@Pages/Shared/ConfigMapSecret/constants'
 
 import BaseConfigurationNavigation from '../BaseConfigurationNavigation'
 import CompareConfigView from '../CompareConfigView'
@@ -2031,16 +2032,15 @@ const DeploymentTemplate = ({
     const renderValuesView = () => (
         <div className="flexbox-col flex-grow-1 dc__overflow-auto">
             {window._env_.ENABLE_SCOPED_VARIABLES && (
-                <div className="app-config-variable-widget-position">
-                    <FloatingVariablesSuggestions
-                        zIndex={100}
-                        appId={appId}
-                        hideObjectVariables={false}
-                        {...(envId && { envId })}
-                        {...(clusterId && { clusterId })}
-                        isTemplateView={isTemplateView}
-                    />
-                </div>
+                <FloatingVariablesSuggestions
+                    zIndex={100}
+                    appId={appId}
+                    hideObjectVariables={false}
+                    {...(envId && { envId })}
+                    {...(clusterId && { clusterId })}
+                    isTemplateView={isTemplateView}
+                    boundaryGap={CM_CS_DEPLOYMENT_CONFIG_FLOATING_WIDGET_BOUNDARY_GAP}
+                />
             )}
 
             {renderEditorComponent()}

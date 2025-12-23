@@ -69,6 +69,7 @@ import { LoadingState } from '../ciConfig/types'
 import { pipelineContext } from '../workflowEditor/workflowEditor'
 import { calculateLastStepDetailsLogic, checkUniqueness, validateTask } from '../cdPipeline/cdpipeline.util'
 import { PipelineContext, PipelineFormDataErrorType } from '../workflowEditor/types'
+import { BOUNDARY_GAP } from './Constants'
 import { EnvironmentWithSelectPickerType } from './types'
 
 const processPluginData: (params: ProcessPluginDataParamsType) => Promise<ProcessPluginDataReturnType> =
@@ -897,17 +898,14 @@ export default function CIPipeline({
         }
 
         return (
-            <div className="flexbox">
-                <div className="floating-scoped-variables-widget">
-                    <FloatingVariablesSuggestions
-                        zIndex={21}
-                        appId={appId}
-                        envId={selectedEnv?.id ? String(selectedEnv.id) : null}
-                        clusterId={selectedEnv?.clusterId}
-                        isTemplateView={isTemplateView}
-                    />
-                </div>
-            </div>
+            <FloatingVariablesSuggestions
+                zIndex={21}
+                appId={appId}
+                envId={selectedEnv?.id ? String(selectedEnv.id) : null}
+                clusterId={selectedEnv?.clusterId}
+                isTemplateView={isTemplateView}
+                boundaryGap={BOUNDARY_GAP}
+            />
         )
     }
 
