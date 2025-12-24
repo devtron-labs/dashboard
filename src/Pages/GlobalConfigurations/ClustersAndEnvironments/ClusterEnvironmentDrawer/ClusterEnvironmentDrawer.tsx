@@ -24,6 +24,7 @@ import {
     ComponentSizeType,
     CustomInput,
     Drawer,
+    getDetailedClusterList as getClusterDetails,
     getSelectPickerOptionByValue,
     Icon,
     ModalSidebarPanel,
@@ -47,12 +48,7 @@ import { getClusterListing } from '@Components/ResourceBrowser/ResourceBrowser.s
 import { getNamespaceFromLocalStorage } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.util'
 import { ADD_ENVIRONMENT_FORM_LOCAL_STORAGE_KEY } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/constants'
 
-import {
-    deleteEnvironment,
-    getClusterList as getClusterDetails,
-    saveEnvironment,
-    updateEnvironment,
-} from '../cluster.service'
+import { deleteEnvironment, saveEnvironment, updateEnvironment } from '../cluster.service'
 import { EnvironmentDeleteComponent } from '../EnvironmentDeleteComponent'
 import { clusterEnvironmentDrawerFormValidationSchema } from './schema'
 import { ClusterNamespacesDTO, EnvDrawerProps, EnvironmentFormType } from './types'
@@ -419,7 +415,7 @@ export const ClusterEnvironmentDrawer = ({
                             </div>
                         )}
 
-                        {EnvironmentLabels && !data.isVirtualCluster && (
+                        {EnvironmentLabels && data.clusterId && !data.isVirtualCluster && (
                             <div className="dc__border-top-n1 pt-16">
                                 <EnvironmentLabels
                                     tags={namespaceLabels.labels}

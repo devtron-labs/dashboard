@@ -37,6 +37,8 @@ import {
     TabGroup,
     URLS as CommonURLS,
     handleAnalyticsEvent,
+    BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import AppConfig from '../../../Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig'
 import Overview from '../../app/Overview/Overview'
@@ -152,8 +154,8 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                     ),
                     linked: false,
                 },
-                app: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Jobs</span>,
+                job: {
+                    component: <BreadcrumbText heading="Job" />,
                     linked: true,
                 },
             },
@@ -224,6 +226,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
                 isBreadcrumbs
                 showTabs
                 renderHeaderTabs={renderAppDetailsTabs}
+                docPath={DOCUMENTATION.AUTOMATION_AND_ENABLEMENT}
             />
         </div>
     )

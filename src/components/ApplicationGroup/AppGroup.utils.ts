@@ -361,14 +361,14 @@ export const getAppGroupDeploymentHistoryLink = (
 ) => {
     if (status?.toLowerCase() === DEPLOYMENT_STATUS.PROGRESSING) {
         //If deployment is in progress then it will redirect to app details page
-        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_DETAILS}/${appId}`
+        return `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${URLS.APP_DETAILS}/${appId}`
     }
     if (redirectToAppGroup) {
         // It will redirect to application group deployment history in case of same environment
-        return `${URLS.APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ? `?type=${type}` : ''}`
+        return `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ? `?type=${type}` : ''}`
         // It will redirect to application deployment history in case of other environments
     }
-    return `${URLS.APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
+    return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
 }
 
 export const parseAppListData = (
@@ -387,8 +387,8 @@ export const parseAppListData = (
             appId: app.appId,
             application: app.appName,
             appStatus: app.appStatus,
-            deploymentStatus: statusRecord[app.appId].status,
-            pipelineId: statusRecord[app.appId].pipelineId,
+            deploymentStatus: statusRecord[app.appId]?.status,
+            pipelineId: statusRecord[app.appId]?.pipelineId,
             lastDeployed: app.lastDeployedTime,
             lastDeployedBy: app.lastDeployedBy,
             lastDeployedImage: app.lastDeployedImage,
@@ -402,7 +402,7 @@ export const parseAppListData = (
 }
 
 export const getDeploymentHistoryLink = (appId: number, pipelineId: number, envId: string) =>
-    `${URLS.APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
+    `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
 
 export const getAppRedirectLink = (appId: number, envId: number) =>
-    `${URLS.APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`
+    `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`

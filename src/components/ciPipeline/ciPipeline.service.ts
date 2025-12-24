@@ -135,7 +135,7 @@ function getPipelineBaseMetaConfiguration(
     isTemplateView: AppConfigProps['isTemplateView'],
 ): Promise<any> {
     return getSourceConfig(appId, queryParams, isTemplateView).then((response) => {
-        const materials: MaterialType[] = response?.result?.material?.map((mat: MaterialType) => {
+        const materials: MaterialType[] = response?.result?.material?.map((mat) => {
             return {
                 id: 0,
                 gitMaterialId: mat.id,
@@ -147,6 +147,7 @@ function getPipelineBaseMetaConfiguration(
                 gitProviderId: mat.gitProviderId,
                 gitHostId: 0,
                 url: mat.url,
+                isRegex: undefined,
             }
         })
         const _baseCiPipelineSourceTypeOptions = CiPipelineSourceTypeBaseOptions.map((obj) => ({ ...obj }))

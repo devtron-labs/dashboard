@@ -379,7 +379,7 @@ export const SourceInfo = ({
                                     linkProps={{
                                         to: isAppView
                                             ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
-                                            : `${URLS.APPLICATION_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
+                                            : `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
                                     }}
                                 />
                             </div>
@@ -501,7 +501,7 @@ export const SourceInfo = ({
                                       <span className="mr-8 fs-12 cn-7">Chart:</span>
                                       <Link
                                           className="cb-5 fw-6"
-                                          to={`${URLS.CHARTS}/discover/chart/${appDetails.appStoreChartId}`}
+                                          to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${appDetails.appStoreChartId}`}
                                       >
                                           {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
                                           {appDetails.appStoreAppVersion})

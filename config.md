@@ -52,5 +52,5 @@
 | LOGIN_PAGE_IMAGE                                          |                                          | Login page image url                                                                                             |
 | FEATURE_FLUX_DEPLOYMENTS_ENABLE                           | false                                    | Enables flux cd deployment type for devtron apps and devtron charts                                              |
 | FEATURE_LINK_EXTERNAL_FLUX_ENABLE                         | false                                    | Enables external flux cd migration                                                                               |
-
+| COMMAND_BAR_REFETCH_INTERVAL                               | 3600                                     | Time interval in seconds to refetch command bar data - Applications List                                        |
 # DASHBOARD CONFIG SECRET

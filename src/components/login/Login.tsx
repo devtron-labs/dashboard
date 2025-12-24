@@ -80,7 +80,7 @@ const Login = () => {
         if (queryParam && queryParam.includes('login')) {
             queryParam =
                 window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
-                    ? URLS.APP
+                    ? URLS.APPLICATION_MANAGEMENT_APP
                     : CommonURL.NETWORK_STATUS_INTERFACE
             const url = `${location.pathname}?continue=${queryParam}`
             history.push(url)
@@ -96,6 +96,14 @@ const Login = () => {
     }, [])
 
     const onClickSSO = () => {
+        if (import.meta.env.VITE_ARGOCD_TOKEN) {
+            document.cookie = `argocd.token=${import.meta.env.VITE_ARGOCD_TOKEN}; path=/`
+
+            history.replace(URLS.APPLICATION_MANAGEMENT_APP)
+
+            return
+        }
+
         if (typeof Storage !== 'undefined') {
             localStorage.setItem('isSSOLogin', 'true')
         }

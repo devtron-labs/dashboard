@@ -28,16 +28,16 @@ import {
     PaginationEnum,
     Progressing,
     Table,
+    TARGET_K8S_VERSION_SEARCH_KEY,
     URL_FILTER_KEYS,
+    URLS,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import emptyCustomChart from '@Images/empty-noresult@2x.png'
 import { ReactComponent as NoOffendingPipeline } from '@Images/no-offending-pipeline.svg'
 import { importComponentFromFELibrary } from '@Components/common'
-import { URLS } from '@Config/routes'
 
-import { TARGET_K8S_VERSION_SEARCH_KEY } from '../Constants'
 import { ClusterDetailBaseParams } from '../Types'
 import ClusterUpgradeCompatibilityInfoTableCellComponent from './ClusterUpgradeCompatibilityInfoTableCellComponent'
 import ClusterUpgradeCompatibilityInfoTableWrapper from './ClusterUpgradeCompatibilityInfoTableWrapper'
@@ -124,7 +124,7 @@ const ClusterUpgradeCompatibilityInfo = ({
             <ErrorScreenManager
                 code={compatibilityError.code}
                 reload={refetchCompatibilityList}
-                redirectURL={URLS.RESOURCE_BROWSER}
+                redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
             />
         )
     }
