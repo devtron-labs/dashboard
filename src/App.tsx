@@ -122,7 +122,7 @@ const App = () => {
                 const loginPath = URLS.LOGIN_SSO
                 const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
                     ? location.search
-                    : `?continue=${location.pathname}`
+                    : `?continue=${location.pathname}${location.search}`
                 push(`${loginPath}${newSearch}`)
             } else {
                 setErrorPage(true)
