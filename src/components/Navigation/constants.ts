@@ -471,7 +471,7 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
         disabled: true,
         items: [
             {
-                title: 'Overview',
+                title: 'Notifications',
                 dataTestId: 'ai-recommendations-overview',
                 id: 'ai-recommendations-overview',
                 icon: 'ic-chart-line-up',
