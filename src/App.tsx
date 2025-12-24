@@ -23,6 +23,7 @@ import {
     BreadcrumbStore,
     DevtronProgressing,
     ErrorScreenManager,
+    getUrlWithSearchParams,
     setGlobalAPITimeout,
     showError,
     URLS as CommonURLS,
@@ -64,9 +65,11 @@ const App = () => {
         : ''
 
     const defaultRedirection = (): void => {
-        if (location.search && location.search.includes('?continue=')) {
-            const newLocation = location.search.replace('?continue=', '')
-            push(newLocation)
+        if (location.search) {
+            const continueUrl = new URLSearchParams(location.search).get('continue')
+            if (continueUrl) {
+                push(continueUrl)
+            }
         }
     }
 
@@ -120,10 +123,11 @@ const App = () => {
             // push to login without breaking search
             if (err?.code === API_STATUS_CODES.UNAUTHORIZED) {
                 const loginPath = URLS.LOGIN_SSO
-                const newSearch = location.pathname.includes(URLS.LOGIN_SSO)
-                    ? location.search
-                    : `?continue=${location.pathname}`
-                push(`${loginPath}${newSearch}`)
+                if (location.pathname.includes(URLS.LOGIN_SSO)) {
+                    push(`${loginPath}${location.search}`)
+                } else {
+                    push(getUrlWithSearchParams(loginPath, { continue: `${location.pathname}${location.search}` }))
+                }
             } else {
                 setErrorPage(true)
                 showError(err)
