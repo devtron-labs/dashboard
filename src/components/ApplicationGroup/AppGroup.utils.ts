@@ -388,7 +388,7 @@ export const parseAppListData = (
             application: app.appName,
             appStatus: app.appStatus,
             deploymentStatus: statusRecord[app.appId]?.status,
-            pipelineId: statusRecord[app.appId].pipelineId,
+            pipelineId: statusRecord[app.appId]?.pipelineId,
             lastDeployed: app.lastDeployedTime,
             lastDeployedBy: app.lastDeployedBy,
             lastDeployedImage: app.lastDeployedImage,

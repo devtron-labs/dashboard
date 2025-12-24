@@ -658,7 +658,7 @@ const GitInfoMaterial = ({
 
         const showHeader =
             currentSidebarTab === CIMaterialSidebarType.CODE_SOURCE &&
-            !(node?.type === WorkflowNodeType.WEBHOOK || node.isLinkedCI || node.isLinkedCD)
+            !(node?.type === WorkflowNodeType.WEBHOOK || node?.isLinkedCI || node?.isLinkedCD)
 
         if (materialError || !areCommitsPresent) {
             return (

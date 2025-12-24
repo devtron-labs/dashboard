@@ -264,7 +264,7 @@ const K8sResourceListTableCellComponent = ({
                                 data-name={resourceData.name}
                                 data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
                                 data-kind={selectedResource.gvk?.Kind}
-                                data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
+                                data-group={selectedResource.gvk?.Group || K8S_EMPTY_GROUP}
                                 onClick={onClickHandler}
                                 ref={nameButtonRef}
                             >

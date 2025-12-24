@@ -97,11 +97,11 @@ export default function CIConfigForm({
         const _currentMaterial = {
             ...material,
             name: material?.name || currentMaterial?.name,
-            url: material?.url || currentMaterial.url,
-            value: material?.id || currentMaterial.id,
-            label: material?.name || currentMaterial.name,
-            startIcon: getGitProviderIcon(material?.url || currentMaterial.url),
-            checkoutPath: material?.checkoutPath || currentMaterial.checkoutPath,
+            url: material?.url || currentMaterial?.url,
+            value: material?.id || currentMaterial?.id,
+            label: material?.name || currentMaterial?.name,
+            startIcon: getGitProviderIcon(material?.url || currentMaterial?.url),
+            checkoutPath: material?.checkoutPath || currentMaterial?.checkoutPath,
         }
         return _currentMaterial
     }
