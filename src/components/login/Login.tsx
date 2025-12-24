@@ -89,7 +89,7 @@ const Login = () => {
             queryParam = ''
         }
 
-        setContinueUrl(encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
+        setContinueUrl(encodeURIComponent(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
     }
 
     useEffect(() => {
