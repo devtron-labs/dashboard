@@ -22,6 +22,7 @@ import {
     useAsync,
     PageHeader,
     getInfrastructureManagementBreadcrumb,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
@@ -71,7 +72,12 @@ const ChartGroupList = () => {
     }
     return (
         <div className="chart-group-list-page bg__primary">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} renderActionButtons={renderCreateGroupButton} />
+            <PageHeader
+                isBreadcrumbs
+                breadCrumbs={renderBreadcrumbs}
+                renderActionButtons={renderCreateGroupButton}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
+            />
             <div className="chart-group-list-page__body">
                 {loading ? (
                     <Progressing pageLoader />

@@ -19,6 +19,7 @@ import { Link, useParams, useRouteMatch } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
     TabGroup,
@@ -44,7 +45,7 @@ const EAHeaderComponent = ({
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
                 ...breadCrumbConfig,
-                app: {
+                apps: {
                     component: (
                         <Link to={redirectURL} className="dc__devtron-breadcrumb__item">
                             <div className="cb-5">{title}</div>
@@ -126,6 +127,7 @@ const EAHeaderComponent = ({
                 showTabs
                 renderHeaderTabs={renderExternalHelmApp}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

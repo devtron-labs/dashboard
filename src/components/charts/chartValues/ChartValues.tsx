@@ -25,6 +25,7 @@ import {
     PageHeader,
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getChartValuesCategorizedListParsed, getChartVersionDetails, getChartVersionsMin } from '../charts.service'
 import ChartValuesView from '../../v2/values/chartValuesDiff/ChartValuesView'
@@ -169,5 +170,5 @@ const Header = ({ appStoreApplicationName, name }) => {
             </div>
         )
     }
-    return <PageHeader isBreadcrumbs breadCrumbs={renderChartValueBreadcrumbs} />
+    return <PageHeader isBreadcrumbs breadCrumbs={renderChartValueBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
 }

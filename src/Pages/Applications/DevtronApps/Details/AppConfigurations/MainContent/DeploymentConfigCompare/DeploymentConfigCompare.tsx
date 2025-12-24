@@ -398,7 +398,6 @@ export const DeploymentConfigCompare = ({
             updateSearchParams({
                 compareWith: value,
                 chartRefId: null,
-                manifestChartRefId: null,
                 compareWithManifestChartRefId: null,
                 compareWithIdentifierId: null,
                 compareWithPipelineId: null,

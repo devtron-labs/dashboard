@@ -17,6 +17,7 @@
 import React, { useState, useEffect } from 'react'
 import {
     ComponentSizeType,
+    DatePickerRangeController,
     DocLink,
     not,
     Progressing,
@@ -42,7 +43,7 @@ import {
     AppDetailsPathParams,
 } from './appDetails.type'
 import { GraphModal, GraphModalProps } from './GraphsModal'
-import { DatePickerType2 as DateRangePicker, InValidHostUrlWarningBlock } from '../../../common'
+import { InValidHostUrlWarningBlock } from '../../../common'
 import { ReactComponent as GraphIcon } from '../../../../assets/icons/ic-graph.svg'
 import { ReactComponent as Fullscreen } from '../../../../assets/icons/ic-fullscreen-2.svg'
 import { ReactComponent as OpenInNew } from '../../../../assets/icons/ic-open-in-new.svg'
@@ -393,7 +394,7 @@ export const AppMetrics: React.FC<{
                                 <span className="dc__tertiary-tab">Per Pod</span>
                             </label>
                         </div>
-                        <DateRangePicker
+                        <DatePickerRangeController
                             calendar={calendar}
                             calendarInputs={calendarInputs}
                             focusedInput={focusedInput}

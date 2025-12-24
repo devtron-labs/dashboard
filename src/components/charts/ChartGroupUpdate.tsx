@@ -27,6 +27,7 @@ import {
     ToastVariantType,
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ChartCard from './ChartCard'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
@@ -297,6 +298,7 @@ export default function ChartGroupUpdate({}) {
                     isBreadcrumbs
                     breadCrumbs={renderBreadcrumbs}
                     renderActionButtons={renderChartGroupEditActionButton}
+                    docPath={DOCUMENTATION.INFRA_MANAGEMENT}
                 />
                 <Prompt
                     when={isLeavingPageNotAllowed.current}

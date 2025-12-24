@@ -20,7 +20,6 @@ import {
     Progressing,
     ErrorScreenManager,
     ErrorScreenNotAuthorized,
-    FeatureTitleWithInfo,
     ToastVariantType,
     ToastManager,
     PageHeader,
@@ -28,6 +27,7 @@ import {
     useBreadcrumb,
     getApplicationManagementBreadcrumb,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { HEADER_TEXT, ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
@@ -54,7 +54,6 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             },
         }
         this.saveProject = this.saveProject.bind(this)
-        this.handleChange = this.handleChange.bind(this)
         this.discard = this.discard.bind(this)
         this.addProject = this.addProject.bind(this)
     }
@@ -87,19 +86,29 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
     }
 
-    handleChange(event, index: number, key: 'name'): void {
+    handleChange = (event, index: number, key: 'name'): void => {
         const { projects, isValid, errorMessage } = { ...this.state }
-        if (event.target.value.includes(' ')) {
+        const value = event.target.value
+        if (!value) {
             isValid[key] = false
-            errorMessage[key] = `Do not use 'spaces' in name`
-        } else if (event.target.value && event.target.value.length > 2) {
-            isValid[key] = true
-            errorMessage[key] = ''
+            errorMessage[key] = REQUIRED_FIELD_MSG
         } else {
-            isValid[key] = false
-            errorMessage[key] = 'Atleast 3 characters required.'
+            if (value.includes(' ')) {
+                isValid[key] = false
+                errorMessage[key] = `Do not use 'spaces' in name`
+            } else if (value.length > 25) {
+                isValid[key] = false
+                errorMessage[key] = 'Maximum 25 characters required'
+            } else if (!/^[a-z0-9]+([-a-z0-9]*[a-z0-9])?$/i.test(value)) {
+                isValid[key] = false
+                errorMessage[key] = `Use only lowercase alphanumeric characters, '-' (Cannot start/end with '-')`
+            } else {
+                isValid[key] = true
+                errorMessage[key] = ''
+            }
         }
-        projects[index][key] = event.target.value
+
+        projects[index][key] = value
         this.setState({ projects, isValid })
     }
 
@@ -224,6 +233,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
                 tippyMessage: HEADER_TEXT.PROJECTS.description,
                 tippyHeader: 'Projects',
             }}
+            docPath={DOCUMENTATION.APP_MANAGEMENT}
         />
     )
 

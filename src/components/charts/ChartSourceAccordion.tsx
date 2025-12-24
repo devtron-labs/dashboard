@@ -49,7 +49,9 @@ export const ChartSourceAccordion = ({ header, options, value, onChange, dataTes
 
             {collapsed && (
                 <div>
-                    <AddChartSource text="Add chart source" />
+                    <div className="flex left">
+                        <AddChartSource text="Add chart source" />
+                    </div>
                     {options.map((option) => (
                         <div
                             className="dc__position-rel flex left cursor dc__hover-n50"

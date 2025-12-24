@@ -15,15 +15,36 @@
  */
 
 import { Switch, Route, Redirect, NavLink, useRouteMatch } from 'react-router-dom'
+
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
+    getSecurityCenterBreadcrumb,
+    PageHeader,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
+
 import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 import { SecurityPolicyCluster } from './SecurityPolicyCluster'
 import { SecurityPolicyApp } from './SecurityPolicyApp'
 import { SecurityPolicyEnvironment } from './SecurityPolicyEnvironment'
 import { VulnerabilityExposure } from './AddCVEPolicy'
-import { SecurityPageHeader } from './SecurityPageHeader'
 
 export const SecurityPoliciesTab = () => {
     const { path } = useRouteMatch()
+
+    const { breadcrumbs } = useBreadcrumb({
+        alias: {
+            ...getSecurityCenterBreadcrumb(),
+            policies: {
+                component: <BreadcrumbText heading="Security Policies" isActive />,
+            },
+        },
+    })
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+
     const renderRouter = () => {
         return (
             <Switch>
@@ -39,7 +60,8 @@ export const SecurityPoliciesTab = () => {
 
     return (
         <div className="security-scan-container bg__primary flexbox-col min-h-100">
-            <SecurityPageHeader />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.SECURITY_CENTER} />
+
             <div className="security-policy flex-grow-1">
                 <div className="dc__secondary-nav">
                     <NavLink
