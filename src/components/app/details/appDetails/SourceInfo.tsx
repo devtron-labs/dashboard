@@ -312,7 +312,7 @@ export const SourceInfo = ({
                                                             content: (
                                                                 <div className="flexbox-col">
                                                                     <span className="fw-6">
-                                                                        Cannot{' '}
+                                                                        Cannot&nbsp;
                                                                         {isHibernated ? 'unhibernate' : 'hibernate'}
                                                                     </span>
                                                                     <span className="fw-4 dc__word-break">
@@ -447,14 +447,12 @@ export const SourceInfo = ({
                           )}
                           {!appMigratedFromExternalSourceAndIsNotTriggered && !loadingResourceTree && (
                               <>
-                                  {
-                                      <IssuesCard
-                                          cardLoading={cardLoading}
-                                          toggleIssuesModal={toggleIssuesModal}
-                                          setErrorsList={setErrorsList}
-                                          setDetailed={setDetailed}
-                                      />
-                                  }
+                                  <IssuesCard
+                                      cardLoading={cardLoading}
+                                      toggleIssuesModal={toggleIssuesModal}
+                                      setErrorsList={setErrorsList}
+                                      setDetailed={setDetailed}
+                                  />
                                   {isIsolatedEnv && (
                                       <HelmAppConfigApplyStatusCard
                                           cardLoading={cardLoading}

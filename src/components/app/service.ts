@@ -267,8 +267,7 @@ const processCIMaterialResponse = (response): CIMaterialType[] => {
             (material, index) =>
                 ({
                     ...material,
-                    // eslint-disable-next-line eqeqeq
-                    isSelected: index == 0,
+                    isSelected: index === 0,
                     gitURL: material.gitMaterialUrl || '',
                     lastFetchTime: material.lastFetchTime ? handleUTCTime(material.lastFetchTime, true) : '',
                     isMaterialLoading: false,
