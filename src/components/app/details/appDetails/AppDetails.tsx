@@ -532,7 +532,7 @@ const Details: React.FC<DetailsType> = ({
     )
 }
 
-const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
+const AppDetail = ({ detailsType, filteredResourceIds, resourceList, setSelectedResourceList }: AppDetailProps) => {
     const params = useParams<{ appId: string; envId: string }>()
     const { replace } = useHistory()
     const { path } = useRouteMatch()
@@ -620,7 +620,16 @@ const AppDetail = ({ detailsType, filteredResourceIds }: AppDetailProps) => {
         if (isAppView) {
             setEnvironmentId(Number(params.envId))
         }
-    }, [params.appId, params.envId])
+
+        // Add option in selected filters temporarilty without adding to local storage, if not already present
+        if (resourceList?.length) {
+            const secondaryResourceId = isAppView ? Number(params.envId) : Number(params.appId)
+            const optionToAdd = resourceList.find((resource) => resource.value === String(secondaryResourceId))
+            if (optionToAdd && filteredEntityMap && !filteredEntityMap.get(secondaryResourceId)) {
+                setSelectedResourceList((prev) => [...prev, optionToAdd])
+            }
+        }
+    }, [params.appId, params.envId, resourceList])
 
     const renderSelectEnvState = () => (
         <>

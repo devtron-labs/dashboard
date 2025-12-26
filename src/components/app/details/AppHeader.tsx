@@ -15,7 +15,6 @@
  */
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import ReactGA from 'react-ga4'
 import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -28,6 +27,8 @@ import {
     URLS as CommonURLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
+
+import { AppFilterTabs } from '@Components/ApplicationGroup/Constants'
 
 import { URLS } from '../../../config'
 import { FilterParentType } from '../../ApplicationGroup/AppGroup.types'
@@ -50,8 +51,6 @@ export const AppHeader = ({
     appListOptions,
     selectedAppList,
     setSelectedAppList,
-    selectedFilterTab,
-    setSelectedFilterTab,
     groupFilterOptions,
     selectedGroupFilter,
     setSelectedGroupFilter,
@@ -67,6 +66,7 @@ export const AppHeader = ({
     const { setCurrentAppName } = useAppContext()
 
     const [isMenuOpen, setMenuOpen] = useState(false)
+    const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
 
     const contextValue = useMemo(
         () => ({
@@ -123,10 +123,9 @@ export const AppHeader = ({
             const tab = currentPathname.current.replace(match.url, '').split('/')[1]
             const newUrl = generatePath(match.path, { appId: value })
             history.push(`${newUrl}/${tab}`)
-            ReactGA.event({
+            handleAnalyticsEvent({
                 category: 'App Selector',
                 action: 'DA_SWITCH_SEARCHED_APP_CLICKED',
-                label: tab,
             })
         },
         [location.pathname],
