@@ -34,7 +34,6 @@ import {
     ToastVariantType,
     URLS as CommonURL,
     useAsync,
-    useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -54,7 +53,6 @@ const getTermsAndConditions = importComponentFromFELibrary('getTermsAndCondition
 const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
 
-    const { searchParams } = useSearchString()
     const location = useLocation()
     const history = useHistory()
 
@@ -63,7 +61,7 @@ const Login = () => {
     const loginList = ssoListResponse?.result ?? []
 
     const setLoginNavigationURL = () => {
-        let queryParam = searchParams.continue
+        let queryParam = new URLSearchParams(location.search).get('continue') || ''
 
         // 1. TOKEN_COOKIE_NAME= 'argocd.token', is the only token unique to a user generated as Cookie when they log in,
         // If a user is still at login page for the first time and getCookie(TOKEN_COOKIE_NAME) becomes false.
@@ -87,11 +85,8 @@ const Login = () => {
             const url = `${location.pathname}?continue=${queryParam}`
             history.push(url)
         }
-        if (!queryParam) {
-            queryParam = ''
-        }
 
-        setContinueUrl(encodeURI(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
+        setContinueUrl(encodeURIComponent(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
     }
 
     useEffect(() => {

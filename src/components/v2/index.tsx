@@ -27,8 +27,6 @@ import {
     showError,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import notFound from '../../assets/img/page-not-found.png'
-
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
@@ -260,7 +258,7 @@ const RouterComponent = () => {
                 <div className="h-100">
                     <ChartHeaderComponent errorResponseCode={errorResponseCode} />
                     <GenericEmptyState
-                        image={notFound}
+                        imgName="img-no-result"
                         classname="w-100 dc__text-center"
                         title={ERROR_EMPTY_SCREEN.APP_NOT_AVAILABLE}
                         subTitle={ERROR_EMPTY_SCREEN.DEPLOYMENT_NOT_EXIST}

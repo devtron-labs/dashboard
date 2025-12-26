@@ -68,7 +68,7 @@ import { MATERIAL_TYPE } from '../triggerView/types'
 import { AppDetailProps, DetailsType, ErrorItem, HibernationModalTypes } from './appDetails.type'
 import AppDetailsCDModal from './AppDetailsCDModal'
 import { AppMetrics } from './AppMetrics'
-import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS } from './constants'
+import { AG_APP_DETAILS_GA_EVENTS, DA_APP_DETAILS_GA_EVENTS, RESOURCE_TREE_UNAVAILABLE_ERROR_CODE } from './constants'
 import HibernateModal from './HibernateModal'
 import IssuesListingModal from './IssuesListingModal'
 import { SourceInfo } from './SourceInfo'
@@ -318,11 +318,11 @@ const Details: React.FC<DetailsType> = ({
                 appName={appDetails.appName}
                 deploymentAppType={appDetails.deploymentAppType}
                 cdModal={{
-                    cdPipelineId: appDetails?.cdPipelineId,
-                    ciPipelineId: appDetails?.ciPipelineId,
-                    parentEnvironmentName: appDetails?.parentEnvironmentName,
+                    cdPipelineId: appDetails.cdPipelineId,
+                    ciPipelineId: appDetails.ciPipelineId,
+                    parentEnvironmentName: appDetails.parentEnvironmentName,
                     deploymentUserActionState: userActionState,
-                    triggerType: appDetails?.triggerType,
+                    triggerType: appDetails.triggerType,
                 }}
                 handleSuccess={refetchAppDetails}
                 materialType={CDModalMaterialType}
@@ -343,7 +343,7 @@ const Details: React.FC<DetailsType> = ({
             )
         }
 
-        if (String(resourceTreeError?.errors?.[0]?.code) === '7000')
+        if (String(resourceTreeError?.errors?.[0]?.code) === RESOURCE_TREE_UNAVAILABLE_ERROR_CODE)
             return (
                 <>
                     <div className="mt-16 mb-9">
