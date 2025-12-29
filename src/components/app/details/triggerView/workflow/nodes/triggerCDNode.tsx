@@ -61,11 +61,8 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
         }
 
         const baseURL = `${this.props.match.url.split('/').slice(0, -1).join('/')}`
-        // If deployment is failed or it is PRE/POST CD node then it will redirect to history page
-        if (
-            this.props.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED ||
-            this.props.type !== DeploymentNodeType.CD
-        ) {
+        // If deployment is failed then it will redirect to history page
+        if (this.props.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED) {
             return `${baseURL}/${URLS.CD_DETAILS}/${this.props.environmentId}/${this.props.id}?type=${DeploymentNodeType.CD}`
         }
 
