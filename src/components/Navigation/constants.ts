@@ -256,13 +256,6 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 href: URLS.AUTOMATION_AND_ENABLEMENT_JOB,
             },
             {
-                title: 'Runbook Automation',
-                dataTestId: 'runbook-automation',
-                id: 'automation-and-enablement-runbook-automation',
-                icon: 'ic-book-open',
-                href: COMMON_URLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
-            },
-            {
                 title: 'Alerting',
                 dataTestId: 'alerting',
                 id: 'automation-and-enablement-alerting',

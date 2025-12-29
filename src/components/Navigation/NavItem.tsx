@@ -10,11 +10,6 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
     // PROPS
     const { id, title, dataTestId, href, icon, hasSubMenu, subItems, disabled } = navItem
 
-    // Debug logging
-    if (!href && !hasSubMenu) {
-        console.error('NavItem missing href:', { id, title, hasSubMenu, href })
-    }
-
     // HOOKS
     const { pathname } = useLocation()
 
@@ -62,6 +57,13 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
         )
     }
 
+    const renderContent = () => (
+        <>
+            <Icon name={icon} color="white" />
+            <span className="fs-13 lh-20 text__sidenav">{title}</span>
+        </>
+    )
+
     // Handle disabled items or items without href
     if (disabled || !href) {
         return (
@@ -70,8 +72,7 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
                 className="nav-item flex left dc__gap-8 px-8 py-6 br-4 dc__disabled"
                 aria-disabled
             >
-                <Icon name={icon} color="white" />
-                <span className="fs-13 lh-20 text__sidenav">{title}</span>
+                {renderContent()}
             </div>
         )
     }
@@ -84,8 +85,7 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
             activeClassName="is-selected fw-6"
             aria-disabled={disabled}
         >
-            <Icon name={icon} color="white" />
-            <span className="fs-13 lh-20 text__sidenav">{title}</span>
+            {renderContent()}
         </NavLink>
     )
 }

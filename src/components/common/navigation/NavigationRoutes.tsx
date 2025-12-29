@@ -711,7 +711,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
                                                 CommonURLS.DATA_PROTECTION,
-                                                CommonURLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
                                             ]}
                                         >
                                             <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>
