@@ -55,6 +55,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                 this.props.appId,
                 this.props.environmentId,
                 this.props.id,
+                this.props.match.params.envId === this.props.environmentId.toString(),
                 this.props.status,
                 DeploymentNodeType.CD,
             )

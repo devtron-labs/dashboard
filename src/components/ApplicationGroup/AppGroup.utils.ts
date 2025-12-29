@@ -356,9 +356,14 @@ export const getAppGroupDeploymentHistoryLink = (
     appId: number,
     envId: string,
     pipelineId: string,
+    redirectToAppGroup: boolean = true,
     status: string = '',
     type?: string | null,
 ) => {
+    if (!redirectToAppGroup) {
+        // It will redirect to application deployment history in case of other environments
+        return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
+    }
     // If deployment is failed or it is PRE/POST CD node then it will redirect to history page
     if (status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED || type !== DeploymentNodeType.CD) {
         return `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ? `?type=${type}` : ''}`
