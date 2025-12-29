@@ -43,25 +43,29 @@ import { CreateClusterParams, CreateClusterProps, CreateClusterTypeEnum } from '
 const CreateClusterForm = importComponentFromFELibrary(
     'CreateClusterForm',
     () => (
-        <EnterpriseTrialDialog
-            featureTitle="Create Kubernetes Cluster"
-            featureDescription="Use Devtron to easily create Kubernetes clusters on popular cloud providers. Simplify cluster
+        <div className="p-20 bg__secondary">
+            <EnterpriseTrialDialog
+                featureTitle="Create Kubernetes Cluster"
+                featureDescription="Use Devtron to easily create Kubernetes clusters on popular cloud providers. Simplify cluster
                 provisioning and management with a guided, user-friendly interface."
-        />
+            />
+        </div>
     ),
     'function',
 )
 const VirtualClusterForm = importComponentFromFELibrary(
     'VirtualClusterForm',
-    <div className="flexbox flex-grow-1">
-        <VirtualClusterSidebar />
-        <div className="p-20 bg__secondary">
-            <EnterpriseTrialDialog
-                featureTitle="Isolated Cluster"
-                featureDescription="An isolated cluster in Devtron is an air-gapped Kubernetes cluster with restricted network access."
-            />
+    () => (
+        <div className="flexbox">
+            <VirtualClusterSidebar />
+            <div className="p-20 bg__secondary">
+                <EnterpriseTrialDialog
+                    featureTitle="Isolated Cluster"
+                    featureDescription="An isolated cluster in Devtron is an air-gapped Kubernetes cluster with restricted network access."
+                />
+            </div>
         </div>
-    </div>,
+    ),
     'function',
 )
 
@@ -99,7 +103,7 @@ const CreateCluster = ({ handleReloadClusterList, handleRedirectOnModalClose }: 
                 )
             case CreateClusterTypeEnum.CREATE_CLUSTER:
                 return (
-                    <div className="flexbox dc__overflow-auto create-cluster-form">
+                    <div className="flexbox dc__overflow-auto create-cluster-form flex-grow-1">
                         <ModalSidebarPanel
                             heading="Create Kubernetes Cluster"
                             icon={<Icon name="ic-kubernetes" size={48} color={null} />}

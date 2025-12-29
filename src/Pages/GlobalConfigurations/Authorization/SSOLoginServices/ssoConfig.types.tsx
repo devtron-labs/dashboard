@@ -16,6 +16,8 @@
 
 import { RouteComponentProps } from 'react-router-dom'
 
+import { SwitchItemValues } from '@Config/constants'
+
 import { GlobalConfiguration } from '../../../../components/globalConfigurations/types'
 import { SSOProvider } from './constants'
 
@@ -44,7 +46,7 @@ export interface SSOLoginState {
     saveLoading: boolean
     sso: string // lowercase
     lastActiveSSO: undefined | SSOLogin
-    configMap: string
+    configMap: SwitchItemValues
     showToggling: boolean
     ssoConfig: SSOConfigType
     isError: {

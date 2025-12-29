@@ -1,10 +1,15 @@
 import { Dispatch, SetStateAction } from 'react'
 
-import { ClusterType, IconBaseColorType, IconsProps, UserPreferencesType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ClusterType,
+    IconBaseColorType,
+    IconsProps,
+    NavigationItemType,
+    UserPreferencesType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 import { HelmApp } from '@Components/app/list-new/AppListType'
 import { Chart } from '@Components/charts/charts.types'
-import { NavigationItemType } from '@Components/Navigation/types'
 import { AppListMinDTO } from '@Services/service.types'
 
 import { RECENT_NAVIGATION_ITEM_ID_PREFIX } from './constants'

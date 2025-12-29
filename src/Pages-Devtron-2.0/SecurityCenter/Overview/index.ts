@@ -1,1 +1,1 @@
-export * from './Overview'
+export { default as SecurityCenterOverview } from './SecurityCenterOverview'

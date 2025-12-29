@@ -20,6 +20,8 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom'
 import {
     APIResponseHandler,
     BreadCrumb,
+    ComponentSizeType,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
@@ -167,7 +169,7 @@ export const ChartDetails = () => {
 
     return (
         <div className="flex-grow-1 flexbox-col bg__secondary dc__overflow-hidden">
-            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+            <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
 
             <APIResponseHandler
                 isLoading={isFetchingChartVersions}
@@ -192,6 +194,7 @@ export const ChartDetails = () => {
                                         segments={CHART_DETAILS_SEGMENTS}
                                         value={tab}
                                         onChange={handleSegmentChange}
+                                        size={ComponentSizeType.xs}
                                     />
                                 </div>
                                 {renderSegments()}

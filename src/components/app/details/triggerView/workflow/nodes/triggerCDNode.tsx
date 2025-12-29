@@ -18,6 +18,7 @@ import { Component } from 'react'
 import Tippy from '@tippyjs/react'
 import { Link } from 'react-router-dom'
 import {
+    DEPLOYMENT_STATUS,
     DeploymentAppTypes,
     DeploymentNodeType,
     getDeploymentStatusFromStatus,
@@ -56,11 +57,17 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
                 this.props.id,
                 this.props.match.params.envId === this.props.environmentId.toString(),
                 this.props.status,
+                DeploymentNodeType.CD,
             )
         }
-        return `${this.props.match.url.split('/').slice(0, -1).join('/')}/${URLS.APP_DETAILS}/${
-            this.props.environmentId
-        }`
+
+        const baseURL = `${this.props.match.url.split('/').slice(0, -1).join('/')}`
+
+        if (this.props.status?.toLowerCase() !== DEPLOYMENT_STATUS.PROGRESSING) {
+            return `${baseURL}/${URLS.CD_DETAILS}/${this.props.environmentId}/${this.props.id}?type=${DeploymentNodeType.CD}`
+        }
+
+        return `${baseURL}/${URLS.APP_DETAILS}/${this.props.environmentId}`
     }
 
     componentDidUpdate(prevProps: Readonly<TriggerCDNodeProps>): void {

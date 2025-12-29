@@ -24,6 +24,7 @@ import {
     ModuleNameMap,
     ModuleStatus,
     motion,
+    NavigationGroupType,
     SearchBar,
     URLS,
     useQuery,
@@ -34,11 +35,11 @@ import { getModuleInfo } from '@Components/v2/devtronStackManager/DevtronStackMa
 import { MODULE_STATUS_POLLING_INTERVAL, MODULE_STATUS_RETRY_COUNT, ViewType } from '@Config/constants'
 import { CommandBar } from '@Pages/Shared/CommandBar'
 
-import { NAVIGATION_LIST } from './constants'
+import { getNavigationList } from './constants'
 import { NavGroup } from './NavGroup'
 import { NavigationLogo, NavigationLogoExpanded } from './NavigationLogo'
 import { NavItem } from './NavItem'
-import { NavGroupProps, NavigationGroupType, NavigationProps } from './types'
+import { NavGroupProps, NavigationProps } from './types'
 import { doesNavigationItemMatchPath, filterNavigationItems, findActiveNavigationItemOfNavGroup } from './utils'
 
 import './styles.scss'
@@ -136,6 +137,8 @@ export const Navigation = ({
     }, [isSecurityClairLoading, isSecurityClairSuccess])
 
     // COMPUTED VALUES
+    const NAVIGATION_LIST = useMemo(() => getNavigationList(serverMode), [serverMode])
+
     const selectedNavGroup = useMemo(
         () => NAVIGATION_LIST.find(({ items }) => items.some((item) => doesNavigationItemMatchPath(item, pathname))),
         [pathname],
@@ -291,17 +294,9 @@ export const Navigation = ({
                                         />
                                         <div className="flex-grow-1 dc__overflow-auto">
                                             {navItems.length ? (
-                                                navItems
-                                                    .filter(({ forceHideEnvKey, hideNav }) =>
-                                                        forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav,
-                                                    )
-                                                    .map((item) => (
-                                                        <NavItem
-                                                            key={item.title}
-                                                            {...item}
-                                                            hasSearchText={!!searchText}
-                                                        />
-                                                    ))
+                                                navItems.map((item) => (
+                                                    <NavItem key={item.title} {...item} hasSearchText={!!searchText} />
+                                                ))
                                             ) : (
                                                 <span className="fs-13 lh-20 text__sidenav">No matching results</span>
                                             )}

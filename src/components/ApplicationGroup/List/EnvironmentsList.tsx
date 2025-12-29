@@ -20,6 +20,7 @@ import { useLocation } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     ErrorScreenManager,
     FilterChips,
     FilterSelectPicker,
@@ -231,6 +232,7 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
                     tippyMessage: APP_GROUP_TIPPY_CONTENT,
                     tippyHeader: 'Application Groups',
                 }}
+                docPath={DOCUMENTATION.APP_MANAGEMENT}
             />
             {renderBody()}
         </div>

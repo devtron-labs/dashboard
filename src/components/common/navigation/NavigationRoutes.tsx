@@ -72,6 +72,8 @@ import EditClusterDrawerContent from '@Pages/GlobalConfigurations/ClustersAndEnv
 import { OffendingPipelineModalAppView } from '@Pages/GlobalConfigurations/PluginPolicy/OffendingPipelineModal'
 import { Configurations } from '@Pages/Releases/Detail'
 import { ApplicationManagementConfigurationsRouter } from '@PagesDevtron2.0/ApplicationManagement'
+import { ApplicationManagementOverview } from '@PagesDevtron2.0/ApplicationManagement/Overview'
+import { InfraOverview } from '@PagesDevtron2.0/InfrastructureManagement'
 
 import { SERVER_MODE, URLS, ViewType } from '../../../config'
 import {
@@ -114,7 +116,6 @@ const AppGroupRoute = lazy(() => import('../../ApplicationGroup/AppGroupRoute'))
 const Jobs = lazy(() => import('../../Jobs/Jobs'))
 
 const ResourceWatcherRouter = importComponentFromFELibrary('ResourceWatcherRouter')
-const AuditLog = importComponentFromFELibrary('AuditLog')
 const SoftwareDistributionHub = importComponentFromFELibrary('SoftwareDistributionHub', null, 'function')
 const NetworkStatusInterface = importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
@@ -136,6 +137,8 @@ const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
     importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
+const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
+const AIChatProvider = importComponentFromFELibrary('AIChatProvider', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
@@ -411,6 +414,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled:
                     result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
+                featureAskDevtronExpert:
+                    result.featureAskDevtronExpert ?? ENVIRONMENT_DATA_FALLBACK.featureAskDevtronExpert,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -440,6 +445,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
+                featureAskDevtronExpert: environmentDataResponse.featureAskDevtronExpert,
             })
 
             setServerMode(serverModeResponse)
@@ -563,54 +569,67 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     </Route>
                                     <Route
                                         key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}
-                                        path={[
-                                            CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST,
-                                            CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP,
-                                        ]}
+                                        path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}
                                     >
                                         <InfraAppsRouter />
+                                    </Route>
+                                    <Route
+                                        key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW}
+                                        path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW}
+                                    >
+                                        <InfraOverview />
                                     </Route>
                                     <Route
                                         path={CommonURLS.GLOBAL_CONFIG}
                                         render={(props) => <GlobalConfig {...props} isSuperAdmin={isSuperAdmin} />}
                                     />
                                     {!window._env_.K8S_CLIENT && [
-                                        <Route
-                                            key={CommonURLS.APPLICATION_MANAGEMENT_APP}
-                                            path={[
-                                                CommonURLS.APPLICATION_MANAGEMENT_APP_LIST,
-                                                URLS.APPLICATION_MANAGEMENT_APP,
-                                            ]}
-                                            render={() => <AppRouter />}
-                                        />,
-                                        <Route
-                                            key={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
-                                            path={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
-                                        >
-                                            <AppGroupRoute isSuperAdmin={isSuperAdmin} />
-                                        </Route>,
+                                        ...(serverMode === SERVER_MODE.FULL
+                                            ? [
+                                                  <Route
+                                                      key={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}
+                                                      path={CommonURLS.APPLICATION_MANAGEMENT_OVERVIEW}
+                                                      exact
+                                                  >
+                                                      <ApplicationManagementOverview />
+                                                  </Route>,
+                                                  <Route
+                                                      key={CommonURLS.APPLICATION_MANAGEMENT_APP}
+                                                      path={CommonURLS.APPLICATION_MANAGEMENT_APP}
+                                                      render={() => <AppRouter />}
+                                                  />,
+                                                  <Route
+                                                      key={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
+                                                      path={URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}
+                                                  >
+                                                      <AppGroupRoute isSuperAdmin={isSuperAdmin} />
+                                                  </Route>,
+                                                  <Route
+                                                      key={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
+                                                      path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
+                                                      render={() => <BulkEdit />}
+                                                  />,
+                                                  <Route path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
+                                                      {(props) => (
+                                                          <ProjectList {...props} isSuperAdmin={isSuperAdmin} />
+                                                      )}
+                                                  </Route>,
+                                                  <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
+                                                      <ApplicationManagementConfigurationsRouter />
+                                                  </Route>,
+                                                  <Route
+                                                      key={CommonURLS.SECURITY_CENTER}
+                                                      path={CommonURLS.SECURITY_CENTER}
+                                                      render={() => <Security />}
+                                                  />,
+                                              ]
+                                            : []),
                                         <Route
                                             key={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             path={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}
                                             render={() => <Charts isSuperAdmin={isSuperAdmin} />}
                                         />,
-                                        <Route
-                                            key={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
-                                            path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
-                                            render={(props) => <BulkEdit {...props} serverMode={serverMode} />}
-                                        />,
-                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS} path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
-                                            {(props) => <ProjectList {...props} isSuperAdmin={isSuperAdmin} />}
-                                        </Route>,
-                                        <Route key={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS} path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
-                                            <ApplicationManagementConfigurationsRouter />
-                                        </Route>,
-                                        <Route
-                                            key={CommonURLS.SECURITY_CENTER}
-                                            path={CommonURLS.SECURITY_CENTER}
-                                            render={() => <Security />}
-                                        />,
-                                        ...(!window._env_.HIDE_RESOURCE_WATCHER && ResourceWatcherRouter
+                                        ...(window._env_.FEATURE_RESOURCE_WATCHER_ENABLE && ResourceWatcherRouter
                                             ? [
                                                   <Route
                                                       key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER}
@@ -620,17 +639,9 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                   </Route>,
                                               ]
                                             : []),
-                                        ...(!window._env_.HIDE_AUDIT_LOGS && AuditLog
-                                            ? [
-                                                  <Route
-                                                      key={CommonURLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS}
-                                                      path={CommonURLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS}
-                                                  >
-                                                      <AuditLog />
-                                                  </Route>,
-                                              ]
-                                            : []),
-                                        ...(!window._env_.HIDE_RELEASES && SoftwareDistributionHub
+                                        ...(serverMode === SERVER_MODE.FULL &&
+                                        window._env_.FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE &&
+                                        SoftwareDistributionHub
                                             ? [
                                                   <Route
                                                       key={CommonURLS.SOFTWARE_RELEASE_MANAGEMENT}
@@ -683,7 +694,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                         </Route>,
                                     ]}
                                     {/* TODO: Check why its coming as empty in case route is in other library */}
-                                    {!window._env_.K8S_CLIENT && (
+                                    {!window._env_.K8S_CLIENT && serverMode === SERVER_MODE.FULL && (
                                         <Route
                                             path={URLS.AUTOMATION_AND_ENABLEMENT_JOB}
                                             key={URLS.AUTOMATION_AND_ENABLEMENT_JOB}
@@ -699,9 +710,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                             path={[
                                                 CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.AI_RECOMMENDATIONS,
-                                                CommonURLS.INFRASTRUCTURE_MANAGEMENT,
                                                 CommonURLS.DATA_PROTECTION,
+                                                CommonURLS.AUTOMATION_ENABLEMENT_RUNBOOKS,
                                             ]}
                                         >
                                             <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>
@@ -725,6 +735,39 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             )
         )
     }
+
+    const renderMainBody = () => (
+        <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+            {!isOnboardingPage && (
+                <Navigation
+                    showStackManager={showStackManager}
+                    isAirgapped={isAirgapped}
+                    serverMode={serverMode}
+                    moduleInInstallingState={moduleInInstallingState}
+                    installedModuleMap={installedModuleMap}
+                    pageState={pageState}
+                />
+            )}
+            <>
+                <motion.div
+                    className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                    ref={navRouteRef}
+                >
+                    {renderMainContent()}
+                </motion.div>
+
+                <SidePanel asideWidth={asideWidth} />
+            </>
+            {showThemeSwitcherDialog && (
+                <SwitchThemeDialog
+                    initialThemePreference={userPreferences?.themePreference}
+                    handleClose={handleCloseSwitchThemeDialog}
+                    handleUpdateUserThemePreference={handleUpdateUserThemePreference}
+                />
+            )}
+            {renderAboutDevtronDialog()}
+        </motion.main>
+    )
 
     return (
         <MainContextProvider
@@ -763,6 +806,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                featureAskDevtronExpert: environmentDataState.featureAskDevtronExpert,
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
@@ -776,39 +820,12 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
                 tempAppWindowConfig,
                 setTempAppWindowConfig,
+                AIRecommendations,
             }}
         >
             <ConfirmationModalProvider>
                 <BaseConfirmationModal />
-                <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
-                    {!isOnboardingPage && (
-                        <Navigation
-                            showStackManager={showStackManager}
-                            isAirgapped={isAirgapped}
-                            serverMode={serverMode}
-                            moduleInInstallingState={moduleInInstallingState}
-                            installedModuleMap={installedModuleMap}
-                            pageState={pageState}
-                        />
-                    )}
-                    <>
-                        <motion.div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
-                            ref={navRouteRef}
-                        >
-                            {renderMainContent()}
-                        </motion.div>
-                        <SidePanel asideWidth={asideWidth} />
-                    </>
-                    {showThemeSwitcherDialog && (
-                        <SwitchThemeDialog
-                            initialThemePreference={userPreferences?.themePreference}
-                            handleClose={handleCloseSwitchThemeDialog}
-                            handleUpdateUserThemePreference={handleUpdateUserThemePreference}
-                        />
-                    )}
-                    {renderAboutDevtronDialog()}
-                </motion.main>
+                {AIChatProvider ? <AIChatProvider>{renderMainBody()}</AIChatProvider> : renderMainBody()}
             </ConfirmationModalProvider>
         </MainContextProvider>
     )

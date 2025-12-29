@@ -20,6 +20,7 @@ import { generatePath, useHistory, useLocation, useParams, useRouteMatch } from 
 
 import {
     BreadCrumb,
+    DOCUMENTATION,
     getApplicationManagementBreadcrumb,
     handleAnalyticsEvent,
     noop,
@@ -137,13 +138,13 @@ export const AppHeader = ({
         {
             alias: {
                 ...getApplicationManagementBreadcrumb(),
+                'devtron-app': {
+                    component: <span className="cb-5 fs-16 dc__capitalize">Devtron Apps</span>,
+                    linked: true,
+                },
                 ':appId(\\d+)': {
                     component: <AppSelector onChange={handleAppChange} appId={appId} appName={appName} />,
                     linked: false,
-                },
-                app: {
-                    component: <span className="cb-5 fs-16 dc__capitalize">devtron apps</span>,
-                    linked: true,
                 },
             },
         },
@@ -256,5 +257,13 @@ export const AppHeader = ({
         </>
     )
 
-    return <PageHeader breadCrumbs={renderBreadcrumbs} isBreadcrumbs showTabs renderHeaderTabs={renderAppDetailsTabs} />
+    return (
+        <PageHeader
+            breadCrumbs={renderBreadcrumbs}
+            isBreadcrumbs
+            showTabs
+            renderHeaderTabs={renderAppDetailsTabs}
+            docPath={DOCUMENTATION.APP_MANAGEMENT}
+        />
+    )
 }

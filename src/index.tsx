@@ -151,8 +151,8 @@ if (!window || !window._env_) {
         FEATURE_USER_DEFINED_GITOPS_REPO_ENABLE: true,
         FEATURE_INTERNET_CONNECTIVITY_ENABLE: true,
         SERVICE_WORKER_TIMEOUT: '3',
-        HIDE_RELEASES: false,
-        HIDE_RESOURCE_WATCHER: false,
+        FEATURE_SOFTWARE_DISTRIBUTION_HUB_ENABLE: true,
+        FEATURE_RESOURCE_WATCHER_ENABLE: true,
         ORGANIZATION_NAME: '',
         FEATURE_EXTERNAL_FLUX_CD_ENABLE: true,
         FEATURE_SCOPED_VARIABLE_ENVIRONMENT_LIST_ENABLE: true,
@@ -175,7 +175,6 @@ if (!window || !window._env_) {
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
         FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
-        FEATURE_ASK_DEVTRON_EXPERT: false,
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
         FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,
@@ -183,7 +182,7 @@ if (!window || !window._env_) {
         FEATURE_LINK_EXTERNAL_FLUX_ENABLE: false,
         FEATURE_CANARY_ROLLOUT_PROGRESS_ENABLE: true,
         COMMAND_BAR_REFETCH_INTERVAL: 3600,
-        HIDE_AUDIT_LOGS: false,
+        FEATURE_STORAGE_ENABLE: true,
     }
 }
 

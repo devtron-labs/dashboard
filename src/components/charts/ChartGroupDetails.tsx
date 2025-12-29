@@ -33,6 +33,7 @@ import {
     ComponentSizeType,
     getInfrastructureManagementBreadcrumb,
     BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
@@ -238,6 +239,7 @@ export default function ChartGroupDetails() {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 renderActionButtons={renderChartGroupActionButton}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             <div className="chart-group-details-page__body flexbox-col dc__overflow-auto">
                 {state.loading && <Progressing pageLoader />}

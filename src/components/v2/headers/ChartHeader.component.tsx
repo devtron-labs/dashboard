@@ -19,6 +19,7 @@ import { Link, useRouteMatch } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
     TabGroup,
@@ -39,7 +40,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
-                app: {
+                apps: {
                     component: (
                     <Link to={URLS.HELM_APP_LIST} className="dc__devtron-breadcrumb__item">
                         <div className="cb-5">Helm Apps</div>
@@ -137,6 +138,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

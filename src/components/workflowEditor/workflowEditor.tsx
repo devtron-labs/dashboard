@@ -44,6 +44,9 @@ import {
     ButtonStyleType,
     handleAnalyticsEvent,
     GenericEmptyState,
+    SearchBar,
+    URL_FILTER_KEYS,
+    GenericFilterEmptyState,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { PipelineContext, WorkflowEditProps, WorkflowEditState } from './types'
 import { URLS, AppConfigStatus, ViewType } from '../../config'
@@ -770,7 +773,41 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    renderNewBuildPipelineButton() {
+    getSearchKey = (): string => {
+        return new URLSearchParams(this.props.location.search).get(URL_FILTER_KEYS.SEARCH_KEY) || ''
+    }
+
+    getWorkflowNameToMatch = (): string => {
+        return new URLSearchParams(this.props.location.search).get('workflowName') || ''
+    }
+
+    openCreateModal = () => {
+        this.props.history.push(
+            `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`,
+        )
+    }
+
+    handleUpdateSearch = (updatedSearchKey: string) => {
+        const updatedParams = new URLSearchParams({
+            [URL_FILTER_KEYS.SEARCH_KEY]: updatedSearchKey,
+        })
+        this.props.history.push({
+            search: updatedParams.toString(),
+        })
+    }
+
+    renderNewWorkflowButton = () => {
+        if (this.props.isJobView) {
+            return (
+                <Button
+                    dataTestId="job-pipeline-button"
+                    onClick={this.openCreateModal}
+                    text="Job pipeline"
+                    startIcon={<Icon name="ic-add" color={null} />}
+                    size={ComponentSizeType.medium}
+                />
+            )
+        }
         return (
             <Button
                 dataTestId="new-workflow-button"
@@ -787,28 +824,8 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         )
     }
 
-    openCreateModal = () => {
-        this.props.history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/edit/workflow/empty-workflow`)
-    }
-
-    renderNewJobPipelineButton = () => {
-        return (
-            <Button
-                dataTestId="job-pipeline-button"
-                onClick={this.openCreateModal}
-                text="Job pipeline"
-                startIcon={<Icon name="ic-add" color={null} />}
-                size={ComponentSizeType.medium}
-            />
-        )
-    }
-
     renderWorkflowControlButton = (): JSX.Element => {
-        if (this.props.isJobView) {
-            return this.renderNewJobPipelineButton()
-        }
-
-        if (this.state.selectedNode) {
+        if (!this.props.isJobView && this.state.selectedNode) {
             return (
                 <div className="flex dc__border-radius-4-imp bcv-5 ev-5">
                     <div className="flex pt-6 pb-6 pl-12 pr-12 dc__gap-8 h-100 fcn-0">
@@ -828,7 +845,19 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             )
         }
 
-        return this.renderNewBuildPipelineButton()
+        return (
+            <div className="flex dc__gap-8">
+                <SearchBar
+                    inputProps={{
+                        placeholder: 'Search Workflow',
+                    }}
+                    initialSearchText={this.getWorkflowNameToMatch() || this.getSearchKey()}
+                    handleEnter={this.handleUpdateSearch}
+                    keyboardShortcut="/"
+                />
+                {this.renderNewWorkflowButton()}
+            </div>
+        )
     }
 
     renderEmptyState() {
@@ -852,9 +881,13 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                 }
                 image={this.props.isJobView ? nojobs : emptyWorkflow}
                 isButtonAvailable
-                renderButton={this.renderWorkflowControlButton}
+                renderButton={this.renderNewWorkflowButton}
             />
         )
+    }
+
+    renderEmptyFilterState = () => {
+        return <GenericFilterEmptyState handleClearFilters={() => this.handleUpdateSearch('')} />
     }
 
     renderHostErrorMessage() {
@@ -874,14 +907,24 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
         this.setState({ workflows: _wf })
     }
 
+    filterWorkflow = (wf) => {
+        // If wfNameToMatch match full name, else match substring
+        const wfNameToMatch = this.getWorkflowNameToMatch()
+        return wfNameToMatch ? wf.name === wfNameToMatch : wf.name.includes(this.getSearchKey())
+    }
+
     renderWorkflows() {
         const handleModalClose = () => {
             this.props.history.push(this.props.match.url)
         }
 
-        return (
+        const filteredWorkflows = this.state.workflows.filter(this.filterWorkflow)
+
+        return filteredWorkflows.length === 0 ? (
+            this.renderEmptyFilterState()
+        ) : (
             <>
-                {this.state.workflows.map((wf) => {
+                {filteredWorkflows.map((wf) => {
                     return (
                         <Workflow
                             id={wf.id}
@@ -917,6 +960,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                             workflowPositionState={this.state.workflowPositionState}
                             handleDisplayLoader={this.handleDisplayLoader}
                             isTemplateView={this.props.isTemplateView}
+                            searchText={this.getWorkflowNameToMatch() || this.getSearchKey() || ''}
                         />
                     )
                 })}

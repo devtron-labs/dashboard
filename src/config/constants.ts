@@ -21,6 +21,7 @@ import {
     EnvResourceType,
     RegistryCredentialsType,
     DOCUMENTATION,
+    SegmentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -258,10 +259,30 @@ export const Routes = {
     USER: 'user',
     ENV_CONFIG: 'config/autocomplete',
     SECURITY_SCAN_CVE_EXPOSURE: 'security/scan/cve/exposure',
+    SECURITY_SCAN_VULNERABILITIES: 'security/scan/vulnerabilities',
     CONFIG_MANIFEST: 'config/manifest',
     USER_RESOURCE_OPTIONS: 'user/resource/options',
     HEALTH: 'health',
     ENV_DATA_SOURCE_NAME: 'env/data-source-name',
+    VULNERABILITY_SUMMARY: 'security/scan/summary',
+
+    // Infrastructure management overview
+    INFRA_OVERVIEW: 'overview/infra',
+    INFRA_OVERVIEW_REFRESH: 'overview/infra/refresh',
+    OVERVIEW_NODE_LIST: 'overview/infra/node-list',
+    // Application management overview
+    APPS_OVERVIEW: 'overview/apps-overview',
+    WORKFLOW_OVERVIEW: 'overview/workflow-overview',
+    DORA_METRICS: 'overview/dora-metrics',
+    BUILD_DEPLOYMENT_ACTIVITY: 'overview/build-deployment-activity',
+    BUILD_DEPLOYMENT_ACTIVITY_DETAILED: 'overview/build-deployment-activity/detailed',
+    PIPELINE_INSIGHTS: 'overview/pipeline-insights',
+    // Security Overview
+    SECURITY_OVERVIEW: 'overview/security/security-glance',
+    SECURITY_SEVERITY_INSIGHTS: 'overview/security/severity-insights',
+    SECURITY_VULNERABILITY_TREND: 'overview/security/vulnerability-trend',
+    SECURITY_DEPLOYMENT_STATUS: 'overview/security/deployment-security-status',
+    SECURITY_BLOCKED_DEPLOYMENTS_TREND: 'overview/security/blocked-deployments-trend',
 }
 
 export enum ViewType {
@@ -795,10 +816,15 @@ export const REQUIRED_FIELDS_MISSING = 'Some required fields are missing'
  */
 export const SELECT_ALL_VALUE = '*'
 
-export const SwitchItemValues = {
-    Sample: 'sample',
-    Configuration: 'configuration',
+export enum SwitchItemValues {
+    Sample = 'sample',
+    Configuration = 'configuration',
 }
+
+export const SWITCH_ITEM_SEGMENTS: SegmentType<SwitchItemValues>[] = [
+    { label: 'Sample', value: SwitchItemValues.Sample },
+    { label: 'Configuration', value: SwitchItemValues.Configuration },
+]
 
 export enum DEFAULT_CONTAINER_NAME {
     DEBUGGER = 'debugger',

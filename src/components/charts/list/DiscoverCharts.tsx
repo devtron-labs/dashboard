@@ -25,6 +25,7 @@ import {
     DetectBottom,
     DevtronProgressing,
     DocLink,
+    DOCUMENTATION,
     FeatureTitleWithInfo,
     getInfrastructureManagementBreadcrumb,
     handleAnalyticsEvent,
@@ -300,9 +301,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
     }
 
     function handleViewAllCharts(): void {
-        history.push(
-            `${match.url.split(URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE)[0]}${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_CHART_REPO}`,
-        )
+        history.push(URLS.GLOBAL_CONFIG_CHART_REPO)
     }
 
     function renderCreateGroupButton() {
@@ -390,7 +389,7 @@ const DiscoverChartList = ({ isSuperAdmin }: { isSuperAdmin: boolean }) => {
         <>
             <div className={`discover-charts bg__primary ${state.charts.length > 0 ? 'summary-show' : ''}`}>
                 <ConditionalWrap condition={state.charts.length > 0} wrap={(children) => <div>{children}</div>}>
-                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} />
+                    <PageHeader isBreadcrumbs breadCrumbs={renderBreadcrumbs} docPath={DOCUMENTATION.INFRA_MANAGEMENT} />
                 </ConditionalWrap>
 
                 <Prompt

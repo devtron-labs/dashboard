@@ -38,6 +38,7 @@ import {
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
     AppEnvironment,
+    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { useAppContext } from '@Components/common'
@@ -47,6 +48,7 @@ import './cdDetail.scss'
 import { getModuleConfigured } from '../appDetails/appDetails.service'
 import { EMPTY_STATE_STATUS } from '../../../../config/constantMessaging'
 import {
+    getUpdatedTriggerId,
     processVirtualEnvironmentDeploymentData,
     renderCIListHeader,
     renderDeploymentApprovalInfo,
@@ -117,19 +119,15 @@ export default function CDDetails({ filteredEnvIds }: { filteredEnvIds: string }
             setHasMore(true)
             setHasMoreLoading(true)
         }
-        let _triggerId = deploymentHistoryResult.result?.cdWorkflows?.[0]?.id
+
         const queryString = new URLSearchParams(location.search)
         const queryParam = queryString.get('type')
-        if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD) {
-            const deploymentStageType =
-                queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
-            const requiredResult = deploymentHistoryResult.result?.cdWorkflows?.filter((obj) => {
-                return obj.stage === deploymentStageType
-            })
-            if (requiredResult?.[0]) {
-                _triggerId = requiredResult[0].id
-            }
-        }
+        const _triggerId = getUpdatedTriggerId(
+            deploymentHistoryResult.result?.cdWorkflows?.[0]?.id,
+            queryParam,
+            deploymentHistoryResult.result?.cdWorkflows,
+        )
+
         const newTriggerHistory = (deploymentHistoryResult.result?.cdWorkflows || []).reduce((agg, curr) => {
             agg.set(curr.id, curr)
             return agg
