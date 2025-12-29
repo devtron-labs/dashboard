@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+import { MultiValue } from 'react-select'
+
 import {
     AppDetails,
     AppEnvironment,
@@ -198,6 +201,8 @@ type AppEnvDetailsType = 'app' | 'app-group'
 export interface AppDetailProps {
     detailsType: AppEnvDetailsType
     filteredResourceIds: string
+    resourceList: OptionType<string, string>[]
+    setSelectedResourceList: Dispatch<SetStateAction<MultiValue<OptionType>>>
 }
 
 export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppView?: boolean }
