@@ -63,7 +63,7 @@ export class TriggerCDNode extends Component<TriggerCDNodeProps, TriggerCDNodeSt
 
         const baseURL = `${this.props.match.url.split('/').slice(0, -1).join('/')}`
 
-        if (this.props.status?.toLowerCase() !== DEPLOYMENT_STATUS.PROGRESSING) {
+        if (this.props.status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED) {
             return `${baseURL}/${URLS.CD_DETAILS}/${this.props.environmentId}/${this.props.id}?type=${DeploymentNodeType.CD}`
         }
 
