@@ -25,6 +25,9 @@ import {
     DetectBottom,
     ToastManager,
     ToastVariantType,
+    getInfrastructureManagementBreadcrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import ChartCard from './ChartCard'
 import { ChartGroupEntry, Chart, ChartListType } from './charts.types'
@@ -81,6 +84,12 @@ export default function ChartGroupUpdate({}) {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                'chart-store': null,
+                discover: {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
                 group: 'Chart Groups',
                 ':groupId': {
                     component: state.name,
@@ -179,7 +188,7 @@ export default function ChartGroupUpdate({}) {
     }
 
     function redirectToGroupDetail(): void {
-        const url = `${URLS.CHARTS}/discover/group/${groupId}`
+        const url = `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}`
         history.push(url)
     }
 
@@ -256,13 +265,7 @@ export default function ChartGroupUpdate({}) {
         await applyFilterOnCharts(location.search, false)
     }
 
-    const renderBreadcrumbs = () => {
-        return (
-            <div className="flex left">
-                <BreadCrumb breadcrumbs={breadcrumbs.slice(1)} />
-            </div>
-        )
-    }
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const renderChartGroupEditActionButton = () => {
         return (
@@ -295,6 +298,7 @@ export default function ChartGroupUpdate({}) {
                     isBreadcrumbs
                     breadCrumbs={renderBreadcrumbs}
                     renderActionButtons={renderChartGroupEditActionButton}
+                    docPath={DOCUMENTATION.INFRA_MANAGEMENT}
                 />
                 <Prompt
                     when={isLeavingPageNotAllowed.current}

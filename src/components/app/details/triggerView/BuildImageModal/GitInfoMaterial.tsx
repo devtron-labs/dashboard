@@ -17,6 +17,7 @@ import {
     handleUTCTime,
     Icon,
     MaterialHistory,
+    OptionType,
     SearchBar,
     showError,
     SourceTypeMap,
@@ -354,8 +355,8 @@ const GitInfoMaterial = ({
         }
     }
 
-    const handleSidebarTabChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCurrentSidebarTab(e.target.value as CIMaterialSidebarType)
+    const handleSidebarTabChange = (selectedSidebarTab: OptionType<CIMaterialSidebarType>) => {
+        setCurrentSidebarTab(selectedSidebarTab.value as CIMaterialSidebarType)
     }
 
     const toggleIncludeExcludeCommits = async () => {
@@ -620,7 +621,7 @@ const GitInfoMaterial = ({
                         imgSrc={linkedCiImg}
                         title={`${selectedApp.name} ${BULK_CI_MESSAGING.emptyLinkedCI.title}`}
                         subTitle={BULK_CI_MESSAGING.emptyLinkedCI.subTitle}
-                        link={`${URLS.APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
+                        link={`${URLS.APPLICATION_MANAGEMENT_APP}/${selectedApp.node.parentAppId}/${URLS.APP_CI_DETAILS}/${selectedApp.node.parentCiPipeline}`}
                         linkText={BULK_CI_MESSAGING.emptyLinkedCI.linkText}
                         rootClassName="bg__tertiary"
                     />
@@ -657,7 +658,7 @@ const GitInfoMaterial = ({
 
         const showHeader =
             currentSidebarTab === CIMaterialSidebarType.CODE_SOURCE &&
-            !(node.type === WorkflowNodeType.WEBHOOK || node.isLinkedCI || node.isLinkedCD)
+            !(node?.type === WorkflowNodeType.WEBHOOK || node?.isLinkedCI || node?.isLinkedCD)
 
         if (materialError || !areCommitsPresent) {
             return (
@@ -771,7 +772,7 @@ const GitInfoMaterial = ({
                     title={node?.title}
                     onCloseBranchRegexModal={handleCloseBranchRegexModal}
                     appId={appId}
-                    workflowId={workflowId}
+                    ciPipelineId={node ? +node.id : null}
                     // This will ensure ciTriggerDetails are also updated
                     handleReload={handleReloadWithWorkflows}
                 />

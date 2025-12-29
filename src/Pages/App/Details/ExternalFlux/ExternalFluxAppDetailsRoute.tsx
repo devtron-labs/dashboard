@@ -17,7 +17,9 @@
 import { lazy, Suspense } from 'react'
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
 
-import { AppListConstants, Progressing, URLS } from '@devtron-labs/devtron-fe-common-lib'
+import { AppListConstants, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+
+import { URLS } from '@Config/routes'
 
 import EAHeaderComponent from '../../../../components/v2/headers/EAHeader.component'
 
@@ -30,8 +32,13 @@ const ExternalFluxAppDetailsRoute = () => {
         <>
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.FLUX_APPS}
-                redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.FLUX_APPS}`}
+                redirectURL={URLS.FLUX_APP_LIST}
                 showAppDetailsOnly
+                breadCrumbConfig={{
+                    ':namespace': null,
+                    'external-flux': null,
+                    ':templateType': null,
+                }}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

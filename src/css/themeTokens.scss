@@ -1,0 +1,10 @@
+@mixin theme-light-tokens {
+    // Background Image
+    --devtron-bg: url('../assets/img/devtron-bg.webp');
+}
+
+
+@mixin theme-dark-tokens {
+    // Background Image
+    --devtron-bg: url('../assets/img/devtron-bg-dark.webp');
+}

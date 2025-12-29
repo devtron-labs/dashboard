@@ -37,6 +37,7 @@ import {
     ButtonComponentType,
     Icon,
     InfoBlock,
+    AuthenticationType,
     GitProviderIcon,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -56,7 +57,6 @@ import {
     DC_MATERIAL_VIEW_ISSINGLE_CONFIRMATION_MESSAGE,
 } from '../../config/constantMessaging'
 import { ReactComponent as InfoOutlined } from '../../assets/icons/ic-info-outlined.svg'
-import { AuthenticationType } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 import {
     INCLUDE_EXCLUDE_COMMIT_TIPPY,
     INCLUDE_EXCLUDE_COMMIT_INFO,
@@ -687,7 +687,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     component: ButtonComponentType.link,
                                     variant: ButtonVariantType.borderLess,
                                     linkProps: {
-                                        to: URLS.GLOBAL_CONFIG_GIT,
+                                        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
                                     },
                                     text: 'Add Git Account',
                                     startIcon: <Icon name="ic-add" color={null} />,
@@ -757,7 +757,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     <div className="mt-8 ml-35">
                                         <div className="p-8 dc__top-radius-4 border__primary dc__no-bottom-border">
                                             <p className="fw-4 fs-13 mb-0-imp">
-                                                Enter file or folder paths to be included or excluded.
+                                                Use following pattern to include/exclude specific files/folder in this repo.
                                                 <a
                                                     data-testid={`${
                                                         !this.props.isLearnHowClicked

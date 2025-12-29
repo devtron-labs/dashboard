@@ -263,8 +263,8 @@ const K8sResourceListTableCellComponent = ({
                                 className="dc__unset-button-styles dc__align-left dc__truncate"
                                 data-name={resourceData.name}
                                 data-namespace={resourceData.namespace || ALL_NAMESPACE_OPTION.value}
-                                data-kind={selectedResource.gvk.Kind}
-                                data-group={selectedResource.gvk.Group || K8S_EMPTY_GROUP}
+                                data-kind={selectedResource.gvk?.Kind}
+                                data-group={selectedResource.gvk?.Group || K8S_EMPTY_GROUP}
                                 onClick={onClickHandler}
                                 ref={nameButtonRef}
                             >
@@ -293,7 +293,7 @@ const K8sResourceListTableCellComponent = ({
                 </div>
             ) : (
                 <div
-                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start'} ${
+                    className={`flexbox ${!isEventListing ? 'dc__align-items-center' : 'dc__align-start py-10'} ${
                         columnName === 'status' || columnName === 'type'
                             ? `app-summary__status-name dc__no-text-transform ${getStatusClass(String(resourceData[columnName]), isNodeListing)}`
                             : ''

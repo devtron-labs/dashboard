@@ -20,7 +20,6 @@ import {
     ServerErrors,
     GenericEmptyState,
     AppStatus,
-    AppListConstants,
     Host,
     useMainContext,
     Pagination,
@@ -31,6 +30,8 @@ import {
     showError,
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
+    InfrastructureManagementAppListType,
+    URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -80,8 +81,8 @@ const GenericAppList = ({
     const [sseConnection, setSseConnection] = useState<EventSource>(null)
     const { isSuperAdmin } = useMainContext()
 
-    const isArgoCDAppList = appType === AppListConstants.AppType.ARGO_APPS
-    const isFluxCDAppList = appType === AppListConstants.AppType.FLUX_APPS
+    const isArgoCDAppList = appType === InfrastructureManagementAppListType.ARGO_CD
+    const isFluxCDAppList = appType === InfrastructureManagementAppListType.FLUX_CD
 
     const { searchKey, sortBy, sortOrder, templateType, namespace, cluster, offset, pageSize } = filterConfig
 
@@ -230,9 +231,9 @@ const GenericAppList = ({
 
     const buildAppDetailUrl = (app: GenericAppType): string => {
         if (isArgoCDAppList) {
-            return `${URLS.APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
+            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_ARGO_APP}/${app.clusterId}/${app.appName}/${app.namespace}`
         }
-        return `${URLS.APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
+        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
     }
 
     function renderAppListHeader() {

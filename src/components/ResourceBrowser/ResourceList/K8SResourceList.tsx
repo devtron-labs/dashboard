@@ -269,7 +269,7 @@ export const K8SResourceList = ({
                     <ErrorScreenManager
                         code={(resourceListError as ServerErrors).code}
                         reload={reloadResourceList}
-                        redirectURL={URLS.RESOURCE_BROWSER}
+                        redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
                     />
                 )}
             </div>

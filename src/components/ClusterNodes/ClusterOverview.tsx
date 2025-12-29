@@ -31,11 +31,11 @@ import {
     showError,
     StatusComponent,
     StatusType,
+    TARGET_K8S_VERSION_SEARCH_KEY,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { getUpgradeCompatibilityTippyConfig } from '@Components/ResourceBrowser/ResourceList/utils'
 import { ClusterDetailBaseParams } from '@Components/ResourceBrowser/Types'
 import { getAvailableCharts } from '@Services/service'
 
@@ -43,12 +43,7 @@ import { ReactComponent as Error } from '../../assets/icons/ic-error-exclamation
 import { MAX_LENGTH_350 } from '../../config/constantMessaging'
 import { importComponentFromFELibrary } from '../common'
 import GenericDescription from '../common/Description/GenericDescription'
-import {
-    K8S_EMPTY_GROUP,
-    SIDEBAR_KEYS,
-    TARGET_K8S_VERSION_SEARCH_KEY,
-    UPGRADE_CLUSTER_CONSTANTS,
-} from '../ResourceBrowser/Constants'
+import { K8S_EMPTY_GROUP } from '../ResourceBrowser/Constants'
 import {
     getClusterOverviewClusterCapacity,
     getClusterOverviewDetails,
@@ -115,7 +110,7 @@ const LoadingMetricCard = () => (
     </div>
 )
 
-function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
+function ClusterOverview({ selectedCluster }: ClusterOverviewProps) {
     const { clusterId } = useParams<ClusterDetailBaseParams>()
 
     const { isSuperAdmin } = useMainContext()
@@ -339,24 +334,11 @@ function ClusterOverview({ selectedCluster, addTab }: ClusterOverviewProps) {
     )
 
     const handleOpenScanClusterTab = (selectedVersion: string) => {
-        const upgradeClusterLowerCaseKind = SIDEBAR_KEYS.upgradeClusterGVK.Kind.toLowerCase()
-
         const URL = getUrlWithSearchParams(generatePath(RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE, { clusterId }), {
             [TARGET_K8S_VERSION_SEARCH_KEY]: selectedVersion,
         })
 
-        addTab({
-            idPrefix: UPGRADE_CLUSTER_CONSTANTS.ID_PREFIX,
-            kind: upgradeClusterLowerCaseKind,
-            name: UPGRADE_CLUSTER_CONSTANTS.NAME,
-            url: URL,
-            dynamicTitle: `${UPGRADE_CLUSTER_CONSTANTS.DYNAMIC_TITLE} to v${selectedVersion}`,
-            tippyConfig: getUpgradeCompatibilityTippyConfig({
-                targetK8sVersion: selectedVersion,
-            }),
-        })
-            .then(() => history.push(URL))
-            .catch(noop)
+        history.push(URL)
     }
 
     const creationPrefix = clusterConfig ? 'Created' : 'Added'

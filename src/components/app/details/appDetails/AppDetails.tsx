@@ -39,6 +39,7 @@ import {
     stringComparatorBySortOrder,
     ToastManager,
     ToastVariantType,
+    URLS,
     useAsync,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -106,8 +107,7 @@ export const AppNotConfigured = ({
     const handleEditApp = () => {
         getAppConfigStatus(+appId, isJobView, false)
             .then(() => {
-                const url = `/${isJobView ? 'job' : 'app'}/${appId}/edit`
-
+                const url = `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`
                 push(url)
             })
             .catch(noop)

@@ -85,7 +85,7 @@ const getManageTrafficMenuButtonConfig = importComponentFromFELibrary(
     'function',
 )
 
-const ENV_OVERVIEW_PATH = `${URLS.APPLICATION_GROUP}/:envId/${URLS.APP_OVERVIEW}`
+const ENV_OVERVIEW_PATH = `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/:envId/${URLS.APP_OVERVIEW}`
 
 const EnvironmentOverview = ({
     appGroupListData,

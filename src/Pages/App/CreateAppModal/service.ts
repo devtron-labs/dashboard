@@ -37,12 +37,11 @@ export const fetchDevtronCloneList = async ({
             const res = await getJobs({
                 teams: [],
                 appStatuses: [],
-                appNameSearch: '',
+                appNameSearch: searchKey,
                 offset,
                 size: 20,
                 sortBy: 'appNameSort',
                 sortOrder: 'ASC',
-                searchKey,
             })
 
             const jobContainers = res.result?.jobContainers ?? []

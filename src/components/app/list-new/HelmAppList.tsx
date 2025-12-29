@@ -31,6 +31,7 @@ import {
     useStickyEvent,
     getClassNameForStickyHeaderWithShadow,
     DocLink,
+    URLS as CommonURLS,
     ComponentSizeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
@@ -316,9 +317,9 @@ const HelmAppList = ({
 
     function _buildAppDetailUrl(app: HelmApp) {
         if (app.isExternal) {
-            return `${URLS.APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
+            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
         }
-        return `${URLS.APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
     }
 
     function _removeExternalAppFetchError(e) {
