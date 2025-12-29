@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Suspense } from 'react'
+import { Suspense } from 'react'
 import { Route, Switch, Redirect, useRouteMatch, useParams } from 'react-router-dom'
 import { Progressing, AppListConstants } from '@devtron-labs/devtron-fe-common-lib'
 import EAHeaderComponent from '../v2/headers/EAHeader.component'
@@ -30,7 +30,10 @@ export default function ExternalApps() {
         <div className="flexbox-col h-100">
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.HELM_APPS}
-                redirectURL={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
+                redirectURL={URLS.HELM_APP_LIST}
+                breadCrumbConfig={{
+                    ea: null,
+                }}
             />
             <Suspense fallback={<Progressing pageLoader />}>
                 <Switch>

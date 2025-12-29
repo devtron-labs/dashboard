@@ -19,6 +19,8 @@ import { Prompt, Route, Switch, useHistory, useLocation, useParams, useRouteMatc
 import Tippy from '@tippyjs/react'
 
 import {
+    ActionMenu,
+    ActionMenuProps,
     Button,
     ButtonStyleType,
     ButtonVariantType,
@@ -29,7 +31,6 @@ import {
     DEFAULT_ROUTE_PROMPT_MESSAGE,
     DeploymentNodeType,
     ErrorScreenManager,
-    PopupMenu,
     Progressing,
     ServerErrors,
     showError,
@@ -78,6 +79,7 @@ import BulkSourceChange from './BulkSourceChange'
 import { getSelectedNodeAndAppId } from './utils'
 
 import './EnvTriggerView.scss'
+import { EnvTriggerViewActionKey } from './types'
 
 const ApprovalMaterialModal = importComponentFromFELibrary('ApprovalMaterialModal')
 const processDeploymentWindowStateAppGroup = importComponentFromFELibrary(
@@ -527,6 +529,25 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
         )
     }
 
+    const handleActionClick: ActionMenuProps['onClick'] = (item) => {
+        switch (item.id) {
+            case EnvTriggerViewActionKey.PRE_DEPLOY:
+                setBulkTriggerType(DeploymentNodeType.PRECD)
+                setShowBulkCDModal(true)
+                break
+            case EnvTriggerViewActionKey.DEPLOY:
+                setBulkTriggerType(DeploymentNodeType.CD)
+                setShowBulkCDModal(true)
+                break
+            case EnvTriggerViewActionKey.POST_DEPLOY:
+                setBulkTriggerType(DeploymentNodeType.POSTCD)
+                setShowBulkCDModal(true)
+                break
+            default:
+                break
+        }
+    }
+
     const renderApprovalMaterial = () => {
         if (ApprovalMaterialModal && location.search.includes(TRIGGER_VIEW_PARAMS.APPROVAL_NODE)) {
             const { node, appId } = getSelectedNodeAndAppId(filteredWorkflows, location.search)
@@ -550,45 +571,43 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
     }
 
     const renderDeployPopupMenu = (): JSX.Element => (
-        <PopupMenu autoClose>
-            <PopupMenu.Button
-                isKebab
-                rootClassName="h-32 popup-button-kebab dc__border-left-b4 pl-8 pr-8 dc__no-left-radius flex bcb-5"
-                dataTestId="deploy-popup"
-            >
-                <Dropdown className="icon-dim-20 fcn-0" />
-            </PopupMenu.Button>
-            <PopupMenu.Body rootClassName=" dc__border pt-4 pb-4 mb-8">
-                {showPreDeployment && (
-                    <div
-                        className="flex left p-10 dc__hover-n50 pointer fs-13"
-                        data-trigger-type="PRECD"
-                        onClick={onShowBulkCDModal}
-                        data-testid="pre-deploy-popup-button"
-                    >
-                        Trigger Pre-deployment stage
-                    </div>
-                )}
-                <div
-                    className="flex left p-10 dc__hover-n50 pointer fs-13"
-                    data-trigger-type="CD"
-                    onClick={onShowBulkCDModal}
-                    data-testid="deploy-popup-button"
-                >
-                    Trigger Deployment
-                </div>
-                {showPostDeployment && (
-                    <div
-                        className="flex left p-10 dc__hover-n50 pointer fs-13"
-                        data-trigger-type="POSTCD"
-                        onClick={onShowBulkCDModal}
-                        data-testid="post-deploy-popup-button"
-                    >
-                        Trigger Post-deployment stage
-                    </div>
-                )}
-            </PopupMenu.Body>
-        </PopupMenu>
+        <ActionMenu<EnvTriggerViewActionKey>
+            id="deploy-popup"
+            onClick={handleActionClick}
+            options={[
+                {
+                    items: [
+                        ...(showPreDeployment
+                            ? [
+                                  {
+                                      id: EnvTriggerViewActionKey.PRE_DEPLOY,
+                                      label: 'Trigger Pre-deployment stage',
+                                  },
+                              ]
+                            : []),
+                        {
+                            id: EnvTriggerViewActionKey.DEPLOY,
+                            label: 'Trigger Deployment',
+                        },
+                        ...(showPostDeployment
+                            ? [
+                                  {
+                                      id: EnvTriggerViewActionKey.POST_DEPLOY,
+                                      label: 'Trigger Post-deployment stage',
+                                  },
+                              ]
+                            : []),
+                    ],
+                },
+            ]}
+            buttonProps={{
+                dataTestId: 'deploy-popup',
+                icon: <Dropdown className="icon-dim-20 fcn-0" />,
+                variant: ButtonVariantType.primary,
+                size: ComponentSizeType.medium,
+                ariaLabel: 'Deploy options',
+            }}
+        />
     )
 
     const renderBulkTriggerActionButtons = (): JSX.Element => {

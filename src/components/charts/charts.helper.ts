@@ -28,26 +28,26 @@ export const MultiChartSummaryView = {
 }
 
 export function getDiscoverChartDetailsURL(chartId: string | number) {
-    return `${URLS.CHARTS}/discover/chart/${chartId}`
+    return `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${chartId}`
 }
 
 export function getSavedValuesListURL(chartId): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}?tab=${ChartDetailsSegment.PRESET_VALUES}`
+    return `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${chartId}?tab=${ChartDetailsSegment.PRESET_VALUES}`
 }
 
 export function getChartValuesURL(chartId: number | string, chartValueId?: number | string): string {
-    return `${URLS.CHARTS}/discover/chart/${chartId}/preset-values/${chartValueId || 0}`
+    return `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${chartId}/preset-values/${chartValueId || 0}`
 }
 
 export function getChartGroupURL(chartGroupId: number | string | null) {
     if (chartGroupId) {
-        return `${URLS.CHARTS}/discover/group/${chartGroupId}`
+        return `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${chartGroupId}`
     }
-    return `${URLS.CHARTS}/group`
+    return `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE}/group`
 }
 
 export function getChartGroupEditURL(chartGroupId: number | string) {
-    return `${URLS.CHARTS}/discover/group/${chartGroupId}/edit`
+    return `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${chartGroupId}/edit`
 }
 
 export function getChartValuesFiltered(chartValuesList: ChartValuesType[]): {

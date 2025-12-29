@@ -27,3 +27,9 @@ export interface SourceUpdateResponseModalProps {
     responseList: any
     isLoading: any
 }
+
+export enum EnvTriggerViewActionKey {
+    PRE_DEPLOY = 'pre-deploy',
+    DEPLOY = 'deploy',
+    POST_DEPLOY = 'post-deploy',
+}

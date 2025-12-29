@@ -15,18 +15,23 @@
  */
 
 import { useMemo } from 'react'
+import { useLocation } from 'react-router-dom'
 
 import {
+    BreadCrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
     ErrorScreenManager,
-    FeatureTitleWithInfo,
     FilterChips,
     FilterSelectPicker,
     GenericEmptyState,
+    getApplicationManagementBreadcrumb,
     ImageType,
     PageHeader,
     SearchBar,
     SelectPickerOptionType,
     useAsync,
+    useBreadcrumb,
     useUrlFilters,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -36,21 +41,10 @@ import { getClusterListMinWithoutAuth } from '../../../services/service'
 import { getEnvAppList } from '../AppGroup.service'
 import { AppGroupAdminType, AppGroupUrlFilters, AppGroupUrlFiltersType } from '../AppGroup.types'
 import { parseSearchParams } from '../AppGroup.utils'
+import { APP_GROUP_TIPPY_CONTENT } from '../Constants'
 import EnvironmentsListView from './EnvironmentListView'
 
 import './EnvironmentsList.scss'
-
-const renderAppGroupDescriptionContent = () =>
-    'Application Groups represent an environment and display all applications deployed to it. They simplify deploying interdependent microservices by allowing you to build and deploy multiple applications together.'
-
-const renderAdditionalHeaderInfo = () => (
-    <FeatureTitleWithInfo
-        title="Application Groups"
-        docLink="APP_GROUP"
-        showInfoIconTippy
-        renderDescriptionContent={renderAppGroupDescriptionContent}
-    />
-)
 
 const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
     const urlFilters = useUrlFilters<never, AppGroupUrlFiltersType>({
@@ -210,10 +204,36 @@ const EnvironmentsList = ({ isSuperAdmin }: AppGroupAdminType) => {
             </div>
         )
     }
+    const { pathname } = useLocation()
+
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getApplicationManagementBreadcrumb(),
+                'application-group': {
+                    component: <BreadcrumbText heading="Application Groups" isActive />,
+                },
+                list: null,
+            },
+        },
+        [pathname],
+    )
+
+    const renderBreadCrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     return (
         <div className="flexbox-col h-100 dc__overflow-auto">
-            <PageHeader additionalHeaderInfo={renderAdditionalHeaderInfo} />
+            <PageHeader
+                isBreadcrumbs
+                breadCrumbs={renderBreadCrumbs}
+                tippyProps={{
+                    isTippyCustomized: true,
+                    tippyRedirectLink: 'APP_GROUP',
+                    tippyMessage: APP_GROUP_TIPPY_CONTENT,
+                    tippyHeader: 'Application Groups',
+                }}
+                docPath={DOCUMENTATION.APP_MANAGEMENT}
+            />
             {renderBody()}
         </div>
     )

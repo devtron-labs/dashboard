@@ -145,6 +145,7 @@ export const getClusterOverviewDetails = async ({
         _moment = moment(result.clusterCreatedOn, 'YYYY-MM-DDTHH:mm:ssZ')
         clusterDetails.addedOn = _moment.format(Moment12HourFormat)
         clusterDetails.serverURL = result.serverUrl
+        clusterDetails.catalogSchemaResourceId = result.catalogSchemaResourceId
 
         const data: DescriptionDataType = CLUSTER_DESCRIPTION_DUMMY_DATA
 

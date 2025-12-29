@@ -16,11 +16,14 @@
 
 import { GroupBase } from 'react-select'
 
-import { OptionType, SelectPickerOptionType, UseUrlFiltersProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    ExportToCsvProps,
+    OptionType,
+    SelectPickerOptionType,
+    UseUrlFiltersProps,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { URLS } from '@Config/routes'
-
-import { AppStatuses, AppStatusesDTO, FluxCDTemplateType } from './AppListType'
+import { AppStatuses, AppStatusesDTO, ExportAppListDataType, FluxCDTemplateType } from './AppListType'
 
 export const APP_LIST_HEADERS = {
     AppName: 'APP NAME',
@@ -94,6 +97,21 @@ export const APPS_WITH_NO_PROJECT_OPTION: OptionType = {
     value: '0',
 }
 
-export const APP_LISTING_URLS = [URLS.DEVTRON_APP_LIST, URLS.HELM_APP_LIST, URLS.ARGO_APP_LIST, URLS.FLUX_APP_LIST]
-
+export const DEVTRON_APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] =
+    'devtron-app-list__filters'
 export const APP_LIST_LOCAL_STORAGE_KEY: UseUrlFiltersProps<never, never>['localStorageKey'] = 'app-list__filters'
+
+export const APPLIST_EXPORT_HEADERS: ExportToCsvProps<keyof ExportAppListDataType>['headers'] = [
+    { label: 'App Name', key: 'appName' },
+    { label: 'App ID', key: 'appId' },
+    { label: 'Project Name', key: 'projectName' },
+    { label: 'Project ID', key: 'projectId' },
+    { label: 'Application Status', key: 'status' },
+    { label: 'Environment Name', key: 'environmentName' },
+    { label: 'Environment ID', key: 'environmentId' },
+    { label: 'Cluster Name', key: 'clusterName' },
+    { label: 'Cluster ID', key: 'clusterId' },
+    { label: 'Namespace Name', key: 'namespace' },
+    { label: 'Namespace ID', key: 'namespaceId' },
+    { label: 'Last Deployed', key: 'lastDeployedTime' },
+]

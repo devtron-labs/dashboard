@@ -18,12 +18,15 @@ import { useEffect, useMemo, useState } from 'react'
 import { Route, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
 
 import {
+    BreadcrumbText,
     DevtronProgressing,
     ErrorScreenManager,
+    getInfrastructureManagementBreadcrumb,
     getResourceGroupListRaw,
     handleAnalyticsEvent,
     Icon,
     RESOURCE_BROWSER_ROUTES,
+    URLS,
     useAsync,
     useBreadcrumb,
     useEffectAfterMount,
@@ -39,7 +42,6 @@ import { ClusterListType } from '@Components/ClusterNodes/types'
 import { DynamicTabsProps, DynamicTabsVariantType, UpdateTabUrlParamsType } from '@Components/common/DynamicTabs/types'
 import { DEFAULT_CLUSTER_ID } from '@Pages/GlobalConfigurations/ClustersAndEnvironments/cluster.type'
 
-import { URLS } from '../../../config'
 import ClusterOverview from '../../ClusterNodes/ClusterOverview'
 import { importComponentFromFELibrary } from '../../common'
 import { DynamicTabs, useTabs } from '../../common/DynamicTabs'
@@ -88,7 +90,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(`${URLS.RESOURCE_BROWSER}/${clusterId}`)
+    } = useTabs(`${URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/${clusterId}`)
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
     const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
@@ -219,7 +221,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
             />
             <Route path={RESOURCE_BROWSER_ROUTES.OVERVIEW} exact>
                 <DynamicTabComponentWrapper type="fixed" {...DynamicTabComponentWrapperBaseProps}>
-                    <ClusterOverview selectedCluster={selectedCluster} addTab={addTab} />
+                    <ClusterOverview selectedCluster={selectedCluster} />
                 </DynamicTabComponentWrapper>
             </Route>
             {MonitoringDashboard && (
@@ -343,7 +345,7 @@ const ResourceListWrapper = () => {
         /* if user manually tries default cluster url redirect */
         if (Number(selected.value) === DEFAULT_CLUSTER_ID && window._env_.HIDE_DEFAULT_CLUSTER) {
             replace({
-                pathname: URLS.RESOURCE_BROWSER,
+                pathname: URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER,
             })
             return
         }
@@ -386,11 +388,12 @@ const ResourceListWrapper = () => {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
+                ...getInfrastructureManagementBreadcrumb(),
                 'resource-browser': {
-                    component: <span className="cb-5 fs-16 dc__capitalize">Resource Browser</span>,
+                    component: <BreadcrumbText heading="Resource Browser" />,
                     linked: true,
                 },
-                ':clusterId': {
+                ':clusterId(\\d+)': {
                     component: (
                         <ClusterSelector
                             onChange={onClusterChange}

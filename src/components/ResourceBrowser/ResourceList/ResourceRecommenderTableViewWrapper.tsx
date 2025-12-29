@@ -26,7 +26,6 @@ export const ResourceRecommenderTableViewWrapper = ({
     searchKey,
     handleSearch,
     filteredRows,
-    isResourceListLoading,
     selectedResource,
     gvkFilterConfig,
     updateSearchParams,
@@ -42,7 +41,6 @@ export const ResourceRecommenderTableViewWrapper = ({
             setSearchText={handleSearch}
             searchPlaceholder="Search"
             filteredRows={filteredRows}
-            isResourceListLoading={isResourceListLoading}
             selectedResource={selectedResource}
             gvkFilterConfig={gvkFilterConfig}
             updateSearchParams={updateSearchParams}
@@ -56,7 +54,7 @@ export const ResourceRecommenderTableViewWrapper = ({
         {resourceListError ? (
             <ErrorScreenManager
                 code={resourceListError?.code}
-                redirectURL={URLS.RESOURCE_BROWSER}
+                redirectURL={URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}
                 reload={reloadResourceListData}
             />
         ) : (

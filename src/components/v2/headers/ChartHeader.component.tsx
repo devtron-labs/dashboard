@@ -16,7 +16,16 @@
 
 import ReactGA from 'react-ga4'
 import { Link, useRouteMatch } from 'react-router-dom'
-import { AppListConstants, PageHeader, TabGroup, TabProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    BreadCrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
+    getInfrastructureManagementBreadcrumb,
+    PageHeader,
+    TabGroup,
+    TabProps,
+    useBreadcrumb,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { URLS } from '../../../config'
 import './header.scss'
 import IndexStore from '../appDetails/index.store'
@@ -27,24 +36,30 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
     const match = useRouteMatch()
     const appDetails = IndexStore.getAppDetails()
 
-    const renderBreadcrumbs = () => {
-        return (
-            <div className="m-0 flex left ">
-                <Link
-                    to={`${URLS.APP}/${URLS.APP_LIST}/${AppListConstants.AppType.HELM_APPS}`}
-                    className="dc__devtron-breadcrumb__item"
-                >
-                    <span className="cb-5 fs-16 cursor">Helm Apps </span>
-                </Link>
-                {Object.keys(appDetails).length > 0 && (
-                    <>
-                        <span className="fs-16 cn-9 ml-4 mr-4"> / </span>
-                        <span className="fs-16 cn-9">{appDetails.appName}</span>
-                    </>
-                )}
-            </div>
-        )
-    }
+    const { breadcrumbs } = useBreadcrumb(
+        {
+            alias: {
+                ...getInfrastructureManagementBreadcrumb(),
+                apps: {
+                    component: (
+                    <Link to={URLS.HELM_APP_LIST} className="dc__devtron-breadcrumb__item">
+                        <div className="cb-5">Helm Apps</div>
+                    </Link>
+                )},
+                deployments: {
+                    component: <BreadcrumbText heading={appDetails.appName} isActive />,
+                    linked: false,
+                },
+                dc: null,
+                env: null,
+                ':appId(\\d+)': null,
+                ':envId(\\d+)': null,
+            },
+        },
+        [appDetails.appName],
+    )
+
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
 
     const renderHelmDetailsTabs = () => {
         const tabs: TabProps[] = [
@@ -123,6 +138,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

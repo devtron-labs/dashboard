@@ -31,6 +31,9 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     ComponentSizeType,
+    getInfrastructureManagementBreadcrumb,
+    BreadcrumbText,
+    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import ChartGroupDeployments from './ChartGroupDeployments'
@@ -72,7 +75,12 @@ export default function ChartGroupDetails() {
     const { breadcrumbs } = useBreadcrumb(
         {
             alias: {
-                'chart-store': null,
+                ...getInfrastructureManagementBreadcrumb(),
+                'chart-store': {
+                    component: <BreadcrumbText heading="Chart Store" />,
+                    linked: true,
+                },
+                 'discover': null,
                 group: 'Chart groups',
                 ':groupId': {
                     component: (
@@ -107,7 +115,7 @@ export default function ChartGroupDetails() {
     }
 
     function redirectToConfigure() {
-        const url = `${URLS.CHARTS}/discover/group/${groupId}/edit`
+        const url = `${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/group/${groupId}/edit`
         push(url)
     }
 
@@ -148,7 +156,7 @@ export default function ChartGroupDetails() {
             installedChartData: chartGroupInstalled?.result?.installedChartData,
         }
         await deleteChartGroup(payload)
-        push(`${URLS.CHARTS}/discover`)
+        push(URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER)
     }
 
     const renderDeleteComponent = () => {
@@ -231,6 +239,7 @@ export default function ChartGroupDetails() {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumbs}
                 renderActionButtons={renderChartGroupActionButton}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             <div className="chart-group-details-page__body flexbox-col dc__overflow-auto">
                 {state.loading && <Progressing pageLoader />}
