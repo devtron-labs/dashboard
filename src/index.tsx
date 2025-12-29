@@ -175,7 +175,6 @@ if (!window || !window._env_) {
         GATEKEEPER_URL: 'https://license.devtron.ai/dashboard',
         FEATURE_AI_INTEGRATION_ENABLE: true,
         LOGIN_PAGE_IMAGE: '',
-        FEATURE_ASK_DEVTRON_EXPERT: false,
         FEATURE_MANAGE_TRAFFIC_ENABLE: true,
         FEATURE_REDFISH_NODE_ENABLE: false,
         FEATURE_INFRA_PROVISION_INFO_BLOCK_HIDE: false,

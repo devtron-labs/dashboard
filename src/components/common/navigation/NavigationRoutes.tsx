@@ -138,6 +138,7 @@ const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 
 const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
     importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
 const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
+const AIChatProvider = importComponentFromFELibrary('AIChatProvider', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
@@ -413,6 +414,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled:
                     result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
+                featureAskDevtronExpert:
+                    result.featureAskDevtronExpert ?? ENVIRONMENT_DATA_FALLBACK.featureAskDevtronExpert,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -442,6 +445,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
+                featureAskDevtronExpert: environmentDataResponse.featureAskDevtronExpert,
             })
 
             setServerMode(serverModeResponse)
@@ -732,6 +736,39 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         )
     }
 
+    const renderMainBody = () => (
+        <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+            {!isOnboardingPage && (
+                <Navigation
+                    showStackManager={showStackManager}
+                    isAirgapped={isAirgapped}
+                    serverMode={serverMode}
+                    moduleInInstallingState={moduleInInstallingState}
+                    installedModuleMap={installedModuleMap}
+                    pageState={pageState}
+                />
+            )}
+            <>
+                <motion.div
+                    className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                    ref={navRouteRef}
+                >
+                    {renderMainContent()}
+                </motion.div>
+
+                <SidePanel asideWidth={asideWidth} />
+            </>
+            {showThemeSwitcherDialog && (
+                <SwitchThemeDialog
+                    initialThemePreference={userPreferences?.themePreference}
+                    handleClose={handleCloseSwitchThemeDialog}
+                    handleUpdateUserThemePreference={handleUpdateUserThemePreference}
+                />
+            )}
+            {renderAboutDevtronDialog()}
+        </motion.main>
+    )
+
     return (
         <MainContextProvider
             value={{
@@ -769,6 +806,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                featureAskDevtronExpert: environmentDataState.featureAskDevtronExpert,
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
@@ -787,35 +825,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
         >
             <ConfirmationModalProvider>
                 <BaseConfirmationModal />
-                <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
-                    {!isOnboardingPage && (
-                        <Navigation
-                            showStackManager={showStackManager}
-                            isAirgapped={isAirgapped}
-                            serverMode={serverMode}
-                            moduleInInstallingState={moduleInInstallingState}
-                            installedModuleMap={installedModuleMap}
-                            pageState={pageState}
-                        />
-                    )}
-                    <>
-                        <motion.div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
-                            ref={navRouteRef}
-                        >
-                            {renderMainContent()}
-                        </motion.div>
-                        <SidePanel asideWidth={asideWidth} />
-                    </>
-                    {showThemeSwitcherDialog && (
-                        <SwitchThemeDialog
-                            initialThemePreference={userPreferences?.themePreference}
-                            handleClose={handleCloseSwitchThemeDialog}
-                            handleUpdateUserThemePreference={handleUpdateUserThemePreference}
-                        />
-                    )}
-                    {renderAboutDevtronDialog()}
-                </motion.main>
+                {AIChatProvider ? <AIChatProvider>{renderMainBody()}</AIChatProvider> : renderMainBody()}
             </ConfirmationModalProvider>
         </MainContextProvider>
     )
