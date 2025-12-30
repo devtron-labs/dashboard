@@ -54,3 +54,5 @@ export const AG_APP_DETAILS_GA_EVENTS: Record<string, Pick<UaEventOptions, 'cate
 
 export const ACTION_DISABLED_TEXT =
     'This application requires deployment approval to perform actions that impact the active deployment.'
+
+export const RESOURCE_TREE_UNAVAILABLE_ERROR_CODE = '7000'
