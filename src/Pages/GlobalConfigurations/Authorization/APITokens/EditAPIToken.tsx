@@ -17,6 +17,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import React, { useEffect, useMemo, useState } from 'react'
 import { useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import dayjs from 'dayjs'
 import moment from 'moment'
 
 import {
@@ -26,6 +27,7 @@ import {
     ButtonVariantType,
     ClipboardButton,
     CustomInput,
+    DATE_TIME_FORMATS,
     ErrorScreenManager,
     Icon,
     InfoBlock,
@@ -39,7 +41,6 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '../../../../components/common'
-import { MomentDateFormat } from '../../../../config'
 import { API_COMPONENTS } from '../../../../config/constantMessaging'
 import { createOrUpdateUser, getUserById } from '../authorization.service'
 import { getDefaultUserStatusAndTimeout } from '../libUtils'
@@ -89,7 +90,7 @@ const EditAPIToken = ({
     const { serverMode } = useMainContext()
     const [loader, setLoader] = useState(false)
 
-    const [customDate, setCustomDate] = useState<number>(undefined)
+    const [customDate, setCustomDate] = useState<Date>(dayjs().add(1, 'day').toDate())
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [invalidDescription, setInvalidDescription] = useState(false)
 
@@ -177,7 +178,7 @@ const EditAPIToken = ({
         return (
             <span className="fw-6 cn-9">
                 This token {isTokenExpired(editData.expireAtInMs) ? 'expired' : 'expires'} on&nbsp;
-                {moment(editData.expireAtInMs).format(MomentDateFormat)}.
+                {moment(editData.expireAtInMs).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}.
             </span>
         )
     }

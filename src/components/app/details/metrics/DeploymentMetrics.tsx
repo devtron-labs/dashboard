@@ -23,6 +23,7 @@ import {
     Chart,
     ChartColorKey,
     ChartProps,
+    DateTimePicker,
     EMPTY_STATE_STATUS,
     ErrorScreenManager,
     GenericEmptyState,
@@ -30,6 +31,7 @@ import {
     SelectPicker,
     showError,
     Tooltip,
+    UpdateDateRangeType,
     URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -42,7 +44,7 @@ import SelectEnvImage from '@Images/ic-empty-dep-metrics@2x.png'
 
 import { ViewType } from '../../../../config'
 import { getAppOtherEnvironmentMin } from '../../../../services/service'
-import { DatePicker, useAppContext } from '../../../common'
+import { useAppContext } from '../../../common'
 import { BenchmarkModal } from './BenchmarkModal'
 import { getDeploymentMetrics } from './deploymentMetrics.service'
 import {
@@ -61,6 +63,7 @@ import {
 } from './deploymentMetrics.util'
 import { DeploymentTable } from './DeploymentTable'
 import { DeploymentTableModal } from './DeploymentTableModal'
+import { getRangeShortcutOptions } from './utils'
 
 import './deploymentMetrics.scss'
 
@@ -239,7 +242,6 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         benchmarkModalData: undefined,
         startDate: moment().set({ hour: 0, minute: 0, seconds: 0 }).subtract(6, 'months'),
         endDate: moment().set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
-        focusedInput: null,
         meanLeadTimeLabel: '',
         leadTimeBenchmark: undefined,
         meanRecoveryTimeLabel: '',
@@ -348,16 +350,12 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         })
     }
 
-    const handleDatesChange = ({ startDate: newStartDate, endDate: newEndDate }): void => {
+    const handleDatesChange: UpdateDateRangeType = ({ from: newStartDate, to: newEndDate }): void => {
         setState((prev) => ({
             ...prev,
-            startDate: newStartDate?.set({ hour: 0, minute: 0, seconds: 0 }),
-            endDate: newEndDate?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
+            startDate: moment(newStartDate)?.set({ hour: 0, minute: 0, seconds: 0 }),
+            endDate: moment(newEndDate)?.set({ hour: 23, minute: 59, seconds: 59, milliseconds: 999 }),
         }))
-    }
-
-    const handleFocusChange = (focusedInput): void => {
-        setState((prev) => ({ ...prev, focusedInput }))
     }
 
     const handleTableFilter = (event): void => {
@@ -481,6 +479,8 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
         handleEnvironmentChange(selected)
     }
 
+    const isOutsideRange = (date: Date) => moment(date).isAfter(moment(), 'day')
+
     const renderInputs = () => (
         <div className="deployment-metrics__inputs bg__primary">
             <div className="w-180" data-testid="select-environment">
@@ -494,14 +494,20 @@ const DeploymentMetricsComponent = ({ filteredEnvIds }: DeploymentMetricsProps) 
                     options={state.environments}
                 />
             </div>
-            <div className="dc__align-right ">
+            <div className="dc__align-right">
                 {selectedEnvironment ? (
-                    <DatePicker
-                        startDate={state.startDate}
-                        endDate={state.endDate}
-                        focusedInput={state.focusedInput}
-                        handleDatesChange={handleDatesChange}
-                        handleFocusChange={handleFocusChange}
+                    <DateTimePicker
+                        id="deployment-metrics-date-range-picker"
+                        isRangePicker
+                        hideTimeSelect
+                        dateRange={{
+                            from: state.startDate?.toDate(),
+                            to: state.endDate?.toDate(),
+                        }}
+                        onChange={handleDatesChange}
+                        blockPreviousDates={false}
+                        isOutsideRange={isOutsideRange}
+                        rangeShortcutOptions={getRangeShortcutOptions()}
                     />
                 ) : null}
             </div>

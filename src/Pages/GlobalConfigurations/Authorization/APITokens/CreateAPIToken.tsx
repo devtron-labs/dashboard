@@ -18,7 +18,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 import { useEffect, useState } from 'react'
 import { useHistory, useRouteMatch } from 'react-router-dom'
-import { Moment } from 'moment'
+import dayjs from 'dayjs'
 
 import {
     CustomInput,
@@ -49,6 +49,7 @@ import ExpirationDate from './ExpirationDate'
 import GenerateActionButton from './GenerateActionButton'
 import GenerateModal from './GenerateModal'
 import { createGeneratedAPIToken } from './service'
+import { ExpirationDateSelectOptionType } from './types'
 import { ValidationRules } from './validationRules'
 
 const showStatus = !!importComponentFromFELibrary('StatusHeaderCell', null, 'function')
@@ -103,7 +104,7 @@ const CreateAPIToken = ({
         isSaveDisabled,
         allowManageAllAccess,
     } = usePermissionConfiguration()
-    const [customDate, setCustomDate] = useState<Moment>(null)
+    const [customDate, setCustomDate] = useState<Date>(dayjs().add(1, 'day').toDate())
     const [tokenResponse, setTokenResponse] = useState<TokenResponseType>({
         success: false,
         token: '',
@@ -147,11 +148,11 @@ const CreateAPIToken = ({
         }
     }
 
-    const onCustomDateChange = (event) => {
-        setCustomDate(event)
+    const onCustomDateChange = (date: Date) => {
+        setCustomDate(date)
         setFormData({
             ...formData,
-            expireAtInMs: event.valueOf(),
+            expireAtInMs: date.valueOf(),
             dateType: 'Custom',
         })
 
@@ -167,12 +168,15 @@ const CreateAPIToken = ({
         history.push(`${match.path.split('create')[0]}list`)
     }
 
-    const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
+    const onChangeSelectFormData = (selectedOption: ExpirationDateSelectOptionType) => {
         setSelectedExpirationDate(selectedOption)
+        const parsedMilliseconds = selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value)
+
         setFormData({
             ...formData,
-            expireAtInMs: selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value),
-            dateType: selectedOption.label,
+            expireAtInMs:
+                typeof selectedOption.value === 'number' ? parsedMilliseconds : selectedOption.value.valueOf(),
+            dateType: selectedOption.label as string,
         })
     }
 
@@ -283,7 +287,7 @@ const CreateAPIToken = ({
                         placeholder="Enter a description to remember where you have used this token"
                         error={formDataErrorObj.invalidDescription && formDataErrorObj.invalidDescriptionMessage}
                     />
-                    <label className="form__row">
+                    <div className="form__row">
                         <div className="flex left">
                             <ExpirationDate
                                 selectedExpirationDate={selectedExpirationDate}
@@ -299,7 +303,7 @@ const CreateAPIToken = ({
                                 Custom expiration can't be blank. Please select a date.
                             </span>
                         )}
-                    </label>
+                    </div>
                     <div className="dc__border-top" />
                     <PermissionConfigurationForm showUserPermissionGroupSelector isAddMode />
                 </div>

@@ -33,6 +33,7 @@ import APITokenList from './APITokenList'
 import CreateAPIToken from './CreateAPIToken'
 import EditAPIToken from './EditAPIToken'
 import { getGeneratedAPITokenList } from './service'
+import { ExpirationDateSelectOptionType } from './types'
 
 import './apiToken.scss'
 
@@ -48,7 +49,7 @@ const ApiTokens = () => {
     const [errorStatusCode, setErrorStatusCode] = useState(0)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
     const [showRegenerateTokenModal, setShowRegenerateTokenModal] = useState(false)
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState<ExpirationDateSelectOptionType>({
         label: '30 days',
         value: 30,
     })

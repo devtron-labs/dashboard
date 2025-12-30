@@ -104,7 +104,6 @@ export interface DeploymentMetricsState {
 
     startDate: Moment
     endDate: Moment
-    focusedInput: any
     filterBy: {
         startDate: undefined | Moment
         endDate: undefined | Moment

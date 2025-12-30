@@ -126,10 +126,6 @@ export default defineConfig(({ mode }) => {
                             return '@react-virtualized'
                         }
 
-                        if (id.includes('node_modules/react-dates') || id.includes('@react-dates')) {
-                            return '@react-dates'
-                        }
-
                         if (id.includes('node_modules/@rjsf')) {
                             return '@rjsf'
                         }

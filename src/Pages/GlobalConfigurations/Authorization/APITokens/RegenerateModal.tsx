@@ -26,6 +26,7 @@ import ExpirationDate from './ExpirationDate'
 import GenerateActionButton from './GenerateActionButton'
 import GenerateModal from './GenerateModal'
 import { updateGeneratedAPIToken } from './service'
+import { ExpirationDateProps, ExpirationDateSelectOptionType } from './types'
 
 const RegeneratedModal = ({
     close,
@@ -38,7 +39,7 @@ const RegeneratedModal = ({
 }: RegenerateModalType) => {
     const [loader, setLoader] = useState(false)
     const [showGenerateModal, setShowGenerateModal] = useState(false)
-    const [selectedExpirationDate, setSelectedExpirationDate] = useState<{ label: string; value: number }>({
+    const [selectedExpirationDate, setSelectedExpirationDate] = useState<ExpirationDateSelectOptionType>({
         label: '30 days',
         value: 30,
     })
@@ -48,8 +49,12 @@ const RegeneratedModal = ({
     )
     const [invalidCustomDate, setInvalidCustomDate] = useState(false)
 
-    const onChangeSelectFormData = (selectedOption: { label: string; value: number }) => {
-        setRegeneratedExpireAtInMs(selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value))
+    const onChangeSelectFormData: ExpirationDateProps['onChangeSelectFormData'] = (selectedOption) => {
+        const parsedMilliseconds = selectedOption.value === 0 ? 0 : getDateInMilliseconds(selectedOption.value)
+
+        setRegeneratedExpireAtInMs(
+            typeof selectedOption.value === 'number' ? parsedMilliseconds : selectedOption.value.valueOf(),
+        )
         setSelectedExpirationDate(selectedOption)
 
         if (selectedOption.label === 'Custom' && invalidCustomDate) {
@@ -57,9 +62,9 @@ const RegeneratedModal = ({
         }
     }
 
-    const handleDatesChange = (event): void => {
-        setCustomDate(event)
-        setRegeneratedExpireAtInMs(event.valueOf())
+    const handleDatesChange = (date: Date): void => {
+        setCustomDate(date)
+        setRegeneratedExpireAtInMs(date.valueOf())
 
         if (invalidCustomDate) {
             setInvalidCustomDate(false)
