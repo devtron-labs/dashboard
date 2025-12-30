@@ -16,8 +16,6 @@
 
 import { BulkEditVersion, OptionType, useMotionValue } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SERVER_MODE_TYPE } from '../../config'
-
 interface BaseOperationResponseType {
     appId: number
     appName: string
@@ -95,7 +93,6 @@ export interface OutputTabType {
 }
 
 export interface BulkEditsProps {
-    serverMode: SERVER_MODE_TYPE
     outputHeightMV: ReturnType<typeof useMotionValue<number>>
     gridTemplateRows: ReturnType<typeof useMotionValue<string>>
 }

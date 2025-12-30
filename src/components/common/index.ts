@@ -17,7 +17,6 @@
 export * from './Contexts'
 export { default as RectangularEdge } from './edge/rectangularEdge'
 export { default as ErrorBoundary } from './errorBoundary'
-export * from './formFields/DevtronSwitch'
 export * from './formFields/Typeahead'
 export * from './helpers/compareVersion'
 export * from './helpers/Helpers'

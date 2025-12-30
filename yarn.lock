@@ -1729,16 +1729,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-fns/tz@npm:^1.4.1":
-  version: 1.4.1
-  resolution: "@date-fns/tz@npm:1.4.1"
-  checksum: 10c0/9033fdc4682fe3d4d147625ce04fa88a8792653594e2de8d5a438c8f3bfc0990ee28fe773f91cac6810b06d818b5b281ae0608752ba8337257d0279ded3f019a
-  languageName: node
-  linkType: hard
-
-"@devtron-labs/devtron-fe-common-lib@npm:1.21.0-beta-3":
-  version: 1.21.0-beta-3
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.21.0-beta-3"
+"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-alpha-11":
+  version: 1.22.0-alpha-11
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-alpha-11"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1792,7 +1785,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/2c51ef3b4c13d433d8a4e9e72c86f87e761d162c7f44dbb09b2a26a82544b46f0f65a303d1315353246092c5f9e7bd9c6e599cad70f7f31d6f14ddf5d4fa4080
+  checksum: 10c0/09563768ccfc249b3f4a88f770557e5daba3a6d807c92bf482f113579304697e8bc5ad608f27c5cc604ef81c4fb259ade73cbf22c6f6696a14ff1ecac91e85a4
   languageName: node
   linkType: hard
 
@@ -4974,11 +4967,11 @@ __metadata:
   linkType: hard
 
 "chart.js@npm:^4.5.0":
-  version: 4.5.0
-  resolution: "chart.js@npm:4.5.0"
+  version: 4.5.1
+  resolution: "chart.js@npm:4.5.1"
   dependencies:
     "@kurkle/color": "npm:^0.3.0"
-  checksum: 10c0/f12c7f9a238ee7ce6d3f7111628e9daba86bb8ff8e54cfe63525fde6ded9003c72c4c8d2c7d5702539dc0aff7e682dfec058660ade8d03a970da002656d4ac91
+  checksum: 10c0/3f2a11dcaae9079e8e6b8ad077e2ae311f04996f9da14815730891e66215ee8b5f2c0eb70b5a156e5bde0f89a41bae13506dc6153e50fd22dcb282b21eec706f
   languageName: node
   linkType: hard
 
@@ -5540,7 +5533,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.21.0-beta-3"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-alpha-11"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"

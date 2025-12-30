@@ -22,6 +22,7 @@ import {
     BreadcrumbText,
     ClusterDetail,
     DevtronProgressing,
+    DOCUMENTATION,
     ErrorScreenManager,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
@@ -118,6 +119,7 @@ const ResourceBrowser: React.FC = () => {
                 isBreadcrumbs
                 breadCrumbs={renderBreadcrumb}
                 renderActionButtons={renderNewClusterButton(reloadDetailClusterList, sortedClusterList.length)}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
             {renderContent()}
         </div>

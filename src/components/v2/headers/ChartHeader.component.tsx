@@ -19,6 +19,7 @@ import { Link, useRouteMatch } from 'react-router-dom'
 import {
     BreadCrumb,
     BreadcrumbText,
+    DOCUMENTATION,
     getInfrastructureManagementBreadcrumb,
     PageHeader,
     TabGroup,
@@ -137,6 +138,7 @@ const ChartHeaderComponent = ({ errorResponseCode }: ChartHeaderComponentType) =
                 showTabs
                 renderHeaderTabs={renderHelmDetailsTabs}
                 breadCrumbs={renderBreadcrumbs}
+                docPath={DOCUMENTATION.INFRA_MANAGEMENT}
             />
         </div>
     )

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { DeploymentNodeType, DeploymentStageType, History, STAGE_TYPE } from '@devtron-labs/devtron-fe-common-lib'
+
 import { importComponentFromFELibrary } from '../../../common'
 
 export const renderCIListHeader = importComponentFromFELibrary('renderCIListHeader', null, 'function')
@@ -45,3 +47,19 @@ export const processVirtualEnvironmentDeploymentData = importComponentFromFELibr
 export const renderRunSource = importComponentFromFELibrary('renderRunSource', null, 'function')
 
 export const renderRunSourceInDropdown = importComponentFromFELibrary('renderRunSourceInDropdown', null, 'function')
+
+export const getUpdatedTriggerId = (initialTriggerId: number, queryParam: string, cdWorkflows: History[]): number => {
+    if (queryParam === STAGE_TYPE.PRECD || queryParam === STAGE_TYPE.POSTCD || queryParam === DeploymentNodeType.CD) {
+        const deploymentStageTypeForPrePostCD =
+            queryParam === STAGE_TYPE.PRECD ? DeploymentStageType.PRE : DeploymentStageType.POST
+        const deploymentStageType =
+            queryParam === DeploymentNodeType.CD ? DeploymentStageType.DEPLOY : deploymentStageTypeForPrePostCD
+
+        const requiredResult = cdWorkflows?.filter((obj) => obj.stage === deploymentStageType)
+        if (requiredResult?.[0]) {
+            return requiredResult[0].id
+        }
+    }
+
+    return initialTriggerId
+}

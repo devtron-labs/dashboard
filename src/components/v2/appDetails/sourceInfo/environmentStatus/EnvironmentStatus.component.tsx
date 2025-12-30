@@ -190,7 +190,7 @@ const EnvironmentStatusComponent = ({
             {loadingDetails ? (
                 shimmerLoaderBlocks()
             ) : (
-                <div className="flex left ml-20 mb-16 lh-20">
+                <div className="flex left ml-20 mb-16 dc__gap-12 lh-20 pt-4">
                     {isVirtualEnvironment ? renderGeneratedManifestDownloadCard() : renderStatusBlock()}
                     {renderIssuesCard()}
                     {renderHelmConfigApplyStatusBlock()}

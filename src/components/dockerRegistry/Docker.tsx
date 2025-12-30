@@ -94,7 +94,7 @@ import {
 import { VALIDATION_STATUS, ValidateForm } from '../common/ValidateForm/ValidateForm'
 
 const RegistryHelmPushCheckbox = importComponentFromFELibrary('RegistryHelmPushCheckbox')
-const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio')
+const RemoteConnectionRadio = importComponentFromFELibrary('RemoteConnectionRadio', null, 'function')
 const getRemoteConnectionConfig = importComponentFromFELibrary('getRemoteConnectionConfig', noop, 'function')
 const AuthenticationTypeRadio = importComponentFromFELibrary('AuthenticationTypeRadio', null, 'function')
 
