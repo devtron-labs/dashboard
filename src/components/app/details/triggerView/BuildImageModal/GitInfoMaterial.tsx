@@ -209,17 +209,17 @@ const GitInfoMaterial = ({
             updatedMaterialKeys.history = [
                 {
                     commitURL: selectedMaterial.gitURL
-                        ? createGitCommitUrl(selectedMaterial.gitURL, commitHistoryResult.Commit)
+                        ? createGitCommitUrl(selectedMaterial.gitURL, commitHistoryResult?.Commit)
                         : '',
-                    commit: commitHistoryResult.Commit || '',
-                    author: commitHistoryResult.Author || '',
-                    date: commitHistoryResult.Date ? handleUTCTime(commitHistoryResult.Date, false) : '',
-                    message: commitHistoryResult.Message || '',
-                    changes: commitHistoryResult.Changes || [],
+                    commit: commitHistoryResult?.Commit || '',
+                    author: commitHistoryResult?.Author || '',
+                    date: commitHistoryResult?.Date ? handleUTCTime(commitHistoryResult.Date, false) : '',
+                    message: commitHistoryResult?.Message || '',
+                    changes: commitHistoryResult?.Changes || [],
                     showChanges: true,
-                    webhookData: commitHistoryResult.WebhookData,
-                    isSelected: !commitHistoryResult.Excluded,
-                    excluded: commitHistoryResult.Excluded,
+                    webhookData: commitHistoryResult?.WebhookData,
+                    isSelected: !commitHistoryResult?.Excluded,
+                    excluded: commitHistoryResult?.Excluded,
                 },
             ]
 
