@@ -69,7 +69,7 @@ const UpdateTemplateConfig = ({
     }
 
     const handleCIConfigParentStateUpdate: CIConfigProps['setParentState'] = (updatedParentStateOrHandler) => {
-        if (updatedParentStateOrHandler && updatedParentStateOrHandler.ciConfig) {
+        if (updatedParentStateOrHandler?.ciConfig) {
             const {
                 ciConfig: { dockerRegistry, dockerRepository },
             } = updatedParentStateOrHandler
