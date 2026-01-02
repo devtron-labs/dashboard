@@ -69,17 +69,19 @@ const UpdateTemplateConfig = ({
     }
 
     const handleCIConfigParentStateUpdate: CIConfigProps['setParentState'] = (updatedParentStateOrHandler) => {
-        const {
-            ciConfig: { dockerRegistry, dockerRepository },
-        } = updatedParentStateOrHandler
+        if (updatedParentStateOrHandler && updatedParentStateOrHandler.ciConfig) {
+            const {
+                ciConfig: { dockerRegistry, dockerRepository },
+            } = updatedParentStateOrHandler
 
-        handleFormStateChange({
-            action: CreateAppFormStateActionType.updateBuildConfiguration,
-            value: {
-                dockerRegistry,
-                dockerRepository,
-            },
-        })
+            handleFormStateChange({
+                action: CreateAppFormStateActionType.updateBuildConfiguration,
+                value: {
+                    dockerRegistry,
+                    dockerRepository,
+                },
+            })
+        }
     }
 
     const handleGitMaterialsChange: MaterialListProps['handleGitMaterialsChange'] = (updatedGitMaterial, isError) => {
