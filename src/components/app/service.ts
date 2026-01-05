@@ -67,6 +67,8 @@ import {
     UseGetDTAppDetailsReturnType,
 } from './types'
 
+const DEPLOYMENT_STATUS_QUERY_KEY = 'deployment-status-detail'
+
 const getDeploymentWindowProfileMetaData: (appId: string, envId: string) => DeploymentWindowProfileMetaData =
     importComponentFromFELibrary('getDeploymentWindowProfileMetaData', null, 'function')
 
@@ -95,12 +97,15 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             // In case query failed and no data is available previously, stop polling and show error state
             !data && query.state.status === 'error' ? false : window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL,
         onSuccess: async (data) => {
-            IndexStore.publishAppDetails(
-                {
-                    ...data,
-                },
-                AppType.DEVTRON_APP,
-            )
+            // Publish app details to IndexStore if there is resource tree is not to be fetched
+            if (!data?.isPipelineTriggered && data?.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
+                IndexStore.publishAppDetails(
+                    {
+                        ...data,
+                    },
+                    AppType.DEVTRON_APP,
+                )
+            }
 
             // Refetch resource tree to get latest data after app details fetch
             await queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
@@ -126,7 +131,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             !!envId &&
             !!appDetails &&
             (appDetails.isPipelineTriggered || appDetails.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS), // Fetch resource tree for pipelines which are not triggered only in case of migrate external apps
-        onSuccess: (data) => {
+        onSuccess: async (data) => {
             IndexStore.publishAppDetails(
                 {
                     ...appDetails,
@@ -134,6 +139,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
                 },
                 AppType.DEVTRON_APP,
             )
+            await queryClient.invalidateQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
         },
     })
 
@@ -190,14 +196,9 @@ export const useGetDeploymentWindowProfileMetaData = (appId: string, envId: stri
         },
     })
 
-export const useGetDTAppDeploymentStatusDetail = (
-    appId: string,
-    envId: string,
-    triggerId?: string,
-    enabled?: boolean,
-) =>
+export const useGetDTAppDeploymentStatusDetail = (appId: string, envId: string, enabled: boolean, triggerId?: string) =>
     useQuery<DeploymentStatusDetailsType, DeploymentStatusCardType['deploymentStatusDetailsBreakdownData']>({
-        queryKey: ['deployment-status-detail', appId, envId, triggerId],
+        queryKey: [DEPLOYMENT_STATUS_QUERY_KEY, appId, envId, triggerId],
         queryFn: () => getDeploymentStatusDetail(appId, envId, triggerId),
         select: ({ result }) => {
             const { deploymentStartedOn, wfrStatus, triggeredBy } = result
@@ -208,7 +209,10 @@ export const useGetDTAppDeploymentStatusDetail = (
             }
         },
         enabled: enabled && !!appId && !!envId,
-        refetchInterval: (data) => (data?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 10000 : 30000),
+        refetchInterval: (data) => (data?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 10000 : false),
+        meta: {
+            showToastError: false,
+        },
     })
 
 export const getCIHistoricalStatus = (params): Promise<ResponseType<History>> => {

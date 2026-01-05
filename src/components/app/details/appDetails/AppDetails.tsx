@@ -35,6 +35,7 @@ import {
     MODAL_TYPE,
     noop,
     Progressing,
+    ReleaseMode,
     showError,
     stringComparatorBySortOrder,
     ToastManager,
@@ -224,7 +225,7 @@ const Details: React.FC<DetailsType> = ({
 
     const showLoadingResourceTree =
         showAppDetailsLoading ||
-        (appDetails?.isPipelineTriggered
+        (appDetails?.isPipelineTriggered || appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
             ? resourceTreeQueryStatus === 'loading' ||
               (resourceTreeQueryStatus === 'error' && !appDetails?.resourceTree && isFetchingResourceTree)
             : false)
@@ -331,7 +332,7 @@ const Details: React.FC<DetailsType> = ({
         )
 
     const renderResourceTree = (): JSX.Element => {
-        if (appDetails && !appDetails.isPipelineTriggered) {
+        if (appDetails && !appDetails.isPipelineTriggered && appDetails.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
             return null
         }
 
@@ -460,7 +461,10 @@ const Details: React.FC<DetailsType> = ({
                     handleOpenCDModal={handleOpenCDModal}
                 />
             </div>
-            {!showAppDetailsLoading && appDetails && !appDetails.isPipelineTriggered ? (
+            {!showAppDetailsLoading &&
+            appDetails &&
+            !appDetails.isPipelineTriggered &&
+            appDetails.releaseMode === ReleaseMode.NEW_DEPLOYMENT ? (
                 renderSelectImageState()
             ) : (
                 <>

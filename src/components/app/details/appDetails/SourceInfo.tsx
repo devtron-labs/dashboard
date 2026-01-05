@@ -92,28 +92,22 @@ export const SourceInfo = ({
     const [hibernationPatchResponseLoading, setHibernationPatchResponseLoading] = useState<boolean>(false)
 
     const isPipelineTriggered = appDetails?.isPipelineTriggered || false
+    const isExternalLinkedApp = appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS
     const isdeploymentAppDeleting = appDetails?.deploymentAppDeleteRequest || false
     const status = appDetails?.resourceTree?.status || ''
     const conditions = appDetails?.resourceTree?.conditions
     const Rollout = appDetails?.resourceTree?.nodes?.filter(({ kind }) => kind === Nodes.Rollout)
     // appMigratedFromExternalSourceAndIsNotTriggered means the app is migrated from a helm/argo release and has not been deployed yet i.e. CD Pipeline has not been triggered
-    const appMigratedFromExternalSourceAndIsNotTriggered =
-        appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS && !appDetails?.isPipelineTriggered
+    const appMigratedFromExternalSourceAndIsNotTriggered = isExternalLinkedApp && !isPipelineTriggered
     const isVirtualEnvironment = appDetails?.isVirtualEnvironment
     const isIsolatedEnv = isVirtualEnvironment && !!appDetails?.resourceTree
     const wfrId = isIsolatedEnv ? appDetails?.resourceTree?.wfrId : null
 
-    const {
-        data: deploymentStatusDetailsBreakdownData = {
-            deploymentStatus: 'checking',
-            deploymentTriggerTime: '',
-            triggeredBy: '',
-        },
-    } = useGetDTAppDeploymentStatusDetail(
+    const { data: deploymentStatusDetailsBreakdownData } = useGetDTAppDeploymentStatusDetail(
         params.appId,
         params.envId,
+        !!appDetails?.resourceTree,
         wfrId ? String(wfrId) : null,
-        isPipelineTriggered || appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
     )
 
     const appStatusCardMessage = useMemo(() => {
@@ -223,7 +217,7 @@ export const SourceInfo = ({
             <div className="flex left w-100 pt-16 px-20">
                 <AppEnvSelector {...(isAppView ? { isAppView, environments } : { isAppView: false, applications })} />
 
-                {isPipelineTriggered && (
+                {(isPipelineTriggered || isExternalLinkedApp) && (
                     <>
                         {appDetails?.deploymentAppType && (
                             <div className={`flex ${!appDetails.isVirtualEnvironment ? 'pl-16' : ''}`}>
@@ -435,8 +429,7 @@ export const SourceInfo = ({
             {renderDevtronAppsEnvironmentSelector()}
             {loadingDetails
                 ? shimmerLoaderBlocks()
-                : isPipelineTriggered &&
-                  !isdeploymentAppDeleting &&
+                : !isdeploymentAppDeleting &&
                   environment && (
                       <div className="app-details-info-card-container flex left w-100 dc__gap-12 pb-16 dc__overflow-auto">
                           {status && (
