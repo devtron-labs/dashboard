@@ -155,6 +155,7 @@ const RouterComponent = () => {
             data: {
                 appId: +params.appId,
                 envId: +params.envId,
+                clusterId: appDetailsRef.current.clusterId,
                 appName: appDetailsRef.current.appName,
                 envName: appDetailsRef.current.environmentName,
                 appType: 'devtronHelmChart'

@@ -229,6 +229,7 @@ const Details: React.FC<DetailsType> = ({
                 data: {
                     appId: +params.appId,
                     envId: +params.envId,
+                    clusterId: appDetails?.clusterId,
                     envName: appDetails?.environmentName,
                     appName: appDetails?.appName,
                     appType: 'devtronApp',
@@ -239,7 +240,7 @@ const Details: React.FC<DetailsType> = ({
         return () => {
             setAIAgentContext(null)
         }
-    }, [appDetails?.environmentName, appDetails?.appName, url])
+    }, [appDetails?.environmentName, appDetails?.appName, appDetails?.clusterId, url])
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
