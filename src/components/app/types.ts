@@ -445,7 +445,7 @@ export interface SourceInfoType extends Pick<DetailsType, 'isAppView'>, Partial<
     setDetailed?: React.Dispatch<React.SetStateAction<boolean>>
     environment: AppEnvironment
     environments: AppEnvironment[]
-    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
+    setShowCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
     showUrlInfo?: React.Dispatch<React.SetStateAction<boolean>>
     showHibernateModal?: React.Dispatch<React.SetStateAction<HibernationModalTypes>>
     loadingDetails?: boolean

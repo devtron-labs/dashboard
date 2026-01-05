@@ -70,7 +70,7 @@ export const SourceInfo = ({
     setDetailed = null,
     environment,
     environments,
-    showCommitInfo = null,
+    setShowCommitInfo = null,
     showUrlInfo = null,
     showHibernateModal = null,
     loadingDetails = false,
@@ -109,7 +109,12 @@ export const SourceInfo = ({
             deploymentTriggerTime: '',
             triggeredBy: '',
         },
-    } = useGetDTAppDeploymentStatusDetail(params.appId, params.envId, wfrId ? String(wfrId) : null)
+    } = useGetDTAppDeploymentStatusDetail(
+        params.appId,
+        params.envId,
+        wfrId ? String(wfrId) : null,
+        isPipelineTriggered || appDetails?.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS,
+    )
 
     const appStatusCardMessage = useMemo(() => {
         const conditionsMessage = conditions?.[0]?.message || ''
@@ -123,7 +128,7 @@ export const SourceInfo = ({
 
     const onClickShowCommitInfo = (e): void => {
         e.stopPropagation()
-        showCommitInfo(true)
+        setShowCommitInfo(true)
     }
 
     const onClickShowUrlInfo = (): void => {
@@ -165,7 +170,7 @@ export const SourceInfo = ({
             loadingCards.push(<LoadingCard key={i} />)
         }
 
-        return <div className="flex left mb-16 ml-20">{loadingCards}</div>
+        return <div className="flex left dc__gap-12 mb-16 ml-20">{loadingCards}</div>
     }
 
     const onClickSliderVerticalButton = () => {

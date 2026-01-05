@@ -89,22 +89,21 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             get<AppDetails>(getUrlWithSearchParams(`${Routes.APP_DETAIL}/v2`, { 'app-id': appId, 'env-id': envId }), {
                 signal,
             }),
-        select: ({ result }) => {
-            IndexStore.publishAppDetails(
-                {
-                    ...result,
-                },
-                AppType.DEVTRON_APP,
-            )
-
-            return result
-        },
+        select: ({ result }) => result,
         enabled: !!appId && !!envId,
         refetchInterval: (data, query) =>
             // In case query failed and no data is available previously, stop polling and show error state
             !data && query.state.status === 'error' ? false : window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL,
-        onSuccess: async () => {
-            await queryClient.invalidateQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
+        onSuccess: async (data) => {
+            IndexStore.publishAppDetails(
+                {
+                    ...data,
+                },
+                AppType.DEVTRON_APP,
+            )
+
+            // Refetch resource tree to get latest data after app details fetch
+            await queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
         },
     })
 
@@ -121,24 +120,21 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
                 getUrlWithSearchParams(`${Routes.APP_DETAIL}/resource-tree`, { 'app-id': appId, 'env-id': envId }),
                 { signal },
             ),
-        select: ({ result }) => {
-            if (result) {
-                IndexStore.publishAppDetails(
-                    {
-                        ...appDetails,
-                        resourceTree: result,
-                    },
-                    AppType.DEVTRON_APP,
-                )
-            }
-
-            return result
-        },
+        select: ({ result }) => result,
         enabled:
             !!appId &&
             !!envId &&
             !!appDetails &&
             (appDetails.isPipelineTriggered || appDetails.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS), // Fetch resource tree for pipelines which are not triggered only in case of migrate external apps
+        onSuccess: (data) => {
+            IndexStore.publishAppDetails(
+                {
+                    ...appDetails,
+                    resourceTree: data,
+                },
+                AppType.DEVTRON_APP,
+            )
+        },
     })
 
     // Returning appDetails, resourceTree as null if it doesn't exist, to form loading and error states properly
@@ -194,7 +190,12 @@ export const useGetDeploymentWindowProfileMetaData = (appId: string, envId: stri
         },
     })
 
-export const useGetDTAppDeploymentStatusDetail = (appId: string, envId: string, triggerId?: string) =>
+export const useGetDTAppDeploymentStatusDetail = (
+    appId: string,
+    envId: string,
+    triggerId?: string,
+    enabled?: boolean,
+) =>
     useQuery<DeploymentStatusDetailsType, DeploymentStatusCardType['deploymentStatusDetailsBreakdownData']>({
         queryKey: ['deployment-status-detail', appId, envId, triggerId],
         queryFn: () => getDeploymentStatusDetail(appId, envId, triggerId),
@@ -206,7 +207,7 @@ export const useGetDTAppDeploymentStatusDetail = (appId: string, envId: string, 
                 deploymentStatus: WFR_STATUS_DTO_TO_DEPLOYMENT_STATUS_MAP[wfrStatus] || DEPLOYMENT_STATUS.INPROGRESS,
             }
         },
-        enabled: !!appId && !!envId,
+        enabled: enabled && !!appId && !!envId,
         refetchInterval: (data) => (data?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 10000 : 30000),
     })
 
