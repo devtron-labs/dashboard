@@ -139,7 +139,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
                 },
                 AppType.DEVTRON_APP,
             )
-            await queryClient.invalidateQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
+            await queryClient.refetchQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
         },
     })
 
