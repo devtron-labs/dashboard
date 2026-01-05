@@ -20,6 +20,7 @@ import { generatePath, Route, useHistory, useLocation, useParams, useRouteMatch 
 import {
     ACTION_STATE,
     aggregateNodes,
+    AIAgentContextSourceType,
     AppStatusModal,
     AppStatusModalTabType,
     ArtifactInfoModal,
@@ -216,20 +217,30 @@ const Details: React.FC<DetailsType> = ({
     const params = useParams<{ appId: string; envId: string }>()
     const location = useLocation()
     const { replace, push } = useHistory()
-    const { path, url } = useRouteMatch()
+    const { url } = useRouteMatch()
 
     const { setAIAgentContext } = useMainContext()
 
     useEffect(() => {
-        setAIAgentContext({
-            path,
-            context: {
-                ...params,
-                environmentName: appDetails?.environmentName ?? '',
-                appName: appDetails?.appName ?? '',
-            },
-        })
-    }, [appDetails?.environmentName, appDetails?.appName, url])
+        // This check is here since we don't clear appDetails on env/app change for some reason :/ and this will cause data mismatch
+        if (appDetails?.environmentId === +params.envId && appDetails?.appId === +params.appId) {
+            setAIAgentContext({
+                source: AIAgentContextSourceType.APP_DETAILS,
+                data: {
+                    appId: +params.appId,
+                    envId: +params.envId,
+                    clusterId: appDetails?.clusterId,
+                    envName: appDetails?.environmentName,
+                    appName: appDetails?.appName,
+                    appType: 'devtronApp',
+                },
+            })
+        }
+
+        return () => {
+            setAIAgentContext(null)
+        }
+    }, [appDetails?.environmentName, appDetails?.appName, appDetails?.clusterId, url])
 
     const appDetailsFromIndexStore = IndexStore.getAppDetails()
 
