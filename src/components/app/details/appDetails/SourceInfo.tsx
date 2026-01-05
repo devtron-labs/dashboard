@@ -106,7 +106,7 @@ export const SourceInfo = ({
     const { data: deploymentStatusDetailsBreakdownData } = useGetDTAppDeploymentStatusDetail(
         params.appId,
         params.envId,
-        !!appDetails?.resourceTree,
+        isPipelineTriggered || isExternalLinkedApp,
         wfrId ? String(wfrId) : null,
     )
 
