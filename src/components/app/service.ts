@@ -95,9 +95,9 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         enabled: !!appId && !!envId,
         refetchInterval: (data, query) =>
             // In case query failed and no data is available previously, stop polling and show error state
-            !data && query.state.status === 'error' ? false : window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL,
+            !data && query.state.status === 'error' ? false : Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL),
         onSuccess: async (data) => {
-            // Publish app details to IndexStore if there is resource tree is not to be fetched
+            // Publish app details to IndexStore if resource tree is not to be fetched
             if (!data?.isPipelineTriggered && data?.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
                 IndexStore.publishAppDetails(
                     {
