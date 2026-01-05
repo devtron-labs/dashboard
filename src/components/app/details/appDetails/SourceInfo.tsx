@@ -500,14 +500,13 @@ export const SourceInfo = ({
                                       renderRollbackButton={renderRollbackButton}
                                   />
                               )}
-                          {!appDetails?.deploymentAppDeleteRequest &&
-                              !appMigratedFromExternalSourceAndIsNotTriggered && (
-                                  <SecurityVulnerabilityCard
-                                      cardLoading={cardLoading}
-                                      appId={params.appId}
-                                      envId={params.envId}
-                                  />
-                              )}
+                          {!appMigratedFromExternalSourceAndIsNotTriggered && (
+                              <SecurityVulnerabilityCard
+                                  cardLoading={cardLoading}
+                                  appId={params.appId}
+                                  envId={params.envId}
+                              />
+                          )}
                           <div className="flex right ml-auto">
                               {appDetails?.appStoreChartId && (
                                   <>
