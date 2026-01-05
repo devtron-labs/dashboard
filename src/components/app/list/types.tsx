@@ -105,8 +105,6 @@ export interface GetEnvironmentsFromClusterNamespaceProps {
     namespaceList: EnvironmentListHelmResult[]
 }
 
-export interface DevtronAppExpandedState {
-    expandedRow: Record<number, boolean>
-    isAllExpanded: boolean
-    isAllExpandable: boolean
+export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {
+    redirectToAppDetails: (app: App, envId: number) => string
 }
