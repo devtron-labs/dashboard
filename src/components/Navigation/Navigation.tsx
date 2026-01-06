@@ -209,6 +209,10 @@ export const Navigation = ({
     const handleOpenCommandBar = () => {
         setShowCommandBar(true)
         handleCloseExpandedNavigation(true)()
+        handleAnalyticsEvent({
+            category: 'command-bar-button',
+            action: 'command-bar-button-click',
+        })
     }
 
     return (

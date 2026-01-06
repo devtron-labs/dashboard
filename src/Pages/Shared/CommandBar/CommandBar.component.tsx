@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 
-import { useQuery } from '@devtron-labs/devtron-fe-common-lib'
+import { handleAnalyticsEvent, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandBarBackdrop from './CommandBarBackdrop'
 import { getCommandBarResourceLists } from './service'
@@ -29,6 +29,10 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault()
                 setShowCommandBar(true)
+                handleAnalyticsEvent({
+                    category: 'command-bar-shortcut',
+                    action: 'command-bar-shortcut-press',
+                })
             }
         }
         window.addEventListener('keydown', handleOpen)
