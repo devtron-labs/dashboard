@@ -350,13 +350,13 @@ const NodeComponent = ({
                 analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
             }
 
-            const data: MainContext['debugAgentContext']['data'] = {
+            const data = {
                 ...aiAgentContext?.data,
                 resourceKind: node?.kind,
                 resourceName: node?.name,
                 namespace: node?.namespace,
                 resourceStatus: nodeStatus,
-            }
+            } as MainContext['debugAgentContext']['data']
 
             const debugAgentContext: MainContext['debugAgentContext'] = {
                 ...aiAgentContext,
