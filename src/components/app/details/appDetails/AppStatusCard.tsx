@@ -17,7 +17,15 @@
 import React, { useMemo } from 'react'
 import Tippy from '@tippyjs/react'
 import ReactGA from 'react-ga4'
-import { AppStatus, AppType, StatusType, LoadingCard, getAIAnalyticsEvents } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    AppStatus,
+    AppType,
+    StatusType,
+    LoadingCard,
+    getAIAnalyticsEvents,
+    useMainContext,
+    MainContext,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICHelpOutline } from '../../../../assets/icons/ic-help-outline.svg'
 import { AppStatusCardType } from './appDetails.type'
 import './appDetails.scss'
@@ -26,6 +34,8 @@ import { importComponentFromFELibrary } from '@Components/common'
 const ExplainWithAIButton = importComponentFromFELibrary('ExplainWithAIButton', null, 'function')
 
 const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }: AppStatusCardType) => {
+    const { aiAgentContext } = useMainContext()
+
     const isHibernated = ['hibernating', 'hibernated'].includes(status.toLowerCase())
     const isFluxCDApp = appDetails?.appType === AppType.EXTERNAL_FLUX_APP
     const isStatusHealthy = useMemo(() => status.toLowerCase() === StatusType.HEALTHY.toLowerCase(), [status])
@@ -44,6 +54,29 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
     }
 
     const renderBottomContainer = () => {
+        const intelligenceConfig: MainContext['intelligenceConfig'] = {
+            clusterId: appDetails.clusterId,
+            metadata: {
+                ...(debugNode ? { object: debugObject } : { message }),
+                namespace: appDetails.namespace,
+                status: debugNode?.health?.status ?? appDetails.appStatus,
+            },
+            prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${appDetails.namespace}`,
+            analyticsCategory: getAIAnalyticsEvents('APP_STATUS', appDetails.appType),
+        }
+
+        const debugAgentContext = {
+            ...aiAgentContext,
+            prompt: `Why is application '${appDetails.appName}' of '${appDetails.environmentName}' env ${status}?`,
+            data: {
+                ...aiAgentContext.data,
+                ...(debugNode ? { debugNodeKind: debugNode.kind, debugNodeName: debugNode.name } : {}),
+                ...(message ? { additionalMessage: message } : {}),
+                namespace: appDetails.namespace,
+                status: debugNode?.health?.status ?? appDetails.appStatus,
+            },
+        } as MainContext['debugAgentContext']
+
         return (
             <div className="flexbox dc__content-space dc__gap-4 w-100">
                 {isStatusHealthy && message && (
@@ -56,16 +89,8 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 <div className="app-details-info-card__bottom-container__details fs-12 fw-6">Details</div>
                 {ExplainWithAIButton && !isStatusHealthy && (debugNode || message) && (
                     <ExplainWithAIButton
-                        intelligenceConfig={{
-                            clusterId: appDetails.clusterId,
-                            metadata: {
-                                ...(debugNode ? { object: debugObject } : { message }),
-                                namespace: appDetails.namespace,
-                                status: debugNode?.health?.status ?? appDetails.appStatus,
-                            },
-                            prompt: `Debug ${message || 'error'} ${debugNode ? `of ${debugObject}` : ''} in ${appDetails.namespace}`,
-                            analyticsCategory: getAIAnalyticsEvents('APP_STATUS', appDetails.appType),
-                        }}
+                        intelligenceConfig={intelligenceConfig}
+                        debugAgentContext={debugAgentContext}
                     />
                 )}
             </div>

@@ -22,12 +22,14 @@ import {
     ClipboardButton,
     ComponentSizeType,
     getAIAnalyticsEvents,
+    MainContext,
     noop,
     SortableTableHeaderCell,
     TabGroup,
     TippyCustomized,
     TippyTheme,
     Tooltip,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
@@ -72,6 +74,8 @@ const NodeComponent = ({
     tabs,
     removeTabByIdentifier,
 }: NodeComponentProps) => {
+    const { aiAgentContext } = useMainContext()
+
     const { url } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -335,6 +339,31 @@ const NodeComponent = ({
                 return _classname
             }
 
+            const intelligenceConfig: MainContext['intelligenceConfig'] = {
+                metadata: {
+                    object: `${node?.kind}/${node?.name}`,
+                    namespace: node?.namespace,
+                    status: nodeStatus,
+                },
+                clusterId,
+                prompt: `Debug what's wrong with ${node?.name}/${node?.kind} of ${node?.namespace}`,
+                analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
+            }
+
+            const data: MainContext['debugAgentContext']['data'] = {
+                ...aiAgentContext?.data,
+                resourceKind: node?.kind,
+                resourceName: node?.name,
+                namespace: node?.namespace,
+                resourceStatus: nodeStatus,
+            }
+
+            const debugAgentContext: MainContext['debugAgentContext'] = {
+                ...aiAgentContext,
+                data,
+                prompt: `Why is ${node?.kind} '${node?.name}' of '${node?.namespace}' namespace in ${nodeStatus} status?`,
+            } as MainContext['debugAgentContext']
+
             return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Fragment key={`grt${index}`}>
@@ -511,16 +540,8 @@ const NodeComponent = ({
                         {showAIButton && (
                             <ExplainWithAIButton
                                 isIconButton
-                                intelligenceConfig={{
-                                    metadata: {
-                                        object: `${node.kind}/${node?.name}`,
-                                        namespace: node?.namespace,
-                                        status: nodeStatus,
-                                    },
-                                    clusterId,
-                                    prompt: `Debug what’s wrong with ${node?.name}/${node.kind} of ${node?.namespace}`,
-                                    analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
-                                }}
+                                intelligenceConfig={intelligenceConfig}
+                                debugAgentContext={debugAgentContext}
                             />
                         )}
                         {!appDetails.isVirtualEnvironment &&
