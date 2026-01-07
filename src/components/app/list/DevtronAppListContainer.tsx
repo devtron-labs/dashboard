@@ -79,7 +79,7 @@ const EnvironmentCellComponent = ({
     }
 
     return (
-        <div className="flex left dc__gap-6">
+        <div className="flex left dc__gap-8">
             <span
                 data-testid={`${app.defaultEnv.name}-environment`}
                 className={`dc__truncate cn-9 ${isEnvConfigured ? '' : 'cn5'}`}
@@ -90,7 +90,7 @@ const EnvironmentCellComponent = ({
             {envCount > 1 ? (
                 <button
                     type="button"
-                    className="dc__no-border dc__outline-none dc__transparent p-0 m-0 dc__underline-onhover dc__link dc__link_over fs-12 lh-18 dc__truncate-text mw-18"
+                    className="dc__no-border dc__outline-none dc__transparent fw-5 dc__link cn-4 p-0 m-0 dc__underline-onhover fs-12 lh-18 dc__truncate-text mw-18"
                 >
                     +{envCount - 1} more
                 </button>
@@ -255,7 +255,7 @@ const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<
     }
 
     return (
-        <div className="flex right p-2">
+        <div className="flex right pr-6 py-2">
             <Button
                 dataTestId="edit-app-button"
                 icon={<Icon name="ic-gear" color={null} />}
@@ -357,6 +357,7 @@ const DevtronAppList = ({
                     fixed: 180,
                 },
                 CellComponent: EnvironmentCellComponent,
+                infoTooltipText: 'Environment is a unique combination of cluster and namespace',
             },
             {
                 field: APP_LIST_HEADERS.Cluster,
@@ -434,7 +435,7 @@ const DevtronAppList = ({
             filtersVariant={FiltersTypeEnum.URL}
             columns={columns}
             rowActionOnHoverConfig={{
-                width: 36,
+                width: 42,
                 Component: HoverComponent,
             }}
             additionalProps={{
@@ -450,6 +451,11 @@ const DevtronAppList = ({
             }}
             clearFilters={clearAllFilters}
             filter={null}
+            rowStartIconConfig={{
+                name: 'ic-devtron',
+                color: 'B500',
+                size: 18,
+            }}
         />
     )
 }

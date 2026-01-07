@@ -355,11 +355,18 @@
     }
 }
 
-.generic-table__row {
-    padding-block: 6px;
-}
+#table-wrapper-table__devtron-app-list {
+    .generic-table__row {
+        padding-block: 6px;
+        padding-inline-end: 0px;
+    }
 
-.generic-table__row--expanded-row {
-    padding-block: 10px;
+    .generic-table__row--expanded-row {
+        padding-block: 0px;
+    }
+
+    .generic-table__header {
+        padding: 0 0 0 20px;
+    }
 }
 
