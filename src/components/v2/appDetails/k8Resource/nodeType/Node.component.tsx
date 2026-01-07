@@ -341,27 +341,27 @@ const NodeComponent = ({
 
             const intelligenceConfig: MainContext['intelligenceConfig'] = {
                 metadata: {
-                    object: `${node?.kind}/${node?.name}`,
-                    namespace: node?.namespace,
+                    object: `${node.kind}/${node.name}`,
+                    namespace: node.namespace,
                     status: nodeStatus,
                 },
                 clusterId,
-                prompt: `Debug what's wrong with ${node?.name}/${node?.kind} of ${node?.namespace}`,
+                prompt: `Debug what's wrong with ${node.name}/${node.kind} of ${node.namespace}`,
                 analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
             }
 
             const data = {
-                ...aiAgentContext?.data,
-                resourceKind: node?.kind,
-                resourceName: node?.name,
-                namespace: node?.namespace,
+                ...aiAgentContext.data,
+                resourceKind: node.kind,
+                resourceName: node.name,
+                namespace: node.namespace,
                 resourceStatus: nodeStatus,
             } as MainContext['debugAgentContext']['data']
 
             const debugAgentContext: MainContext['debugAgentContext'] = {
                 ...aiAgentContext,
                 data,
-                prompt: `Why is ${node?.kind} '${node?.name}' of '${node?.namespace}' namespace in ${nodeStatus} status?`,
+                prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus}?`,
             } as MainContext['debugAgentContext']
 
             return (

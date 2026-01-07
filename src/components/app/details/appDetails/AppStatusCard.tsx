@@ -71,7 +71,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
             data: {
                 ...aiAgentContext.data,
                 ...(debugNode ? { debugNodeKind: debugNode.kind, debugNodeName: debugNode.name } : {}),
-                ...(message ? { additionalMessage: message } : {}),
+                ...(message ? { debugError: message } : {}),
                 namespace: appDetails.namespace,
                 status: debugNode?.health?.status ?? appDetails.appStatus,
             },
