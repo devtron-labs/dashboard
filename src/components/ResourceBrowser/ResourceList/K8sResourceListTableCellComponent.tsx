@@ -249,6 +249,7 @@ const K8sResourceListTableCellComponent = ({
             .join('')}</div>`,
         data: {
             ...aiAgentContext.data,
+            ...baseEventDetails,
         },
     } as MainContext['debugAgentContext']
 
