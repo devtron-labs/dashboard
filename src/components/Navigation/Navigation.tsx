@@ -19,6 +19,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
     AnimatePresence,
+    handleAnalyticsEvent,
     IS_PLATFORM_MAC_OS,
     KeyboardShortcut,
     ModuleNameMap,
@@ -165,6 +166,10 @@ export const Navigation = ({
             ) {
                 e.preventDefault()
             }
+            handleAnalyticsEvent({
+                category: 'Navigation',
+                action: `nav-${navItem.id}`,
+            })
             setHoveredNavGroup(navItem)
             setSearchText('')
         }
@@ -204,6 +209,10 @@ export const Navigation = ({
     const handleOpenCommandBar = () => {
         setShowCommandBar(true)
         handleCloseExpandedNavigation(true)()
+        handleAnalyticsEvent({
+            category: 'command-bar-button',
+            action: 'command-bar-button-click',
+        })
     }
 
     return (

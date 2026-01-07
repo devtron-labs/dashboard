@@ -702,9 +702,10 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     {EnterpriseRouter && CostVisibilityRenderProvider && (
                                         <Route
                                             path={[
-                                                CommonURLS.APPLICATION_MANAGEMENT,
                                                 CommonURLS.COST_VISIBILITY,
-                                                CommonURLS.DATA_PROTECTION,
+                                                ...(serverMode === SERVER_MODE.FULL
+                                                    ? [CommonURLS.APPLICATION_MANAGEMENT, CommonURLS.DATA_PROTECTION]
+                                                    : []),
                                             ]}
                                         >
                                             <CostVisibilityRenderProvider renderClusterForm={renderClusterForm}>

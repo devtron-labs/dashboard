@@ -24,6 +24,7 @@ import {
     ButtonVariantType,
     ClusterCostModuleConfigPayload,
     DEFAULT_SECRET_PLACEHOLDER,
+    handleAnalyticsEvent,
     Icon,
     ModalSidebarPanel,
     ModuleNameMap,
@@ -405,15 +406,26 @@ const ClusterForm = ({
     const hideConfirmationModal = () => setConfirmation(false)
 
     const getTabSwitchHandler = (tab: ClusterConfigTabEnum) => () => {
+        if (tab === ClusterConfigTabEnum.COST_VISIBILITY) {
+            handleAnalyticsEvent({
+                category: 'cluster-config',
+                action: 'CLUSTER_CONFIG_COST_VISIBILITY',
+            })
+        }
         validateAllAndSetErrors()
         additionalValidations()
         setClusterConfigTab(tab)
     }
 
     const toggleCostModule = () => {
+        const enabled = !costModuleState.enabled
+        handleAnalyticsEvent({
+            category: 'cluster-config-cost-toggle',
+            action: `CLUSTER_CONFIG_COST_VISIBILITY_${enabled ? 'ENABLED' : 'DISABLED'}`,
+        })
         const newConfigState: typeof costModuleState = {
             ...costModuleState,
-            enabled: !costModuleState.enabled,
+            enabled,
         }
 
         setCostModuleError(newConfigState.enabled && !validateCostModuleConfig(newConfigState))
