@@ -416,7 +416,7 @@ const DevtronAppList = ({
                 totalRows: totalCount,
             }
         },
-        [syncListData, JSON.stringify(filterConfig)],
+        [syncListData, filterConfig],
     )
 
     if (isSearchOrFilterApplied && noRows) {
@@ -429,6 +429,7 @@ const DevtronAppList = ({
 
     return (
         <Table<App, FiltersTypeEnum.URL, TableAdditionalPropsType>
+            key={JSON.stringify({ syncListData, filterConfig })}
             id="table__devtron-app-list"
             getRows={getRows}
             paginationVariant={PaginationEnum.PAGINATED}
