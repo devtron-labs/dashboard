@@ -108,9 +108,11 @@ export const EventsTable = ({
 
                         const debugAgentContext = {
                             ...aiAgentContext,
-                            prompt: `Explain why the event occurred with the following details:\n${Object.entries(event)
-                                .map(([key, value]) => `| ${key} | ${value} |`)
-                                .join('\n')}`,
+                            prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+                                event,
+                            )
+                                .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+                                .join('')}</div>`,
                             data: {
                                 ...aiAgentContext.data,
                                 ...intelligenceConfig.metadata,

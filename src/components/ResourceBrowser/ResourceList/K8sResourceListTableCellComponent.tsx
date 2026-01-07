@@ -242,9 +242,11 @@ const K8sResourceListTableCellComponent = ({
 
     const eventDebugAgentContext = {
         ...aiAgentContext,
-        prompt: `Explain why the event occurred with the following details:\n${Object.entries(baseEventDetails)
-            .map(([key, value]) => `| ${key} | ${value} |`)
-            .join('\n')}`,
+        prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+            baseEventDetails,
+        )
+            .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+            .join('')}</div>`,
         data: {
             ...aiAgentContext.data,
         },
