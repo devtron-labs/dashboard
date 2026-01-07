@@ -240,18 +240,20 @@ const K8sResourceListTableCellComponent = ({
         analyticsCategory: getAIAnalyticsEvents('RB_RESOURCE'),
     }
 
-    const eventDebugAgentContext = {
-        ...aiAgentContext,
-        prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
-            baseEventDetails,
-        )
-            .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
-            .join('')}</div>`,
-        data: {
-            ...aiAgentContext.data,
-            ...baseEventDetails,
-        },
-    } as MainContext['debugAgentContext']
+    const eventDebugAgentContext = aiAgentContext
+        ? ({
+              ...aiAgentContext,
+              prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+                  baseEventDetails,
+              )
+                  .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+                  .join('')}</div>`,
+              data: {
+                  ...aiAgentContext.data,
+                  ...baseEventDetails,
+              },
+          } as MainContext['debugAgentContext'])
+        : null
 
     if (columnName === 'cpu.usagePercentage') {
         return (
@@ -403,17 +405,21 @@ const K8sResourceListTableCellComponent = ({
                                     prompt: `Debug what's wrong with ${resourceData.name}/${selectedResource?.gvk?.Kind} of ${resourceData.namespace}`,
                                     analyticsCategory: getAIAnalyticsEvents('RB__RESOURCE'),
                                 }}
-                                debugAgentContext={{
-                                    ...aiAgentContext,
-                                    prompt: `Why is ${selectedResource?.gvk?.Kind} '${resourceData.name}' of '${resourceData.namespace}' namespace in ${resourceData.status}?`,
-                                    data: {
-                                        ...aiAgentContext.data,
-                                        kind: selectedResource?.gvk?.Kind,
-                                        name: resourceData.name,
-                                        namespace: resourceData.namespace,
-                                        status: resourceData.status ?? '',
-                                    },
-                                }}
+                                debugAgentContext={
+                                    aiAgentContext
+                                        ? {
+                                              ...aiAgentContext,
+                                              prompt: `Why is ${selectedResource?.gvk?.Kind} '${resourceData.name}' of '${resourceData.namespace}' namespace in ${resourceData.status}?`,
+                                              data: {
+                                                  ...aiAgentContext.data,
+                                                  kind: selectedResource?.gvk?.Kind,
+                                                  name: resourceData.name,
+                                                  namespace: resourceData.namespace,
+                                                  status: resourceData.status ?? '',
+                                              },
+                                          }
+                                        : null
+                                }
                             />
                         </div>
                     )}

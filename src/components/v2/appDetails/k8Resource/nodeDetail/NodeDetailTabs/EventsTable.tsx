@@ -106,18 +106,20 @@ export const EventsTable = ({
                             analyticsCategory: aiWidgetAnalyticsEvent,
                         }
 
-                        const debugAgentContext = {
-                            ...aiAgentContext,
-                            prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
-                                event,
-                            )
-                                .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
-                                .join('')}</div>`,
-                            data: {
-                                ...aiAgentContext.data,
-                                ...intelligenceConfig.metadata,
-                            },
-                        } as MainContext['debugAgentContext']
+                        const debugAgentContext = aiAgentContext
+                            ? ({
+                                  ...aiAgentContext,
+                                  prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+                                      event,
+                                  )
+                                      .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+                                      .join('')}</div>`,
+                                  data: {
+                                      ...aiAgentContext.data,
+                                      ...intelligenceConfig.metadata,
+                                  },
+                              } as MainContext['debugAgentContext'])
+                            : null
 
                         return (
                             <div

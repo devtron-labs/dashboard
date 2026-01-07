@@ -65,7 +65,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
             analyticsCategory: getAIAnalyticsEvents('APP_STATUS', appDetails.appType),
         }
 
-        const debugAgentContext = {
+        const debugAgentContext = aiAgentContext ? {
             ...aiAgentContext,
             prompt: `Why is application '${appDetails.appName}' of '${appDetails.environmentName}' env ${status}?`,
             data: {
@@ -75,7 +75,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
                 namespace: appDetails.namespace,
                 status: debugNode?.health?.status ?? appDetails.appStatus,
             },
-        } as MainContext['debugAgentContext']
+        } as MainContext['debugAgentContext'] : null
 
         return (
             <div className="flexbox dc__content-space dc__gap-4 w-100">

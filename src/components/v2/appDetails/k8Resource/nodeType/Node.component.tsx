@@ -350,19 +350,19 @@ const NodeComponent = ({
                 analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
             }
 
-            const data = {
-                ...aiAgentContext.data,
-                resourceKind: node.kind,
-                resourceName: node.name,
-                namespace: node.namespace,
-                resourceStatus: nodeStatus,
-            } as MainContext['debugAgentContext']['data']
-
-            const debugAgentContext: MainContext['debugAgentContext'] = {
-                ...aiAgentContext,
-                data,
-                prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus}?`,
-            } as MainContext['debugAgentContext']
+            const debugAgentContext: MainContext['debugAgentContext'] = aiAgentContext
+                ? ({
+                      ...aiAgentContext,
+                      data: {
+                          ...aiAgentContext.data,
+                          resourceKind: node.kind,
+                          resourceName: node.name,
+                          namespace: node.namespace,
+                          resourceStatus: nodeStatus,
+                      },
+                      prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus}?`,
+                  } as MainContext['debugAgentContext'])
+                : null
 
             return (
                 // eslint-disable-next-line react/no-array-index-key
