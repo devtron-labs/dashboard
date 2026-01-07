@@ -145,6 +145,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const location = useLocation()
     const navRouteRef = useRef<HTMLDivElement>()
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
+    const [debugAgentContext, setDebugAgentContext] = useState<MainContext['debugAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -820,10 +821,13 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 tempAppWindowConfig,
                 setTempAppWindowConfig,
                 AIRecommendations,
+                debugAgentContext,
+                setDebugAgentContext,
             }}
         >
             <ConfirmationModalProvider>
                 <BaseConfirmationModal />
+                {/* Ensure useAIChat is used in fe-lib only! */}
                 {AIChatProvider ? <AIChatProvider>{renderMainBody()}</AIChatProvider> : renderMainBody()}
             </ConfirmationModalProvider>
         </MainContextProvider>
