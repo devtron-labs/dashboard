@@ -181,7 +181,7 @@ if (!window || !window._env_) {
         FEATURE_CANARY_ROLLOUT_PROGRESS_ENABLE: true,
         COMMAND_BAR_REFETCH_INTERVAL: 3600,
         FEATURE_STORAGE_ENABLE: true,
-        FEATURE_ATHENA_DEBUG_MODE_ENABLE: true,
+        FEATURE_ATHENA_DEBUG_MODE_ENABLE: false,
     }
 }
 
