@@ -88,15 +88,14 @@ export function getDeploymentStatusDetail(
     isHelmApps?: boolean,
     installedAppVersionHistoryId?: number,
 ): Promise<DeploymentStatusDetailsResponse> {
-    let appendUrl
-    if (isHelmApps) {
-        appendUrl = Routes.HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP
-    } else {
-        appendUrl = Routes.DEPLOYMENT_STATUS
-    }
-    return get(
-        `${appendUrl}/${appId}/${envId}?showTimeline=false${triggerId ? `&wfrId=${triggerId}` : ``}${installedAppVersionHistoryId ? `&installedAppVersionHistoryId=${installedAppVersionHistoryId}` : ''}`,
-    )
+    const appendUrl = isHelmApps ? Routes.HELM_DEPLOYMENT_STATUS_TIMELINE_INSTALLED_APP : Routes.DEPLOYMENT_STATUS
+    const url = getUrlWithSearchParams(`${appendUrl}/${appId}/${envId}`, {
+        showTimeline: false,
+        wfrId: triggerId,
+        installedAppVersionHistoryId,
+    })
+
+    return get(url)
 }
 
 export function getModuleConfigured(moduleName: string): Promise<ModuleConfigResponse> {

@@ -115,6 +115,10 @@ const DeploymentStatusCard = ({
         return <LoadingCard wider />
     }
 
+    if (!deploymentStatusDetailsBreakdownData) {
+        return null
+    }
+
     return (
         <div
             data-testid="deployment-status-card"

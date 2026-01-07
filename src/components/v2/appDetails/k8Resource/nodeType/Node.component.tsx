@@ -94,6 +94,13 @@ const NodeComponent = ({
         ? `node-row--${nodeRowClassModifierMap[params.nodeType]}`
         : ''
 
+    const showingAIButtonInAnyNode =
+        ExplainWithAIButton &&
+        selectedNodes?.some((node) => {
+            const status = getNodeStatus(node)
+            return !!status && !EXPLAIN_AI_EXCLUDED_STATUS.has(status.toLowerCase())
+        })
+
     useEffect(() => {
         if (externalLinks?.length > 0) {
             const _podLevelExternalLinks = []
@@ -572,7 +579,9 @@ const NodeComponent = ({
                             </div>
                         )}
 
-                        <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
+                        <div
+                            className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier} ${showingAIButtonInAnyNode ? 'explain-ai-button' : ''}`}
+                        >
                             {tableHeader.map((cell, index) => (
                                 <div
                                     // eslint-disable-next-line react/no-array-index-key

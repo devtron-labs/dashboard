@@ -111,7 +111,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     const [appListOptions, setAppListOptions] = useState<OptionType[]>([])
     const [selectedAppList, setSelectedAppList] = useState<MultiValue<OptionType>>([])
     const [appGroupListData, setAppGroupListData] = useState<AppGroupListType>()
-    const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
     const [groupFilterOptions, setGroupFilterOptions] = useState<GroupOptionType[]>([])
     const [selectedGroupFilter, setSelectedGroupFilter] = useState<MultiValue<GroupOptionType>>([])
     const [showCreateGroup, setShowCreateGroup] = useState<boolean>(false)
@@ -440,7 +439,12 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                             />
                         </Route>
                         <Route path={`${path}${URLS.DETAILS}/:appId(\\d+)?`}>
-                            <AppDetail detailsType="app-group" filteredResourceIds={_filteredAppsIds} />
+                            <AppDetail
+                                detailsType="app-group"
+                                filteredResourceIds={_filteredAppsIds}
+                                resourceList={appListOptions}
+                                setSelectedResourceList={setSelectedAppList}
+                            />
                         </Route>
                         <Route path={`${path}/${URLS.APP_TRIGGER}`}>
                             <EnvTriggerView filteredAppIds={_filteredAppsIds} isVirtualEnv={isVirtualEnv} />
@@ -473,8 +477,6 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
                 appListOptions={appListOptions}
                 selectedAppList={selectedAppList}
                 setSelectedAppList={setSelectedAppList}
-                selectedFilterTab={selectedFilterTab}
-                setSelectedFilterTab={setSelectedFilterTab}
                 groupFilterOptions={groupFilterOptions}
                 selectedGroupFilter={selectedGroupFilter}
                 setSelectedGroupFilter={setSelectedGroupFilter}
@@ -504,7 +506,7 @@ export default function AppGroupDetailsRoute({ isSuperAdmin }: AppGroupAdminType
     )
 }
 
-export const EnvHeader = ({
+const EnvHeader = ({
     envName,
     setEnvName,
     setShowEmpty,
@@ -512,8 +514,6 @@ export const EnvHeader = ({
     appListOptions,
     selectedAppList,
     setSelectedAppList,
-    selectedFilterTab,
-    setSelectedFilterTab,
     groupFilterOptions,
     selectedGroupFilter,
     setSelectedGroupFilter,
@@ -529,6 +529,7 @@ export const EnvHeader = ({
     const { setCurrentEnvironmentName } = useAppContext()
 
     const [isMenuOpen, setMenuOpen] = useState(false)
+    const [selectedFilterTab, setSelectedFilterTab] = useState<AppFilterTabs>(AppFilterTabs.GROUP_FILTER)
 
     const contextValue = useMemo(
         () => ({

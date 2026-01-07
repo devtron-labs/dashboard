@@ -137,7 +137,6 @@ export const ERROR_EMPTY_SCREEN = {
     TAKE_BACK_HOME: 'Take me home',
     APP_NOT_AVAILABLE: 'This application is not available on this environment',
     DEPLOYMENT_NOT_EXIST: 'Deployment on this environment doesn’t exist or was removed.',
-    SELECT_ANOTHER_ENVIRONMENT: 'Please select another environment',
     ALL_SET_GO_CONFIGURE: 'Looks like you’re all set. Go ahead and select an image to deploy',
     DEPLOYEMENT_WILL_BE_HERE: 'Once deployed, details for the deployment will be available here',
     GO_TO_DEPLOY: 'Go to deploy',
