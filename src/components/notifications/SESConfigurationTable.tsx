@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, Icon, InteractiveCellText, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
-import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
 import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
-import { ConfigurationTableProps } from './types'
+import { ConfigurationsTabTypes, SES_TABLE_COLUMNS } from './constants'
+import { renderDefaultTag } from './notifications.util'
+import { ConfigurationTableProps, SESConfigurationTableRow } from './types'
 
 import './notifications.scss'
 
@@ -43,31 +43,24 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
         })
     }
 
-    return (
-        <div className="ses-config-container flex-grow-1">
-            <div className="ses-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20 dc__position-sticky dc__top-0 bg__primary">
-                <p className="icon-dim-24 m-0" />
-                <p className="flex left m-0">Name</p>
-                <p className="flex left m-0">Access Key Id</p>
-                <p className="flex left m-0">Sender&apos;s Email</p>
-                <p className="m-0" />
-            </div>
-            <div className="flex-grow-1">
-                {state.sesConfigurationList.map((sesConfig) => (
-                    <div
-                        className="configuration-tab__table-row ses-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50 dc__visible-hover dc__visible-hover--parent"
-                        key={sesConfig.id}
-                    >
-                        {getConfigTabIcons(ConfigurationsTabTypes.SES)}
-                        <div className=" flex left dc__gap-8">
+    const tableRows = useMemo(
+        () =>
+            state.sesConfigurationList.map((sesConfig) => ({
+                id: `ses-${sesConfig.id}`,
+                data: {
+                    icon: <Icon name="ic-ses" color={null} size={null} />,
+                    name: (
+                        <div className="flex left dc__gap-8 py-10">
                             <InteractiveCellText
                                 text={sesConfig.name}
                                 onClickHandler={onClickSESConfigEdit(sesConfig.id)}
                             />
                             {renderDefaultTag(sesConfig.isDefault)}
                         </div>
-                        <InteractiveCellText text={sesConfig.accessKeyId} />
-                        <InteractiveCellText text={sesConfig.email} />
+                    ),
+                    accessKeyId: sesConfig.accessKeyId,
+                    email: sesConfig.email,
+                    actions: (
                         <ConfigTableRowActionButton
                             onClickEditRow={onClickSESConfigEdit(sesConfig.id)}
                             onClickDeleteRow={deleteClickHandler(
@@ -76,10 +69,29 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                             )}
                             modal={ConfigurationsTabTypes.SES}
                         />
-                    </div>
-                ))}
-            </div>
-        </div>
+                    ),
+                },
+            })),
+        [state.sesConfigurationList, deleteClickHandler],
+    )
+
+    return (
+        <Table<SESConfigurationTableRow, FiltersTypeEnum.STATE, {}>
+            id="table__ses-configuration"
+            columns={SES_TABLE_COLUMNS}
+            rows={tableRows}
+            emptyStateConfig={{
+                noRowsConfig: {
+                    title: 'No SES Configurations Found',
+                },
+            }}
+            filtersVariant={FiltersTypeEnum.STATE}
+            additionalFilterProps={{
+                initialSortKey: 'name',
+            }}
+            paginationVariant={undefined}
+            filter={null}
+        />
     )
 }
 

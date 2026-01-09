@@ -16,7 +16,14 @@
 
 // ------------ Configuration Constants ------------
 
-import { SlackFormType } from './types'
+import { FiltersTypeEnum, TableProps } from '@devtron-labs/devtron-fe-common-lib'
+
+import {
+    SESConfigurationTableRow,
+    SlackFormType,
+    SlackWebhookConfigurationTableRow,
+    SMTPConfigurationTableRow,
+} from './types'
 
 export enum ConfigurationsTabTypes {
     SES = 'ses',
@@ -120,3 +127,80 @@ export const DefaultWebhookValidations = {
 }
 
 export const SlackIncomingWebhookUrl = 'https://slack.com/marketplace/A0F7XDUAZ-incoming-webhooks'
+
+// ------------ Common Configuration Constants ------------
+
+export const BASE_CONFIG = [
+    {
+        label: '',
+        field: 'icon',
+        size: { fixed: 24 },
+    },
+    {
+        label: 'Name',
+        field: 'name',
+        isSortable: true,
+        size: null,
+    },
+]
+
+export const ACTION_COLUMN = {
+    label: '',
+    field: 'actions',
+    size: { fixed: 80 },
+}
+
+export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRow, FiltersTypeEnum.STATE, {}>['columns'] = [
+    ...BASE_CONFIG,
+    {
+        label: 'Access Key Id',
+        field: 'accessKeyId',
+        isSortable: true,
+        size: null,
+    },
+    {
+        label: "Sender's Email",
+        field: 'email',
+        isSortable: true,
+        size: null,
+    },
+    ...[ACTION_COLUMN],
+]
+
+export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRow, FiltersTypeEnum.STATE, {}>['columns'] = [
+    ...BASE_CONFIG,
+    {
+        label: 'Host',
+        field: 'host',
+        isSortable: true,
+        size: null,
+    },
+    {
+        label: 'Port',
+        field: 'port',
+        isSortable: true,
+        size: null,
+    },
+    {
+        label: "Sender's Email",
+        field: 'email',
+        isSortable: true,
+        size: null,
+    },
+    ...[ACTION_COLUMN],
+]
+
+export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
+    SlackWebhookConfigurationTableRow,
+    FiltersTypeEnum.STATE,
+    {}
+>['columns'] = [
+    ...BASE_CONFIG,
+    {
+        label: 'Webhook URL',
+        field: 'webhookUrl',
+        isSortable: false,
+        size: null,
+    },
+    ...[ACTION_COLUMN],
+]
