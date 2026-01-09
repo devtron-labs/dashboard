@@ -1,14 +1,17 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { handleAnalyticsEvent, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandBarBackdrop from './CommandBarBackdrop'
+import NavigationUpgradedDialog from './NavigationUpgradedDialog'
 import { getCommandBarResourceLists } from './service'
 import { CommandBarBackdropProps, CommandBarProps } from './types'
+import { getShowUpgradeDialogFromLocalStorage, hideUpgradeDialogInLocalStorage } from './utils'
 
 import './CommandBar.scss'
 
 const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
+    const [showUpgradeDialog, setShowUpgradeDialog] = useState(getShowUpgradeDialogFromLocalStorage())
     const { isLoading: isResourceListLoading, data: resourceList } = useQuery<
         CommandBarBackdropProps['resourceList'],
         CommandBarBackdropProps['resourceList'],
@@ -24,10 +27,16 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
         setShowCommandBar(false)
     }
 
+    const handleCloseUpgradeDialog = () => {
+        setShowUpgradeDialog(false)
+        hideUpgradeDialogInLocalStorage()
+    }
+
     useEffect(() => {
         const handleOpen = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault()
+                handleCloseUpgradeDialog()
                 setShowCommandBar(true)
                 handleAnalyticsEvent({
                     category: 'command-bar-shortcut',
@@ -42,7 +51,7 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
     }, [])
 
     if (!showCommandBar) {
-        return null
+        return <NavigationUpgradedDialog isOpen={showUpgradeDialog} onClose={handleCloseUpgradeDialog} />
     }
 
     return (
