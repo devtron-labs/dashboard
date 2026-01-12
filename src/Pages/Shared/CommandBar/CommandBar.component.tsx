@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { handleAnalyticsEvent, useQuery } from '@devtron-labs/devtron-fe-common-lib'
 
 import CommandBarBackdrop from './CommandBarBackdrop'
+import { UPGRADE_DIALOG_LOCAL_STORAGE_KEY } from './constants'
 import NavigationUpgradedDialog from './NavigationUpgradedDialog'
 import { getCommandBarResourceLists } from './service'
 import { CommandBarBackdropProps, CommandBarProps } from './types'
@@ -33,6 +34,12 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
     }
 
     useEffect(() => {
+        const handleStorageEvent = (e: StorageEvent) => {
+            if (e.key === UPGRADE_DIALOG_LOCAL_STORAGE_KEY && e.newValue === 'true') {
+                setShowUpgradeDialog(false)
+            }
+        }
+
         const handleOpen = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                 e.preventDefault()
@@ -45,8 +52,10 @@ const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
             }
         }
         window.addEventListener('keydown', handleOpen)
+        window.addEventListener('storage', handleStorageEvent)
         return () => {
             window.removeEventListener('keydown', handleOpen)
+            window.removeEventListener('storage', handleStorageEvent)
         }
     }, [])
 
