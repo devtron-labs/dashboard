@@ -65,6 +65,7 @@ const EnvironmentCellComponent = ({
     row: { data },
     isExpandedRow,
     isRowInExpandState,
+    expandRowCallback,
 }: TableCellComponentProps<App | Environment, FiltersTypeEnum.URL>) => {
     if (isExpandedRow) {
         return <div className="flex left">{(data as Environment).name}</div>
@@ -91,6 +92,7 @@ const EnvironmentCellComponent = ({
                 <button
                     type="button"
                     className="dc__no-border dc__outline-none dc__transparent fw-5 dc__link cn-4 p-0 m-0 dc__underline-onhover fs-12 lh-18 dc__truncate-text mw-18"
+                    onClick={expandRowCallback}
                 >
                     +{envCount - 1} more
                 </button>
@@ -285,6 +287,8 @@ const DevtronAppList = ({
 
     const { searchKey, appStatus, project, environment, namespace, cluster } = filterConfig
 
+    const { push } = useHistory()
+
     const isSearchOrFilterApplied =
         searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
 
@@ -406,10 +410,13 @@ const DevtronAppList = ({
                     data: app,
                     id: String(app.id),
                     expandableRows:
-                        app.defaultEnv.name && app.environments.length
+                        app.defaultEnv.name && app.environments.length > 1
                             ? app.environments.map((env) => ({
                                   id: `expanded-row-${app.id}-${env.id}`,
-                                  data: env,
+                                  data: {
+                                      app,
+                                      ...env,
+                                  },
                               }))
                             : null,
                 })),
@@ -418,6 +425,20 @@ const DevtronAppList = ({
         },
         [syncListData, filterConfig],
     )
+
+    const onRowClick = ({ data, expandableRows }) => {
+        if (expandableRows) {
+            const app = data as App
+
+            push(redirectToAppDetails(app, app.defaultEnv.id))
+
+            return
+        }
+
+        const { app, ...env } = data as (Environment & { app: App })
+
+        push(redirectToAppDetails(app, env.id))
+    }
 
     if (isSearchOrFilterApplied && noRows) {
         return <GenericFilterEmptyState handleClearFilters={clearAllFilters} />
@@ -457,6 +478,7 @@ const DevtronAppList = ({
                 color: 'B500',
                 size: 18,
             }}
+            onRowClick={onRowClick}
         />
     )
 }
