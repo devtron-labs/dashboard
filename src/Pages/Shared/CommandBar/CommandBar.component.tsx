@@ -11,7 +11,7 @@ import { getShowUpgradeDialogFromLocalStorage, hideUpgradeDialogInLocalStorage }
 import './CommandBar.scss'
 
 const CommandBar = ({ showCommandBar, setShowCommandBar }: CommandBarProps) => {
-    const [showUpgradeDialog, setShowUpgradeDialog] = useState(getShowUpgradeDialogFromLocalStorage())
+    const [showUpgradeDialog, setShowUpgradeDialog] = useState(getShowUpgradeDialogFromLocalStorage)
     const { isLoading: isResourceListLoading, data: resourceList } = useQuery<
         CommandBarBackdropProps['resourceList'],
         CommandBarBackdropProps['resourceList'],
