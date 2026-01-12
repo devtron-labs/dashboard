@@ -16,7 +16,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useHistory } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
 import DOMPurify from 'dompurify'
 import moment from 'moment'
 
@@ -49,7 +48,6 @@ import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCar
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
 
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
-// TODO: add info tippy support in column header cell
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
@@ -229,16 +227,14 @@ const CellComponent = ({
         return (
             <div className="flex left">
                 {lastDeployedTime && (
-                    <Tippy
-                        className="default-tt"
-                        arrow
-                        placement="top"
+                    <Tooltip
+                        alwaysShowTippyOnHover
                         content={moment(lastDeployedTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
                     >
                         <p className="dc__truncate-text  m-0" data-testid="last-deployed-time">
                             {handleUTCTime(lastDeployedTime, true)}
                         </p>
-                    </Tippy>
+                    </Tooltip>
                 )}
             </div>
         )
@@ -257,7 +253,7 @@ const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<
     }
 
     return (
-        <div className="flex right pr-6 py-2">
+        <div className="flex right pr-12 py-2">
             <Button
                 dataTestId="edit-app-button"
                 icon={<Icon name="ic-gear" color={null} />}
@@ -341,6 +337,7 @@ const DevtronAppList = ({
                 },
                 CellComponent: NameCellComponent,
                 isSortable: true,
+                horizontallySticky: true
             },
             ...(isArgoInstalled
                 ? [
@@ -426,8 +423,13 @@ const DevtronAppList = ({
         [syncListData, filterConfig],
     )
 
-    const onRowClick = ({ data, expandableRows }) => {
-        if (expandableRows) {
+    const onClearFilters = () => {
+        setNoRows(false)
+        clearAllFilters()
+    }
+
+    const onRowClick = ({ data }, isExpandedRow) => {
+        if (!isExpandedRow) {
             const app = data as App
 
             push(redirectToAppDetails(app, app.defaultEnv.id))
@@ -435,13 +437,13 @@ const DevtronAppList = ({
             return
         }
 
-        const { app, ...env } = data as (Environment & { app: App })
+        const { app, id } = data as (Environment & { app: App })
 
-        push(redirectToAppDetails(app, env.id))
+        push(redirectToAppDetails(app, id))
     }
 
     if (isSearchOrFilterApplied && noRows) {
-        return <GenericFilterEmptyState handleClearFilters={clearAllFilters} />
+        return <GenericFilterEmptyState handleClearFilters={onClearFilters} />
     }
 
     if (noRows) {
@@ -471,7 +473,7 @@ const DevtronAppList = ({
                 // empty state is handled externally
                 noRowsConfig: null,
             }}
-            clearFilters={clearAllFilters}
+            clearFilters={onClearFilters}
             filter={null}
             rowStartIconConfig={{
                 name: 'ic-devtron',
