@@ -14,31 +14,20 @@
  * limitations under the License.
  */
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
-import DOMPurify from 'dompurify'
-import moment from 'moment'
 
 import {
-    AppStatus,
     Button,
     ButtonStyleType,
     ButtonVariantType,
-    ClipboardButton,
     ComponentSizeType,
-    DATE_TIME_FORMATS,
     FiltersTypeEnum,
     GenericFilterEmptyState,
-    handleUTCTime,
-    highlightSearchText,
     Icon,
     PaginationEnum,
-    statusColor,
     Table,
-    TableCellComponentProps,
     TableRowActionsOnHoverComponentProps,
-    TableSignalEnum,
-    Tooltip,
     URLS as CommonURLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -52,198 +41,14 @@ import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
 import { AppListSortableKeys } from '../list-new/AppListType'
-import { APP_LIST_HEADERS } from '../list-new/Constants'
 import { getAppList } from '../service'
 import { appListModal, getDevtronAppListPayload } from './appList.modal'
 import { App, DevtronAppListProps, Environment, TableAdditionalPropsType } from './types'
+import { getTableColumns } from './utils'
 
 import './list.scss'
 
-const EnvironmentCellComponent = ({
-    row: { data },
-    isExpandedRow,
-    isRowInExpandState,
-    expandRowCallback,
-}: TableCellComponentProps<App | Environment, FiltersTypeEnum.URL>) => {
-    if (isExpandedRow) {
-        return <div className="flex left">{(data as Environment).name}</div>
-    }
-
-    const app = data as App
-    const envCount = app.environments.length
-    const isEnvConfigured = app.defaultEnv.name
-
-    if (!envCount || isRowInExpandState) {
-        return null
-    }
-
-    return (
-        <div className="flex left dc__gap-8">
-            <span
-                data-testid={`${app.defaultEnv.name}-environment`}
-                className={`dc__truncate cn-9 ${isEnvConfigured ? '' : 'cn5'}`}
-            >
-                {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
-            </span>
-
-            {envCount > 1 ? (
-                <button
-                    type="button"
-                    className="dc__no-border dc__outline-none dc__transparent fw-5 dc__link cn-4 p-0 m-0 dc__underline-onhover fs-12 lh-18 dc__truncate-text mw-18"
-                    onClick={expandRowCallback}
-                >
-                    +{envCount - 1} more
-                </button>
-            ) : null}
-        </div>
-    )
-}
-
-export const NameCellComponent = ({
-    signals,
-    row: { id, data },
-    filterConfig: { searchKey: searchText },
-    redirectToAppDetails,
-    isExpandedRow,
-}: TableCellComponentProps<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>) => {
-    const nameButtonRef = useRef<HTMLButtonElement>(null)
-    const { push } = useHistory()
-
-    useEffect(() => {
-        const handleEnterPressed = ({ detail: { activeRowData } }) => {
-            if (activeRowData.id === id) {
-                nameButtonRef.current?.click()
-            }
-        }
-
-        signals.addEventListener(TableSignalEnum.ENTER_PRESSED, handleEnterPressed)
-
-        return () => {
-            signals.removeEventListener(TableSignalEnum.ENTER_PRESSED, handleEnterPressed)
-        }
-    }, [])
-
-    if (isExpandedRow) {
-        const color = statusColor[(data as Environment).appStatus.toLowerCase()] || 'var(--N500)'
-
-        return (
-            <div className="flex left dc__overflow-hidden">
-                <svg className="app-status" preserveAspectRatio="none" viewBox="0 0 200 40">
-                    <line x1="0" y1="20" x2="100%" y2="20" stroke={color} strokeWidth="1" />
-                    <line x1="0" y1="15" x2="0" y2="25" stroke={color} strokeWidth="1" />
-                </svg>
-            </div>
-        )
-    }
-
-    const app = data as App
-
-    const { name } = app
-
-    const onClick = () => {
-        push(redirectToAppDetails(app, app.defaultEnv.id))
-    }
-
-    return (
-        <div className="flex left dc__gap-4 dc__visible-hover dc__visible-hover--parent">
-            <Tooltip content={name}>
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                <button
-                    type="button"
-                    className="dc__unset-button-styles dc__align-left dc__truncate"
-                    onClick={onClick}
-                    ref={nameButtonRef}
-                >
-                    <span
-                        className="dc__link cursor"
-                        // eslint-disable-next-line react/no-danger
-                        dangerouslySetInnerHTML={{
-                            __html: DOMPurify.sanitize(
-                                highlightSearchText({
-                                    searchText,
-                                    text: String(name),
-                                    highlightClasses: 'p-0 fw-6 bcy-2',
-                                }),
-                            ),
-                        }}
-                    />
-                </button>
-            </Tooltip>
-            <ClipboardButton content={String(name)} rootClassName="p-2 dc__visible-hover--child" iconSize={16} />
-        </div>
-    )
-}
-
-const CellComponent = ({
-    field,
-    row: { data },
-    isExpandedRow,
-    isRowInExpandState,
-}: TableCellComponentProps<App | Environment, FiltersTypeEnum.URL>) => {
-    if (isRowInExpandState) {
-        return null
-    }
-
-    const app = data as App
-    const env = data as Environment
-
-    if (field === APP_LIST_HEADERS.AppStatus) {
-        return (
-            <div className="flex left" data-testid="devtron-app-status">
-                <AppStatus
-                    status={isExpandedRow ? env.status : app.defaultEnv.appStatus}
-                    isVirtualEnv={isExpandedRow ? env.isVirtualEnvironment : app.defaultEnv.isVirtualEnvironment}
-                />
-            </div>
-        )
-    }
-
-    if (field === APP_LIST_HEADERS.Cluster) {
-        const clusterName = isExpandedRow ? env.clusterName : app.defaultEnv?.clusterName ?? ''
-
-        return (
-            <div className="flex left">
-                <p data-testid={`${clusterName}-cluster`} className="dc__truncate-text  m-0">
-                    {clusterName}
-                </p>
-            </div>
-        )
-    }
-
-    if (field === APP_LIST_HEADERS.Namespace) {
-        const namespace = isExpandedRow ? env.namespace : app.defaultEnv?.namespace ?? ''
-        return (
-            <div className="flex left">
-                <p data-testid={`${namespace}-namespace`} className="dc__truncate-text  m-0">
-                    {namespace}
-                </p>
-            </div>
-        )
-    }
-
-    if (field === AppListSortableKeys.LAST_DEPLOYED) {
-        const lastDeployedTime = isExpandedRow ? env.lastDeployedTime : app.defaultEnv.lastDeployedTime
-
-        return (
-            <div className="flex left">
-                {lastDeployedTime && (
-                    <Tooltip
-                        alwaysShowTippyOnHover
-                        content={moment(lastDeployedTime).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
-                    >
-                        <p className="dc__truncate-text  m-0" data-testid="last-deployed-time">
-                            {handleUTCTime(lastDeployedTime, true)}
-                        </p>
-                    </Tooltip>
-                )}
-            </div>
-        )
-    }
-
-    return null
-}
-
-const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<App>) => {
+const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<App | Environment>) => {
     const { push } = useHistory()
     const app = data as App
 
@@ -274,7 +79,6 @@ const DevtronAppList = ({
     namespaceList,
     syncListData,
     updateDataSyncing,
-    setCurrentAppName,
     clearAllFilters,
     isArgoInstalled,
     setAppCount,
@@ -289,11 +93,10 @@ const DevtronAppList = ({
         searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
 
     const redirectToAppDetails = (app, envId: number): string => {
-        setCurrentAppName(app.name)
-
         if (envId) {
             return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/details/${envId}`
         }
+
         return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/trigger`
     }
 
@@ -325,68 +128,6 @@ const DevtronAppList = ({
                 />
             </div>
         </div>
-    )
-
-    const columns = useMemo(
-        () => [
-            {
-                field: AppListSortableKeys.APP_NAME,
-                label: APP_LIST_HEADERS.AppName,
-                size: {
-                    fixed: 220,
-                },
-                CellComponent: NameCellComponent,
-                isSortable: true,
-                horizontallySticky: true
-            },
-            ...(isArgoInstalled
-                ? [
-                      {
-                          field: APP_LIST_HEADERS.AppStatus,
-                          label: APP_LIST_HEADERS.AppStatus,
-                          size: {
-                              fixed: 160,
-                          },
-                          CellComponent,
-                      },
-                  ]
-                : []),
-            {
-                field: APP_LIST_HEADERS.Environment,
-                label: APP_LIST_HEADERS.Environment,
-                size: {
-                    fixed: 180,
-                },
-                CellComponent: EnvironmentCellComponent,
-                infoTooltipText: 'Environment is a unique combination of cluster and namespace',
-            },
-            {
-                field: APP_LIST_HEADERS.Cluster,
-                label: APP_LIST_HEADERS.Cluster,
-                size: {
-                    fixed: 160,
-                },
-                CellComponent,
-            },
-            {
-                field: APP_LIST_HEADERS.Namespace,
-                label: APP_LIST_HEADERS.Namespace,
-                size: {
-                    fixed: 160,
-                },
-                CellComponent,
-            },
-            {
-                field: AppListSortableKeys.LAST_DEPLOYED,
-                label: APP_LIST_HEADERS.LastDeployedAt,
-                size: {
-                    fixed: 220,
-                },
-                CellComponent,
-                isSortable: true,
-            },
-        ],
-        [isArgoInstalled],
     )
 
     const getRows = useCallback(
@@ -437,10 +178,12 @@ const DevtronAppList = ({
             return
         }
 
-        const { app, id } = data as (Environment & { app: App })
+        const { app, id } = data as Environment & { app: App }
 
         push(redirectToAppDetails(app, id))
     }
+
+    const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])
 
     if (isSearchOrFilterApplied && noRows) {
         return <GenericFilterEmptyState handleClearFilters={onClearFilters} />
@@ -451,7 +194,7 @@ const DevtronAppList = ({
     }
 
     return (
-        <Table<App, FiltersTypeEnum.URL, TableAdditionalPropsType>
+        <Table<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>
             key={JSON.stringify({ syncListData, filterConfig })}
             id="table__devtron-app-list"
             getRows={getRows}

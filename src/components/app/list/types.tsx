@@ -64,7 +64,6 @@ export interface DevtronAppListProps
     syncListData: boolean
     updateDataSyncing: (loading: boolean) => void
     clearAllFilters: () => void
-    setCurrentAppName: (appName: string) => void
     setAppCount: (appCount: number) => void
     appListContainerRef: MutableRefObject<HTMLDivElement>
 }
