@@ -1366,16 +1366,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@date-fns/tz@npm:^1.4.1":
+"@date-fns/tz@npm:^1.2.0":
   version: 1.4.1
   resolution: "@date-fns/tz@npm:1.4.1"
   checksum: 10c0/9033fdc4682fe3d4d147625ce04fa88a8792653594e2de8d5a438c8f3bfc0990ee28fe773f91cac6810b06d818b5b281ae0608752ba8337257d0279ded3f019a
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-7":
-  version: 1.22.0-beta-7
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-7"
+"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-8":
+  version: 1.22.0-beta-8
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-8"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1409,7 +1409,7 @@ __metadata:
     qrcode.react: "npm:^4.2.0"
     react-canvas-confetti: "npm:^2.0.7"
     react-csv: "npm:^2.2.2"
-    react-day-picker: "npm:^9.11.2"
+    react-day-picker: "npm:9.4.3"
     react-draggable: "npm:^4.4.5"
     react-international-phone: "npm:^4.5.0"
     react-virtualized-sticky-tree: "npm:^3.0.0-beta18"
@@ -1429,7 +1429,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/837b7634f89a106849a3ba34de5a8516bc2c7752a7ea59f1013de583a075f51058cf2b66e1d5de06921528710027a728fab93499dede433f30ed5290143f8b41
+  checksum: 10c0/43d112e982d56ade02d3f536a232a6d10f7a9389b0ec7a9f91fc255e52744429a52b9c75e6dc1a1c190f3bd90254f2739e55238ba205f5c28427a7063b3390a4
   languageName: node
   linkType: hard
 
@@ -5690,7 +5690,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-beta-7"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-beta-8"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@rjsf/core": "npm:^5.13.3"
@@ -5807,13 +5807,6 @@ __metadata:
     es-errors: "npm:^1.3.0"
     is-data-view: "npm:^1.0.1"
   checksum: 10c0/fa7aa40078025b7810dcffc16df02c480573b7b53ef1205aa6a61533011005c1890e5ba17018c692ce7c900212b547262d33279fde801ad9843edc0863bf78c4
-  languageName: node
-  linkType: hard
-
-"date-fns-jalali@npm:^4.1.0-0":
-  version: 4.1.0-0
-  resolution: "date-fns-jalali@npm:4.1.0-0"
-  checksum: 10c0/f9ad98d9f7e8e5abe0d070dc806b0c8baded2b1208626c42e92cbd2605b5171f5714d6b79b20cc2666267d821699244c9d0b5e93274106cf57d6232da77596ed
   languageName: node
   linkType: hard
 
@@ -10553,16 +10546,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-day-picker@npm:^9.11.2":
-  version: 9.13.0
-  resolution: "react-day-picker@npm:9.13.0"
+"react-day-picker@npm:9.4.3":
+  version: 9.4.3
+  resolution: "react-day-picker@npm:9.4.3"
   dependencies:
-    "@date-fns/tz": "npm:^1.4.1"
+    "@date-fns/tz": "npm:^1.2.0"
     date-fns: "npm:^4.1.0"
-    date-fns-jalali: "npm:^4.1.0-0"
   peerDependencies:
     react: ">=16.8.0"
-  checksum: 10c0/e176309a24697f6552c80c7fde257f3dc06506a4e5ec22b11b55bf136bd452ab98d2ca9c2a17632092d67d23d08b3b35daf77d99e95a937ad290d3322abc745c
+  checksum: 10c0/f0d2c547bc4f148234db0a422cf6c0f655a76547fb1436057b75bd732aa1497767a5ff4affeaecdb479b58bc155f797afcc8c6a4e5d329a406c41b610bea2e4a
   languageName: node
   linkType: hard
 
