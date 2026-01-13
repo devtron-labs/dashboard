@@ -6,9 +6,6 @@
     "dependencies": {
         "@devtron-labs/devtron-fe-common-lib": "1.22.0-beta-8",
         "@esbuild-plugins/node-globals-polyfill": "0.2.3",
-        "@rjsf/core": "^6.1.2",
-        "@rjsf/utils": "^6.1.2",
-        "@rjsf/validator-ajv8": "^6.1.2",
         "@sentry/browser": "7.119.1",
         "@sentry/integrations": "7.50.0",
         "@sentry/tracing": "7.50.0",
