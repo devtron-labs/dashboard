@@ -67,7 +67,7 @@ const AppStatusCard = ({ appDetails, status, cardLoading, setDetailed, message }
 
         const debugAgentContext = aiAgentContext ? {
             ...aiAgentContext,
-            prompt: `Why is application '${appDetails.appName}' of '${appDetails.environmentName}' env ${status}?`,
+            prompt: `Why is application '${appDetails.appName}' of '${appDetails.environmentName}' in env ${status} state?`,
             data: {
                 ...aiAgentContext.data,
                 ...(debugNode ? { debugNodeKind: debugNode.kind, debugNodeName: debugNode.name } : {}),
