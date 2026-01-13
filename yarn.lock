@@ -5748,7 +5748,6 @@ __metadata:
     react-draggable: "npm:^4.4.5"
     react-ga4: "npm:^1.4.1"
     react-gtm-module: "npm:^2.0.11"
-    react-mde: "npm:^11.5.0"
     react-router-dom: "npm:^5.3.4"
     react-select: "npm:5.8.0"
     react-test-render: "npm:^1.1.2"
@@ -10652,16 +10651,6 @@ __metadata:
     "@types/react": ">=18"
     react: ">=18"
   checksum: 10c0/7f1aef171b49af9b84896917c033cbc0f45d0d2b4a5db5a339bf96977a143ae19f21cb7a69a6878b718d5578db021e96372fa33621b79bf57a87efb9b3c84166
-  languageName: node
-  linkType: hard
-
-"react-mde@npm:^11.5.0":
-  version: 11.5.0
-  resolution: "react-mde@npm:11.5.0"
-  peerDependencies:
-    react: ^17.0.0
-    react-dom: ^17.0.0
-  checksum: 10c0/958102a1fc5fd4fbf8e2633c735b97711a933deee7c7ae9b988b211c9b56730f3027853dd09237266789c1c70cca405b8dd204e9a33b8442231ed9a14de3b0ad
   languageName: node
   linkType: hard
 

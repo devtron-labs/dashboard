@@ -15,7 +15,7 @@
  */
 
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import * as Sentry from '@sentry/browser'
 import { CaptureConsole } from '@sentry/integrations'
@@ -185,7 +185,7 @@ if (!window || !window._env_) {
     }
 }
 
-ReactDOM.render(
+createRoot(root).render(
     <React.StrictMode>
         {window.top === window.self ? (
             <QueryClientProvider>
@@ -202,5 +202,4 @@ ReactDOM.render(
             </QueryClientProvider>
         ) : null}
     </React.StrictMode>,
-    root,
 )
