@@ -19,6 +19,8 @@ import {
     getComponentSpecificThemeClass,
     getTimeDifference,
     Icon,
+    MainContext,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -50,6 +52,8 @@ export const EventsTable = ({
     aiWidgetAnalyticsEvent,
     shouldScroll = true,
 }: EventTableType) => {
+    const { aiAgentContext } = useMainContext()
+
     const renderEventsTable = () => {
         if (loading) {
             return (
@@ -94,6 +98,29 @@ export const EventsTable = ({
                         const age = getTimeDifference({ startTime: firstTimestamp, endTime: currentTimeStamp })
 
                         const isNormalEventType = type === 'Normal'
+
+                        const intelligenceConfig: MainContext['intelligenceConfig'] = {
+                            metadata: { reason, message, count, lastSeen, age },
+                            clusterId,
+                            prompt: JSON.stringify(event),
+                            analyticsCategory: aiWidgetAnalyticsEvent,
+                        }
+
+                        const debugAgentContext = aiAgentContext
+                            ? ({
+                                  ...aiAgentContext,
+                                  prompt: `Explain why the event occurred with the following details:<div class="flexbox-col dc__gap-4 mt-16">${Object.entries(
+                                      event,
+                                  )
+                                      .map(([key, value]) => `<div>**${key}**: \`${value}\`</div>`)
+                                      .join('')}</div>`,
+                                  data: {
+                                      ...aiAgentContext.data,
+                                      ...intelligenceConfig.metadata,
+                                  },
+                              } as MainContext['debugAgentContext'])
+                            : null
+
                         return (
                             <div
                                 key={`${reason}-${message}`}
@@ -111,12 +138,8 @@ export const EventsTable = ({
                                 <span className={EVENT_TABLE_ITEM_CLASS}>{lastSeen}</span>
                                 {clusterId && ExplainWithAIButton && !isNormalEventType ? (
                                     <ExplainWithAIButton
-                                        intelligenceConfig={{
-                                            metadata: { reason, message, count, lastSeen, age },
-                                            clusterId,
-                                            prompt: JSON.stringify(event),
-                                            analyticsCategory: aiWidgetAnalyticsEvent,
-                                        }}
+                                        intelligenceConfig={intelligenceConfig}
+                                        debugAgentContext={debugAgentContext}
                                     />
                                 ) : null}
                             </div>
