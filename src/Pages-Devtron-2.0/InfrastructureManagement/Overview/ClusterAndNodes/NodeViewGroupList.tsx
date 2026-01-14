@@ -237,7 +237,7 @@ const NodeViewGroupListWrapper = ({
 
 const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewGroupType }) => {
     const { push } = useHistory()
-    const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = async (
+    const getRows: TableProps<NodeViewGroupRowType, FiltersTypeEnum.URL, {}>['getRows'] = useCallback(async (
         {
             searchKey,
             offset,
@@ -260,13 +260,13 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
             ...(nodeViewGroupType === NodeViewGroupType.NODE_ERRORS && errorType !== 'ALL'
                 ? { errorType: errorType as NodeErrorsKeys }
                 : {}),
-            ...(nodeViewGroupType === NodeViewGroupType.AUTOSCALER_MANAGED && autoscalerType !== 'ALL'
-                ? { autoscalerType: autoscalerType as AutoscalerTypes }
-                : {}),
-            ...(nodeViewGroupType === NodeViewGroupType.NODE_SCHEDULING && schedulableType !== 'ALL'
-                ? { schedulableType: schedulableType as NodeSchedulingKeys }
-                : {}),
-            abortSignal,
+                ...(nodeViewGroupType === NodeViewGroupType.AUTOSCALER_MANAGED && autoscalerType !== 'ALL'
+                    ? { autoscalerType: autoscalerType as AutoscalerTypes }
+                    : {}),
+                    ...(nodeViewGroupType === NodeViewGroupType.NODE_SCHEDULING && schedulableType !== 'ALL'
+                        ? { schedulableType: schedulableType as NodeSchedulingKeys }
+                        : {}),
+                        abortSignal,
         })
 
         return {
@@ -276,7 +276,7 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
             })),
             totalRows: response.result?.totalCount || 0,
         }
-    }
+    }, [])
 
     const clearFilters = () => {
         push({ search: '' })
@@ -311,7 +311,7 @@ const NodeViewGroupList = ({ nodeViewGroupType }: { nodeViewGroupType: NodeViewG
             }}
             paginationVariant={PaginationEnum.PAGINATED}
             filtersVariant={FiltersTypeEnum.URL}
-            filter={() => true}
+            filter={null}
             additionalFilterProps={{
                 initialSortKey: 'nodeName',
                 parseSearchParams: (searchParams) => ({

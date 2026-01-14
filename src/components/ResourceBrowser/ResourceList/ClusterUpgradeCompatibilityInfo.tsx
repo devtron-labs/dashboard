@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react'
+import { useMemo, useCallback } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -144,15 +144,15 @@ const ClusterUpgradeCompatibilityInfo = ({
         )
     }
 
-    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = (row, filterData) =>
-        !filterData.searchKey ||
-        Object.entries(row.data).some(
-            ([key, value]) =>
-                key !== 'id' &&
-                value !== null &&
-                value !== undefined &&
-                String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-        )
+    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = useCallback((row, filterData) =>
+                                                                              !filterData.searchKey ||
+                                                                                  Object.entries(row.data).some(
+                                                                                      ([key, value]) =>
+                                                                                      key !== 'id' &&
+                                                                                          value !== null &&
+                                                                                          value !== undefined &&
+                                                                                          String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+                                                                              ), [])
 
     const clearFilters = () => {
         const searchParams = new URLSearchParams(location.search)

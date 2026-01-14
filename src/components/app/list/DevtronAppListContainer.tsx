@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useCallback, useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -23,7 +23,6 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     FiltersTypeEnum,
-    GenericFilterEmptyState,
     Icon,
     PaginationEnum,
     Table,
@@ -185,17 +184,12 @@ const DevtronAppList = ({
 
     const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])
 
-    if (isSearchOrFilterApplied && noRows) {
-        return <GenericFilterEmptyState handleClearFilters={onClearFilters} />
-    }
-
-    if (noRows) {
+    if (noRows && !isSearchOrFilterApplied) {
         return renderGuidedCards()
     }
 
     return (
         <Table<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>
-            key={JSON.stringify({ syncListData, filterConfig })}
             id="table__devtron-app-list"
             getRows={getRows}
             paginationVariant={PaginationEnum.PAGINATED}
@@ -217,6 +211,7 @@ const DevtronAppList = ({
                 noRowsConfig: null,
             }}
             clearFilters={onClearFilters}
+            areFiltersApplied={isSearchOrFilterApplied}
             filter={null}
             rowStartIconConfig={{
                 name: 'ic-devtron',

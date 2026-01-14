@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useCallback } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -221,7 +221,7 @@ export const K8SResourceList = ({
         [resourceList?.data],
     )
 
-    const tableFilter: K8sResourceListTableProps['filter'] = (row, filterData) => {
+    const tableFilter: K8sResourceListTableProps['filter'] = useCallback((row, filterData) => {
         let nodeFilters = true
 
         if (isNodeListing) {
@@ -232,12 +232,12 @@ export const K8SResourceList = ({
             !filterData.searchKey ||
             Object.entries(row.data).some(
                 ([key, value]) =>
-                    key !== 'id' &&
+                key !== 'id' &&
                     (!isNodeListing || NODE_LIST_HEADER_KEYS_TO_SEARCH.includes(key)) &&
                     value !== null &&
                     value !== undefined &&
                     String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-            )
+        )
 
         if (isEventListing) {
             return (
@@ -247,7 +247,7 @@ export const K8SResourceList = ({
         }
 
         return isSearchMatch && nodeFilters
-    }
+    })
 
     const getDefaultSortKey = () => {
         if (isEventListing) {
