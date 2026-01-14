@@ -1373,9 +1373,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-9":
-  version: 1.22.0-beta-9
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-9"
+"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-10":
+  version: 1.22.0-beta-10
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-10"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1416,9 +1416,9 @@ __metadata:
     sass: "npm:^1.69.7"
     tslib: "npm:2.7.0"
   peerDependencies:
-    "@rjsf/core": 5.13.3
-    "@rjsf/utils": 5.13.3
-    "@rjsf/validator-ajv8": 5.13.3
+    "@rjsf/core": ^6.2.4
+    "@rjsf/utils": ^6.2.4
+    "@rjsf/validator-ajv8": ^6.2.4
     "@typeform/embed-react": 2.20.0
     dompurify: ^3.2.4
     patch-package: ^8.0.0
@@ -1429,7 +1429,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/adb1616ff2daaa9882261f8c3b77a7b2efb864823cbaa4a593e9300d2cdc1c91c9d86756bd4c20252ccf7b7fe79cbc4a3a5f423918f8c1819b78fb93c1955148
+  checksum: 10c0/172a8cc53eb38474103ac23420705ccd5507af675e72bade52baf01d9e54b451ec4cee4734d0a1c9b65c1d7a48293e3e21619c6b9bc2e4f4969be3a58791b167
   languageName: node
   linkType: hard
 
@@ -5609,7 +5609,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-beta-9"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-beta-10"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@sentry/browser": "npm:7.119.1"
@@ -12081,11 +12081,11 @@ __metadata:
   linkType: hard
 
 "synckit@npm:^0.11.7":
-  version: 0.11.11
-  resolution: "synckit@npm:0.11.11"
+  version: 0.11.12
+  resolution: "synckit@npm:0.11.12"
   dependencies:
     "@pkgr/core": "npm:^0.2.9"
-  checksum: 10c0/f0761495953d12d94a86edf6326b3a565496c72f9b94c02549b6961fb4d999f4ca316ce6b3eb8ed2e4bfc5056a8de65cda0bd03a233333a35221cd2fdc0e196b
+  checksum: 10c0/cc4d446806688ae0d728ae7bb3f53176d065cf9536647fb85bdd721dcefbd7bf94874df6799ff61580f2b03a392659219b778a9254ad499f9a1f56c34787c235
   languageName: node
   linkType: hard
 
