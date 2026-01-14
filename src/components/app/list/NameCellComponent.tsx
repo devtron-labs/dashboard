@@ -27,7 +27,13 @@ export const NameCellComponent = ({
     useEffect(() => {
         const handleEnterPressed = ({ detail: { activeRowData } }) => {
             if (activeRowData.id === id) {
-                nameButtonRef.current?.click()
+                if (!isExpandedRow) {
+                    nameButtonRef.current?.click()
+
+                    return
+                }
+
+                push(redirectToAppDetails(data.app, data.id))
             }
         }
 

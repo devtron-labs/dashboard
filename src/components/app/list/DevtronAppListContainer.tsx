@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo, useState, MouseEvent } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -51,7 +51,8 @@ const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<
     const { push } = useHistory()
     const app = data as App
 
-    const handleEditAppClick = () => {
+    const handleEditAppClick = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
         const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${Routes.EDIT}`
         push(url)
     }
