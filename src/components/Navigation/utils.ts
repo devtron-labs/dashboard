@@ -6,22 +6,14 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 const getNavigationTreeItems = (items: NavigationItemType['subItems']) =>
-    items
-        .filter(({ forceHideEnvKey, hideNav, href }) => {
-            // Filter out items with undefined href
-            if (!href) {
-                return false
-            }
-            return forceHideEnvKey ? window._env_[forceHideEnvKey] : !hideNav
-        })
-        .map<TreeNode>(({ title, id, href, disabled }) => ({
-            id,
-            title,
-            href,
-            type: 'item',
-            as: 'link',
-            isDisabled: disabled,
-        }))
+    items.map<TreeNode>(({ title, id, href, disabled }) => ({
+        id,
+        title,
+        href,
+        type: 'item',
+        as: 'link',
+        isDisabled: disabled,
+    }))
 
 export const getNavigationTreeNodes = ({
     id,

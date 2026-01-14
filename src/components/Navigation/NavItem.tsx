@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 
-import { Icon, TreeView } from '@devtron-labs/devtron-fe-common-lib'
+import { handleAnalyticsEvent, Icon, preventDefault, TreeView } from '@devtron-labs/devtron-fe-common-lib'
 
 import { NavItemProps } from './types'
 import { doesNavigationItemMatchPath, getNavigationTreeNodes } from './utils'
@@ -36,6 +36,13 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
             ...prevExpandedMap,
             [id]: !prevExpandedMap[id],
         }))
+    }
+
+    const handleNavItemClick = () => {
+        handleAnalyticsEvent({
+            category: 'Navigation SubMenu',
+            action: `nav-${id}`,
+        })
     }
 
     if (hasSubMenu) {
@@ -84,6 +91,7 @@ export const NavItem = ({ hasSearchText, ...navItem }: NavItemProps) => {
             className="nav-item flex left dc__gap-8 px-8 py-6 br-4"
             activeClassName="is-selected fw-6"
             aria-disabled={disabled}
+            onClick={disabled ? preventDefault : handleNavItemClick}
         >
             {renderContent()}
         </NavLink>
