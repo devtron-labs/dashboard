@@ -49,8 +49,6 @@
         "test": "vitest test",
         "test-coverage:watch": "npm run test -- --coverage",
         "test-coverage": "npm run test -- --coverage --watchAll=false",
-        "test:ci": "jest --watchAll=false --ci --json --coverage --testLocationInResults --outputFile=report.json",
-        "jest": "jest",
         "lint-staged": "lint-staged",
         "postinstall": "patch-package"
     },
@@ -64,9 +62,6 @@
         "@playwright/test": "^1.32.1",
         "@sentry/cli": "^2.2.0",
         "@tanstack/eslint-plugin-query": "<5",
-        "@testing-library/jest-dom": "^5.16.2",
-        "@testing-library/react": "^12.1.4",
-        "@types/jest": "^27.4.1",
         "@types/node": "20.11.0",
         "@types/react": "^18.3.27",
         "@types/react-dom": "^18.3.7",
@@ -88,8 +83,6 @@
         "eslint-plugin-react-hooks": "^4.6.0",
         "eslint-plugin-simple-import-sort": "^12.1.1",
         "husky": "^7.0.4",
-        "jest-extended": "^2.0.0",
-        "jest-junit": "^13.0.0",
         "json-schema": "^0.4.0",
         "lint-staged": "12.5.0",
         "mock-socket": "^9.2.1",
@@ -101,7 +94,6 @@
         "sass": "^1.69.7",
         "sharp": "^0.33.5",
         "svgo": "^3.3.2",
-        "ts-jest": "29.2.5",
         "ts-node": "10.9.2",
         "typescript": "5.5.4",
         "vite": "6.3.5",
@@ -110,20 +102,6 @@
         "vite-plugin-require-transform": "1.0.21",
         "vite-plugin-svgr": "^2.4.0",
         "vite-tsconfig-paths": "5.0.1"
-    },
-    "jest": {
-        "collectCoverageFrom": [
-            "**/*.{ts,tsx,js,jsx}",
-            "!**/?(*.)+(mock).+(ts|js)",
-            "!**/node_modules/**",
-            "!**/coverage/**",
-            "!**/serviceWorker.ts",
-            "!**/index.tsx",
-            "!**/setupProxy.js"
-        ],
-        "setupFilesAfterEnv": [
-            "jest-extended"
-        ]
     },
     "resolutions": {
         "nanoid": "^3.3.8",
