@@ -1373,9 +1373,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-8":
-  version: 1.22.0-beta-8
-  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-8"
+"@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-9":
+  version: 1.22.0-beta-9
+  resolution: "@devtron-labs/devtron-fe-common-lib@npm:1.22.0-beta-9"
   dependencies:
     "@codemirror/autocomplete": "npm:6.18.6"
     "@codemirror/lang-json": "npm:6.0.1"
@@ -1416,9 +1416,9 @@ __metadata:
     sass: "npm:^1.69.7"
     tslib: "npm:2.7.0"
   peerDependencies:
-    "@rjsf/core": ^5.13.3
-    "@rjsf/utils": ^5.13.3
-    "@rjsf/validator-ajv8": ^5.13.3
+    "@rjsf/core": 5.13.3
+    "@rjsf/utils": 5.13.3
+    "@rjsf/validator-ajv8": 5.13.3
     "@typeform/embed-react": 2.20.0
     dompurify: ^3.2.4
     patch-package: ^8.0.0
@@ -1429,7 +1429,7 @@ __metadata:
     react-select: 5.8.0
     rxjs: ^7.8.1
     yaml: ^2.4.1
-  checksum: 10c0/43d112e982d56ade02d3f536a232a6d10f7a9389b0ec7a9f91fc255e52744429a52b9c75e6dc1a1c190f3bd90254f2739e55238ba205f5c28427a7063b3390a4
+  checksum: 10c0/adb1616ff2daaa9882261f8c3b77a7b2efb864823cbaa4a593e9300d2cdc1c91c9d86756bd4c20252ccf7b7fe79cbc4a3a5f423918f8c1819b78fb93c1955148
   languageName: node
   linkType: hard
 
@@ -3828,11 +3828,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:*":
-  version: 25.0.7
-  resolution: "@types/node@npm:25.0.7"
+  version: 25.0.8
+  resolution: "@types/node@npm:25.0.8"
   dependencies:
     undici-types: "npm:~7.16.0"
-  checksum: 10c0/a9feeb16a6487621ef96158e7a9759f89e3c1726189c7b19a9e6d3e0d581499c62e441e120e5a334e9eb01bc4d26644f27767fd5931d6d4f177d14f4f8e3f9ab
+  checksum: 10c0/2282464cd928ab184b2310b79899c76bfaa88c8d14640dfab2f9218fdee7e2d916056492de683aa3a26050c8f3bbcade0305616a55277a7c344926c0393149e0
   languageName: node
   linkType: hard
 
@@ -5609,7 +5609,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "dashboard@workspace:."
   dependencies:
-    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-beta-8"
+    "@devtron-labs/devtron-fe-common-lib": "npm:1.22.0-beta-9"
     "@esbuild-plugins/node-globals-polyfill": "npm:0.2.3"
     "@playwright/test": "npm:^1.32.1"
     "@sentry/browser": "npm:7.119.1"
