@@ -286,7 +286,7 @@ const GenericAppList = ({
     }, [isFluxCDAppList])
 
     const onRowClick = ({ data: app }) => {
-        push(buildAppDetailUrl(app))
+        push(buildAppDetailUrl(app.detail))
     }
 
     const filter = useCallback(({ data: app }) => {
