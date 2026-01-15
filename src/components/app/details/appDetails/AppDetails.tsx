@@ -24,6 +24,7 @@ import {
     AppStatusModalTabType,
     ArtifactInfoModal,
     Button,
+    ButtonComponentType,
     DocLink,
     ErrorScreenManager,
     GenericEmptyState,
@@ -52,7 +53,7 @@ import { URL_PARAM_MODE_TYPE } from '@Components/common/helpers/types'
 
 import { DEPLOYMENT_STATUS_QUERY_PARAM, RESOURCES_NOT_FOUND } from '../../../../config'
 import { APP_DETAILS, ERROR_EMPTY_SCREEN } from '../../../../config/constantMessaging'
-import { getAppConfigStatus, getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
+import { getAppOtherEnvironmentMin, stopStartApp } from '../../../../services/service'
 import { useAppContext } from '../../../common'
 import { ClusterMetaDataBar } from '../../../common/ClusterMetaDataBar/ClusterMetaDataBar'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
@@ -103,24 +104,17 @@ export const AppNotConfigured = ({
     renderCustomButton?: () => JSX.Element
 }) => {
     const { appId } = useParams<{ appId: string }>()
-    const { push } = useHistory()
-
-    const handleEditApp = () => {
-        getAppConfigStatus(+appId, isJobView, false)
-            .then(() => {
-                const url = `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`
-                push(url)
-            })
-            .catch(noop)
-    }
 
     const renderButton = () =>
         appId && (
             <Button
                 dataTestId="app-details-empty"
                 text={buttonTitle || 'Go to app configurations'}
-                onClick={handleEditApp}
                 endIcon={<ForwardArrow />}
+                component={ButtonComponentType.link}
+                linkProps={{
+                    to: `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/edit`,
+                }}
             />
         )
 

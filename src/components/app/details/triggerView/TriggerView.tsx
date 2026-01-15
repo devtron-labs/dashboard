@@ -47,6 +47,7 @@ const JobNotConfiguredSubtitle = () => (
             dataTestId="job-not-configured-learn-more"
             fontWeight="normal"
             text={APP_DETAILS.NEED_HELP}
+            fullWidth
         />
     </>
 )
