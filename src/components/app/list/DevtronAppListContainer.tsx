@@ -206,6 +206,9 @@ const DevtronAppList = ({
                 width: 42,
                 Component: HoverComponent,
             }}
+            additionalProps={{
+                filterConfig,
+            }}
             additionalFilterProps={{
                 initialSortKey: AppListSortableKeys.APP_NAME,
             }}
