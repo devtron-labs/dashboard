@@ -23,6 +23,7 @@ import {
     API_STATUS_CODES,
     DetailsProgressing,
     ErrorScreenManager,
+    GenericEmptyState,
     getIsRequestAborted,
     showError,
     useMainContext,
@@ -30,7 +31,6 @@ import {
 
 import { URLS } from '../../config'
 import { sortOptionsByValue } from '../common'
-import { AppDetailsEmptyState } from '../common/AppDetailsEmptyState'
 import { getExternalLinks } from '../externalLinks/ExternalLinks.service'
 import { ExternalLinkIdentifierType, ExternalLinksAndToolsType } from '../externalLinks/ExternalLinks.type'
 import { sortByUpdatedOn } from '../externalLinks/ExternalLinks.utils'
@@ -43,6 +43,7 @@ import ChartDeploymentHistory from './chartDeploymentHistory/ChartDeploymentHist
 import ChartHeaderComponent from './headers/ChartHeader.component'
 import { HelmAppOverview } from './HelmAppOverview/HelmAppOverview'
 import ValuesComponent from './values/ChartValues.component'
+import { ERROR_EMPTY_SCREEN } from '@Config/constantMessaging'
 
 let initTimer = null
 
@@ -187,7 +188,7 @@ const RouterComponent = () => {
             setLoadingDetails(false)
         } catch (error) {
             const isAborted = getIsRequestAborted(error)
-            
+
             if (!isAborted) {
                 handleAppDetailsCallError(error)
             }
@@ -220,17 +221,16 @@ const RouterComponent = () => {
 
     const _getAndSetAppDetail = async (fetchExternalLinks: boolean) => {
         // Intentionally not setting await since it was not awaited earlier when in thens as well
-        Promise.allSettled([
-            handleFetchAppDetails(fetchExternalLinks),
-            handleFetchResourceTree(),
-        ]).then((results) => {
-            const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
-            if (!isAborted) {
-                handleInitiatePolling()
-            }
-        }).finally(() => {
-            handledFirstCall.current = true
-        })
+        Promise.allSettled([handleFetchAppDetails(fetchExternalLinks), handleFetchResourceTree()])
+            .then((results) => {
+                const isAborted = results.some((result) => result.status === 'fulfilled' && result.value.isAborted)
+                if (!isAborted) {
+                    handleInitiatePolling()
+                }
+            })
+            .finally(() => {
+                handledFirstCall.current = true
+            })
     }
 
     const handleReloadResourceTree = () => {
@@ -276,7 +276,12 @@ const RouterComponent = () => {
             return (
                 <div className="h-100">
                     <ChartHeaderComponent errorResponseCode={errorResponseCode} />
-                    <AppDetailsEmptyState envType={EnvType.CHART} />
+                    <GenericEmptyState
+                        imgName="img-no-result"
+                        classname="w-100 dc__text-center"
+                        title={ERROR_EMPTY_SCREEN.APP_NOT_AVAILABLE}
+                        subTitle={ERROR_EMPTY_SCREEN.DEPLOYMENT_NOT_EXIST}
+                    />
                 </div>
             )
         }
