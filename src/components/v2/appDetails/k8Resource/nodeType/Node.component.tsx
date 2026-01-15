@@ -360,7 +360,7 @@ const NodeComponent = ({
                           namespace: node.namespace,
                           resourceStatus: nodeStatus,
                       },
-                      prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus}?`,
+                      prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus} state?`,
                   } as MainContext['debugAgentContext'])
                 : null
 

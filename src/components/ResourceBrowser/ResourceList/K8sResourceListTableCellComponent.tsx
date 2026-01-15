@@ -409,7 +409,7 @@ const K8sResourceListTableCellComponent = ({
                                     aiAgentContext
                                         ? {
                                               ...aiAgentContext,
-                                              prompt: `Why is ${selectedResource?.gvk?.Kind} '${resourceData.name}' of '${resourceData.namespace}' namespace in ${resourceData.status}?`,
+                                              prompt: `Why is ${selectedResource?.gvk?.Kind} '${resourceData.name}' of '${resourceData.namespace}' namespace in ${resourceData.status} state?`,
                                               data: {
                                                   ...aiAgentContext.data,
                                                   kind: selectedResource?.gvk?.Kind,
