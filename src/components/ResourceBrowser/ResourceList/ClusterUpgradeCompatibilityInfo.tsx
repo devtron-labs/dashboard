@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useHistory, useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -105,6 +105,19 @@ const ClusterUpgradeCompatibilityInfo = ({
         [resourceListForCurrentData],
     )
 
+    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = useCallback(
+        (row, filterData) =>
+            !filterData.searchKey ||
+            Object.entries(row.data).some(
+                ([key, value]) =>
+                    key !== 'id' &&
+                    value !== null &&
+                    value !== undefined &&
+                    String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+            ),
+        [],
+    )
+
     if (isLoading) {
         return (
             <div className="flex column h-100">
@@ -143,16 +156,6 @@ const ClusterUpgradeCompatibilityInfo = ({
             />
         )
     }
-
-    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = useCallback((row, filterData) =>
-                                                                              !filterData.searchKey ||
-                                                                                  Object.entries(row.data).some(
-                                                                                      ([key, value]) =>
-                                                                                      key !== 'id' &&
-                                                                                          value !== null &&
-                                                                                          value !== undefined &&
-                                                                                          String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-                                                                              ), [])
 
     const clearFilters = () => {
         const searchParams = new URLSearchParams(location.search)

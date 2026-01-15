@@ -243,3 +243,7 @@ export interface ExportAppListDataType {
     namespaceId: number | string
     lastDeployedTime: string
 }
+
+export type GenericAppListRowType = {
+    detail: GenericAppType
+} & Record<string, any>

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useCallback } from 'react'
+import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 
 import {
@@ -221,33 +221,36 @@ export const K8SResourceList = ({
         [resourceList?.data],
     )
 
-    const tableFilter: K8sResourceListTableProps['filter'] = useCallback((row, filterData) => {
-        let nodeFilters = true
+    const tableFilter: K8sResourceListTableProps['filter'] = useCallback(
+        (row, filterData) => {
+            let nodeFilters = true
 
-        if (isNodeListing) {
-            nodeFilters = isItemASearchMatchForNodeListing(row.data, filterData)
-        }
+            if (isNodeListing) {
+                nodeFilters = isItemASearchMatchForNodeListing(row.data, filterData)
+            }
 
-        const isSearchMatch =
-            !filterData.searchKey ||
-            Object.entries(row.data).some(
-                ([key, value]) =>
-                key !== 'id' &&
-                    (!isNodeListing || NODE_LIST_HEADER_KEYS_TO_SEARCH.includes(key)) &&
-                    value !== null &&
-                    value !== undefined &&
-                    String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-        )
+            const isSearchMatch =
+                !filterData.searchKey ||
+                Object.entries(row.data).some(
+                    ([key, value]) =>
+                        key !== 'id' &&
+                        (!isNodeListing || NODE_LIST_HEADER_KEYS_TO_SEARCH.includes(key)) &&
+                        value !== null &&
+                        value !== undefined &&
+                        String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+                )
 
-        if (isEventListing) {
-            return (
-                (row.data.type as string)?.toLowerCase() ===
-                    ((filterData as unknown as K8sResourceListFilterType).eventType || 'warning') && isSearchMatch
-            )
-        }
+            if (isEventListing) {
+                return (
+                    (row.data.type as string)?.toLowerCase() ===
+                        ((filterData as unknown as K8sResourceListFilterType).eventType || 'warning') && isSearchMatch
+                )
+            }
 
-        return isSearchMatch && nodeFilters
-    })
+            return isSearchMatch && nodeFilters
+        },
+        [isNodeListing, isEventListing],
+    )
 
     const getDefaultSortKey = () => {
         if (isEventListing) {

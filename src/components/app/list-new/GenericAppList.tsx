@@ -35,6 +35,8 @@ import {
     Table,
     PaginationEnum,
     FiltersTypeEnum,
+    TableProps,
+    TableColumnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -60,6 +62,7 @@ import {
     GenericAppListProps,
     GenericAppListResponse,
     GenericAppType,
+    GenericAppListRowType,
 } from './AppListType'
 import { renderIcon } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
@@ -99,9 +102,11 @@ const GenericAppList = ({
             data: {
                 detail: app,
                 [AppListSortableKeys.APP_NAME]: app.appName,
-                [APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus']]: app.appStatus,
+                [APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus']]: (
+                    <AppStatus status={app.appStatus} />
+                ),
                 [APP_LIST_HEADERS.FluxCDTemplateType]: app.fluxAppDeploymentType,
-                [APP_LIST_HEADERS.Environment]: app.namespace,
+                [APP_LIST_HEADERS.Environment]: `${app.clusterName}__${app.namespace}`,
                 [APP_LIST_HEADERS.Cluster]: app.clusterName,
                 [APP_LIST_HEADERS.Namespace]: app.namespace,
             },
@@ -115,7 +120,6 @@ const GenericAppList = ({
 
     const getExternalInstalledFluxApps = (clusterIdsCsv: string) => {
         const fluxAppListURL = `${Host}/${Routes.FLUX_APPS}?clusterIds=${clusterIdsCsv}`
-        console.log(fluxAppListURL)
 
         closeCurrentSseConnection()
 
@@ -235,7 +239,7 @@ const GenericAppList = ({
         )
     }
 
-    const columns = useMemo(() => {
+    const columns: TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[] = useMemo(() => {
         return [
             {
                 field: AppListSortableKeys.APP_NAME,
@@ -259,7 +263,7 @@ const GenericAppList = ({
                 size: {
                     fixed: 120,
                 },
-            }] : []),
+            } as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>] : []),
             {
                 field: APP_LIST_HEADERS.Environment,
                 label: APP_LIST_HEADERS.Environment,
@@ -285,9 +289,9 @@ const GenericAppList = ({
         ]
     }, [isFluxCDAppList])
 
-    const onRowClick = ({ data: app }) => {
+    const onRowClick = useCallback(({ data: app }) => {
         push(buildAppDetailUrl(app.detail))
-    }
+    }, [])
 
     const filter = useCallback(({ data: app }) => {
         let filterOut = true
@@ -333,28 +337,6 @@ const GenericAppList = ({
             subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
         }
 
-        if (isAnyFilterAppliedExceptCluster && !clusterIdsCsv) {
-            return {
-                children: (
-                    <div className="mt-18">
-                        <p
-                            className="bcb-1 cn-9 fs-13 pt-10 pb-10 pl-16 pr-16 eb-2 bw-1 br-4 cluster-tip flex left top"
-                            style={{ width: '300px' }}
-                        >
-                            <span>
-                                <InfoFill className="icon-dim-20" />
-                            </span>
-                            <div className="ml-12 cn-9" style={{ textAlign: 'start' }}>
-                                <span className="fw-6">Tip </span>
-                                <span>{APP_LIST_EMPTY_STATE_MESSAGING.selectCluster}</span>
-                            </div>
-                        </p>
-                    </div>
-                ),
-                ...baseProps,
-            }
-        }
-
         if (isOnlyAllClusterFilterApplied) {
             return askToConnectAClusterForNoResult()
         }
@@ -384,7 +366,7 @@ const GenericAppList = ({
         )
     }
     return (
-        <Table<GenericAppType, FiltersTypeEnum.URL>
+        <Table<GenericAppListRowType, FiltersTypeEnum.URL>
             id="table__generic-app-list"
             columns={columns}
             loading={dataStateType === AppListViewType.LOADING}

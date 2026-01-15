@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useState, MouseEvent } from 'react'
+import { MouseEvent, useCallback, useMemo, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -89,8 +89,14 @@ const DevtronAppList = ({
 
     const { push } = useHistory()
 
-    const isSearchOrFilterApplied =
-        searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
+    const isSearchOrFilterApplied = !!(
+        searchKey ||
+        appStatus.length ||
+        project.length ||
+        environment.length ||
+        namespace.length ||
+        cluster.length
+    )
 
     const redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
@@ -169,7 +175,7 @@ const DevtronAppList = ({
         clearAllFilters()
     }
 
-    const onRowClick = ({ data }, isExpandedRow) => {
+    const onRowClick = useCallback(({ data }, isExpandedRow) => {
         if (!isExpandedRow) {
             const app = data as App
 
@@ -181,7 +187,7 @@ const DevtronAppList = ({
         const { app, id } = data as Environment & { app: App }
 
         push(redirectToAppDetails(app, id))
-    }
+    }, [])
 
     const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])
 
@@ -199,10 +205,6 @@ const DevtronAppList = ({
             rowActionOnHoverConfig={{
                 width: 42,
                 Component: HoverComponent,
-            }}
-            additionalProps={{
-                filterConfig,
-                redirectToAppDetails,
             }}
             additionalFilterProps={{
                 initialSortKey: AppListSortableKeys.APP_NAME,
