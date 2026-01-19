@@ -35,7 +35,6 @@ import {
     Table,
     PaginationEnum,
     FiltersTypeEnum,
-    TableProps,
     TableColumnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
@@ -373,7 +372,7 @@ const GenericAppList = ({
             rows={rows}
             filter={filter}
             rowStartIconConfig={{
-                name: !isFluxCDAppList ? 'ic-argocd-app' : 'ic-fluxcd-app',
+                name: isFluxCDAppList ? 'ic-fluxcd-app' : 'ic-argocd-app',
                 color: null,
                 size: 24,
             }}
