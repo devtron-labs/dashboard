@@ -17,14 +17,18 @@
 import { useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { FiltersTypeEnum, Icon, InteractiveCellText, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FiltersTypeEnum,
+    InteractiveCellText,
+    PaginationEnum,
+    Table,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { DeleteComponentsName } from '@Config/constantMessaging'
-
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes, SES_TABLE_COLUMNS } from './constants'
+import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
+import { BASE_CONFIG, ConfigurationsTabTypes, SES_TABLE_COLUMNS } from './constants'
 import { renderDefaultTag } from './notifications.util'
-import { ConfigurationTableProps, SESConfigurationTableRow } from './types'
+import { ConfigurationTableProps, SESConfigurationTableRowType } from './types'
 
 import './notifications.scss'
 
@@ -32,7 +36,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    const onClickSESConfigEdit = (id: number) => () => {
+    const onClickEditRow = (id: number) => () => {
         const newParams = {
             ...searchParams,
             configId: id.toString(),
@@ -46,37 +50,23 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
     const tableRows = useMemo(
         () =>
             state.sesConfigurationList.map((sesConfig) => ({
-                id: `ses-${sesConfig.id}`,
+                id: `${sesConfig.id}`,
                 data: {
-                    icon: <Icon name="ic-ses" color={null} size={null} />,
                     name: (
                         <div className="flex left dc__gap-8 py-10">
-                            <InteractiveCellText
-                                text={sesConfig.name}
-                                onClickHandler={onClickSESConfigEdit(sesConfig.id)}
-                            />
+                            <InteractiveCellText text={sesConfig.name} onClickHandler={onClickEditRow(sesConfig.id)} />
                             {renderDefaultTag(sesConfig.isDefault)}
                         </div>
                     ),
                     accessKeyId: sesConfig.accessKeyId,
                     email: sesConfig.email,
-                    actions: (
-                        <ConfigTableRowActionButton
-                            onClickEditRow={onClickSESConfigEdit(sesConfig.id)}
-                            onClickDeleteRow={deleteClickHandler(
-                                sesConfig.id,
-                                DeleteComponentsName.SesConfigurationTab,
-                            )}
-                            modal={ConfigurationsTabTypes.SES}
-                        />
-                    ),
                 },
             })),
-        [state.sesConfigurationList, deleteClickHandler],
+        [state.sesConfigurationList],
     )
 
     return (
-        <Table<SESConfigurationTableRow, FiltersTypeEnum.STATE, {}>
+        <Table<SESConfigurationTableRowType, FiltersTypeEnum.STATE>
             id="table__ses-configuration"
             columns={SES_TABLE_COLUMNS}
             rows={tableRows}
@@ -87,10 +77,20 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
             }}
             filtersVariant={FiltersTypeEnum.STATE}
             additionalFilterProps={{
-                initialSortKey: 'name',
+                initialSortKey: BASE_CONFIG[0].field,
             }}
-            paginationVariant={undefined}
+            paginationVariant={PaginationEnum.NOT_PAGINATED}
             filter={null}
+            rowStartIconConfig={{
+                name: 'ic-ses',
+                color: null,
+                size: 24,
+            }}
+            rowActionOnHoverConfig={{
+                width: 100,
+                Component: ConfigurationRowActionButtonWrapper,
+            }}
+            additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.SES }}
         />
     )
 }

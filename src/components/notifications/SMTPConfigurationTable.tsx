@@ -17,25 +17,24 @@
 import { useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { FiltersTypeEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-import { DeleteComponentsName } from '@Config/constantMessaging'
 
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes, SMTP_TABLE_COLUMNS } from './constants'
-import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
-import { ConfigurationTableProps, SMTPConfigurationTableRow } from './types'
+import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
+import { BASE_CONFIG, ConfigurationsTabTypes, SMTP_TABLE_COLUMNS } from './constants'
+import { renderDefaultTag } from './notifications.util'
+import { ConfigurationTableProps, SMTPConfigurationTableRowType } from './types'
 
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { smtpConfigurationList } = state
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    const onClickEditRow = (configId) => () => {
+    const onClickEditRow = (id: number) => () => {
         const newParams = {
             ...searchParams,
-            configId: configId.toString(),
+            configId: id.toString(),
             modal: ConfigurationsTabTypes.SMTP,
         }
         history.push({
@@ -46,9 +45,8 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
     const tableRows = useMemo(
         () =>
             smtpConfigurationList.map((smtpConfig) => ({
-                id: `smtp-${smtpConfig.id}`,
+                id: `${smtpConfig.id}`,
                 data: {
-                    icon: getConfigTabIcons(ConfigurationsTabTypes.SMTP),
                     name: (
                         <div className="flex left dc__gap-8 py-10">
                             <InteractiveCellText
@@ -61,23 +59,13 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                     host: smtpConfig.host,
                     port: smtpConfig.port.toString(),
                     email: smtpConfig.email,
-                    actions: (
-                        <ConfigTableRowActionButton
-                            onClickEditRow={onClickEditRow(smtpConfig.id)}
-                            onClickDeleteRow={deleteClickHandler(
-                                smtpConfig.id,
-                                DeleteComponentsName.SMTPConfigurationTab,
-                            )}
-                            modal={ConfigurationsTabTypes.SMTP}
-                        />
-                    ),
                 },
             })),
         [smtpConfigurationList],
     )
 
     return (
-        <Table<SMTPConfigurationTableRow, FiltersTypeEnum.STATE, {}>
+        <Table<SMTPConfigurationTableRowType, FiltersTypeEnum.STATE>
             id="table__smtp-configuration"
             columns={SMTP_TABLE_COLUMNS}
             rows={tableRows}
@@ -88,10 +76,20 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
             }}
             filtersVariant={FiltersTypeEnum.STATE}
             additionalFilterProps={{
-                initialSortKey: 'name',
+                initialSortKey: BASE_CONFIG[0].field,
             }}
-            paginationVariant={undefined}
+            paginationVariant={PaginationEnum.NOT_PAGINATED}
             filter={null}
+            rowStartIconConfig={{
+                name: 'ic-smtp',
+                color: null,
+                size: 24,
+            }}
+            rowActionOnHoverConfig={{
+                width: 100,
+                Component: ConfigurationRowActionButtonWrapper,
+            }}
+            additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.SMTP }}
         />
     )
 }

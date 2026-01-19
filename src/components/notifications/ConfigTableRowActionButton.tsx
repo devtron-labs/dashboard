@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-import { Button, ButtonStyleType, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
+import { useHistory } from 'react-router-dom'
 
-import { ReactComponent as Edit } from '@Icons/ic-pencil.svg'
-import { Trash } from '@Components/common'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    useSearchString,
+} from '@devtron-labs/devtron-fe-common-lib'
 
+import { ConfigurationsTabTypes } from './constants'
 import { ConfigTableRowActionButtonProps } from './types'
 
 export const ConfigTableRowActionButton = ({
@@ -33,7 +40,7 @@ export const ConfigTableRowActionButton = ({
                 variant={ButtonVariantType.borderLess}
                 size={ComponentSizeType.xs}
                 dataTestId={`${modal}-config-edit-button`}
-                icon={<Edit />}
+                icon={<Icon name="ic-pencil" color={null} />}
                 ariaLabel="Edit"
                 style={ButtonStyleType.neutral}
             />
@@ -42,10 +49,42 @@ export const ConfigTableRowActionButton = ({
                 variant={ButtonVariantType.borderLess}
                 size={ComponentSizeType.xs}
                 dataTestId={`${modal}-config-delete-button`}
-                icon={<Trash />}
+                icon={<Icon name="ic-delete" color={null} />}
                 ariaLabel="Delete"
                 style={ButtonStyleType.negativeGrey}
             />
         </div>
     </div>
 )
+
+export const ConfigurationRowActionButtonWrapper = ({
+    row,
+    deleteClickHandler,
+    modal,
+}: {
+    row: any
+    deleteClickHandler: (id: number, modal: ConfigurationsTabTypes) => () => void
+    modal: ConfigurationsTabTypes
+}) => {
+    const { searchParams } = useSearchString()
+    const history = useHistory()
+
+    const onClickEditRow = () => () => {
+        const newParams = {
+            ...searchParams,
+            configId: row.id,
+            modal,
+        }
+        history.push({
+            search: new URLSearchParams(newParams).toString(),
+        })
+    }
+
+    return (
+        <ConfigTableRowActionButton
+            onClickEditRow={onClickEditRow()}
+            onClickDeleteRow={deleteClickHandler(row.id, modal)}
+            modal={modal}
+        />
+    )
+}

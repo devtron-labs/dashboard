@@ -304,23 +304,22 @@ export interface NotificationTabState {
     disableEdit: boolean
 }
 
-export interface BaseConfigurationTableRow {
-    icon: React.ReactNode
+export interface BaseConfigurationTableRowType {
     name: React.ReactNode
-    actions: React.ReactNode
+    actions?: React.ReactNode
 }
 
-export interface SESConfigurationTableRow extends BaseConfigurationTableRow {
+export interface SESConfigurationTableRowType extends BaseConfigurationTableRowType {
     accessKeyId: string
     email: string
 }
 
-export interface SMTPConfigurationTableRow extends BaseConfigurationTableRow {
+export interface SMTPConfigurationTableRowType extends BaseConfigurationTableRowType {
     host: string
     port: string
     email: string
 }
 
-export interface SlackWebhookConfigurationTableRow extends BaseConfigurationTableRow {
+export interface SlackWebhookConfigurationTableRowType extends BaseConfigurationTableRowType {
     webhookUrl: string
 }

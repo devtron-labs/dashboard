@@ -19,10 +19,10 @@
 import { FiltersTypeEnum, TableProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
-    SESConfigurationTableRow,
+    SESConfigurationTableRowType,
     SlackFormType,
-    SlackWebhookConfigurationTableRow,
-    SMTPConfigurationTableRow,
+    SlackWebhookConfigurationTableRowType,
+    SMTPConfigurationTableRowType,
 } from './types'
 
 export enum ConfigurationsTabTypes {
@@ -132,11 +132,6 @@ export const SlackIncomingWebhookUrl = 'https://slack.com/marketplace/A0F7XDUAZ-
 
 export const BASE_CONFIG = [
     {
-        label: '',
-        field: 'icon',
-        size: { fixed: 24 },
-    },
-    {
         label: 'Name',
         field: 'name',
         isSortable: true,
@@ -150,7 +145,7 @@ export const ACTION_COLUMN = {
     size: { fixed: 80 },
 }
 
-export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRow, FiltersTypeEnum.STATE, {}>['columns'] = [
+export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
     ...BASE_CONFIG,
     {
         label: 'Access Key Id',
@@ -164,10 +159,9 @@ export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRow, FiltersType
         isSortable: true,
         size: null,
     },
-    ...[ACTION_COLUMN],
 ]
 
-export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRow, FiltersTypeEnum.STATE, {}>['columns'] = [
+export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
     ...BASE_CONFIG,
     {
         label: 'Host',
@@ -187,11 +181,10 @@ export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRow, FiltersTy
         isSortable: true,
         size: null,
     },
-    ...[ACTION_COLUMN],
 ]
 
 export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
-    SlackWebhookConfigurationTableRow,
+    SlackWebhookConfigurationTableRowType,
     FiltersTypeEnum.STATE,
     {}
 >['columns'] = [
@@ -202,5 +195,4 @@ export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
         isSortable: false,
         size: null,
     },
-    ...[ACTION_COLUMN],
 ]

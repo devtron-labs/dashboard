@@ -35,7 +35,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
+import {
+    FormError,
+    SESFormType,
+    SMTPFormType,
+    WebhookDataRowType,
+    WebhookHeaderKeyType,
+} from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -223,8 +229,6 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean): SMTPFormT
     isLoading: false,
 })
 
-
-
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {
         return <span className="br-4 fs-12 px-6 fw-5 lh-16 cb-7 bcb-1 py-2">Default</span>
@@ -352,3 +356,8 @@ export const getValidationFormConfig = (formConfig) => {
     )
     return { allValid, formValidations }
 }
+
+export const CommonIconComponent = (tab: ConfigurationsTabTypes) => (
+    <div className="flex py-12">{getConfigTabIcons(tab)}</div>
+)
+
