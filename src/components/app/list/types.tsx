@@ -104,6 +104,4 @@ export interface GetEnvironmentsFromClusterNamespaceProps {
     namespaceList: EnvironmentListHelmResult[]
 }
 
-export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {
-    redirectToAppDetails: (app: App, envId: number) => string
-}
+export interface TableAdditionalPropsType extends Pick<DevtronAppListProps, 'filterConfig'> {}

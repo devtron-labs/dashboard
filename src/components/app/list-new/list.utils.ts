@@ -42,7 +42,7 @@ import {
     GetAppListFiltersParams,
     useFilterOptionsProps,
 } from './AppListType'
-import { APPS_WITH_NO_PROJECT_OPTION, SELECT_CLUSTER_TIPPY } from './Constants'
+import { SELECT_CLUSTER_TIPPY } from './Constants'
 
 export const getAppTabNameFromAppType = (appType: InfrastructureManagementAppListType) => {
     switch (appType) {
@@ -115,7 +115,6 @@ export const useFilterOptions = ({
 
     const projectOptions: GroupedOptionsType[] = useMemo(
         () => [
-            { label: '', options: [APPS_WITH_NO_PROJECT_OPTION] },
             {
                 label: 'Projects',
                 options: appListFiltersResponse
