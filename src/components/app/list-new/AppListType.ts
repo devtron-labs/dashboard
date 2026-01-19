@@ -28,6 +28,7 @@ import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 
 import { DevtronAppListProps } from '../list/types'
+import { APP_LIST_HEADERS } from './Constants'
 
 export enum FluxCDTemplateType {
     KUSTOMIZATION = 'Kustomization',
@@ -246,4 +247,4 @@ export interface ExportAppListDataType {
 
 export type GenericAppListRowType = {
     detail: GenericAppType
-} & Record<string, any>
+} & Record<AppListSortableKeys | keyof typeof APP_LIST_HEADERS, string | GenericAppType>

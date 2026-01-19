@@ -2,6 +2,12 @@
     .generic-table__row {
         padding-block: 10px;
         padding-inline-end: 0px;
+
+        & > div.generic-table__cell:nth-of-type(2) {
+            span {
+                color: var(--B500);
+            }
+        }
     }
 
     .generic-table__row--expanded-row {

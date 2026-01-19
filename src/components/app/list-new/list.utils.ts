@@ -289,54 +289,55 @@ export const getAppListFilters = ({
     },
 ]
 
-export const getGenericAppListColumns = (isFluxCDAppList: boolean) => [
-    {
-        field: AppListSortableKeys.APP_NAME,
-        label: APP_LIST_HEADERS.AppName,
-        isSortable: true,
-        size: {
-            fixed: 250,
+export const getGenericAppListColumns = (isFluxCDAppList: boolean) =>
+    [
+        {
+            field: AppListSortableKeys.APP_NAME,
+            label: APP_LIST_HEADERS.AppName,
+            isSortable: true,
+            size: {
+                fixed: 250,
+            },
+            comparator: stringComparatorBySortOrder,
         },
-        comparator: stringComparatorBySortOrder,
-    },
-    {
-        field: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
-        label: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
-        size: {
-            fixed: 164,
+        {
+            field: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
+            label: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
+            size: {
+                fixed: 164,
+            },
         },
-    },
-    ...(isFluxCDAppList
-        ? [
-              {
-                  field: APP_LIST_HEADERS.FluxCDTemplateType,
-                  label: APP_LIST_HEADERS.FluxCDTemplateType,
-                  size: {
-                      fixed: 120,
-                  },
-              } as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>,
-          ]
-        : []),
-    {
-        field: APP_LIST_HEADERS.Environment,
-        label: APP_LIST_HEADERS.Environment,
-        size: {
-            fixed: 200,
+        ...(isFluxCDAppList
+            ? [
+                  {
+                      field: APP_LIST_HEADERS.FluxCDTemplateType,
+                      label: APP_LIST_HEADERS.FluxCDTemplateType,
+                      size: {
+                          fixed: 120,
+                      },
+                  } as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>,
+              ]
+            : []),
+        {
+            field: APP_LIST_HEADERS.Environment,
+            label: APP_LIST_HEADERS.Environment,
+            size: {
+                fixed: 200,
+            },
+            infoTooltipText: ENVIRONMENT_HEADER_TIPPY_CONTENT,
         },
-        infoTooltipText: ENVIRONMENT_HEADER_TIPPY_CONTENT,
-    },
-    {
-        field: APP_LIST_HEADERS.Cluster,
-        label: APP_LIST_HEADERS.Cluster,
-        size: {
-            fixed: 150,
+        {
+            field: APP_LIST_HEADERS.Cluster,
+            label: APP_LIST_HEADERS.Cluster,
+            size: {
+                fixed: 150,
+            },
         },
-    },
-    {
-        field: APP_LIST_HEADERS.Namespace,
-        label: APP_LIST_HEADERS.Namespace,
-        size: {
-            fixed: 150,
+        {
+            field: APP_LIST_HEADERS.Namespace,
+            label: APP_LIST_HEADERS.Namespace,
+            size: {
+                fixed: 150,
+            },
         },
-    },
-]
+    ] as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[]

@@ -16,6 +16,7 @@
 
 import { useRef, useEffect, useMemo, useState, useCallback } from 'react'
 import {
+    TableProps,
     ErrorScreenManager,
     ServerErrors,
     GenericEmptyState,
@@ -62,7 +63,7 @@ import {
     GenericAppType,
     GenericAppListRowType,
 } from './AppListType'
-import { renderIcon, getGenericAppListColumns } from './list.utils'
+import { getGenericAppListColumns } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
 import AskToClearFilters from './AppListComponents'
 
@@ -108,7 +109,7 @@ const GenericAppList = ({
                 [APP_LIST_HEADERS.Cluster]: app.clusterName,
                 [APP_LIST_HEADERS.Namespace]: app.namespace,
             },
-        })),
+        })) as TableProps<GenericAppListRowType, FiltersTypeEnum.URL>['rows'],
         [appsList],
     )
 
@@ -232,7 +233,7 @@ const GenericAppList = ({
         </div>
     )
 
-    const columns: TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[] = useMemo(
+    const columns = useMemo(
         () => getGenericAppListColumns(isFluxCDAppList),
         [isFluxCDAppList],
     )
