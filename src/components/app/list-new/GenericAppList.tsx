@@ -50,7 +50,6 @@ import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
     APP_LIST_HEADERS,
-    ENVIRONMENT_HEADER_TIPPY_CONTENT,
     appListLoadingArray,
     FLUX_CD_HELM_RELEASE_LABEL,
 } from './Constants'
@@ -63,7 +62,7 @@ import {
     GenericAppType,
     GenericAppListRowType,
 } from './AppListType'
-import { renderIcon } from './list.utils'
+import { renderIcon, getGenericAppListColumns } from './list.utils'
 import { EXTERNAL_FLUX_APP_STATUS } from '../../../Pages/App/Details/ExternalFlux/types'
 import AskToClearFilters from './AppListComponents'
 
@@ -95,8 +94,8 @@ const GenericAppList = ({
 
     const { searchKey, templateType, namespace, cluster } = filterConfig
 
-    const rows = useMemo(() => {
-        return appsList.map((app) => ({
+    const rows = useMemo(() =>
+        appsList.map((app) => ({
             id: `${app.appName}:${app.clusterName}:${app.namespace}`,
             data: {
                 detail: app,
@@ -109,13 +108,34 @@ const GenericAppList = ({
                 [APP_LIST_HEADERS.Cluster]: app.clusterName,
                 [APP_LIST_HEADERS.Namespace]: app.namespace,
             },
-        }))
-    }, [appsList])
+        })),
+        [appsList],
+    )
 
     const closeCurrentSseConnection = () => {
         sseConnectionRef.current?.close()
         sseConnectionRef.current = null
     }
+
+    const onSSEConnectionMessage = (message) => {
+        try {
+            const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
+            externalAppData.result.fluxApplication?.forEach((fluxApp) => {
+                if (fluxApp.appStatus === 'True') {
+                    fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
+                } else if (fluxApp.appStatus === 'False') {
+                    fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
+                }
+            })
+            const receivedExternalFluxApps = externalAppData?.result?.fluxApplication || []
+            setAppsList((currAppList) => [...currAppList, ...receivedExternalFluxApps])
+            setDataStateType(AppListViewType.LIST)
+        } catch (err) {
+            showError(err)
+            setDataStateType(AppListViewType.ERROR)
+        }
+    }
+
 
     const getExternalInstalledFluxApps = (clusterIdsCsv: string) => {
         const fluxAppListURL = `${Host}/${Routes.FLUX_APPS}?clusterIds=${clusterIdsCsv}`
@@ -126,36 +146,12 @@ const GenericAppList = ({
             withCredentials: true,
         })
 
-        sseConnectionRef.current.onmessage = (message) => {
-            try {
-                const externalAppData: ResponseType<GenericAppListResponse> = JSON.parse(message.data)
-                externalAppData.result.fluxApplication?.forEach((fluxApp) => {
-                    if (fluxApp.appStatus === 'True') {
-                        fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.READY
-                    } else if (fluxApp.appStatus === 'False') {
-                        fluxApp.appStatus = EXTERNAL_FLUX_APP_STATUS.NOT_READY
-                    }
-                })
-                const receivedExternalFluxApps = externalAppData?.result?.fluxApplication || []
-                setAppsList((currAppList) => [...currAppList, ...receivedExternalFluxApps])
-                setDataStateType(AppListViewType.LIST)
-            } catch (err) {
-                showError(err)
-                setDataStateType(AppListViewType.ERROR)
-            }
-        }
-
-        sseConnectionRef.current.onerror = () => {
-            closeCurrentSseConnection()
-        }
+        sseConnectionRef.current.onmessage = onSSEConnectionMessage
+        sseConnectionRef.current.onerror = closeCurrentSseConnection
     }
 
     const init = () => {
-        if (clusterIdsCsv) {
-            setDataStateType(AppListViewType.LOADING)
-        } else {
-            setDataStateType(AppListViewType.LIST)
-        }
+        setDataStateType(clusterIdsCsv ? AppListViewType.LOADING : AppListViewType.LIST)
         setAppsList([])
         closeCurrentSseConnection()
     }
@@ -211,9 +207,9 @@ const GenericAppList = ({
 
     const isAnyFilterApplied = isAnyFilterAppliedExceptCluster || !!clusterIdsCsv
 
-    const isAllClusterSelected = cluster.length === clusterList?.length
+    const isAllClusterSelected = cluster.length === clusterList?.filter((cluster) => !cluster.isVirtualCluster).length
 
-    const isOnlyAllClusterFilterApplied = isAllClusterSelected && templateType.length === 0 && !searchKey
+    const isOnlyAllClusterFilterApplied = isAllClusterSelected && templateType.length === 0 && !searchKey && !namespace.length
 
     const buildAppDetailUrl = (app: GenericAppType): string => {
         if (isArgoCDAppList) {
@@ -222,101 +218,57 @@ const GenericAppList = ({
         return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_FLUX_APP}/${app.clusterId}/${app.appName}/${app.namespace}/${app.fluxAppDeploymentType}`
     }
 
-    const askToSelectClusterId = () => {
-        return (
-            <div className="dc__position-rel flex-grow-1">
-                <GenericEmptyState
-                    image={SelectClusterImage}
-                    title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
-                    subTitle={
-                        isArgoCDAppList
-                            ? APP_LIST_EMPTY_STATE_MESSAGING.argoCDInfoText
-                            : APP_LIST_EMPTY_STATE_MESSAGING.fluxCDInfoText
-                    }
-                />
-            </div>
-        )
-    }
+    const askToSelectClusterId = () => (
+        <div className="dc__position-rel flex-grow-1">
+            <GenericEmptyState
+                image={SelectClusterImage}
+                title={APP_LIST_EMPTY_STATE_MESSAGING.heading}
+                subTitle={
+                    isArgoCDAppList
+                        ? APP_LIST_EMPTY_STATE_MESSAGING.argoCDInfoText
+                        : APP_LIST_EMPTY_STATE_MESSAGING.fluxCDInfoText
+                }
+            />
+        </div>
+    )
 
-    const columns: TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[] = useMemo(() => {
-        return [
-            {
-                field: AppListSortableKeys.APP_NAME,
-                label: APP_LIST_HEADERS.AppName,
-                isSortable: true,
-                size: {
-                    fixed: 250,
-                },
-                comparator: stringComparatorBySortOrder,
-            },
-            {
-                field: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
-                label: APP_LIST_HEADERS[isFluxCDAppList ? 'Status' : 'AppStatus'],
-                size: {
-                    fixed: 164,
-                },
-            },
-            ...(isFluxCDAppList ? [{
-                field: APP_LIST_HEADERS.FluxCDTemplateType,
-                label: APP_LIST_HEADERS.FluxCDTemplateType,
-                size: {
-                    fixed: 120,
-                },
-            } as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>] : []),
-            {
-                field: APP_LIST_HEADERS.Environment,
-                label: APP_LIST_HEADERS.Environment,
-                size: {
-                    fixed: 200,
-                },
-                infoTooltipText: ENVIRONMENT_HEADER_TIPPY_CONTENT,
-            },
-            {
-                field: APP_LIST_HEADERS.Cluster,
-                label: APP_LIST_HEADERS.Cluster,
-                size: {
-                    fixed: 150,
-                },
-            },
-            {
-                field: APP_LIST_HEADERS.Namespace,
-                label: APP_LIST_HEADERS.Namespace,
-                size: {
-                    fixed: 150,
-                },
-            },
-        ]
-    }, [isFluxCDAppList])
+    const columns: TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[] = useMemo(
+        () => getGenericAppListColumns(isFluxCDAppList),
+        [isFluxCDAppList],
+    )
 
     const onRowClick = useCallback(({ data: app }) => {
         push(buildAppDetailUrl(app.detail))
     }, [])
 
     const filter = useCallback(({ data: app }) => {
-        let filterOut = true
+        let isMatch = true
 
         if (searchKey) {
             const searchLowerCase = searchKey.toLowerCase()
-            filterOut = filterOut && app.detail.appName.includes(searchLowerCase)
+            isMatch = isMatch && app.detail.appName.includes(searchLowerCase)
         }
 
         if (templateType.length) {
-            filterOut = filterOut && templateType.includes(app.detail.fluxAppDeploymentType)
+            isMatch = isMatch && templateType.includes(app.detail.fluxAppDeploymentType)
         }
 
         if (namespace.length) {
-            filterOut = filterOut && namespace.includes(`${app.detail.clusterId}_${app.detail.namespace}`)
+            isMatch = isMatch && namespace.includes(`${app.detail.clusterId}_${app.detail.namespace}`)
         }
 
-        return !isAnyFilterAppliedExceptCluster || filterOut
+        return !isAnyFilterAppliedExceptCluster || isMatch
     }, [searchKey, templateType, namespace, isAnyFilterAppliedExceptCluster])
 
 
     const askToConnectAClusterForNoResult = () => {
         return {
-            image: noChartInClusterImage,
+            imgName: 'img-no-chart-in-clusters',
             title: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound,
             subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
+            // NOTE: if handleClearFilters is provided renderButton is not rendered
+            // therefore need to override this
+            handleClearFilters: null,
             isButtonAvailable: true,
             renderButton: () => {
                 return (
@@ -329,20 +281,6 @@ const GenericAppList = ({
             },
         }
     }
-
-    const getFilterEmptyStateProps = () => {
-        const baseProps = {
-            title: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound,
-            subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
-        }
-
-        if (isOnlyAllClusterFilterApplied) {
-            return askToConnectAClusterForNoResult()
-        }
-
-        return baseProps
-    }
-
 
     if (!isSuperAdmin) {
         return (
@@ -364,6 +302,7 @@ const GenericAppList = ({
             </div>
         )
     }
+
     return (
         <Table<GenericAppListRowType, FiltersTypeEnum.URL>
             id="table__generic-app-list"
@@ -379,8 +318,13 @@ const GenericAppList = ({
             filtersVariant={FiltersTypeEnum.URL}
             paginationVariant={PaginationEnum.PAGINATED}
             emptyStateConfig={{
-                noRowsForFilterConfig: getFilterEmptyStateProps(),
-                noRowsConfig: askToConnectAClusterForNoResult(),
+                noRowsForFilterConfig: isOnlyAllClusterFilterApplied ? askToConnectAClusterForNoResult() : {
+                    title: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFound,
+                    subTitle: APP_LIST_EMPTY_STATE_MESSAGING.noAppsFoundInfoText,
+                },
+                // NOTE: handled externally;
+                // since cluster Id filter has to be applied for table to be rendered
+                noRowsConfig: null,
             }}
             clearFilters={clearAllFilters}
             onRowClick={onRowClick}

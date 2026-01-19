@@ -229,6 +229,8 @@ export const K8SResourceList = ({
                 nodeFilters = isItemASearchMatchForNodeListing(row.data, filterData)
             }
 
+            const lowercasedSearchKey = filterData.searchKey?.toLowerCase()
+
             const isSearchMatch =
                 !filterData.searchKey ||
                 Object.entries(row.data).some(
@@ -237,7 +239,7 @@ export const K8SResourceList = ({
                         (!isNodeListing || NODE_LIST_HEADER_KEYS_TO_SEARCH.includes(key)) &&
                         value !== null &&
                         value !== undefined &&
-                        String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
+                        String(value).toLowerCase().includes(lowercasedSearchKey),
                 )
 
             if (isEventListing) {

@@ -105,18 +105,19 @@ const ClusterUpgradeCompatibilityInfo = ({
         [resourceListForCurrentData],
     )
 
-    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = useCallback(
-        (row, filterData) =>
+    const tableFilter: ClusterUpgradeCompatibilityInfoTableProps['filter'] = useCallback((row, filterData) => {
+        const lowercasedSearchKey = filterData.searchKey?.toLowerCase()
+        return (
             !filterData.searchKey ||
             Object.entries(row.data).some(
                 ([key, value]) =>
                     key !== 'id' &&
                     value !== null &&
                     value !== undefined &&
-                    String(value).toLowerCase().includes(filterData.searchKey.toLowerCase()),
-            ),
-        [],
-    )
+                    String(value).toLowerCase().includes(lowercasedSearchKey),
+            )
+        )
+    }, [])
 
     if (isLoading) {
         return (
