@@ -57,7 +57,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                     webhookUrl: webhookConfig.webhookUrl,
                 },
             })),
-        [webhookConfigurationList, deleteClickHandler],
+        [webhookConfigurationList],
     )
 
     return (
