@@ -36,7 +36,6 @@ import {
     Table,
     PaginationEnum,
     FiltersTypeEnum,
-    TableColumnType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
