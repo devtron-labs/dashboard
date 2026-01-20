@@ -83,7 +83,7 @@ export const ConfigurationRowActionButtonWrapper = ({
     return (
         <ConfigTableRowActionButton
             onClickEditRow={onClickEditRow()}
-            onClickDeleteRow={deleteClickHandler(row.id, modal)}
+            onClickDeleteRow={deleteClickHandler(Number(row.id), modal)}
             modal={modal}
         />
     )

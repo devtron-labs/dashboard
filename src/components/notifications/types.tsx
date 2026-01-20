@@ -306,7 +306,6 @@ export interface NotificationTabState {
 
 export interface BaseConfigurationTableRowType {
     name: React.ReactNode
-    actions?: React.ReactNode
 }
 
 export interface SESConfigurationTableRowType extends BaseConfigurationTableRowType {
