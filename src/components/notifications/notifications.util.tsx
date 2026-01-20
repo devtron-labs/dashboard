@@ -357,7 +357,3 @@ export const getValidationFormConfig = (formConfig) => {
     return { allValid, formValidations }
 }
 
-export const CommonIconComponent = (tab: ConfigurationsTabTypes) => (
-    <div className="flex py-12">{getConfigTabIcons(tab)}</div>
-)
-

@@ -138,12 +138,6 @@ export const BASE_CONFIG = [
     },
 ]
 
-export const ACTION_COLUMN = {
-    label: '',
-    field: 'actions',
-    size: { fixed: 80 },
-}
-
 export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRowType, FiltersTypeEnum.STATE, {}>['columns'] = [
     ...BASE_CONFIG,
     {
