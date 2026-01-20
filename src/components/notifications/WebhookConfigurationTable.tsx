@@ -22,7 +22,7 @@ import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtro
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
 
 import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes, SLACK_WEBHOOK_TABLE_COLUMNS } from './constants'
+import { BASE_CONFIG, ConfigurationsTabTypes, SLACK_WEBHOOK_TABLE_COLUMNS } from './constants'
 import { ConfigurationTableProps, SlackWebhookConfigurationTableRowType } from './types'
 
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
@@ -72,7 +72,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
             }}
             filtersVariant={FiltersTypeEnum.STATE}
             additionalFilterProps={{
-                initialSortKey: 'name',
+                initialSortKey: BASE_CONFIG[0].field,
             }}
             paginationVariant={PaginationEnum.NOT_PAGINATED}
             filter={null}

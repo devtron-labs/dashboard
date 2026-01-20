@@ -59,7 +59,7 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
                     webhookUrl: slackConfig.webhookUrl,
                 },
             })),
-        [],
+        [state.slackConfigurationList],
     )
 
     return (

@@ -134,7 +134,6 @@ export const BASE_CONFIG = [
     {
         label: 'Name',
         field: 'name',
-        isSortable: true,
         size: null,
     },
 ]
@@ -150,13 +149,11 @@ export const SES_TABLE_COLUMNS: TableProps<SESConfigurationTableRowType, Filters
     {
         label: 'Access Key Id',
         field: 'accessKeyId',
-        isSortable: true,
         size: null,
     },
     {
         label: "Sender's Email",
         field: 'email',
-        isSortable: true,
         size: null,
     },
 ]
@@ -166,19 +163,16 @@ export const SMTP_TABLE_COLUMNS: TableProps<SMTPConfigurationTableRowType, Filte
     {
         label: 'Host',
         field: 'host',
-        isSortable: true,
         size: null,
     },
     {
         label: 'Port',
         field: 'port',
-        isSortable: true,
         size: null,
     },
     {
         label: "Sender's Email",
         field: 'email',
-        isSortable: true,
         size: null,
     },
 ]
@@ -192,7 +186,6 @@ export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
     {
         label: 'Webhook URL',
         field: 'webhookUrl',
-        isSortable: false,
         size: null,
     },
 ]
