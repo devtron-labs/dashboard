@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useState } from 'react'
+import { MouseEvent, useCallback, useMemo, useState } from 'react'
 import { useHistory } from 'react-router-dom'
 
 import {
@@ -23,7 +23,6 @@ import {
     ButtonVariantType,
     ComponentSizeType,
     FiltersTypeEnum,
-    GenericFilterEmptyState,
     Icon,
     PaginationEnum,
     Table,
@@ -52,7 +51,8 @@ const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<
     const { push } = useHistory()
     const app = data as App
 
-    const handleEditAppClick = () => {
+    const handleEditAppClick = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
         const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${Routes.EDIT}`
         push(url)
     }
@@ -89,8 +89,14 @@ const DevtronAppList = ({
 
     const { push } = useHistory()
 
-    const isSearchOrFilterApplied =
-        searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
+    const isSearchOrFilterApplied = !!(
+        searchKey ||
+        appStatus.length ||
+        project.length ||
+        environment.length ||
+        namespace.length ||
+        cluster.length
+    )
 
     const redirectToAppDetails = (app, envId: number): string => {
         if (envId) {
@@ -169,7 +175,7 @@ const DevtronAppList = ({
         clearAllFilters()
     }
 
-    const onRowClick = ({ data }, isExpandedRow) => {
+    const onRowClick = useCallback(({ data }, isExpandedRow) => {
         if (!isExpandedRow) {
             const app = data as App
 
@@ -181,21 +187,16 @@ const DevtronAppList = ({
         const { app, id } = data as Environment & { app: App }
 
         push(redirectToAppDetails(app, id))
-    }
+    }, [])
 
     const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])
 
-    if (isSearchOrFilterApplied && noRows) {
-        return <GenericFilterEmptyState handleClearFilters={onClearFilters} />
-    }
-
-    if (noRows) {
+    if (noRows && !isSearchOrFilterApplied) {
         return renderGuidedCards()
     }
 
     return (
         <Table<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>
-            key={JSON.stringify({ syncListData, filterConfig })}
             id="table__devtron-app-list"
             getRows={getRows}
             paginationVariant={PaginationEnum.PAGINATED}
@@ -207,7 +208,6 @@ const DevtronAppList = ({
             }}
             additionalProps={{
                 filterConfig,
-                redirectToAppDetails,
             }}
             additionalFilterProps={{
                 initialSortKey: AppListSortableKeys.APP_NAME,
@@ -217,6 +217,7 @@ const DevtronAppList = ({
                 noRowsConfig: null,
             }}
             clearFilters={onClearFilters}
+            areFiltersApplied={isSearchOrFilterApplied}
             filter={null}
             rowStartIconConfig={{
                 name: 'ic-devtron',
