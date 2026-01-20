@@ -61,29 +61,29 @@ export const NameCellComponent = ({
 
     return (
         <div className="flex left dc__gap-4 dc__visible-hover dc__visible-hover--parent">
-                {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
-                <button
-                    type="button"
-                    className="dc__unset-button-styles dc__align-left"
-                    onClick={onClick}
-                    ref={nameButtonRef}
-                >
-                    <Tooltip content={name}>
-                        <span
-                            className="dc__link cursor dc__truncate"
-                            // eslint-disable-next-line react/no-danger
-                            dangerouslySetInnerHTML={{
-                                __html: DOMPurify.sanitize(
-                                    highlightSearchText({
-                                        searchText,
-                                        text: String(name),
-                                        highlightClasses: 'p-0 fw-6 bcy-2',
-                                    }),
-                                ),
-                            }}
-                        />
-                    </Tooltip>
-                </button>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <button
+                type="button"
+                className="dc__unset-button-styles dc__align-left"
+                onClick={onClick}
+                ref={nameButtonRef}
+            >
+                <Tooltip content={name}>
+                    <span
+                        className="dc__link cursor dc__truncate"
+                        // eslint-disable-next-line react/no-danger
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                highlightSearchText({
+                                    searchText,
+                                    text: String(name),
+                                    highlightClasses: 'p-0 fw-6 bcy-2',
+                                }),
+                            ),
+                        }}
+                    />
+                </Tooltip>
+            </button>
             <ClipboardButton content={String(name)} rootClassName="p-2 dc__visible-hover--child" iconSize={16} />
         </div>
     )
