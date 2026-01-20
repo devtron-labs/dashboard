@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { generatePath, useRouteMatch } from 'react-router-dom'
 
 import {
@@ -104,8 +104,10 @@ export const ChartDetailsPresetValues = () => {
         setDeletePresetValue(null)
     }
 
-    const filter: PresetValuesTableProps['filter'] = (rowData, filterData) =>
-        rowData.data.name.includes(filterData.searchKey.toLowerCase())
+    const filter: PresetValuesTableProps['filter'] = useCallback(
+        (rowData, filterData) => rowData.data.name.includes(filterData.searchKey.toLowerCase()),
+        [],
+    )
 
     return (
         <div className="mh-500 flexbox-col bg__primary border__primary br-4 w-100 dc__overflow-auto">
