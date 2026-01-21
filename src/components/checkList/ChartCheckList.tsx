@@ -32,7 +32,7 @@ export class ChartCheckList extends Component<ChartCheckListProps, {}> {
                 <div className="fs-13">
                     {!this.props.chartChecklist.project && (
                         <NavLink
-                            to={COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS}
+                            to={COMMON_URLS.GLOBAL_CONFIG_PROJECTS}
                             className="dc__no-decor  mt-8 flex left"
                             style={{ color: project ? `var(--N500)` : `var(--B500)` }}
                         >
