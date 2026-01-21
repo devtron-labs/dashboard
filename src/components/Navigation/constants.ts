@@ -9,6 +9,7 @@ import { URLS } from '@Config/routes'
 import { NavigationGroupType, NavigationItemType } from './types'
 
 const FE_LIB_ROUTER_URLS = importComponentFromFELibrary('ROUTER_URLS', {}, 'function')
+const AuditLog = importComponentFromFELibrary('AuditLog')
 
 export const APPLICATION_MANAGEMENT_CONFIGURATIONS: NavigationItemType['subItems'] = [
     {
@@ -287,6 +288,13 @@ export const NAVIGATION_LIST: NavigationGroupType[] = [
                 icon: 'ic-resource-watcher',
                 href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_WATCHER,
             },
+            {
+                title: 'Audit Logs',
+                dataTestId: 'audit-logs',
+                id: 'infrastructure-management-audit-logs',
+                icon: 'ic-monitoring',
+                href: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_AUDIT_LOGS,
+            }
         ],
     },
     {
