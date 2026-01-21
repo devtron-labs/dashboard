@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-import { DeleteComponentsName } from '@Config/constantMessaging'
 
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons, renderDefaultTag } from './notifications.util'
-import { ConfigurationTableProps } from './types'
+import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
+import { BASE_CONFIG, ConfigurationsTabTypes, SMTP_TABLE_COLUMNS } from './constants'
+import { renderDefaultTag } from './notifications.util'
+import { ConfigurationTableProps, SMTPConfigurationTableRowType } from './types'
 
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { smtpConfigurationList } = state
     const { searchParams } = useSearchString()
     const history = useHistory()
 
-    const onClickEditRow = (configId) => () => {
+    const onClickEditRow = (id: number) => () => {
         const newParams = {
             ...searchParams,
-            configId: configId.toString(),
+            configId: id.toString(),
             modal: ConfigurationsTabTypes.SMTP,
         }
         history.push({
@@ -42,51 +42,59 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
         })
     }
 
-    return (
-        <div className="smtp-config-container flex-grow-1">
-            <div className="smtp-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20 dc__position-sticky dc__top-0 bg__primary">
-                <p className="icon-dim-24 m-0" />
-                <p className="dc__truncate-text flex left m-0">Name</p>
-                <p className="dc__truncate-text flex left m-0">Host</p>
-                <p className="dc__truncate-text flex left m-0">Port</p>
-                <p className="dc__truncate-text flex left m-0">Sender&apos; Email</p>
-                <p className="" aria-label="Action" />
-            </div>
-            <div className="flex-grow-1">
-                {smtpConfigurationList.map((smtpConfig) => (
-                    <div
-                        data-testid={`smtp-container-${smtpConfig.name}`}
-                        key={smtpConfig.id}
-                        className="configuration-tab__table-row smtp-config-grid dc__gap-16 py-6 px-20 dc__hover-n50 h-100 dc__visible-hover dc__visible-hover--parent"
-                    >
-                        {getConfigTabIcons(ConfigurationsTabTypes.SMTP)}
-                        <div
-                            data-testid={`smtp-config-name-${smtpConfig.name}`}
-                            className=" dc__truncate-text flexbox dc__gap-8"
-                        >
+    const tableRows = useMemo(
+        () =>
+            smtpConfigurationList.map((smtpConfig) => ({
+                id: `${smtpConfig.id}`,
+                data: {
+                    name: (
+                        <div className="flex left dc__gap-8 py-10">
                             <InteractiveCellText
                                 text={smtpConfig.name}
                                 onClickHandler={onClickEditRow(smtpConfig.id)}
                             />
                             {renderDefaultTag(smtpConfig.isDefault)}
                         </div>
-                        <InteractiveCellText
-                            text={smtpConfig.host}
-                            dataTestId={`smtp-config-host-${smtpConfig.host}`}
-                        />
-                        <InteractiveCellText text={smtpConfig.port} />
-                        <InteractiveCellText text={smtpConfig.email} />
-                        <ConfigTableRowActionButton
-                            onClickEditRow={onClickEditRow(smtpConfig.id)}
-                            onClickDeleteRow={deleteClickHandler(
-                                smtpConfig.id,
-                                DeleteComponentsName.SMTPConfigurationTab,
-                            )}
-                            modal={ConfigurationsTabTypes.SMTP}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
+                    ),
+                    host: smtpConfig.host,
+                    port: smtpConfig.port.toString(),
+                    email: smtpConfig.email,
+                },
+            })),
+        [smtpConfigurationList],
+    )
+
+    const onRowClick = (rowData) => {
+        onClickEditRow(Number(rowData.id))()
+    }
+
+    return (
+        <Table<SMTPConfigurationTableRowType, FiltersTypeEnum.STATE>
+            id="table__smtp-configuration"
+            columns={SMTP_TABLE_COLUMNS}
+            rows={tableRows}
+            emptyStateConfig={{
+                noRowsConfig: {
+                    title: 'No SMTP Configurations Found',
+                },
+            }}
+            filtersVariant={FiltersTypeEnum.STATE}
+            additionalFilterProps={{
+                initialSortKey: BASE_CONFIG[0].field,
+            }}
+            paginationVariant={PaginationEnum.NOT_PAGINATED}
+            filter={null}
+            rowStartIconConfig={{
+                name: 'ic-smtp',
+                color: null,
+                size: 24,
+            }}
+            rowActionOnHoverConfig={{
+                width: 100,
+                Component: ConfigurationRowActionButtonWrapper,
+            }}
+            additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.SMTP }}
+            onRowClick={onRowClick}
+        />
     )
 }
