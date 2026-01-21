@@ -65,6 +65,10 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
         [state.sesConfigurationList],
     )
 
+    const onRowClick = (rowData) => {
+        onClickEditRow(Number(rowData.id))()
+    }
+
     return (
         <Table<SESConfigurationTableRowType, FiltersTypeEnum.STATE>
             id="table__ses-configuration"
@@ -91,6 +95,7 @@ const SESConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTable
                 Component: ConfigurationRowActionButtonWrapper,
             }}
             additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.SES }}
+            onRowClick={onRowClick}
         />
     )
 }

@@ -64,6 +64,10 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
         [smtpConfigurationList],
     )
 
+    const onRowClick = (rowData) => {
+        onClickEditRow(Number(rowData.id))()
+    }
+
     return (
         <Table<SMTPConfigurationTableRowType, FiltersTypeEnum.STATE>
             id="table__smtp-configuration"
@@ -90,6 +94,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
                 Component: ConfigurationRowActionButtonWrapper,
             }}
             additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.SMTP }}
+            onRowClick={onRowClick}
         />
     )
 }

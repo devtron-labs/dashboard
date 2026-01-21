@@ -60,6 +60,10 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
         [webhookConfigurationList],
     )
 
+    const onRowClick = (rowData) => {
+        onClickWebhookConfigEdit(Number(rowData.id))()
+    }
+
     return (
         <Table<SlackWebhookConfigurationTableRowType, FiltersTypeEnum.STATE>
             id="table__webhook-configuration"
@@ -86,6 +90,7 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
                 Component: ConfigurationRowActionButtonWrapper,
             }}
             additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.WEBHOOK }}
+            onRowClick={onRowClick}
         />
     )
 }
