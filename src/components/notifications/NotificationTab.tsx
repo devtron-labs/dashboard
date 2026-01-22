@@ -36,6 +36,9 @@ import {
     ConfirmationModal,
     ConfirmationModalVariantType,
     SourceTypeMap,
+    Icon,
+    stopPropagation,
+    Chip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
 import {
@@ -45,19 +48,11 @@ import {
     getChannelsAndEmailsFilteredByEmail,
 } from './notifications.service'
 import { ReactComponent as Add } from '@Icons/ic-add.svg'
-import { ReactComponent as Trash } from '@Icons/ic-delete-interactive.svg'
 import { ReactComponent as Bell } from '@Icons/ic-bell.svg'
-import { ReactComponent as User } from '@Icons/ic-users.svg'
-import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
-import { ReactComponent as Email } from '@Icons/ic-mail.svg'
-import { ReactComponent as Check } from '@Icons/ic-check.svg'
-import { ReactComponent as Play } from '@Icons/ic-play.svg'
-import { ReactComponent as Info } from '@Icons/ic-info-outline.svg'
-import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
 import { ViewType, URLS } from '../../config'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import { getHostURLConfiguration } from '../../services/service'
-import { renderPipelineTypeIcon } from './notifications.util'
+import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
 import { NotificationTabState } from './types'
 import { InValidHostUrlWarningBlock } from '@Components/common'
 
@@ -100,10 +95,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             singleDeletedId: 0,
             disableEdit: false,
         }
-        this.updateNotificationEvents = this.updateNotificationEvents.bind(this)
-        this.changePageSize = this.changePageSize.bind(this)
-        this.changePage = this.changePage.bind(this)
-        this.onChangePipelineCheckbox = this.onChangePipelineCheckbox.bind(this)
     }
 
     componentDidMount() {
@@ -118,7 +109,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    getHostURLConfig() {
+    getHostURLConfig = () => {
         getHostURLConfiguration()
             .then((response) => {
                 this.setState({ hostURLConfig: response.result })
@@ -126,7 +117,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             .catch((error) => {})
     }
 
-    getAllNotifications() {
+    getAllNotifications = () => {
         getNotificationConfigurations(this.state.pagination.offset, this.state.pagination.pageSize)
             .then((response: any) => {
                 this.setState({
@@ -149,7 +140,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             })
     }
 
-    getChannels() {
+    getChannels = () => {
         getChannelsAndEmailsFilteredByEmail()
             .then((response) => {
                 let list: any[] = response.result || []
@@ -167,7 +158,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             })
     }
 
-    changePage(pageNo, pageSize?): void {
+    changePage = (pageNo, pageSize?): void => {
         const state = { ...this.state }
         state.view = ViewType.LOADING
         state.pagination.offset = pageSize ? 0 : (pageNo - 1) * this.state.pagination.pageSize
@@ -177,11 +168,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    changePageSize(pageSize): void {
+    changePageSize = (pageSize): void => {
         this.changePage(1, pageSize)
     }
 
-    toggleNotification(id: number): void {
+    toggleNotification = (id: number): void => {
         const state = { ...this.state }
         let isAnySelected = false
         let areAllSelected = true
@@ -198,7 +189,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.setState(state)
     }
 
-    toggleAllNotification(): void {
+    toggleAllNotification = (): void => {
         const state = { ...this.state }
         state.headerCheckbox.isChecked = !state.headerCheckbox.isChecked
         state.headerCheckbox.value = state.headerCheckbox.isChecked ? 'CHECKED' : 'INTERMEDIATE'
@@ -209,7 +200,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.setState(state)
     }
 
-    onOpenEditNotficationMenu(): void {
+    onOpenEditNotficationMenu = (): void => {
         const allSelectedRows = this.state.notificationList
             .filter((row) => row.isSelected)
             .map((row) => {
@@ -263,7 +254,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    triggerCheckboxHandler(): void {
+    triggerCheckboxHandler = (e): void => {
+        stopPropagation(e)
         const state = { ...this.state }
         state.triggerCheckbox = {
             isChecked: !state.triggerCheckbox.isChecked,
@@ -280,7 +272,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.setState(state)
     }
 
-    successCheckboxHandler(): void {
+    successCheckboxHandler = (e): void => {
+        stopPropagation(e)
         const state = { ...this.state }
         state.successCheckbox.isChecked = !state.successCheckbox.isChecked
         state.successCheckbox.value = state.successCheckbox.isChecked ? 'CHECKED' : 'INTERMEDIATE'
@@ -295,7 +288,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.setState(state)
     }
 
-    failureCheckboxHandler(): void {
+    failureCheckboxHandler = (e): void => {
+        stopPropagation(e)
         const state = { ...this.state }
         state.failureCheckbox.isChecked = !state.failureCheckbox.isChecked
         state.failureCheckbox.value = state.failureCheckbox.isChecked ? 'CHECKED' : 'INTERMEDIATE'
@@ -310,7 +304,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.setState(state)
     }
 
-    updateNotificationEvents(event): void {
+    updateNotificationEvents = (): void => {
         this.setState({ view: ViewType.LOADING })
         const payload = this.state.payloadUpdateEvents.map((row) => {
             return {
@@ -375,7 +369,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    CreateNewNotification = () => {
+    createNewNotification = () => {
         if (this.state.disableEdit) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,
@@ -386,26 +380,27 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-    renderGenericState() {
-        const renderGenericStateButton = () => {
-            return (
-                <button
-                    data-testid="add-notification-button"
-                    onClick={this.CreateNewNotification}
-                    className="cta flex dc__no-decor"
-                >
-                    <Add className="icon-dim-20 mr-5" />
-                    Add Notification
-                </button>
-            )
-        }
+    renderAddNotificationButton = () => {
+        return (
+            <Button
+                text="Add Notification"
+                variant={ButtonVariantType.primary}
+                size={ComponentSizeType.medium}
+                onClick={this.createNewNotification}
+                dataTestId="add-notification-button"
+                startIcon={<Icon name="ic-add" color={null} />}
+            />
+        )
+    }
+
+    renderGenericEmptyState = () => {
         return (
             <GenericEmptyState
                 image={EmptyImage}
                 title={EMPTY_STATE_STATUS.NOTIFICATION_TAB.TITLE}
                 subTitle={EMPTY_STATE_STATUS.NOTIFICATION_TAB.SUBTITL}
                 isButtonAvailable
-                renderButton={renderGenericStateButton}
+                renderButton={this.renderAddNotificationButton}
             />
         )
     }
@@ -425,14 +420,14 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         this.validateAccess({ showDeleteDialog: !this.state.showDeleteDialog, singleDeletedId: 0 })
     }
 
-    applyModifyEvents = (event) => {
+    applyModifyEvents = () => {
         if (this.state.disableEdit) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,
                 description: TOAST_ACCESS_DENIED.SUBTITLE,
             })
         } else {
-            this.updateNotificationEvents(event)
+            this.updateNotificationEvents()
         }
     }
 
@@ -449,9 +444,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         rootClassName=""
                         isChecked={this.state.triggerCheckbox.isChecked}
                         value={this.state.triggerCheckbox.value}
-                        onChange={(e) => {
-                            this.triggerCheckboxHandler()
-                        }}
+                        onChange={this.triggerCheckboxHandler}
                     >
                         <span />
                     </Checkbox>
@@ -462,10 +455,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         rootClassName=""
                         isChecked={this.state.successCheckbox.isChecked}
                         value={this.state.successCheckbox.value}
-                        onChange={(e) => {
-                            e.stopPropagation()
-                            this.successCheckboxHandler()
-                        }}
+                        onChange={this.successCheckboxHandler}
                     >
                         <span />
                     </Checkbox>
@@ -476,9 +466,29 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         rootClassName=""
                         isChecked={this.state.failureCheckbox.isChecked}
                         value={this.state.failureCheckbox.value}
-                        onChange={(e) => {
-                            this.failureCheckboxHandler()
-                        }}
+                        onChange={this.failureCheckboxHandler}
+                    >
+                        <span />
+                    </Checkbox>
+                </li>
+                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
+                    <span>Config Approval</span>
+                    <Checkbox
+                        rootClassName=""
+                        isChecked={this.state.failureCheckbox.isChecked}
+                        value={this.state.failureCheckbox.value}
+                        onChange={this.failureCheckboxHandler}
+                    >
+                        <span />
+                    </Checkbox>
+                </li>
+                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
+                    <span>Image Approval</span>
+                    <Checkbox
+                        rootClassName=""
+                        isChecked={this.state.failureCheckbox.isChecked}
+                        value={this.state.failureCheckbox.value}
+                        onChange={this.failureCheckboxHandler}
                     >
                         <span />
                     </Checkbox>
@@ -492,20 +502,19 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         </PopupMenu.Body>
     )
 
-    renderOptions() {
+    renderOptions = () => {
         if (this.state.headerCheckbox.isChecked) {
             return (
                 <div className="flex left dc__gap-16">
-                    {/* NOTE: Need to replace all the icons with the new Button component all together */}
-                    <Tippy placement="top" content="Delete">
-                        <div className="flex">
-                            <Trash
-                                className="icon-dim-24 notification-tab__option"
-                                onClick={this.showDeleteModal}
-                                data-testid="notification-delete-button"
-                            />
-                        </div>
-                    </Tippy>
+                    <Button
+                        dataTestId="notification-delete-button"
+                        icon={<Icon name="ic-delete" color={null} />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        ariaLabel="Delete Notifications"
+                        onClick={this.showDeleteModal}
+                        showAriaLabelInTippy={true}
+                    />
                     <PopupMenu
                         onToggleCallback={(isOpen) => {
                             if (isOpen) {
@@ -522,18 +531,23 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </PopupMenu.Button>
                         {this.renderModifyEventPopUpBody()}
                     </PopupMenu>
-                    <Tippy placement="top" content="Modify Recipients">
-                        <div className="flex">
-                            <User className="icon-dim-24 notification-tab__option" onClick={this.showModifyModal} />
-                        </div>
-                    </Tippy>
+
+                    <Button
+                        dataTestId="button__modify-recipients"
+                        icon={<Icon name="ic-users" color={null} />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        ariaLabel="Modify Recipients"
+                        onClick={this.showModifyModal}
+                        showAriaLabelInTippy={true}
+                    />
                 </div>
             )
         }
     }
 
-    onChangePipelineCheckbox(e) {
-        e.stopPropagation()
+    onChangePipelineCheckbox = (e) => {
+        stopPropagation(e)
         this.toggleAllNotification()
     }
 
@@ -544,7 +558,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    renderPipelineList() {
+    renderPipelineList = () => {
         return (
             <table className="flexbox-col flex-grow-1">
                 <tbody>
@@ -612,49 +626,41 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                             <div className="dc__devtron-tag__container">
                                                 {row.appliedFilters.project.map((element) => {
                                                     return (
-                                                        <span
+                                                        <Chip
                                                             data-testid={`${row.pipelineType}-${element.name}`}
-                                                            key={element.name}
-                                                            className="dc__devtron-tag mr-5"
-                                                        >
-                                                            Project:{element.name}
-                                                        </span>
+                                                            label={`project: ${element.name}`}
+                                                            size={ComponentSizeType.xs}
+                                                        />
                                                     )
                                                 })}
                                                 {row.appliedFilters.application.map((element) => {
                                                     return (
-                                                        <span
+                                                        <Chip
                                                             data-testid={`${row.pipelineType}-${element.name}`}
-                                                            key={element.name}
-                                                            className="dc__devtron-tag mr-5"
-                                                        >
-                                                            App:{element.name}
-                                                        </span>
+                                                            label={`app: ${element.name}`}
+                                                            size={ComponentSizeType.xs}
+                                                        />
                                                     )
                                                 })}
                                                 {row.appliedFilters.environment.map((element) => {
                                                     return (
-                                                        <span
+                                                        <Chip
                                                             data-testid={`${row.pipelineType}-${element.name}`}
-                                                            key={element.name}
-                                                            className="dc__devtron-tag mr-5"
-                                                        >
-                                                            Env:{element.name}
-                                                        </span>
+                                                            label={`env: ${element.name}`}
+                                                            size={ComponentSizeType.xs}
+                                                        />
                                                     )
                                                 })}
                                                 {row.appliedFilters.cluster.map((element) => {
                                                     return (
-                                                        <span
+                                                        <Chip
                                                             data-testid={`${row.pipelineType}-${element.name}`}
-                                                            key={element.name}
-                                                            className="dc__devtron-tag mr-5"
-                                                        >
-                                                            Cluster:{element.name}
-                                                        </span>
+                                                            label={`cluster: ${element.name}`}
+                                                            size={ComponentSizeType.xs}
+                                                        />
                                                     )
                                                 })}
-                                            </div>{' '}
+                                            </div>
                                         </>
                                     ) : null}
                                 </td>
@@ -674,31 +680,65 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     )}
                                     {row.pipelineType === 'CD' ? row?.environmentName : ''}
                                 </td>
-                                <td className="pipeline-list__stages flexbox flex-justify">
+                                <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
                                     {row.trigger ? (
-                                        <Tippy placement="top" content="on trigger">
-                                            <div className="flex">
-                                                <Play className="icon-dim-20 icon-n5" />
-                                            </div>
-                                        </Tippy>
+                                        <Icon
+                                            name="ic-play-outline"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Trigger',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
                                     ) : (
                                         <span className="icon-dim-20" />
                                     )}
                                     {row.success ? (
-                                        <Tippy placement="top" content="on success">
-                                            <div className="flex">
-                                                <Check className="icon-dim-20 icon-n5" />
-                                            </div>
-                                        </Tippy>
+                                        <Icon
+                                            name="ic-check"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Success',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
                                     ) : (
                                         <span className="icon-dim-20" />
                                     )}
                                     {row.failure ? (
-                                        <Tippy placement="top" content="on failure">
-                                            <div className="flex">
-                                                <Info className="icon-dim-20 icon-n5" />
-                                            </div>
-                                        </Tippy>
+                                        <Icon
+                                            name="ic-close-small"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Failure',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className="icon-dim-20" />
+                                    )}
+                                    {row.configApproval ? (
+                                        <Icon
+                                            name="ic-code"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Config Approval',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <span className="icon-dim-20" />
+                                    )}
+
+                                    {row.imageApproval ? (
+                                        <Icon
+                                            name="ic-image-approve"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Image Approval',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
                                     ) : (
                                         <span className="icon-dim-20" />
                                     )}
@@ -707,23 +747,19 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     <div className="dc__devtron-tag__container">
                                         {row.providers.map((p) => {
                                             return (
-                                                <div key={p.configId} className="dc__devtron-tag">
-                                                    {p.dest === 'ses' ? <Email className="icon-dim-20 mr-5" /> : null}
-                                                    {p.dest === 'slack' ? <Slack className="icon-dim-20 mr-5" /> : null}
-                                                    {p.dest === 'email' ? <Email className="icon-dim-20 mr-5" /> : null}
-                                                    {p.dest === 'smtp' ? <Email className="icon-dim-20 mr-5" /> : null}
-                                                    {p.dest === 'webhook' ? (
-                                                        <Webhook className="icon-dim-20 mr-5" />
-                                                    ) : null}
-                                                    {p.recipient ? p.recipient : p.name}
-                                                </div>
+                                                <Chip
+                                                    data-testid={`recipient-${p.configId}`}
+                                                    label={p.recipient ? p.recipient : p.name}
+                                                    size={ComponentSizeType.xs}
+                                                    startIcon={getRecipientChipStartIcon(p.dest)}
+                                                />
                                             )
                                         })}
                                     </div>
                                 </td>
                                 <td className="pipeline-list__hover flex">
                                     <Button
-                                        icon={<Trash />}
+                                        icon={<Icon name="ic-delete" color={null} />}
                                         ariaLabel="Delete"
                                         variant={ButtonVariantType.borderLess}
                                         style={ButtonStyleType.negativeGrey}
@@ -741,7 +777,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    renderPagination() {
+    renderPagination = () => {
         if (this.state.pagination.size) {
             return (
                 <Pagination
@@ -757,14 +793,14 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         return null
     }
 
-    renderBody() {
+    renderBody = () => {
         return (
             <div className="flexbox-col flex-grow-1 dc__gap-16">
                 <Button
                     variant={ButtonVariantType.primary}
                     text="Add New"
                     size={ComponentSizeType.medium}
-                    onClick={this.CreateNewNotification}
+                    onClick={this.createNewNotification}
                     dataTestId="delete-notification-button"
                     startIcon={<Add />}
                 />
@@ -775,7 +811,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    renderModifyRecipients() {
+    renderModifyRecipients = () => {
         if (this.state.showModifyRecipientsModal) {
             const allCandidates = this.state.notificationList
                 .filter((row) => row.isSelected)
@@ -798,7 +834,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
     }
 
-    renderHostErrorMessage() {
+    renderHostErrorMessage = () => {
         if (!this.state.hostURLConfig || this.state.hostURLConfig.value !== window.location.origin) {
             return <InValidHostUrlWarningBlock />
         }
@@ -815,7 +851,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return (
                 <div className="flexbox-col flex-grow-1">
                     {this.renderHostErrorMessage()}
-                    {this.renderGenericState()}
+                    {this.renderGenericEmptyState()}
                 </div>
             )
         }

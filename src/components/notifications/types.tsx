@@ -264,6 +264,8 @@ export interface NotificationConfiguration {
     trigger: boolean
     success: boolean
     failure: boolean
+    configApproval: boolean
+    imageApproval: boolean
     isSelected: boolean
     providers: { dest: string; configId: number; recipient: string; name?: string }[]
     appliedFilters: {
@@ -321,4 +323,37 @@ export interface SMTPConfigurationTableRowType extends BaseConfigurationTableRow
 
 export interface SlackWebhookConfigurationTableRowType extends BaseConfigurationTableRowType {
     webhookUrl: string
+}
+
+export interface ModifyRecipientsModalProps {
+    channelList: SelectedRecipientType[]
+    onSaveSuccess: () => void
+    closeModifyRecipientsModal: () => void
+    notificationListFromParent: {
+        id: number
+        providers: { dest: string; configId: number; recipient: string; name?: string }[]
+    }[]
+}
+
+export interface RecipientType {
+    configId: number
+    recipient: string
+    dest: string
+    name?: string
+}
+
+export interface SelectedRecipientType {
+    __isNew__?: boolean
+    label: string
+    value: string
+    data: RecipientType
+}
+
+export interface ModifyRecipientsModalState {
+    isLoading: boolean
+    savedRecipients: RecipientType[]
+    selectedRecipient: SelectedRecipientType[]
+    showEmailAgents: boolean
+    selectedEmailAgent: string
+    recipientWithoutEmailAgent: boolean
 }

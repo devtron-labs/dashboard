@@ -15,7 +15,18 @@
  */
 
 import { Component } from 'react'
-import { showError, Progressing, VisibleModal, RadioGroup, RadioGroupItem, ToastVariantType, ToastManager } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    showError,
+    VisibleModal,
+    RadioGroup,
+    RadioGroupItem,
+    ToastVariantType,
+    ToastManager,
+    preventDefault,
+    Button,
+    ButtonVariantType,
+    ButtonStyleType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import CreatableSelect from 'react-select/creatable'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { ReactComponent as Slack } from '../../assets/icons/slack-logo.svg'
@@ -25,40 +36,7 @@ import { ReactComponent as Webhook } from '../../assets/icons/ic-CIWebhook.svg'
 import { updateNotificationRecipients } from './notifications.service'
 import { multiSelectStyles, DropdownIndicator, MultiValueLabel, Option } from './notifications.util'
 import './notifications.scss'
-import { EMAIL_AGENT } from './types'
-
-interface ModifyRecipientsModalProps {
-    channelList: SelectedRecipientType[]
-    onSaveSuccess: () => void
-    closeModifyRecipientsModal: () => void
-    notificationListFromParent: {
-        id: number
-        providers: { dest: string; configId: number; recipient: string; name?: string }[]
-    }[]
-}
-
-interface RecipientType {
-    configId: number
-    recipient: string
-    dest: string
-    name?: string
-}
-
-interface SelectedRecipientType {
-    __isNew__?: boolean
-    label: string
-    value: string
-    data: RecipientType
-}
-
-interface ModifyRecipientsModalState {
-    isLoading: boolean
-    savedRecipients: RecipientType[]
-    selectedRecipient: SelectedRecipientType[]
-    showEmailAgents: boolean
-    selectedEmailAgent: string
-    recipientWithoutEmailAgent: boolean
-}
+import { EMAIL_AGENT, ModifyRecipientsModalProps, ModifyRecipientsModalState } from './types'
 
 export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps, ModifyRecipientsModalState> {
     constructor(props) {
@@ -71,8 +49,6 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
             selectedEmailAgent: null,
             recipientWithoutEmailAgent: false,
         }
-        this.saveRecipients = this.saveRecipients.bind(this)
-        this.changeEmailAgent = this.changeEmailAgent.bind(this)
     }
 
     componentDidMount() {
@@ -130,8 +106,8 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
         this.setState(state)
     }
 
-    saveRecipients(e) {
-        e.preventDefault()
+    saveRecipients = (e) => {
+        preventDefault(e)
         if (
             this.state.selectedRecipient.length > 0 &&
             this.state.recipientWithoutEmailAgent &&
@@ -164,13 +140,13 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
             })
     }
 
-    changeEmailAgent(event: any): void {
+    changeEmailAgent = (event: any): void => {
         const state = { ...this.state }
         state.selectedEmailAgent = event.target.value
         this.setState(state)
     }
 
-    renderEmailAgentSelector() {
+    renderEmailAgentSelector = () => {
         if (this.state.selectedRecipient.length > 0 && this.state.recipientWithoutEmailAgent) {
             return (
                 <div className="form__row">
@@ -285,26 +261,23 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             <div style={{ marginBottom: '60px' }} />
                         )}
                     </div>
-                    <div>{this.renderEmailAgentSelector()}</div>
+                    <div>{this.renderEmailAgentSelector}</div>
                 </div>
-                <div className="form__button-group-bottom flex right">
-                    <button
-                        type="button"
-                        className="cta cancel mr-16"
-                        tabIndex={3}
+                <div className="form__button-group-bottom flex right dc__gap-16">
+                    <Button
+                        dataTestId="button__cancel"
+                        text="Cancel"
                         onClick={this.props.closeModifyRecipientsModal}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="cta"
-                        tabIndex={4}
-                        disabled={this.state.isLoading}
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                    />
+                    <Button
+                        dataTestId="button__save-changes"
+                        text="Save Changes"
                         onClick={this.saveRecipients}
-                    >
-                        {this.state.isLoading ? <Progressing /> : 'Save Changes'}
-                    </button>
+                        variant={ButtonVariantType.primary}
+                        disabled={this.state.isLoading}
+                    />
                 </div>
             </>
         )

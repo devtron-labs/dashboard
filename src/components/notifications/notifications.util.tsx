@@ -35,13 +35,7 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import {
-    FormError,
-    SESFormType,
-    SMTPFormType,
-    WebhookDataRowType,
-    WebhookHeaderKeyType,
-} from './types'
+import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -357,3 +351,12 @@ export const getValidationFormConfig = (formConfig) => {
     return { allValid, formValidations }
 }
 
+export const getRecipientChipStartIcon = (config: string) => {
+    if (config === 'slack') {
+        return <Icon name="ic-slack" color={null} />
+    }
+    if (config === 'webhook') {
+        return <Icon name="ic-webhook" color={null} />
+    }
+    return <Icon name="ic-email" color={null} />
+}

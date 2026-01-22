@@ -880,7 +880,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     isSearchable
                     isClearable={false}
                     backspaceRemovesValue
-                    className="react-select--height-44"
+                    className="mh-44"
                     components={{
                         MultiValueContainer: ({ ...props }) => (
                             <MultiValueContainer {...props} validator={validateEmail} />
