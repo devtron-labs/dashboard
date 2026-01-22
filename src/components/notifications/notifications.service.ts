@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { get, post, trash, put, ResponseType, sortCallback } from '@devtron-labs/devtron-fe-common-lib'
+import { get, post, trash, put, ResponseType, sortCallback, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
-import { FilterOptions, PipelineType } from './AddNotification'
-import { NotificationConfiguration, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import { FilterOptions, NotificationConfiguration, PipelineType, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -442,7 +441,7 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
 
             return {
                 appliedFilters: projects.concat(app, environment, cluster),
-                checkbox: { isChecked: false, value: 'INTERMEDIATE' },
+                checkbox: { isChecked: false, value: CHECKBOX_VALUE.INTERMEDIATE },
                 pipelineId: row.pipeline?.id,
                 appName: row?.pipeline?.appName,
                 branch: row?.pipeline?.branches?.join(', '),
@@ -452,6 +451,8 @@ export function getPipelines(filters): Promise<GetPipelinesResponseType> {
                 trigger: false,
                 success: false,
                 failure: false,
+                configApproval: false,
+                imageApproval: false,
             }
         })
         const matchingPipelines = parsedResult.filter((r) => r.appliedFilters.length == 0)

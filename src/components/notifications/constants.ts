@@ -183,3 +183,35 @@ export const SLACK_WEBHOOK_TABLE_COLUMNS: TableProps<
         size: null,
     },
 ]
+
+export enum EVENTS {
+    TRIGGER = 'trigger',
+    SUCCESS = 'success',
+    FAILURE = 'failure',
+    CONFIG_APPROVAL = 'configApproval',
+    IMAGE_APPROVAL = 'imageApproval',
+}
+
+export const EVENT_LABEL = {
+    [EVENTS.TRIGGER]: 'Trigger',
+    [EVENTS.SUCCESS]: 'Success',
+    [EVENTS.FAILURE]: 'Failure',
+    [EVENTS.CONFIG_APPROVAL]: 'Config approval',
+    [EVENTS.IMAGE_APPROVAL]: 'Image approval',
+}
+
+export const EVENT_ID = {
+    [EVENTS.TRIGGER]: 1,
+    [EVENTS.SUCCESS]: 2,
+    [EVENTS.FAILURE]: 3,
+    [EVENTS.CONFIG_APPROVAL]: 4,
+    [EVENTS.IMAGE_APPROVAL]: 7,
+}
+
+export const EVENT_ICONS = {
+    [EVENTS.TRIGGER]: 'ic-play-outline',
+    [EVENTS.SUCCESS]: 'ic-check',
+    [EVENTS.FAILURE]: 'ic-close-small',
+    [EVENTS.CONFIG_APPROVAL]: 'ic-code',
+    [EVENTS.IMAGE_APPROVAL]: 'ic-image-approve',
+}

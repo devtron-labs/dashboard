@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import {
     showError,
     Progressing,
@@ -34,6 +34,13 @@ import {
     TYPE_3_CHARACTERS_TO_SEE_MATCHING_RESULTS,
     TYPE_TO_SEE_MATCHING_RESULTS,
     SourceTypeMap,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    IconsProps,
+    ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { RouteComponentProps, Link } from 'react-router-dom'
 import { components } from 'react-select'
@@ -59,98 +66,16 @@ import {
 import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'
-import { EMAIL_AGENT } from './types'
+import {
+    AddNotificationsProps,
+    AddNotificationState,
+    EMAIL_AGENT,
+    FilterOptions,
+    NotificationEventsType,
+} from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
-
-interface AddNotificationsProps extends RouteComponentProps<{}> {}
-
-export enum FilterOptions {
-    ENVIRONMENT = 'environment',
-    APPLICATION = 'application',
-    PROJECT = 'project',
-    CLUSTER = 'cluster',
-}
-interface Options {
-    environment: {
-        value: number
-        label: string
-        type: string
-    }[]
-    application: {
-        value: number
-        label: string
-        type: string
-    }[]
-    project: {
-        value: number
-        label: string
-        type: string
-    }[]
-    cluster: {
-        value: number
-        label: string
-        type: string
-    }[]
-}
-export interface PipelineType {
-    checkbox: {
-        isChecked: boolean
-        value: 'CHECKED' | 'INTERMEDIATE'
-    }
-    type: 'CI' | 'CD'
-    pipelineId: number
-    pipelineName: string
-    environmentName?: string
-    branch?: string
-    appName: string
-    success: boolean
-    trigger: boolean
-    failure: boolean
-    appliedFilters: Array<{ type: string; value: number | string | undefined; name: string; label: string | undefined }>
-    isVirtualEnvironment?: boolean
-}
-
-interface AddNotificationState {
-    view: string
-    showSlackConfigModal: boolean
-    showSESConfigModal: boolean
-    showSMTPConfigModal: boolean
-    channelOptions: {
-        __isNew__?: boolean
-        label: string
-        value
-        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
-    }[]
-    sesConfigOptions: {
-        id: number
-        configName: string
-        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
-        recipient: string
-    }[]
-    smtpConfigOptions: {
-        id: number
-        configName: string
-        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
-        recipient: string
-    }[]
-    isLoading: boolean
-    appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
-    selectedChannels: {
-        __isNew__?: boolean
-        label: string
-        value
-        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
-    }[]
-    openSelectPipeline: boolean
-    pipelineList: PipelineType[]
-    filterInput: string
-    emailAgentConfigId: number
-    options: Options
-    isApplistLoading: boolean
-    selectedEmailAgent: string
-    showWebhookConfigModal: boolean
-}
+import { EVENT_ICONS, EVENTS } from './constants'
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
     filterOptionsMain = [
@@ -189,7 +114,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.handleFilterInput = this.handleFilterInput.bind(this)
         this.selectFilterType = this.selectFilterType.bind(this)
         this.toggleSelectPipeline = this.toggleSelectPipeline.bind(this)
-        this.handlePipelineEventType = this.handlePipelineEventType.bind(this)
         this.selectChannel = this.selectChannel.bind(this)
         this.handleFilterTag = this.handleFilterTag.bind(this)
         this.selectEmailAgentAccount = this.selectEmailAgentAccount.bind(this)
@@ -343,23 +267,38 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         })
     }
 
-    handlePipelineEventType(pipelineIndex: number, stage: 'success' | 'trigger' | 'failure'): void {
+    handlePipelineEventType = (
+        pipelineIndex: number,
+        stage: 'trigger' | 'success' | 'failure' | 'configApproval' | 'imageApproval',
+    ): void => {
         const state = { ...this.state }
         const pipeline = state.pipelineList[pipelineIndex]
         pipeline[stage] = !pipeline[stage]
-        if (pipeline.success && pipeline.trigger && pipeline.failure) {
+        if (
+            pipeline.success &&
+            pipeline.trigger &&
+            pipeline.failure &&
+            pipeline.configApproval &&
+            pipeline.imageApproval
+        ) {
             pipeline.checkbox = {
-                value: 'CHECKED',
+                value: CHECKBOX_VALUE.CHECKED,
                 isChecked: true,
             }
-        } else if (pipeline.success || pipeline.trigger || pipeline.failure) {
+        } else if (
+            pipeline.success ||
+            pipeline.trigger ||
+            pipeline.failure ||
+            pipeline.configApproval ||
+            pipeline.imageApproval
+        ) {
             pipeline.checkbox = {
-                value: 'INTERMEDIATE',
+                value: CHECKBOX_VALUE.INTERMEDIATE,
                 isChecked: true,
             }
-        } else if (!(pipeline.success && pipeline.trigger && pipeline.failure)) {
+        } else {
             pipeline.checkbox = {
-                value: 'CHECKED',
+                value: CHECKBOX_VALUE.CHECKED,
                 isChecked: false,
             }
         }
@@ -371,10 +310,12 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         const state = { ...this.state }
         const pipeline = state.pipelineList[pipelineIndex]
         pipeline.checkbox.isChecked = !pipeline.checkbox.isChecked
-        pipeline.checkbox.value = pipeline.checkbox.isChecked ? 'CHECKED' : 'INTERMEDIATE'
+        pipeline.checkbox.value = pipeline.checkbox.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
         pipeline.trigger = pipeline.checkbox.isChecked
         pipeline.success = pipeline.checkbox.isChecked
         pipeline.failure = pipeline.checkbox.isChecked
+        pipeline.configApproval = pipeline.checkbox.isChecked
+        pipeline.imageApproval = pipeline.checkbox.isChecked
         state.pipelineList[pipelineIndex] = pipeline
         this.setState(state)
     }
@@ -403,6 +344,10 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             state.emailAgentConfigId = emailAgentConfigId
             this.setState(state)
         }
+    }
+
+    handleBackClick = () => {
+        this.props.history.push(`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`)
     }
 
     saveNotification(): void {
@@ -448,7 +393,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
         saveNotification(selectedPipelines, selectedChannels)
             .then(() => {
-                this.props.history.push(`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`)
+                this.handleBackClick()
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: 'Saved Successfully',
@@ -813,52 +758,33 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                     )}
                                     {row.type === 'CD' ? row?.environmentName : ''}
                                 </td>
-                                <td className="pipeline-list__stages flexbox flex-justify">
-                                    <Tippy className="default-tt" arrow placement="top" content="Trigger">
-                                        <div>
-                                            <Checkbox
-                                                dataTestId={`trigger-notification-checkbox-${rowIndex}`}
-                                                rootClassName="gray"
-                                                isChecked={row.trigger}
-                                                value={CHECKBOX_VALUE.CHECKED}
-                                                onChange={(e) => {
-                                                    this.handlePipelineEventType(rowIndex, 'trigger')
+                                <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
+                                    {Object.values(EVENTS).map((event) => {
+                                        return (
+                                            <Button
+                                                key={event}
+                                                icon={
+                                                    <Icon
+                                                        name={EVENT_ICONS[event] as IconsProps['name']}
+                                                        color={null}
+                                                    />
+                                                }
+                                                variant={
+                                                    row[event]
+                                                        ? ButtonVariantType.primary
+                                                        : ButtonVariantType.borderLess
+                                                }
+                                                style={row[event] ? ButtonStyleType.default : ButtonStyleType.neutral}
+                                                size={ComponentSizeType.xs}
+                                                onClick={() => {
+                                                    this.handlePipelineEventType(rowIndex, event)
                                                 }}
-                                            >
-                                                <span />
-                                            </Checkbox>
-                                        </div>
-                                    </Tippy>
-                                    <Tippy className="default-tt" arrow placement="top" content="Success">
-                                        <div>
-                                            <Checkbox
-                                                dataTestId={`success-notification-checkbox-${rowIndex}`}
-                                                rootClassName="green"
-                                                isChecked={row.success}
-                                                value={CHECKBOX_VALUE.CHECKED}
-                                                onChange={(e) => {
-                                                    this.handlePipelineEventType(rowIndex, 'success')
-                                                }}
-                                            >
-                                                <span />
-                                            </Checkbox>
-                                        </div>
-                                    </Tippy>
-                                    <Tippy className="default-tt" arrow placement="top" content="Failure">
-                                        <div>
-                                            <Checkbox
-                                                dataTestId={`failure-notification-checkbox-${rowIndex}`}
-                                                rootClassName="red"
-                                                isChecked={row.failure}
-                                                value={CHECKBOX_VALUE.CHECKED}
-                                                onChange={(e) => {
-                                                    this.handlePipelineEventType(rowIndex, 'failure')
-                                                }}
-                                            >
-                                                <span />
-                                            </Checkbox>
-                                        </div>
-                                    </Tippy>
+                                                ariaLabel={event}
+                                                showAriaLabelInTippy={false}
+                                                dataTestId={`${event}-notification-checkbox-${rowIndex}`}
+                                            />
+                                        )
+                                    })}
                                 </td>
                             </tr>
                         )
@@ -936,7 +862,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
             </div>
         )
     }
-
     renderAddCard() {
         return (
             <div className="white-card white-card--no-padding dc__mxw-1000">
@@ -949,26 +874,23 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                     </div>
                     {this.renderPipelineList()}
                 </div>
-                <div className="form__button-group-bottom flex right">
-                    <Link
-                        to={`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`}
-                        className="cta cancel mr-16 dc__no-decor"
-                        tabIndex={8}
-                    >
-                        Cancel
-                    </Link>
-                    <button
-                        data-testid="add-notification-save-button"
-                        type="submit"
-                        className="cta"
-                        tabIndex={7}
-                        disabled={this.state.isLoading}
-                        onClick={(event) => {
-                            this.saveNotification()
+                <div className="form__button-group-bottom flex right dc__gap-16">
+                    <Button
+                        dataTestId="cancel-add-notification"
+                        text="Cancel"
+                        variant={ButtonVariantType.secondary}
+                        style={ButtonStyleType.neutral}
+                        component={ButtonComponentType.link}
+                        linkProps={{
+                            to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
                         }}
-                    >
-                        {this.state.isLoading ? <Progressing /> : 'Save'}
-                    </button>
+                    />
+                    <Button
+                        dataTestId="add-notification-save-button"
+                        text="Save"
+                        style={ButtonStyleType.default}
+                        onClick={this.saveNotification}
+                    />
                 </div>
             </div>
         )
@@ -1070,7 +992,23 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         return (
             <ErrorBoundary>
                 <div className="flexbox-col bg__primary h-100 dc__gap-24 px-20 py-16">
-                    <div data-testid="add-notifications-heading-title" className="form__title mb-16">
+                    <div
+                        data-testid="add-notifications-heading-title"
+                        className="form__title mb-16 flex left dc__gap-12"
+                    >
+                        <Button
+                            dataTestId="back-to-notifications"
+                            icon={<Icon name="ic-arrow-right" color={null} rotateBy={180} />}
+                            component={ButtonComponentType.link}
+                            linkProps={{
+                                to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
+                            }}
+                            ariaLabel="Back to notifications"
+                            showAriaLabelInTippy={false}
+                            variant={ButtonVariantType.borderLess}
+                            style={ButtonStyleType.neutral}
+                            size={ComponentSizeType.small}
+                        />
                         Add Notifications
                     </div>
                     {this.renderAddCard()}

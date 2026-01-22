@@ -254,7 +254,15 @@ export interface ConfigurationTabSwitcherType {
     isEmptyView: boolean
 }
 
-export interface NotificationConfiguration {
+export interface NotificationEventsType {
+    trigger: boolean
+    success: boolean
+    failure: boolean
+    configApproval: boolean
+    imageApproval: boolean
+}
+
+export interface NotificationConfiguration extends NotificationEventsType {
     id: number
     pipelineId?: number
     appName: string
@@ -262,11 +270,6 @@ export interface NotificationConfiguration {
     pipelineType: 'CI' | 'CD'
     environmentName?: string
     branch?: string
-    trigger: boolean
-    success: boolean
-    failure: boolean
-    configApproval: boolean
-    imageApproval: boolean
     isSelected: boolean
     providers: { dest: string; configId: number; recipient: string; name?: string }[]
     appliedFilters: {
@@ -288,9 +291,9 @@ interface NotificationTabCheckboxTypes {
 }
 
 export interface NotificationTabEvents {
-    triggerCheckbox: NotificationTabCheckboxTypes
-    successCheckbox: NotificationTabCheckboxTypes
-    failureCheckbox: NotificationTabCheckboxTypes
+    trigger: NotificationTabCheckboxTypes
+    success: NotificationTabCheckboxTypes
+    failure: NotificationTabCheckboxTypes
     configApproval: NotificationTabCheckboxTypes
     imageApproval: NotificationTabCheckboxTypes
 }
@@ -363,4 +366,90 @@ export interface ModifyRecipientsModalState {
     showEmailAgents: boolean
     selectedEmailAgent: string
     recipientWithoutEmailAgent: boolean
+}
+
+export interface AddNotificationsProps extends RouteComponentProps<{}> {}
+
+export enum FilterOptions {
+    ENVIRONMENT = 'environment',
+    APPLICATION = 'application',
+    PROJECT = 'project',
+    CLUSTER = 'cluster',
+}
+interface Options {
+    environment: {
+        value: number
+        label: string
+        type: string
+    }[]
+    application: {
+        value: number
+        label: string
+        type: string
+    }[]
+    project: {
+        value: number
+        label: string
+        type: string
+    }[]
+    cluster: {
+        value: number
+        label: string
+        type: string
+    }[]
+}
+export interface PipelineType extends NotificationEventsType {
+    checkbox: {
+        isChecked: boolean
+        value: CHECKBOX_VALUE
+    }
+    type: 'CI' | 'CD'
+    pipelineId: number
+    pipelineName: string
+    environmentName?: string
+    branch?: string
+    appName: string
+    appliedFilters: Array<{ type: string; value: number | string | undefined; name: string; label: string | undefined }>
+    isVirtualEnvironment?: boolean
+}
+
+export interface AddNotificationState {
+    view: string
+    showSlackConfigModal: boolean
+    showSESConfigModal: boolean
+    showSMTPConfigModal: boolean
+    channelOptions: {
+        __isNew__?: boolean
+        label: string
+        value
+        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
+    }[]
+    sesConfigOptions: {
+        id: number
+        configName: string
+        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
+        recipient: string
+    }[]
+    smtpConfigOptions: {
+        id: number
+        configName: string
+        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
+        recipient: string
+    }[]
+    isLoading: boolean
+    appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
+    selectedChannels: {
+        __isNew__?: boolean
+        label: string
+        value
+        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
+    }[]
+    openSelectPipeline: boolean
+    pipelineList: PipelineType[]
+    filterInput: string
+    emailAgentConfigId: number
+    options: Options
+    isApplistLoading: boolean
+    selectedEmailAgent: string
+    showWebhookConfigModal: boolean
 }
