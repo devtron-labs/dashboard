@@ -17,6 +17,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
+    CHECKBOX_VALUE,
     DynamicDataTableRowType,
     GenericEmptyStateType,
     PaginationProps,
@@ -283,7 +284,15 @@ export interface NotificationConfiguration {
 
 interface NotificationTabCheckboxTypes {
     isChecked: boolean
-    value: 'INTERMEDIATE' | 'CHECKED'
+    value: CHECKBOX_VALUE.INTERMEDIATE | CHECKBOX_VALUE.CHECKED
+}
+
+export interface NotificationTabEvents {
+    triggerCheckbox: NotificationTabCheckboxTypes
+    successCheckbox: NotificationTabCheckboxTypes
+    failureCheckbox: NotificationTabCheckboxTypes
+    configApproval: NotificationTabCheckboxTypes
+    imageApproval: NotificationTabCheckboxTypes
 }
 
 export interface NotificationTabState {
@@ -293,10 +302,8 @@ export interface NotificationTabState {
     channelList: any[]
     showDeleteDialog: boolean
     showModifyRecipientsModal: boolean
+    events: NotificationTabEvents
     headerCheckbox: NotificationTabCheckboxTypes
-    triggerCheckbox: NotificationTabCheckboxTypes
-    successCheckbox: NotificationTabCheckboxTypes
-    failureCheckbox: NotificationTabCheckboxTypes
     payloadUpdateEvents: Array<{ id: number; eventTypeIds: number[] }>
     pagination: Pick<PaginationProps, 'offset' | 'size' | 'pageSize'>
     hostURLConfig: HostURLConfig
