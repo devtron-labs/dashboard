@@ -56,6 +56,8 @@ import {
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
 import { NotificationTabState } from './types'
+import { ModifyRecipientPopUp } from './ModifyRecipientPopUp'
+import { EVENT_ID } from './constants'
 
 export class NotificationTab extends Component<any, NotificationTabState> {
     constructor(props) {
@@ -72,15 +74,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 value: CHECKBOX_VALUE.INTERMEDIATE,
             },
             events: {
-                triggerCheckbox: {
+                trigger: {
                     isChecked: false,
                     value: CHECKBOX_VALUE.INTERMEDIATE,
                 },
-                successCheckbox: {
+                success: {
                     isChecked: false,
                     value: CHECKBOX_VALUE.INTERMEDIATE,
                 },
-                failureCheckbox: {
+                failure: {
                     isChecked: false,
                     value: CHECKBOX_VALUE.INTERMEDIATE,
                 },
@@ -124,7 +126,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             .then((response) => {
                 this.setState({ hostURLConfig: response.result })
             })
-            .catch((error) => {})
+            .catch(() => {})
     }
 
     getAllNotifications = () => {
@@ -265,15 +267,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         }
         this.setState({
             events: {
-                triggerCheckbox: {
+                trigger: {
                     isChecked: isAnyTriggerEventSelected,
                     value: areAllTriggerEventSelected ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
                 },
-                successCheckbox: {
+                success: {
                     isChecked: isAnySuccessEventSelected,
                     value: areAllSuccessEventSelected ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
                 },
-                failureCheckbox: {
+                failure: {
                     isChecked: isAnyFailureEventSelected,
                     value: areAllFailureEventSelected ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
                 },
@@ -290,90 +292,18 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
-    triggerCheckboxHandler = (e): void => {
+    onChangeCheckboxHandler = (e, value) => () => {
         stopPropagation(e)
         const state = { ...this.state }
-        state.events.triggerCheckbox = {
-            isChecked: !state.events.triggerCheckbox.isChecked,
-            value: !state.events.triggerCheckbox.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
+        state.events[value] = {
+            isChecked: !state.events[value].isChecked,
+            value: !state.events[value].isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE,
         }
         state.payloadUpdateEvents = state.payloadUpdateEvents.map((row) => {
-            if (state.events.triggerCheckbox.isChecked) {
-                row.eventTypeIds.push(1)
+            if (state.events[value].isChecked) {
+                row.eventTypeIds.push(EVENT_ID[value])
             } else {
-                row.eventTypeIds = row.eventTypeIds.filter((id) => id !== 1)
-            }
-            return row
-        })
-        this.setState(state)
-    }
-
-    successCheckboxHandler = (e): void => {
-        stopPropagation(e)
-        const state = { ...this.state }
-        state.events.successCheckbox.isChecked = !state.events.successCheckbox.isChecked
-        state.events.successCheckbox.value = state.events.successCheckbox.isChecked
-            ? CHECKBOX_VALUE.CHECKED
-            : CHECKBOX_VALUE.INTERMEDIATE
-        state.payloadUpdateEvents = state.payloadUpdateEvents.map((row) => {
-            if (state.events.successCheckbox.isChecked) {
-                row.eventTypeIds.push(2)
-            } else {
-                row.eventTypeIds = row.eventTypeIds.filter((id) => id !== 2)
-            }
-            return row
-        })
-        this.setState(state)
-    }
-
-    failureCheckboxHandler = (e): void => {
-        stopPropagation(e)
-        const state = { ...this.state }
-        state.events.failureCheckbox.isChecked = !state.events.failureCheckbox.isChecked
-        state.events.failureCheckbox.value = state.events.failureCheckbox.isChecked
-            ? CHECKBOX_VALUE.CHECKED
-            : CHECKBOX_VALUE.INTERMEDIATE
-        state.payloadUpdateEvents = state.payloadUpdateEvents.map((row) => {
-            if (state.events.failureCheckbox.isChecked) {
-                row.eventTypeIds.push(3)
-            } else {
-                row.eventTypeIds = row.eventTypeIds.filter((id) => id !== 3)
-            }
-            return row
-        })
-        this.setState(state)
-    }
-
-    configApprovalCheckboxHandler = (e): void => {
-        stopPropagation(e)
-        const state = { ...this.state }
-        state.events.configApproval.isChecked = !state.events.configApproval.isChecked
-        state.events.configApproval.value = state.events.configApproval.isChecked
-            ? CHECKBOX_VALUE.CHECKED
-            : CHECKBOX_VALUE.INTERMEDIATE
-        state.payloadUpdateEvents = state.payloadUpdateEvents.map((row) => {
-            if (state.events.configApproval.isChecked) {
-                row.eventTypeIds.push(4)
-            } else {
-                row.eventTypeIds = row.eventTypeIds.filter((id) => id !== 4)
-            }
-            return row
-        })
-        this.setState(state)
-    }
-
-    imageApprovalCheckboxHandler = (e): void => {
-        stopPropagation(e)
-        const state = { ...this.state }
-        state.events.imageApproval.isChecked = !state.events.imageApproval.isChecked
-        state.events.imageApproval.value = state.events.imageApproval.isChecked
-            ? CHECKBOX_VALUE.CHECKED
-            : CHECKBOX_VALUE.INTERMEDIATE
-        state.payloadUpdateEvents = state.payloadUpdateEvents.map((row) => {
-            if (state.events.imageApproval.isChecked) {
-                row.eventTypeIds.push(7)
-            } else {
-                row.eventTypeIds = row.eventTypeIds.filter((id) => id !== 7)
+                row.eventTypeIds = row.eventTypeIds.filter((id) => id !== EVENT_ID[value])
             }
             return row
         })
@@ -507,72 +437,15 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderModifyEventPopUpBody = () => (
         <PopupMenu.Body>
-            <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
-                <li key="edit" className="dc__kebab-menu__list-item flex-justify">
-                    <span>Trigger</span>
-                    <Checkbox
-                        rootClassName=""
-                        isChecked={this.state.events.triggerCheckbox.isChecked}
-                        value={this.state.events.triggerCheckbox.value}
-                        onChange={this.triggerCheckboxHandler}
-                    >
-                        <span />
-                    </Checkbox>
-                </li>
-                <li key="success" className="dc__kebab-menu__list-item flex-justify">
-                    <span>Success</span>
-                    <Checkbox
-                        rootClassName=""
-                        isChecked={this.state.events.successCheckbox.isChecked}
-                        value={this.state.events.successCheckbox.value}
-                        onChange={this.successCheckboxHandler}
-                    >
-                        <span />
-                    </Checkbox>
-                </li>
-                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
-                    <span>Failure</span>
-                    <Checkbox
-                        rootClassName=""
-                        isChecked={this.state.events.failureCheckbox.isChecked}
-                        value={this.state.events.failureCheckbox.value}
-                        onChange={this.failureCheckboxHandler}
-                    >
-                        <span />
-                    </Checkbox>
-                </li>
-                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
-                    <span>Config Approval</span>
-                    <Checkbox
-                        rootClassName=""
-                        isChecked={this.state.events.configApproval.isChecked}
-                        value={this.state.events.configApproval.value}
-                        onChange={this.configApprovalCheckboxHandler}
-                    >
-                        <span />
-                    </Checkbox>
-                </li>
-                <li key="failure" className="dc__kebab-menu__list-item flex-justify">
-                    <span>Image Approval</span>
-                    <Checkbox
-                        rootClassName=""
-                        isChecked={this.state.events.imageApproval.isChecked}
-                        value={this.state.events.imageApproval.value}
-                        onChange={this.imageApprovalCheckboxHandler}
-                    >
-                        <span />
-                    </Checkbox>
-                </li>
-            </ul>
-            <div className="kebab-menu__sticky-bottom">
-                <button type="button" className="cta w-100" onClick={this.applyModifyEvents}>
-                    Apply
-                </button>
-            </div>
+            <ModifyRecipientPopUp
+                events={this.state.events}
+                applyModifyEvents={this.applyModifyEvents}
+                onChangeCheckboxHandler={this.onChangeCheckboxHandler}
+            />
         </PopupMenu.Body>
     )
 
-    renderOptions = () => {
+    renderBulkOptions = () => {
         if (this.state.headerCheckbox.isChecked) {
             return (
                 <div className="flex left dc__gap-16">
@@ -629,6 +502,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         })
     }
 
+    onClickToggleNotification = (id) => (e) => {
+        stopPropagation(e)
+        this.toggleNotification(id)
+    }
+
     renderPipelineList = () => (
         <table className="flexbox-col flex-grow-1">
             <tbody>
@@ -645,7 +523,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         </Checkbox>
                     </th>
                     <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
-                    <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
+                    <th className="pipeline-list__app-name fw-6">Application Name</th>
                     <th className="pipeline-list__type fw-6">Type</th>
                     <th className="pipeline-list__environment fw-6">Env/Branch</th>
                     <th className="pipeline-list__stages fw-6">Events</th>
@@ -676,11 +554,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 <Checkbox
                                     rootClassName=""
                                     isChecked={row.isSelected}
-                                    value="CHECKED"
-                                    onChange={(e) => {
-                                        e.stopPropagation()
-                                        this.toggleNotification(row.id)
-                                    }}
+                                    value={row.isSelected ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE}
+                                    onChange={this.onClickToggleNotification(row.id)}
                                 >
                                     <span />
                                 </Checkbox>
@@ -726,7 +601,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     </>
                                 ) : null}
                             </td>
-                            <td className="pipeline-list__pipeline-name">{row?.appName}</td>
+                            <td className="pipeline-list__app-name">{row?.appName}</td>
                             <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
                             <td className="pipeline-list__environment">
                                 {_isCi && (
@@ -862,7 +737,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 dataTestId="delete-notification-button"
                 startIcon={<Icon name="ic-add" color={null} />}
             />
-            {this.renderOptions()}
+            {this.renderBulkOptions()}
             {this.renderPipelineList()}
             {this.renderPagination()}
         </div>

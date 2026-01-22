@@ -93,6 +93,12 @@ function createSaveNotificationPayload(selectedPipelines, providers): SaveNotifi
         if (config.failure) {
             eventTypeIds.push(3)
         }
+        if (config.configApproval) {
+            eventTypeIds.push(4)
+        }
+        if (config.imageApproval) {
+            eventTypeIds.push(7)
+        }
 
         const teamId = config.appliedFilters
             .filter((filter) => filter.type === FilterOptions.PROJECT)
@@ -233,6 +239,8 @@ export function getNotificationConfigurations(offset: number, pageSize: number):
                 trigger: config.eventTypes.includes(1),
                 success: config.eventTypes.includes(2),
                 failure: config.eventTypes.includes(3),
+                configApproval: config.eventTypes.includes(4) || config.eventTypes.includes(5),
+                imageApproval: config.eventTypes.includes(7),
                 isSelected: false,
                 providers,
                 appliedFilters: {

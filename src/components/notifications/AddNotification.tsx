@@ -42,9 +42,7 @@ import {
     IconsProps,
     ButtonComponentType,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { RouteComponentProps, Link } from 'react-router-dom'
 import { components } from 'react-select'
-import Tippy from '@tippyjs/react'
 import CreatableSelect from 'react-select/creatable'
 import SESConfigModal from './SESConfigModal'
 import { SlackConfigModal } from './SlackConfigModal'
@@ -71,7 +69,6 @@ import {
     AddNotificationState,
     EMAIL_AGENT,
     FilterOptions,
-    NotificationEventsType,
 } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
@@ -350,7 +347,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.props.history.push(`${URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS}/channels`)
     }
 
-    saveNotification(): void {
+    saveNotification = (): void => {
         const selectedPipelines = this.state.pipelineList.filter((p) => p.checkbox.isChecked)
         if (!selectedPipelines.length) {
             ToastManager.showToast({
@@ -780,7 +777,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                     this.handlePipelineEventType(rowIndex, event)
                                                 }}
                                                 ariaLabel={event}
-                                                showAriaLabelInTippy={false}
+                                                showAriaLabelInTippy={true}
                                                 dataTestId={`${event}-notification-checkbox-${rowIndex}`}
                                             />
                                         )
