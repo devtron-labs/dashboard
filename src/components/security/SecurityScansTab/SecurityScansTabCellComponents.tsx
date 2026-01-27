@@ -14,37 +14,11 @@
  * limitations under the License.
  */
 
-import dayjs from 'dayjs'
-
-import { DATE_TIME_FORMATS, TableCellComponentProps, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScanType } from '../security.types'
 import { getSeverityWithCount } from './utils'
 
-export const AppNameCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
-    <span className="cb-5 dc__truncate lh-20" data-testid={`scanned-app-list-${row.data.name}`}>
-        {row.data.name}
-    </span>
-)
-
-export const EnvironmentCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
-    <span className="dc__truncate lh-20">{row.data.environment}</span>
-)
-
 export const SeverityCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
-    <div>{getSeverityWithCount(row.data.severityCount)}</div>
-)
-
-export const FixableVulnerabilitiesCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
-    <span className="dc__truncate">
-        {row.data.fixableVulnerabilities} out of {row.data.totalSeverities}
-    </span>
-)
-
-export const ScannedOnCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
-    <span data-testid="image-scan-security-check lh-20">
-        {row.data.lastExecution && row.data.lastExecution !== ZERO_TIME_STRING
-            ? dayjs(row.data.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)
-            : ''}
-    </span>
+    getSeverityWithCount(row.data.severityCount)
 )

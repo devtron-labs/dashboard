@@ -21,7 +21,6 @@ import {
     SeveritiesDTO,
     SeverityChip,
     SeverityCount,
-    stringComparatorBySortOrder,
     TableProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -33,7 +32,7 @@ import {
     ScannedOnCellComponent,
     SeverityCellComponent,
 } from './SecurityScansTabCellComponents'
-import { ScanTypeOptions, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
+import { ScanTypeOptions, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys, SecurityListSortableKeys } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],
@@ -66,7 +65,7 @@ export const getSeverityWithCount = (severityCount: SeverityCount) => {
         return <Badge label="Passed" variant="positive" size={ComponentSizeType.xxs} />
     }
 
-    return <div className="flex left dc__gap-4">{badges}</div>
+    return <div className="flex left dc__gap-4 flex-wrap">{badges}</div>
 }
 
 export const getGroupFilterItems: (
@@ -100,17 +99,19 @@ export const getSecurityScansTableColumns = (
     const baseColumns: TableProps<SecurityScanType>['columns'] = [
         {
             label: 'APP NAME',
-            field: 'name',
+            field: SecurityListSortableKeys.APP_NAME,
             isSortable: true,
-            comparator: (a, b, sortOrder) => stringComparatorBySortOrder(a.data.name, b.data.name, sortOrder),
-            CellComponent: AppNameCellComponent,
+            size: {
+                fixed: 200,
+            }
         },
         {
             label: 'ENVIRONMENT',
             field: 'environment',
             isSortable: true,
-            comparator: (a, b, sortOrder) => stringComparatorBySortOrder(a.data.environment, b.data.environment, sortOrder),
-            CellComponent: EnvironmentCellComponent,
+            size: {
+                fixed: 200,
+            }
         },
         {
             label: 'IMAGE VULNERABILITY SCAN',
@@ -118,6 +119,7 @@ export const getSecurityScansTableColumns = (
             CellComponent: isNotScannedList
                 ? () => <div>Not Scanned</div>
                 : SeverityCellComponent,
+            size: null,
         },
     ]
 
@@ -126,14 +128,17 @@ export const getSecurityScansTableColumns = (
             {
                 label: 'FIXABLE VULNERABILITIES',
                 field: 'fixableVulnerabilities',
-                CellComponent: FixableVulnerabilitiesCellComponent,
+            size: {
+                fixed: 200,
+            }
             },
             {
                 label: 'SCANNED ON',
                 field: 'lastExecution',
                 isSortable: true,
-                comparator: (a, b, sortOrder) => stringComparatorBySortOrder(a.data.lastExecution, b.data.lastExecution, sortOrder),
-                CellComponent: ScannedOnCellComponent,
+            size: {
+                fixed: 200,
+            }
             },
         )
     }

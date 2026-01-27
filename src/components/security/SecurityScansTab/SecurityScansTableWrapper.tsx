@@ -61,7 +61,6 @@ interface SecurityScansTableWrapperProps extends TableViewWrapperProps<SecurityS
     scanDetails: ScanDetailsType
     setScanDetails: (details: ScanDetailsType) => void
 }
-}
 
 const SecurityScansTableWrapper = ({
     searchKey,
@@ -79,6 +78,7 @@ const SecurityScansTableWrapper = ({
     clearFilters,
     scanDetails,
     setScanDetails,
+    children,
 }: SecurityScansTableWrapperProps) => {
     const { scanResultLoading, scanResultResponse, scanResultError } = useGetAppSecurityDetails({
         appId: scanDetails.appId,
@@ -113,13 +113,13 @@ const SecurityScansTableWrapper = ({
         }
 
     const handleSegmentControlChange: SegmentedControlProps['onChange'] = (selectedSegment) => {
+        handleSearch('')
         updateSearchParams({
             scanStatus: selectedSegment.value as ScanTypeOptions,
             severity: [],
             cluster: [],
             environment: [],
         })
-        handleSearch('')
     }
 
     const selectedSeverities = severity.map((severityId) => ({
@@ -197,6 +197,7 @@ const SecurityScansTableWrapper = ({
 
     return (
         <>
+            <div className="flexbox-col dc__overflow-hidden">
             <div className="flexbox-col dc__gap-12 px-20 py-16">
                 <div className="flex dc__content-space">
                     <div className="flex dc__gap-8">
@@ -246,6 +247,8 @@ const SecurityScansTableWrapper = ({
                         }}
                     />
                 )}
+                </div>
+                {children}
             </div>
             {!isNotScannedList && renderScanDetailsModal()}
         </>

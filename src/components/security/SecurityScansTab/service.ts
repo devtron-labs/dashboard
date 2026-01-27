@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { TableProps } from '@devtron-labs/devtron-fe-common-lib'
+import dayjs from 'dayjs'
+
+import { TableProps, DATE_TIME_FORMATS, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getSecurityScanList } from '../security.service'
 import { SecurityScanType } from '../security.types'
@@ -31,11 +33,13 @@ export const getSecurityScans: TableProps<SecurityScanType>['getRows'] = async (
         cluster = [],
         environment = [],
         scanStatus = ScanTypeOptions.SCANNED,
+        isNotScannedList,
     }: Parameters<TableProps['getRows']>[0] & {
         severity: string[]
         cluster: string[]
         environment: string[]
         scanStatus: ScanTypeOptions
+        isNotScannedList: boolean
     },
     signal: AbortSignal,
 ) => {
@@ -55,7 +59,14 @@ export const getSecurityScans: TableProps<SecurityScanType>['getRows'] = async (
 
     return {
         rows: response.result.securityScans.map((scan) => ({
-            data: scan,
+            data: {
+                ...scan,
+                fixableVulnerabilities: `${scan.fixableVulnerabilities} out of ${scan.totalSeverities}`,
+                lastExecution: scan.lastExecution && scan.lastExecution !== ZERO_TIME_STRING
+                    ? dayjs(scan.lastExecution).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)
+                    : '',
+                [SecurityListSortableKeys.APP_NAME]: scan.name,
+            },
             id: `${scan.appId}-${scan.envId}`,
         })),
         totalRows: response.result.totalCount,

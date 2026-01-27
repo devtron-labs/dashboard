@@ -41,21 +41,15 @@ import {
 } from './types'
 import { getSecurityScansTableColumns, parseSearchParams } from './utils'
 
+import './styles.scss'
+
 const SecurityScansTab = () => {
     const { push } = useHistory()
-    const urlFilters = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
+    const { scanStatus } = useUrlFilters<SecurityListSortableKeys, Partial<ScanListUrlFiltersType>>({
         parseSearchParams,
         initialSortKey: SecurityListSortableKeys.APP_NAME,
     })
     const [scanDetails, setScanDetails] = useState<ScanDetailsType>(INITIAL_SCAN_DETAILS)
-    const {
-        severity,
-        environment,
-        cluster,
-        scanStatus,
-        updateSearchParams,
-        clearFilters,
-    } = urlFilters
 
     const [clusterEnvListLoading, clusterEnvListResult, clusterEnvListError, reloadClusterEnvOptions] = useAsync(() =>
         getVulnerabilityFilterData(),
@@ -99,26 +93,19 @@ const SecurityScansTab = () => {
                     initialSortKey: SecurityListSortableKeys.APP_NAME,
                     parseSearchParams,
                 }}
-                ViewWrapper={(props) => (
-                    <SecurityScansTableWrapper
-                        {...props}
-                        severity={severity}
-                        cluster={cluster}
-                        environment={environment}
-                        scanStatus={scanStatus}
-                        clusterEnvListLoading={clusterEnvListLoading}
-                        clusterEnvListResult={clusterEnvListResult}
-                        clusterEnvListError={clusterEnvListError}
-                        reloadClusterEnvOptions={reloadClusterEnvOptions}
-                        updateSearchParams={updateSearchParams}
-                        clearFilters={clearFilters}
-                        scanDetails={scanDetails}
-                        setScanDetails={setScanDetails}
-                    />
-                )}
+                additionalProps={{
+                    clusterEnvListLoading,
+                    clusterEnvListResult,
+                    clusterEnvListError,
+                    reloadClusterEnvOptions,
+                    scanDetails,
+                    setScanDetails,
+                }}
+                ViewWrapper={SecurityScansTableWrapper}
                 rowStartIconConfig={{
                     name: 'ic-devtron-app',
                     size: 24,
+                    color: 'B500',
                 }}
                 onRowClick={handleRowClick}
             />
