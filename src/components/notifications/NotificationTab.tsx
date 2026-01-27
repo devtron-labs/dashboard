@@ -568,7 +568,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 row.appliedFilters.cluster?.length ? (
                                     <>
                                         <i>All current and future pipelines matching.</i>
-                                        <div className="dc__devtron-tag__container">
+                                        <div>
                                             {row.appliedFilters.project.map((element) => (
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}

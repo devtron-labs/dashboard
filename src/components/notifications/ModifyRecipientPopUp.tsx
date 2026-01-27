@@ -24,20 +24,23 @@ export const ModifyRecipientPopUp = ({
                             rootClassName=""
                             isChecked={events[option.value].isChecked}
                             value={events[option.value].value}
-                            onChange={(e) => onChangeCheckboxHandler(e, option.value)}
+                            onChange={(e) => onChangeCheckboxHandler(e, option.value)()}
                         >
                             <span />
                         </Checkbox>
                     </li>
                 ))}
             </ul>
-            <Button
-                dataTestId="apply-recipient"
-                text="Apply"
-                variant={ButtonVariantType.primary}
-                size={ComponentSizeType.medium}
-                onClick={applyModifyEvents}
-            />
+            <div className="p-8">
+                <Button
+                    dataTestId="apply-recipient"
+                    text="Apply"
+                    variant={ButtonVariantType.primary}
+                    size={ComponentSizeType.medium}
+                    onClick={applyModifyEvents}
+                    fullWidth
+                />
+            </div>
         </div>
     )
 }

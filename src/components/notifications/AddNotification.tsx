@@ -733,7 +733,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                         </span>
                                                     )
                                                 })}
-                                            </div>{' '}
+                                            </div>
                                         </>
                                     ) : (
                                         row.pipelineName
