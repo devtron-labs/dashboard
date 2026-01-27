@@ -21,8 +21,19 @@ import {
     SeveritiesDTO,
     SeverityChip,
     SeverityCount,
+    stringComparatorBySortOrder,
+    TableProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 
+import { SecurityScanType } from '../security.types'
+import {
+    AppIconCellComponent,
+    AppNameCellComponent,
+    EnvironmentCellComponent,
+    FixableVulnerabilitiesCellComponent,
+    ScannedOnCellComponent,
+    SeverityCellComponent,
+} from './SecurityScansTabCellComponents'
 import { ScanTypeOptions, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys } from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
@@ -83,3 +94,56 @@ export const getGroupFilterItems: (
         ],
     },
 ]
+
+export const getSecurityScansTableColumns = (
+    isNotScannedList: boolean,
+): TableProps<SecurityScanType>['columns'] => {
+    const baseColumns: TableProps<SecurityScanType>['columns'] = [
+        {
+            label: '',
+            field: 'appId',
+            size: { fixed: 24 },
+            CellComponent: AppIconCellComponent,
+        },
+        {
+            label: 'APP NAME',
+            field: 'name',
+            isSortable: true,
+            comparator: (a, b, sortOrder) => stringComparatorBySortOrder(a.data.name, b.data.name, sortOrder),
+            CellComponent: AppNameCellComponent,
+        },
+        {
+            label: 'ENVIRONMENT',
+            field: 'environment',
+            isSortable: true,
+            comparator: (a, b, sortOrder) => stringComparatorBySortOrder(a.data.environment, b.data.environment, sortOrder),
+            CellComponent: EnvironmentCellComponent,
+        },
+        {
+            label: 'IMAGE VULNERABILITY SCAN',
+            field: 'severityCount',
+            CellComponent: isNotScannedList
+                ? () => <div>Not Scanned</div>
+                : SeverityCellComponent,
+        },
+    ]
+
+    if (!isNotScannedList) {
+        baseColumns.push(
+            {
+                label: 'FIXABLE VULNERABILITIES',
+                field: 'fixableVulnerabilities',
+                CellComponent: FixableVulnerabilitiesCellComponent,
+            },
+            {
+                label: 'SCANNED ON',
+                field: 'lastExecution',
+                isSortable: true,
+                comparator: (a, b, sortOrder) => stringComparatorBySortOrder(a.data.lastExecution, b.data.lastExecution, sortOrder),
+                CellComponent: ScannedOnCellComponent,
+            },
+        )
+    }
+
+    return baseColumns
+}
