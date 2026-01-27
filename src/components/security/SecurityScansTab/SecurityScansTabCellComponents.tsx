@@ -16,14 +16,10 @@
 
 import dayjs from 'dayjs'
 
-import { DATE_TIME_FORMATS, Icon, TableCellComponentProps, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
+import { DATE_TIME_FORMATS, TableCellComponentProps, ZERO_TIME_STRING } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScanType } from '../security.types'
 import { getSeverityWithCount } from './utils'
-
-export const AppIconCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
-    <Icon name="ic-devtron-app" color={null} size={24} />
-)
 
 export const AppNameCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
     <span className="cb-5 dc__truncate lh-20" data-testid={`scanned-app-list-${row.data.name}`}>

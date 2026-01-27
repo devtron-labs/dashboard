@@ -116,6 +116,10 @@ const SecurityScansTab = () => {
                         setScanDetails={setScanDetails}
                     />
                 )}
+                rowStartIconConfig={{
+                    name: 'ic-devtron-app',
+                    size: 24,
+                }}
                 onRowClick={handleRowClick}
             />
         </div>

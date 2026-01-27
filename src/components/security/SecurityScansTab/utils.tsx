@@ -27,7 +27,6 @@ import {
 
 import { SecurityScanType } from '../security.types'
 import {
-    AppIconCellComponent,
     AppNameCellComponent,
     EnvironmentCellComponent,
     FixableVulnerabilitiesCellComponent,
@@ -99,12 +98,6 @@ export const getSecurityScansTableColumns = (
     isNotScannedList: boolean,
 ): TableProps<SecurityScanType>['columns'] => {
     const baseColumns: TableProps<SecurityScanType>['columns'] = [
-        {
-            label: '',
-            field: 'appId',
-            size: { fixed: 24 },
-            CellComponent: AppIconCellComponent,
-        },
         {
             label: 'APP NAME',
             field: 'name',
