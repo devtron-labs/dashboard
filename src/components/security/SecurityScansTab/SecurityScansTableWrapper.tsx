@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo } from 'react'
 
 import {
     ComponentSizeType,
@@ -58,6 +58,9 @@ interface SecurityScansTableWrapperProps extends TableViewWrapperProps<SecurityS
     reloadClusterEnvOptions: () => void
     updateSearchParams: (params: Partial<ScanListUrlFiltersType>) => void
     clearFilters: () => void
+    scanDetails: ScanDetailsType
+    setScanDetails: (details: ScanDetailsType) => void
+}
 }
 
 const SecurityScansTableWrapper = ({
@@ -74,8 +77,9 @@ const SecurityScansTableWrapper = ({
     reloadClusterEnvOptions,
     updateSearchParams,
     clearFilters,
+    scanDetails,
+    setScanDetails,
 }: SecurityScansTableWrapperProps) => {
-    const [scanDetails, setScanDetails] = useState<ScanDetailsType>(INITIAL_SCAN_DETAILS)
     const { scanResultLoading, scanResultResponse, scanResultError } = useGetAppSecurityDetails({
         appId: scanDetails.appId,
         envId: scanDetails.envId,

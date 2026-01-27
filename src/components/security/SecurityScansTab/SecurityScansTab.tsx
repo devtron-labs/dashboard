@@ -19,7 +19,6 @@ import { useHistory } from 'react-router-dom'
 
 import {
     EMPTY_STATE_STATUS,
-    ErrorScreenManager,
     FiltersTypeEnum,
     PaginationEnum,
     Table,
@@ -68,14 +67,6 @@ const SecurityScansTab = () => {
         push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/details/${envId}`)
     }
 
-    const handleOpenScanDetailsModal = (event: React.MouseEvent, scan: SecurityScanType) => {
-        event.stopPropagation()
-        setScanDetails({
-            appId: scan.appId,
-            envId: scan.envId,
-        })
-    }
-
     const handleRowClick = (row: { data: SecurityScanType; id: string }) => {
         if (isNotScannedList) {
             redirectToAppEnv(row.data.appId, row.data.envId)
@@ -121,6 +112,8 @@ const SecurityScansTab = () => {
                         reloadClusterEnvOptions={reloadClusterEnvOptions}
                         updateSearchParams={updateSearchParams}
                         clearFilters={clearFilters}
+                        scanDetails={scanDetails}
+                        setScanDetails={setScanDetails}
                     />
                 )}
                 onRowClick={handleRowClick}
