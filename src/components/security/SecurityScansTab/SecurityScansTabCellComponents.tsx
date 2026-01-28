@@ -19,6 +19,5 @@ import { TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 import { SecurityScanType } from '../security.types'
 import { getSeverityWithCount } from './utils'
 
-export const SeverityCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) => (
+export const SeverityCellComponent = ({ row }: TableCellComponentProps<SecurityScanType>) =>
     getSeverityWithCount(row.data.severityCount)
-)

@@ -22,49 +22,32 @@ import {
     GroupedFilterSelectPicker,
     GroupedFilterSelectPickerProps,
     SearchBar,
+    SecurityModal,
     SegmentedControl,
     SegmentedControlProps,
     SelectPickerOptionType,
-    SEVERITY_LABEL_MAP,
     Severity,
-    TableViewWrapperProps,
+    SEVERITY_LABEL_MAP,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { useGetAppSecurityDetails } from '@Components/app/details/appDetails/AppSecurity'
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { SecurityModal } from '@devtron-labs/devtron-fe-common-lib'
 import { VulnerabilitySummary, VulnerabilityViewTypeSelect } from '../Vulnerabilities'
-import { SecurityScanType } from '../security.types'
 import { INITIAL_SCAN_DETAILS, SCANNED_UNSCANNED_CONTROL_SEGMENTS } from './constants'
 import {
-    ScanDetailsType,
     ScanListUrlFiltersType,
     ScanTypeOptions,
+    SecurityScansTableWrapperProps,
     SecurityScansTabMultiFilterKeys,
 } from './types'
 import { getGroupFilterItems } from './utils'
 
 const SecurityModalSidebar = importComponentFromFELibrary('SecurityModalSidebar', null, 'function')
 
-interface SecurityScansTableWrapperProps extends TableViewWrapperProps<SecurityScanType> {
-    severity: string[]
-    cluster: string[]
-    environment: string[]
-    scanStatus: ScanTypeOptions
-    clusterEnvListLoading: boolean
-    clusterEnvListResult: Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>
-    clusterEnvListError: Error
-    reloadClusterEnvOptions: () => void
-    updateSearchParams: (params: Partial<ScanListUrlFiltersType>) => void
-    clearFilters: () => void
-    scanDetails: ScanDetailsType
-    setScanDetails: (details: ScanDetailsType) => void
-}
-
 const SecurityScansTableWrapper = ({
     searchKey,
-    isLoading,
+    areRowsLoading,
     handleSearch,
     severity,
     cluster,
@@ -198,55 +181,55 @@ const SecurityScansTableWrapper = ({
     return (
         <>
             <div className="flexbox-col dc__overflow-hidden">
-            <div className="flexbox-col dc__gap-12 px-20 py-16">
-                <div className="flex dc__content-space">
-                    <div className="flex dc__gap-8">
-                        <VulnerabilityViewTypeSelect />
-                        <SearchBar
-                            containerClassName="w-250"
-                            initialSearchText={searchKey}
-                            inputProps={{
-                                placeholder: 'Search application',
-                                disabled: isLoading,
-                            }}
-                            handleEnter={handleSearch}
-                            size={ComponentSizeType.large}
-                            keyboardShortcut="/"
-                        />
-                        <SegmentedControl
-                            name="filter-scanned-unscanned-deployments"
-                            segments={SCANNED_UNSCANNED_CONTROL_SEGMENTS}
-                            value={scanStatus}
-                            onChange={handleSegmentControlChange}
+                <div className="flexbox-col dc__gap-12 px-20 py-16">
+                    <div className="flex dc__content-space">
+                        <div className="flex dc__gap-8">
+                            <VulnerabilityViewTypeSelect />
+                            <SearchBar
+                                containerClassName="w-250"
+                                initialSearchText={searchKey}
+                                inputProps={{
+                                    placeholder: 'Search application',
+                                    disabled: areRowsLoading,
+                                }}
+                                handleEnter={handleSearch}
+                                size={ComponentSizeType.large}
+                                keyboardShortcut="/"
+                            />
+                            <SegmentedControl
+                                name="filter-scanned-unscanned-deployments"
+                                segments={SCANNED_UNSCANNED_CONTROL_SEGMENTS}
+                                value={scanStatus}
+                                onChange={handleSegmentControlChange}
+                            />
+                        </div>
+                        <GroupedFilterSelectPicker<SecurityScansTabMultiFilterKeys>
+                            id="grouped-scan-list-filters"
+                            options={getGroupFilterItems(scanStatus)}
+                            filterSelectPickerPropsMap={groupedFiltersPropsMap}
+                            isFilterApplied={areGroupedFiltersActive}
                         />
                     </div>
-                    <GroupedFilterSelectPicker<SecurityScansTabMultiFilterKeys>
-                        id="grouped-scan-list-filters"
-                        options={getGroupFilterItems(scanStatus)}
-                        filterSelectPickerPropsMap={groupedFiltersPropsMap}
-                        isFilterApplied={areGroupedFiltersActive}
-                    />
-                </div>
-                <FilterChips<Omit<ScanListUrlFiltersType, 'scanStatus'>>
-                    filterConfig={{
-                        severity,
-                        cluster,
-                        environment,
-                    }}
-                    getFormattedValue={getLabelFromValue}
-                    onRemoveFilter={updateSearchParams}
-                    clearFilters={clearFilters}
-                    clearButtonClassName="dc__no-background-imp dc__no-border-imp dc__tab-focus"
-                />
-                {!isNotScannedList && (
-                    <VulnerabilitySummary
-                        filters={{
+                    <FilterChips<Omit<ScanListUrlFiltersType, 'scanStatus'>>
+                        filterConfig={{
                             severity,
                             cluster,
                             environment,
                         }}
+                        getFormattedValue={getLabelFromValue}
+                        onRemoveFilter={updateSearchParams}
+                        clearFilters={clearFilters}
+                        clearButtonClassName="dc__no-background-imp dc__no-border-imp dc__tab-focus"
                     />
-                )}
+                    {!isNotScannedList && (
+                        <VulnerabilitySummary
+                            filters={{
+                                severity,
+                                cluster,
+                                environment,
+                            }}
+                        />
+                    )}
                 </div>
                 {children}
             </div>

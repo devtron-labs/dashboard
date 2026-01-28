@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-import { SortingOrder } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    FiltersTypeEnum,
+    SelectPickerOptionType,
+    ServerErrors,
+    SortingOrder,
+    TableViewWrapperProps,
+} from '@devtron-labs/devtron-fe-common-lib'
+
+import { SecurityScanType } from '../security.types'
 
 export enum ScanTypeOptions {
     SCANNED = 'scanned',
@@ -66,3 +74,21 @@ export enum SeverityFilterValues {
     'low' = 0,
     'unknown' = 5,
 }
+
+export type SecurityScansTableAdditionalProps = {
+    clusterEnvListLoading: boolean
+    clusterEnvListResult: Record<SecurityScansTabMultiFilterKeys, SelectPickerOptionType[]>
+    clusterEnvListError: ServerErrors
+    reloadClusterEnvOptions: () => void
+    scanDetails: ScanDetailsType
+    setScanDetails: (details: ScanDetailsType) => void
+}
+
+export type SecurityScansTableWrapperProps = TableViewWrapperProps<SecurityScanType, FiltersTypeEnum.URL> & {
+    severity: string[]
+    cluster: string[]
+    environment: string[]
+    scanStatus: ScanTypeOptions
+    updateSearchParams: (params: Partial<ScanListUrlFiltersType>) => void
+    clearFilters: () => void
+} & SecurityScansTableAdditionalProps

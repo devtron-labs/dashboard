@@ -17,6 +17,7 @@
 import {
     Badge,
     ComponentSizeType,
+    FiltersTypeEnum,
     GroupedFilterSelectPickerProps,
     SeveritiesDTO,
     SeverityChip,
@@ -25,14 +26,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { SecurityScanType } from '../security.types'
+import { SeverityCellComponent } from './SecurityScansTabCellComponents'
 import {
-    AppNameCellComponent,
-    EnvironmentCellComponent,
-    FixableVulnerabilitiesCellComponent,
-    ScannedOnCellComponent,
-    SeverityCellComponent,
-} from './SecurityScansTabCellComponents'
-import { ScanTypeOptions, SecurityScansTabMultiFilterKeys, SecurityScansTabSingleFilterKeys, SecurityListSortableKeys } from './types'
+    ScanTypeOptions,
+    SecurityListSortableKeys,
+    SecurityScansTabMultiFilterKeys,
+    SecurityScansTabSingleFilterKeys,
+} from './types'
 
 export const parseSearchParams = (searchParams: URLSearchParams) => ({
     [SecurityScansTabMultiFilterKeys.severity]: searchParams.getAll(SecurityScansTabMultiFilterKeys.severity) || [],
@@ -95,7 +95,7 @@ export const getGroupFilterItems: (
 
 export const getSecurityScansTableColumns = (
     isNotScannedList: boolean,
-): TableProps<SecurityScanType>['columns'] => {
+): TableProps<SecurityScanType, FiltersTypeEnum.URL>['columns'] => {
     const baseColumns: TableProps<SecurityScanType>['columns'] = [
         {
             label: 'APP NAME',
@@ -103,22 +103,20 @@ export const getSecurityScansTableColumns = (
             isSortable: true,
             size: {
                 fixed: 200,
-            }
+            },
         },
         {
             label: 'ENVIRONMENT',
-            field: 'environment',
+            field: SecurityListSortableKeys.ENV_NAME,
             isSortable: true,
             size: {
                 fixed: 200,
-            }
+            },
         },
         {
             label: 'IMAGE VULNERABILITY SCAN',
             field: 'severityCount',
-            CellComponent: isNotScannedList
-                ? () => <div>Not Scanned</div>
-                : SeverityCellComponent,
+            CellComponent: isNotScannedList ? () => <span>Not Scanned</span> : SeverityCellComponent,
             size: null,
         },
     ]
@@ -127,18 +125,18 @@ export const getSecurityScansTableColumns = (
         baseColumns.push(
             {
                 label: 'FIXABLE VULNERABILITIES',
-                field: 'fixableVulnerabilities',
-            size: {
-                fixed: 200,
-            }
+                field: 'fixableItems',
+                size: {
+                    fixed: 200,
+                },
             },
             {
                 label: 'SCANNED ON',
-                field: 'lastExecution',
+                field: SecurityListSortableKeys.LAST_CHECKED,
                 isSortable: true,
-            size: {
-                fixed: 200,
-            }
+                size: {
+                    fixed: 200,
+                },
             },
         )
     }

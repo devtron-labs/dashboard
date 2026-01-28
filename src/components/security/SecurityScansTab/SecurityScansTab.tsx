@@ -38,6 +38,7 @@ import {
     ScanListUrlFiltersType,
     ScanTypeOptions,
     SecurityListSortableKeys,
+    SecurityScansTableAdditionalProps,
 } from './types'
 import { getSecurityScansTableColumns, parseSearchParams } from './utils'
 
@@ -76,7 +77,7 @@ const SecurityScansTab = () => {
 
     return (
         <div className="security-scan-container bg__primary flexbox-col flex-grow-1 dc__overflow-hidden">
-            <Table<SecurityScanType, FiltersTypeEnum.URL, ScanListUrlFiltersType>
+            <Table<SecurityScanType, FiltersTypeEnum.URL, SecurityScansTableAdditionalProps>
                 id="table__security-scans"
                 columns={columns}
                 getRows={getSecurityScans}
