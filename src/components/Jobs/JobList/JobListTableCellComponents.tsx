@@ -38,7 +38,7 @@ export interface JobTableAdditionalProps {
 export const JobNameCellComponent = ({
     row: { data },
     isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.STATE, JobTableAdditionalProps>) => {
+}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     if (isExpandedRow) {
         // For expanded rows, show pipeline name
         return <div className="app-list__cell app-list__cell--env cb-5">{data.pipeline?.ciPipelineName || '-'}</div>
@@ -61,7 +61,7 @@ export const JobNameCellComponent = ({
 export const JobStatusCellComponent = ({
     row: { data },
     isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.STATE, JobTableAdditionalProps>) => {
+}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
     return <AppStatus status={pipeline?.status || 'notdeployed'} isJobView />
 }
@@ -70,7 +70,7 @@ export const JobStatusCellComponent = ({
 export const JobEnvironmentCellComponent = ({
     row: { data },
     isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.STATE, JobTableAdditionalProps>) => {
+}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
     const envName = environmentName(pipeline)
 
@@ -86,7 +86,7 @@ export const JobEnvironmentCellComponent = ({
 export const JobLastRunAtCellComponent = ({
     row: { data },
     isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.STATE, JobTableAdditionalProps>) => {
+}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
     return <p className="dc__truncate-text m-0">{pipeline?.lastRunAt || '-'}</p>
 }
@@ -95,18 +95,7 @@ export const JobLastRunAtCellComponent = ({
 export const JobLastSuccessAtCellComponent = ({
     row: { data },
     isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.STATE, JobTableAdditionalProps>) => {
+}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
     return <p className="dc__truncate-text m-0">{pipeline?.lastSuccessAt || '-'}</p>
-}
-
-// Actions Cell Component
-export const JobActionsCellComponent = ({
-    isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.STATE, JobTableAdditionalProps>) => {
-    if (isExpandedRow) {
-        return null
-    }
-
-    return null // Actions will be handled via rowActionOnHoverConfig
 }

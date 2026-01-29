@@ -85,7 +85,7 @@ export default function JobListView(props: JobListViewProps) {
                 totalRows: totalCount,
             }
         },
-        [props.searchKey, props.status, props.environment, props.project, isSearchOrFilterApplied],
+        [props.searchKey, props.status, props.environment, props.project, props.setJobCount, isSearchOrFilterApplied],
     )
 
     // Show empty state if no jobs exist
