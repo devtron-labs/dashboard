@@ -22,6 +22,7 @@ import {
     RegistryCredentialsType,
     DOCUMENTATION,
     SegmentType,
+    PATTERNS as COMMON_PATTERNS,
 } from '@devtron-labs/devtron-fe-common-lib'
 export const DEFAULT_STATUS = 'checking'
 export const DEFAULTK8SVERSION = 'v1.16.0'
@@ -307,7 +308,7 @@ export const AppConfigStatus = {
 
 export const PATTERNS = {
     STRING: /[A-Za-z0-9]+$/,
-    APP_NAME: '^[a-z][a-z0-9-]*[a-z0-9]$/*',
+    APP_NAME: COMMON_PATTERNS.APP_NAME,
     CD_PIPELINE_NAME: `^[a-z]+[a-z0-9\-\?]*[a-z0-9]+$`,
     APP_LABEL_CHIP: /^.+:.+$/,
     VARIABLE: /^[A-z0-9-_]+$/,
