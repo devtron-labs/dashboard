@@ -567,8 +567,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 row.appliedFilters.project?.length ||
                                 row.appliedFilters.cluster?.length ? (
                                     <>
-                                        <i>All current and future pipelines matching.</i>
-                                        <div>
+                                        <i>All existing and future pipelines matching:</i>
+                                        <div className='flex left dc__gap-6'>
                                             {row.appliedFilters.project.map((element) => (
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
@@ -617,68 +617,70 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 )}
                                 {row.pipelineType === 'CD' ? row?.environmentName : ''}
                             </td>
-                            <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
-                                {row.trigger ? (
-                                    <Icon
-                                        name="ic-play-outline"
-                                        color={null}
-                                        tooltipProps={{
-                                            content: 'Trigger',
-                                            alwaysShowTippyOnHover: true,
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="icon-dim-20" />
-                                )}
-                                {row.success ? (
-                                    <Icon
-                                        name="ic-check"
-                                        color={null}
-                                        tooltipProps={{
-                                            content: 'Success',
-                                            alwaysShowTippyOnHover: true,
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="icon-dim-20" />
-                                )}
-                                {row.failure ? (
-                                    <Icon
-                                        name="ic-close-small"
-                                        color={null}
-                                        tooltipProps={{
-                                            content: 'Failure',
-                                            alwaysShowTippyOnHover: true,
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="icon-dim-20" />
-                                )}
-                                {row.configApproval ? (
-                                    <Icon
-                                        name="ic-code"
-                                        color={null}
-                                        tooltipProps={{
-                                            content: 'Config Approval',
-                                            alwaysShowTippyOnHover: true,
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="icon-dim-20" />
-                                )}
+                            <td className="pipeline-list__stages p-10">
+                                <div className="flexbox flex-justify dc__gap-12">
+                                    {row.trigger ? (
+                                        <Icon
+                                            name="ic-play-outline"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Trigger',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="icon-dim-20" />
+                                    )}
+                                    {row.success ? (
+                                        <Icon
+                                            name="ic-check"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Success',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="icon-dim-20" />
+                                    )}
+                                    {row.failure ? (
+                                        <Icon
+                                            name="ic-close-small"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Failure',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="icon-dim-20" />
+                                    )}
+                                    {row.configApproval ? (
+                                        <Icon
+                                            name="ic-code"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Config Change Approval',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="icon-dim-20" />
+                                    )}
 
-                                {row.imageApproval ? (
-                                    <Icon
-                                        name="ic-image-approve"
-                                        color={null}
-                                        tooltipProps={{
-                                            content: 'Image Approval',
-                                            alwaysShowTippyOnHover: true,
-                                        }}
-                                    />
-                                ) : (
-                                    <span className="icon-dim-20" />
-                                )}
+                                    {row.imageApproval ? (
+                                        <Icon
+                                            name="ic-image-approve"
+                                            color={null}
+                                            tooltipProps={{
+                                                content: 'Deployment Approval',
+                                                alwaysShowTippyOnHover: true,
+                                            }}
+                                        />
+                                    ) : (
+                                        <div className="icon-dim-20" />
+                                    )}
+                                </div>
                             </td>
                             <td className="pipeline-list__recipients">
                                 <div className="dc__devtron-tag__container">
@@ -692,7 +694,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     ))}
                                 </div>
                             </td>
-                            <td className="pipeline-list__hover flex">
+                            <td className="pipeline-list__hover flex p-10">
                                 <Button
                                     icon={<Icon name="ic-delete" color={null} />}
                                     ariaLabel="Delete"

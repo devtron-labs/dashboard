@@ -64,12 +64,7 @@ import {
 import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'
-import {
-    AddNotificationsProps,
-    AddNotificationState,
-    EMAIL_AGENT,
-    FilterOptions,
-} from './types'
+import { AddNotificationsProps, AddNotificationState, EMAIL_AGENT, FilterOptions } from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
 import { EVENT_ICONS, EVENTS } from './constants'
@@ -708,82 +703,88 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         }
 
                         return (
-                            <tr key={row.pipelineId + row.type} className="pipeline-list__row">
-                                <td className="pipeline-list__checkbox">
-                                    <Checkbox
-                                        rootClassName=""
-                                        isChecked={row.checkbox.isChecked}
-                                        value={row.checkbox.value}
-                                        onChange={(e) => {
-                                            this.togglePipelineCheckbox(rowIndex)
-                                        }}
-                                    >
-                                        <span />
-                                    </Checkbox>
-                                </td>
-                                <td className="pipeline-list__pipeline-name">
-                                    {row.appliedFilters.length ? (
-                                        <>
-                                            <i>All current and future pipelines matching.</i>
-                                            <div className="dc__devtron-tag__container">
-                                                {row.appliedFilters.map((e) => {
-                                                    return (
-                                                        <span key={e.type + e.name} className="dc__devtron-tag m-2">
-                                                            {e?.type}: {e?.name}
-                                                        </span>
-                                                    )
-                                                })}
-                                            </div>
-                                        </>
-                                    ) : (
-                                        row.pipelineName
-                                    )}
-                                </td>
-                                <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
-                                <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
-                                <td className="pipeline-list__environment">
-                                    {_isCi && (
-                                        <span className="flex left">
-                                            <CiPipelineSourceConfig
-                                                sourceType={
-                                                    _isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed
-                                                }
-                                                sourceValue={row.branch}
-                                                showTooltip
-                                            />
-                                        </span>
-                                    )}
-                                    {row.type === 'CD' ? row?.environmentName : ''}
-                                </td>
-                                <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
-                                    {Object.values(EVENTS).map((event) => {
-                                        return (
-                                            <Button
-                                                key={event}
-                                                icon={
-                                                    <Icon
-                                                        name={EVENT_ICONS[event] as IconsProps['name']}
-                                                        color={null}
-                                                    />
-                                                }
-                                                variant={
-                                                    row[event]
-                                                        ? ButtonVariantType.primary
-                                                        : ButtonVariantType.borderLess
-                                                }
-                                                style={row[event] ? ButtonStyleType.default : ButtonStyleType.neutral}
-                                                size={ComponentSizeType.xs}
-                                                onClick={() => {
-                                                    this.handlePipelineEventType(rowIndex, event)
-                                                }}
-                                                ariaLabel={event}
-                                                showAriaLabelInTippy={true}
-                                                dataTestId={`${event}-notification-checkbox-${rowIndex}`}
-                                            />
-                                        )
-                                    })}
-                                </td>
-                            </tr>
+                            <>
+                                <tr key={row.pipelineId + row.type} className="pipeline-list__row">
+                                    <td className="pipeline-list__checkbox">
+                                        <Checkbox
+                                            rootClassName=""
+                                            isChecked={row.checkbox.isChecked}
+                                            value={row.checkbox.value}
+                                            onChange={(e) => {
+                                                this.togglePipelineCheckbox(rowIndex)
+                                            }}
+                                        >
+                                            <span />
+                                        </Checkbox>
+                                    </td>
+                                    <td className="pipeline-list__pipeline-name">
+                                        {row.appliedFilters.length  ? (
+                                            <>
+                                                <i>All current and future pipelines matching.</i>
+                                                <div className="dc__devtron-tag__container">
+                                                    {row.appliedFilters.map((e) => {
+                                                        return (
+                                                            <span key={e.type + e.name} className="dc__devtron-tag m-2">
+                                                                {e?.type}: {e?.name}
+                                                            </span>
+                                                        )
+                                                    })}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            row.pipelineName
+                                        )}
+                                    </td>
+                                    <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
+                                    <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
+                                    <td className="pipeline-list__environment">
+                                        {_isCi && (
+                                            <span className="flex left">
+                                                <CiPipelineSourceConfig
+                                                    sourceType={
+                                                        _isWebhookCi ? SourceTypeMap.WEBHOOK : SourceTypeMap.BranchFixed
+                                                    }
+                                                    sourceValue={row.branch}
+                                                    showTooltip
+                                                />
+                                            </span>
+                                        )}
+                                        {row.type === 'CD' ? row?.environmentName : ''}
+                                    </td>
+                                    <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
+                                        {Object.values(EVENTS)
+                                            .filter((event) => row.type !== 'CI' || (event !== 'configApproval' && event !== 'imageApproval'))
+                                            .map((event) => {
+                                            return (
+                                                <Button
+                                                    key={event}
+                                                    icon={
+                                                        <Icon
+                                                            name={EVENT_ICONS[event] as IconsProps['name']}
+                                                            color={null}
+                                                        />
+                                                    }
+                                                    variant={
+                                                        row[event]
+                                                            ? ButtonVariantType.primary
+                                                            : ButtonVariantType.borderLess
+                                                    }
+                                                    style={
+                                                        row[event] ? ButtonStyleType.default : ButtonStyleType.neutral
+                                                    }
+                                                    size={ComponentSizeType.xs}
+                                                    onClick={() => {
+                                                        this.handlePipelineEventType(rowIndex, event)
+                                                    }}
+                                                    ariaLabel={event}
+                                                    showAriaLabelInTippy={true}
+                                                    dataTestId={`${event}-notification-checkbox-${rowIndex}`}
+                                                />
+                                            )
+                                        })}
+                                    </td>
+                                </tr>
+                            </>
                         )
                     })}
                 </tbody>

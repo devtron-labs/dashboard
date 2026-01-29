@@ -335,21 +335,21 @@ export interface SlackWebhookConfigurationTableRowType extends BaseConfiguration
     webhookUrl: string
 }
 
+export interface RecipientType {
+    configId: number
+    recipient: string
+    dest: string
+    name?: string
+}
+
 export interface ModifyRecipientsModalProps {
     channelList: SelectedRecipientType[]
     onSaveSuccess: () => void
     closeModifyRecipientsModal: () => void
     notificationListFromParent: {
         id: number
-        providers: { dest: string; configId: number; recipient: string; name?: string }[]
+        providers: RecipientType[]
     }[]
-}
-
-export interface RecipientType {
-    configId: number
-    recipient: string
-    dest: string
-    name?: string
 }
 
 export interface SelectedRecipientType {
@@ -376,34 +376,24 @@ export enum FilterOptions {
     PROJECT = 'project',
     CLUSTER = 'cluster',
 }
+
+interface BaseOptionsType {
+    value: number
+    label: string
+    type: string
+}
 interface Options {
-    environment: {
-        value: number
-        label: string
-        type: string
-    }[]
-    application: {
-        value: number
-        label: string
-        type: string
-    }[]
-    project: {
-        value: number
-        label: string
-        type: string
-    }[]
-    cluster: {
-        value: number
-        label: string
-        type: string
-    }[]
+    environment: BaseOptionsType[]
+    application: BaseOptionsType[]
+    project: BaseOptionsType[]
+    cluster: BaseOptionsType[]
 }
 export interface PipelineType extends NotificationEventsType {
     checkbox: {
         isChecked: boolean
         value: CHECKBOX_VALUE
     }
-    type: 'CI' | 'CD'
+    type: 'CI' | 'CD' | 'configApproval'
     pipelineId: number
     pipelineName: string
     environmentName?: string
@@ -413,37 +403,31 @@ export interface PipelineType extends NotificationEventsType {
     isVirtualEnvironment?: boolean
 }
 
+interface BaseConfigType {
+    id: number
+    configName: string
+    dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
+    recipient: string
+}
+
+interface ChannelType {
+    __isNew__?: boolean
+    label: string
+    value: string
+    data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
+}
+
 export interface AddNotificationState {
     view: string
     showSlackConfigModal: boolean
     showSESConfigModal: boolean
     showSMTPConfigModal: boolean
-    channelOptions: {
-        __isNew__?: boolean
-        label: string
-        value
-        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
-    }[]
-    sesConfigOptions: {
-        id: number
-        configName: string
-        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
-        recipient: string
-    }[]
-    smtpConfigOptions: {
-        id: number
-        configName: string
-        dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
-        recipient: string
-    }[]
+    channelOptions: ChannelType[]
+    sesConfigOptions: BaseConfigType[]
+    smtpConfigOptions: BaseConfigType[]
     isLoading: boolean
     appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
-    selectedChannels: {
-        __isNew__?: boolean
-        label: string
-        value
-        data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
-    }[]
+    selectedChannels: ChannelType[]
     openSelectPipeline: boolean
     pipelineList: PipelineType[]
     filterInput: string
