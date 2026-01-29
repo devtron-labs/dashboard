@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { DeploymentChartType, ResponseType, UseUrlFiltersReturnType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    DeploymentChartType,
+    DeploymentChartVersionsType,
+    ResponseType,
+    UseUrlFiltersReturnType,
+} from '@devtron-labs/devtron-fe-common-lib'
 
 export interface ChartUploadType {
     chartName: string
@@ -54,4 +59,10 @@ export enum DeploymentChartsListSortableKeys {
     CHART_NAME = 'chartName',
     CHART_VERSION = 'chartVersion',
     UPLOADED_BY = 'uploadedBy',
+}
+
+export interface DeploymentChartRowType
+    extends Omit<DeploymentChartVersionsType, 'id' | 'isUserUploaded' | 'uploadedBy'> {
+    name: React.ReactNode
+    uploadedBy: React.ReactNode
 }
