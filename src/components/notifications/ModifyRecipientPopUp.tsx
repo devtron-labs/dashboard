@@ -53,7 +53,7 @@ export const ModifyRecipientPopUp = ({
                 {options.map((option) => (
                     <Tooltip
                         content={option.isDisabled ? 'Event is not applicable for selected type' : ''}
-                        placement="bottom"
+                        placement="top"
                         className="mxh-210 dc__overflow-auto dc__word-break"
                         alwaysShowTippyOnHover={option.isDisabled}
                     >
