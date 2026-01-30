@@ -789,46 +789,79 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         {row.type === NotificationPipelineType.CD ? row?.environmentName : ''}
                                     </td>
                                     <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
-                                        {Object.values(EVENTS)
-                                            .filter((event) => {
-                                                if (isApprovalPipeline) {
-                                                    return event === EVENTS.CONFIG_APPROVAL
+                                        {isApprovalPipeline 
+                                            ? Object.values(EVENTS).map((event) => {
+                                                if (event === EVENTS.CONFIG_APPROVAL) {
+                                                    return (
+                                                        <Button
+                                                            key={event}
+                                                            icon={
+                                                                <Icon
+                                                                    name={EVENT_ICONS[event] as IconsProps['name']}
+                                                                    color={null}
+                                                                />
+                                                            }
+                                                            variant={
+                                                                row[event]
+                                                                    ? ButtonVariantType.primary
+                                                                    : ButtonVariantType.borderLess
+                                                            }
+                                                            style={
+                                                                row[event]
+                                                                    ? ButtonStyleType.default
+                                                                    : ButtonStyleType.neutral
+                                                            }
+                                                            size={ComponentSizeType.xs}
+                                                            onClick={() => {
+                                                                this.handlePipelineEventType(rowIndex, event, row.type)
+                                                            }}
+                                                            ariaLabel={EVENT_LABEL[event]}
+                                                            showAriaLabelInTippy={true}
+                                                            dataTestId={`${event}-notification-checkbox-${rowIndex}`}
+                                                        />
+                                                    )
+                                                } else {
+                                                    return <div className="flexbox flex-justify dc__gap-12"><div key={event} className="icon-dim-24"></div></div>
                                                 }
-                                                return (
-                                                    row.type !== NotificationPipelineType.CI ||
-                                                    (event !== EVENTS.CONFIG_APPROVAL && event !== EVENTS.IMAGE_APPROVAL)
-                                                )
                                             })
-                                            .map((event) => {
-                                                return (
-                                                    <Button
-                                                        key={event}
-                                                        icon={
-                                                            <Icon
-                                                                name={EVENT_ICONS[event] as IconsProps['name']}
-                                                                color={null}
-                                                            />
-                                                        }
-                                                        variant={
-                                                            row[event]
-                                                                ? ButtonVariantType.primary
-                                                                : ButtonVariantType.borderLess
-                                                        }
-                                                        style={
-                                                            row[event]
-                                                                ? ButtonStyleType.default
-                                                                : ButtonStyleType.neutral
-                                                        }
-                                                        size={ComponentSizeType.xs}
-                                                        onClick={() => {
-                                                            this.handlePipelineEventType(rowIndex, event, row.type)
-                                                        }}
-                                                        ariaLabel={EVENT_LABEL[event]}
-                                                        showAriaLabelInTippy={true}
-                                                        dataTestId={`${event}-notification-checkbox-${rowIndex}`}
-                                                    />
-                                                )
-                                            })}
+                                            : Object.values(EVENTS)
+                                                .filter((event) => {
+                                                    return (
+                                                        row.type !== NotificationPipelineType.CI ||
+                                                        (event !== EVENTS.CONFIG_APPROVAL && event !== EVENTS.IMAGE_APPROVAL)
+                                                    )
+                                                })
+                                                .map((event) => {
+                                                    return (
+                                                        <Button
+                                                            key={event}
+                                                            icon={
+                                                                <Icon
+                                                                    name={EVENT_ICONS[event] as IconsProps['name']}
+                                                                    color={null}
+                                                                />
+                                                            }
+                                                            variant={
+                                                                row[event]
+                                                                    ? ButtonVariantType.primary
+                                                                    : ButtonVariantType.borderLess
+                                                            }
+                                                            style={
+                                                                row[event]
+                                                                    ? ButtonStyleType.default
+                                                                    : ButtonStyleType.neutral
+                                                            }
+                                                            size={ComponentSizeType.xs}
+                                                            onClick={() => {
+                                                                this.handlePipelineEventType(rowIndex, event, row.type)
+                                                            }}
+                                                            ariaLabel={EVENT_LABEL[event]}
+                                                            showAriaLabelInTippy={true}
+                                                            dataTestId={`${event}-notification-checkbox-${rowIndex}`}
+                                                        />
+                                                    )
+                                                })
+                                        }
                                     </td>
                                 </tr>
                             </>

@@ -163,7 +163,7 @@ export const renderPipelineTypeIcon = (row) => {
         return <CI className="icon-dim-20 dc__flip" />
     }
     if (row.pipelineType === NotificationPipelineType.BASE || row.type === NotificationPipelineType.BASE ) {
-        return <Icon name="ic-configuration-file" color={"B500"} size={24} />
+        return <Icon name="ic-configuration-file" color={null} size={24} />
     }
     return <CD className="icon-dim-20 dc__flip" />
 }
