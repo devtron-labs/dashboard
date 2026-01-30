@@ -5,6 +5,7 @@ import {
     ComponentSizeType,
     Icon,
     IconName,
+    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
@@ -50,24 +51,35 @@ export const ModifyRecipientPopUp = ({
         <div>
             <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
                 {options.map((option) => (
-                    <li key={option.value} className="dc__kebab-menu__list-item flex-justify flex">
-                        <div className="flex left dc__gap-8">
-                            <Icon name={option.icon as IconName} color={null} />
-                            <span>{option.label}</span>
-                        </div>
-
-                        <Checkbox
-                            rootClassName="mb-0"
-                            isChecked={events[option.value].isChecked}
-                            value={events[option.value].value}
-                            onChange={(e) => onChangeCheckboxHandler(e, option.value)()}
-                            disabled={option.isDisabled}
+                    <Tooltip
+                        content={option.isDisabled ? 'Event is not applicable for selected type' : ''}
+                        placement="bottom"
+                        className="mxh-210 dc__overflow-auto dc__word-break"
+                        alwaysShowTippyOnHover={option.isDisabled}
+                    >
+                        <li
+                            key={option.value}
+                            className={`dc__kebab-menu__list-item flex-justify flex ${option.isDisabled ? 'dc__disabled' : ''}`}
                         >
-                            <span />
-                        </Checkbox>
-                    </li>
+                            <div className="flex left dc__gap-8">
+                                <Icon name={option.icon as IconName} color={null} />
+                                <span>{option.label}</span>
+                            </div>
+
+                            <Checkbox
+                                rootClassName="mb-0"
+                                isChecked={events[option.value].isChecked}
+                                value={events[option.value].value}
+                                onChange={(e) => onChangeCheckboxHandler(e, option.value)()}
+                                disabled={option.isDisabled}
+                            >
+                                <span />
+                            </Checkbox>
+                        </li>
+                    </Tooltip>
                 ))}
             </ul>
+
             <div className="p-8">
                 <Button
                     dataTestId="apply-recipient"
