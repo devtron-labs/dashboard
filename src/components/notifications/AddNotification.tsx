@@ -694,7 +694,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                 <tbody>
                     <tr className="pipeline-list__header">
                         <th className="pipeline-list__checkbox fw-6" />
-                        <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
+                        <th className="pipeline-list__pipeline-name fw-6">Resource</th>
                         <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
                         <th className="pipeline-list__type fw-6">Type</th>
                         <th className="pipeline-list__environment fw-6">Env/Branch</th>
@@ -736,7 +736,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                 <i>
                                                     {isApprovalPipeline
                                                         ? 'Base configuration matching:'
-                                                        : 'All existing and future deployment pipelines matching:'}
+                                                        : `All existing and future ${row.type === NotificationPipelineType.CI ? 'build' : 'deployment'} pipelines matching:`}
                                                 </i>
                                                 <div className="dc__devtron-tag__container">
                                                     {row.appliedFilters.map((e) => {

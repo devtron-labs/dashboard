@@ -526,7 +526,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             <span />
                         </Checkbox>
                     </th>
-                    <th className="pipeline-list__pipeline-name fw-6">Pipeline Name</th>
+                    <th className="pipeline-list__pipeline-name fw-6">Resource</th>
                     <th className="pipeline-list__app-name fw-6">Application Name</th>
                     <th className="pipeline-list__type fw-6">Type</th>
                     <th className="pipeline-list__environment fw-6">Env/Branch</th>
