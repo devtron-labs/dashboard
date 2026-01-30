@@ -41,6 +41,7 @@ import {
     Icon,
     IconsProps,
     ButtonComponentType,
+    stopPropagation,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -64,10 +65,16 @@ import {
 import './notifications.scss'
 import { getAppListMin, getEnvironmentListMin } from '../../services/service'
 import { SMTPConfigModal } from './SMTPConfigModal'
-import { AddNotificationsProps, AddNotificationState, EMAIL_AGENT, FilterOptions } from './types'
+import {
+    AddNotificationsProps,
+    AddNotificationState,
+    EMAIL_AGENT,
+    FilterOptions,
+    NotificationPipelineType,
+} from './types'
 import { WebhookConfigModal } from './WebhookConfigModal'
 import { getClusterListMin } from '@Components/ClusterNodes/clusterNodes.service'
-import { EVENT_ICONS, EVENTS } from './constants'
+import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
 
 export class AddNotification extends Component<AddNotificationsProps, AddNotificationState> {
     filterOptionsMain = [
@@ -261,32 +268,52 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
 
     handlePipelineEventType = (
         pipelineIndex: number,
-        stage: 'trigger' | 'success' | 'failure' | 'configApproval' | 'imageApproval',
+        stage: EVENTS,
+        rowType: NotificationPipelineType,
     ): void => {
         const state = { ...this.state }
         const pipeline = state.pipelineList[pipelineIndex]
         pipeline[stage] = !pipeline[stage]
-        if (
-            pipeline.success &&
-            pipeline.trigger &&
-            pipeline.failure &&
-            pipeline.configApproval &&
-            pipeline.imageApproval
-        ) {
+        if (rowType === NotificationPipelineType.BASE && pipeline.configApproval) {
             pipeline.checkbox = {
                 value: CHECKBOX_VALUE.CHECKED,
                 isChecked: true,
             }
         } else if (
-            pipeline.success ||
-            pipeline.trigger ||
-            pipeline.failure ||
-            pipeline.configApproval ||
-            pipeline.imageApproval
+            rowType === NotificationPipelineType.CI &&
+            pipeline.success &&
+            pipeline.trigger &&
+            pipeline.failure &&
+            !pipeline.configApproval &&
+            !pipeline.imageApproval
         ) {
             pipeline.checkbox = {
-                value: CHECKBOX_VALUE.INTERMEDIATE,
+                value: CHECKBOX_VALUE.CHECKED,
                 isChecked: true,
+            }
+        } else if (rowType === NotificationPipelineType.CD) {
+            if (
+                pipeline.success &&
+                pipeline.trigger &&
+                pipeline.failure &&
+                pipeline.configApproval &&
+                pipeline.imageApproval
+            ) {
+                pipeline.checkbox = {
+                    value: CHECKBOX_VALUE.CHECKED,
+                    isChecked: true,
+                }
+            } else if (
+                pipeline.success ||
+                pipeline.trigger ||
+                pipeline.failure ||
+                pipeline.configApproval ||
+                pipeline.imageApproval
+            ) {
+                pipeline.checkbox = {
+                    value: CHECKBOX_VALUE.INTERMEDIATE,
+                    isChecked: true,
+                }
             }
         } else {
             pipeline.checkbox = {
@@ -298,16 +325,19 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.setState(state)
     }
 
-    togglePipelineCheckbox(pipelineIndex: number): void {
+    togglePipelineCheckbox(pipelineIndex: number, rowType: NotificationPipelineType): void {
         const state = { ...this.state }
         const pipeline = state.pipelineList[pipelineIndex]
         pipeline.checkbox.isChecked = !pipeline.checkbox.isChecked
         pipeline.checkbox.value = pipeline.checkbox.isChecked ? CHECKBOX_VALUE.CHECKED : CHECKBOX_VALUE.INTERMEDIATE
-        pipeline.trigger = pipeline.checkbox.isChecked
-        pipeline.success = pipeline.checkbox.isChecked
-        pipeline.failure = pipeline.checkbox.isChecked
-        pipeline.configApproval = pipeline.checkbox.isChecked
-        pipeline.imageApproval = pipeline.checkbox.isChecked
+        pipeline.trigger = rowType !== NotificationPipelineType.BASE ? pipeline.checkbox.isChecked : false
+        pipeline.success = rowType !== NotificationPipelineType.BASE ? pipeline.checkbox.isChecked : false
+        pipeline.failure = rowType !== NotificationPipelineType.BASE ? pipeline.checkbox.isChecked : false
+        pipeline.configApproval = rowType === NotificationPipelineType.CI ? false : pipeline.checkbox.isChecked
+        pipeline.imageApproval =
+            rowType === NotificationPipelineType.CI || rowType === NotificationPipelineType.BASE
+                ? false
+                : pipeline.checkbox.isChecked
         state.pipelineList[pipelineIndex] = pipeline
         this.setState(state)
     }
@@ -691,7 +721,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         <th className="pipeline-list__stages dc__block fw-6">Events</th>
                     </tr>
                     {this.state.pipelineList.map((row, rowIndex) => {
-                        const _isCi = row.branch && row.type === 'CI'
+                        const _isCi = row.branch && row.type === NotificationPipelineType.CI
                         let _isWebhookCi
                         if (_isCi) {
                             try {
@@ -702,6 +732,8 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                             }
                         }
 
+                        const isApprovalPipeline = row.type === NotificationPipelineType.BASE
+
                         return (
                             <>
                                 <tr key={row.pipelineId + row.type} className="pipeline-list__row">
@@ -711,16 +743,21 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                             isChecked={row.checkbox.isChecked}
                                             value={row.checkbox.value}
                                             onChange={(e) => {
-                                                this.togglePipelineCheckbox(rowIndex)
+                                                stopPropagation(e)
+                                                this.togglePipelineCheckbox(rowIndex, row.type)
                                             }}
                                         >
                                             <span />
                                         </Checkbox>
                                     </td>
                                     <td className="pipeline-list__pipeline-name">
-                                        {row.appliedFilters.length  ? (
+                                        {row.appliedFilters.length ? (
                                             <>
-                                                <i>All current and future pipelines matching.</i>
+                                                <i>
+                                                    {isApprovalPipeline
+                                                        ? 'Base configuration matching:'
+                                                        : 'All existing and future deployment pipelines matching:'}
+                                                </i>
                                                 <div className="dc__devtron-tag__container">
                                                     {row.appliedFilters.map((e) => {
                                                         return (
@@ -749,39 +786,49 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                                 />
                                             </span>
                                         )}
-                                        {row.type === 'CD' ? row?.environmentName : ''}
+                                        {row.type === NotificationPipelineType.CD ? row?.environmentName : ''}
                                     </td>
                                     <td className="pipeline-list__stages flexbox flex-justify dc__gap-12">
                                         {Object.values(EVENTS)
-                                            .filter((event) => row.type !== 'CI' || (event !== 'configApproval' && event !== 'imageApproval'))
+                                            .filter((event) => {
+                                                if (isApprovalPipeline) {
+                                                    return event === EVENTS.CONFIG_APPROVAL
+                                                }
+                                                return (
+                                                    row.type !== NotificationPipelineType.CI ||
+                                                    (event !== EVENTS.CONFIG_APPROVAL && event !== EVENTS.IMAGE_APPROVAL)
+                                                )
+                                            })
                                             .map((event) => {
-                                            return (
-                                                <Button
-                                                    key={event}
-                                                    icon={
-                                                        <Icon
-                                                            name={EVENT_ICONS[event] as IconsProps['name']}
-                                                            color={null}
-                                                        />
-                                                    }
-                                                    variant={
-                                                        row[event]
-                                                            ? ButtonVariantType.primary
-                                                            : ButtonVariantType.borderLess
-                                                    }
-                                                    style={
-                                                        row[event] ? ButtonStyleType.default : ButtonStyleType.neutral
-                                                    }
-                                                    size={ComponentSizeType.xs}
-                                                    onClick={() => {
-                                                        this.handlePipelineEventType(rowIndex, event)
-                                                    }}
-                                                    ariaLabel={event}
-                                                    showAriaLabelInTippy={true}
-                                                    dataTestId={`${event}-notification-checkbox-${rowIndex}`}
-                                                />
-                                            )
-                                        })}
+                                                return (
+                                                    <Button
+                                                        key={event}
+                                                        icon={
+                                                            <Icon
+                                                                name={EVENT_ICONS[event] as IconsProps['name']}
+                                                                color={null}
+                                                            />
+                                                        }
+                                                        variant={
+                                                            row[event]
+                                                                ? ButtonVariantType.primary
+                                                                : ButtonVariantType.borderLess
+                                                        }
+                                                        style={
+                                                            row[event]
+                                                                ? ButtonStyleType.default
+                                                                : ButtonStyleType.neutral
+                                                        }
+                                                        size={ComponentSizeType.xs}
+                                                        onClick={() => {
+                                                            this.handlePipelineEventType(rowIndex, event, row.type)
+                                                        }}
+                                                        ariaLabel={EVENT_LABEL[event]}
+                                                        showAriaLabelInTippy={true}
+                                                        dataTestId={`${event}-notification-checkbox-${rowIndex}`}
+                                                    />
+                                                )
+                                            })}
                                     </td>
                                 </tr>
                             </>

@@ -267,7 +267,7 @@ export interface NotificationConfiguration extends NotificationEventsType {
     pipelineId?: number
     appName: string
     pipelineName?: string
-    pipelineType: 'CI' | 'CD'
+    pipelineType: NotificationPipelineType
     environmentName?: string
     branch?: string
     isSelected: boolean
@@ -314,6 +314,7 @@ export interface NotificationTabState {
     confirmation: boolean
     singleDeletedId: number
     disableEdit: boolean
+    selectedNotificationList: NotificationConfiguration[]
 }
 
 export interface BaseConfigurationTableRowType {
@@ -388,12 +389,18 @@ interface Options {
     project: BaseOptionsType[]
     cluster: BaseOptionsType[]
 }
+
+export enum NotificationPipelineType {
+    CI = 'CI',
+    CD = 'CD',
+    BASE = 'BASE',
+}
 export interface PipelineType extends NotificationEventsType {
     checkbox: {
         isChecked: boolean
         value: CHECKBOX_VALUE
     }
-    type: 'CI' | 'CD' | 'configApproval'
+    type: NotificationPipelineType
     pipelineId: number
     pipelineName: string
     environmentName?: string
@@ -436,4 +443,10 @@ export interface AddNotificationState {
     isApplistLoading: boolean
     selectedEmailAgent: string
     showWebhookConfigModal: boolean
+}
+
+export interface ModifyRecipientPopUpType extends Pick<NotificationTabState, 'selectedNotificationList'> {
+    events: NotificationTabEvents
+    applyModifyEvents: () => void
+    onChangeCheckboxHandler: (e, value) => () => void
 }

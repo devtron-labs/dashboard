@@ -196,8 +196,8 @@ export const EVENT_LABEL = {
     [EVENTS.TRIGGER]: 'Trigger',
     [EVENTS.SUCCESS]: 'Success',
     [EVENTS.FAILURE]: 'Failure',
-    [EVENTS.CONFIG_APPROVAL]: 'Config approval',
-    [EVENTS.IMAGE_APPROVAL]: 'Image approval',
+    [EVENTS.CONFIG_APPROVAL]: 'Config change approval',
+    [EVENTS.IMAGE_APPROVAL]: 'Deployment approval',
 }
 
 export const EVENT_ID = {

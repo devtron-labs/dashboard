@@ -16,7 +16,7 @@
 
 import { get, post, trash, put, ResponseType, sortCallback, CHECKBOX_VALUE } from '@devtron-labs/devtron-fe-common-lib'
 import { Routes } from '../../config/constants'
-import { FilterOptions, NotificationConfiguration, PipelineType, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
+import { FilterOptions, NotificationConfiguration, NotificationPipelineType, PipelineType, SMTPConfigResponseType, WebhookAttributesResponseType } from './types'
 
 interface UpdateNotificationEvent {
     id: number
@@ -29,7 +29,7 @@ interface SaveNotificationPayload {
         appId: number[]
         envId: number[]
         pipelineId: number
-        pipelineType: 'CI' | 'CD'
+        pipelineType: NotificationPipelineType
         eventTypeIds: number[]
     }[]
     providers: { configId: number; dest: 'ses' | 'slack' | ''; recipient: string }[]

@@ -55,7 +55,7 @@ import {
     updateNotificationEvents,
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
-import { NotificationTabState } from './types'
+import { NotificationPipelineType, NotificationTabState } from './types'
 import { ModifyRecipientPopUp } from './ModifyRecipientPopUp'
 import { EVENT_ID } from './constants'
 
@@ -106,6 +106,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             confirmation: false,
             singleDeletedId: 0,
             disableEdit: false,
+            selectedNotificationList: [],
         }
     }
 
@@ -210,6 +211,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             return config
         })
         this.setState(state)
+        this.setState({ selectedNotificationList: state.notificationList.filter((row) => row.isSelected) })
     }
 
     onOpenEditNotificationMenu = (): void => {
@@ -441,6 +443,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 events={this.state.events}
                 applyModifyEvents={this.applyModifyEvents}
                 onChangeCheckboxHandler={this.onChangeCheckboxHandler}
+                selectedNotificationList={this.state.selectedNotificationList}
             />
         </PopupMenu.Body>
     )
@@ -505,6 +508,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     onClickToggleNotification = (id) => (e) => {
         stopPropagation(e)
         this.toggleNotification(id)
+        this.setState({ selectedNotificationList: this.state.notificationList.filter((row) => row.isSelected) })
     }
 
     renderPipelineList = () => (
@@ -531,7 +535,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                     <th className="pipeline-list__hover " />
                 </tr>
                 {this.state.notificationList.map((row) => {
-                    const _isCi = row.branch && row.pipelineType === 'CI'
+                    const _isCi = row.branch && row.pipelineType === NotificationPipelineType.CI
                     let _isWebhookCi
                     if (_isCi) {
                         try {
@@ -567,7 +571,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 row.appliedFilters.project?.length ||
                                 row.appliedFilters.cluster?.length ? (
                                     <>
-                                        <i>All existing and future pipelines matching:</i>
+                                        <i>{row.pipelineType === NotificationPipelineType.BASE ? 'Base configuration matching:' : 'All existing and future deployment pipelines matching:'}</i>
                                         <div className='flex left dc__gap-6'>
                                             {row.appliedFilters.project.map((element) => (
                                                 <Chip
@@ -615,7 +619,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                         />
                                     </span>
                                 )}
-                                {row.pipelineType === 'CD' ? row?.environmentName : ''}
+                                {row.pipelineType === NotificationPipelineType.CD ? row?.environmentName : ''}
                             </td>
                             <td className="pipeline-list__stages p-10">
                                 <div className="flexbox flex-justify dc__gap-12">

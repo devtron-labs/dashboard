@@ -8,38 +8,60 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { EVENT_ICONS, EVENT_LABEL, EVENTS } from './constants'
-import { NotificationTabEvents } from './types'
+import { ModifyRecipientPopUpType, NotificationPipelineType } from './types'
 
 export const ModifyRecipientPopUp = ({
     events,
     applyModifyEvents,
     onChangeCheckboxHandler,
-}: {
-    events: NotificationTabEvents
-    applyModifyEvents: () => void
-    onChangeCheckboxHandler: (e, value) => () => void
-}) => {
+    selectedNotificationList,
+}: ModifyRecipientPopUpType) => {
+    const getDisabledLabel = (value) => {
+        if (
+            selectedNotificationList.some(
+                (row) =>
+                    row.pipelineType === NotificationPipelineType.BASE &&
+                    value !== EVENTS.CONFIG_APPROVAL &&
+                    selectedNotificationList.length === 1,
+            )
+        ) {
+            return true
+        }
+        if (
+            selectedNotificationList.some(
+                (row) =>
+                    row.pipelineType === NotificationPipelineType.CI &&
+                    (value === EVENTS.CONFIG_APPROVAL || value === EVENTS.IMAGE_APPROVAL) &&
+                    selectedNotificationList.length === 1,
+            )
+        ) {
+            return true
+        }
+        return false
+    }
     const options = Object.values(EVENTS).map((value) => ({
         label: EVENT_LABEL[value],
         value,
         icon: EVENT_ICONS[value],
+        isDisabled: getDisabledLabel(value),
     }))
 
     return (
         <div>
             <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
                 {options.map((option) => (
-                    <li key={option.value} className="dc__kebab-menu__list-item flex-justify">
-                        <div className="flex left dc__gap-6">
+                    <li key={option.value} className="dc__kebab-menu__list-item flex-justify flex">
+                        <div className="flex left dc__gap-8">
                             <Icon name={option.icon as IconName} color={null} />
                             <span>{option.label}</span>
                         </div>
 
                         <Checkbox
-                            rootClassName=""
+                            rootClassName="mb-0"
                             isChecked={events[option.value].isChecked}
                             value={events[option.value].value}
                             onChange={(e) => onChangeCheckboxHandler(e, option.value)()}
+                            disabled={option.isDisabled}
                         >
                             <span />
                         </Checkbox>
