@@ -1,3 +1,5 @@
+import { Job, JobCIPipeline } from '../Types'
+
 export interface ExportJobDataType {
     jobName: string
     jobId: string
@@ -7,4 +9,14 @@ export interface ExportJobDataType {
     status: string
     lastRunAt: string
     lastSuccessAt: string
+}
+
+export interface JobTableRowData extends Job {
+    // For expandable rows
+    isExpandedRow?: boolean
+    pipeline?: JobCIPipeline
+}
+
+export interface JobTableAdditionalProps {
+    handleEditJob: (jobId: number) => void
 }

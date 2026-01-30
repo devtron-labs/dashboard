@@ -11,10 +11,8 @@ import {
     JobLastSuccessAtCellComponent,
     JobNameCellComponent,
     JobStatusCellComponent,
-    JobTableAdditionalProps,
-    JobTableRowData,
 } from './JobListTableCellComponents'
-import { ExportJobDataType } from './types'
+import { ExportJobDataType, JobTableAdditionalProps, JobTableRowData } from './types'
 
 export { JobRowActionsComponent } from './JobRowActionsComponent'
 

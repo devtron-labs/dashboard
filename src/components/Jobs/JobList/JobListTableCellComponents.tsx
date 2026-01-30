@@ -21,18 +21,8 @@ import { AppStatus, FiltersTypeEnum, TableCellComponentProps } from '@devtron-la
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { URLS } from '../../../config'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
-import { Job, JobCIPipeline } from '../Types'
 import { environmentName } from '../Utils'
-
-export interface JobTableRowData extends Job {
-    // For expandable rows
-    isExpandedRow?: boolean
-    pipeline?: JobCIPipeline
-}
-
-export interface JobTableAdditionalProps {
-    handleEditJob: (jobId: number) => void
-}
+import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 // Name Cell Component with Job Icon
 export const JobNameCellComponent = ({

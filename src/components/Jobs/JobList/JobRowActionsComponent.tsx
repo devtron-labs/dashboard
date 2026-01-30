@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-import React, { MouseEvent } from 'react'
+import { MouseEvent } from 'react'
 
 import { TableRowActionsOnHoverComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
-import { JobTableAdditionalProps, JobTableRowData } from './JobListTableCellComponents'
+import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 // Row actions hover component
-export const JobRowActionsComponent: React.FC<
-    TableRowActionsOnHoverComponentProps<JobTableRowData, JobTableAdditionalProps> & JobTableAdditionalProps
-> = ({ row, handleEditJob }) => {
+export const JobRowActionsComponent = ({
+    row,
+    handleEditJob,
+}: TableRowActionsOnHoverComponentProps<JobTableRowData, JobTableAdditionalProps> & JobTableAdditionalProps) => {
     const handleEdit = (event: MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
         event.preventDefault()
