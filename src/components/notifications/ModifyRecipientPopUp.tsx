@@ -18,28 +18,19 @@ export const ModifyRecipientPopUp = ({
     selectedNotificationList,
 }: ModifyRecipientPopUpType) => {
     const getDisabledLabel = (value) => {
-        if (
-            selectedNotificationList.some(
-                (row) =>
-                    row.pipelineType === NotificationPipelineType.BASE &&
-                    value !== EVENTS.CONFIG_APPROVAL &&
-                    selectedNotificationList.length === 1,
-            )
-        ) {
-            return true
+        // If BASE type is present among all, only CONFIG_APPROVAL should be enabled
+        if (selectedNotificationList.some((row) => row.pipelineType === NotificationPipelineType.BASE)) {
+            return value !== EVENTS.CONFIG_APPROVAL
         }
-        if (
-            selectedNotificationList.some(
-                (row) =>
-                    row.pipelineType === NotificationPipelineType.CI &&
-                    (value === EVENTS.CONFIG_APPROVAL || value === EVENTS.IMAGE_APPROVAL) &&
-                    selectedNotificationList.length === 1,
-            )
-        ) {
-            return true
+
+        // If CI is available, disable CONFIG_APPROVAL and IMAGE_APPROVAL
+        if (selectedNotificationList.some((row) => row.pipelineType === NotificationPipelineType.CI)) {
+            return value === EVENTS.CONFIG_APPROVAL || value === EVENTS.IMAGE_APPROVAL
         }
+
         return false
     }
+
     const options = Object.values(EVENTS).map((value) => ({
         label: EVENT_LABEL[value],
         value,
