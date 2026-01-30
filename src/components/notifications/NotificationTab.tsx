@@ -792,7 +792,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             )
         }
         return (
-            <div className="flexbox-col flex-grow-1 p-16 dc__gap-16">
+            <div className="flexbox-col flex-grow-1 p-16 dc__gap-16 bg__primary">
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
                 {this.state.showDeleteDialog && this.renderDeleteDialog()}

@@ -43,7 +43,7 @@ export const ModifyRecipientPopUp = ({
             <ul className="dc__kebab-menu__list kebab-menu__list--notification-tab ">
                 {options.map((option) => (
                     <Tooltip
-                        content={option.isDisabled ? 'Event is not applicable for selected type' : ''}
+                        content={option.isDisabled ? 'Cannot edit for the selected resource types.' : ''}
                         placement="top"
                         className="mxh-210 dc__overflow-auto dc__word-break"
                         alwaysShowTippyOnHover={option.isDisabled}
