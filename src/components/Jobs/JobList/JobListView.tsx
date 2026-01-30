@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useCallback, useState } from 'react'
+import { useCallback, useState  } from 'react'
 import {
     FiltersTypeEnum,
     PaginationEnum,
@@ -25,10 +25,13 @@ import { JobListViewProps } from '../Types'
 import { URLS } from '../../../config'
 import { JOB_LIST_TABLE_COLUMNS, JobRowActionsComponent } from './constants'
 import { JobTableRowData, JobTableAdditionalProps } from './types'
-import { getJobs } from '../Service'
-import { jobListModal } from '../Utils'
+import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
+import { getJobs  } from '../Service'
+import { jobListModal, environmentName } from '../Utils'
 import JobsEmptyState from '../JobsEmptyState'
 import { JobListViewType } from '../Constants'
+
+import './styles.scss'
 
 export default function JobListView(props: JobListViewProps) {
     const history = useHistory()
@@ -67,26 +70,45 @@ export default function JobListView(props: JobListViewProps) {
             setNoJobs(totalCount === 0 && !isSearchOrFilterApplied)
 
             return {
-                rows: jobs.map((job) => ({
+                rows: jobs.map((job) => {
+                    const pipeline = job.defaultPipeline
+                    const envName = environmentName(pipeline)
+
+                    return ({
                     id: String(job.id),
-                    data: job,
+                    data: { ...job,
+                        'defaultPipeline.environmentName':`${envName || '-'}${envName === DEFAULT_ENV ? ' (default)' : ''}`,
+                        'defaultPipeline.lastRunAt': job.defaultPipeline?.lastRunAt || '-',
+                        'defaultPipeline.lastSuccessAt':  job.defaultPipeline?.lastSuccessAt || '-' },
                     expandableRows:
                         job.ciPipelines.length > 1
-                            ? job.ciPipelines.map((pipeline) => ({
-                                  id: `expanded-row-${job.id}-${pipeline.ciPipelineId}` as const,
-                                  data: {
-                                      ...job,
-                                      isExpandedRow: true,
-                                      pipeline,
-                                  },
-                              }))
-                            : undefined,
-                })),
+                            ? job.ciPipelines.map((pipeline) => {
+                                const environment = environmentName(pipeline)
+
+                                return ({
+                                id: `expanded-row-${job.id}-${pipeline.ciPipelineId}` as const,
+                                data: {
+                                    ...job,
+                                    pipeline,
+                                    'defaultPipeline.environmentName':`${environment}${environment === DEFAULT_ENV ? ' (default)' : ''}`,
+                                    'defaultPipeline.lastRunAt': pipeline?.lastRunAt || '-',
+                                    'defaultPipeline.lastSuccessAt':  pipeline?.lastSuccessAt || '-' },
+                            })})
+                                : undefined,
+                })}),
                 totalRows: totalCount,
             }
         },
         [props.searchKey, props.status, props.environment, props.project, props.setJobCount, isSearchOrFilterApplied],
     )
+
+    const onRowClick = useCallback(({ data }, isExpandedRow) => {
+        if (isExpandedRow) {
+            return
+        }
+
+        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${data.id}/${URLS.APP_OVERVIEW}`)
+    }, [])
 
     // Show empty state if no jobs exist
     if (noJobs) {
@@ -99,7 +121,7 @@ export default function JobListView(props: JobListViewProps) {
             columns={JOB_LIST_TABLE_COLUMNS}
             getRows={getRows}
             filtersVariant={FiltersTypeEnum.URL}
-            filter={(row) => true} // No filtering needed as filtering is handled by API
+            filter={null}
             paginationVariant={PaginationEnum.PAGINATED}
             emptyStateConfig={{
                 noRowsConfig: null, // Empty state is handled externally
@@ -110,17 +132,20 @@ export default function JobListView(props: JobListViewProps) {
                 },
             }}
             rowActionOnHoverConfig={{
-                Component: (componentProps) => (
-                    <JobRowActionsComponent {...componentProps} handleEditJob={props.handleEditJob} />
-                ),
-                width: 100,
+                Component: JobRowActionsComponent,
+                width: 64,
             }}
+            rowStartIconConfig={{ name: 'ic-devtron-job', color: null, size: 24, }}
             clearFilters={props.clearFilters}
             areFiltersApplied={isSearchOrFilterApplied}
             additionalFilterProps={{
                 initialSortKey: props.sortBy,
             }}
+            additionalProps={{
+                handleEditJob: props.handleEditJob,
+            }}
             data-testid="job-list-container"
+            onRowClick={onRowClick}
         />
     )
 }

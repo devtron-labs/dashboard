@@ -18,10 +18,7 @@ import { Link } from 'react-router-dom'
 
 import { AppStatus, FiltersTypeEnum, TableCellComponentProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { URLS } from '../../../config'
-import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
-import { environmentName } from '../Utils'
 import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 // Name Cell Component with Job Icon
@@ -31,18 +28,15 @@ export const JobNameCellComponent = ({
 }: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     if (isExpandedRow) {
         // For expanded rows, show pipeline name
-        return <div className="app-list__cell app-list__cell--env cb-5">{data.pipeline?.ciPipelineName || '-'}</div>
+        return <div className="flex left dc__truncate-text lh-20 fs-13">{data.pipeline?.ciPipelineName || '-'}</div>
     }
 
     // For main rows, show job name with icon
     const redirectToJobOverview = `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${data.id}/${URLS.APP_OVERVIEW}`
 
     return (
-        <Link to={redirectToJobOverview} className="flex left dc__gap-8">
-            <div className="icon-dim-24 dc__icon-bg-color br-4 p-4">
-                <JobIcon className="icon-dim-16" />
-            </div>
-            <p className="dc__truncate-text m-0 value cb-5">{data.name}</p>
+        <Link to={redirectToJobOverview} className="cb-5 dc__truncate-text lh-20 fs-13 flex left">
+            {data.name}
         </Link>
     )
 }
@@ -54,38 +48,4 @@ export const JobStatusCellComponent = ({
 }: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
     const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
     return <AppStatus status={pipeline?.status || 'notdeployed'} isJobView />
-}
-
-// Environment Cell Component
-export const JobEnvironmentCellComponent = ({
-    row: { data },
-    isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
-    const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
-    const envName = environmentName(pipeline)
-
-    return (
-        <p className="dc__truncate-text m-0">
-            {envName}
-            {envName === DEFAULT_ENV && <span className="fw-4 fs-11 ml-4 dc__italic-font-style">(Default)</span>}
-        </p>
-    )
-}
-
-// Last Run At Cell Component
-export const JobLastRunAtCellComponent = ({
-    row: { data },
-    isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
-    const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
-    return <p className="dc__truncate-text m-0">{pipeline?.lastRunAt || '-'}</p>
-}
-
-// Last Success At Cell Component
-export const JobLastSuccessAtCellComponent = ({
-    row: { data },
-    isExpandedRow,
-}: TableCellComponentProps<JobTableRowData, FiltersTypeEnum.URL, JobTableAdditionalProps>) => {
-    const pipeline = isExpandedRow ? data.pipeline : data.defaultPipeline
-    return <p className="dc__truncate-text m-0">{pipeline?.lastSuccessAt || '-'}</p>
 }

@@ -16,9 +16,15 @@
 
 import { MouseEvent } from 'react'
 
-import { TableRowActionsOnHoverComponentProps } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    Icon,
+    TableRowActionsOnHoverComponentProps,
+} from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { JobTableAdditionalProps, JobTableRowData } from './types'
 
 // Row actions hover component
@@ -28,21 +34,21 @@ export const JobRowActionsComponent = ({
 }: TableRowActionsOnHoverComponentProps<JobTableRowData, JobTableAdditionalProps> & JobTableAdditionalProps) => {
     const handleEdit = (event: MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
-        event.preventDefault()
         handleEditJob(row.data.id)
     }
 
     return (
-        <div className="flex right pr-12 py-2">
-            <button
-                data-testid="edit-job-button"
-                type="button"
-                className="button-edit"
+        <div className="flex right py-2">
+            <Button
+                style={ButtonStyleType.neutral}
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.xs}
+                icon={<Icon name="ic-gear" color={null} />}
+                dataTestId="edit-job-button"
                 onClick={handleEdit}
-                aria-label="Edit job"
-            >
-                <Edit className="button-edit__icon" />
-            </button>
+                ariaLabel="Open job configurations"
+                showAriaLabelInTippy={false}
+            />
         </div>
     )
 }

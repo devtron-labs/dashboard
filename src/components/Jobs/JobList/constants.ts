@@ -1,17 +1,6 @@
-import {
-    ExportToCsvProps,
-    FiltersTypeEnum,
-    stringComparatorBySortOrder,
-    TableProps,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ExportToCsvProps, FiltersTypeEnum, TableProps } from '@devtron-labs/devtron-fe-common-lib'
 
-import {
-    JobEnvironmentCellComponent,
-    JobLastRunAtCellComponent,
-    JobLastSuccessAtCellComponent,
-    JobNameCellComponent,
-    JobStatusCellComponent,
-} from './JobListTableCellComponents'
+import { JobNameCellComponent, JobStatusCellComponent } from './JobListTableCellComponents'
 import { ExportJobDataType, JobTableAdditionalProps, JobTableRowData } from './types'
 
 export { JobRowActionsComponent } from './JobRowActionsComponent'
@@ -36,9 +25,8 @@ export const JOB_LIST_TABLE_COLUMNS: TableProps<
         label: 'NAME',
         field: 'name',
         isSortable: true,
-        size: { range: { startWidth: 200, minWidth: 150, maxWidth: 'infinite' } },
+        size: { fixed: 300 },
         CellComponent: JobNameCellComponent,
-        comparator: stringComparatorBySortOrder,
     },
     {
         label: 'LAST RUN STATUS',
@@ -52,20 +40,17 @@ export const JOB_LIST_TABLE_COLUMNS: TableProps<
         field: 'defaultPipeline.environmentName',
         isSortable: false,
         size: { fixed: 200 },
-        CellComponent: JobEnvironmentCellComponent,
     },
     {
         label: 'LAST RUN AT',
         field: 'defaultPipeline.lastRunAt',
         isSortable: false,
         size: { fixed: 200 },
-        CellComponent: JobLastRunAtCellComponent,
     },
     {
         label: 'LAST SUCCESS AT',
         field: 'defaultPipeline.lastSuccessAt',
         isSortable: false,
         size: { fixed: 200 },
-        CellComponent: JobLastSuccessAtCellComponent,
     },
 ]
