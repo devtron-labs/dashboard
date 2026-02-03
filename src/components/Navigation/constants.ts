@@ -155,13 +155,6 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
             },
             ...(APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM ? [APPLICATION_MANAGEMENT_TEMPLATES_NAV_ITEM] : []),
             {
-                title: 'Projects',
-                dataTestId: 'click-on-projects',
-                id: 'application-management-projects',
-                icon: 'ic-folder',
-                href: COMMON_URLS.APPLICATION_MANAGEMENT_PROJECTS,
-            },
-            {
                 title: 'Configurations',
                 dataTestId: 'click-on-configurations',
                 id: 'application-management-configurations',
@@ -308,6 +301,14 @@ const NAVIGATION_LIST: NavigationGroupType[] = [
                 id: 'global-configuration-container-oci-registry',
                 icon: 'ic-folder',
                 href: URLS.GLOBAL_CONFIG_DOCKER,
+                isAvailableInEA: true,
+            },
+            {
+                title: 'Projects',
+                dataTestId: 'click-on-projects',
+                id: 'global-configuration-projects',
+                icon: 'ic-folder',
+                href: COMMON_URLS.GLOBAL_CONFIG_PROJECTS,
                 isAvailableInEA: true,
             },
             {

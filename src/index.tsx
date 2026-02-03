@@ -41,14 +41,12 @@ declare global {
         Worker: any
         __BASE_URL__: string
         __ORCHESTRATOR_ROOT__: string
-        __GRAFANA_ORG_ID__: number
     }
 }
 
 if (!window.__BASE_URL__ || !window.__ORCHESTRATOR_ROOT__) {
     window.__BASE_URL__ = import.meta.env.BASE_URL || '/dashboard'
     window.__ORCHESTRATOR_ROOT__ = import.meta.env.VITE_ORCHESTRATOR_ROOT || 'orchestrator'
-    window.__GRAFANA_ORG_ID__ = import.meta.env.VITE_GRAFANA_ORG_ID || 2
 }
 
 const root = document.getElementById('root')
@@ -182,6 +180,7 @@ if (!window || !window._env_) {
         COMMAND_BAR_REFETCH_INTERVAL: 3600,
         FEATURE_STORAGE_ENABLE: true,
         FEATURE_ATHENA_DEBUG_MODE_ENABLE: false,
+        GRAFANA_ORG_ID: 2,
     }
 }
 
