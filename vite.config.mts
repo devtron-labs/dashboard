@@ -16,7 +16,7 @@
 
 // Changed to .mts to support importing from ESM module
 
-import { defineConfig, PluginOption, loadEnv, splitVendorChunkPlugin, UserConfig } from 'vite'
+import { defineConfig, PluginOption, loadEnv, UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
 import fs from 'node:fs/promises'
@@ -183,7 +183,6 @@ export default defineConfig(({ mode }) => {
                 // Use React plugin in all *.jsx and *.tsx files
                 include: '**/*.{jsx,tsx}',
             }),
-            splitVendorChunkPlugin(),
             svgr({
                 svgrOptions: {},
             }),
