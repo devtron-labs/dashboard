@@ -366,11 +366,6 @@ export const HEADER_TEXT: Record<string, { title: string; description: string; d
         description: 'Manage notifications for build and deployment pipelines.',
         docLink: "GLOBAL_CONFIG_NOTIFICATION"
     },
-    PROJECTS: {
-        title: 'Projects',
-        description: "Manage your organization's projects.",
-        docLink: "GLOBAL_CONFIG_PROJECT"
-    },
     SSO_LOGIN: {
         title: 'SSO Login Service',
         description: 'Configure and manage login service for your organization.',

@@ -106,7 +106,6 @@ import './navigation.scss'
 
 const Charts = lazy(() => import('../../charts/Charts'))
 
-const ProjectList = lazy(() => import('@Components/project/ProjectList'))
 const GlobalConfig = lazy(() => import('../../globalConfigurations/GlobalConfiguration'))
 const BulkEdit = lazy(() => import('../../bulkEdits/BulkEdits'))
 const ResourceBrowser = lazy(() => import('../../ResourceBrowser/ResourceBrowserRouter'))
@@ -611,11 +610,6 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                                       path={URLS.APPLICATION_MANAGEMENT_BULK_EDIT}
                                                       render={() => <BulkEdit />}
                                                   />,
-                                                  <Route path={CommonURLS.APPLICATION_MANAGEMENT_PROJECTS}>
-                                                      {(props) => (
-                                                          <ProjectList {...props} isSuperAdmin={isSuperAdmin} />
-                                                      )}
-                                                  </Route>,
                                                   <Route path={CommonURLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}>
                                                       <ApplicationManagementConfigurationsRouter />
                                                   </Route>,
