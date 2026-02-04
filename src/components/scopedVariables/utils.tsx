@@ -15,7 +15,12 @@
  */
 
 import yaml from 'yaml'
-import { YAMLStringify, ScopedVariablesFileViewType } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    YAMLStringify,
+    ScopedVariablesFileViewType,
+    InteractiveCellText,
+    Icon,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ScopedVariablesDataType } from './types'
 import { FileReaderStatus, ValidatorType } from '../common/hooks/types'
 import { MIME_TYPE, FILE_EXTENSION } from '../common/helpers/types'
@@ -25,6 +30,8 @@ import {
     PARSE_ERROR_STATUS,
     JSON_PARSE_ERROR_STATUS,
     YAML_PARSE_ERROR_STATUS,
+    SENSITIVE_VARIABLE_DESCRIPTION,
+    IN_SENSITIVE_VARIABLE_DESCRIPTION,
 } from './constants'
 
 export const getFileMimeType = (fileDataName: string): MIME_TYPE => {
@@ -174,3 +181,24 @@ export const parseURLViewToValidView = (
             return ScopedVariablesFileViewType.YAML
     }
 }
+
+export const VariableNameCellComponent = ({ row }) => (
+    <InteractiveCellText text={row.data.name} rootClassName="fw-4 cn-9 fs-13 py-12" />
+)
+
+export const DescriptionCellComponent = ({ row }) => (
+    <InteractiveCellText text={row.data.description} rootClassName="fw-4 cn-9 fs-13 py-12" />
+)
+
+export const SensitiveValueCellComponent = ({ row }) => (
+    <div className="flex left">
+        <Icon
+            name={row.data.isSensitive ? 'ic-visibility-off' : 'ic-visibility-on'}
+            color={null}
+            tooltipProps={{
+                content: row.data.isSensitive ? SENSITIVE_VARIABLE_DESCRIPTION : IN_SENSITIVE_VARIABLE_DESCRIPTION,
+                alwaysShowTippyOnHover: true,
+            }}
+        />
+    </div>
+)
