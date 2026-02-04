@@ -168,12 +168,12 @@ const App = () => {
             const pageHeaderTab = parts?.[2]
 
             if (
-                pageHeaderTab === 'details' ||
-                pageHeaderTab === 'trigger' ||
+                pageHeaderTab === CommonURLS.APP_DETAILS ||
+                pageHeaderTab === CommonURLS.APP_TRIGGER ||
                 pageHeaderTab === URLS.APP_CI_DETAILS ||
                 pageHeaderTab === URLS.APP_CD_DETAILS ||
                 pageHeaderTab === URLS.APP_DEPLOYMENT_METRICS ||
-                pageHeaderTab === 'edit'
+                pageHeaderTab === CommonURLS.APP_CONFIG
             ) {
                 parts[0] = URLS.APPLICATION_MANAGEMENT_APP
                 const newPath = parts.join('/')
