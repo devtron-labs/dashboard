@@ -15,11 +15,12 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useHistory, useLocation } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
+    DeploymentConfigDiffProps,
     DeploymentConfigDiffState,
     DeploymentHistorySingleValue,
     DeploymentStrategyType,
@@ -29,13 +30,19 @@ import {
     getAppEnvDeploymentConfigList,
     getCompareSecretsData,
     getDefaultVersionAndPreviousDeploymentOptions,
+    getDeploymentManifest,
     showError,
+    TemplateListType,
     useAsync,
     useMainContext,
+    useQuery,
     useUrlFilters,
+    YAMLStringify,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '@Config/routes'
+import { getChartList } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/MainContent/DeploymentTemplate/service'
+import { deploymentConfigDiffTabs, getDeploymentConfigDiffTabs } from '@Pages/Shared'
 import { getTemplateOptions } from '@Services/service'
 
 import {
@@ -66,10 +73,19 @@ export const usePipelineDeploymentConfig = ({
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
     const { pathname, search } = useLocation()
+    const history = useHistory()
     const { isSuperAdmin } = useMainContext()
 
     // STATES
     const [convertVariables, setConvertVariables] = useState(false)
+
+    const [resourceTypeParam] = (pathname.split(`${URLS.APP_DIFF_VIEW}/`)[1] || '').split('/')
+
+    const isManifestView = resourceTypeParam === EnvResourceType.Manifest
+    const selectedTab =
+        resourceTypeParam === EnvResourceType.Manifest
+            ? deploymentConfigDiffTabs.MANIFEST
+            : deploymentConfigDiffTabs.CONFIGURATION
 
     // SEARCH PARAMS & SORTING
     const urlFilters = useUrlFilters<string, PipelineConfigDiffQueryParamsType>({
@@ -270,6 +286,86 @@ export const usePipelineDeploymentConfig = ({
         }
     }, [pipelineDeploymentConfigRes, pipelineDeploymentConfigLoading])
 
+    const getManifestData = async (signal: AbortSignal) => {
+        if (!previousDeployments?.length || !pipelineDeploymentConfigRes) {
+            return null
+        }
+
+        const lastDeployedChart = previousDeployments[0] || null
+        const lastDeployedChartRefId = lastDeployedChart?.chartRefId || null
+
+        const specificImageChart = previousDeployments.find((deployment) => deployment.wfrId === wfrId)
+        const specificImageChartRefId = specificImageChart?.chartRefId || null
+
+        const { selectedChartRefId: lastSavedChartRefId } = await getChartList({
+            appId: String(appId),
+            envId: envId ? String(envId) : null,
+            isTemplateView: false,
+            signal,
+        })
+
+        // Last Deployed, Last Saved, Specific Image
+        const manifestData = await Promise.all([
+            getDeploymentManifest(
+                {
+                    appId,
+                    envId,
+                    chartRefId: lastDeployedChartRefId,
+                    pipelineId,
+                    deploymentTemplateHistoryId: lastDeployedChart?.deploymentTemplateHistoryId || null,
+                    type: TemplateListType.DeployedOnSelfEnvironment,
+                },
+                signal,
+            ),
+            getDeploymentManifest(
+                {
+                    appId,
+                    envId,
+                    chartRefId: lastSavedChartRefId,
+                    values: latestDeploymentConfig?.deploymentTemplate?.data
+                        ? YAMLStringify(latestDeploymentConfig.deploymentTemplate.data)
+                        : '',
+                },
+                signal,
+            ),
+            isRollbackTriggerSelected && wfrId && specificImageChartRefId
+                ? getDeploymentManifest(
+                      {
+                          appId,
+                          envId,
+                          chartRefId: specificImageChartRefId,
+                          pipelineId,
+                          deploymentTemplateHistoryId: specificImageChart?.deploymentTemplateHistoryId || null,
+                          type: TemplateListType.DeployedOnSelfEnvironment,
+                      },
+                      signal,
+                  )
+                : null,
+        ])
+
+        return {
+            lastDeployedManifest: manifestData[0]?.result || null,
+            lastSavedManifest: manifestData[1]?.result || null,
+            specificImageManifest: manifestData[2]?.result || null,
+        }
+    }
+
+    const {
+        data: manifestDetails,
+        isFetching: isLoadingManifestDetails,
+        error: manifestDetailsError,
+        refetch: refetchManifestDetails,
+    } = useQuery<
+        Awaited<ReturnType<typeof getManifestData>>,
+        Awaited<ReturnType<typeof getManifestData>>,
+        [string, string, typeof pipelineDeploymentConfigRes, number | undefined],
+        false
+    >({
+        queryKey: ['getManifestData', selectedTab, pipelineDeploymentConfigRes, wfrId],
+        queryFn: ({ signal }) => getManifestData(signal),
+        enabled: selectedTab === deploymentConfigDiffTabs.MANIFEST,
+    })
+
     const pipelineDeploymentConfigErr = useMemo(() => {
         if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
             return (
@@ -324,55 +420,108 @@ export const usePipelineDeploymentConfig = ({
     const getNavItemHref = (resourceType: EnvResourceType, resourceName: string) =>
         `${pathname.split(`/${URLS.APP_DIFF_VIEW}/`)[0]}/${URLS.APP_DIFF_VIEW}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
 
-    const pipelineDeploymentConfig = useMemo(() => {
+    const onTabChange = async (tab: typeof selectedTab) => {
+        history.replace(
+            getNavItemHref(
+                tab === deploymentConfigDiffTabs.MANIFEST
+                    ? EnvResourceType.Manifest
+                    : EnvResourceType.DeploymentTemplate,
+                '',
+            ),
+        )
+    }
+
+    const tabConfig: DeploymentConfigDiffProps['tabConfig'] = useMemo(
+        () => ({
+            tabs: getDeploymentConfigDiffTabs(),
+            activeTab: selectedTab,
+            onClick: onTabChange,
+        }),
+        [selectedTab, search, pathname],
+    )
+
+    const getSelectedManifest = () => {
+        if (deploy === DeploymentWithConfigType.SPECIFIC_TRIGGER_CONFIG) {
+            return manifestDetails?.specificImageManifest || null
+        }
+
+        if (deploy === DeploymentWithConfigType.LAST_SAVED_CONFIG) {
+            return manifestDetails?.lastSavedManifest || null
+        }
+
+        return manifestDetails?.lastDeployedManifest || null
+    }
+
+    const pipelineDeploymentConfig: Pick<
+        DeploymentConfigDiffProps,
+        'configList' | 'tabConfig' | 'navList' | 'collapsibleNavList'
+    > = useMemo(() => {
         if (!pipelineDeploymentConfigLoading && pipelineDeploymentConfigRes) {
-            const compareData = getComparisonDataBasedOnDeployAndStrategy({
-                deploy,
-                latestDeploymentConfig,
-                specificDeploymentConfig,
-                recentDeploymentConfig: deploymentStrategy
-                    ? recentDeploymentConfig
-                    : recentDeploymentConfigWithoutStrategy,
-            })
+            if (selectedTab === deploymentConfigDiffTabs.CONFIGURATION) {
+                const compareData = getComparisonDataBasedOnDeployAndStrategy({
+                    deploy,
+                    latestDeploymentConfig,
+                    specificDeploymentConfig,
+                    recentDeploymentConfig: deploymentStrategy
+                        ? recentDeploymentConfig
+                        : recentDeploymentConfigWithoutStrategy,
+                })
 
-            const { configList, ...rest } = getAppEnvDeploymentConfigList({
-                currentList: compareData || {
-                    configMapData: null,
-                    deploymentTemplate: null,
-                    secretsData: null,
-                    isAppAdmin: false,
-                },
-                compareList: recentDeploymentConfigWithoutStrategy || {
-                    configMapData: null,
-                    deploymentTemplate: null,
-                    secretsData: null,
-                    isAppAdmin: false,
-                },
-                getNavItemHref,
-                convertVariables,
-                sortingConfig: { sortBy, sortOrder },
-            })
+                const { configList, ...rest } = getAppEnvDeploymentConfigList({
+                    currentList: compareData || {
+                        configMapData: null,
+                        deploymentTemplate: null,
+                        secretsData: null,
+                        isAppAdmin: false,
+                    },
+                    compareList: recentDeploymentConfigWithoutStrategy || {
+                        configMapData: null,
+                        deploymentTemplate: null,
+                        secretsData: null,
+                        isAppAdmin: false,
+                    },
+                    getNavItemHref,
+                    convertVariables,
+                    sortingConfig: { sortBy, sortOrder },
+                })
 
-            // filtering out tooltipContent from secondary config, as we are not showing tooltip in right side
-            return {
-                ...rest,
-                configList: configList.map((list) => ({
-                    ...list,
-                    secondaryConfig: {
-                        ...list.secondaryConfig,
-                        list: {
-                            ...list.secondaryConfig.list,
-                            values: {
-                                ...list.secondaryConfig.list.values,
-                                strategy: Object.fromEntries(
-                                    Object.entries(list.secondaryConfig.list.values.strategy ?? {}).filter(
-                                        ([key]) => key !== 'tooltipContent',
-                                    ),
-                                ) as DeploymentHistorySingleValue,
+                // filtering out tooltipContent from secondary config, as we are not showing tooltip in right side
+                return {
+                    ...rest,
+                    tabConfig,
+                    configList: configList.map((list) => ({
+                        ...list,
+                        secondaryConfig: {
+                            ...list.secondaryConfig,
+                            list: {
+                                ...list.secondaryConfig.list,
+                                values: {
+                                    ...list.secondaryConfig.list.values,
+                                    strategy: Object.fromEntries(
+                                        Object.entries(list.secondaryConfig.list.values.strategy ?? {}).filter(
+                                            ([key]) => key !== 'tooltipContent',
+                                        ),
+                                    ) as DeploymentHistorySingleValue,
+                                },
                             },
                         },
-                    },
-                })),
+                    })),
+                }
+            }
+
+            if (selectedTab === deploymentConfigDiffTabs.MANIFEST && manifestDetails) {
+                const configData = getAppEnvDeploymentConfigList<true>({
+                    currentList: getSelectedManifest(),
+                    compareList: manifestDetails.lastDeployedManifest,
+                    getNavItemHref,
+                    convertVariables,
+                    isManifestView: true,
+                })
+
+                return {
+                    ...configData,
+                    tabConfig,
+                }
             }
         }
 
@@ -385,11 +534,18 @@ export const usePipelineDeploymentConfig = ({
         convertVariables,
         sortBy,
         sortOrder,
+        tabConfig,
+        selectedTab,
+        manifestDetails,
     ])
 
-    const reload = () => {
+    const reload = async () => {
         reloadPreviousDeployments()
         reloadPipelineDeploymentConfig()
+
+        if (selectedTab === deploymentConfigDiffTabs.MANIFEST) {
+            await refetchManifestDetails()
+        }
     }
 
     // DEPLOYMENT CONFIG SELECTOR PROPS
@@ -428,15 +584,21 @@ export const usePipelineDeploymentConfig = ({
         onConvertVariablesClick: () => setConvertVariables(!convertVariables),
     }
 
-    const isLoading = previousDeploymentsLoader || pipelineDeploymentConfigLoading
-    const isError = previousDeploymentsErr || pipelineDeploymentConfigErr
+    const isManifestViewLoading = selectedTab === deploymentConfigDiffTabs.MANIFEST && isLoadingManifestDetails
+    const isLoading = previousDeploymentsLoader || pipelineDeploymentConfigLoading || isManifestViewLoading
+
+    const isManifestViewError = selectedTab === deploymentConfigDiffTabs.MANIFEST && manifestDetailsError
+    const isError = previousDeploymentsErr || pipelineDeploymentConfigErr || isManifestViewError
 
     return {
         pipelineDeploymentConfigLoading: isLoading || (!isError && !pipelineDeploymentConfig),
         pipelineDeploymentConfig,
         errorConfig: {
             error: isError && !isLoading,
-            code: previousDeploymentsErr?.code || pipelineDeploymentConfigErr?.code,
+            code:
+                previousDeploymentsErr?.code ||
+                pipelineDeploymentConfigErr?.code ||
+                (isManifestViewError ? manifestDetailsError?.code : null),
             reload,
         },
         radioSelectConfig,
@@ -447,8 +609,11 @@ export const usePipelineDeploymentConfig = ({
         noSpecificDeploymentConfig: specificDeploymentConfig === null,
         canReviewConfig,
         canDeployWithConfig,
-        scopeVariablesConfig,
+        scopeVariablesConfig: selectedTab === deploymentConfigDiffTabs.CONFIGURATION ? scopeVariablesConfig : null,
         urlFilters,
         lastDeploymentWfrId,
+        navHelpText: isManifestView
+            ? 'The manifest is generated locally from the configuration files. Server-side testing of chart validity (eg. whether an API is supported) is NOT done. K8s based templating may be different depending on cluster version.'
+            : null,
     }
 }
