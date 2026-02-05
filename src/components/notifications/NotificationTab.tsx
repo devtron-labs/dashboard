@@ -571,8 +571,12 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 row.appliedFilters.project?.length ||
                                 row.appliedFilters.cluster?.length ? (
                                     <>
-                                        <i>{row.pipelineType === NotificationPipelineType.BASE ? 'Base configuration matching:' : 'All existing and future deployment pipelines matching:'}</i>
-                                        <div className='flex left dc__gap-6'>
+                                        <i>
+                                            {row.pipelineType === NotificationPipelineType.BASE
+                                                ? 'Base configuration matching:'
+                                                : 'All existing and future deployment pipelines matching:'}
+                                        </i>
+                                        <div className="flex left dc__gap-6">
                                             {row.appliedFilters.project.map((element) => (
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
@@ -735,17 +739,21 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody = () => (
         <div className="flexbox-col flex-grow-1 dc__gap-16">
-            <Button
-                variant={ButtonVariantType.primary}
-                text="Add New"
-                size={ComponentSizeType.medium}
-                onClick={this.createNewNotification}
-                dataTestId="delete-notification-button"
-                startIcon={<Icon name="ic-add" color={null} />}
-            />
-            {this.renderBulkOptions()}
-            {this.renderPipelineList()}
-            {this.renderPagination()}
+            <div className="flex right">
+                <Button
+                    variant={ButtonVariantType.primary}
+                    text="Add New"
+                    size={ComponentSizeType.medium}
+                    onClick={this.createNewNotification}
+                    dataTestId="delete-notification-button"
+                    startIcon={<Icon name="ic-add" color={null} />}
+                />
+            </div>
+            <div>
+                {this.renderBulkOptions()}
+                {this.renderPipelineList()}
+                {this.renderPagination()}
+            </div>
         </div>
     )
 
