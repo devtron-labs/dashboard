@@ -32,7 +32,7 @@ import { useAppContext } from '../../common'
 import { EnvAppList, EnvironmentsListViewType } from '../AppGroup.types'
 import { EMPTY_LIST_MESSAGING, GROUP_LIST_HEADER, NO_ACCESS_TOAST_MESSAGE } from '../Constants'
 
-const EnvironmentNameCellComponent = ({ row, value }: TableCellComponentProps<EnvAppList, FiltersTypeEnum.NONE>) => {
+const EnvironmentNameCellComponent = ({ row, value }: TableCellComponentProps<EnvAppList, FiltersTypeEnum.URL>) => {
     const { setCurrentEnvironmentName } = useAppContext()
     const { namespace, id: environmentId, appCount, environment_name: environmentName } = row.data
 
@@ -63,7 +63,7 @@ const EnvironmentNameCellComponent = ({ row, value }: TableCellComponentProps<En
 }
 
 // Cell component for application count
-const ApplicationCountCellComponent = ({ value }: TableCellComponentProps<EnvAppList, FiltersTypeEnum.NONE>) => {
+const ApplicationCountCellComponent = ({ value }: TableCellComponentProps<EnvAppList, FiltersTypeEnum.URL>) => {
     const count = (value as number) || 0
     return (
         <div>
@@ -76,7 +76,6 @@ const ApplicationCountCellComponent = ({ value }: TableCellComponentProps<EnvApp
 const EnvironmentsListView = ({
     isSuperAdmin,
     filterConfig,
-    clearFilters,
     appListLoading,
     appListResponse,
 }: EnvironmentsListViewType) => {
@@ -127,7 +126,7 @@ const EnvironmentsListView = ({
     )
 
     return (
-        <Table<EnvAppList, FiltersTypeEnum.NONE>
+        <Table<EnvAppList, FiltersTypeEnum.URL>
             id="table__application-group-environment-list"
             columns={[
                 {
@@ -154,8 +153,8 @@ const EnvironmentsListView = ({
                 },
             ]}
             getRows={getRows}
-            filtersVariant={FiltersTypeEnum.NONE}
-            paginationVariant={PaginationEnum.NOT_PAGINATED}
+            filtersVariant={FiltersTypeEnum.URL}
+            paginationVariant={PaginationEnum.PAGINATED}
             loading={appListLoading}
             filter={null}
             emptyStateConfig={{
@@ -164,10 +163,11 @@ const EnvironmentsListView = ({
                     subTitle: hasClusterFilter ? "We couldn't find any matching app groups." : '',
                 },
                 noRowsForFilterConfig: hasClusterFilter
-                    ? {
-                          clearFilters,
-                      }
-                    : undefined,
+                    ? undefined
+                    : {
+                          title: 'No results',
+                          subTitle: "We couldn't find any matching results",
+                      },
             }}
             onRowClick={handleRowClick}
             rowStartIconConfig={{
