@@ -287,14 +287,16 @@ export const usePipelineDeploymentConfig = ({
     }, [pipelineDeploymentConfigRes, pipelineDeploymentConfigLoading])
 
     const getManifestData = async (signal: AbortSignal) => {
-        if (!previousDeployments?.length || !pipelineDeploymentConfigRes) {
+        if (!pipelineDeploymentConfigRes) {
             return null
         }
 
-        const lastDeployedChart = previousDeployments[0] || null
+        const prevDeployments = previousDeployments || []
+
+        const lastDeployedChart = prevDeployments[0] || null
         const lastDeployedChartRefId = lastDeployedChart?.chartRefId || null
 
-        const specificImageChart = previousDeployments.find((deployment) => deployment.wfrId === wfrId)
+        const specificImageChart = prevDeployments.find((deployment) => deployment.wfrId === wfrId)
         const specificImageChartRefId = specificImageChart?.chartRefId || null
 
         const { selectedChartRefId: lastSavedChartRefId } = await getChartList({
@@ -304,19 +306,31 @@ export const usePipelineDeploymentConfig = ({
             signal,
         })
 
+        const nullResponse: Awaited<ReturnType<typeof getDeploymentManifest>> = {
+            result: {
+                data: '',
+                resolvedData: '',
+                variableSnapshot: {},
+            },
+            code: 200,
+            status: 'OK',
+        }
+
         // Last Deployed, Last Saved, Specific Image
         const manifestData = await Promise.all([
-            getDeploymentManifest(
-                {
-                    appId,
-                    envId,
-                    chartRefId: lastDeployedChartRefId,
-                    pipelineId,
-                    deploymentTemplateHistoryId: lastDeployedChart?.deploymentTemplateHistoryId || null,
-                    type: TemplateListType.DeployedOnSelfEnvironment,
-                },
-                signal,
-            ),
+            lastDeployedChartRefId
+                ? getDeploymentManifest(
+                      {
+                          appId,
+                          envId,
+                          chartRefId: lastDeployedChartRefId,
+                          pipelineId,
+                          deploymentTemplateHistoryId: lastDeployedChart?.deploymentTemplateHistoryId || null,
+                          type: TemplateListType.DeployedOnSelfEnvironment,
+                      },
+                      signal,
+                  )
+                : structuredClone(nullResponse),
             getDeploymentManifest(
                 {
                     appId,
@@ -340,7 +354,7 @@ export const usePipelineDeploymentConfig = ({
                       },
                       signal,
                   )
-                : null,
+                : structuredClone(nullResponse),
         ])
 
         return {
