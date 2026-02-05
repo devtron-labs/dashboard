@@ -87,7 +87,7 @@ export const PipelineConfigDiff = ({
             scrollIntoViewId={`${resourceType}${resourceName ? `-${resourceName}` : ''}`}
             navHeading="Deployment Configuration"
             headerText=""
-            sortingConfig={!isManifestView ? sortingConfig : undefined}
+            sortingConfig={isManifestView ? undefined : sortingConfig}
             scopeVariablesConfig={scopeVariablesConfig}
             renderedInDrawer
             showDetailedDiffState
