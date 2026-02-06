@@ -21,6 +21,7 @@ import {
     K8sResourcePayloadAppType,
     YAMLStringify,
     OptionsBase,
+    PodMetaData,
     SelectedResourceType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import {
@@ -29,13 +30,11 @@ import {
     LogState,
     Options,
     PodContainerOptions,
-    PodMetaData,
     NodeType,
     K8sResourcePayloadDeploymentType,
 } from '../../appDetails.type'
 import IndexStore from '../../index.store'
 import { EphemeralContainerOptionsType, ManifestData, NodeDetailTab } from './nodeDetail.type'
-import { multiSelectStyles } from '../../../common/ReactSelectCustomization'
 import { sortOptionsByLabel } from '../../../../common'
 import { ALLOW_UNTIL_TIME_OPTIONS, CUSTOM_LOGS_FILTER, MANIFEST_KEY_FIELDS } from '../../../../../config'
 import { DeleteEphemeralButton } from './DeleteEphemeralButton'

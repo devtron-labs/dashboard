@@ -22,21 +22,14 @@ import {
     ErrorScreenNotAuthorized,
     ToastVariantType,
     ToastManager,
-    PageHeader,
-    BreadCrumb,
-    useBreadcrumb,
-    getApplicationManagementBreadcrumb,
-    BreadcrumbText,
-    DOCUMENTATION,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { HEADER_TEXT, ViewType } from '../../config'
+import { ViewType } from '../../config'
 import { createProject, getProjectList } from './service'
 import { Project } from './Project'
 import { ProjectListState, ProjectType, ProjectListProps } from './types'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import './project.scss'
 import { PROJECT_EXIST_MSG, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
-import { useLocation } from 'react-router-dom'
 
 export default class ProjectList extends Component<ProjectListProps, ProjectListState> {
     constructor(props) {
@@ -59,6 +52,8 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
     }
 
     getProjectList = () => {
+        this.setState({ view: ViewType.LOADING })
+
         getProjectList()
             .then((response) => {
                 this.setState({
@@ -168,7 +163,7 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
             })
             .catch((errors) => {
                 showError(errors)
-                this.setState({ view: ViewType.ERROR, code: errors.code, loadingData: false })
+                this.setState({ loadingData: false })
             })
     }
 
@@ -207,45 +202,12 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         }
     }
 
-    renderBreadcrumbs = () => {
-        const { pathname } = useLocation()
-
-        const { breadcrumbs } = useBreadcrumb(
-            {
-                alias: {
-                    ...getApplicationManagementBreadcrumb(),
-                    projects: { component: <BreadcrumbText heading="Projects" isActive /> },
-                },
-            },
-            [pathname],
-        )
-
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
-    }
-
-    renderPageHeader = () => (
-        <PageHeader
-            breadCrumbs={this.renderBreadcrumbs}
-            isBreadcrumbs
-            tippyProps={{
-                isTippyCustomized: true,
-                tippyRedirectLink: HEADER_TEXT.PROJECTS.docLink,
-                tippyMessage: HEADER_TEXT.PROJECTS.description,
-                tippyHeader: 'Projects',
-            }}
-            docPath={DOCUMENTATION.APP_MANAGEMENT}
-        />
-    )
-
     render() {
         if (!this.props.isSuperAdmin) {
             return (
-                <>
-                    {this.renderPageHeader()}
-                    <div className="dc__align-reload-center">
-                        <ErrorScreenNotAuthorized />
-                    </div>
-                </>
+                <div className="dc__align-reload-center">
+                    <ErrorScreenNotAuthorized />
+                </div>
             )
         }
         if (this.state.view === ViewType.LOADING) {
@@ -254,26 +216,23 @@ export default class ProjectList extends Component<ProjectListProps, ProjectList
         if (this.state.view === ViewType.ERROR) {
             return (
                 <div className="dc__align-reload-center">
-                    <ErrorScreenManager code={this.state.code} />
+                    <ErrorScreenManager code={this.state.code} reload={this.getProjectList} />
                 </div>
             )
         }
         return (
-            <>
-                {this.renderPageHeader()}
-                <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
-                    <div className="project-list-container flex-grow-1">
-                        {this.renderAddProject()}
-                        {this.state.projects.map((project, index) => {
-                            return (
-                                <React.Fragment key={`${project.name}-${index}`}>
-                                    {this.renderProjects(project, index)}
-                                </React.Fragment>
-                            )
-                        })}
-                    </div>
-                </section>
-            </>
+            <section className="flex-grow-1 flex top p-24 bg__secondary dc__overflow-auto">
+                <div className="project-list-container flex-grow-1">
+                    {this.renderAddProject()}
+                    {this.state.projects.map((project, index) => {
+                        return (
+                            <React.Fragment key={`${project.name}-${index}`}>
+                                {this.renderProjects(project, index)}
+                            </React.Fragment>
+                        )
+                    })}
+                </div>
+            </section>
         )
     }
 }

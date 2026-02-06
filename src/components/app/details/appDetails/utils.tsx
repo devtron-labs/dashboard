@@ -337,7 +337,7 @@ export function addQueryParamToGrafanaURL(
 ): string {
     const startTime: string = getTimestampFromDateIfAvailable(calendarInputs.startDate)
     const endTime: string = getTimestampFromDateIfAvailable(calendarInputs.endDate)
-    url += `?orgId=${window.__GRAFANA_ORG_ID__}`
+    url += `?orgId=${Number(window._env_.GRAFANA_ORG_ID) || 2}`
     url += `&refresh=10s`
     url += `&var-app=${appId}`
     url += `&var-env=${envId}`

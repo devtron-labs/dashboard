@@ -62,7 +62,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
     const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
 
     const getDefaultRedirectionURL = () => {
-        const queryString = history.location.search.split('continue=')[1]
+        const queryString = new URLSearchParams(location.search).get('continue')
         if (queryString) {
             return queryString
         }
