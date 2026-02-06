@@ -687,7 +687,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 </div>
                             </td>
                             <td className="pipeline-list__recipients">
-                                <div className="dc__devtron-tag__container">
+                                <div className="flexbox-col dc__gap-4">
                                     {row.providers.map((p) => (
                                         <Chip
                                             data-testid={`recipient-${p.configId}`}
