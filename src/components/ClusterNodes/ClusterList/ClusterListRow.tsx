@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { memo, useMemo } from 'react'
+import { useMemo } from 'react'
 import { generatePath, Link } from 'react-router-dom'
 
 import {
@@ -46,7 +46,7 @@ const CompareClusterButton = importComponentFromFELibrary('CompareClusterButton'
 const KubeConfigButton = importComponentFromFELibrary('KubeConfigButton', null, 'function')
 const KubeConfigRowCheckbox = importComponentFromFELibrary('KubeConfigRowCheckbox', null, 'function')
 
-const ClusterListRowComponent = ({
+const ClusterListRow = ({
     clusterData,
     clusterListLoader,
     onChangeShowKubeConfigModal,
@@ -172,12 +172,5 @@ const ClusterListRowComponent = ({
         </div>
     )
 }
-
-const ClusterListRow = memo(
-    ClusterListRowComponent,
-    (prev, next) => prev.clusterData === next.clusterData && prev.clusterListLoader === next.clusterListLoader,
-)
-
-ClusterListRow.displayName = 'ClusterListRow'
 
 export default ClusterListRow
