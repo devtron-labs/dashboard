@@ -21,8 +21,6 @@ import {
     GenericEmptyState,
     DeploymentAppTypes,
     useAsync,
-    STAGE_TYPE,
-    DeploymentStageType,
     Sidebar,
     TriggerOutput,
     ModuleNameMap,
@@ -38,7 +36,6 @@ import {
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
     AppEnvironment,
-    DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useHistory, useRouteMatch, useParams, generatePath, useLocation, Route } from 'react-router-dom'
 import { useAppContext } from '@Components/common'
