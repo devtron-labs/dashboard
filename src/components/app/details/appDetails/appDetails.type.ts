@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
+import { Dispatch, SetStateAction } from 'react'
+import { MultiValue } from 'react-select'
+
 import {
-    ACTION_STATE,
+    AppDetails,
     AppEnvironment,
     DeploymentStatusDetailsBreakdownDataType,
     EnvAppsMetaDTO,
@@ -26,10 +29,7 @@ import {
     ServerErrors,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { fetchAppDetailsInTime } from '@Components/app/service'
-
-import { AppDetails, SyncErrorType } from '../../../v2/appDetails/appDetails.type'
-import { AggregatedNodes } from '../../types'
+import { AggregatedNodes, UseGetDTAppDetailsReturnType } from '../../types'
 
 export enum AppMetricsTab {
     Aggregate = 'aggregate',
@@ -108,29 +108,11 @@ export interface NodeSelectorsType {
 }
 
 export interface DetailsType {
-    environment?: any
-    appDetailsAPI: typeof fetchAppDetailsInTime
-    setAppDetailResultInParent?: (appDetails) => void
-    isAppDeployment?: boolean
+    environment?: AppEnvironment
     environments: AppEnvironment[]
-    isPollingRequired?: boolean
-    setIsAppDeleted?: any
-    commitInfo?: boolean
-    isAppDeleted?: boolean
-    showCommitInfo?: React.Dispatch<React.SetStateAction<boolean>>
-    isVirtualEnvRef?: React.MutableRefObject<boolean>
-    isDeploymentBlocked?: boolean
-    filteredEnvIds?: string
-    deploymentUserActionState?: ACTION_STATE
-    onCloseHideDeploymentWindowConfirmationModal?: () => void
-    appDetails: any
-    setAppDetails: React.Dispatch<React.SetStateAction<AppDetails>>
     isAppView: boolean
     applications: EnvAppsMetaDTO['apps']
-}
-
-export interface DeletedAppComponentType extends SyncErrorType {
-    resourceTreeFetchTimeOut: boolean
+    appDetailsQueryData: UseGetDTAppDetailsReturnType
 }
 
 export interface AppStatusCardType {
@@ -142,7 +124,10 @@ export interface AppStatusCardType {
 }
 
 export interface DeploymentStatusCardType {
-    deploymentStatusDetailsBreakdownData?: DeploymentStatusDetailsBreakdownDataType
+    deploymentStatusDetailsBreakdownData?: Pick<
+        DeploymentStatusDetailsBreakdownDataType,
+        'deploymentStatus' | 'triggeredBy' | 'deploymentTriggerTime'
+    >
     cardLoading?: boolean
     hideDetails?: boolean
     triggeredBy?: string
@@ -210,6 +195,8 @@ type AppEnvDetailsType = 'app' | 'app-group'
 export interface AppDetailProps {
     detailsType: AppEnvDetailsType
     filteredResourceIds: string
+    resourceList: OptionType<string, string>[]
+    setSelectedResourceList: Dispatch<SetStateAction<MultiValue<OptionType>>>
 }
 
 export type AppEnvDropdownProps = Pick<SelectPickerProps, 'options' | 'value'> & { isAppView?: boolean }
