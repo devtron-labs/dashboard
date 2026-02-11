@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import React from 'react'
 import { AppStatus, DATE_TIME_FORMATS, FiltersTypeEnum, handleUTCTime, TableCellProps } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
@@ -21,8 +22,8 @@ import { LazyImage } from '../../common'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import { HelmAppListRowType } from './AppListType'
 
-const handleImageError = (e) => {
-    const target = e.target as HTMLImageElement
+const handleImageError = (event: React.SyntheticEvent<HTMLImageElement>) => {
+    const target = event.target as HTMLImageElement
     target.onerror = null
     target.src = defaultChartImage
 }

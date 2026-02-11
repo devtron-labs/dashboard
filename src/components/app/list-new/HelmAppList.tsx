@@ -105,8 +105,8 @@ const HelmAppList = ({
         const cols = getHelmAppListColumns(isArgoInstalled)
         // Disable sorting when SSE is fetching external apps
         if (sseConnection) {
-            return cols.map(col => ({
-                ...col,
+            return cols.map(column => ({
+                ...column,
                 isSortable: false,
             }))
         }
@@ -151,16 +151,15 @@ const HelmAppList = ({
         [searchKey, project, environment, namespace],
     )
 
-    const _buildAppDetailUrl = (app: HelmApp) => {
-        if (app.isExternal) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
-        }
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
-    }
-
     const onRowClick = useCallback(({ data: app }) => {
-        push(_buildAppDetailUrl(app.detail))
-    }, [])
+        const buildAppDetailUrl = (helmApp: HelmApp) => {
+            if (helmApp.isExternal) {
+                return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${helmApp.appId}/${helmApp.appName}`
+            }
+            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail.environmentId}`
+        }
+        push(buildAppDetailUrl(app.detail))
+    }, [push])
 
     const _removeExternalAppFetchError = (index: number) => {
         const _externalHelmListFetchErrors = [...externalHelmListFetchErrors]
