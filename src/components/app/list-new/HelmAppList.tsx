@@ -107,7 +107,7 @@ const HelmAppList = ({
         if (sseConnection) {
             return cols.map(column => ({
                 ...column,
-                isSortable: false,
+                isSortable: column.isSortable ? false : undefined,
             }))
         }
         return cols
@@ -151,14 +151,14 @@ const HelmAppList = ({
         [searchKey, project, environment, namespace],
     )
 
-    const onRowClick = useCallback(({ data: app }) => {
-        const buildAppDetailUrl = (helmApp: HelmApp) => {
-            if (helmApp.isExternal) {
-                return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${helmApp.appId}/${helmApp.appName}`
+    const onRowClick = useCallback(({ data: helmApp }) => {
+        const buildAppDetailUrl = (app: HelmApp) => {
+            if (app.isExternal) {
+                return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
             }
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${helmApp.appId}/env/${helmApp.environmentDetail.environmentId}`
+            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
         }
-        push(buildAppDetailUrl(app.detail))
+        push(buildAppDetailUrl(helmApp.detail))
     }, [push])
 
     const _removeExternalAppFetchError = (index: number) => {
@@ -393,7 +393,11 @@ const HelmAppList = ({
         )
     }
 
-    // Determine empty state config
+    /**
+     * Determines the empty state configuration when no rows are present (before any filters are applied).
+     * Returns null to indicate that the empty state should be handled externally (outside the Table component).
+     * The external handling is done in the conditional rendering below.
+     */
     const getNoRowsConfig = () => {
         if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
             // Return null to render custom component
@@ -402,10 +406,13 @@ const HelmAppList = ({
         if (!clusterIdsCsv) {
             return null
         }
-        // Return allCheckModal config
+        // Return null for allCheckModal - handled externally
         return null
     }
 
+    /**
+     * Determines the empty state configuration when filters are applied but no rows match.
+     */
     const getNoRowsForFilterConfig = () => {
         if (isOnlyAllClusterFilterApplied) {
             return askToConnectAClusterForNoResult()
