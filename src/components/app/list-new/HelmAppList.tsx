@@ -16,49 +16,34 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import {
-    AppStatus,
     showError,
     ErrorScreenManager,
     ServerErrors,
     Host,
     GenericEmptyState,
-    handleUTCTime,
-    DATE_TIME_FORMATS,
-    stringComparatorBySortOrder,
-    DocLink,
     URLS as CommonURLS,
-    ComponentSizeType,
     Table,
     PaginationEnum,
     FiltersTypeEnum,
     TableProps,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link, useHistory } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
-import { LazyImage } from '../../common'
-import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
+import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease } from '../../../config'
 import { AppListViewType } from '../config'
 import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
-import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
-import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
-import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
 import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
-    ENVIRONMENT_HEADER_TIPPY_CONTENT,
     EXTERNAL_HELM_APP_FETCH_CLUSTER_ERROR,
     EXTERNAL_HELM_APP_FETCH_ERROR,
     EXTERNAL_HELM_SSE_CONNECTION_ERROR,
     APP_LIST_HEADERS,
     HELM_PERMISSION_MESSAGE,
-    SELECT_CLUSTER_FROM_FILTER_NOTE,
 } from './Constants'
-import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
 import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps, HelmAppListRowType } from './AppListType'
 import AskToClearFilters from './AppListComponents'
 import { getHelmAppListColumns } from './list.utils'
@@ -116,7 +101,17 @@ const HelmAppList = ({
         [devtronInstalledHelmAppsList, externalHelmAppsList],
     )
 
-    const columns = useMemo(() => getHelmAppListColumns(isArgoInstalled), [isArgoInstalled])
+    const columns = useMemo(() => {
+        const cols = getHelmAppListColumns(isArgoInstalled)
+        // Disable sorting when SSE is fetching external apps
+        if (sseConnection) {
+            return cols.map(col => ({
+                ...col,
+                isSortable: false,
+            }))
+        }
+        return cols
+    }, [isArgoInstalled, sseConnection])
 
     // Filter function for the table
     const filter = useCallback(
@@ -385,17 +380,6 @@ const HelmAppList = ({
                     <span>{HELM_PERMISSION_MESSAGE}</span>
                 </div>
             </>
-        )
-    }
-
-    function renderAllCheckModal() {
-        return (
-            <div
-                style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
-                className="bg__primary pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
-            >
-                <AllCheckModal />
-            </div>
         )
     }
 
