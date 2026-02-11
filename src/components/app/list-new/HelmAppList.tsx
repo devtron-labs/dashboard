@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, useCallback } from 'react'
 import {
     AppStatus,
     showError,
@@ -22,39 +22,31 @@ import {
     ServerErrors,
     Host,
     GenericEmptyState,
-    DEFAULT_BASE_PAGE_SIZE,
-    Pagination,
     handleUTCTime,
     DATE_TIME_FORMATS,
-    SortableTableHeaderCell,
     stringComparatorBySortOrder,
-    useStickyEvent,
-    getClassNameForStickyHeaderWithShadow,
     DocLink,
     URLS as CommonURLS,
     ComponentSizeType,
+    Table,
+    PaginationEnum,
+    FiltersTypeEnum,
+    TableProps,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link } from 'react-router-dom'
+import { Link, useHistory } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import moment from 'moment'
 import { getDevtronInstalledHelmApps } from './AppListService'
 import { LazyImage } from '../../common'
 import { SERVER_MODE, URLS, checkIfDevtronOperatorHelmRelease, ModuleNameMap } from '../../../config'
 import { AppListViewType } from '../config'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
 import NoClusterSelectImage from '../../../assets/icons/ic-select-cluster.svg'
 import defaultChartImage from '../../../assets/icons/ic-default-chart.svg'
 import HelmCluster from '../../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import { AllCheckModal } from '../../checkList/AllCheckModal'
-import { ReactComponent as InfoFillPurple } from '../../../assets/icons/ic-info-filled-purple.svg'
-import { ReactComponent as ErrorExclamationIcon } from '../../../assets/icons/ic-error-exclamation.svg'
-import { ReactComponent as CloseIcon } from '../../../assets/icons/ic-close.svg'
 import { ReactComponent as AlertTriangleIcon } from '../../../assets/icons/ic-alert-triangle.svg'
-import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
 import noChartInClusterImage from '../../../assets/img/ic-no-chart-in-clusters@2x.png'
-import ContentCard from '../../common/ContentCard/ContentCard'
-import { CardContentDirection, CardLinkIconPlacement } from '../../common/ContentCard/ContentCard.types'
 import '../list/list.scss'
 import {
     APP_LIST_EMPTY_STATE_MESSAGING,
@@ -65,11 +57,14 @@ import {
     APP_LIST_HEADERS,
     HELM_PERMISSION_MESSAGE,
     SELECT_CLUSTER_FROM_FILTER_NOTE,
-    appListLoadingArray,
 } from './Constants'
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '../../onboardingGuide/OnboardingGuide.constants'
-import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps } from './AppListType'
+import { HelmAppListResponse, HelmApp, AppListSortableKeys, HelmAppListProps, HelmAppListRowType } from './AppListType'
 import AskToClearFilters from './AppListComponents'
+import { getHelmAppListColumns } from './list.utils'
+import { HelmAppListViewWrapper } from './HelmAppListViewWrapper'
+
+import './styles.scss'
 
 const HelmAppList = ({
     serverMode,
@@ -96,53 +91,104 @@ const HelmAppList = ({
     const [externalHelmListFetchErrors, setExternalHelmListFetchErrors] = useState<string[]>([])
     const [showGuidedContentCards, setShowGuidedContentCards] = useState(false)
 
+    const { push } = useHistory()
+
     const { appStatus, environment, cluster, namespace, project, searchKey, sortBy, sortOrder, offset, pageSize } =
         filterConfig
 
-    const handleAppListSorting = (a: HelmApp, b: HelmApp) =>
-        sortBy === AppListSortableKeys.APP_NAME
-            ? stringComparatorBySortOrder(a.appName, b.appName, sortOrder)
-            : stringComparatorBySortOrder(a.lastDeployedAt, b.lastDeployedAt, sortOrder)
+    // Transform helm apps into table rows
+    const rows = useMemo(
+        () =>
+            [...devtronInstalledHelmAppsList, ...externalHelmAppsList].map((app) => ({
+                id: app.appId,
+                data: {
+                    detail: app,
+                    [AppListSortableKeys.APP_NAME]: app.appName,
+                    [APP_LIST_HEADERS.AppStatus]: app.appStatus,
+                    [APP_LIST_HEADERS.Environment]: app.environmentDetail.environmentName
+                        ? app.environmentDetail.environmentName
+                        : `${app.environmentDetail.clusterName}__${app.environmentDetail.namespace}`,
+                    [APP_LIST_HEADERS.Cluster]: app.environmentDetail.clusterName,
+                    [APP_LIST_HEADERS.Namespace]: app.environmentDetail.namespace,
+                    [AppListSortableKeys.LAST_DEPLOYED]: app.lastDeployedAt,
+                },
+            })) as TableProps<HelmAppListRowType, FiltersTypeEnum.URL>['rows'],
+        [devtronInstalledHelmAppsList, externalHelmAppsList],
+    )
 
-    const { filteredHelmAppList, filteredListTotalSize } = useMemo(() => {
-        let filteredHelmAppList: HelmApp[] = [...devtronInstalledHelmAppsList, ...externalHelmAppsList]
-        if (searchKey) {
-            const searchLowerCase = searchKey.toLowerCase()
-            filteredHelmAppList = filteredHelmAppList.filter(
-                (app) => app.appName.includes(searchLowerCase) || app.chartName.includes(searchLowerCase),
-            )
+    const columns = useMemo(() => getHelmAppListColumns(isArgoInstalled), [isArgoInstalled])
+
+    // Filter function for the table
+    const filter = useCallback(
+        ({ data: app }) => {
+            let isMatch = true
+
+            if (searchKey) {
+                const searchLowerCase = searchKey.toLowerCase()
+                isMatch =
+                    isMatch &&
+                    (app.detail.appName.toLowerCase().includes(searchLowerCase) ||
+                        app.detail.chartName.toLowerCase().includes(searchLowerCase))
+            }
+
+            if (project.length) {
+                const projectMap = new Map<string, true>(project.map((projectId) => [projectId, true]))
+                isMatch = isMatch && (projectMap.get(String(app.detail.projectId)) ?? false)
+            }
+
+            if (environment.length) {
+                const environmentMap = new Map<string, true>(environment.map((envId) => [envId, true]))
+                isMatch = isMatch && (environmentMap.get(String(app.detail.environmentDetail.environmentId)) ?? false)
+            }
+
+            if (namespace.length) {
+                const namespaceMap = new Map<string, true>(namespace.map((namespaceItem) => [namespaceItem, true]))
+                isMatch =
+                    isMatch &&
+                    (namespaceMap.get(
+                        `${app.detail.environmentDetail.clusterId}_${app.detail.environmentDetail.namespace}`,
+                    ) ??
+                        false)
+            }
+
+            return isMatch
+        },
+        [searchKey, project, environment, namespace],
+    )
+
+    const _buildAppDetailUrl = (app: HelmApp) => {
+        if (app.isExternal) {
+            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
         }
-        if (project.length) {
-            const projectMap = new Map<string, true>(project.map((projectId) => [projectId, true]))
-            filteredHelmAppList = filteredHelmAppList.filter((app) => projectMap.get(String(app.projectId)) ?? false)
-        }
-        if (environment.length) {
-            const environmentMap = new Map<string, true>(environment.map((envId) => [envId, true]))
-            filteredHelmAppList = filteredHelmAppList.filter(
-                (app) => environmentMap.get(String(app.environmentDetail.environmentId)) ?? false,
-            )
-        }
-        if (namespace.length) {
-            const namespaceMap = new Map<string, true>(namespace.map((namespaceItem) => [namespaceItem, true]))
-            filteredHelmAppList = filteredHelmAppList.filter(
-                (app) =>
-                    namespaceMap.get(`${app.environmentDetail.clusterId}_${app.environmentDetail.namespace}`) ?? false,
-            )
-        }
-        filteredHelmAppList = filteredHelmAppList.sort((a, b) => handleAppListSorting(a, b))
+        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
+    }
 
-        const filteredListTotalSize = filteredHelmAppList.length
+    const onRowClick = useCallback(({ data: app }) => {
+        push(_buildAppDetailUrl(app.detail))
+    }, [])
 
-        filteredHelmAppList = filteredHelmAppList.slice(offset, offset + pageSize)
+    const _removeExternalAppFetchError = (index: number) => {
+        const _externalHelmListFetchErrors = [...externalHelmListFetchErrors]
+        _externalHelmListFetchErrors.splice(index, 1)
+        setExternalHelmListFetchErrors(_externalHelmListFetchErrors)
+    }
 
-        return { filteredHelmAppList, filteredListTotalSize }
-    }, [devtronInstalledHelmAppsList, externalHelmAppsList, filterConfig])
+    function _isAnyFilterationAppliedExceptClusterAndNs() {
+        return project.length || searchKey.length || environment.length || appStatus.length
+    }
 
-    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
-        identifier: 'helm-app-list',
-        containerRef: appListContainerRef,
-        isStickyElementMounted: dataStateType === AppListViewType.LIST && filteredListTotalSize > 0,
-    })
+    function _isAnyFilterationApplied() {
+        return _isAnyFilterationAppliedExceptClusterAndNs() || cluster.length || namespace.length
+    }
+
+    function _isOnlyAllClusterFilterationApplied() {
+        const _isAllClusterSelected = cluster.length === clusterList?.length
+        const _isAnyNamespaceSelected = !!namespace.length
+        return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected
+    }
+
+    const isAnyFilterApplied = _isAnyFilterationApplied()
+    const isOnlyAllClusterFilterApplied = _isOnlyAllClusterFilterationApplied()
 
     // component load
     useEffect(() => {
@@ -295,237 +341,6 @@ const HelmAppList = ({
         setSseConnection(_sseConnection)
     }
 
-    function _isAnyFilterationAppliedExceptClusterAndNs() {
-        return project.length || searchKey.length || environment.length || appStatus.length
-    }
-
-    function _isAnyFilterationApplied() {
-        return _isAnyFilterationAppliedExceptClusterAndNs() || cluster.length || namespace.length
-    }
-
-    function _isOnlyAllClusterFilterationApplied() {
-        const _isAllClusterSelected = cluster.length === clusterList?.length
-        const _isAnyNamespaceSelected = !!namespace.length
-        return !_isAnyFilterationAppliedExceptClusterAndNs() && _isAllClusterSelected && !_isAnyNamespaceSelected
-    }
-
-    function handleImageError(e) {
-        const target = e.target as HTMLImageElement
-        target.onerror = null
-        target.src = defaultChartImage
-    }
-
-    function _buildAppDetailUrl(app: HelmApp) {
-        if (app.isExternal) {
-            return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.EXTERNAL_APPS}/${app.appId}/${app.appName}`
-        }
-        return `${CommonURLS.INFRASTRUCTURE_MANAGEMENT_APP}/${URLS.DEVTRON_CHARTS}/deployments/${app.appId}/env/${app.environmentDetail.environmentId}`
-    }
-
-    function _removeExternalAppFetchError(e) {
-        const index = Number(e.currentTarget.dataset.id)
-        const _externalHelmListFetchErrors = [...externalHelmListFetchErrors]
-        _externalHelmListFetchErrors.splice(index, 1)
-        setExternalHelmListFetchErrors(_externalHelmListFetchErrors)
-    }
-
-    const handleAppNameSorting = () => handleSorting(AppListSortableKeys.APP_NAME)
-
-    const handleLastDeployedSorting = () => handleSorting(AppListSortableKeys.LAST_DEPLOYED)
-
-    function renderHeaders() {
-        return (
-            <div
-                ref={stickyElementRef}
-                className={`app-list__header ${getClassNameForStickyHeaderWithShadow(isHeaderStuck, 'dc__top-47')}`}
-            >
-                <div className="app-list__cell--icon" />
-                <div className="app-list__cell app-list__cell--name">
-                    {sseConnection && <span>{APP_LIST_HEADERS.ReleaseName}</span>}
-                    {!sseConnection && (
-                        <SortableTableHeaderCell
-                            title={APP_LIST_HEADERS.ReleaseName}
-                            isSortable
-                            isSorted={sortBy === AppListSortableKeys.APP_NAME}
-                            sortOrder={sortOrder}
-                            triggerSorting={handleAppNameSorting}
-                            disabled={dataStateType === AppListViewType.LOADING}
-                        />
-                    )}
-                </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--app_status">
-                        <span className="app-list__cell-header">{APP_LIST_HEADERS.AppStatus}</span>
-                    </div>
-                )}
-                <div className="app-list__cell app-list__cell--env flex left">
-                    <span className="app-list__cell-header mr-4">{APP_LIST_HEADERS.Environment}</span>
-                    <Tippy
-                        className="default-tt"
-                        arrow={false}
-                        placement="top"
-                        content={ENVIRONMENT_HEADER_TIPPY_CONTENT}
-                    >
-                        <div className="flex">
-                            <ICHelpOutline className="icon-dim-16" />
-                        </div>
-                    </Tippy>
-                </div>
-                <div className="app-list__cell app-list__cell--cluster">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.Cluster}</span>
-                </div>
-                <div className="app-list__cell app-list__cell--namespace">
-                    <span className="app-list__cell-header">{APP_LIST_HEADERS.Namespace}</span>
-                </div>
-                <div className="app-list__cell app-list__cell--time">
-                    <SortableTableHeaderCell
-                        title={APP_LIST_HEADERS.LastDeployedAt}
-                        isSortable
-                        isSorted={sortBy === AppListSortableKeys.LAST_DEPLOYED}
-                        sortOrder={sortOrder}
-                        triggerSorting={handleLastDeployedSorting}
-                        disabled={dataStateType === AppListViewType.LOADING}
-                    />
-                </div>
-            </div>
-        )
-    }
-
-    const renderFetchError = (externalHelmListFetchError: string, index: number) => (
-        <div className="bg__primary" key={index}>
-            <div className="h-8" />
-            <div className="ea-fetch-error-message above-header-message flex left">
-                <span className="mr-8 flex">
-                    <ErrorExclamationIcon className="icon-dim-20" />
-                </span>
-                <span>{externalHelmListFetchError}</span>
-                <CloseIcon
-                    data-id={index}
-                    className="icon-dim-24 dc__align-right cursor"
-                    onClick={_removeExternalAppFetchError}
-                />
-            </div>
-        </div>
-    )
-
-    const renderHelmAppLink = (app: HelmApp): JSX.Element => (
-        <Link key={app.appId} to={_buildAppDetailUrl(app)} className="app-list__row" data-testid="app-list-row">
-            <div className="app-list__cell--icon">
-                <LazyImage
-                    className="dc__chart-grid-item__icon icon-dim-24"
-                    src={app.chartAvatar}
-                    onError={handleImageError}
-                />
-            </div>
-            <div className="app-list__cell app-list__cell--name flex column left">
-                <div className="dc__truncate-text  m-0 value cb-5">{app.appName}</div>
-                <div className="dc__truncate-text fs-12 m-0">{app.chartName}</div>
-            </div>
-            {isArgoInstalled && (
-                <div className="app-list__cell app-list__cell--namespace">
-                    <AppStatus status={app.appStatus} isVirtualEnv={app.environmentDetail.isVirtualEnvironment} />
-                </div>
-            )}
-            <div className="app-list__cell app-list__cell--env">
-                <p
-                    className="dc__truncate-text  m-0"
-                    data-testid={`${app.environmentDetail.environmentName}-environment`}
-                >
-                    {app.environmentDetail.environmentName
-                        ? app.environmentDetail.environmentName
-                        : `${app.environmentDetail.clusterName}__${app.environmentDetail.namespace}`}
-                </p>
-            </div>
-            <div className="app-list__cell app-list__cell--cluster">
-                <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.clusterName}`}>
-                    {app.environmentDetail.clusterName}
-                </p>
-            </div>
-            <div className="app-list__cell app-list__cell--namespace">
-                <p className="dc__truncate-text  m-0" data-testid={`${app.environmentDetail.namespace}`}>
-                    {app.environmentDetail.namespace}
-                </p>
-            </div>
-            <div className="app-list__cell app-list__cell--time">
-                {app.lastDeployedAt && (
-                    <Tippy
-                        className="default-tt"
-                        arrow
-                        placement="top"
-                        content={moment(app.lastDeployedAt).format(DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT)}
-                    >
-                        <p className="dc__truncate-text  m-0">{handleUTCTime(app.lastDeployedAt, true)}</p>
-                    </Tippy>
-                )}
-            </div>
-        </Link>
-    )
-
-    function renderApplicationList() {
-        return (
-            <div data-testid="helm-app-list-container">
-                {!clusterIdsCsv && (
-                    <div className="bg__primary" data-testid="helm-app-list">
-                        <div className="h-8" />
-                        <div className="cluster-select-message-strip above-header-message flex left">
-                            <span className="mr-8 flex">
-                                <InfoFillPurple className="icon-dim-20" />
-                            </span>
-                            <div className="flexbox">
-                                {SELECT_CLUSTER_FROM_FILTER_NOTE}&nbsp;
-                                <DocLink
-                                    docLinkKey="HYPERION"
-                                    dataTestId="learn-more-about-hyperion-link"
-                                    size={ComponentSizeType.xs}
-                                />
-                            </div>
-                        </div>
-                    </div>
-                )}
-                {externalHelmListFetchErrors.map((externalHelmListFetchError, index) =>
-                    renderFetchError(externalHelmListFetchError, index),
-                )}
-                {filteredListTotalSize > 0 && renderHeaders()}
-                {filteredHelmAppList.map((app) => renderHelmAppLink(app))}
-                {showGuidedContentCards && (
-                    <div className="helm-app-guided-cards-wrapper">
-                        <ContentCard
-                            redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
-                            direction={CardContentDirection.Horizontal}
-                            imgSrc={HelmCluster}
-                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.title}
-                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.GlobalConfigCluster.linkText}
-                            LinkIcon={ArrowRight}
-                            linkIconClass="scb-5"
-                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                        />
-                        <ContentCard
-                            redirectTo={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`}
-                            direction={CardContentDirection.Horizontal}
-                            imgSrc={DeployCICD}
-                            title={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.title}
-                            linkText={HELM_GUIDED_CONTENT_CARDS_TEXTS.StackManager.installLinkText}
-                            LinkIcon={ArrowRight}
-                            linkIconClass="scb-5"
-                            linkIconPlacement={CardLinkIconPlacement.AfterLinkApart}
-                        />
-                    </div>
-                )}
-            </div>
-        )
-    }
-
-    function renderAllCheckModal() {
-        return (
-            <div
-                style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
-                className="bg__primary pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
-            >
-                <AllCheckModal />
-            </div>
-        )
-    }
-
     function askToSelectClusterId() {
         return (
             <div className="dc__position-rel flex-grow-1">
@@ -550,17 +365,13 @@ const HelmAppList = ({
                 </button>
             </Link>
         )
-        return (
-            <div className="dc__position-rel flex-grow-1">
-                <GenericEmptyState
-                    image={noChartInClusterImage}
-                    title={APP_LIST_EMPTY_STATE_MESSAGING.noHelmChartsFound}
-                    subTitle={APP_LIST_EMPTY_STATE_MESSAGING.connectClusterInfoText}
-                    isButtonAvailable
-                    renderButton={handleButton}
-                />
-            </div>
-        )
+        return {
+            imgName: 'img-no-chart-in-clusters',
+            title: APP_LIST_EMPTY_STATE_MESSAGING.noHelmChartsFound,
+            subTitle: APP_LIST_EMPTY_STATE_MESSAGING.connectClusterInfoText,
+            isButtonAvailable: true,
+            renderButton: handleButton,
+        }
     }
 
     function renderHelmPermissionMessageStrip() {
@@ -577,49 +388,51 @@ const HelmAppList = ({
         )
     }
 
-    function renderNoApplicationState() {
-        if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
-            return askToClearFiltersWithSelectClusterTip()
-        }
-        if (_isOnlyAllClusterFilterationApplied()) {
-            return askToConnectAClusterForNoResult()
-        }
-        if (_isAnyFilterationApplied()) {
-            return <AskToClearFilters clearAllFilters={clearAllFilters} />
-        }
-        if (!clusterIdsCsv) {
-            return askToSelectClusterId()
-        }
-        return renderAllCheckModal()
-    }
-
-    function renderFullModeApplicationListContainer() {
-        if (!sseConnection && filteredListTotalSize === 0) {
-            return (
-                <>
-                    {serverMode === SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
-                    {renderNoApplicationState()}
-                </>
-            )
-        }
-        return renderApplicationList()
-    }
-
-    function renderPagination(): JSX.Element {
+    function renderAllCheckModal() {
         return (
-            filteredListTotalSize > DEFAULT_BASE_PAGE_SIZE &&
-            !fetchingExternalApps && (
-                <Pagination
-                    rootClassName="flex dc__content-space px-20"
-                    size={filteredListTotalSize}
-                    pageSize={pageSize}
-                    offset={offset}
-                    changePage={changePage}
-                    changePageSize={changePageSize}
-                />
-            )
+            <div
+                style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
+                className="bg__primary pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
+            >
+                <AllCheckModal />
+            </div>
         )
     }
+
+    function renderAllCheckModal() {
+        return (
+            <div
+                style={{ width: '600px', margin: 'auto', marginTop: '20px' }}
+                className="bg__primary pt-20 pb-20 pl-20 pr-20 br-8 en-1 bw-1 mt-20"
+            >
+                <AllCheckModal />
+            </div>
+        )
+    }
+
+    // Determine empty state config
+    const getNoRowsConfig = () => {
+        if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
+            // Return null to render custom component
+            return null
+        }
+        if (!clusterIdsCsv) {
+            return null
+        }
+        // Return allCheckModal config
+        return null
+    }
+
+    const getNoRowsForFilterConfig = () => {
+        if (isOnlyAllClusterFilterApplied) {
+            return askToConnectAClusterForNoResult()
+        }
+        return {
+            title: APP_LIST_EMPTY_STATE_MESSAGING.noHelmChartsFound,
+            subTitle: APP_LIST_EMPTY_STATE_MESSAGING.connectClusterInfoText,
+        }
+    }
+
     if (dataStateType === AppListViewType.ERROR) {
         return (
             <div className="flex-grow-1">
@@ -627,28 +440,64 @@ const HelmAppList = ({
             </div>
         )
     }
+
+    // Handle edge cases where we don't show the table
+    if (!sseConnection && rows.length === 0 && dataStateType === AppListViewType.LIST) {
+        if (_isAnyFilterationAppliedExceptClusterAndNs() && !clusterIdsCsv) {
+            return (
+                <>
+                    {serverMode === SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
+                    {askToClearFiltersWithSelectClusterTip()}
+                </>
+            )
+        }
+        if (!clusterIdsCsv) {
+            return (
+                <>
+                    {serverMode === SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
+                    {askToSelectClusterId()}
+                </>
+            )
+        }
+        if (!_isAnyFilterationApplied()) {
+            return (
+                <>
+                    {serverMode === SERVER_MODE.FULL && renderHelmPermissionMessageStrip()}
+                    {renderAllCheckModal()}
+                </>
+            )
+        }
+    }
+
     return (
         <>
-            {dataStateType === AppListViewType.LOADING && (
-                <>
-                    {renderHeaders()}
-                    <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
-                        {appListLoadingArray.map((eachRow) => (
-                            <div className="pl-20 resource-list__table-row" key={eachRow.id}>
-                                {Object.keys(eachRow).map((eachKey) => (
-                                    <div className="child child-shimmer-loading" key={eachKey} />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                </>
-            )}
-            {dataStateType === AppListViewType.LIST && (
-                <div className="flex-grow-1 flexbox-col">
-                    {renderFullModeApplicationListContainer()}
-                    {renderPagination()}
-                </div>
-            )}
+            {serverMode === SERVER_MODE.FULL && rows.length === 0 && dataStateType === AppListViewType.LIST && renderHelmPermissionMessageStrip()}
+            <Table<HelmAppListRowType, FiltersTypeEnum.URL>
+                id="table__helm-app-list"
+                columns={columns}
+                loading={dataStateType === AppListViewType.LOADING}
+                rows={rows}
+                filter={filter}
+                filtersVariant={FiltersTypeEnum.URL}
+                paginationVariant={PaginationEnum.PAGINATED}
+                emptyStateConfig={{
+                    noRowsConfig: getNoRowsConfig(),
+                    noRowsForFilterConfig: getNoRowsForFilterConfig(),
+                }}
+                clearFilters={clearAllFilters}
+                onRowClick={onRowClick}
+                additionalFilterProps={{
+                    initialSortKey: AppListSortableKeys.APP_NAME,
+                }}
+                areFiltersApplied={isAnyFilterApplied}
+                ViewWrapper={HelmAppListViewWrapper}
+                additionalProps={{
+                    showGuidedContentCards,
+                    externalHelmListFetchErrors,
+                    clusterIdsCsv,
+                    removeExternalAppFetchError: _removeExternalAppFetchError,
+                }}
+            />
         </>
     )
 }

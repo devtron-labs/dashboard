@@ -45,8 +45,15 @@ import {
     GenericAppListRowType,
     GetAppListFiltersParams,
     useFilterOptionsProps,
+    HelmAppListRowType,
 } from './AppListType'
 import { APP_LIST_HEADERS, ENVIRONMENT_HEADER_TIPPY_CONTENT, SELECT_CLUSTER_TIPPY } from './Constants'
+import {
+    HelmAppNameCellComponent,
+    HelmAppStatusCellComponent,
+    HelmAppEnvironmentCellComponent,
+    HelmAppLastDeployedCellComponent,
+} from './HelmAppListCellComponents'
 
 export const getAppTabNameFromAppType = (appType: InfrastructureManagementAppListType) => {
     switch (appType) {
@@ -341,3 +348,62 @@ export const getGenericAppListColumns = (isFluxCDAppList: boolean) =>
             },
         },
     ] as TableColumnType<GenericAppListRowType, FiltersTypeEnum.URL>[]
+
+export const getHelmAppListColumns = (isArgoInstalled: boolean) =>
+    [
+        {
+            field: AppListSortableKeys.APP_NAME,
+            label: APP_LIST_HEADERS.ReleaseName,
+            isSortable: true,
+            size: {
+                fixed: 250,
+            },
+            comparator: stringComparatorBySortOrder,
+            CellComponent: HelmAppNameCellComponent,
+        },
+        ...(isArgoInstalled
+            ? [
+                  {
+                      field: APP_LIST_HEADERS.AppStatus,
+                      label: APP_LIST_HEADERS.AppStatus,
+                      size: {
+                          fixed: 164,
+                      },
+                      CellComponent: HelmAppStatusCellComponent,
+                  } as TableColumnType<HelmAppListRowType, FiltersTypeEnum.URL>,
+              ]
+            : []),
+        {
+            field: APP_LIST_HEADERS.Environment,
+            label: APP_LIST_HEADERS.Environment,
+            size: {
+                fixed: 200,
+            },
+            infoTooltipText: ENVIRONMENT_HEADER_TIPPY_CONTENT,
+            CellComponent: HelmAppEnvironmentCellComponent,
+        },
+        {
+            field: APP_LIST_HEADERS.Cluster,
+            label: APP_LIST_HEADERS.Cluster,
+            size: {
+                fixed: 150,
+            },
+        },
+        {
+            field: APP_LIST_HEADERS.Namespace,
+            label: APP_LIST_HEADERS.Namespace,
+            size: {
+                fixed: 150,
+            },
+        },
+        {
+            field: AppListSortableKeys.LAST_DEPLOYED,
+            label: APP_LIST_HEADERS.LastDeployedAt,
+            isSortable: true,
+            size: {
+                fixed: 180,
+            },
+            comparator: stringComparatorBySortOrder,
+            CellComponent: HelmAppLastDeployedCellComponent,
+        },
+    ] as TableColumnType<HelmAppListRowType, FiltersTypeEnum.URL>[]
