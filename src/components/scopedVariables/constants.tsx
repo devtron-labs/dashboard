@@ -32,7 +32,6 @@ export const DROPDOWN_ITEMS: Record<DownloadVariableType, string> = {
     [DownloadVariableType.FILE]: 'Download saved file',
     [DownloadVariableType.TEMPLATE]: 'Download template',
 }
-export const TABLE_LIST_HEADINGS = ['VARIABLE NAME', 'DESCRIPTION', 'VALUE IS']
 export const DESCRIPTOR_TABS = {
     [ScopedVariablesFileViewType.ENVIRONMENT_LIST]: 'Environment',
     [ScopedVariablesFileViewType.SAVED]: 'Variables',
