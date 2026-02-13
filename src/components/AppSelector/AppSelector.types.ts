@@ -39,4 +39,5 @@ export interface ChartSelectorType {
     onChange?: ({ label, value }) => void
     formatOptionLabel?: ({ label, value, ...rest }) => React.ReactNode
     filterOption?: (option: any, searchString: string) => boolean
+    path: string // path pattern for generatePath
 }

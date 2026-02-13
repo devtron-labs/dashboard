@@ -35,6 +35,7 @@ import {
     showError,
     Tooltip,
     URLS as CommonURLS,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICCamera } from '@Icons/ic-camera.svg'
@@ -43,7 +44,7 @@ import { ReactComponent as LinkIcon } from '@Icons/ic-link.svg'
 import { ReactComponent as ICRollback } from '@Icons/ic-rollback.svg'
 import HelmAppConfigApplyStatusCard from '@Components/v2/appDetails/sourceInfo/environmentStatus/HelmAppConfigApplyStatusCard'
 
-import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '../../../../config'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '../../../../config'
 import DeploymentTypeIcon from '../../../common/DeploymentTypeIcon/DeploymentTypeIcon'
 import { importComponentFromFELibrary } from '../../../common/helpers/Helpers'
 import { Nodes, SourceInfoType } from '../../types'
@@ -393,7 +394,7 @@ export const SourceInfo = ({
                                             linkProps={{
                                                 to: isAppView
                                                     ? `${getAppComposeURL(params.appId, APP_COMPOSE_STAGE.ENV_OVERRIDE, false, false)}/${params.envId}`
-                                                    : `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
+                                                    : `${ROUTER_URLS.APP_GROUP}/${envId}/${CommonURLS.APP_CONFIG}/${appDetails?.appId}`,
                                             }}
                                         />
                                     </div>
@@ -513,7 +514,7 @@ export const SourceInfo = ({
                                       <span className="mr-8 fs-12 cn-7">Chart:</span>
                                       <Link
                                           className="cb-5 fw-6"
-                                          to={`${URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}/chart/${appDetails.appStoreChartId}`}
+                                          to={`${ROUTER_URLS.CHART_STORE}/chart/${appDetails.appStoreChartId}`}
                                       >
                                           {appDetails.appStoreChartName}/{appDetails.appStoreAppName}(
                                           {appDetails.appStoreAppVersion})

@@ -29,10 +29,11 @@ import {
     RecentlyVisitedGroupedOptionsType,
     RecentlyVisitedOptions,
     BaseRecentlyVisitedEntitiesTypes,
+    ROUTER_URLS,
     DeploymentNodeType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { getParsedBranchValuesForPlugin } from '@Components/common'
-import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED, URLS } from '../../config'
+import { DEFAULT_GIT_BRANCH_VALUE, DOCKER_FILE_ERROR_TITLE, SOURCE_NOT_CONFIGURED } from '../../config'
 import { getEnvAppList } from './AppGroup.service'
 import {
     AppGroupUrlFilters,
@@ -42,6 +43,7 @@ import {
     AppGroupListType,
 } from './AppGroup.types'
 import { getMinCharSearchPlaceholderGroup } from '@Components/AppSelector/constants'
+import { generatePath } from 'react-router-dom'
 
 let timeoutId
 
@@ -362,13 +364,16 @@ export const getAppGroupDeploymentHistoryLink = (
 ) => {
     if (!redirectToAppGroup) {
         // It will redirect to application deployment history in case of other environments
-        return `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS, { appId: String(appId) })}/${envId}/${pipelineId}${type ? `?type=${type}` : ''}`
     }
     // If deployment is failed or it is PRE/POST CD node then it will redirect to history page
     if (status?.toLowerCase() === DEPLOYMENT_STATUS.FAILED || type !== DeploymentNodeType.CD) {
-        return `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${URLS.APP_CD_DETAILS}/${appId}/${pipelineId}${type ? `?type=${type}` : ''}`
+        return `${generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CD_DETAILS, { envId })}/${appId}/${pipelineId}${type ? `?type=${type}` : ''}`
     }
-    return `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/${URLS.APP_DETAILS}/${appId}`
+    return generatePath(ROUTER_URLS.APP_GROUP_DETAILS.APP_DETAILS, {
+        envId,
+        appId: String(appId),
+    })
 }
 
 export const parseAppListData = (
@@ -400,9 +405,4 @@ export const parseAppListData = (
 
     return parsedData
 }
-
-export const getDeploymentHistoryLink = (appId: number, pipelineId: number, envId: string) =>
-    `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}/cd-details/${appId}/${pipelineId}/`
-
-export const getAppRedirectLink = (appId: number, envId: number) =>
-    `${URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP}/${envId}${URLS.DETAILS}/${appId}`
+    

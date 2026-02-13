@@ -96,7 +96,9 @@ export const useOnline = ({ onOnline = noop }: { onOnline?: () => void }) => {
     }, [])
 
     useEffect(() => {
-        if (hideInternetConnectivityBanner) return null
+        if (hideInternetConnectivityBanner) {
+            return noop
+        }
         window.addEventListener('online', handleOnline)
         window.addEventListener('offline', handleOffline)
 

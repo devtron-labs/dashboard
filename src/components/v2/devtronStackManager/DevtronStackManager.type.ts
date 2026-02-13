@@ -15,7 +15,6 @@
  */
 
 import React from 'react'
-import { RouteComponentProps } from 'react-router-dom'
 
 import { InstallationType, ResponseType } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -136,8 +135,6 @@ export interface ModuleDetailsViewType {
     fromDiscoverModules?: boolean
     isActionTriggered: boolean
     handleActionTrigger: (actionName: string, actionState: boolean) => void
-    history: RouteComponentProps['history']
-    location: RouteComponentProps['location']
     setShowResourceStatusModal: React.Dispatch<React.SetStateAction<boolean>>
     isSuperAdmin?: boolean
     setSelectedModule?: React.Dispatch<React.SetStateAction<ModuleDetails>>

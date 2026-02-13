@@ -25,20 +25,26 @@ export const checkIfToRefetchData = (location): boolean => {
     return false
 }
 
-export const deleteRefetchDataFromUrl = (history, location): void => {
+export const deleteRefetchDataFromUrl = (navigate, location): void => {
     if (checkIfToRefetchData(location)) {
         const queryParams = new URLSearchParams(location.search)
         queryParams.delete('refetchData')
-        history.replace({
-            search: queryParams.toString(),
-        })
+        navigate(
+            {
+                search: queryParams.toString(),
+            },
+            { replace: true },
+        )
     }
 }
 
-export const appendRefetchDataToUrl = (history, location): void => {
+export const appendRefetchDataToUrl = (navigate, location): void => {
     const queryParams = new URLSearchParams(location.search)
     queryParams.append('refetchData', 'true')
-    history.replace({
-        search: queryParams.toString(),
-    })
+    navigate(
+        {
+            search: queryParams.toString(),
+        },
+        { replace: true },
+    )
 }

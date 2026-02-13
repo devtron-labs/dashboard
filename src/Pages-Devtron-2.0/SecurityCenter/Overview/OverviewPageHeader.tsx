@@ -4,6 +4,7 @@ import {
     DOCUMENTATION,
     getSecurityCenterBreadcrumb,
     PageHeader,
+    ROUTER_URLS,
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -24,6 +25,7 @@ const TippyContent = () => (
 
 const OverviewPageHeader = () => {
     const { breadcrumbs } = useBreadcrumb(
+        ROUTER_URLS.SECURITY_CENTER_OVERVIEW,
         {
             alias: {
                 ...getSecurityCenterBreadcrumb(),
@@ -35,7 +37,7 @@ const OverviewPageHeader = () => {
         [],
     )
 
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.SECURITY_CENTER_OVERVIEW} />
 
     return (
         <PageHeader

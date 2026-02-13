@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useState } from 'react'
-import { generatePath, Route, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import {
     Progressing,
     showError,
@@ -34,8 +34,8 @@ import {
     useScrollable,
     TRIGGER_STATUS_PROGRESSING,
     CiPipeline,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { URLS } from '../../../../config'
 import { APP_GROUP_CI_DETAILS } from '../../../../config/constantMessaging'
 import { EmptyView } from '../../../app/details/cicdHistory/History.components'
 import { Details } from '../../../app/details/cIDetails/CIDetails'
@@ -71,6 +71,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         autoBottomScroll: triggerDetails && TRIGGER_STATUS_PROGRESSING.includes(triggerDetails.status.toLowerCase()),
     })
 
+    const navigate = useNavigate()
 
     useEffect(() => {
         try {
@@ -89,9 +90,15 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                     })
                     _filteredPipelines.sort((a, b) => sortCallback('appName', a, b))
                     if (!_filteredPipelines.length && pipelineId) {
-                        replace(generatePath(path, { envId }))
+                        navigate(generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CI_DETAILS, { envId }), { replace: true })
                     } else if (!selectedPipelineExist && _filteredPipelines.length) {
-                        replace(generatePath(path, { envId, pipelineId: _filteredPipelines[0].id }))
+                        navigate(
+                            generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.CI_DETAILS}/:pipelineId`, {
+                                envId,
+                                pipelineId: _filteredPipelines[0].id,
+                            }),
+                            { replace: true },
+                        )
                     }
                     setPipelineList(_filteredPipelines)
                 }
@@ -120,8 +127,6 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
         [pipelineId, pagination],
         !!pipelineId,
     )
-    const { path } = useRouteMatch()
-    const { replace } = useHistory()
     useInterval(pollHistory, 30000)
 
     useEffect(() => {
@@ -214,14 +219,23 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
             setTriggerHistory(new Map(mapByKey(triggerHistoryResult.result.ciWorkflows, 'id')))
         }
         setFetchBuildIdData(FetchIdDataStatus.SUSPEND)
-        replace(generatePath(path, { envId, pipelineId }))
+        navigate(generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.CI_DETAILS}/:pipelineId`, { envId, pipelineId }), {
+            replace: true,
+        })
     }
 
     if ((!hasMoreLoading && loading) || ciGroupLoading || (pipelineId && dependencyState[0] !== pipelineId)) {
         return <Progressing pageLoader />
     }
     if (!buildId && pipelineId && triggerHistory.size > 0) {
-        replace(generatePath(path, { buildId: triggerHistory.entries().next().value[0], envId, pipelineId }))
+        navigate(
+            generatePath(`${ROUTER_URLS.APP_GROUP_DETAILS.CI_DETAILS}/:pipelineId/:buildId`, {
+                buildId: triggerHistory.entries().next().value[0],
+                envId,
+                pipelineId,
+            }),
+            { replace: true },
+        )
     }
     const pipelineOptions: CICDSidebarFilterOptionType[] = (pipelineList || []).map((item) => {
         return { value: `${item.id}`, label: item.appName, pipelineId: item.id, pipelineType: item.pipelineType }
@@ -232,11 +246,8 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
     const renderPipelineDetails = (): JSX.Element | null => {
         if (triggerHistory.size > 0 || fetchBuildIdData) {
             return (
-                <Route
-                    path={`${path
-                        .replace(':pipelineId(\\d+)?', ':pipelineId(\\d+)')
-                        .replace(':buildId(\\d+)?', ':buildId(\\d+)')}`}
-                >
+                pipelineId &&
+                buildId && (
                     <Details
                         fullScreenView={fullScreenView}
                         synchroniseState={synchroniseState}
@@ -252,7 +263,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         scrollToTop={scrollToTop}
                         scrollToBottom={scrollToBottom}
                     />
-                </Route>
+                )
             )
         }
         if (pipeline.parentCiPipeline || pipeline.pipelineType === 'LINKED') {
@@ -260,7 +271,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                 <EmptyView
                     title={APP_GROUP_CI_DETAILS.linkedCI.title}
                     subTitle={APP_GROUP_CI_DETAILS.linkedCI.title}
-                    link={`${URLS.APPLICATION_MANAGEMENT_APP}/${pipeline.parentAppId}/${URLS.APP_CI_DETAILS}/${pipeline.parentCiPipeline}/logs`}
+                    link={`${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, { appId: pipeline.parentAppId })}/${pipeline.parentCiPipeline}/logs`}
                     linkText={APP_GROUP_CI_DETAILS.linkedCI.linkText}
                 />
             )
@@ -289,6 +300,7 @@ export default function EnvCIDetails({ filteredAppIds }: AppGroupDetailDefaultTy
                         setPagination={setPagination}
                         fetchIdData={fetchBuildIdData}
                         handleViewAllHistory={handleViewAllHistory}
+                        path={`${ROUTER_URLS.APP_GROUP_DETAILS.CI_DETAILS}/:pipelineId?/:buildId?`}
                     />
                 </div>
             )}

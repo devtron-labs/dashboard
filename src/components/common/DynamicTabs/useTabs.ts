@@ -206,7 +206,7 @@ export function useTabs(persistenceKey: string, fallbackTabIndex = FALLBACK_TAB)
                         }
                     }
 
-                    _tabs = parsedTabsData ? parsedTabsData.data[persistenceKey] ?? [] : prevTabs
+                    _tabs = parsedTabsData ? (parsedTabsData.data[persistenceKey] ?? []) : prevTabs
                 } catch {
                     _tabs = prevTabs
                 }

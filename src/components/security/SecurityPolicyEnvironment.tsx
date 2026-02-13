@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
-import { RouteComponentProps, NavLink } from 'react-router-dom'
+import { Component } from 'react'
+import { NavLink, useParams } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -29,7 +29,7 @@ import { ViewType } from '../../config'
 import { SecurityPolicyEnvironmentState } from './security.types'
 
 export class SecurityPolicyEnvironment extends Component<
-    RouteComponentProps<{ envId: string }>,
+    { params: ReturnType<typeof useParams<{ envId: string }>> },
     SecurityPolicyEnvironmentState
 > {
     constructor(props) {
@@ -67,7 +67,6 @@ export class SecurityPolicyEnvironment extends Component<
     }
 
     renderList() {
-        const { url } = this.props.match
         if (this.state.view === ViewType.LOADING) {
             return (
                 <div style={{ height: '280px' }}>
@@ -105,7 +104,7 @@ export class SecurityPolicyEnvironment extends Component<
                                     data-testid="security-policy-environment-list"
                                 >
                                     <td className="pl-20 pr-20 pt-16 pb-16">
-                                        <NavLink to={`${url}/${env.id}`}>{env.name}</NavLink>
+                                        <NavLink to={`${env.id}`}>{env.name}</NavLink>
                                     </td>
                                 </tr>
                             )
@@ -116,12 +115,12 @@ export class SecurityPolicyEnvironment extends Component<
     }
 
     renderContent() {
-        if (this.props.match.params.envId) {
+        if (this.props.params.envId) {
             return (
                 <SecurityPolicyEdit
                     level="environment"
-                    id={Number(`${this.props.match.params.envId}`)}
-                    key={`${this.props.match.params.envId}`}
+                    id={Number(`${this.props.params.envId}`)}
+                    key={`${this.props.params.envId}`}
                 />
             )
         }
@@ -145,3 +144,11 @@ export class SecurityPolicyEnvironment extends Component<
         return <>{this.renderContent()}</>
     }
 }
+
+const SecurityPolicyEnvironmentWithParams = () => {
+    const params = useParams<{ envId: string }>()
+
+    return <SecurityPolicyEnvironment params={params} />
+}
+
+export default SecurityPolicyEnvironmentWithParams

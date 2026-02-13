@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,7 +29,7 @@ import { ConfigurationTableProps } from './types'
 export const SMTPConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { smtpConfigurationList } = state
     const { searchParams } = useSearchString()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onClickEditRow = (configId) => () => {
         const newParams = {
@@ -37,7 +37,7 @@ export const SMTPConfigurationTable = ({ state, deleteClickHandler }: Configurat
             configId: configId.toString(),
             modal: ConfigurationsTabTypes.SMTP,
         }
-        history.push({
+        navigate({
             search: new URLSearchParams(newParams).toString(),
         })
     }

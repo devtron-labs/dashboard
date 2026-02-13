@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useRef } from 'react'
-import { generatePath, useHistory, useParams } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
 
 import {
@@ -25,7 +25,7 @@ import {
     highlightSearchText,
     Nodes,
     noop,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     TableSignalEnum,
     Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -45,7 +45,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
     reloadResourceListData,
     lowercaseKindToResourceGroupMap,
 }: ClusterUpgradeCompatibilityInfoTableCellComponentProps) => {
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { clusterId } = useParams<ClusterDetailBaseParams>()
     const nameButtonRef = useRef<HTMLButtonElement>(null)
     const contextMenuRef = useRef<HTMLButtonElement>(null)
@@ -57,7 +57,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
             getFirstResourceFromKindResourceMap(lowercaseKindToResourceGroupMap, kind.toLowerCase())?.gvk?.Group ||
             K8S_EMPTY_GROUP
 
-        const url = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
+        const url = generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.K8S_RESOURCE_DETAIL, {
             clusterId,
             namespace,
             name,
@@ -65,7 +65,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
             group,
         })
 
-        push(`${url}/${tab}`)
+        navigate(`${url}/${tab}`)
     }
 
     useEffect(() => {
@@ -120,7 +120,7 @@ const ClusterUpgradeCompatibilityInfoTableCellComponent = ({
             data-testid="created-resource-name"
         >
             <div className="flex left dc__gap-4">
-                <Tooltip content={resourceData.name}>
+                <Tooltip content={resourceData.name as string}>
                     {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
                     <button
                         type="button"

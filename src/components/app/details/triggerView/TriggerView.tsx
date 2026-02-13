@@ -15,13 +15,12 @@
  */
 
 import React, { useState } from 'react'
-import { Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { DocLink, ErrorScreenManager, Progressing } from '@devtron-labs/devtron-fe-common-lib'
+import { DocLink, ErrorScreenManager, Progressing, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { getExternalCIConfig } from '@Components/ciPipeline/Webhook/webhook.service'
 
-import { URLS } from '../../../../config'
 import { APP_DETAILS } from '../../../../config/constantMessaging'
 import { LinkedCIDetail } from '../../../../Pages/Shared/LinkedCIDetailsModal'
 import { importComponentFromFELibrary, InValidHostUrlWarningBlock, useAppContext } from '../../../common'
@@ -54,9 +53,8 @@ const JobNotConfiguredSubtitle = () => (
 
 const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
     const { appId, envId } = useParams<CIMaterialRouterProps>()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const match = useRouteMatch()
 
     const { currentAppName } = useAppContext()
 
@@ -74,12 +72,12 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
     } = useTriggerViewServices({ appId, isJobView, filteredEnvIds })
 
     const openCIMaterialModal = (ciNodeId: string) => {
-        history.push(`${match.url}${URLS.BUILD}/${ciNodeId}`)
+        navigate(`build/${ciNodeId}`)
     }
 
     const closeApprovalModal = (e: React.MouseEvent): void => {
         e.stopPropagation()
-        history.push({
+        navigate({
             search: '',
         })
         // eslint-disable-next-line @typescript-eslint/no-floating-promises
@@ -97,7 +95,8 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
     }
 
     const revertToPreviousURL = () => {
-        history.push(match.url)
+        const redirectPath = generatePath(isJobView ? ROUTER_URLS.JOB_DETAIL.TRIGGER : ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, { appId })
+        navigate(redirectPath)
     }
 
     const renderApprovalMaterial = () => {
@@ -114,7 +113,6 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     pipelineId={cdNodeId}
                     getModuleInfo={getModuleInfo}
                     ciPipelineId={node?.connectingCiPipelineId}
-                    history={history}
                 />
             )
         }
@@ -145,9 +143,9 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     width={workflow.width}
                     nodes={workflow.nodes}
                     artifactPromotionMetadata={workflow.artifactPromotionMetadata}
-                    history={history}
+                    params={{ appId, envId }}
                     location={location}
-                    match={{ params: { appId, envId }, url: match.url, path: match.path, isExact: match.isExact }}
+                    navigate={navigate}
                     isJobView={isJobView}
                     index={index}
                     filteredCIPipelines={filteredCIPipelines}
@@ -158,7 +156,7 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                     reloadTriggerView={reloadWorkflows}
                 />
             ))}
-            <LinkedCIDetail workflows={workflows} handleClose={revertToPreviousURL} />
+            <LinkedCIDetail workflows={workflows} />
             {renderWebhookAddImageModal()}
         </>
     )
@@ -206,20 +204,23 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
                 {renderHostErrorMessage()}
                 {renderWorkflow()}
 
-                <Switch>
-                    <Route path={`${match.url}${URLS.BUILD}/:ciNodeId`} exact>
-                        <BuildImageModal
-                            handleClose={revertToPreviousURL}
-                            isJobView={isJobView}
-                            filteredCIPipelines={filteredCIPipelines}
-                            workflows={workflows}
-                            reloadWorkflows={reloadWorkflows}
-                            appId={+appId}
-                            environmentLists={environmentList}
-                            reloadWorkflowStatus={reloadWorkflowStatus}
-                        />
-                    </Route>
-                </Switch>
+                <Routes>
+                    <Route
+                        path="build/:ciNodeId"
+                        element={
+                            <BuildImageModal
+                                handleClose={revertToPreviousURL}
+                                isJobView={isJobView}
+                                filteredCIPipelines={filteredCIPipelines}
+                                workflows={workflows}
+                                reloadWorkflows={reloadWorkflows}
+                                appId={+appId}
+                                environmentLists={environmentList}
+                                reloadWorkflowStatus={reloadWorkflowStatus}
+                            />
+                        }
+                    />
+                </Routes>
 
                 <CDMaterial
                     workflows={workflows}
@@ -231,8 +232,6 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
             </div>
             {WorkflowActionRouter && (
                 <WorkflowActionRouter
-                    basePath={match.path}
-                    baseURL={match.url}
                     workflows={workflows}
                     getModuleInfo={getModuleInfo}
                     reloadWorkflowStatus={reloadWorkflowStatus}

@@ -49,11 +49,10 @@ export interface PermissionGroupContainerProps {
     setBulkSelectionModalConfig: (config: BulkSelectionModalConfig) => void
 }
 
-export interface UserPermissionTableProps
-    extends Pick<
-        PermissionGroupContainerProps,
-        'urlFilters' | 'permissionGroups' | 'totalCount' | 'refetchPermissionGroupList'
-    > {
+export interface UserPermissionTableProps extends Pick<
+    PermissionGroupContainerProps,
+    'urlFilters' | 'permissionGroups' | 'totalCount' | 'refetchPermissionGroupList'
+> {
     isLoading: boolean
     showPagination: boolean
     isActionsDisabled: boolean

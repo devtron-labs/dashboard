@@ -58,7 +58,7 @@ import {
     handleAnalyticsEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Redirect, Route, Switch, useParams, useRouteMatch } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useParams } from 'react-router-dom'
 import { CDDeploymentTabText, RegistryPayloadType, ViewType } from '../../config'
 import { getPluginIdsFromBuildStage, importComponentFromFELibrary, sortObjectArrayAlphabetically } from '../common'
 import BuildCD from './BuildCD'
@@ -121,7 +121,6 @@ const getDeploymentWindowProfileMetaData = importComponentFromFELibrary(
 )
 
 export default function CDPipeline({
-    location,
     appName,
     close,
     getWorkflows,
@@ -136,9 +135,10 @@ export default function CDPipeline({
     isGitOpsInstalledButNotConfigured,
 }: CDPipelineProps) {
     const isCdPipeline = true
+    const location = useLocation()
     const urlParams = new URLSearchParams(location.search)
     const validationRules = new ValidationRules()
-    const isWebhookCD = window.location.href.includes('webhook')
+    const isWebhookCD = location.pathname.includes('webhook')
     const allStrategies = useRef<{ [key: string]: any }>({})
     const noStrategyAvailable = useRef(false)
     const addType = urlParams.get('addType')
@@ -223,7 +223,6 @@ export default function CDPipeline({
         forceDeleteDialogMessage: '',
         forceDeleteDialogTitle: '',
     })
-    const { path } = useRouteMatch()
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [isEnvUsedState, setIsEnvUsedState] = useState<boolean>(false)
     const [isVirtualEnvironment, setIsVirtualEnvironment] = useState<boolean>()
@@ -1314,40 +1313,35 @@ export default function CDPipeline({
                                 <Sidebar setInputVariablesListFromPrevStep={setInputVariablesListFromPrevStep} />
                             </div>
                         )}
-                        <Switch>
-                            {isAdvanced && (
-                                <Route path={`${path}/pre-build`}>
-                                    <PreBuild />
-                                </Route>
-                            )}
-                            {isAdvanced && (
-                                <Route path={`${path}/post-build`}>
-                                    <PreBuild />
-                                </Route>
-                            )}
-                            <Route path={`${path}/build`}>
-                                <BuildCD
-                                    allStrategies={allStrategies}
-                                    isAdvanced={isAdvanced}
-                                    setIsVirtualEnvironment={setIsVirtualEnvironment}
-                                    noStrategyAvailable={noStrategyAvailable}
-                                    parentPipelineId={parentPipelineId}
-                                    isWebhookCD={isWebhookCD}
-                                    dockerRegistries={dockerRegistries}
-                                    envIds={envIds}
-                                    isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
-                                    noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
-                                    releaseMode={formData.releaseMode}
-                                    isCustomChart={formData.isCustomChart}
-                                    getMandatoryPluginData={getMandatoryPluginData}
-                                    migrateToDevtronFormState={migrateToDevtronFormState}
-                                    setMigrateToDevtronFormState={setMigrateToDevtronFormState}
-                                    isTemplateView={isTemplateView}
-                                    isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
-                                />
-                            </Route>
-                            <Redirect to={`${path}/build`} />
-                        </Switch>
+                        <Routes>
+                            {isAdvanced && <Route path="pre-build" element={<PreBuild />} />}
+                            {isAdvanced && <Route path="post-build" element={<PreBuild />} />}
+                            <Route
+                                path="build"
+                                element={
+                                    <BuildCD
+                                        allStrategies={allStrategies}
+                                        isAdvanced={isAdvanced}
+                                        setIsVirtualEnvironment={setIsVirtualEnvironment}
+                                        noStrategyAvailable={noStrategyAvailable}
+                                        parentPipelineId={parentPipelineId}
+                                        isWebhookCD={isWebhookCD}
+                                        dockerRegistries={dockerRegistries}
+                                        envIds={envIds}
+                                        isGitOpsRepoNotConfigured={isGitOpsRepoNotConfigured}
+                                        noGitOpsModuleInstalledAndConfigured={noGitOpsModuleInstalledAndConfigured}
+                                        releaseMode={formData.releaseMode}
+                                        isCustomChart={formData.isCustomChart}
+                                        getMandatoryPluginData={getMandatoryPluginData}
+                                        migrateToDevtronFormState={migrateToDevtronFormState}
+                                        setMigrateToDevtronFormState={setMigrateToDevtronFormState}
+                                        isTemplateView={isTemplateView}
+                                        isGitOpsInstalledButNotConfigured={isGitOpsInstalledButNotConfigured}
+                                    />
+                                }
+                            />
+                            <Route path="*" element={<Navigate to="build" />} />
+                        </Routes>
                     </div>
                 </pipelineContext.Provider>
             </>

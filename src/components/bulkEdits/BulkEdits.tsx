@@ -42,6 +42,7 @@ import {
     PageHeader,
     Progressing,
     ResponseType,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerVariantType,
     showError,
@@ -592,6 +593,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
         const { pathname } = useLocation()
 
         const { breadcrumbs } = useBreadcrumb(
+            ROUTER_URLS.BULK_EDIT,
             {
                 alias: {
                     ...getApplicationManagementBreadcrumb(),
@@ -601,7 +603,7 @@ class BulkEdits extends Component<BulkEditsProps, BulkEditsState> {
             [pathname],
         )
 
-        return <BreadCrumb breadcrumbs={breadcrumbs} />
+        return <BreadCrumb breadcrumbs={breadcrumbs} path={ROUTER_URLS.BULK_EDIT} />
     }
 
     render() {

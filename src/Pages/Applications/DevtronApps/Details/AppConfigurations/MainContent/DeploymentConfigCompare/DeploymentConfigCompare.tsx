@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
@@ -75,8 +75,8 @@ export const DeploymentConfigCompare = ({
     appOrEnvIdToResourceApprovalConfigurationMap,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
-    const { push } = useHistory()
-    const { path, params } = useRouteMatch<DeploymentConfigParams>()
+    const navigate = useNavigate()
+    const params = useParams<DeploymentConfigParams>()
     const { compareTo, resourceType, resourceName, appId, envId } = params
     const location = useLocation()
     const { isSuperAdmin } = useMainContext()
@@ -547,10 +547,10 @@ export const DeploymentConfigCompare = ({
                 type: 'string',
                 text: compareTo || BASE_CONFIGURATIONS.name,
             },
-            ...(((currentEnvOptions?.previousDeployments.length ||
+            ...((((currentEnvOptions?.previousDeployments.length ||
                 appOrEnvIdToResourceApprovalConfigurationMap?.[getIdentifierForApprovalConfig(false)]
                     ?.isApprovalApplicable) ??
-            isBaseConfigProtected
+            isBaseConfigProtected)
                 ? [
                       {
                           id: `environment-config-type-selector-current`,
@@ -590,16 +590,16 @@ export const DeploymentConfigCompare = ({
         const _compareWithManifestChartRefId =
             chartRefId ??
             (currentSearchParams.has('compareWithIdentifierId') && _isManifestView
-                ? compareEnvOptions.previousDeployments.find(
+                ? (compareEnvOptions.previousDeployments.find(
                       (prev) => prev.wfrId === Number(currentSearchParams.get('compareWithIdentifierId')),
-                  )?.chartRefId ?? null
+                  )?.chartRefId ?? null)
                 : null)
 
         const _manifestChartRefId =
             currentSearchParams.has('identifierId') && _isManifestView
-                ? currentEnvOptions.previousDeployments.find(
+                ? (currentEnvOptions.previousDeployments.find(
                       (prev) => prev.wfrId === Number(currentSearchParams.get('identifierId')),
-                  )?.chartRefId ?? null
+                  )?.chartRefId ?? null)
                 : null
 
         if (identifierId) {
@@ -638,12 +638,11 @@ export const DeploymentConfigCompare = ({
             currentSearchParams.delete('manifestChartRefId')
         }
 
-        push({
-            pathname: generatePath(path, {
-                ...params,
-                resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
-                resourceName: null,
-            }),
+        navigate({
+            pathname: getNavItemHref(
+                _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
+                '',
+            ),
             search: currentSearchParams.toString(),
         })
     }

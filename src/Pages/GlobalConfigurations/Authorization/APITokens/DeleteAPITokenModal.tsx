@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-import { DeleteConfirmationModal } from '@devtron-labs/devtron-fe-common-lib'
+import { DeleteConfirmationModal, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DeleteComponentsName } from '@Config/constantMessaging'
 
@@ -24,14 +24,13 @@ import { DeleteAPITokenModalProps } from './apiToken.type'
 import { deleteGeneratedAPIToken } from './service'
 
 const DeleteAPITokenModal = ({ isEditView, tokenData, reload, setDeleteConfirmation }: DeleteAPITokenModalProps) => {
-    const match = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const onDelete = async () => {
         await deleteGeneratedAPIToken(tokenData.id.toString())
         reload()
         if (isEditView) {
-            history.push(`${match.path.split('edit')[0]}list`)
+            navigate(ROUTER_URLS.GLOBAL_CONFIG_AUTH.API_TOKEN)
         }
     }
 

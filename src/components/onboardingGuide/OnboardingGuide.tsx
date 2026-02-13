@@ -16,11 +16,11 @@
 
 import { useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
-import { ModuleNameMap, handlePostHogEventUpdate, URLS as CommonURLS } from '@devtron-labs/devtron-fe-common-lib'
+import { ModuleNameMap, handlePostHogEventUpdate, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import HelmCollage from '../../assets/img/guided-helm-collage.png'
 import HelmCluster from '../../assets/img/guided-helm-cluster.png'
 import DeployCICD from '../../assets/img/guide-onboard.png'
-import { SERVER_MODE, URLS } from '../../config'
+import { SERVER_MODE } from '../../config'
 import { ReactComponent as ArrowRight } from '../../assets/icons/ic-arrow-right.svg'
 import { LOGIN_COUNT, POSTHOG_EVENT_ONBOARDING } from './onboarding.utils'
 import GuideCommonHeader from './GuideCommonHeader'
@@ -51,8 +51,8 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
 
     const redirectDeployCardToCICD = (): string => {
         return serverMode === SERVER_MODE.FULL
-            ? CommonURLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP
-            : `${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`
+            ? ROUTER_URLS.CREATE_DEVTRON_APP
+            : `${ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.CICD}`
     }
 
     const onClickHelmChart = () => {
@@ -93,7 +93,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                 <div className="onboarding__abs">
                     <div className="onboarding-cards__wrap">
                         <ContentCard
-                            redirectTo={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER}
+                            redirectTo={ROUTER_URLS.CHART_STORE}
                             onClick={onClickHelmChart}
                             imgSrc={HelmCollage}
                             title={HELM_GUIDED_CONTENT_CARDS_TEXTS.ChartsDiscover.title}
@@ -104,7 +104,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                             datatestid="Browse-hem-charts"
                         />
                         <ContentCard
-                            redirectTo={URLS.GLOBAL_CONFIG_CLUSTER}
+                            redirectTo={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}
                             rootClassName={isFirstLogin ? 'ev-5' : ''}
                             onClick={onClickCluster}
                             imgSrc={HelmCluster}
@@ -133,7 +133,7 @@ export default function OnboardingGuide({ loginCount, serverMode, isGettingStart
                     </div>
                     <div className="fs-14 mt-40 mb-20 flex column">
                         <NavLink
-                            to={`${URLS.APPLICATION_MANAGEMENT_APP}/${URLS.APP_LIST}`}
+                            to={ROUTER_URLS.DEVTRON_APP_LIST}
                             className="guide_skip dc__no-decor cb-5 fw-6 cursor mb-4"
                             data-posthog={POSTHOG_EVENT_ONBOARDING.SKIP_AND_EXPLORE_DEVTRON}
                             onClick={handleSkipOnboarding}

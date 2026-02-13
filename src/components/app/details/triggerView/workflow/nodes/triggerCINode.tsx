@@ -15,9 +15,16 @@
  */
 
 import { Component } from 'react'
-import { RouteComponentProps, Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
-import { CIMaterialType, ConsequenceType, Icon, getWorkflowNodeStatusTitle } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    CIMaterialType,
+    ConsequenceType,
+    Icon,
+    RouterV5Props,
+    getWorkflowNodeStatusTitle,
+    ROUTER_URLS,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
 import { ReactComponent as IcLink } from '../../../../../../assets/icons/ic-link.svg'
@@ -25,7 +32,8 @@ import { DEFAULT_ENV } from '../../Constants'
 import { getLinkedCITippyContent } from '../../../../../../Pages/Shared/LinkedCIDetailsModal/utils'
 import { WorkflowProps } from '../../types'
 
-export interface TriggerCINodeProps extends RouteComponentProps<{ appId: string }>, Pick<WorkflowProps, 'openCIMaterialModal'> {
+export interface TriggerCINodeProps
+    extends RouterV5Props<{ appId: string }>, Pick<WorkflowProps, 'openCIMaterialModal'> {
     x: number
     y: number
     height: number
@@ -61,14 +69,16 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     getCIDetailsURL(): string {
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CI_DETAILS)}/${this.props.id}`
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, {
+            appId: this.props.params.appId,
+        })}/${this.props.id}`
     }
 
     redirectToCIDetails() {
         if (this.props.fromAppGrouping) {
             return
         }
-        this.props.history.push(this.getCIDetailsURL())
+        this.props.navigate(this.getCIDetailsURL())
     }
 
     hideDetails(status: string = '') {
@@ -83,7 +93,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     handleLinkedCIWorkflowChipClick = (e) => {
         // stopPropagation to stop redirection to ci-details
         e.stopPropagation()
-        this.props.history.push(`${this.props.match.url}/${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
+        this.props.navigate(`${URLS.LINKED_CI_DETAILS}/${this.props.id}`)
     }
 
     renderStatus() {

@@ -15,10 +15,11 @@
  */
 
 import { useEffect, useState } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
     AnimatePresence,
+    BASE_ROUTES,
     Button,
     ButtonComponentType,
     ButtonStyleType,
@@ -29,10 +30,10 @@ import {
     Icon,
     LoginBanner,
     motion,
+    ROUTER_URLS,
     SSOProviderIcon,
     ToastManager,
     ToastVariantType,
-    URLS as CommonURL,
     useAsync,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -54,7 +55,7 @@ const Login = () => {
     const [continueUrl, setContinueUrl] = useState('')
 
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
 
     const [ssoListLoading, ssoListResponse] = useAsync(getSSOConfigList, [])
 
@@ -80,10 +81,10 @@ const Login = () => {
         if (queryParam && queryParam.includes('login')) {
             queryParam =
                 window._env_.HIDE_NETWORK_STATUS_INTERFACE || !NetworkStatusInterface
-                    ? URLS.APPLICATION_MANAGEMENT_APP
-                    : CommonURL.NETWORK_STATUS_INTERFACE
+                    ? ROUTER_URLS.DEVTRON_APP_LIST
+                    : ROUTER_URLS.NETWORK_STATUS_INTERFACE.ROOT
             const url = `${location.pathname}?continue=${queryParam}`
-            history.push(url)
+            navigate(url)
         }
 
         setContinueUrl(encodeURIComponent(`${window.location.origin}/orchestrator${window.__BASE_URL__}${queryParam}`))
@@ -99,7 +100,7 @@ const Login = () => {
         if (import.meta.env.VITE_ARGOCD_TOKEN) {
             document.cookie = `argocd.token=${import.meta.env.VITE_ARGOCD_TOKEN}; path=/`
 
-            history.replace(URLS.APPLICATION_MANAGEMENT_APP)
+            navigate(ROUTER_URLS.DEVTRON_APP_LIST, { replace: true })
 
             return
         }
@@ -148,7 +149,7 @@ const Login = () => {
                     component={ButtonComponentType.link}
                     variant={ButtonVariantType.text}
                     linkProps={{
-                        to: `${URLS.LOGIN_ADMIN}${location.search}`,
+                        to: `${ROUTER_URLS.LOGIN.ADMIN}${location.search}`,
                     }}
                     text="Login as administrator"
                     dataTestId="login-as-admin"
@@ -172,11 +173,11 @@ const Login = () => {
     )
 
     const renderLoginContent = () => (
-        <Switch location={location}>
-            <Route path={URLS.LOGIN_SSO} component={renderSSOLoginPage} />
-            <Route path={URLS.LOGIN_ADMIN} component={renderAdminLoginPage} />
-            <Redirect to={URLS.LOGIN_SSO} />
-        </Switch>
+        <Routes>
+            <Route path={BASE_ROUTES.LOGIN.SSO} element={renderSSOLoginPage()} />
+            <Route path={BASE_ROUTES.LOGIN.ADMIN} element={renderAdminLoginPage()} />
+            <Route path="*" element={<Navigate to={BASE_ROUTES.LOGIN.SSO} replace />} />
+        </Routes>
     )
 
     return (

@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
@@ -73,7 +73,7 @@ export const usePipelineDeploymentConfig = ({
 }: UsePipelineDeploymentConfigProps) => {
     // HOOKS
     const { pathname, search } = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const { isSuperAdmin } = useMainContext()
 
     // STATES
@@ -435,13 +435,14 @@ export const usePipelineDeploymentConfig = ({
         `${pathname.split(`/${URLS.APP_DIFF_VIEW}/`)[0]}/${URLS.APP_DIFF_VIEW}/${resourceType}${resourceName ? `/${resourceName}` : ''}${search}`
 
     const onTabChange = async (tab: typeof selectedTab) => {
-        history.replace(
+        navigate(
             getNavItemHref(
                 tab === deploymentConfigDiffTabs.MANIFEST
                     ? EnvResourceType.Manifest
                     : EnvResourceType.DeploymentTemplate,
                 '',
             ),
+            { replace: true },
         )
     }
 

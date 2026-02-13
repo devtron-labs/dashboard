@@ -14,6 +14,7 @@ import {
     InfoBlock,
     Popover,
     Progressing,
+    ROUTER_URLS,
     SearchBar,
     ToastManager,
     ToastVariantType,
@@ -23,7 +24,6 @@ import {
 
 import { reSyncChartRepo } from '@Components/chartRepo/chartRepo.service'
 import { TOAST_INFO } from '@Config/constantMessaging'
-import { URLS } from '@Config/routes'
 
 import AddChartSource from './AddChartSource'
 import ChartListPopUpRow from './ChartListPopUpRow'
@@ -115,9 +115,9 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
                         subTitle={
                             <div>
                                 <span>Add a &nbsp;</span>
-                                <NavLink to={URLS.GLOBAL_CONFIG_CHART_REPO}>Chart repositories</NavLink>
+                                <NavLink to={ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES}>Chart repositories</NavLink>
                                 <span>&nbsp;or&nbsp;</span>
-                                <NavLink to={URLS.GLOBAL_CONFIG_DOCKER}>OCI Registries</NavLink>
+                                <NavLink to={ROUTER_URLS.GLOBAL_CONFIG_DOCKER}>OCI Registries</NavLink>
                                 <span>to view and deploy helm charts.</span>
                             </div>
                         }
@@ -173,9 +173,11 @@ export const ChartsList = ({ chartsList, isLoading }: ChartsListProps) => {
                                             Showing Chart repositories and OCI Registries (used as chart repositories).
                                             You can add other&nbsp;
                                         </span>
-                                        <NavLink to={URLS.GLOBAL_CONFIG_CHART_REPO}>Chart repositories</NavLink>
+                                        <NavLink to={ROUTER_URLS.GLOBAL_CONFIG_CHART_REPOSITORIES}>
+                                            Chart repositories
+                                        </NavLink>
                                         <span>&nbsp;or&nbsp;</span>
-                                        <NavLink to={URLS.GLOBAL_CONFIG_DOCKER}>OCI Registries</NavLink>
+                                        <NavLink to={ROUTER_URLS.GLOBAL_CONFIG_DOCKER}>OCI Registries</NavLink>
                                         <span>&nbsp;as chart sources.</span>
                                     </div>
                                 }

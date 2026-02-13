@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom'
-import { URLS } from '../../config'
+import { Navigate, Route, Routes } from 'react-router-dom'
+
+import { BASE_ROUTES } from '@devtron-labs/devtron-fe-common-lib'
+
 import { ErrorBoundary } from '../common'
 import JobDetails from './JobDetails/JobDetails'
 import JobsList from './JobList/JobsList'
 
-export default function Jobs() {
-    const { path } = useRouteMatch()
+const JOB_ROUTES = BASE_ROUTES.AUTOMATION_AND_ENABLEMENT.JOBS
 
-    return (
-        <ErrorBoundary>
-            <Switch>
-                <Route path={`${path}/${URLS.APP_LIST}`}>
-                    <JobsList />
-                </Route>
-                <Route path={`${path}/:appId(\\d+)`}>
-                    <JobDetails />
-                </Route>
-                <Redirect to={`${path}/${URLS.APP_LIST}`} />
-            </Switch>
-        </ErrorBoundary>
-    )
-}
+const Jobs = () => (
+    <ErrorBoundary>
+        <Routes>
+            <Route path={`${JOB_ROUTES.LIST.ROOT}/*`} element={<JobsList />} />
+            <Route path={`${JOB_ROUTES.DETAIL.ROOT}/*`} element={<JobDetails />} />
+            <Route path="*" element={<Navigate to={JOB_ROUTES.LIST.ROOT} replace />} />
+        </Routes>
+    </ErrorBoundary>
+)
+
+export default Jobs

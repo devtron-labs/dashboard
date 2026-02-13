@@ -14,47 +14,26 @@
  * limitations under the License.
  */
 
-import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType, InfrastructureManagementAppListType } from '@devtron-labs/devtron-fe-common-lib'
+import { AppConfigProps, URLS as COMMON_URLS, EnvResourceType, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import { generatePath } from 'react-router-dom'
 
-export const CREATE_CLUSTER_PATH = 'create/cluster/:type(connect-using-server-url|connect-using-kubeconfig|create-cluster|add-isolated-cluster)'
+export const CREATE_CLUSTER_PATH = 'create/cluster/:type'
 
+/** @deprecated */
 export const URLS = {
-    APPLICATION_MANAGEMENT_APP: COMMON_URLS.APPLICATION_MANAGEMENT_APP,
-    APPLICATION_MANAGEMENT_APPLICATION_GROUP: COMMON_URLS.APPLICATION_MANAGEMENT_APPLICATION_GROUP,
-    APPLICATION_MANAGEMENT_BULK_EDIT: `${COMMON_URLS.APPLICATION_MANAGEMENT}/bulk-edit`,
-    APPLICATION_MANAGEMENT_CONFIGURATIONS_GITOPS: `${COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}/gitops`,
-    APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS: `${COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}/git-accounts`,
-    APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS: COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
-    APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW: `${COMMON_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS}/notifications/new`,
-    INFRASTRUCTURE_MANAGEMENT_CHART_STORE: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE,
-    INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER: COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER,
-    AUTOMATION_AND_ENABLEMENT_JOB: COMMON_URLS.AUTOMATION_AND_ENABLEMENT_JOB,
-    CREATE_JOB: 'create-job',
-    RESOURCE_BROWSER_INSTALLATION_CLUSTER: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/installation-cluster/:installationId`,
-    RESOURCE_BROWSER_CREATE_CLUSTER: `${COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER}/${CREATE_CLUSTER_PATH}`,
-    EXTERNAL_APPS: COMMON_URLS.EXTERNAL_APPS,
-    DEVTRON_CHARTS: 'dc',
-    EXTERNAL_ARGO_APP: 'eaa',
-    EXTERNAL_FLUX_APP: 'external-flux',
-    APP_LIST: 'list',
     APP_VALUES: 'values',
     APP_DETAILS: 'details',
     APP_DEPLOYMNENT_HISTORY: 'deployments',
     APP_DETAILS_K8: 'k8s-resources', // for V2
     APP_DETAILS_LOG: 'log-analyzer', // for V2
-    APP_DETAILS_DEFAULT: 'default-view',
     APP_DIFF_VIEW: 'diff-view',
-    APP_TRIGGER: 'trigger',
     APP_OVERVIEW: 'overview',
     MANAGE_TRAFFIC: 'manage-traffic',
     APP_CI_DETAILS: 'ci-details',
     APP_CD_DETAILS: 'cd-details',
-    APP_DEPLOYMENT_METRICS: 'deployment-metrics',
     APP_GIT_CONFIG: 'materials',
     APP_DOCKER_CONFIG: 'docker-build-config',
     APP_GITOPS_CONFIG: 'gitops-config',
-    APP_DOCKER_OVERRIDE_DETAILS: 'override-details',
     APP_DEPLOYMENT_CONFIG: EnvResourceType.DeploymentTemplate,
     APP_WORKFLOW_CONFIG: 'workflow',
     APP_CM_CONFIG: EnvResourceType.ConfigMap,
@@ -71,42 +50,15 @@ export const URLS = {
     AUTHENTICATE: '/auth/login',
     BASE_CONFIG: 'base-config',
     LINKED_CD: 'linked-cd',
-    LOGIN: '/login',
-    LOGIN_ADMIN: '/login/admin', //
-    LOGIN_SSO: '/login/sso',
-    GLOBAL_CONFIG_HOST_URL: `${COMMON_URLS.GLOBAL_CONFIG}/host-url`,
-    GLOBAL_CONFIG_EXTERNAL_LINKS: `${COMMON_URLS.GLOBAL_CONFIG}/external-links`,
-    GLOBAL_CONFIG_CHART_REPO: `${COMMON_URLS.GLOBAL_CONFIG}/chart-repositories`,
-    GLOBAL_CONFIG_DOCKER: `${COMMON_URLS.GLOBAL_CONFIG}/docker`,
-    GLOBAL_CONFIG_CLUSTER: `${COMMON_URLS.GLOBAL_CONFIG}/cluster-env`,
-    GLOBAL_CONFIG_CREATE_CLUSTER: `${COMMON_URLS.GLOBAL_CONFIG}/cluster-env/${CREATE_CLUSTER_PATH}`,
-    GLOBAL_CONFIG_AUTH: `${COMMON_URLS.GLOBAL_CONFIG}/auth`,
-    GLOBAL_CONFIG_AUTH_USER_PERMISSION: `${COMMON_URLS.GLOBAL_CONFIG}/auth/users`,
-    GLOBAL_CONFIG_AUTH_PERMISSION_GROUPS: `${COMMON_URLS.GLOBAL_CONFIG}/auth/groups`,
-    GUIDE: 'guide',
-    GETTING_STARTED: 'getting-started',
+    GLOBAL_CONFIG_CREATE_CLUSTER: `${ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}/${CREATE_CLUSTER_PATH}`,
     LINKED_CI_DETAILS: 'linked-ci-details',
-    STACK_MANAGER: '/stack-manager',
-    STACK_MANAGER_DISCOVER_MODULES: '/stack-manager/discover',
-    STACK_MANAGER_DISCOVER_MODULES_DETAILS: '/stack-manager/discover/details',
-    STACK_MANAGER_INSTALLED_MODULES: '/stack-manager/installed',
-    STACK_MANAGER_INSTALLED_MODULES_DETAILS: '/stack-manager/installed/details',
-    STACK_MANAGER_ABOUT: '/stack-manager/about',
-    STACK_MANAGER_ABOUT_RELEASES: '/stack-manager/about/releases',
-    DEPLOYMENT_HISTORY_CONFIGURATIONS: '/configuration',
     NODES_LIST: '/nodes',
     NODE_DETAILS: '/node-details',
     CHART: '/chart',
     PRESET_VALUES: '/preset-values',
     DEPLOY_CHART: '/deploy-chart',
     DETAILS: '/details',
-    DEVTRON_APP_LIST: COMMON_URLS.APPLICATION_MANAGEMENT_APP_LIST,
-    HELM_APP_LIST: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.HELM }),
-    ARGO_APP_LIST: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.ARGO_CD }),
-    FLUX_APP_LIST: generatePath(COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST, { appType: InfrastructureManagementAppListType.FLUX_CD }),
     BUILD: '/build',
-    WEBHOOK_MODAL: 'webhook',
-    MONITORING_DASHBOARD: 'monitoring-dashboard',
     CREATE_ENVIRONMENT: '/create/environment',
     POD_SPREAD: 'pod-spread',
     HIBERNATION_RULES: 'hibernation-rules',
@@ -140,10 +92,10 @@ export const getAppComposeURL = (
     isTemplateView: AppConfigProps['isTemplateView'],
 ): string => {
     const _url = isTemplateView
-        ? `${generatePath(COMMON_URLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
+        ? `${generatePath(ROUTER_URLS.APP_TEMPLATE_DETAIL, {
               appId,
           })}/${COMMON_URLS.APP_CONFIG}`
-        : `${isJobView ? URLS.AUTOMATION_AND_ENABLEMENT_JOB : URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
+        : `${isJobView ? ROUTER_URLS.JOBS : ROUTER_URLS.DEVTRON_APP}/${appId}/${COMMON_URLS.APP_CONFIG}`
     if (!appStage) {
         return _url
     }

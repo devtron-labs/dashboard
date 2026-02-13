@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { generatePath, useRouteMatch } from 'react-router-dom'
+import { generatePath, useParams } from 'react-router-dom'
 
 import { Button, ButtonComponentType, GenericEmptyState, ImageType } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,10 +29,10 @@ export const ConfigMapSecretNullState = ({
     componentType,
     componentName,
     nullStateType,
+    routePath,
 }: ConfigMapSecretNullStateProps) => {
     // HOOKS
-    const { path, params } = useRouteMatch()
-
+    const params = useParams()
     const noCMSecretPresent = nullStateType === 'NO_CM_CS'
 
     return (
@@ -49,7 +49,7 @@ export const ConfigMapSecretNullState = ({
                     startIcon={<ICAdd />}
                     text={CM_SECRET_EMPTY_STATE_TEXT[componentType].buttonText}
                     linkProps={{
-                        to: generatePath(path, { ...params, name: 'create' }),
+                        to: generatePath(routePath, { ...params, name: 'create' }),
                     }}
                 />
             )}

@@ -34,6 +34,7 @@ export interface EnvironmentOverrideComponentProps extends Required<Pick<AppConf
     envConfig: EnvConfigurationState
     fetchEnvConfig: (envId: number) => void
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
+    routePath: string
 }
 
 export interface ListComponentType {

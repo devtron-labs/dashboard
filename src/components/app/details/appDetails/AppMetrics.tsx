@@ -21,6 +21,7 @@ import {
     DocLink,
     not,
     Progressing,
+    ROUTER_URLS,
     ToastManager,
     ToastVariantType,
     UpdateDateRangeType,
@@ -539,7 +540,7 @@ const MonitoringModuleNotInstalled = ({ addSpace }: { addSpace: string }) => {
                     View metrics like CPU, memory, status codes 2xx, 3xx, 5xx; throughput and latency for this
                     app.&nbsp;
                     <NavLink
-                        to={`${URLS.STACK_MANAGER_DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
+                        to={`${ROUTER_URLS.STACK_MANAGER.DISCOVER_MODULES_DETAILS}?id=${ModuleNameMap.GRAFANA}`}
                         className="cb-5 fs-13 fw-6 anchor w-auto dc__no-decor flex"
                         target="_blank"
                     >
@@ -610,7 +611,7 @@ const AppMetricsEmptyState = ({ isLoading, isConfigured, isHealthy, hostURLConfi
                                     />
                                     &nbsp;
                                     <Link
-                                        to={URLS.GLOBAL_CONFIG_CLUSTER}
+                                        to={ROUTER_URLS.GLOBAL_CONFIG_CLUSTER_ENV}
                                         className="cta small text"
                                         style={{ paddingLeft: '0' }}
                                     >

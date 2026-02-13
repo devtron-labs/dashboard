@@ -119,8 +119,9 @@ export interface InfraOverview extends Pick<InfraOverviewDTO, 'totalClusters'> {
 export type PropsTypeWithInfraQueryState<T> = T &
     Pick<ReturnType<typeof useQuery>, 'isFetching' | 'isError' | 'refetch'>
 
-export interface InfraOverviewAtAGlanceProps
-    extends PropsTypeWithInfraQueryState<Pick<InfraOverview, 'infraGlanceConfig'>> {}
+export interface InfraOverviewAtAGlanceProps extends PropsTypeWithInfraQueryState<
+    Pick<InfraOverview, 'infraGlanceConfig'>
+> {}
 
 export enum NodeViewGroupType {
     AUTOSCALER_MANAGED = 'autoscalerManaged',

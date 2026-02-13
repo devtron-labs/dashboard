@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react'
-import { generatePath, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -44,11 +44,11 @@ const EnvironmentOverride = ({
     fetchEnvConfig,
     appOrEnvIdToResourceApprovalConfigurationMap,
     isTemplateView,
+    routePath,
 }: EnvironmentOverrideComponentProps) => {
     const isAppGroupView = !!envName
     const params = useParams<{ appId: string; envId: string }>()
-    const { path, url } = useRouteMatch()
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
     const { environmentId, setEnvironmentId } = useAppContext()
     const environmentsMap = mapByKey(environments || [], 'environmentId')
@@ -69,11 +69,11 @@ const EnvironmentOverride = ({
             return
         }
         if (environmentsMap.has(environmentId)) {
-            const newUrl = generatePath(path, { appId: params.appId, envId: environmentId })
-            push(newUrl)
+            const newUrl = generatePath(routePath, { appId: params.appId, envId: String(environmentId) })
+            navigate(newUrl)
         } else {
             const workflowUrl = getAppComposeURL(params.appId, APP_COMPOSE_STAGE.WORKFLOW_EDITOR, null, isTemplateView)
-            push(workflowUrl)
+            navigate(workflowUrl)
         }
     }, [])
 
@@ -82,11 +82,11 @@ const EnvironmentOverride = ({
     }
 
     if (params.envId && !environmentsMap.has(+params.envId) && environments.length) {
-        const newUrl = url.replace(
+        const newUrl = location.pathname.replace(
             `${URLS.APP_ENV_OVERRIDE_CONFIG}/${params.envId}`,
             `${URLS.APP_ENV_OVERRIDE_CONFIG}/${environments[0].environmentId}`,
         )
-        push(newUrl)
+        navigate(newUrl)
     }
 
     const getParentName = (): string => {
@@ -124,8 +124,8 @@ const EnvironmentOverride = ({
     return (
         <ErrorBoundary>
             <div className={`h-100 ${isDeploymentOverride ? 'deployment-template-override' : ''}`}>
-                <Switch>
-                    <Route path={`${path}/${URLS.APP_DEPLOYMENT_CONFIG}`}>
+                <Routes>
+                    <Route path={URLS.APP_DEPLOYMENT_CONFIG}>
                         <DeploymentTemplate
                             key={`deployment-${params.appId}-${params.envId}`}
                             environmentName={getEnvName()}
@@ -141,7 +141,7 @@ const EnvironmentOverride = ({
                             isTemplateView={isTemplateView}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CM_CONFIG}/:name?`}>
+                    <Route path={`${URLS.APP_CM_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             key={`configmap-${params.appId}-${params.envId}`}
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
@@ -158,9 +158,10 @@ const EnvironmentOverride = ({
                             envName={getEnvName()}
                             isExceptionUser={approvalConfigMap?.[ApprovalConfigDataKindType.configMap].isExceptionUser}
                             isTemplateView={isTemplateView}
+                            routePath={`${routePath}/${URLS.APP_CM_CONFIG}/:name?`}
                         />
                     </Route>
-                    <Route path={`${path}/${URLS.APP_CS_CONFIG}/:name?`}>
+                    <Route path={`${URLS.APP_CS_CONFIG}/:name?`}>
                         <ConfigMapSecretWrapper
                             key={`secret-${params.appId}-${params.envId}`}
                             isApprovalPolicyConfigured={getIsApprovalPolicyConfigured(
@@ -180,9 +181,10 @@ const EnvironmentOverride = ({
                                 approvalConfigMap?.[ApprovalConfigDataKindType.configSecret].isExceptionUser
                             }
                             isTemplateView={isTemplateView}
+                            routePath={`${routePath}/${URLS.APP_CS_CONFIG}/:name?`}
                         />
                     </Route>
-                </Switch>
+                </Routes>
             </div>
         </ErrorBoundary>
     )

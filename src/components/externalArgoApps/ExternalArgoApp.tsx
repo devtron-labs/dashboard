@@ -15,43 +15,43 @@
  */
 
 import { Suspense } from 'react'
-import { Route, Switch, Redirect, useRouteMatch, useParams } from 'react-router-dom'
-import {
-    Progressing,
-    AppListConstants,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { Route, Routes, Navigate, useParams } from 'react-router-dom'
+import { Progressing, AppListConstants, ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import EAHeaderComponent from '../v2/headers/EAHeader.component'
 import { URLS } from '../../config'
 import ExternalArgoAppDetail from './ExternalArgoAppDetail'
 
 export default function ExternalArgoApp() {
     const params = useParams<{ clusterId: string; appName: string; namespace: string }>()
-    const { path } = useRouteMatch()
 
     return (
         <>
             <EAHeaderComponent
                 title={AppListConstants.AppTabs.ARGO_APPS}
-                redirectURL={URLS.ARGO_APP_LIST}
+                redirectURL={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.ARGO_CD}
                 showAppDetailsOnly
                 breadCrumbConfig={{
                     eaa: null,
                     ':namespace': null,
-                    ':clusterId(\\d+)': null,
+                    ':clusterId': null,
                 }}
+                breadcrumbPathPattern={ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_DETAIL.EXTERNAL_ARGO_APP}
             />
             <Suspense fallback={<Progressing pageLoader />}>
-                <Switch>
-                    <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                        <ExternalArgoAppDetail
-                            clusterId={params.clusterId}
-                            appName={params.appName}
-                            namespace={params.namespace}
-                            isExternalApp
-                        />
-                    </Route>
-                    <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-                </Switch>
+                <Routes>
+                    <Route
+                        path={`${URLS.APP_DETAILS}/*`}
+                        element={
+                            <ExternalArgoAppDetail
+                                clusterId={params.clusterId}
+                                appName={params.appName}
+                                namespace={params.namespace}
+                                isExternalApp
+                            />
+                        }
+                    />
+                    <Route path="*" element={<Navigate to={URLS.APP_DETAILS} />} />
+                </Routes>
             </Suspense>
         </>
     )

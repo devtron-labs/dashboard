@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
-
-import { Drawer } from '@devtron-labs/devtron-fe-common-lib'
+import { Route, Routes } from 'react-router-dom'
 
 import { URLS } from '../../../config'
 import LinkedCIDetailsModal from './LinkedCIDetailsModal'
 import { LinkedCIDetailModalProps } from './types'
 
-const LinkedCIDetail = ({ workflows, handleClose }: LinkedCIDetailModalProps) => {
-    const { path } = useRouteMatch()
-
-    return (
-        <Switch>
-            <Route path={`${path}/${URLS.LINKED_CI_DETAILS}/:ciPipelineId`} exact>
-                <Drawer position="right" width="800px" onEscape={handleClose}>
-                    <LinkedCIDetailsModal workflows={workflows} handleClose={handleClose} />
-                </Drawer>
-            </Route>
-        </Switch>
-    )
-}
+const LinkedCIDetail = ({ workflows }: LinkedCIDetailModalProps) => (
+    <Routes>
+        <Route
+            path={`${URLS.LINKED_CI_DETAILS}/:ciPipelineId`}
+            element={<LinkedCIDetailsModal workflows={workflows} />}
+        />
+    </Routes>
+)
 
 export default LinkedCIDetail

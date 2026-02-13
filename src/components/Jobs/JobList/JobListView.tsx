@@ -23,8 +23,9 @@ import {
     Pagination,
     SortableTableHeaderCell,
     handleAnalyticsEvent,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { Link, useHistory, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation, generatePath } from 'react-router-dom'
 import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import { ReactComponent as JobIcon } from '../../../assets/icons/ic-job-node.svg'
 import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
@@ -33,12 +34,11 @@ import { Job, JobListViewProps, JobsListSortableKeys } from '../Types'
 import { JobListViewType, JOB_LIST_HEADERS } from '../Constants'
 import ExpandedRow from '../ExpandedRow/ExpandedRow'
 import JobsEmptyState from '../JobsEmptyState'
-import { URLS } from '../../../config'
 import { environmentName } from '../Utils'
 import { DEFAULT_ENV } from '../../app/details/triggerView/Constants'
 
 export default function JobListView(props: JobListViewProps) {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
 
     const handleJobNameSorting = () => props.handleSorting(JobsListSortableKeys.APP_NAME)
@@ -74,7 +74,7 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const redirectToJobOverview = (job: Job): string => {
-        return `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${job.id}/${URLS.APP_OVERVIEW}`
+        return generatePath(ROUTER_URLS.JOB_DETAIL.OVERVIEW, { appId: String(job.id) })
     }
 
     const renderJobPipelines = () => {
@@ -189,7 +189,10 @@ export default function JobListView(props: JobListViewProps) {
     }
 
     const createJobHandler = () => {
-        history.push(`${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${URLS.APP_LIST}/${URLS.CREATE_JOB}${location.search}`)
+        navigate({
+            pathname: ROUTER_URLS.CREATE_JOB,
+            search: location.search,
+        })
     }
 
     if (props.view === JobListViewType.LOADING) {
@@ -202,10 +205,10 @@ export default function JobListView(props: JobListViewProps) {
     if (props.view === JobListViewType.EMPTY || props.view === JobListViewType.NO_RESULT) {
         return (
             <>
-            <JobsEmptyState
-                view={props.view}
-                clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearFilters}
-            />
+                <JobsEmptyState
+                    view={props.view}
+                    clickHandler={props.view === JobListViewType.EMPTY ? createJobHandler : props.clearFilters}
+                />
             </>
         )
     }

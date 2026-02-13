@@ -1,10 +1,11 @@
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import {
     Chart,
     ChartColorKey,
     ChartProps,
     noop,
+    ROUTER_URLS,
     SectionEmptyState,
     useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -72,7 +73,7 @@ const ClusterNodeHealthCard = ({
 }
 
 const ClusterNodeHealth = ({ clusterNodeHealth }: ClusterNodeHealthProps) => {
-    const { push, location } = useHistory()
+    const navigate = useNavigate()
     const { setTempAppWindowConfig } = useMainContext()
 
     const getChartClickHandler: (key: ClusterNodeHealthStatusKeys) => ChartProps['onChartClick'] = (key) => {
@@ -89,11 +90,11 @@ const ClusterNodeHealth = ({ clusterNodeHealth }: ClusterNodeHealthProps) => {
                         customCloseConfig: {
                             icon: null,
                             beforeClose: () => {
-                                push(location.pathname)
+                                navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW)
                             },
                         },
                     })
-                    push({ search: searchParams.toString() })
+                    navigate({ search: searchParams.toString() })
                 }
             case ClusterNodeHealthStatusKeys.NODE_SCHEDULING_BREAKDOWN:
                 return (datasetName) => {
@@ -108,17 +109,17 @@ const ClusterNodeHealth = ({ clusterNodeHealth }: ClusterNodeHealthProps) => {
                         customCloseConfig: {
                             icon: null,
                             beforeClose: () => {
-                                push(location.pathname)
+                                navigate(ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_OVERVIEW)
                             },
                         },
                     })
-                    push({ search: searchParams.toString() })
+                    navigate({ search: searchParams.toString() })
                 }
 
             case ClusterNodeHealthStatusKeys.CLUSTER_STATUS_BREAKDOWN:
                 return (datasetName) => {
                     const clusterFilter = getClusterFilterTypeFromLabel(datasetName)
-                    return push(getClusterListingUrl(clusterFilter))
+                    return navigate(getClusterListingUrl(clusterFilter))
                 }
             default:
                 return noop

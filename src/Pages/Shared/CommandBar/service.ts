@@ -16,7 +16,8 @@ export const getCommandBarResourceLists = async (signal: AbortSignal): Promise<C
     const appList = promiseResponse[0].status === 'fulfilled' ? promiseResponse[0].value.result : []
     const chartList = promiseResponse[1].status === 'fulfilled' ? promiseResponse[1].value.result : []
     const clusterList = promiseResponse[2].status === 'fulfilled' ? promiseResponse[2].value.result : []
-    const helmAppList = promiseResponse[3].status === 'fulfilled' ? promiseResponse[3].value.result?.helmApps ?? [] : []
+    const helmAppList =
+        promiseResponse[3].status === 'fulfilled' ? (promiseResponse[3].value.result?.helmApps ?? []) : []
 
     return {
         appList,

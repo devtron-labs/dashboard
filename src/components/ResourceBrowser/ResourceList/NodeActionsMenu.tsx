@@ -15,7 +15,7 @@
  */
 
 import { forwardRef, useState } from 'react'
-import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ActionMenu,
@@ -25,7 +25,7 @@ import {
     ComponentSizeType,
     NodeActionMenuOptionIdEnum,
     noop,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as MenuDots } from '@Icons/ic-more-vertical.svg'
@@ -40,10 +40,11 @@ import { NodeActionsMenuProps } from '../Types'
 import { getNodeActions } from './constants'
 import { K8sResourceListURLParams } from './types'
 
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 // TODO: This should be commoned out with ResourceBrowserActionMenu to have consistent styling
 const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
     ({ nodeData, getNodeListData, addTab, handleClearBulkSelection }: NodeActionsMenuProps, forwardedRef) => {
-        const history = useHistory()
+        const navigate = useNavigate()
         const { clusterId } = useParams<K8sResourceListURLParams>()
         const location = useLocation()
 
@@ -57,13 +58,13 @@ const NodeActionsMenu = forwardRef<HTMLButtonElement, NodeActionsMenuProps>(
         const handleOpenTerminalAction = () => {
             const queryParams = new URLSearchParams(location.search)
             queryParams.set('node', name)
-            history.push(`${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`)
+            navigate(`${generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, { clusterId })}?${queryParams.toString()}`)
         }
 
         const handleEditYamlAction = () => {
             const _url = `${generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })}?tab=yaml`
             addTab({ idPrefix: K8S_EMPTY_GROUP, kind: 'node', name, url: _url })
-                .then(() => history.push(_url))
+                .then(() => navigate(_url))
                 .catch(noop)
         }
 

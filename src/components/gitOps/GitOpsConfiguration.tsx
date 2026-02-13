@@ -15,7 +15,6 @@
  */
 
 import React, { Component, ComponentType, Fragment, SyntheticEvent } from 'react'
-import { withRouter } from 'react-router-dom'
 import {
     showError,
     Progressing,
@@ -1452,4 +1451,4 @@ const withIsFeatureUserDefinedGitOpsEnabled = (Component: ComponentType) => (pro
     return <Component isFeatureUserDefinedGitOpsEnabled={isFeatureUserDefinedGitOpsEnabled} {...props} />
 }
 
-export default withIsFeatureUserDefinedGitOpsEnabled(withRouter(GitOpsConfiguration))
+export default withIsFeatureUserDefinedGitOpsEnabled(GitOpsConfiguration)

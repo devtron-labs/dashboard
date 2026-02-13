@@ -18,8 +18,12 @@ import { BreadCrumb, DOCUMENTATION, noop, PageHeader } from '@devtron-labs/devtr
 
 import { ResourcePageHeaderProps } from './types'
 
-const ResourcePageHeader = ({ breadcrumbs, renderPageHeaderActionButtons }: ResourcePageHeaderProps) => {
-    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} />
+const ResourcePageHeader = ({
+    breadcrumbs,
+    renderPageHeaderActionButtons,
+    breadcrumbsPathPattern,
+}: ResourcePageHeaderProps) => {
+    const renderBreadcrumbs = () => <BreadCrumb breadcrumbs={breadcrumbs} path={breadcrumbsPathPattern} />
 
     return (
         <PageHeader

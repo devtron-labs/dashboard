@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { generatePath, useHistory, useLocation, useParams } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 import ReactSelect, { GroupBase, InputActionMeta } from 'react-select'
 import Select, { FormatOptionLabelMeta } from 'react-select/base'
 import DOMPurify from 'dompurify'
@@ -27,7 +27,7 @@ import {
     Nodes,
     NodeType,
     ReactSelectInputAction,
-    RESOURCE_BROWSER_ROUTES,
+    ROUTER_URLS,
     TreeNode,
     TreeView,
     URL_FILTER_KEYS,
@@ -44,7 +44,7 @@ import { getRBSidebarTreeViewNodeId, getRBSidebarTreeViewNodes } from './utils'
 const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateTabLastSyncMoment }: SidebarType) => {
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const location = useLocation()
-    const { push } = useHistory()
+    const navigate = useNavigate()
     const { clusterId, kind, group } = useParams<K8sResourceListURLParams>()
     const [searchText, setSearchText] = useState('')
     /* NOTE: apiResources prop will only change after a component mount/dismount */
@@ -101,7 +101,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
         if (selectedKind !== Nodes.Event.toLowerCase()) {
             params.delete('eventType')
         }
-        const path = generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST, {
+        const path = generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.K8S_RESOURCE_LIST, {
             clusterId,
             kind: selectedKind,
             group: selectedGroup || K8S_EMPTY_GROUP,
@@ -115,7 +115,7 @@ const Sidebar = ({ apiResources, selectedResource, updateK8sResourceTab, updateT
         updateK8sResourceTab({ url: _url, dynamicTitle: capitalizeFirstLetter(selectedKind), retainSearchParams: true })
         updateTabLastSyncMoment(ResourceBrowserTabsId.k8s_Resources)
 
-        push(_url)
+        navigate(_url)
     }
 
     useEffect(() => {

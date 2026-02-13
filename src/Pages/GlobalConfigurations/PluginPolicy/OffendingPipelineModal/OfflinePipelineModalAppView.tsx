@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { APIResponseHandler, GenericEmptyState, ImageType, noop, useAsync } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -31,9 +31,9 @@ const OffendingPipelineModalAppView = ({
     policyKind,
     policyName,
 }: OffendingPipelineModalAppViewProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const match = useRouteMatch<any>()
+    const params = useParams()
 
     const [isWorkflowsLoading, workflowsResponse, workflowsError, refetchWorkflows] = useAsync(
         () =>
@@ -75,17 +75,9 @@ const OffendingPipelineModalAppView = ({
                         width={workflow.width}
                         height={workflow.height}
                         nodes={workflow.nodes}
-                        history={history}
                         location={location}
-                        match={{
-                            ...match,
-                            // Can't pass appId to url since we have infinite scrolling
-                            params: {
-                                ...match.params,
-                                appId,
-                                workflowId: workflow.id,
-                            },
-                        }}
+                        navigate={navigate}
+                        params={params}
                         handleCDSelect={noop}
                         handleCISelect={noop}
                         openEditWorkflow={noop}

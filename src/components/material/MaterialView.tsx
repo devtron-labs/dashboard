@@ -39,10 +39,10 @@ import {
     InfoBlock,
     AuthenticationType,
     GitProviderIcon,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
 import { MaterialViewProps, MaterialViewState } from './material.types'
-import { URLS } from '../../config'
 import { ReactComponent as Add } from '../../assets/icons/ic-add.svg'
 import { ReactComponent as Down } from '../../assets/icons/ic-chevron-down.svg'
 import { ReactComponent as ICHelpOutline } from '../../assets/icons/ic-help-outline.svg'
@@ -687,7 +687,7 @@ export class MaterialView extends Component<MaterialViewProps, MaterialViewState
                                     component: ButtonComponentType.link,
                                     variant: ButtonVariantType.borderLess,
                                     linkProps: {
-                                        to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_GIT_ACCOUNTS,
+                                        to: ROUTER_URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS.GIT_ACCOUNTS,
                                     },
                                     text: 'Add Git Account',
                                     startIcon: <Icon name="ic-add" color={null} />,

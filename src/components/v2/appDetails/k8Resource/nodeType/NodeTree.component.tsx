@@ -15,7 +15,7 @@
  */
 
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
-import { useHistory, useLocation, useRouteMatch, NavLink } from 'react-router-dom'
+import { useNavigate, useLocation, NavLink } from 'react-router-dom'
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
 import { getTreeNodesWithChild } from './useNodeTreeReducer'
 import IndexStore from '../../index.store'
@@ -33,15 +33,15 @@ const NodeTreeComponent = ({
     registerNodeClick: Dispatch<SetStateAction<Map<string, string>>>
     isDevtronApp?: boolean
 }) => {
-    const { url } = useRouteMatch()
-    const history = useHistory()
+    const navigate = useNavigate()
+    const { pathname } = useLocation()
     const location = useLocation()
     const [filteredNodes] = useSharedState(
         IndexStore.getAppDetailsFilteredNodes(),
         IndexStore.getAppDetailsNodesFilteredObservable(),
     )
     const [nodes] = useSharedState(IndexStore.getAppDetailsNodes(), IndexStore.getAppDetailsNodesObservable())
-    const _arr = url.split(URLS.APP_DETAILS_K8)
+    const _arr = pathname.split(URLS.APP_DETAILS_K8)
     const k8URL = _arr[0] + URLS.APP_DETAILS_K8
 
     // This is used to re-render in case of click node update
@@ -71,14 +71,13 @@ const NodeTreeComponent = ({
                 handleClickOnNodes(_kind, [parent.toLowerCase()])
             }
         } else {
-            history.replace({
+            navigate({
                 pathname:
-                    url.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
+                    pathname.replace(/\/$/, '') + getRedirectURLExtension(clickedNodes, _filteredTreeNodes, isDevtronApp),
                 search: location.search,
             })
         }
-    }, [url])
-
+    }, [pathname])
     let tempNodes = _filteredTreeNodes
     while (tempNodes.length > 0) {
         tempNodes = tempNodes.flatMap((_tn) => {

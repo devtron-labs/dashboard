@@ -15,7 +15,7 @@
  */
 
 import { Suspense, useEffect, useRef, useState } from 'react'
-import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useNavigate, useLocation, useParams, Navigate } from 'react-router-dom'
 
 import {
     abortPreviousRequests,
@@ -47,9 +47,8 @@ let initTimer = null
 
 const RouterComponent = () => {
     const params = useParams<{ appId: string; envId: string; nodeType: string }>()
-    const { path } = useRouteMatch()
     const location = useLocation()
-    const history = useHistory()
+    const navigate = useNavigate()
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
@@ -109,7 +108,7 @@ const RouterComponent = () => {
         if (checkIfToRefetchData(location)) {
             timer = setTimeout(() => {
                 abortPreviousRequests(() => _getAndSetAppDetail(true), abortControllerRef)
-                deleteRefetchDataFromUrl(history, location)
+                deleteRefetchDataFromUrl(navigate, location)
             }, 5000)
         }
 
@@ -283,39 +282,50 @@ const RouterComponent = () => {
                 <>
                     <ChartHeaderComponent />
                     <Suspense fallback={<DetailsProgressing fullHeight loadingText="Please wait…" size={24} />}>
-                        <Switch>
-                            <Route path={`${path}/${URLS.APP_OVERVIEW}`}>
-                                <HelmAppOverview
-                                    key={params.appId}
-                                    appId={params.appId}
-                                    setErrorResponseCode={setErrorResponseCode}
-                                />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_DETAILS}`}>
-                                <AppDetailsComponent
-                                    externalLinks={externalLinksAndTools.externalLinks}
-                                    monitoringTools={externalLinksAndTools.monitoringTools}
-                                    isExternalApp={false}
-                                    _init={_init}
-                                    loadingDetails={loadingDetails}
-                                    loadingResourceTree={loadingResourceTree}
-                                    handleReloadResourceTree={handleReloadResourceTree}
-                                    isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
-                                />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_VALUES}`}>
-                                <ValuesComponent appId={params.appId} init={_init} />
-                            </Route>
-                            <Route path={`${path}/${URLS.APP_DEPLOYMNENT_HISTORY}`}>
-                                <ChartDeploymentHistory
-                                    appId={params.appId}
-                                    isExternal={false}
-                                    isLoadingDetails={loadingDetails}
-                                    isVirtualEnvironment={isVirtualRef.current}
-                                />
-                            </Route>
-                            <Redirect to={`${path}/${URLS.APP_DETAILS}`} />
-                        </Switch>
+                        <Routes>
+                            <Route
+                                path={URLS.APP_OVERVIEW}
+                                element={
+                                    <HelmAppOverview
+                                        key={params.appId}
+                                        appId={params.appId}
+                                        setErrorResponseCode={setErrorResponseCode}
+                                    />
+                                }
+                            />
+                            <Route
+                                path={`${URLS.APP_DETAILS}/*`}
+                                element={
+                                    <AppDetailsComponent
+                                        externalLinks={externalLinksAndTools.externalLinks}
+                                        monitoringTools={externalLinksAndTools.monitoringTools}
+                                        isExternalApp={false}
+                                        _init={_init}
+                                        loadingDetails={loadingDetails}
+                                        loadingResourceTree={loadingResourceTree}
+                                        handleReloadResourceTree={handleReloadResourceTree}
+                                        isReloadResourceTreeInProgress={isReloadResourceTreeInProgress}
+                                    />
+                                }
+                            />
+
+                            <Route
+                                path={URLS.APP_VALUES}
+                                element={<ValuesComponent appId={params.appId} init={_init} />}
+                            />
+                            <Route
+                                path={URLS.APP_DEPLOYMNENT_HISTORY}
+                                element={
+                                    <ChartDeploymentHistory
+                                        appId={params.appId}
+                                        isExternal={false}
+                                        isLoadingDetails={loadingDetails}
+                                        isVirtualEnvironment={isVirtualRef.current}
+                                    />
+                                }
+                            />
+                            <Route path="*" element={<Navigate to={URLS.APP_DETAILS} />} />
+                        </Routes>
                     </Suspense>
                 </>
             )}

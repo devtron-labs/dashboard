@@ -23,9 +23,10 @@ import {
     PageHeader,
     getInfrastructureManagementBreadcrumb,
     DOCUMENTATION,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { useRouteMatch, useHistory, useLocation, Switch, Route, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Route, Link, Routes } from 'react-router-dom'
 import { getChartGroups } from '../charts.service'
 import { ChartGroupCard } from '../ChartGroupCard'
 import CreateChartGroup from '../modal/CreateChartGroup'
@@ -34,9 +35,12 @@ import ChartGroupDetails from '../ChartGroupDetails'
 import ChartGroupAdvanceDeploy from '../ChartGroupAdvanceDeploy'
 import { ReactComponent as Add } from '../../../assets/icons/ic-add.svg'
 
+const pagePathPattern = `${ROUTER_URLS.CHART_STORE}/group`
+
 const ChartGroupList = () => {
     const [loading, result] = useAsync(getChartGroups, [])
     const { breadcrumbs } = useBreadcrumb(
+        pagePathPattern,
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
@@ -50,13 +54,11 @@ const ChartGroupList = () => {
         },
         [],
     )
-    const match = useRouteMatch()
-    const { url } = match
 
     const renderBreadcrumbs = () => {
         return (
             <div className="flex left">
-                <BreadCrumb breadcrumbs={breadcrumbs} />
+                <BreadCrumb breadcrumbs={breadcrumbs} path={pagePathPattern} />
             </div>
         )
     }
@@ -64,7 +66,7 @@ const ChartGroupList = () => {
     const renderCreateGroupButton = () => {
         return (
             <div className="dc__page-header__cta-container flex ">
-                <Link className="flex cta h-32" to={`${url}/create`}>
+                <Link className="flex cta h-32" to="create">
                     <Add className="icon-dim-18 mr-5" /> Create Group
                 </Link>
             </div>
@@ -85,7 +87,9 @@ const ChartGroupList = () => {
                     <div className="chart-grid">
                         {result?.result?.groups
                             ?.sort((a, b) => a.name.localeCompare(b.name))
-                            .map((chartGroup) => <ChartGroupCard key={chartGroup.id} chartGroup={chartGroup} />)}
+                            .map((chartGroup) => (
+                                <ChartGroupCard key={chartGroup.id} chartGroup={chartGroup} />
+                            ))}
                     </div>
                 )}
             </div>
@@ -94,27 +98,28 @@ const ChartGroupList = () => {
 }
 
 export default function ChartGroupRouter() {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const match = useRouteMatch()
-    const { url, path } = match
     return (
-        <Switch>
-            <Route exact path={`${path}/create`}>
-                <ChartGroupList />
-                <CreateChartGroup
-                    history={history}
-                    location={location}
-                    match={match}
-                    closeChartGroupModal={() => history.push(url)}
-                />
-            </Route>
-            <Route exact path={`${path}/:groupId/edit`} component={ChartGroupUpdate} />
-            <Route exact path={`${path}/:groupId/deploy`} component={ChartGroupAdvanceDeploy} />
-            <Route exact path={`${path}/:groupId`} component={ChartGroupDetails} />
-            <Route>
-                <ChartGroupList />
-            </Route>
-        </Switch>
+        <Routes>
+            <Route
+                path="create"
+                element={
+                    <>
+                        <ChartGroupList />
+                        <CreateChartGroup
+                            location={location}
+                            navigate={navigate}
+                            params={{}}
+                            closeChartGroupModal={() => navigate(-1)}
+                        />
+                    </>
+                }
+            />
+            <Route path=":groupId/edit" element={<ChartGroupUpdate />} />
+            <Route path=":groupId/deploy" element={<ChartGroupAdvanceDeploy />} />
+            <Route path=":groupId" element={<ChartGroupDetails />} />
+            <Route index element={<ChartGroupList />} />
+        </Routes>
     )
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react'
+import { Component } from 'react'
 import { NavLink } from 'react-router-dom'
-import { URLS } from '../../config'
+import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
 import img from '../../assets/img/ic-checklist-chart@2x.png'
 import './checklist.scss'
 
@@ -27,7 +27,7 @@ export class GlobalChartsCheck extends Component {
                 <img className="img-width pt-12 pl-16" src={img} />
                 <div className="pl-16 pr-16 pt-12 pb-12 fs-13">
                     <div className="cn-9"> Deploy charts using Devtron.</div>
-                    <NavLink to={URLS.INFRASTRUCTURE_MANAGEMENT_CHART_STORE_DISCOVER} className="dc__no-decor cb-5 fw-6 ">
+                    <NavLink to={ROUTER_URLS.CHART_STORE} className="dc__no-decor cb-5 fw-6 ">
                         Discover charts
                     </NavLink>
                 </div>

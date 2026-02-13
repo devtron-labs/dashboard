@@ -41,13 +41,13 @@ import {
     Button,
     ButtonVariantType,
     ButtonStyleType,
-    RESOURCE_BROWSER_ROUTES,
     getUrlWithSearchParams,
     ResourceBrowserActionMenuEnum,
     UNSAVED_CHANGES_PROMPT_MESSAGE,
     usePrompt,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, useHistory, generatePath, Prompt } from 'react-router-dom'
+import { useParams, useLocation, generatePath, useNavigate } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
@@ -68,20 +68,20 @@ import {
     UpdateNodeRequestBody,
 } from './types'
 import { OrderBy } from '../app/list/types'
-import { MODES, URLS } from '../../config'
+import { MODES } from '../../config'
 import EditTaintsModal from './NodeActions/EditTaintsModal'
 import { AUTO_SELECT, CLUSTER_NODE_ACTIONS_LABELS, NODE_DETAILS_TABS } from './constants'
 import CordonNodeModal from './NodeActions/CordonNodeModal'
 import DrainNodeModal from './NodeActions/DrainNodeModal'
 import DeleteNodeModal from './NodeActions/DeleteNodeModal'
 import { K8S_EMPTY_GROUP, SIDEBAR_KEYS } from '@Components/ResourceBrowser/Constants'
-import { AppDetailsTabs } from '../v2/appDetails/appDetails.store'
 import './clusterNodes.scss'
 import ResourceBrowserActionMenu from '@Components/ResourceBrowser/ResourceList/ResourceBrowserActionMenu'
 import { importComponentFromFELibrary } from '@Components/common'
 import { unauthorizedInfoText } from '@Components/ResourceBrowser/ResourceList/utils'
 
 const REDFISH_NODE_UI_TABS = importComponentFromFELibrary('REDFISH_NODE_UI_TABS', [], 'function')
+const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterListType) => {
     const { clusterId, name } = useParams<{ clusterId: string; nodeType: string; name: string }>()
@@ -111,11 +111,11 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
     const queryParams = new URLSearchParams(location.search)
-    const { push, replace } = useHistory()
+    const navigate = useNavigate()
 
     const hasUnsavedChanges = (nodeDetail?.manifest ? YAMLStringify(nodeDetail.manifest) : '') !== modifiedManifest
 
-    usePrompt({ shouldPrompt: hasUnsavedChanges })
+    usePrompt({ shouldPrompt: hasUnsavedChanges, message: UNSAVED_CHANGES_PROMPT_MESSAGE })
 
     const getData = (_patchdata: jsonpatch.Operation[]) => {
         setLoader(true)
@@ -280,10 +280,13 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         if (tabIndex !== -1) {
             setSelectedTabIndex(tabIndex)
         } else {
-            replace({
-                pathname: location.pathname,
-                search: `?tab=${getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)}`,
-            })
+            navigate(
+                {
+                    pathname: location.pathname,
+                    search: `?tab=${getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)}`,
+                },
+                { replace: true },
+            )
         }
     }, [location.search])
 
@@ -682,7 +685,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const openDebugTerminal = () => {
         const queryParams = new URLSearchParams(location.search)
         queryParams.set('node', nodeDetail.name)
-        push(
+        navigate(
             getUrlWithSearchParams(
                 generatePath(RESOURCE_BROWSER_ROUTES.TERMINAL, {
                     clusterId,
@@ -725,7 +728,7 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
 
     const handleResourceClick = (e) => {
         const { name, tab = ResourceBrowserActionMenuEnum.manifest, namespace } = e.currentTarget.dataset
-        push(
+        navigate(
             getUrlWithSearchParams(
                 generatePath(RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL, {
                     clusterId,
@@ -1079,7 +1082,6 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
                 <Progressing pageLoader size={32} />
             ) : (
                 <>
-                    <Prompt when={hasUnsavedChanges} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
                     {renderNodeDetailsTabs()}
                     {renderTabContent()}
                     {showCordonNodeDialog && (

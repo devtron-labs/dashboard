@@ -15,11 +15,12 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import {
     Button,
     Drawer,
+    ROUTER_URLS,
     showError,
     ToastManager,
     ToastVariantType,
@@ -55,7 +56,7 @@ import './styles.scss'
 const createDevtronAppUsingTemplate = importComponentFromFELibrary('createDevtronAppUsingTemplate', null, 'function')
 
 const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const [isSubmitting, setIsSubmitting] = useState(false)
     const [selectedCreationMethod, setSelectedCreationMethod] = useState<CreationMethodType>(null)
     const [formState, setFormState] = useState<CreateAppFormStateType>(structuredClone(createAppInitialFormState))
@@ -234,9 +235,9 @@ const CreateAppModal = ({ isJobView, handleClose }: CreateAppModalProps) => {
 
     const redirectToArtifacts = (appId: string) => {
         const url = isCreationMethodTemplate
-            ? `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_TRIGGER}`
+            ? generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, { appId })
             : getAppComposeURL(appId, APP_COMPOSE_STAGE.SOURCE_CONFIG, isJobView, false)
-        history.push(url)
+        navigate(url)
     }
 
     const getCreateApiMethod = () => {

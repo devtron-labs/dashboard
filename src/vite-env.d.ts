@@ -18,7 +18,5 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-pwa/client" />
 
-import 'jest-extended'
-
 declare const __BASE_URL__: string
 declare const __ORCHESTRATOR_ROOT__: string

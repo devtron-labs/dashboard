@@ -15,19 +15,11 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-    Redirect,
-    RedirectProps,
-    Route,
-    Switch,
-    useHistory,
-    useLocation,
-    useParams,
-    useRouteMatch,
-} from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppListConstants,
+    BASE_ROUTES,
     FilterChips,
     getNamespaceListMin,
     handleUTCTime,
@@ -35,9 +27,9 @@ import {
     InfrastructureManagementAppListType,
     ModuleNameMap,
     Progressing,
+    ROUTER_URLS,
     TabGroup,
     TabProps,
-    URLS as COMMON_URLS,
     useAsync,
     useMainContext,
     useUrlFilters,
@@ -48,7 +40,7 @@ import { CreateAppModal } from '@Pages/App/CreateAppModal'
 import { getCommonAppFilters } from '@Services/service'
 import { Cluster } from '@Services/service.types'
 
-import { SERVER_MODE, URLS } from '../../../config'
+import { SERVER_MODE } from '../../../config'
 import { useAppContext } from '../../common'
 import { getModuleInfo } from '../../v2/devtronStackManager/DevtronStackManager.service'
 import DevtronAppList from '../list/DevtronAppListContainer'
@@ -75,9 +67,8 @@ import '../list/list.scss'
 let interval
 
 const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
-    const { url } = useRouteMatch()
     const params = useParams<{ appType: InfrastructureManagementAppListType }>()
     const { serverMode, isSuperAdmin } = useMainContext()
     const { setCurrentAppName } = useAppContext()
@@ -310,7 +301,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
             tabType: 'navLink',
             props: {
                 to: {
-                    pathname: URLS.HELM_APP_LIST,
+                    pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM,
                     search: removePageNumber(location.search),
                 },
                 'data-testid': 'helm-app-list-button',
@@ -324,7 +315,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                       tabType: 'navLink' as const,
                       props: {
                           to: {
-                              pathname: URLS.ARGO_APP_LIST,
+                              pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.ARGO_CD,
                               search: removePageNumber(location.search),
                           },
                           'data-testid': 'argo-app-list-button',
@@ -340,7 +331,7 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                       tabType: 'navLink' as const,
                       props: {
                           to: {
-                              pathname: URLS.FLUX_APP_LIST,
+                              pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.FLUX_CD,
                               search: removePageNumber(location.search),
                           },
                           'data-testid': 'flux-app-list-button',
@@ -357,18 +348,20 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
     )
 
     const closeDevtronAppCreateModal = () => {
-        history.push(`${url}${location.search}`)
+        navigate({
+            pathname: ROUTER_URLS.DEVTRON_APP_LIST,
+            search: location.search,
+        })
     }
 
     const renderAppCreateRouter = () => (
-        <Switch>
+        <Routes>
             <Route
-                path={COMMON_URLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
-                key={COMMON_URLS.APPLICATION_MANAGEMENT_CREATE_DEVTRON_APP}
-            >
-                <CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />
-            </Route>
-        </Switch>
+                path={BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.LIST.CREATE_APP}
+                key={BASE_ROUTES.APPLICATION_MANAGEMENT.DEVTRON_APP.LIST.CREATE_APP}
+                element={<CreateAppModal handleClose={closeDevtronAppCreateModal} isJobView={false} />}
+            />
+        </Routes>
     )
 
     return (
@@ -464,7 +457,12 @@ const AppList = ({ isDevtronAppList }: { isDevtronAppList?: boolean }) => {
                         />
                     )}
                     {tabs.every((tab) => tab.id !== params.appType) && (
-                        <Redirect {...(tabs[0].props as RedirectProps)} />
+                        <Navigate
+                            to={{
+                                pathname: ROUTER_URLS.INFRASTRUCTURE_MANAGEMENT_APP_LIST.HELM,
+                                search: removePageNumber(location.search),
+                            }}
+                        />
                     )}
                 </>
             )}

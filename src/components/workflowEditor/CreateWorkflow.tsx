@@ -32,17 +32,17 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
     }
 
     componentDidMount() {
-        if (this.props.match.params.workflowId) {
+        if (this.props.params.workflowId) {
             this.getWorkflow()
         }
     }
 
     getWorkflow(): void {
-        getWorkflowList(this.props.match.params.appId, '', this.props.isTemplateView)
+        getWorkflowList(this.props.params.appId, '', this.props.isTemplateView)
             .then((response) => {
                 if (response.result) {
                     const workflows = response.result.workflows || []
-                    const workflow = workflows.find((wf) => wf.id == +this.props.match.params.workflowId)
+                    const workflow = workflows.find((wf) => wf.id == +this.props.params.workflowId)
                     if (workflow) {
                         this.setState({ id: workflow.id, name: workflow.name })
                     } else {
@@ -66,7 +66,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
         event.preventDefault()
         this.setState({ showError: true })
         const request = {
-            appId: +this.props.match.params.appId,
+            appId: +this.props.params.appId,
             id: this.state.id,
             name: this.state.name,
         }
@@ -74,7 +74,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
             return
         }
         const message = this.state.id ? 'Workflow Updated Successfully' : 'Workflow Created successfully'
-        const promise = this.props.match.params.workflowId
+        const promise = this.props.params.workflowId
             ? updateWorkflow(request, this.props.isTemplateView)
             : createWorkflow(request, this.props.isTemplateView)
         promise
@@ -102,7 +102,7 @@ export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflow
 
     render() {
         const isValid = this.isNameValid()
-        const title = this.props.match.params.workflowId ? 'Edit Workflow' : 'Add Workflow'
+        const title = this.props.params.workflowId ? 'Edit Workflow' : 'Add Workflow'
         return (
             <DialogForm
                 title={title}

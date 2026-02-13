@@ -130,25 +130,23 @@ export enum AppListUrlFilters {
 export interface AppListUrlFiltersType extends Record<AppListUrlFilters, string[]> {}
 
 export interface AppListFilterConfig
-    extends AppListUrlFiltersType,
-        Pick<AppListPayloadType, 'sortBy' | 'sortOrder' | 'offset'> {
+    extends AppListUrlFiltersType, Pick<AppListPayloadType, 'sortBy' | 'sortOrder' | 'offset'> {
     pageSize: number
     searchKey: string
 }
 
-export interface HelmAppListProps
-    extends Pick<
-        DevtronAppListProps,
-        | 'filterConfig'
-        | 'clearAllFilters'
-        | 'handleSorting'
-        | 'changePage'
-        | 'changePageSize'
-        | 'isArgoInstalled'
-        | 'syncListData'
-        | 'updateDataSyncing'
-        | 'appListContainerRef'
-    > {
+export interface HelmAppListProps extends Pick<
+    DevtronAppListProps,
+    | 'filterConfig'
+    | 'clearAllFilters'
+    | 'handleSorting'
+    | 'changePage'
+    | 'changePageSize'
+    | 'isArgoInstalled'
+    | 'syncListData'
+    | 'updateDataSyncing'
+    | 'appListContainerRef'
+> {
     clusterIdsCsv: string
     serverMode: SERVER_MODE
     fetchingExternalApps: boolean
@@ -158,7 +156,8 @@ export interface HelmAppListProps
 }
 
 export interface GenericAppListProps
-    extends Pick<
+    extends
+        Pick<
             DevtronAppListProps,
             | 'filterConfig'
             | 'clearAllFilters'
@@ -173,7 +172,8 @@ export interface GenericAppListProps
 }
 
 export interface AppListFiltersProps
-    extends Pick<DevtronAppListProps, 'filterConfig' | 'isArgoInstalled'>,
+    extends
+        Pick<DevtronAppListProps, 'filterConfig' | 'isArgoInstalled'>,
         Pick<
             UseUrlFiltersReturnType<AppListSortableKeys, AppListUrlFiltersType>,
             'updateSearchParams' | 'handleSearch'
@@ -198,15 +198,10 @@ export interface AppListFiltersProps
     showExportCsvButton: boolean
 }
 
-export interface useFilterOptionsProps
-    extends Pick<
-        AppListFiltersProps,
-        | 'appListFiltersResponse'
-        | 'namespaceListResponse'
-        | 'getFormattedFilterValue'
-        | 'isExternalArgo'
-        | 'isExternalFlux'
-    > {}
+export interface useFilterOptionsProps extends Pick<
+    AppListFiltersProps,
+    'appListFiltersResponse' | 'namespaceListResponse' | 'getFormattedFilterValue' | 'isExternalArgo' | 'isExternalFlux'
+> {}
 
 export interface GetDevtronHelmAppListParamsType {
     appStatuses: string

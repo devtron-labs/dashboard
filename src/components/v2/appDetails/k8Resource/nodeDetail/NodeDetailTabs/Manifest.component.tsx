@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Prompt, useHistory, useLocation, useParams, useRouteMatch } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import YAML from 'yaml'
 
@@ -108,8 +108,7 @@ const ManifestComponent = ({
     handleStickDynamicTabsToTop,
 }: ManifestActionPropsType) => {
     const location = useLocation()
-    const history = useHistory()
-    const { url } = useRouteMatch()
+    const navigate = useNavigate()
     /* TODO: can be unified later with resource browser */
     const params = useParams<{
         actionName: string
@@ -257,7 +256,7 @@ const ManifestComponent = ({
     }
 
     useEffect(() => {
-        selectedTab(NodeDetailTab.MANIFEST, url)
+        selectedTab(NodeDetailTab.MANIFEST, location.pathname)
         if (isDeleted) {
             /* NOTE:(linting) useEffect callback should have uniform return values */
             return () => {}
@@ -541,7 +540,7 @@ const ManifestComponent = ({
                     setIsResourceMissing(false)
                 }
                 setLoading(false)
-                appendRefetchDataToUrl(history, location)
+                appendRefetchDataToUrl(navigate, location)
             })
             .catch((err) => {
                 setLoading(false)
@@ -691,7 +690,7 @@ const ManifestComponent = ({
 
     const hasUnsavedChanges = isEditMode && previousEditorState.current !== getCodeEditorValue()
 
-    usePrompt({ shouldPrompt: hasUnsavedChanges })
+    usePrompt({ shouldPrompt: hasUnsavedChanges, message: UNSAVED_CHANGES_PROMPT_MESSAGE })
 
     const getCodeEditorProps = () => {
         if (!previousEditorState.current) {
@@ -790,55 +789,50 @@ const ManifestComponent = ({
         )
     }
 
-    return (
-        <>
-            <Prompt when={hasUnsavedChanges} message={UNSAVED_CHANGES_PROMPT_MESSAGE} />
-            {isDeleted ? (
-                <div className="h-100 flex-grow-1">
-                    <MessageUI msg="This resource no longer exists" size={32} />
-                </div>
-            ) : (
+    return isDeleted ? (
+        <div className="h-100 flex-grow-1">
+            <MessageUI msg="This resource no longer exists" size={32} />
+        </div>
+    ) : (
+        <div
+            className={`flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-auto' : ''}`}
+            data-testid="app-manifest-container"
+            style={{
+                background: 'var(--terminal-bg)',
+            }}
+        >
+            {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
+            {!error && (
                 <div
-                    className={`flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-auto' : ''}`}
-                    data-testid="app-manifest-container"
-                    style={{
-                        background: 'var(--terminal-bg)',
-                    }}
+                    className={`${
+                        manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
+                    } flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-hidden' : ''}`}
                 >
-                    {error && !loading && <MessageUI msg="Manifest not available" size={24} />}
-                    {!error && (
-                        <div
-                            className={`${
-                                manifestFormConfigurationType === ConfigurationType.GUI ? 'bg__primary' : ''
-                            } flexbox-col flex-grow-1 ${isResourceBrowserView ? 'dc__overflow-hidden' : ''}`}
-                        >
-                            {isResourceMissing && !loading && !showManifestCompareView ? (
-                                <MessageUI
-                                    msg="Manifest not available"
-                                    size={24}
-                                    isShowActionButton={showDesiredAndCompareManifest}
-                                    actionButtonText="Recreate this resource"
-                                    onActionButtonClick={recreateResource}
-                                />
-                            ) : (
-                                renderContent()
-                            )}
-                        </div>
-                    )}
-
-                    {showLockedDiffModal && ShowIneligibleChangesModal && (
-                        <ShowIneligibleChangesModal
-                            handleCallApplyChangesAPI={handleCallApplyChangesAPI}
-                            uneditedManifest={uneditedManifest}
-                            // NOTE: a check on modifiedManifest is made before this component is rendered
-                            editedManifest={YAML.parse(modifiedManifest)}
-                            handleModalClose={handleCloseShowLockedDiffModal}
-                            lockedKeys={lockedKeys}
+                    {isResourceMissing && !loading && !showManifestCompareView ? (
+                        <MessageUI
+                            msg="Manifest not available"
+                            size={24}
+                            isShowActionButton={showDesiredAndCompareManifest}
+                            actionButtonText="Recreate this resource"
+                            onActionButtonClick={recreateResource}
                         />
+                    ) : (
+                        renderContent()
                     )}
                 </div>
             )}
-        </>
+
+            {showLockedDiffModal && ShowIneligibleChangesModal && (
+                <ShowIneligibleChangesModal
+                    handleCallApplyChangesAPI={handleCallApplyChangesAPI}
+                    uneditedManifest={uneditedManifest}
+                    // NOTE: a check on modifiedManifest is made before this component is rendered
+                    editedManifest={YAML.parse(modifiedManifest)}
+                    handleModalClose={handleCloseShowLockedDiffModal}
+                    lockedKeys={lockedKeys}
+                />
+            )}
+        </div>
     )
 }
 

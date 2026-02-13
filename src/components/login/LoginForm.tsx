@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
     Button,
@@ -26,9 +26,9 @@ import {
     getDocumentationUrl,
     Icon,
     PasswordField,
+    ROUTER_URLS,
     ServerErrors,
     showError,
-    URLS as COMMON_URLS,
     useUserEmail,
 } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -56,7 +56,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
     })
 
     const { setEmail } = useUserEmail()
-    const history = useHistory()
+    const navigate = useNavigate()
     const location = useLocation()
 
     const NetworkStatusInterface = !importComponentFromFELibrary('NetworkStatusInterface', null, 'function')
@@ -68,13 +68,13 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
         }
 
         if (!window._env_.HIDE_NETWORK_STATUS_INTERFACE && !!NetworkStatusInterface) {
-            return COMMON_URLS.NETWORK_STATUS_INTERFACE
+            return ROUTER_URLS.NETWORK_STATUS_INTERFACE.ROOT
         }
 
         // NOTE: we don't have serverMode therefore defaulting to flag value
         return window._env_.FEATURE_DEFAULT_LANDING_RB_ENABLE
-            ? COMMON_URLS.INFRASTRUCTURE_MANAGEMENT_RESOURCE_BROWSER
-            : COMMON_URLS.APPLICATION_MANAGEMENT_APP
+            ? ROUTER_URLS.RESOURCE_BROWSER.ROOT
+            : ROUTER_URLS.DEVTRON_APP_LIST
     }
 
     const onSubmitLogin = (e): void => {
@@ -87,7 +87,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
                     setLoading(false)
                     const url = getDefaultRedirectionURL()
                     setEmail(data.username)
-                    history.push(url)
+                    navigate(url)
                     localStorage.setItem('isAdminLogin', 'true')
                 }
             })
@@ -172,7 +172,7 @@ export const LoginForm = ({ loginList }: LoginFormType) => {
                         text="Login using SSO service"
                         component={ButtonComponentType.link}
                         linkProps={{
-                            to: `${COMMON_URLS.LOGIN_SSO}${location.search}`,
+                            to: `${ROUTER_URLS.LOGIN.SSO}${location.search}`,
                         }}
                         variant={ButtonVariantType.text}
                     />

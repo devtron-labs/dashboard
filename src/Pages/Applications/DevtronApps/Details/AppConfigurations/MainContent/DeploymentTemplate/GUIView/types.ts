@@ -18,16 +18,15 @@ import { DeploymentChartVersionType, GUIViewError } from '@devtron-labs/devtron-
 
 import { DeploymentTemplateFormProps } from '../types'
 
-export interface GUIViewProps
-    extends Pick<
-        DeploymentTemplateFormProps,
-        | 'editorOnChange'
-        | 'lockedConfigKeysWithLockType'
-        | 'hideLockedKeys'
-        | 'uneditedDocument'
-        | 'editedDocument'
-        | 'mergeStrategy'
-    > {
+export interface GUIViewProps extends Pick<
+    DeploymentTemplateFormProps,
+    | 'editorOnChange'
+    | 'lockedConfigKeysWithLockType'
+    | 'hideLockedKeys'
+    | 'uneditedDocument'
+    | 'editedDocument'
+    | 'mergeStrategy'
+> {
     value: string
     readOnly: boolean
     isUnSet: boolean

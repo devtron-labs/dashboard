@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { generatePath, useHistory, useParams, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import { GroupBase } from 'react-select'
 
 import {
     AppEnvironment,
     BaseURLParams,
     EnvAppsMetaDTO,
+    ROUTER_URLS,
     SelectPicker,
     SelectPickerOptionType,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -29,16 +30,19 @@ import { AppEnvDropdownProps, AppEnvSelectorProps } from './appDetails.type'
 import { getEnvOptions } from './utils'
 
 const AppEnvDropdown = ({ isAppView = false, options, value }: AppEnvDropdownProps) => {
-    const { push } = useHistory()
-    const { path } = useRouteMatch()
+    const navigate = useNavigate()
     const { appId, envId } = useParams<Pick<BaseURLParams, 'appId' | 'envId'>>()
+
+    const path = isAppView
+        ? ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS
+        : ROUTER_URLS.APP_GROUP_DETAILS.APP_DETAILS
 
     const handleOnChange = (option: SelectPickerOptionType) => {
         const newUrl = generatePath(path, {
-            appId: isAppView ? appId : option.value,
-            envId: isAppView ? option.value : envId,
+            appId: isAppView ? appId : String(option.value),
+            envId: isAppView ? String(option.value) : envId,
         })
-        push(newUrl)
+        navigate(newUrl)
     }
 
     return (

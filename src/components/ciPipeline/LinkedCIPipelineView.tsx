@@ -33,6 +33,7 @@ import {
     ButtonVariantType,
     ButtonStyleType,
     DeleteCINodeButton,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
@@ -93,8 +94,8 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
     componentDidMount() {
         document.addEventListener('keydown', this.escFunction)
         getInitDataWithCIPipeline(
-            this.props.match.params.appId,
-            this.props.match.params.ciPipelineId,
+            this.props.params.appId,
+            this.props.params.ciPipelineId,
             true,
             this.props.isTemplateView,
         )
@@ -102,7 +103,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 this.setState({ ...response, loadingData: false }, () => {
                     this.generateSourceUrl().catch(() => {
                         this.setState({
-                            sourcePipelineURL: `${URLS.APPLICATION_MANAGEMENT_APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
+                            sourcePipelineURL: `${ROUTER_URLS.DEVTRON_APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}`,
                         })
                     })
                 })
@@ -149,7 +150,7 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
                 this.props.isTemplateView,
             )
             this.setState({
-                sourcePipelineURL: `${URLS.APPLICATION_MANAGEMENT_APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
+                sourcePipelineURL: `${ROUTER_URLS.DEVTRON_APP}/${this.state.ciPipeline.parentAppId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${url}`,
             })
         }
     }
@@ -236,13 +237,13 @@ export default class LinkedCIPipelineView extends Component<CIPipelineProps, CIP
         const canDeletePipeline = this.props.connectCDPipelines === 0 && this.state.ciPipeline.linkedCount === 0
 
         const deleteConfig = {
-            appId: this.props.match.params.appId,
+            appId: this.props.params.appId,
             pipelineId: this.state.ciPipeline.id,
             pipelineName: this.state.ciPipeline.name,
-            appWorkflowId: Number(this.props.match.params.workflowId),
+            appWorkflowId: Number(this.props.params.workflowId),
         }
 
-        if (this.props.match.params.ciPipelineId) {
+        if (this.props.params.ciPipelineId) {
             return (
                 <ConditionalWrap
                     condition={!canDeletePipeline}

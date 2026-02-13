@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, SyntheticEvent, useMemo, useState } from 'react'
-import { Prompt, useHistory, useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
     ACTION_STATE,
@@ -7,7 +7,6 @@ import {
     API_STATUS_CODES,
     ArtifactInfo,
     ConditionalWrap,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
     DEPLOYMENT_CONFIG_DIFF_SORT_KEY,
     DeploymentAppTypes,
     DeploymentNodeType,
@@ -38,6 +37,7 @@ import {
     useDownload,
     usePrompt,
     useSearchString,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
@@ -111,7 +111,7 @@ const DeployImageModal = ({
     isTriggerBlockedDueToPlugin,
     parentEnvironmentName,
 }: DeployImageModalProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { pathname } = useLocation()
     const { searchParams } = useSearchString()
     const { handleDownload } = useDownload()
@@ -255,7 +255,7 @@ const DeployImageModal = ({
             newParams.delete('sortBy')
         }
 
-        history.push({
+        navigate({
             pathname:
                 modeParamValue === URL_PARAM_MODE_TYPE.REVIEW_CONFIG
                     ? // Replace consecutive trailing single slashes
@@ -352,7 +352,7 @@ const DeployImageModal = ({
     )
 
     const redirectToDeploymentStepsPage = () => {
-        history.push(`${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`)
+        navigate(`${ROUTER_URLS.DEVTRON_APP}/${appId}/${URLS.APP_CD_DETAILS}/${envId}/${pipelineId}`)
     }
 
     const handleDeployment = ({ ciArtifactId, deploymentWithConfig, computedWfrId }: HandleDeploymentProps) => {
@@ -499,7 +499,7 @@ const DeployImageModal = ({
             searchText: newSearchText,
         }))
 
-        history.push({
+        navigate({
             pathname,
             search: newParams.toString(),
         })
@@ -766,8 +766,6 @@ const DeployImageModal = ({
                     envName={envName}
                 />
             )}
-
-            <Prompt when={isDeploymentLoading} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
         </>
     )
 }

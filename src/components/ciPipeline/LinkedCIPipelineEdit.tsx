@@ -122,7 +122,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         const { form, isValid } = { ...this.state }
         form.name = event.target.value
         const isFound = !!this.state.ciPipelines.find((pipeline) => pipeline.name === form.name)
-        isValid.name = +this.props.match.params.appId === this.state.form.parentAppId ? !isFound : true
+        isValid.name = +this.props.params.appId === this.state.form.parentAppId ? !isFound : true
         this.setState({ form, isValid })
     }
 
@@ -132,7 +132,7 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         form.parentCIPipelineId = pipeline.id
         form.name = pipelines[0].name
         isValid.parentCIPipelineId = true
-        isValid.name = !(+this.props.match.params.appId === this.state.form.parentAppId)
+        isValid.name = !(+this.props.params.appId === this.state.form.parentAppId)
         this.setState({ form, isValid, showPluginWarning: pipeline.isOffendingMandatoryPlugin })
     }
 
@@ -145,8 +145,8 @@ export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedC
         const parentCIPipeline = this.state.ciPipelines.find((ci) => ci.id === this.state.form.parentCIPipelineId)
         parentCIPipeline.pipelineType = CIPipelineBuildType.CI_LINKED
         const params = {
-            appId: +this.props.match.params.appId,
-            workflowId: +this.props.match.params.workflowId,
+            appId: +this.props.params.appId,
+            workflowId: +this.props.params.workflowId,
             name: this.state.form.name,
             isTemplateView: this.props.isTemplateView,
         }

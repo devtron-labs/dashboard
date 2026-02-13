@@ -15,14 +15,8 @@
  */
 
 import React from 'react'
-import { Prompt } from 'react-router-dom'
 
-import {
-    ConfirmationModal,
-    ConfirmationModalVariantType,
-    DEFAULT_ROUTE_PROMPT_MESSAGE,
-    usePrompt,
-} from '@devtron-labs/devtron-fe-common-lib'
+import { ConfirmationModal, ConfirmationModalVariantType, usePrompt } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DeployButton } from '@Icons/ic-nav-rocket.svg'
 import { ReactComponent as ICRollback } from '@Icons/ic-rollback-medium.svg'
@@ -47,29 +41,26 @@ const RollbackConfirmationDialog = ({
     }
 
     return (
-        <>
-            <ConfirmationModal
-                variant={ConfirmationModalVariantType.custom}
-                Icon={<ICRollback />}
-                title={rollbackDialogTitle}
-                subtitle="Are you sure you want to deploy a previous version?"
-                buttonConfig={{
-                    secondaryButtonConfig: {
-                        text: 'Cancel',
-                        onClick: handleClose,
-                        disabled: deploying,
-                    },
-                    primaryButtonConfig: {
-                        text: 'Deploy',
-                        isLoading: deploying,
-                        startIcon: <DeployButton />,
-                        onClick: handleDeployClick,
-                    },
-                }}
-                handleClose={handleClose}
-            />
-            <Prompt when={deploying} message={DEFAULT_ROUTE_PROMPT_MESSAGE} />
-        </>
+        <ConfirmationModal
+            variant={ConfirmationModalVariantType.custom}
+            Icon={<ICRollback />}
+            title={rollbackDialogTitle}
+            subtitle="Are you sure you want to deploy a previous version?"
+            buttonConfig={{
+                secondaryButtonConfig: {
+                    text: 'Cancel',
+                    onClick: handleClose,
+                    disabled: deploying,
+                },
+                primaryButtonConfig: {
+                    text: 'Deploy',
+                    isLoading: deploying,
+                    startIcon: <DeployButton />,
+                    onClick: handleDeployClick,
+                },
+            }}
+            handleClose={handleClose}
+        />
     )
 }
 

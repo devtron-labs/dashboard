@@ -43,6 +43,8 @@ import {
     MODES,
     noop,
     Progressing,
+    ROUTER_URLS,
+    RouterV5Props,
     SegmentedControl,
     SegmentType,
     showError,
@@ -58,7 +60,7 @@ import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
 import { importComponentFromFELibrary } from '@Components/common'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
-import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, URLS, ViewType } from '../../../../config'
+import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, ViewType } from '../../../../config'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
@@ -105,7 +107,7 @@ const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastA
     </label>
 )
 
-class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
+class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginState> {
     /**
      * Ref to store the value from the API, used for showing the modal
      */
@@ -474,7 +476,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                                 setTippyConfig({
                                     showTippy: false,
                                 })
-                                this.props.history.push(URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION)
+                                this.props.navigate(ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS)
                             }
 
                             return (
@@ -496,7 +498,7 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                             Icon: UsersIcon,
                             iconClass: 'fcy-5',
                             showTippy: true,
-                            showOnRoute: URLS.GLOBAL_CONFIG_AUTH_USER_PERMISSION,
+                            showOnRoute: ROUTER_URLS.GLOBAL_CONFIG_AUTH.USERS,
                             iconSize: 32,
                             additionalContent: renderTippyButton(),
                         })

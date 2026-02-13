@@ -45,6 +45,7 @@ import {
     ChangeCIPayloadType,
     URLS as CommonURLS,
     highlightSearchText,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ReactComponent as ICInput } from '../../assets/icons/ic-input.svg'
 import { ReactComponent as ICMoreOption } from '../../assets/icons/ic-more-option.svg'
@@ -109,9 +110,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     goToWorkFlowEditor = (node: CommonNodeAttr) => {
         if (node.branch === GIT_BRANCH_NOT_CONFIGURED) {
-            this.props.history.push(
+            this.props.navigate(
                 getCIPipelineURL(
-                    this.props.match.params.appId,
+                    this.props.params.appId,
                     this.props.id.toString(),
                     true,
                     node.downstreams[0].split('-')[1],
@@ -293,7 +294,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     openCDPipeline(node: CommonNodeAttr, isWebhookCD: boolean) {
-        const { appId } = this.props.match.params
+        const { appId } = this.props.params
 
         if (this.props.isOffendingPipelineView) {
             return getCDPipelineURL(
@@ -306,17 +307,17 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
             )
         }
 
-        return `${this.props.match.url}/${getCDPipelineURL(
+        return getCDPipelineURL(
             appId,
             this.props.id.toString(),
             String(node.connectingCiPipelineId ?? 0),
             isWebhookCD,
             node.id,
-        )}`
+        )
     }
 
     openCIPipeline(node: CommonNodeAttr) {
-        const { appId } = this.props.match.params
+        const { appId } = this.props.params
         let url = ''
         if (node.isLinkedCI) {
             url = getLinkedCIPipelineURL(appId, this.props.id.toString(), node.id, this.props.isOffendingPipelineView)
@@ -337,11 +338,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         if (this.props.isOffendingPipelineView) {
             return url
         }
-        return `${this.props.match.url}/${url}`
+        return url
     }
 
     openWebhookDetails(node: CommonNodeAttr) {
-        return `${this.props.match.url}/${getWebhookDetailsURL(this.props.id.toString(), node.id)}`
+        return getWebhookDetailsURL(this.props.id.toString(), node.id)
     }
 
     getAllWorkflows = () => {
@@ -384,11 +385,11 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 isLastNode={node.downstreams.length === 0}
-                history={this.props.history}
+                navigate={this.props.navigate}
                 location={this.props.location}
-                match={this.props.match}
+                params={this.props.params}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
-                appId={this.props.match.params.appId}
+                appId={this.props.params.appId}
                 getWorkflows={this.getAllWorkflows}
                 isTemplateView={this.props.isTemplateView}
             />
@@ -405,13 +406,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 height={node.height}
                 configDiffView={this.props.cdWorkflowList?.length > 0}
                 title={node.title}
-                redirectTo={`${
-                    this.props.isTemplateView
-                        ? generatePath(CommonURLS.APPLICATION_MANAGEMENT_TEMPLATES_DEVTRON_APP_DETAIL, {
-                              appId: this.props.match.params.appId,
-                          })
-                        : `${URLS.APPLICATION_MANAGEMENT_APP}/${this.props.match.params.appId}`
-                }/${CommonURLS.APP_CONFIG}/${
+                redirectTo={`${generatePath(this.props.isTemplateView ? ROUTER_URLS.APP_TEMPLATE_DETAIL : ROUTER_URLS.DEVTRON_APP_DETAILS.ROOT, { appId: this.props.params.appId })}/${CommonURLS.APP_CONFIG}/${
                     URLS.APP_WORKFLOW_CONFIG
                 }/${this.props.id ?? 0}/${URLS.LINKED_CD}?changeCi=0&switchFromCiPipelineId=${
                     node.id
@@ -420,14 +415,13 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 toggleCDMenu={() => {
                     this.props.handleCDSelect(this.props.id, node.id, 'ci-pipeline', node.id)
                 }}
-                history={this.props.history}
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
                 selectedNode={this.props.selectedNode}
                 id={node.id}
                 isLastNode={node.downstreams.length === 0}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
                 readOnly={this.props.isOffendingPipelineView}
-                appId={this.props.match.params.appId}
+                appId={this.props.params.appId}
                 getWorkflows={this.getAllWorkflows}
                 workflowId={this.props.id}
                 isTemplateView={this.props.isTemplateView}
@@ -463,7 +457,6 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 cdNamesList={cdNamesList}
                 hideWebhookTippy={this.props.hideWebhookTippy}
                 deploymentAppDeleteRequest={node.deploymentAppDeleteRequest}
-                match={this.props.match}
                 isVirtualEnvironment={node.isVirtualEnvironment}
                 addNewPipelineBlocked={this.props.addNewPipelineBlocked}
                 handleSelectedNodeChange={this.props.handleSelectedNodeChange}
@@ -472,7 +465,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 // Adding this downstream hack, for the case when we are not receiving all the nodes in case of filtered CD
                 isLastNode={node.isLast || node.downstreams.length === 0}
                 deploymentAppType={node.deploymentAppType}
-                appId={this.props.match.params.appId}
+                appId={this.props.params.appId}
                 getWorkflows={this.props.getWorkflows}
                 reloadEnvironments={this.props.reloadEnvironments}
                 deploymentAppCreated={node.deploymentAppCreated}
@@ -481,8 +474,9 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
                 showPluginWarning={node.showPluginWarning}
                 isOffendingPipelineView={this.props.isOffendingPipelineView}
                 isTemplateView={this.props.isTemplateView}
-                history={this.props.history}
                 location={this.props.location}
+                navigate={this.props.navigate}
+                params={this.props.params}
             />
         )
     }
@@ -516,7 +510,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
         nodesWithBufferHeight: CommonNodeAttr[]
     }) => {
         const ciPipeline = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)
-        this.props.history.push(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
+        this.props.navigate(`workflow/${this.props.id}/ci-pipeline/${+ciPipeline?.id}/cd-pipeline/${nodeId}`)
     }
 
     renderEdgeList({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) {
@@ -645,7 +639,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     handleCIChange = ({ nodesWithBufferHeight }: { nodesWithBufferHeight: CommonNodeAttr[] }) => {
         const payload: ChangeCIPayloadType = {
             appWorkflowId: Number(this.props.id),
-            appId: Number(this.props.match.params.appId),
+            appId: Number(this.props.params.appId),
         }
 
         const switchFromCiPipelineId = nodesWithBufferHeight.find((nd) => nd.type == WorkflowNodeType.CI)?.id
@@ -669,8 +663,8 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
     }
 
     handleNewJobRedirection = () => {
-        this.props.history.push(
-            `${URLS.AUTOMATION_AND_ENABLEMENT_JOB}/${this.props.match.params.appId}/${CommonURLS.APP_CONFIG}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+        this.props.navigate(
+            `${generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId: this.props.params.appId })}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 

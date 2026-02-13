@@ -15,21 +15,22 @@
  */
 
 import React from 'react'
-import { useHistory, useRouteMatch } from 'react-router-dom'
+import { generatePath, useNavigate } from 'react-router-dom'
 
 import { LoadingCard } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ReactComponent as Timer } from '../../../../assets/icons/ic-clock-counterclockwise.svg'
+import { ReactComponent as Timer } from '@Icons/ic-clock-counterclockwise.svg'
+
 import { URLS } from '../../../../config'
 import { LastUpdatedCardType } from './appDetails.type'
 import { validateMomentDate } from './utils'
 
 const LastUpdatedCard = ({ deploymentTriggerTime, triggeredBy, cardLoading }: LastUpdatedCardType) => {
-    const history = useHistory()
-    const match = useRouteMatch()
+    const navigate = useNavigate()
 
     const goToDeploymentHistory = () => {
-        history.push(`${match.url.split(URLS.APP_DETAILS)[0]}${URLS.APP_DEPLOYMNENT_HISTORY}`)
+        const url = generatePath(`../${URLS.APP_DEPLOYMNENT_HISTORY}`)
+        navigate(url)
     }
 
     if (cardLoading) {

@@ -15,7 +15,7 @@
  */
 
 import { useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import moment from 'moment'
 
 import {
@@ -39,12 +39,12 @@ import DeleteAPITokenModal from './DeleteAPITokenModal'
 import './apiToken.scss'
 
 const APITokenList = ({ tokenList, renderSearchToken, reload }: APITokenListType) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false)
     const [selectedToken, setSelectedToken] = useState<TokenListType>()
 
     const handleGenerateRowActionButton = (key: 'create' | 'edit', id?) => {
-        history.push(id ? `${key}/${id}` : key)
+        navigate(id ? `../${key}/${id}` : `../${key}`)
     }
 
     const handleDeleteButton = (_tokenList) => {

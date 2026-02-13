@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { ReactComponent as Close } from '../../assets/icons/ic-close.svg'
 import { GuideCommonHeaderType } from './OnboardingGuide.type'
 
 const GuideCommonHeader = ({ loginCount, title, subtitle, isGettingStartedClicked }: GuideCommonHeaderType) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const showCloseIcon = loginCount > 0 || isGettingStartedClicked
 
     const onClickCloseButton = () => {
-        history.goBack()
+        navigate(-1)
     }
 
     return (

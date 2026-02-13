@@ -15,12 +15,13 @@
  */
 
 import { Component } from 'react'
-import { Link } from 'react-router-dom'
+import { generatePath, Link } from 'react-router-dom'
 import {
     DeploymentAppTypes,
     stopPropagation,
     getWorkflowNodeStatusTitle,
     Icon,
+    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerPrePostCDNodeProps, TriggerPrePostCDNodeState } from '../../types'
 import { TriggerStatus } from '../../../../config'
@@ -47,18 +48,18 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 this.props.appId,
                 this.props.environmentId,
                 this.props.id,
-                this.props.match.params.envId === this.props.environmentId.toString(),
+                this.props.params.envId === this.props.environmentId.toString(),
                 '',
                 this.props.type,
             )
         }
-        return `${this.props.match.url.replace(URLS.APP_TRIGGER, URLS.APP_CD_DETAILS)}/${this.props.environmentId}/${
-            this.props.id
-        }?type=${this.props.type}`
+        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CD_DETAILS, {
+            appId: this.props.params.appId,
+        })}/${this.props.environmentId}/${this.props.id}?type=${this.props.type}`
     }
 
     redirectToCDDetails = () => {
-        this.props.history.push(this.getCDDetailsURL())
+        this.props.navigate(this.getCDDetailsURL())
     }
 
     renderStatus(isClickable: boolean, status: string) {
@@ -151,7 +152,7 @@ export class TriggerPrePostCDNode extends Component<TriggerPrePostCDNodeProps, T
                 {this.state.showGitOpsRepoConfiguredWarning && (
                     <NoGitOpsRepoConfiguredWarning
                         closePopup={this.handleShowGitOpsRepoConfiguredWarning}
-                        appId={+this.props.match.params.appId}
+                        appId={+this.props.params.appId}
                         text={gitOpsRepoNotConfiguredWithEnforcedEnv(this.props.environmentName)}
                         reload={this.props.reloadTriggerView}
                     />

@@ -16,7 +16,7 @@
 
 import { Dispatch, MouseEvent, useEffect, useMemo, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { generatePath, NavLink, useHistory, useLocation, useRouteMatch } from 'react-router-dom'
+import { generatePath, NavLink, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { GroupBase, OptionsOrGroups } from 'react-select'
 import Tippy from '@tippyjs/react'
 
@@ -70,6 +70,7 @@ const EnvConfigurationsNavContent = ({
     appOrEnvIdToResourceApprovalConfigurationMap,
     expandedIds,
     setExpandedIds,
+    path,
 }: Pick<
     EnvConfigurationsNavProps,
     | 'showBaseConfigurations'
@@ -79,15 +80,16 @@ const EnvConfigurationsNavContent = ({
     | 'paramToCheck'
     | 'isCMSecretLocked'
     | 'appOrEnvIdToResourceApprovalConfigurationMap'
+    | 'path'
 > & {
     expandedIds: ExpandedIdsType
     setExpandedIds: Dispatch<ExpandedIdsType>
 }) => {
     // HOOKS
-    const history = useHistory()
+    const navigate = useNavigate()
     const { pathname } = useLocation()
-    const { path, params } = useRouteMatch<EnvConfigRouteParams>()
-    const { envId, resourceType } = params
+    const params = useParams<EnvConfigRouteParams>()
+    const { appId, envId, resourceType } = params
     const parsedResourceId = +params[paramToCheck]
 
     const [updatedEnvConfig, setUpdatedEnvConfig] = useState<ReturnType<typeof getEnvConfiguration>>({
@@ -125,7 +127,7 @@ const EnvConfigurationsNavContent = ({
                 ..._updatedEnvConfig[envConfigKey],
                 {
                     title: 'Unnamed',
-                    href: getNavigationPath(path, params, resourceType, 'create'),
+                    href: getNavigationPath(path, { appId, resourceType, envId }, resourceType, 'create'),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
                     ...getUnnamedIconConfig(
@@ -142,7 +144,7 @@ const EnvConfigurationsNavContent = ({
         if (resourceData.id === BASE_CONFIGURATIONS.id && envId) {
             // Removing `/env-override/:envId` from pathname, resulting path will be base configuration path.
             const [basePath, resourcePath] = pathname.split(`/${URLS.APP_ENV_OVERRIDE_CONFIG}/${envId}`)
-            history.push(`${basePath}${URLS.BASE_CONFIG}/${resourcePath}`)
+            navigate(`${basePath}${URLS.BASE_CONFIG}/${resourcePath}`)
         }
     }, [resourceData, envId])
 
@@ -151,7 +153,11 @@ const EnvConfigurationsNavContent = ({
             const newEnvConfig = getEnvConfiguration(
                 config,
                 path,
-                params,
+                {
+                    appId,
+                    envId,
+                    ...params,
+                },
                 // For base configurations, the resource id is undefined
                 appOrEnvIdToResourceApprovalConfigurationMap?.[parsedResourceId || BASE_CONFIGURATION_ENV_ID]
                     ?.approvalConfigurationMap,
@@ -211,7 +217,18 @@ const EnvConfigurationsNavContent = ({
             return
         }
         setExpandedIds({ ...expandedIds, [_resourceType]: true })
-        history.push(getNavigationPath(path, params, _resourceType, 'create'))
+        navigate(
+            getNavigationPath(
+                path,
+                {
+                    appId,
+                    envId,
+                    ...params,
+                },
+                _resourceType,
+                'create',
+            ),
+        )
     }
 
     /** Collapsible List Config. */
@@ -308,12 +325,13 @@ export const EnvConfigurationsNav = ({
     appOrEnvIdToResourceApprovalConfigurationMap,
     isTemplateView,
     shouldSetEnvInContext = false,
+    path,
 }: EnvConfigurationsNavProps) => {
-    const history = useHistory()
+    const navigate = useNavigate()
     const { isSuperAdmin } = useMainContext()
     const { setEnvironmentId } = useAppContext()
     const { pathname } = useLocation()
-    const { path, params } = useRouteMatch<EnvConfigRouteParams>()
+    const params = useParams<EnvConfigRouteParams>()
 
     const { envId, resourceType } = params
     const parsedResourceId = +params[paramToCheck]
@@ -345,11 +363,12 @@ export const EnvConfigurationsNav = ({
             const validResourceType =
                 isSuperAdmin || !areCMsPresent ? EnvResourceType.DeploymentTemplate : EnvResourceType.ConfigMap
 
-            history.replace(
+            navigate(
                 generatePath(path, {
                     ...params,
                     resourceType: validResourceType,
                 }),
+                { replace: true },
             )
         }
     }
@@ -405,7 +424,7 @@ export const EnvConfigurationsNav = ({
         })}${resourceName ? `/${resourceName}` : ''}`
 
         // Navigate to the generated path
-        history.push(generatedPath)
+        navigate(generatedPath)
     }
 
     const renderEnvSelector = () => (
@@ -495,6 +514,7 @@ export const EnvConfigurationsNav = ({
                             hideEnvSelector,
                             compareWithURL,
                             appOrEnvIdToResourceApprovalConfigurationMap,
+                            path,
                         }}
                         expandedIds={expandedIds}
                         setExpandedIds={setExpandedIds}

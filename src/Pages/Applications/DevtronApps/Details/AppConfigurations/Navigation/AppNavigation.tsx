@@ -32,7 +32,7 @@
  */
 
 import { ReactNode } from 'react'
-import { Route, Switch, useLocation, useRouteMatch } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 import {
     Button,
@@ -54,9 +54,8 @@ import { EnvConfigurationsNav } from './EnvConfigurationsNav'
 import EnvironmentOverrideRouter from './EnvironmentOverrideRouter'
 import { renderNavItem } from './Navigation.helper'
 
-export const AppNavigation = () => {
+export const AppNavigation = ({ routePath }: { routePath: string }) => {
     // HOOKS
-    const { path } = useRouteMatch()
     const location = useLocation()
 
     // CONTEXTS
@@ -148,100 +147,109 @@ export const AppNavigation = () => {
     }
 
     return (
-        <Switch>
-            <Route
-                path={[
-                    `${path}/${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
-                    `${path}/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
-                ]}
-            >
-                {({ match }) => (
-                    <EnvConfigurationsNav
-                        key={`env-configurations-nav-${'envId' in match.params ? match.params.envId : ''}`}
-                        envConfig={envConfig}
-                        fetchEnvConfig={fetchEnvConfig}
-                        environments={environments.map(({ environmentName, environmentId }) => ({
-                            id: environmentId,
-                            name: environmentName,
-                        }))}
-                        showBaseConfigurations
-                        showDeploymentTemplate={!isJobView}
-                        goBackURL={getValidBackURL()}
-                        compareWithURL={`${path}/:envId(\\d+)?`}
-                        showComparison={!isJobView && isUnlocked.workflowEditor}
-                        isCMSecretLocked={!isUnlocked.workflowEditor}
-                        appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                        isTemplateView={isTemplateView}
-                        shouldSetEnvInContext={!isTemplateView && !isJobView}
-                    />
-                )}
-            </Route>
-
-            <Route key="default-navigation">
-                <>
-                    <div className="flexbox-col flex-grow-1 dc__overflow-auto w-100 pt-16 px-12">
-                        {!hideConfigHelp && (
-                            <AppConfigurationCheckBox
-                                selectedNav={selectedNav}
-                                isJobView={isJobView}
-                                totalSteps={totalSteps}
-                            />
-                        )}
-                        {navItems
-                            .filter((item) => !item.isHidden)
-                            .map((item) => {
-                                if (item.altNavKey) {
-                                    return null
-                                }
-
-                                if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
-                                    return (
-                                        canShowExternalLinks && (
-                                            <div key={item.stage}>
-                                                <div className="dc__border-bottom-n1 mt-8 mb-8" />
-                                                {renderNavItem(item)}
-                                            </div>
-                                        )
-                                    )
-                                }
-
-                                if (
-                                    item.stage !== STAGE_NAME.ENV_OVERRIDE ||
-                                    (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
-                                ) {
-                                    return (
-                                        <ConditionalWrap
-                                            key={item.stage}
-                                            condition={showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG}
-                                            wrap={getEnvOverrideTippy}
-                                        >
-                                            {item.required && renderNavItem(item, isJobView)}
-                                        </ConditionalWrap>
-                                    )
-                                }
-
-                                return (
-                                    <EnvironmentOverrideRouter
-                                        key={item.stage}
-                                        envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
-                                    />
-                                )
-                            })}
-                        {isJobView && <div className="h-100" />}
-                    </div>
-                    <div className="p-12 w-100">
-                        <Button
-                            dataTestId="delete-job-app-button"
-                            variant={ButtonVariantType.secondary}
-                            size={ComponentSizeType.medium}
-                            style={ButtonStyleType.negative}
-                            onClick={deleteApp}
-                            text={getDeleteButtonText()}
-                            fullWidth
+        <Routes>
+            {[
+                `${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`,
+                `${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`,
+            ].map((pathPattern) => (
+                <Route
+                    key={pathPattern}
+                    path={pathPattern}
+                    element={
+                        <EnvConfigurationsNav
+                            key="env-configurations-nav"
+                            envConfig={envConfig}
+                            fetchEnvConfig={fetchEnvConfig}
+                            environments={environments.map(({ environmentName, environmentId }) => ({
+                                id: environmentId,
+                                name: environmentName,
+                            }))}
+                            showBaseConfigurations
+                            showDeploymentTemplate={!isJobView}
+                            goBackURL={getValidBackURL()}
+                            compareWithURL={`${routePath}/:envId?`}
+                            showComparison={!isJobView && isUnlocked.workflowEditor}
+                            isCMSecretLocked={!isUnlocked.workflowEditor}
+                            appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                            isTemplateView={isTemplateView}
+                            shouldSetEnvInContext={!isTemplateView && !isJobView}
+                            path={`${routePath}/${pathPattern}`}
                         />
-                    </div>
-                </>
-            </Route>
-        </Switch>
+                    }
+                />
+            ))}
+            <Route
+                key="default-navigation"
+                index
+                path="/*"
+                element={
+                    <>
+                        <div className="flexbox-col flex-grow-1 dc__overflow-auto w-100 pt-16 px-12">
+                            {!hideConfigHelp && (
+                                <AppConfigurationCheckBox
+                                    selectedNav={selectedNav}
+                                    isJobView={isJobView}
+                                    totalSteps={totalSteps}
+                                />
+                            )}
+                            {navItems
+                                .filter((item) => !item.isHidden)
+                                .map((item) => {
+                                    if (item.altNavKey) {
+                                        return null
+                                    }
+
+                                    if (item.stage === STAGE_NAME.EXTERNAL_LINKS) {
+                                        return (
+                                            canShowExternalLinks && (
+                                                <div key={item.stage}>
+                                                    <div className="dc__border-bottom-n1 mt-8 mb-8" />
+                                                    {renderNavItem(item)}
+                                                </div>
+                                            )
+                                        )
+                                    }
+
+                                    if (
+                                        item.stage !== STAGE_NAME.ENV_OVERRIDE ||
+                                        (item.stage === STAGE_NAME.ENV_OVERRIDE && item.isLocked)
+                                    ) {
+                                        return (
+                                            <ConditionalWrap
+                                                key={item.stage}
+                                                condition={
+                                                    showCannotDeleteTooltip && item.stage === STAGE_NAME.CI_CONFIG
+                                                }
+                                                wrap={getEnvOverrideTippy}
+                                            >
+                                                {item.required && renderNavItem(item, isJobView)}
+                                            </ConditionalWrap>
+                                        )
+                                    }
+
+                                    return (
+                                        <EnvironmentOverrideRouter
+                                            key={item.stage}
+                                            envIdToEnvApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
+                                        />
+                                    )
+                                })}
+                            {isJobView && <div className="h-100" />}
+                        </div>
+                        <div className="p-12 w-100">
+                            <Button
+                                dataTestId="delete-job-app-button"
+                                variant={ButtonVariantType.secondary}
+                                size={ComponentSizeType.medium}
+                                style={ButtonStyleType.negative}
+                                onClick={deleteApp}
+                                text={getDeleteButtonText()}
+                                fullWidth
+                            />
+                        </div>
+                    </>
+                }
+            />
+        </Routes>
     )
 }
