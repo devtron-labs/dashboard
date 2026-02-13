@@ -319,7 +319,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     }
                 />
                 <Route
-                    path={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_DETAIL}
+                    path={`${CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_DETAIL}/*`}
                     element={
                         <DynamicTabComponentWrapper
                             type="dynamic"
