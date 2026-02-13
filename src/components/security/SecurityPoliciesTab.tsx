@@ -26,11 +26,11 @@ import {
     useBreadcrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
-import SecurityPolicyClusterWithParams from './SecurityPolicyCluster'
-import SecurityPolicyAppWithParams from './SecurityPolicyApp'
-import SecurityPolicyEnvironmentWithParams from './SecurityPolicyEnvironment'
 import { VulnerabilityExposure } from './AddCVEPolicy'
+import SecurityPolicyAppWithParams from './SecurityPolicyApp'
+import SecurityPolicyClusterWithParams from './SecurityPolicyCluster'
+import SecurityPolicyEnvironmentWithParams from './SecurityPolicyEnvironment'
+import { SecurityPolicyGlobal } from './SecurityPolicyGlobal'
 
 export const SecurityPoliciesTab = () => {
     const { breadcrumbs } = useBreadcrumb(ROUTER_URLS.SECURITY_CENTER_POLICIES, {

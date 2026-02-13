@@ -67,7 +67,7 @@ export interface NodeDetailComponentWrapperProps
         Omit<NodeDetailPropsType, 'updateTabUrl' | 'removeTabByIdentifier'> {
     clusterName: string
 }
-export interface NodeDetailURLParams {
+export type NodeDetailURLParams = {
     name: string
 }
 

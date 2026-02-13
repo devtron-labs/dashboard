@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { SELECT_ALL_VALUE, URLS } from '../../../config'
+import { generatePath } from 'react-router-dom'
+
+import { ROUTER_URLS } from '@devtron-labs/devtron-fe-common-lib'
+
+import { SELECT_ALL_VALUE } from '../../../config'
 import { ENVIRONMENT_FILTER_SEARCH_KEY } from './constants'
 import { LinkedCIAppUrlProps } from './types'
 
@@ -27,6 +31,9 @@ export const getLinkedCITippyContent = (workflowCount: number = 0) =>
 
 export const getLinkedCIAppUrl = ({ appId, environmentId }: LinkedCIAppUrlProps): string => {
     const envId = environmentId ? `/${environmentId}` : ''
-    const link = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${URLS.APP_DETAILS}${envId}`
+    const link = generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+        appId: String(appId),
+        envId,
+    })
     return link
 }

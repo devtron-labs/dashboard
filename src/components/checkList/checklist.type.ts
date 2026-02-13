@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+export interface AppCheckList {
+    gitOps: boolean
+    project: boolean
+    git: boolean
+    environment: boolean
+    docker: boolean
+    hostUrl: boolean
+}
+
 export interface ChartCheckList {
     gitOps: boolean
     project: boolean

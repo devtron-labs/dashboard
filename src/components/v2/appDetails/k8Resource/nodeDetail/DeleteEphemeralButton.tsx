@@ -64,7 +64,7 @@ export const DeleteEphemeralButton = ({
                 appType,
                 fluxTemplateType,
                 isResourceBrowserView,
-                params,
+                params: params as ParamsType,
             })
 
             const updatedContainers = containers.filter((con) => con.name !== result) || []

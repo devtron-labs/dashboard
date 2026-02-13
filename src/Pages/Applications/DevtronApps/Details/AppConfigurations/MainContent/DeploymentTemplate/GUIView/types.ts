@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeploymentChartVersionType, GUIViewError } from '@devtron-labs/devtron-fe-common-lib'
+import { DeploymentChartVersionType, FormProps, GUIViewError } from '@devtron-labs/devtron-fe-common-lib'
 
 import { DeploymentTemplateFormProps } from '../types'
 
@@ -37,8 +37,8 @@ export interface GUIViewProps extends Pick<
 
 export type GUIViewState =
     | {
-          guiSchema: object
-          uiSchema: object
+          guiSchema: FormProps['schema']
+          uiSchema: FormProps['uiSchema']
           error?: never
       }
     | {
