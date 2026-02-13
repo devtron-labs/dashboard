@@ -32,7 +32,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 import { saveHostURLConfiguration } from '@Components/hostURL/hosturl.service'
 import { createJob } from '@Components/Jobs/Service'
 import { REQUIRED_FIELDS_MISSING } from '@Config/constants'
-import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/routes'
+import { APP_COMPOSE_STAGE, getAppComposeURL } from '@Config/routes'
 import { getHostURLConfiguration } from '@Services/service'
 
 import ApplicationInfoForm from './ApplicationInfoForm'

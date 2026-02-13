@@ -95,7 +95,10 @@ const TriggerView = ({ isJobView, filteredEnvIds }: TriggerViewProps) => {
     }
 
     const revertToPreviousURL = () => {
-        const redirectPath = generatePath(isJobView ? ROUTER_URLS.JOB_DETAIL.TRIGGER : ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, { appId })
+        const redirectPath = generatePath(
+            isJobView ? ROUTER_URLS.JOB_DETAIL.TRIGGER : ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER,
+            { appId },
+        )
         navigate(redirectPath)
     }
 

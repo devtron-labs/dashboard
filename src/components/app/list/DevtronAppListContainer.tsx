@@ -125,9 +125,11 @@ const DevtronAppList = ({
     }, [appListResponseLoading])
 
     const handleEditApp = (appId: number): void => {
-        navigate(generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, {
-            appId: String(appId),
-        }))
+        navigate(
+            generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CONFIGURATIONS, {
+                appId: String(appId),
+            }),
+        )
     }
 
     const handleEditAppRedirect = (event): void => {
@@ -146,8 +148,8 @@ const DevtronAppList = ({
             })
         }
         return generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.TRIGGER, {
-                appId: String(app.id),
-            })
+            appId: String(app.id),
+        })
     }
 
     const expandRow = (id: number): void => {

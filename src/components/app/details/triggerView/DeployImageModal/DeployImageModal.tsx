@@ -24,6 +24,7 @@ import {
     ModuleStatus,
     noop,
     PipelineDeploymentStrategy,
+    ROUTER_URLS,
     ServerErrors,
     showError,
     SortingOrder,
@@ -37,7 +38,6 @@ import {
     useDownload,
     usePrompt,
     useSearchString,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'

@@ -50,7 +50,7 @@ const ActivateLicense = () => {
     const { appTheme } = useTheme()
 
     const [isLoading, licenseData, licenseDataError, reloadLicenseData] = useAsync(getDevtronLicenseInfo, [])
-    
+
     const [showActivateDialog, setShowActivateDialog] = useState<boolean>(false)
     const [isActivatingLicense, setIsActivatingLicense] = useState<boolean>(false)
 

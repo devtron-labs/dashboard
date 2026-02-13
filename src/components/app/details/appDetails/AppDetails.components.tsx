@@ -33,9 +33,7 @@ const AppEnvDropdown = ({ isAppView = false, options, value }: AppEnvDropdownPro
     const navigate = useNavigate()
     const { appId, envId } = useParams<Pick<BaseURLParams, 'appId' | 'envId'>>()
 
-    const path = isAppView
-        ? ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS
-        : ROUTER_URLS.APP_GROUP_DETAILS.APP_DETAILS
+    const path = isAppView ? ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS : ROUTER_URLS.APP_GROUP_DETAILS.APP_DETAILS
 
     const handleOnChange = (option: SelectPickerOptionType) => {
         const newUrl = generatePath(path, {

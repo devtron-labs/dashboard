@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { useLocation } from 'react-router-dom'
-
 import {
     Button,
     ButtonStyleType,
@@ -88,9 +86,6 @@ export const ConfigMapSecretForm = ({
     noContainerPadding = false,
     handleMergeStrategyChange,
 }: ConfigMapSecretFormProps) => {
-    // HOOKS
-    const location = useLocation()
-
     // FORM PROPS
     const { data, errors, formState, setValue, register } = useFormProps
 
