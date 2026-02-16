@@ -150,10 +150,12 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
             // keeping the existing type intact
             .then(([ssoConfigListRes, authorizationGlobalConfig]) => {
                 let ssoConfig = ssoConfigListRes.result?.find((sso) => sso.active)
+                let ssoName = 'google'
                 if (ssoConfig) {
+                    ssoName = ssoConfig.name
                     this.setState({ sso: ssoConfig?.name, lastActiveSSO: ssoConfig })
                 } else {
-                    ssoConfig = sample.google.config as any // TODO: Add type for sample
+                    ssoConfig = sample.google as any // TODO: Add type for sample
                     this.setState({ sso: 'google', ssoConfig: this.parseResponse(ssoConfig) })
                 }
                 // Would be undefined for OSS
@@ -165,12 +167,13 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
                     })
                     this.savedShouldAutoAssignPermissionRef.current = shouldAutoAssignPermissions
                 }
+                return { ssoConfig, ssoName }
             })
-            .then(() => {
-                if (this.state.lastActiveSSO && this.state.lastActiveSSO?.id) {
-                    getSSOConfig(this.state.lastActiveSSO?.name.toLowerCase())
+            .then(({ ssoConfig, ssoName }) => {
+                if (ssoConfig?.id) {
+                    getSSOConfig(ssoConfig.name.toLowerCase())
                         .then((response) => {
-                            this.setConfig(response, this.state.lastActiveSSO.name.toLowerCase())
+                            this.setConfig(response, ssoConfig.name.toLowerCase())
                         })
                         .catch((error) => {
                             this.setState({ view: ViewType.ERROR, statusCode: error.code })
@@ -178,7 +181,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
                 } else {
                     this.setState({
                         view: ViewType.FORM,
-                        ssoConfig: this.parseResponse(sample[this.state.sso]),
+                        ssoConfig: this.parseResponse(sample[ssoName]),
                     })
                 }
             })
