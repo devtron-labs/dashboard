@@ -16,29 +16,72 @@
 
 import { Component } from 'react'
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
-import { DOCUMENTATION, ErrorScreenNotAuthorized, FeatureTitleWithInfo, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
+import {
+    Button,
+    ButtonVariantType,
+    ComponentSizeType,
+    ErrorScreenNotAuthorized,
+    FeatureTitleWithInfo,
+    Icon,
+    TabGroup,
+    TOAST_ACCESS_DENIED,
+    ToastManager,
+    ToastVariantType,
+} from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
-import { HEADER_TEXT } from '../../config'
+import { HEADER_TEXT, URLS } from '../../config'
 import './notifications.scss'
+import { NotificationsProps, NotificationsState } from './types'
 
-interface NotificationsProps extends RouteComponentProps<{}> {
-    isSuperAdmin: boolean
-}
+export default class Notifications extends Component<NotificationsProps, NotificationsState> {
 
-export default class Notifications extends Component<NotificationsProps, {}> {
+    constructor(props) {
+        super(props)
+        this.state = {
+            disableEdit: false,
+        }
+    }
+
+    createNewNotification = () => {
+        if (this.state.disableEdit) {
+            ToastManager.showToast({
+                variant: ToastVariantType.notAuthorized,
+                description: TOAST_ACCESS_DENIED.SUBTITLE,
+            })
+        } else {
+            this.props.history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
+        }
+    }
+
+    toggleDisableEdit = (disableEdit: boolean) => {
+        this.setState({ disableEdit })
+    }
+
     renderNotificationHeader() {
         return (
             <div className="notification-page bg__primary flexbox-col h-100">
                 <div className="notification-page__header">
-                    <FeatureTitleWithInfo
-                        title={HEADER_TEXT.NOTIFICATIONS.title}
-                        renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
-                        docLink="GLOBAL_CONFIG_NOTIFICATION"
-                        showInfoIconTippy
-                        dataTestId="notifications-feature-title"
-                    />
+                    <div className="flex dc__content-space">
+                        <FeatureTitleWithInfo
+                            title={HEADER_TEXT.NOTIFICATIONS.title}
+                            renderDescriptionContent={() => HEADER_TEXT.NOTIFICATIONS.description}
+                            docLink="GLOBAL_CONFIG_NOTIFICATION"
+                            showInfoIconTippy
+                            dataTestId="notifications-feature-title"
+                        />
+                        <div className="flex right">
+                            <Button
+                                variant={ButtonVariantType.primary}
+                                text="Add New"
+                                size={ComponentSizeType.medium}
+                                onClick={this.createNewNotification}
+                                dataTestId="delete-notification-button"
+                                startIcon={<Icon name="ic-add" color={null} />}
+                            />
+                        </div>
+                    </div>
                     <TabGroup
                         tabs={[
                             {
@@ -64,7 +107,15 @@ export default class Notifications extends Component<NotificationsProps, {}> {
                 </div>
                 <ErrorBoundary>
                     <Switch>
-                        <Route path={`${this.props.match.url}/channels`} component={NotificationTab} />
+                        <Route
+                            path={`${this.props.match.url}/channels`}
+                            render={() => (
+                                <NotificationTab
+                                    disableEdit={this.state.disableEdit}
+                                    toggleDisableEdit={this.toggleDisableEdit}
+                                />
+                            )}
+                        />
                         <Route path={`${this.props.match.url}/configurations`} component={ConfigurationTab} />
                         <Redirect to={`${this.props.match.url}/channels`} />
                     </Switch>

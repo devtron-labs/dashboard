@@ -278,11 +278,17 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         } else {
             const baseEvents = pipeline.success && pipeline.trigger && pipeline.failure
             const approvalEvents = pipeline.configApproval && pipeline.imageApproval
-            const anyEvent = pipeline.success || pipeline.trigger || pipeline.failure || pipeline.configApproval || pipeline.imageApproval
+            const anyEvent =
+                pipeline.success ||
+                pipeline.trigger ||
+                pipeline.failure ||
+                pipeline.configApproval ||
+                pipeline.imageApproval
 
-            const isFullySelected = rowType === NotificationPipelineType.CI 
-                ? baseEvents && !pipeline.configApproval && !pipeline.imageApproval
-                : baseEvents && approvalEvents
+            const isFullySelected =
+                rowType === NotificationPipelineType.CI
+                    ? baseEvents && !pipeline.configApproval && !pipeline.imageApproval
+                    : baseEvents && approvalEvents
 
             if (isFullySelected) {
                 pipeline.checkbox = {
@@ -696,7 +702,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         <th className="pipeline-list__checkbox fw-6" />
                         <th className="pipeline-list__pipeline-name fw-6">Resource</th>
                         <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
-                        <th className="pipeline-list__type fw-6">Type</th>
                         <th className="pipeline-list__environment fw-6">Env/Branch</th>
                         <th className="pipeline-list__stages dc__block fw-6">Events</th>
                     </tr>
@@ -731,6 +736,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         </Checkbox>
                                     </td>
                                     <td className="pipeline-list__pipeline-name">
+                                        <span className="pipeline-list__type">{renderPipelineTypeIcon(row, 20)}</span>
                                         {row.appliedFilters.length ? (
                                             <>
                                                 <i>
@@ -753,7 +759,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         )}
                                     </td>
                                     <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
-                                    <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
                                     <td className="pipeline-list__environment">
                                         {_isCi && (
                                             <span className="flex left">
