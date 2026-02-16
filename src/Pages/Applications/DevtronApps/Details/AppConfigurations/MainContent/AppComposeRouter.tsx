@@ -129,7 +129,7 @@ const AppComposeRouter = ({ routePath }: { routePath: string }) => {
             {isUnlocked.workflowEditor && [
                 <Route
                     key={URLS.APP_WORKFLOW_CONFIG}
-                    path={`${URLS.APP_WORKFLOW_CONFIG}/:workflowId?/*`}
+                    path={`${URLS.APP_WORKFLOW_CONFIG}/*`}
                     element={
                         <WorkflowEdit
                             configStatus={1}
@@ -289,7 +289,7 @@ const AppComposeRouter = ({ routePath }: { routePath: string }) => {
             {isUnlocked.workflowEditor && [
                 <Route
                     key={URLS.APP_WORKFLOW_CONFIG}
-                    path={`${URLS.APP_WORKFLOW_CONFIG}/:workflowId?/*`}
+                    path={`${URLS.APP_WORKFLOW_CONFIG}/*`}
                     element={
                         <WorkflowEdit
                             configStatus={1}

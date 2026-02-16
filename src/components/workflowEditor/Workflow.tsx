@@ -664,7 +664,7 @@ export class Workflow extends Component<WorkflowProps, WorkflowState> {
 
     handleNewJobRedirection = () => {
         this.props.navigate(
-            `${generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId: this.props.params.appId })}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
+            `${generatePath(ROUTER_URLS.JOB_DETAIL.CONFIGURATIONS, { appId: this.props.params.appId })}/${URLS.APP_WORKFLOW_CONFIG}/${this.props.id}/${URLS.APP_CI_CONFIG}/0`,
         )
     }
 

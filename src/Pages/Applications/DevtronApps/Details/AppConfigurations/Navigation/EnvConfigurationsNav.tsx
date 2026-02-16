@@ -412,7 +412,7 @@ export const EnvConfigurationsNav = ({
 
         // Build the new app path, conditionally adding the environment override config when switching to environment
         const appPath = `${truncatedPath}${
-            value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId(\\d+)?` : `/${URLS.BASE_CONFIG}`
+            value !== BASE_CONFIGURATIONS.id ? `/${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId?` : `/${URLS.BASE_CONFIG}`
         }/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?` // Dynamically set valid resource types
 
         // Generate the final path

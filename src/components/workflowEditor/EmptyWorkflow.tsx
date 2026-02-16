@@ -15,6 +15,7 @@
  */
 
 import { useState } from 'react'
+import { useParams } from 'react-router-dom'
 import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
 import { EmptyWorkflowProps, EmptyWorkflowState } from './types'
 import { createWorkflow } from './service'
@@ -22,6 +23,7 @@ import { FILTER_NAME_REGEX } from '../ApplicationGroup/Constants'
 import { NO_WORKFLOW_NAME, INVALID_WORKFLOW_NAME, MIN_3CHARS, MAX_30CHARS, SUCCESS_CREATION } from './constants'
 
 export default function EmptyWorkflow(props: EmptyWorkflowProps) {
+    const params = useParams<{ appId: string }>()
     const [state, setState] = useState<EmptyWorkflowState>({
         name: '',
         showError: false,
@@ -36,7 +38,7 @@ export default function EmptyWorkflow(props: EmptyWorkflowProps) {
         event.preventDefault()
         setState({ ...state, showError: true, loading: true })
         const request = {
-            appId: +props.params.appId,
+            appId: +params.appId,
             name: state.name,
         }
         if (!isNameValid().isValid) {

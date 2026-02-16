@@ -102,24 +102,18 @@ export interface WorkflowEditProps
     reloadAppConfig?: () => void
 }
 
-export interface AddWorkflowState {
-    id: number
-    name: string
-    showError: boolean
-}
 export interface EmptyWorkflowState {
     name: string
     loading: boolean
     showError: boolean
 }
 
-export interface AddWorkflowProps
-    extends RouterV5Props<{ appId: string; workflowId: string }>, Pick<AppConfigProps, 'isTemplateView'> {
+export interface AddWorkflowProps extends Pick<AppConfigProps, 'isTemplateView'> {
     name: string
     onClose: () => void
     getWorkflows: () => void
 }
-export interface EmptyWorkflowProps extends RouterV5Props<{ appId: string; workflowId: string }> {
+export interface EmptyWorkflowProps {
     name: string
     onClose: () => void
     getWorkflows: () => void

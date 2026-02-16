@@ -14,118 +14,109 @@
  * limitations under the License.
  */
 
-import { Component } from 'react'
+import { useEffect, useState } from 'react'
 import { CustomInput, DialogForm, DialogFormSubmit, ServerErrors, showError, ToastManager, ToastVariantType } from '@devtron-labs/devtron-fe-common-lib'
-import { AddWorkflowProps, AddWorkflowState } from './types'
+import { AddWorkflowProps } from './types'
 import { createWorkflow, updateWorkflow } from './service'
 import { getWorkflowList } from '../../services/service'
 import { REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
+import { useParams } from 'react-router-dom'
 
-export default class AddWorkflow extends Component<AddWorkflowProps, AddWorkflowState> {
-    constructor(props) {
-        super(props)
-        this.state = {
-            id: 0,
-            name: '',
-            showError: false,
-        }
-    }
+const AddWorkflow = ({ onClose, getWorkflows, isTemplateView }: AddWorkflowProps) => {
+    const params = useParams<{ appId: string; workflowId: string }>()
 
-    componentDidMount() {
-        if (this.props.params.workflowId) {
-            this.getWorkflow()
-        }
-    }
+    const [workflowId, setWorkflowId] = useState<number>(0)
+    const [workflowName, setWorkflowName] = useState<string>('')
+    const [showValidationError, setShowValidationError] = useState<boolean>(false)
 
-    getWorkflow(): void {
-        getWorkflowList(this.props.params.appId, '', this.props.isTemplateView)
-            .then((response) => {
-                if (response.result) {
-                    const workflows = response.result.workflows || []
-                    const workflow = workflows.find((wf) => wf.id == +this.props.params.workflowId)
-                    if (workflow) {
-                        this.setState({ id: workflow.id, name: workflow.name })
-                    } else {
-                        ToastManager.showToast({
-                            variant: ToastVariantType.error,
-                            description: 'Workflow Not Found',
-                        })
+    const isNameValid = !!workflowName?.length
+
+    useEffect(() => {
+        if (params.workflowId) {
+            getWorkflowList(params.appId, '', isTemplateView)
+                .then((response) => {
+                    if (response.result) {
+                        const workflows = response.result.workflows || []
+                        const workflow = workflows.find((wf) => wf.id === +params.workflowId)
+                        if (workflow) {
+                            setWorkflowId(workflow.id)
+                            setWorkflowName(workflow.name)
+                        } else {
+                            ToastManager.showToast({
+                                variant: ToastVariantType.error,
+                                description: 'Workflow Not Found',
+                            })
+                        }
                     }
-                }
-            })
-            .catch((error: ServerErrors) => {
-                showError(error)
-            })
-    }
-
-    handleWorkflowName = (event): void => {
-        this.setState({ name: event.target.value })
-    }
-
-    saveWorkflow = (event): void => {
-        event.preventDefault()
-        this.setState({ showError: true })
-        const request = {
-            appId: +this.props.params.appId,
-            id: this.state.id,
-            name: this.state.name,
+                })
+                .catch((error: ServerErrors) => {
+                    showError(error)
+                })
         }
-        if (!this.isNameValid()) {
+    }, [params.workflowId, params.appId, isTemplateView])
+
+    const handleWorkflowName = (event): void => {
+        setWorkflowName(event.target.value)
+    }
+
+    const saveWorkflow = (event): void => {
+        event.preventDefault()
+        setShowValidationError(true)
+        const request = {
+            appId: +params.appId,
+            id: workflowId,
+            name: workflowName,
+        }
+        if (!isNameValid) {
             return
         }
-        const message = this.state.id ? 'Workflow Updated Successfully' : 'Workflow Created successfully'
-        const promise = this.props.params.workflowId
-            ? updateWorkflow(request, this.props.isTemplateView)
-            : createWorkflow(request, this.props.isTemplateView)
+        const message = workflowId ? 'Workflow Updated Successfully' : 'Workflow Created successfully'
+        const promise = params.workflowId
+            ? updateWorkflow(request, isTemplateView)
+            : createWorkflow(request, isTemplateView)
         promise
             .then((response) => {
                 ToastManager.showToast({
                     variant: ToastVariantType.success,
                     description: message,
                 })
-                this.setState({
-                    id: response.result.id,
-                    name: response.result.name,
-                    showError: false,
-                })
-                this.props.onClose()
-                this.props.getWorkflows()
+                setWorkflowId(response.result.id)
+                setWorkflowName(response.result.name)
+                setShowValidationError(false)
+                onClose()
+                getWorkflows()
             })
             .catch((error: ServerErrors) => {
                 showError(error)
             })
     }
 
-    isNameValid(): boolean {
-        return !!this.state.name?.length
-    }
+    const title = params.workflowId ? 'Edit Workflow' : 'Add Workflow'
 
-    render() {
-        const isValid = this.isNameValid()
-        const title = this.props.params.workflowId ? 'Edit Workflow' : 'Add Workflow'
-        return (
-            <DialogForm
-                title={title}
-                className=""
-                close={(event) => this.props.onClose()}
-                onSave={this.saveWorkflow}
-                isLoading={false}
-                closeOnESC
-            >
-                <label className="form__row">
-                    <CustomInput
-                        name="workflow-name"
-                        label="Workflow Name"
-                        value={this.state.name}
-                        placeholder="e.g. production workflow"
-                        autoFocus
-                        onChange={this.handleWorkflowName}
-                        required
-                        error={this.state.showError && !isValid && REQUIRED_FIELD_MSG}
-                    />
-                </label>
-                <DialogFormSubmit tabIndex={2}>Save</DialogFormSubmit>
-            </DialogForm>
-        )
-    }
+    return (
+        <DialogForm
+            title={title}
+            className=""
+            close={onClose}
+            onSave={saveWorkflow}
+            isLoading={false}
+            closeOnESC
+        >
+            <label className="form__row">
+                <CustomInput
+                    name="workflow-name"
+                    label="Workflow Name"
+                    value={workflowName}
+                    placeholder="e.g. production workflow"
+                    autoFocus
+                    onChange={handleWorkflowName}
+                    required
+                    error={showValidationError && !isNameValid && REQUIRED_FIELD_MSG}
+                />
+            </label>
+            <DialogFormSubmit tabIndex={2}>Save</DialogFormSubmit>
+        </DialogForm>
+    )
 }
+
+export default AddWorkflow

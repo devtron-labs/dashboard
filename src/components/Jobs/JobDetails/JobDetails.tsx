@@ -22,6 +22,7 @@ import {
     BreadCrumb,
     BreadcrumbText,
     DOCUMENTATION,
+    getAutomationEnablementBreadcrumb,
     handleAnalyticsEvent,
     PageHeader,
     Progressing,
@@ -144,6 +145,7 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
         ROUTER_URLS.JOB_DETAIL.ROOT,
         {
             alias: {
+                ...getAutomationEnablementBreadcrumb(),
                 ':appId': {
                     component: (
                         <AppSelector onChange={handleAppChange} appId={Number(appId)} appName={jobName} isJobView />
