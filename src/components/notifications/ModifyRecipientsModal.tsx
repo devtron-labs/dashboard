@@ -261,7 +261,7 @@ export class ModifyRecipientsModal extends Component<ModifyRecipientsModalProps,
                             <div style={{ marginBottom: '60px' }} />
                         )}
                     </div>
-                    <div>{this.renderEmailAgentSelector}</div>
+                    {this.renderEmailAgentSelector()}
                 </div>
                 <div className="form__button-group-bottom flex right dc__gap-16">
                     <Button

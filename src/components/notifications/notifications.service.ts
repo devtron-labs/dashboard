@@ -297,12 +297,13 @@ export function updateNotificationRecipients(
             }
         }
         updatedProviders = updatedProviders.concat(newRecipients)
+
         updatedProviders = updatedProviders.map((r) => {
             if (r.configId) {
                 return {
                     configId: r.configId,
                     dest: r.dest === 'slack' || r.dest === 'webhook' ? r.dest : emailChannel,
-                    recipient: '',
+                    recipient: r.recipient,
                 }
             }
             return {
