@@ -324,7 +324,7 @@ const RouterComponent = () => {
                                     />
                                 }
                             />
-                            <Route path="*" element={<Navigate to={URLS.APP_DETAILS} />} />
+                            <Route path="*" element={<Navigate to={URLS.APP_DETAILS} replace />} />
                         </Routes>
                     </Suspense>
                 </>

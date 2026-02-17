@@ -83,7 +83,7 @@ const EnvironmentStatusComponent = ({
             loadingCards.push(<LoadingCard key={i} />)
         }
 
-        return <div className="flex left ml-20 mb-16">{loadingCards}</div>
+        return <div className="flex left ml-20 mb-16 dc__gap-12">{loadingCards}</div>
     }
     const renderStatusBlock = () => {
         if (!status) {

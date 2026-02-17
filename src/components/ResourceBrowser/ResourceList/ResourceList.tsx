@@ -226,6 +226,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     path={CLUSTER_DETAILS_ROUTES.OVERVIEW}
                     element={
                         <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.OVERVIEW}
                             type="fixed"
                             path={RESOURCE_BROWSER_ROUTES.OVERVIEW}
                             {...DynamicTabComponentWrapperBaseProps}
@@ -239,6 +240,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                         path={CLUSTER_DETAILS_ROUTES.MONITORING_DASHBOARD}
                         element={
                             <DynamicTabComponentWrapper
+                                key={CLUSTER_DETAILS_ROUTES.MONITORING_DASHBOARD}
                                 type="fixed"
                                 path={RESOURCE_BROWSER_ROUTES.MONITORING_DASHBOARD}
                                 {...DynamicTabComponentWrapperBaseProps}
@@ -252,6 +254,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     path={CLUSTER_DETAILS_ROUTES.TERMINAL}
                     element={
                         <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.TERMINAL}
                             type="fixed"
                             path={RESOURCE_BROWSER_ROUTES.TERMINAL}
                             {...DynamicTabComponentWrapperBaseProps}
@@ -263,6 +266,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                         path={CLUSTER_DETAILS_ROUTES.RESOURCE_RECOMMENDER}
                         element={
                             <DynamicTabComponentWrapper
+                                key={CLUSTER_DETAILS_ROUTES.RESOURCE_RECOMMENDER}
                                 type="fixed"
                                 path={RESOURCE_BROWSER_ROUTES.RESOURCE_RECOMMENDER}
                                 {...DynamicTabComponentWrapperBaseProps}
@@ -281,6 +285,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                         path={CLUSTER_DETAILS_ROUTES.CLUSTER_UPGRADE}
                         element={
                             <DynamicTabComponentWrapper
+                                key={CLUSTER_DETAILS_ROUTES.CLUSTER_UPGRADE}
                                 type="dynamic"
                                 path={RESOURCE_BROWSER_ROUTES.CLUSTER_UPGRADE}
                                 {...DynamicTabComponentWrapperBaseProps}
@@ -305,6 +310,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     path={CLUSTER_DETAILS_ROUTES.NODE_DETAIL}
                     element={
                         <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.NODE_DETAIL}
                             type="dynamic"
                             path={RESOURCE_BROWSER_ROUTES.NODE_DETAIL}
                             {...DynamicTabComponentWrapperBaseProps}
@@ -322,6 +328,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     path={`${CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_DETAIL}/*`}
                     element={
                         <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_DETAIL}
                             type="dynamic"
                             path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_DETAIL}
                             {...DynamicTabComponentWrapperBaseProps}
@@ -344,6 +351,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
                     path={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_LIST}
                     element={
                         <DynamicTabComponentWrapper
+                            key={CLUSTER_DETAILS_ROUTES.K8S_RESOURCE_LIST}
                             type="fixed"
                             path={RESOURCE_BROWSER_ROUTES.K8S_RESOURCE_LIST}
                             {...DynamicTabComponentWrapperBaseProps}

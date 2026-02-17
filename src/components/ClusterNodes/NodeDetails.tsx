@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect, useRef, useMemo, ReactNode } from 'react'
+import React, { useState, useEffect, useRef, useMemo } from 'react'
 import {
     showError,
     Progressing,

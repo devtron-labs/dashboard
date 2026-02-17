@@ -16,7 +16,7 @@
 
 import { useEffect, useState } from 'react'
 import ReactGA from 'react-ga4'
-import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
+import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { noop, smoothScrollToTop, useStickyEvent } from '@devtron-labs/devtron-fe-common-lib'
 
@@ -29,7 +29,12 @@ import { URLS } from '../../../config'
 import { K8ResourceComponent } from './k8Resource/K8Resource.component'
 import { getApplicationsGAEvent } from './k8Resource/utils'
 import LogAnalyzerComponent from './logAnalyzer/LogAnalyzer.component'
-import { APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX, AppDetailsTabs, getInitialTabs } from './appDetails.store'
+import {
+    APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX,
+    AppDetailsTabs,
+    getInitialTabs,
+    getRoutePatternForNodeTree,
+} from './appDetails.store'
 import { K8ResourceComponentProps, NodeTreeDetailTabProps, NodeType } from './appDetails.type'
 import IndexStore from './index.store'
 import NodeDetailComponentWrapper from './NodeDetailComponentWrapper'
@@ -47,7 +52,10 @@ const NodeTreeDetailTab = ({
     handleReloadResourceTree,
     isReloadResourceTreeInProgress,
 }: NodeTreeDetailTabProps) => {
+    const params = useParams()
     const { pathname } = useLocation()
+    const routeMatchPath = getRoutePatternForNodeTree(appDetails.appType)
+    const routeMatchUrl = generatePath(routeMatchPath, params)
     const {
         tabs,
         initTabs,
@@ -58,8 +66,7 @@ const NodeTreeDetailTab = ({
         getTabId,
         updateTabUrl,
         // NOTE: fallback to 0th index since that is the k8s_resource tab
-    } = useTabs(pathname, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
-    const location = useLocation()
+    } = useTabs(routeMatchUrl, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
     const navigate = useNavigate()
     const [clickedNodes, registerNodeClick] = useState<Map<string, string>>(new Map<string, string>())
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
@@ -80,12 +87,12 @@ const NodeTreeDetailTab = ({
     const dynamicTabsBackgroundClass = isDynamicTabsStuck ? 'bg__tertiary' : 'bg__primary'
 
     useEffect(() => {
-        const initialTabs = getInitialTabs(location.pathname, pathname, displayLogAnalyzer)
+        const initialTabs = getInitialTabs(pathname, routeMatchUrl, displayLogAnalyzer)
 
         initTabs(initialTabs, false, !displayLogAnalyzer ? [AppDetailsTabs.log_analyzer] : null)
 
         // NOTE: if we need to hide (remove) logAnalyzer tab but user was on this tab then we need
-        if (!displayLogAnalyzer && location.pathname.includes(URLS.APP_DETAILS_LOG)) {
+        if (!displayLogAnalyzer && pathname.includes(URLS.APP_DETAILS_LOG)) {
             navigate(initialTabs[APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX].url)
         }
     }, [displayLogAnalyzer])
