@@ -74,7 +74,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                         <div className="flex right">
                             <Button
                                 variant={ButtonVariantType.primary}
-                                text="Add New"
+                                text="Add Notification"
                                 size={ComponentSizeType.medium}
                                 onClick={this.createNewNotification}
                                 dataTestId="delete-notification-button"

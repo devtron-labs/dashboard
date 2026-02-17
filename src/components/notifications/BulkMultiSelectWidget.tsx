@@ -51,17 +51,7 @@ export const BulkMultiSelectTagWidget = ({
                     <span className="cn-9">Selected</span>
                 </div>
                 <div className="dc__divider h-16" />
-                <div className="flex left dc__gap-4" />
                 <div className="flex left dc__gap-4">
-                    <Button
-                        dataTestId="notification-delete-button"
-                        icon={<Icon name="ic-delete" color={null} />}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        ariaLabel="Delete Notifications"
-                        onClick={showDeleteModal}
-                        showAriaLabelInTippy
-                    />
                     <PopupMenu
                         onToggleCallback={(isOpen) => {
                             if (isOpen) {
@@ -71,7 +61,7 @@ export const BulkMultiSelectTagWidget = ({
                     >
                         <PopupMenu.Button rootClassName="popup-button--notification-tab">
                             <Icon
-                                name="ic-error"
+                                name="ic-bell"
                                 color={null}
                                 size={20}
                                 tooltipProps={{ content: 'Modify events', alwaysShowTippyOnHover: true }}
@@ -87,6 +77,16 @@ export const BulkMultiSelectTagWidget = ({
                         style={ButtonStyleType.neutral}
                         ariaLabel="Modify Recipients"
                         onClick={showModifyModal}
+                        showAriaLabelInTippy
+                    />
+
+                    <Button
+                        dataTestId="notification-delete-button"
+                        icon={<Icon name="ic-delete" color={null} />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        ariaLabel="Delete Notifications"
+                        onClick={showDeleteModal}
                         showAriaLabelInTippy
                     />
                 </div>
