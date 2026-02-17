@@ -303,3 +303,22 @@ export interface NotificationTabState {
     singleDeletedId: number
     disableEdit: boolean
 }
+
+export interface BaseConfigurationTableRowType {
+    name: React.ReactNode
+}
+
+export interface SESConfigurationTableRowType extends BaseConfigurationTableRowType {
+    accessKeyId: string
+    email: string
+}
+
+export interface SMTPConfigurationTableRowType extends BaseConfigurationTableRowType {
+    host: string
+    port: string
+    email: string
+}
+
+export interface SlackWebhookConfigurationTableRowType extends BaseConfigurationTableRowType {
+    webhookUrl: string
+}
