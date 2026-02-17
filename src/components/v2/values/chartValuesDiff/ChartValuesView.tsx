@@ -47,7 +47,8 @@ import {
     URLS as CommonURLS,
     SegmentedControl,
     ComponentSizeType,
-    SegmentType
+    SegmentType,
+    validateAppName,
 } from '@devtron-labs/devtron-fe-common-lib'
 import YAML from 'yaml'
 import Tippy from '@tippyjs/react'
@@ -138,7 +139,6 @@ import ClusterNotReachableDialog from '../../../common/ClusterNotReachableDialog
 import { VIEW_MODE } from '@Pages/Shared/ConfigMapSecret/constants'
 import IndexStore from '../../appDetails/index.store'
 import { AUTO_GENERATE_GITOPS_REPO, CHART_VALUE_ID } from './constant'
-import { validateAppName } from '@Pages/App/CreateAppModal/utils'
 import { DeleteChartDialog } from './DeleteChartDialog'
 
 const GeneratedHelmDownload = importComponentFromFELibrary('GeneratedHelmDownload')

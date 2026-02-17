@@ -122,6 +122,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const AskDevtronButton = importComponentFromFELibrary('AskDevtronButton', null, 'function')
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -818,6 +819,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 AIRecommendations,
                 debugAgentContext,
                 setDebugAgentContext,
+                AskDevtronButton,
             }}
         >
             <ConfirmationModalProvider>

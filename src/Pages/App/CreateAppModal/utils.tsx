@@ -18,45 +18,16 @@ import {
     Icon,
     IconsProps,
     SelectPickerOptionType,
+    validateAppName,
     validateDescription,
     ValidationResponseType,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { importComponentFromFELibrary } from '@Components/common'
-import { MAX_LENGTH_30 } from '@Config/constantMessaging'
-import { PATTERNS } from '@Config/constants'
 
 import { CreateAppFormStateType, CreateAppModalProps, CreationMethodType } from './types'
 
 const isFELibAvailable: boolean = importComponentFromFELibrary('isFELibAvailable', null, 'function')
-
-export const validateAppName = (value: CreateAppFormStateType['name']): Required<ValidationResponseType> => {
-    const re = PATTERNS.APP_NAME
-    const regExp = new RegExp(re)
-    const test = regExp.test(value)
-
-    if (value.length === 0) {
-        return { isValid: false, message: 'Please provide app name' }
-    }
-
-    if (value.length < 3) {
-        return { isValid: false, message: 'Atleast 3 characters required' }
-    }
-
-    if (value.length > 30) {
-        return { isValid: false, message: MAX_LENGTH_30 }
-    }
-
-    if (!test) {
-        return {
-            isValid: false,
-            message:
-                "Min 3 chars; Start with alphabet; End with alphanumeric; Use only lowercase; Allowed:(-); Do not use 'spaces'",
-        }
-    }
-
-    return { isValid: true, message: '' }
-}
 
 export const validateProject = (projectId: CreateAppFormStateType['projectId']): ValidationResponseType => {
     if (projectId) {
@@ -99,7 +70,7 @@ export const getCreateMethodConfig = (
             ? []
             : [
                   {
-                      label: `From template`,
+                      label: 'From template',
                       value: CreationMethodType.template,
                       startIcon: (
                           <Icon
