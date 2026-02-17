@@ -21,6 +21,7 @@ import {
     ALL_RESOURCE_KIND_FILTER,
     getPodsRootParentNameAndStatus,
     Node,
+    ROUTER_URLS,
     StatusFilterButtonComponent,
     useSearchString,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -174,8 +175,11 @@ export const K8ResourceComponent = ({
 }
 
 export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMessage: string }) => {
-    const location = useLocation()
-    const routeMatchUrl = location.pathname
+    const params = useParams()
+    const routeMatchUrl = generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.ENV_DETAILS, {
+        appId: params.appId,
+        envId: params.envId,
+    })
     const {
         tabs,
         initTabs,
@@ -184,6 +188,7 @@ export const EmptyK8sResourceComponent = ({ emptyStateMessage }: { emptyStateMes
         stopTabByIdentifier,
         // NOTE: fallback to 0th index since that is the k8s_resource tab
     } = useTabs(routeMatchUrl, APP_DETAILS_DYNAMIC_TABS_FALLBACK_INDEX)
+    const location = useLocation()
 
     useEffect(() => {
         initTabs(getInitialTabs(location.pathname, routeMatchUrl, false), true)

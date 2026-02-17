@@ -21,7 +21,6 @@ import {
     HELM_APP_LIST_COMMAND_GROUP_ID,
     NAV_SUB_ITEMS_ICON_MAPPING,
     RECENT_NAVIGATION_ITEM_ID_PREFIX,
-    UPGRADE_DIALOG_LOCAL_STORAGE_KEY,
 } from './constants'
 import { CommandBarActionIdType, CommandBarBackdropProps, CommandBarGroupType, CommandBarItemType } from './types'
 
@@ -385,13 +384,4 @@ export const getAdditionalNavGroups = (
         ...getTopFiveChartListGroup(chartList, searchText),
         ...getTopFiveClusterListGroup(clusterList, searchText),
     ]
-}
-
-export const getShowUpgradeDialogFromLocalStorage = () => {
-    const hasClosedUpgradeDialog = localStorage.getItem(UPGRADE_DIALOG_LOCAL_STORAGE_KEY)
-    return hasClosedUpgradeDialog !== 'true'
-}
-
-export const hideUpgradeDialogInLocalStorage = () => {
-    localStorage.setItem(UPGRADE_DIALOG_LOCAL_STORAGE_KEY, 'true')
 }

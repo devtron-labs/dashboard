@@ -396,8 +396,7 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
             {
                 appId: this.props.params.appId,
             },
-        )}
-        }/${CommonURLS.APP_CONFIG}/${
+        )}/${CommonURLS.APP_CONFIG}/${
             URLS.APP_WORKFLOW_CONFIG
         }/${workflowId}/${ciURL}/${URLS.APP_CD_CONFIG}/0/build?parentPipelineType=${parentPipelineType}&addType=${
             addType ?? AddPipelineType.PARALLEL

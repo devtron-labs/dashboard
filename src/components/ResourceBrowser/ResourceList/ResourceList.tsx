@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     BASE_ROUTES,
@@ -77,8 +77,7 @@ const CLUSTER_DETAILS_ROUTES = BASE_ROUTES.INFRASTRUCTURE_MANAGEMENT.RESOURCE_BR
 const RESOURCE_BROWSER_ROUTES = ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS
 
 const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) => {
-    const params = useParams<ClusterDetailBaseParams>()
-    const { clusterId } = params
+    const { clusterId } = useParams<ClusterDetailBaseParams>()
     const location = useLocation()
     const {
         tabs,
@@ -92,7 +91,7 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
         stopTabByIdentifier,
         getTabId,
         getTabById,
-    } = useTabs(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.ROOT)
+    } = useTabs(generatePath(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_DETAILS.ROOT, { clusterId }))
     const [logSearchTerms, setLogSearchTerms] = useState<Record<string, string>>()
     const [isDataStale, setIsDataStale] = useState(false)
     const { setIntelligenceConfig, setAIAgentContext, isResourceRecommendationEnabled } = useMainContext()
@@ -131,13 +130,14 @@ const ResourceList = ({ selectedCluster, k8SObjectMapRaw }: ResourceListProps) =
             setAIAgentContext(null)
         }
     }, [])
+
     useEffectAfterMount(() => initTabsBasedOnRole(true), [clusterId])
 
     useEffect(() => {
         setAIAgentContext({
             path: '',
             context: {
-                ...params,
+                clusterId,
                 clusterName: selectedCluster.label,
                 search: location.search,
             },

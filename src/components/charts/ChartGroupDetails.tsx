@@ -78,11 +78,11 @@ export default function ChartGroupDetails() {
         {
             alias: {
                 ...getInfrastructureManagementBreadcrumb(),
-                'chart-store': {
+                'chart-store': null,
+                discover: {
                     component: <BreadcrumbText heading="Chart Store" />,
                     linked: true,
                 },
-                discover: null,
                 group: 'Chart groups',
                 ':groupId': {
                     component: (
