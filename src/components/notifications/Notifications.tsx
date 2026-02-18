@@ -34,6 +34,7 @@ import { ErrorBoundary } from '../common'
 import { HEADER_TEXT, URLS } from '../../config'
 import './notifications.scss'
 import { NotificationsProps, NotificationsState } from './types'
+import { AddNotificationButton } from './AddNotificationButton'
 
 export default class Notifications extends Component<NotificationsProps, NotificationsState> {
 
@@ -41,17 +42,6 @@ export default class Notifications extends Component<NotificationsProps, Notific
         super(props)
         this.state = {
             disableEdit: false,
-        }
-    }
-
-    createNewNotification = () => {
-        if (this.state.disableEdit) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-        } else {
-            this.props.history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
         }
     }
 
@@ -72,14 +62,7 @@ export default class Notifications extends Component<NotificationsProps, Notific
                             dataTestId="notifications-feature-title"
                         />
                         <div className="flex right">
-                            <Button
-                                variant={ButtonVariantType.primary}
-                                text="Add Notification"
-                                size={ComponentSizeType.medium}
-                                onClick={this.createNewNotification}
-                                dataTestId="delete-notification-button"
-                                startIcon={<Icon name="ic-add" color={null} />}
-                            />
+                            <AddNotificationButton disableEdit={this.state.disableEdit} />
                         </div>
                     </div>
                     <TabGroup

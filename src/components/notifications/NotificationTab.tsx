@@ -45,7 +45,7 @@ import {
 import { InValidHostUrlWarningBlock } from '@Components/common'
 
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
-import { URLS, ViewType } from '../../config'
+import { ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import {
@@ -56,10 +56,10 @@ import {
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
 import { NotificationPipelineType, NotificationTabState } from './types'
-import { ModifyRecipientPopUp } from './ModifyRecipientPopUp'
 import { EVENT_ID } from './constants'
 import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
 import React from 'react'
+import { AddNotificationButton } from './AddNotificationButton'
 
 export class NotificationTab extends Component<any, NotificationTabState> {
     bulkMultiSelectWidgetRef = React.createRef<HTMLDivElement>()
@@ -378,28 +378,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    createNewNotification = () => {
-        if (this.props.disableEdit) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-        } else {
-            this.props.history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
-        }
-    }
-
     renderAddNotificationButton = () => (
-        <Button
-            text="Add Notification"
-            variant={ButtonVariantType.primary}
-            size={ComponentSizeType.medium}
-            onClick={this.createNewNotification}
-            dataTestId="add-notification-button"
-            startIcon={<Icon name="ic-add" color={null} />}
-        />
+        <AddNotificationButton disableEdit={this.props.disableEdit} />
     )
-
     renderGenericEmptyState = () => (
         <GenericEmptyState
             image={EmptyImage}
@@ -459,7 +440,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     renderPipelineList = () => (
-        <table className="flexbox-col">
+        <table className="flexbox-col flex-grow-1">
             <thead>
                 <tr className="pipeline-list__header">
                     <th className="pipeline-list__checkbox flex-grow-1">
@@ -699,7 +680,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody = () => (
         <div className="flexbox-col flex-grow-1 dc__gap-16">
-            <div>
+            <div className="flexbox-col flex-grow-1">
                 {this.renderPipelineList()}
                 {this.renderPagination()}
             </div>
