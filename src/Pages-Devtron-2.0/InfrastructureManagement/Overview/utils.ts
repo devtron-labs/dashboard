@@ -100,6 +100,6 @@ export const getNodeListDataForExport = (groupBy: NodeViewGroupType, nodeList: N
     })
 
 export const getClusterListingUrl = (clusterFilter?: ClusterFiltersType) =>
-    getUrlWithSearchParams(ROUTER_URLS.RESOURCE_BROWSER.ROOT, {
+    getUrlWithSearchParams(ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_LIST, {
         clusterFilter: clusterFilter ?? ClusterFiltersType.ALL_CLUSTERS,
     })

@@ -336,7 +336,7 @@ const getTopFiveClusterListGroup = (
     return parsedClusterList[0]
         ? topFiveGroupParser(parsedClusterList[0], {
               id: 'search-cluster-list-view',
-              href: `${ROUTER_URLS.RESOURCE_BROWSER.ROOT}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
+              href: `${ROUTER_URLS.RESOURCE_BROWSER.CLUSTER_LIST}?${URL_FILTER_KEYS.SEARCH_KEY}=${encodeURIComponent(
                   searchText,
               )}`,
           })
