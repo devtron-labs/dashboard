@@ -248,3 +248,14 @@ export interface ExportAppListDataType {
 export type GenericAppListRowType = {
     detail: GenericAppType
 } & Record<AppListSortableKeys | keyof typeof APP_LIST_HEADERS, string | GenericAppType>
+
+export type HelmAppListRowType = {
+    detail: HelmApp
+} & Record<AppListSortableKeys | keyof typeof APP_LIST_HEADERS, string | HelmApp>
+
+export interface HelmAppListAdditionalProps {
+    showGuidedContentCards: boolean
+    externalHelmListFetchErrors: string[]
+    clusterIdsCsv: string
+    removeExternalAppFetchError: (index: number) => void
+}
