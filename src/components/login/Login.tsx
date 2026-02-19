@@ -18,7 +18,6 @@ import { useEffect, useState } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom'
 
 import {
-    AnimatePresence,
     BASE_ROUTES,
     Button,
     ButtonComponentType,
@@ -198,19 +197,17 @@ const Login = () => {
                 <div className="shadow__overlay dc__overflow-hidden br-12 mw-420 bg__primary dc__border">
                     <div className="flexbox-col">
                         {renderDevtronLogo()}
-                        <AnimatePresence>
-                            <motion.div
-                                key={location.pathname}
-                                variants={LOGIN_CARD_ANIMATION_VARIANTS}
-                                initial="initial"
-                                animate="animate"
-                                exit="exit"
-                                transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
-                                className="dc__overflow-hidden"
-                            >
-                                {renderLoginContent()}
-                            </motion.div>
-                        </AnimatePresence>
+                        <motion.div
+                            key={location.pathname}
+                            variants={LOGIN_CARD_ANIMATION_VARIANTS}
+                            initial="initial"
+                            animate="animate"
+                            exit="exit"
+                            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+                            className="dc__overflow-hidden"
+                        >
+                            {renderLoginContent()}
+                        </motion.div>
                     </div>
                     {getTermsAndConditions && getTermsAndConditions()}
                 </div>
