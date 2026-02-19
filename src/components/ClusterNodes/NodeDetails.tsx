@@ -47,7 +47,7 @@ import {
     usePrompt,
     ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
-import { useParams, useLocation, generatePath, useNavigate } from 'react-router-dom'
+import { useParams, useLocation, generatePath, useNavigate, Routes, Route, Navigate } from 'react-router-dom'
 import YAML from 'yaml'
 import * as jsonpatch from 'fast-json-patch'
 import { applyPatch } from 'fast-json-patch'
@@ -88,7 +88,6 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const [loader, setLoader] = useState(true)
     const [apiInProgress, setApiInProgress] = useState(false)
     const [isReviewState, setIsReviewStates] = useState(false)
-    const [selectedTabIndex, setSelectedTabIndex] = useState(0)
     const [selectedSubTabIndex, setSelectedSubTabIndex] = useState(0)
     const [nodeDetail, setNodeDetail] = useState<NodeDetail>(null)
     const [modifiedManifest, setModifiedManifest] = useState('')
@@ -110,7 +109,6 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     const [isEdit, setIsEdit] = useState(false)
     const [errorResponseCode, setErrorResponseCode] = useState<number>()
     const location = useLocation()
-    const queryParams = new URLSearchParams(location.search)
     const navigate = useNavigate()
 
     const hasUnsavedChanges = (nodeDetail?.manifest ? YAMLStringify(nodeDetail.manifest) : '') !== modifiedManifest
@@ -273,23 +271,6 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         },
     ]
 
-    useEffect(() => {
-        const tab = queryParams.get('tab')
-        const tabIndex = NODE_TABS_INFO.findIndex((tabDetails) => tabDetails.id === tab)
-
-        if (tabIndex !== -1) {
-            setSelectedTabIndex(tabIndex)
-        } else {
-            navigate(
-                {
-                    pathname: location.pathname,
-                    search: `?tab=${getSanitizedNodeTabId(NODE_DETAILS_TABS.summary)}`,
-                },
-                { replace: true },
-            )
-        }
-    }, [location.search])
-
     const selectedResource = useMemo((): { gvk: GVKType; namespaced: boolean } => {
         // Using - as a prefix since the group is empty for pods
         const resourceGroupData = lowercaseKindToResourceGroupMap[`-${Nodes.Pod.toLowerCase()}`]
@@ -303,25 +284,24 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
         const _tabIndex = Number(e.currentTarget.dataset.tabIndex)
         if (name !== AUTO_SELECT.value) {
             const selectedTab = NODE_TABS_INFO[_tabIndex]?.id || ''
-            const _searchParam = `?tab=${selectedTab}`
-
             updateTabUrl({
-                url: `${location.pathname}${_searchParam}`,
+                url: generatePath(`${RESOURCE_BROWSER_ROUTES.NODE_DETAIL}/${selectedTab}`, { clusterId, name }),
             })
         }
     }
 
     const renderNodeDetailsTabs = (): JSX.Element => {
-        const tabs = NODE_TABS_INFO.map(({ renderComponent, ...tabDetails }, index) => ({
-            ...tabDetails,
+        const tabs: TabProps[] = NODE_TABS_INFO.map(({ icon, label, id }, index) => ({
+            id,
+            label,
+            icon,
             tabType: 'navLink',
             props: {
-                to: `?tab=${tabDetails.id}`,
+                to: id,
                 onClick: changeNodeTab,
-                isActive: (_, { search }) => search === `?tab=${tabDetails.id}`,
                 ['data-tab-index']: index,
             },
-        })) as TabProps[]
+        }))
 
         return (
             <div className="px-20 dc__border-bottom flex dc__gap-16">
@@ -833,9 +813,10 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     }
 
     const renderTabControls = () => {
-        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
+        const nodeDetailPath = generatePath(RESOURCE_BROWSER_ROUTES.NODE_DETAIL, { clusterId, name })
+        const selectedTabId = location.pathname.replace(nodeDetailPath, '').split('/')[1]
 
-        if (selectedTab.id === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
+        if (selectedTabId === getSanitizedNodeTabId(NODE_DETAILS_TABS.yaml)) {
             if (!isEdit) {
                 return (
                     <div className="flexbox dc__align-items-center dc__gap-12">
@@ -1013,14 +994,14 @@ const NodeDetails = ({ lowercaseKindToResourceGroupMap, updateTabUrl }: ClusterL
     }
 
     const renderTabContent = (): JSX.Element => {
-        const selectedTab = NODE_TABS_INFO[selectedTabIndex]
-        const renderNode = selectedTab?.renderComponent
-
-        if (renderNode) {
-            return renderNode()
-        }
-
-        return null
+        return (
+            <Routes>
+                {NODE_TABS_INFO.map(({ id, renderComponent: Component }) => (
+                    <Route key={id} path={id} element={<Component />} />
+                ))}
+                <Route path="*" element={<Navigate to={NODE_TABS_INFO[0].id} />} />
+            </Routes>
+        )
     }
 
     const showCordonNodeModal = (): void => {
