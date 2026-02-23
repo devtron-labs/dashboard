@@ -77,7 +77,10 @@ const OffendingPipelineModalAppView = ({
                         nodes={workflow.nodes}
                         location={location}
                         navigate={navigate}
-                        params={params}
+                        params={{
+                            appId: String(appId),
+                            ...params,
+                        }}
                         handleCDSelect={noop}
                         handleCISelect={noop}
                         openEditWorkflow={noop}

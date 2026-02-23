@@ -149,12 +149,12 @@ export const AppNavigation = ({ routePath }: { routePath: string }) => {
     return (
         <Routes>
             {[
-                `${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`,
-                `${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`,
+                `${URLS.BASE_CONFIG}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
+                `${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`,
             ].map((pathPattern) => (
                 <Route
                     key={pathPattern}
-                    path={pathPattern}
+                    path={`${pathPattern}/*`}
                     element={
                         <EnvConfigurationsNav
                             key="env-configurations-nav"

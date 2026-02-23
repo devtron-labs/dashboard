@@ -145,19 +145,21 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
 
     return (
         <Routes>
-            <Route
-                path={`${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-                element={
-                    <DeploymentConfigCompareWrapper
-                        type="appGroup"
-                        envName={envName}
-                        environments={envAppList}
-                        routePath={`${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-                        baseGoBackURL={generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS, { envId })}
-                        appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
-                    />
-                }
-            />
+            {appId && (
+                <Route
+                    path={`${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                    element={
+                        <DeploymentConfigCompareWrapper
+                            type="appGroup"
+                            envName={envName}
+                            environments={envAppList}
+                            routePath={`${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/:appId/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
+                            baseGoBackURL={generatePath(ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS, { envId })}
+                            appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
+                        />
+                    }
+                />
+            )}
             <Route
                 index
                 path="/*"
@@ -188,7 +190,7 @@ const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
                                     })}
                                     appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                                     isTemplateView={false}
-                                    routePath={ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}
+                                    routePath={`${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/:appId`}
                                 />
                             </div>
                         ) : (

@@ -53,7 +53,7 @@ const ApplicationRoute = ({
                             showComparison
                             appOrEnvIdToResourceApprovalConfigurationMap={appIdToAppApprovalConfigMap}
                             isTemplateView={false}
-                            path={path}
+                            path={`${path}/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}
                         />
                     }
                 />
@@ -62,7 +62,6 @@ const ApplicationRoute = ({
             <Route
                 index
                 key="default-navigation"
-                path="/*"
                 element={
                     <>
                         <div className="pt-8 px-8" data-testid="application-group-configuration-heading">
@@ -79,7 +78,10 @@ const ApplicationRoute = ({
                                     {renderNavItem({
                                         title: name,
                                         isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
-                                        href: `${id}`,
+                                        href: generatePath(`${path}/:appId`, {
+                                            envId,
+                                            appId: String(id),
+                                        }),
                                     })}
                                 </Fragment>
                             ))}

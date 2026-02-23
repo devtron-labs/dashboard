@@ -21,9 +21,10 @@ import {
     ApprovalConfigDataKindType,
     CMSecretComponentType,
     getIsApprovalPolicyConfigured,
+    mapByKey,
 } from '@devtron-labs/devtron-fe-common-lib'
 
-import { ErrorBoundary, mapByKey, useAppContext } from '@Components/common'
+import { ErrorBoundary, useAppContext } from '@Components/common'
 import { APP_COMPOSE_STAGE, getAppComposeURL, URLS } from '@Config/index'
 import { DeploymentTemplate } from '@Pages/Applications'
 import { ConfigMapSecretWrapper } from '@Pages/Shared/ConfigMapSecret/ConfigMapSecret.wrapper'
@@ -178,7 +179,7 @@ const EnvironmentOverride = ({
                                     approvalConfigMap?.[ApprovalConfigDataKindType.configSecret],
                                 )}
                                 parentName={getParentName()}
-                                clusterId={environmentsMap.get(+params.envId)?.clusterId?.toString()}
+                                clusterId={clusterId}
                                 componentType={CMSecretComponentType.Secret}
                                 envConfig={envConfig}
                                 fetchEnvConfig={fetchEnvConfig}

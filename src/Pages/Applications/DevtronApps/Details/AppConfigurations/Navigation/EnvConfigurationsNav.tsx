@@ -154,9 +154,9 @@ const EnvConfigurationsNavContent = ({
                 config,
                 path,
                 {
+                    ...params,
                     appId,
                     envId,
-                    ...params,
                 },
                 // For base configurations, the resource id is undefined
                 appOrEnvIdToResourceApprovalConfigurationMap?.[parsedResourceId || BASE_CONFIGURATION_ENV_ID]
@@ -221,9 +221,9 @@ const EnvConfigurationsNavContent = ({
             getNavigationPath(
                 path,
                 {
+                    ...params,
                     appId,
                     envId,
-                    ...params,
                 },
                 _resourceType,
                 'create',

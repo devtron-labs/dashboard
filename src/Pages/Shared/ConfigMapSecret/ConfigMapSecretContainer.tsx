@@ -583,7 +583,7 @@ export const ConfigMapSecretContainer = ({
         fetchEnvConfig(+envId || -1)
 
         if (isCreateState) {
-            navigate(generatePath(routePath, { ...params, appId, envId, name: configName }))
+            navigate(generatePath(routePath, { appId, envId, name: configName }))
         }
     }
 

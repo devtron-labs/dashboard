@@ -334,15 +334,16 @@ export interface LinkedCIPipelineState {
     }
 }
 
-export interface CIPipelineProps
-    extends
-        RouterV5Props<{ appId: string; ciPipelineId: string; workflowId: string }>,
-        Required<Pick<AppConfigProps, 'isTemplateView'>> {
-    appName: string
+export interface LinkedCIPipelineViewProps extends Required<Pick<AppConfigProps, 'isTemplateView'>> {
     connectCDPipelines: number
     getWorkflows: () => void
     close: () => void
-    changeCIPayload?: ChangeCIPayloadType
+}
+
+export interface LinkedCIPipelineEditProps
+    extends RouterV5Props<{ appId: string; workflowId: string }>, LinkedCIPipelineViewProps {
+    appName: string
+    changeCIPayload: ChangeCIPayloadType
 }
 
 export const PatchAction = {

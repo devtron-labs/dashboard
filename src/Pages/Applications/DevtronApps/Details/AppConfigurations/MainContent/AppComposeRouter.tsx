@@ -186,6 +186,7 @@ const AppComposeRouter = ({ routePath }: { routePath: string }) => {
                     }
                 />,
                 <Route
+                    key={URLS.APP_ENV_OVERRIDE_CONFIG}
                     path={`${URLS.APP_ENV_OVERRIDE_CONFIG}/:envId?/*`}
                     element={
                         <EnvironmentOverride

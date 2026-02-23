@@ -703,10 +703,6 @@ class WorkflowEdit extends Component<WorkflowEditProps, WorkflowEditState> {
                                 path="linked-ci/:ciPipelineId"
                                 element={
                                     <LinkedCIPipelineView
-                                        location={this.props.location}
-                                        navigate={this.props.navigate}
-                                        params={this.props.params}
-                                        appName={this.state.appName}
                                         connectCDPipelines={this.getLen()}
                                         close={this.closePipeline}
                                         getWorkflows={this.getAllWorkflows}

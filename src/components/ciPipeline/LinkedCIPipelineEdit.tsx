@@ -30,7 +30,7 @@ import {
 import AsyncSelect from 'react-select/async'
 import { saveLinkedCIPipeline } from './ciPipeline.service'
 import { ViewType } from '../../config'
-import { CIPipelineBuildType, CIPipelineProps, LinkedCIPipelineState } from './types'
+import { CIPipelineBuildType, LinkedCIPipelineEditProps, LinkedCIPipelineState } from './types'
 import { Typeahead, TypeaheadOption, TypeaheadErrorOption } from '../common'
 import { ValidationRules } from './validationRules'
 import { Info } from '../common/icons/Icons'
@@ -42,7 +42,7 @@ import { appListOptions } from '../AppSelector/AppSelectorUtil'
 import { ReactComponent as Warning } from '../../assets/icons/ic-warning.svg'
 import { DUPLICATE_PIPELINE_NAME_VALIDATION, REQUIRED_FIELD_MSG } from '../../config/constantMessaging'
 
-export default class LinkedCIPipeline extends Component<CIPipelineProps, LinkedCIPipelineState> {
+export default class LinkedCIPipeline extends Component<LinkedCIPipelineEditProps, LinkedCIPipelineState> {
     validationRules
 
     urlRef

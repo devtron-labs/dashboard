@@ -15,7 +15,7 @@
  */
 
 import { Component } from 'react'
-import { generatePath, Link } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 import {
     CIMaterialType,
@@ -23,7 +23,6 @@ import {
     Icon,
     RouterV5Props,
     getWorkflowNodeStatusTitle,
-    ROUTER_URLS,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { TriggerStatus } from '../../../../config'
 import { BUILD_STATUS, DEFAULT_STATUS, URLS } from '../../../../../../config'
@@ -69,9 +68,7 @@ export class TriggerCINode extends Component<TriggerCINodeProps> {
     }
 
     getCIDetailsURL(): string {
-        return `${generatePath(ROUTER_URLS.DEVTRON_APP_DETAILS.CI_DETAILS, {
-            appId: this.props.params.appId,
-        })}/${this.props.id}`
+        return `${this.props.location.pathname.replace('trigger', URLS.APP_CI_DETAILS)}/${this.props.id}`
     }
 
     redirectToCIDetails() {
