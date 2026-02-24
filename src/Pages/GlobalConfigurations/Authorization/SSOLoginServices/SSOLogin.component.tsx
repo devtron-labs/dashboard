@@ -59,6 +59,7 @@ import { importComponentFromFELibrary } from '@Components/common'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, URLS, ViewType } from '../../../../config'
+import { AutoAssignToggleTile, UserPermissionConfirmationModal } from './AutoAssign'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
@@ -74,8 +75,6 @@ import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType 
 import '@Components/login/login.scss'
 import './ssoLogin.scss'
 
-const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
-const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
 const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizationGlobalConfig', noop, 'function')
 const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
     <label className="dc__tertiary-tab__radio">
@@ -293,15 +292,12 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
     }
 
     // The global auth config type needs to be updated irrespective of the SSO name check
-    _getGlobalAuthConfigType = () =>
-        AutoAssignToggleTile
-            ? {
-                  globalAuthConfigType:
-                      this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
-                          ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
-                          : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
-              }
-            : {}
+    _getGlobalAuthConfigType = () => ({
+        globalAuthConfigType:
+            this.isAutoAssignPermissionFlowActive && this.state.shouldAutoAssignPermissions
+                ? AUTHORIZATION_CONFIG_TYPES.GROUP_CLAIMS
+                : AUTHORIZATION_CONFIG_TYPES.DEVTRON_MANAGED,
+    })
 
     _getSSOCreateOrUpdatePayload = (configJSON) => ({
         id: this.state.ssoConfig.id,
@@ -764,8 +760,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
             </div>
         )
 
-        this.isAutoAssignPermissionFlowActive = !!(
-            autoAssignPermissionsFlowActiveProviders.includes(this.state.sso as SSOProvider) && AutoAssignToggleTile
+        this.isAutoAssignPermissionFlowActive = !!autoAssignPermissionsFlowActiveProviders.includes(
+            this.state.sso as SSOProvider,
         )
         // The assignment confirmation modal has precedence over SSO change confirmation modal
         const showSSOChangeConfirmationModal = this.state.showToggling && !this.state.showAutoAssignConfirmationModal
@@ -811,7 +807,8 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                 {this.isAutoAssignPermissionFlowActive && (
                     <div className="w-100">
                         <AutoAssignToggleTile
-                            ssoType={this.state.sso}
+                            // FIXME: Typing needs to be fixed later
+                            ssoType={this.state.sso as any}
                             isSelected={this.state.shouldAutoAssignPermissions}
                             onChange={this.toggleAutoAssignPermissions}
                         />
@@ -876,11 +873,11 @@ class SSOLogin extends Component<SSOLoginProps, SSOLoginState> {
                     />
                 )}
                 {/* Confirmation modal for permission auto-assignment */}
-                {UserPermissionConfirmationModal && this.state.showAutoAssignConfirmationModal && (
+                {this.state.showAutoAssignConfirmationModal && (
                     <UserPermissionConfirmationModal
                         handleSave={this.saveNewSSO}
                         handleCancel={this.handleAutoAssignConfirmationModalClose}
-                        ssoType={this.state.sso}
+                        ssoType={this.state.sso as any}
                         isLoading={this.state.saveLoading}
                     />
                 )}
