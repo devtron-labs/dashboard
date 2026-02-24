@@ -392,7 +392,9 @@ const AppComposeRouter = ({ routePath }: { routePath: string }) => {
                     />
                 ),
             ]}
-            <Route path="*" element={<Navigate to={lastUnlockedStage} replace />} />
+            {location.pathname !== generatePath(routePath, params) ? (
+                <Route path="*" element={<Navigate to={lastUnlockedStage} />} />
+            ) : null}
         </Routes>
     )
     return (

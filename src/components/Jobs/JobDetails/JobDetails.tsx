@@ -127,10 +127,14 @@ const JobHeader = ({ jobName }: { jobName: string }) => {
         onClickTabPreventDefault(event, 'active')
     }
 
+    useEffect(() => {
+        currentPathname.current = location.pathname
+    }, [location.pathname])
+
     const handleAppChange = useCallback(
         ({ value }) => {
-            const currenUrl = generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId })
-            const tab = currentPathname.current.replace(currenUrl, '').split('/')[1]
+            const currentUrl = generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId })
+            const tab = currentPathname.current.replace(currentUrl, '').split('/')[1]
             const newUrl = generatePath(ROUTER_URLS.JOB_DETAIL.ROOT, { appId: value })
             navigate(`${newUrl}/${tab}`)
             handleAnalyticsEvent({
