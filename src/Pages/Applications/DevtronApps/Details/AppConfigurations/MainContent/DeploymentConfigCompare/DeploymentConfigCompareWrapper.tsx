@@ -56,6 +56,7 @@ const DeploymentConfigCompareWrapper = ({
             {...(props as DeploymentConfigCompareProps)}
             goBackURL={calculatedGoBackURL}
             getNavItemHref={getNavItemHref}
+            routePath={routePath}
         />
     )
 }

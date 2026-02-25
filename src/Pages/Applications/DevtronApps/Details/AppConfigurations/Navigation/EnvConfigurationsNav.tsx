@@ -127,7 +127,7 @@ const EnvConfigurationsNavContent = ({
                 ..._updatedEnvConfig[envConfigKey],
                 {
                     title: 'Unnamed',
-                    href: getNavigationPath(path, { appId, resourceType, envId }, resourceType, 'create'),
+                    href: getNavigationPath(path, { ...params, appId, resourceType, envId }, resourceType, 'create'),
                     configState: ResourceConfigState.Unnamed,
                     subtitle: '',
                     ...getUnnamedIconConfig(

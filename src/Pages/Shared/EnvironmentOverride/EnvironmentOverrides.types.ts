@@ -18,6 +18,7 @@ import { AppConfigProps } from '@devtron-labs/devtron-fe-common-lib'
 
 import {
     AppConfigState,
+    EnvConfigType,
     EnvConfigurationState,
 } from '@Pages/Applications/DevtronApps/Details/AppConfigurations/AppConfig.types'
 
@@ -32,7 +33,7 @@ export interface EnvironmentOverrideComponentProps extends Required<Pick<AppConf
     isJob?: boolean
     onErrorRedirectURL: string
     envConfig: EnvConfigurationState
-    fetchEnvConfig: (envId: number) => void
+    fetchEnvConfig: (envId: number, callback: (res: EnvConfigType) => void) => void
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
     routePath: string
 }

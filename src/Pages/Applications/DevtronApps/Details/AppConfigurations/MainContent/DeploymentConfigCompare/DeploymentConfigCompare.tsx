@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { generatePath, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     AppEnvDeploymentConfigType,
@@ -73,6 +73,7 @@ export const DeploymentConfigCompare = ({
     overwriteNavHeading,
     getNavItemHref,
     appOrEnvIdToResourceApprovalConfigurationMap,
+    routePath,
 }: DeploymentConfigCompareProps) => {
     // HOOKS
     const navigate = useNavigate()
@@ -639,10 +640,11 @@ export const DeploymentConfigCompare = ({
         }
 
         navigate({
-            pathname: getNavItemHref(
-                _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
-                '',
-            ),
+            pathname: generatePath(routePath, {
+                ...params,
+                resourceType: _isManifestView ? EnvResourceType.Manifest : EnvResourceType.DeploymentTemplate,
+                resourceName: null,
+            }),
             search: currentSearchParams.toString(),
         })
     }

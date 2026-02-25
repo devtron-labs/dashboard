@@ -15,7 +15,7 @@
  */
 
 import { useEffect, useMemo, useState } from 'react'
-import { Route, Routes, useParams } from 'react-router-dom'
+import { generatePath, Route, Routes, useParams } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -55,7 +55,9 @@ const renderNullState = () => (
 
 export const ReleaseConfigurations = () => {
     // HOOKS
-    const { appId, envId } = useParams<Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'>>()
+    const { appId, envId, releaseTrack, releaseVersion } = useParams<
+        Pick<DeploymentHistoryBaseParamsType, 'appId' | 'envId'> & { releaseTrack: string; releaseVersion: string }
+    >()
 
     // CONTEXTS
     const {
@@ -112,7 +114,7 @@ export const ReleaseConfigurations = () => {
         <Routes>
             <Route
                 key={appId}
-                path={`${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}
+                path={`${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`}
                 element={
                     <EnvConfigurationsNav
                         envConfig={envConfig}
@@ -218,7 +220,12 @@ export const ReleaseConfigurations = () => {
                             appName={selectedApp.label}
                             environments={environments}
                             routePath={`${ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}/${URLS.APP_ENV_CONFIG_COMPARE}/:compareTo?/${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}/:resourceName?`}
-                            baseGoBackURL={ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS}
+                            baseGoBackURL={generatePath(ROUTER_URLS.RELEASES.DETAIL.CONFIGURATIONS, {
+                                appId,
+                                envId,
+                                releaseTrack,
+                                releaseVersion,
+                            })}
                             overwriteNavHeading={`Comparing ${selectedApp.label}`}
                             appOrEnvIdToResourceApprovalConfigurationMap={envIdToEnvApprovalConfigurationMap}
                         />
