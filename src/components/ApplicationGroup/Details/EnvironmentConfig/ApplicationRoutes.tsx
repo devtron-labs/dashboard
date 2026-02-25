@@ -25,7 +25,7 @@ import { renderNavItem } from '@Pages/Applications/DevtronApps/Details/AppConfig
 
 import { ApplicationRouteType } from '../../AppGroup.types'
 
-const path = ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS
+const path = `${ROUTER_URLS.APP_GROUP_DETAILS.CONFIGURATIONS}/:appId?`
 
 const ApplicationRoute = ({
     envAppList,
@@ -39,7 +39,7 @@ const ApplicationRoute = ({
         <Routes>
             {!!appId && (
                 <Route
-                    path={`${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?`}
+                    path={`${DEPLOYMENT_CONFIGURATION_RESOURCE_TYPE_ROUTE}?/*`}
                     element={
                         <EnvConfigurationsNav
                             key={appId}
@@ -78,7 +78,7 @@ const ApplicationRoute = ({
                                     {renderNavItem({
                                         title: name,
                                         isProtectionAllowed: appIdToAppApprovalConfigMap?.[id]?.isApprovalApplicable,
-                                        href: generatePath(`${path}/:appId`, {
+                                        href: generatePath(path, {
                                             envId,
                                             appId: String(id),
                                         }),

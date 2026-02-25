@@ -45,8 +45,7 @@ const getApprovalPolicyConfigForEnv: (envId: number) => Promise<ResourceIdToReso
 
 const EnvConfig = ({ filteredAppIds, envName }: AppGroupDetailDefaultType) => {
     // HOOKS
-    const params = useParams<{ envId: string; appId: string }>()
-    const { appId, envId } = params
+    const { appId, envId } = useParams<{ envId: string; appId: string }>()
     const { pathname } = useLocation()
     const navigate = useNavigate()
 

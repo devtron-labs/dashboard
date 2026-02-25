@@ -15,7 +15,7 @@
  */
 
 import { useEffect } from 'react'
-import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
+import { generatePath, Navigate, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import {
     ApprovalConfigDataKindType,
@@ -196,6 +196,7 @@ const EnvironmentOverride = ({
                             />
                         }
                     />
+                    <Route path="*" element={<Navigate to={URLS.APP_DEPLOYMENT_CONFIG} />} />
                 </Routes>
             </div>
         </ErrorBoundary>

@@ -33,7 +33,7 @@ export interface EnvironmentOverrideComponentProps extends Required<Pick<AppConf
     isJob?: boolean
     onErrorRedirectURL: string
     envConfig: EnvConfigurationState
-    fetchEnvConfig: (envId: number, callback: (res: EnvConfigType) => void) => void
+    fetchEnvConfig: (envId: number, callback?: (res: EnvConfigType) => void) => void
     appOrEnvIdToResourceApprovalConfigurationMap: AppConfigState['envIdToEnvApprovalConfigurationMap']
     routePath: string
 }
