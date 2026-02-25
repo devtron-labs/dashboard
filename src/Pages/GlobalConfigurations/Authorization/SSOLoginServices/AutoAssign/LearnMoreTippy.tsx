@@ -12,20 +12,22 @@ const AdditionalContent = ({
             <a
                 href={documentationLink}
                 target="_blank"
-                rel="noreferrer noreferrer"
+                rel="noreferrer noopener"
                 className="anchor flexbox flex-align-center fs-13 dc__gap-4 mb-8"
             >
                 {documentationText}
                 <Icon name="ic-arrow-square-out" color="B500" size={14} />
             </a>
         )}
-        <DocLink
-            docLinkKey={devtronDocLink}
-            text="View documentation"
-            dataTestId="learn-more-about-view-documentation-link"
-            showExternalIcon
-            openInNewTab
-        />
+        {devtronDocLink && (
+            <DocLink
+                docLinkKey={devtronDocLink}
+                text="View documentation"
+                dataTestId="learn-more-about-view-documentation-link"
+                showExternalIcon
+                openInNewTab
+            />
+        )}
     </div>
 )
 
