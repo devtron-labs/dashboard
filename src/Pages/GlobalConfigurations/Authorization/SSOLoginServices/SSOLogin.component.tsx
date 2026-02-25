@@ -41,7 +41,6 @@ import {
     FeatureTitleWithInfo,
     InfoBlock,
     MODES,
-    noop,
     Progressing,
     SegmentedControl,
     SegmentType,
@@ -55,11 +54,10 @@ import {
 import { ReactComponent as InfoIcon } from '@Icons/ic-info-warn.svg'
 import Check from '@Icons/ic-selected-corner.png'
 import { ReactComponent as UsersIcon } from '@Icons/ic-users.svg'
-import { importComponentFromFELibrary } from '@Components/common'
 
 import { withGlobalConfiguration } from '../../../../components/globalConfigurations/GlobalConfigurationProvider'
 import { HEADER_TEXT, SWITCH_ITEM_SEGMENTS, SwitchItemValues, URLS, ViewType } from '../../../../config'
-import { AutoAssignToggleTile, UserPermissionConfirmationModal } from './AutoAssign'
+import { AutoAssignToggleTile, getAuthorizationGlobalConfig, UserPermissionConfirmationModal } from './AutoAssign'
 import {
     AUTHORIZATION_CONFIG_TYPES,
     autoAssignPermissionsFlowActiveProviders,
@@ -75,7 +73,6 @@ import { OIDCType, SSOConfigType, SSOLoginProps, SSOLoginState, SSOLoginTabType 
 import '@Components/login/login.scss'
 import './ssoLogin.scss'
 
-const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizationGlobalConfig', noop, 'function')
 const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
     <label className="dc__tertiary-tab__radio">
         <input
