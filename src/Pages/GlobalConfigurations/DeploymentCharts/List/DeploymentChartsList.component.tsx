@@ -21,11 +21,12 @@ import {
     APIResponseHandler,
     DocLink,
     EMPTY_STATE_STATUS,
+    FiltersTypeEnum,
     GenericEmptyState,
-    GenericFilterEmptyState,
     getAlphabetIcon,
     highlightSearchText,
-    SortableTableHeaderCell,
+    PaginationEnum,
+    Table,
     Tooltip,
     URLS,
     useAsync,
@@ -33,13 +34,13 @@ import {
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICDevtronApp } from '@Icons/ic-devtron-app.svg'
-import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
+// import { ReactComponent as ICFolderZip } from '@Icons/ic-folder-zip.svg'
 import emptyCustomChart from '@Images/ic-empty-custom-charts.webp'
 import { importComponentFromFELibrary } from '@Components/common'
 
-import { DeploymentChartsListSortableKeys } from '../types'
+import { DeploymentChartRowType, DeploymentChartsListSortableKeys } from '../types'
 import DeploymentChartsListHeader from './DeploymentChartsListHeader'
-import DownloadChartButton from './DownloadChartButton'
+// import DownloadChartButton from './DownloadChartButton'
 import { getChartList } from './service'
 import UploadButton from './UploadButton'
 import UploadChartModal from './UploadChartModal'
@@ -49,16 +50,47 @@ import './styles.scss'
 
 const DeploymentChartActionButton = importComponentFromFELibrary('DeploymentChartActionButton', null, 'function')
 
+const DeploymentChartActionButtonWrapper = () => (
+    <>
+        {DeploymentChartActionButton && <DeploymentChartActionButton name="test" />}
+        {/* <DownloadChartButton name={row.data.name} versions={row.data.version} /> */}
+    </>
+)
+
+const NameCellComponent = (props) => {
+    console.log(props)
+    return (
+        <span
+            className="dc__truncate"
+            // eslint-disable-next-line react/no-danger
+            dangerouslySetInnerHTML={{
+                __html: DOMPurify.sanitize(
+                    highlightSearchText({
+                        searchText: 'props.filterData.searchKey',
+                        text: 'props.row.data.name',
+                        highlightClasses: 'bcy-2',
+                    }),
+                ),
+            }}
+        />
+    )
+}
+
 const DeploymentChartsList = () => {
     const [showUploadPopup, setShowUploadPopup] = useState(false)
     const [chartListLoading, chartList, chartListError, reloadChartList] = useAsync(getChartList)
 
-    const { sortBy, sortOrder, searchKey, handleSearch, handleSorting, clearFilters } =
-        useUrlFilters<DeploymentChartsListSortableKeys>({
-            initialSortKey: DeploymentChartsListSortableKeys.CHART_NAME,
-        })
+    const {
+        sortBy,
+        sortOrder,
+        searchKey,
+        handleSearch,
+        //  handleSorting, clearFilters
+    } = useUrlFilters<DeploymentChartsListSortableKeys>({
+        initialSortKey: DeploymentChartsListSortableKeys.CHART_NAME,
+    })
 
-    const handleTriggerSorting = (sortKey: DeploymentChartsListSortableKeys) => () => handleSorting(sortKey)
+    // const handleTriggerSorting = (sortKey: DeploymentChartsListSortableKeys) => () => handleSorting(sortKey)
 
     const filteredChartList = useMemo(() => {
         const lowerCaseSearch = searchKey.toLowerCase()
@@ -104,7 +136,81 @@ const DeploymentChartsList = () => {
                     handleSearch={handleSearch}
                     handleOpenUploadChartModal={handleOpenUploadChartModal}
                 />
-                {filteredChartList.length ? (
+                <Table<DeploymentChartRowType, FiltersTypeEnum.STATE>
+                    id="table__deployment-charts-list"
+                    columns={[
+                        {
+                            label: 'Name',
+                            field: 'name',
+                            size: null,
+                            isSortable: true,
+                            CellComponent: NameCellComponent,
+                        },
+                        {
+                            label: 'Version',
+                            field: 'version',
+                            size: null,
+                        },
+                        {
+                            label: 'Description',
+                            field: 'description',
+                            size: null,
+                        },
+                        {
+                            label: 'Uploaded by',
+                            field: 'uploadedBy',
+                            size: null,
+                        },
+                    ]}
+                    rows={filteredChartList.map((chartData) => {
+                        const { version, description, uploadedBy, isUserUploaded } = chartData.versions[0]
+                        return {
+                            id: chartData.name,
+                            data: {
+                                name: chartData.name,
+                                version,
+                                description,
+                                // <Tooltip content={description} placement="top">
+                                //     <span className="dc__truncate">{description}</span>
+                                // </Tooltip>
+                                uploadedBy: (
+                                    <div className="flexbox dc__align-items-center dc__gap-8">
+                                        {isUserUploaded ? (
+                                            getAlphabetIcon(uploadedBy, 'icon-dim-20 m-0-imp')
+                                        ) : (
+                                            <ICDevtronApp className="icon-dim-20 fcb-5 dc__no-shrink" />
+                                        )}
+                                        <Tooltip content={uploadedBy} placement="left">
+                                            <span className="dc__truncate">{uploadedBy}</span>
+                                        </Tooltip>
+                                    </div>
+                                ),
+                            },
+                        }
+                    })}
+                    emptyStateConfig={{
+                        noRowsConfig: {
+                            title: 'No Deployment Charts Found',
+                        },
+                    }}
+                    filtersVariant={FiltersTypeEnum.STATE}
+                    additionalFilterProps={{
+                        initialSortKey: DeploymentChartsListSortableKeys.CHART_NAME,
+                    }}
+                    paginationVariant={PaginationEnum.NOT_PAGINATED}
+                    filter={null}
+                    rowStartIconConfig={{
+                        name: 'ic-folder-color',
+                        color: null,
+                        size: 24,
+                    }}
+                    rowActionOnHoverConfig={{
+                        width: 100,
+                        Component: DeploymentChartActionButtonWrapper,
+                    }}
+                />
+
+                {/* {filteredChartList.length ? (
                     <div className="flexbox-col dc__overflow-auto">
                         <div className="dc__grid dc__gap-16 dc__align-items-center chart-list-row dc__border-bottom px-20 py-10 fs-12 fw-6 lh-20 cn-7">
                             <span />
@@ -194,7 +300,7 @@ const DeploymentChartsList = () => {
                     </div>
                 ) : (
                     <GenericFilterEmptyState handleClearFilters={clearFilters} />
-                )}
+                )} */}
             </div>
         )
     }
