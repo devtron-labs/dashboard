@@ -74,7 +74,7 @@ const ClusterListView = (props: ClusterViewType) => {
 
             return (!searchKey || option.name.toLowerCase().includes(loweredSearchKey)) && filterCondition
         })
-    }, [searchKey, clusterOptions, `${clusterFilter}`, sortBy, sortOrder])
+    }, [searchKey, clusterOptions, clusterFilter, sortBy, sortOrder])
 
     const handleFilterKeyPress = (value: string) => {
         handleSearch(value)
