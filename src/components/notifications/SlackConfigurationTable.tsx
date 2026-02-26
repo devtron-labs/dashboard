@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-import { DeleteComponentsName } from '@Config/constantMessaging'
 
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons } from './notifications.util'
-import { ConfigurationTableProps } from './types'
+import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
+import { BASE_CONFIG, ConfigurationsTabTypes, SLACK_WEBHOOK_TABLE_COLUMNS } from './constants'
+import { ConfigurationTableProps, SlackWebhookConfigurationTableRowType } from './types'
 
 import './notifications.scss'
 
@@ -33,7 +32,7 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
     const history = useHistory()
     const { slackConfigurationList } = state
 
-    const onClickSlackConfigEdit = (id: number) => () => {
+    const onClickEditRow = (id: number) => () => {
         const newParams = {
             ...searchParams,
             configId: id.toString(),
@@ -44,40 +43,57 @@ const SlackConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTab
         })
     }
 
-    return (
-        <div className="slack-config-container h-100">
-            <div className="slack-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20  dc__position-sticky dc__top-0 bg__primary">
-                <div className="icon-dim-24" />
-                <p className="flex left m-0 ">Name</p>
-                <p className="flex left m-0 ">Webhook URL</p>
-                <p className="m-0" />
-            </div>
-            <div className="flex-grow-1">
-                {slackConfigurationList.map((slackConfig) => (
-                    <div
-                        key={slackConfig.id}
-                        className="slack-config-grid configuration-tab__table-row dc__gap-16 dc__hover-n50 dc__visible-hover dc__visible-hover--parent"
-                    >
-                        {getConfigTabIcons(ConfigurationsTabTypes.SLACK)}
-                        <div className="flex left dc__gap-8">
+    const tableRow = useMemo(
+        () =>
+            slackConfigurationList.map((slackConfig) => ({
+                id: `${slackConfig.id}`,
+                data: {
+                    name: (
+                        <div className="flex left dc__gap-8 py-10">
                             <InteractiveCellText
                                 text={slackConfig.slackChannel}
-                                onClickHandler={onClickSlackConfigEdit(slackConfig.id)}
+                                onClickHandler={onClickEditRow(slackConfig.id)}
                             />
                         </div>
-                        <InteractiveCellText text={slackConfig.webhookUrl} />
-                        <ConfigTableRowActionButton
-                            onClickEditRow={onClickSlackConfigEdit(slackConfig.id)}
-                            onClickDeleteRow={deleteClickHandler(
-                                slackConfig.id,
-                                DeleteComponentsName.SlackConfigurationTab,
-                            )}
-                            modal={ConfigurationsTabTypes.SLACK}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
+                    ),
+                    webhookUrl: slackConfig.webhookUrl,
+                },
+            })),
+        [state.slackConfigurationList],
+    )
+
+    const onRowClick = (rowData) => {
+        onClickEditRow(Number(rowData.id))()
+    }
+
+    return (
+        <Table<SlackWebhookConfigurationTableRowType, FiltersTypeEnum.STATE>
+            id="table__slack-configuration"
+            columns={SLACK_WEBHOOK_TABLE_COLUMNS}
+            rows={tableRow}
+            emptyStateConfig={{
+                noRowsConfig: {
+                    title: 'No Slack Configurations Found',
+                },
+            }}
+            filtersVariant={FiltersTypeEnum.STATE}
+            additionalFilterProps={{
+                initialSortKey: BASE_CONFIG[0].field,
+            }}
+            paginationVariant={PaginationEnum.NOT_PAGINATED}
+            filter={null}
+            rowStartIconConfig={{
+                name: 'ic-slack',
+                color: null,
+                size: 24,
+            }}
+            rowActionOnHoverConfig={{
+                width: 100,
+                Component: ConfigurationRowActionButtonWrapper,
+            }}
+            additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.SLACK }}
+            onRowClick={onRowClick}
+        />
     )
 }
 

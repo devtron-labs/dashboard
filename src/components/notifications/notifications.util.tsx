@@ -22,21 +22,26 @@ import { ReactComponent as CI } from '@Icons/ic-CI.svg'
 import { ReactComponent as CD } from '@Icons/ic-CD.svg'
 import { ReactComponent as Rocket } from '@Icons/ic-paper-rocket.svg'
 import { ReactComponent as Slack } from '@Icons/slack-logo.svg'
-import { ReactComponent as SES } from '@Icons/ic-aws-ses.svg'
 import { ReactComponent as Webhook } from '@Icons/ic-CIWebhook.svg'
-import { ReactComponent as SMTP } from '@Icons/ic-smtp.svg'
 import {
     commonSelectStyles,
     DynamicDataTableHeaderType,
     DynamicDataTableRowDataType,
     getUniqueId,
+    Icon,
+    IconBaseSizeType,
     ToastManager,
     ToastVariantType,
-    Tooltip,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationFieldKeys, ConfigurationsTabTypes, ConfigurationTabText } from './constants'
 import { validateEmail } from '../common'
-import { FormError, SESFormType, SMTPFormType, WebhookDataRowType, WebhookHeaderKeyType } from './types'
+import {
+    FormError,
+    SESFormType,
+    SMTPFormType,
+    WebhookDataRowType,
+    WebhookHeaderKeyType,
+} from './types'
 import { REQUIRED_FIELD_MSG } from '@Config/constantMessaging'
 
 export const multiSelectStyles = {
@@ -166,17 +171,17 @@ export const renderPipelineTypeIcon = (row) => {
     return <CD className="icon-dim-20 dc__flip" />
 }
 
-export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: number = 24) => {
+export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: IconBaseSizeType = 24) => {
     switch (tab) {
         case ConfigurationsTabTypes.SMTP:
-            return <SMTP className={`icon-dim-${size}`} />
+            return <Icon name="ic-smtp" color={null} size={size} />
         case ConfigurationsTabTypes.SLACK:
-            return <Slack className={`icon-dim-${size}`} />
+            return <Icon name="ic-slack" color={null} size={size} />
         case ConfigurationsTabTypes.WEBHOOK:
-            return <Webhook className={`icon-dim-${size}`} />
+            return <Icon name="ic-webhook" color={null} size={size} />
         case ConfigurationsTabTypes.SES:
         default:
-            return <SES className={`icon-dim-${size}`} />
+            return <Icon name="ic-ses" color={null} size={size} />
     }
 }
 
@@ -223,8 +228,6 @@ export const getSMTPDefaultConfiguration = (shouldBeDefault: boolean): SMTPFormT
     default: shouldBeDefault,
     isLoading: false,
 })
-
-
 
 export const renderDefaultTag = (isDefault: boolean) => {
     if (isDefault) {
@@ -353,3 +356,4 @@ export const getValidationFormConfig = (formConfig) => {
     )
     return { allValid, formValidations }
 }
+

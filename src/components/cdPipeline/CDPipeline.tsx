@@ -79,6 +79,7 @@ import {
 import { Sidebar } from '../CIPipelineN/Sidebar'
 import DeleteCDNode from './DeleteCDNode'
 import { PreBuild } from '../CIPipelineN/PreBuild'
+import { BOUNDARY_GAP } from '../CIPipelineN/Constants'
 import { ValidationRules } from '../ciPipeline/validationRules'
 import './cdPipeline.scss'
 import {
@@ -1522,17 +1523,13 @@ export default function CDPipeline({
         }
 
         return (
-            <div className="flexbox">
-                <div className="floating-scoped-variables-widget">
-                    <FloatingVariablesSuggestions
-                        zIndex={21}
-                        appId={appId}
-                        envId={formData?.environmentId ? String(formData.environmentId) : null}
-                        clusterId={formData?.clusterId}
-                        isTemplateView={isTemplateView}
-                    />
-                </div>
-            </div>
+            <FloatingVariablesSuggestions
+                appId={appId}
+                envId={formData?.environmentId ? String(formData.environmentId) : null}
+                clusterId={formData?.clusterId}
+                isTemplateView={isTemplateView}
+                boundaryGap={BOUNDARY_GAP}
+            />
         )
     }
 
