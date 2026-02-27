@@ -22,12 +22,14 @@ import {
     ClipboardButton,
     ComponentSizeType,
     getAIAnalyticsEvents,
+    MainContext,
     noop,
     SortableTableHeaderCell,
     TabGroup,
     TippyCustomized,
     TippyTheme,
     Tooltip,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICExpand } from '@Icons/ic-expand.svg'
@@ -72,6 +74,8 @@ const NodeComponent = ({
     tabs,
     removeTabByIdentifier,
 }: NodeComponentProps) => {
+    const { aiAgentContext } = useMainContext()
+
     const { url } = useRouteMatch()
     const history = useHistory()
     const location = useLocation()
@@ -93,6 +97,13 @@ const NodeComponent = ({
     const nodeRowClassModifier = nodeRowClassModifierMap[params.nodeType]
         ? `node-row--${nodeRowClassModifierMap[params.nodeType]}`
         : ''
+
+    const showingAIButtonInAnyNode =
+        ExplainWithAIButton &&
+        selectedNodes?.some((node) => {
+            const status = getNodeStatus(node)
+            return !!status && !EXPLAIN_AI_EXCLUDED_STATUS.has(status.toLowerCase())
+        })
 
     useEffect(() => {
         if (externalLinks?.length > 0) {
@@ -335,6 +346,31 @@ const NodeComponent = ({
                 return _classname
             }
 
+            const intelligenceConfig: MainContext['intelligenceConfig'] = {
+                metadata: {
+                    object: `${node.kind}/${node.name}`,
+                    namespace: node.namespace,
+                    status: nodeStatus,
+                },
+                clusterId,
+                prompt: `Debug what's wrong with ${node.name}/${node.kind} of ${node.namespace}`,
+                analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
+            }
+
+            const debugAgentContext: MainContext['debugAgentContext'] = aiAgentContext
+                ? ({
+                      ...aiAgentContext,
+                      data: {
+                          ...aiAgentContext.data,
+                          resourceKind: node.kind,
+                          resourceName: node.name,
+                          namespace: node.namespace,
+                          resourceStatus: nodeStatus,
+                      },
+                      prompt: `Why is ${node.kind} '${node.name}' of '${node.namespace}' namespace in ${nodeStatus} state?`,
+                  } as MainContext['debugAgentContext'])
+                : null
+
             return (
                 // eslint-disable-next-line react/no-array-index-key
                 <Fragment key={`grt${index}`}>
@@ -511,16 +547,8 @@ const NodeComponent = ({
                         {showAIButton && (
                             <ExplainWithAIButton
                                 isIconButton
-                                intelligenceConfig={{
-                                    metadata: {
-                                        object: `${node.kind}/${node?.name}`,
-                                        namespace: node?.namespace,
-                                        status: nodeStatus,
-                                    },
-                                    clusterId,
-                                    prompt: `Debug what’s wrong with ${node?.name}/${node.kind} of ${node?.namespace}`,
-                                    analyticsCategory: getAIAnalyticsEvents('RESOURCE', appDetails.appType),
-                                }}
+                                intelligenceConfig={intelligenceConfig}
+                                debugAgentContext={debugAgentContext}
                             />
                         )}
                         {!appDetails.isVirtualEnvironment &&
@@ -572,7 +600,9 @@ const NodeComponent = ({
                             </div>
                         )}
 
-                        <div className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier}`}>
+                        <div
+                            className={`node-row dc__border-bottom-n1 pt-6 pb-5 pl-8 pr-16 ${nodeRowClassModifier} ${showingAIButtonInAnyNode ? 'explain-ai-button' : ''}`}
+                        >
                             {tableHeader.map((cell, index) => (
                                 <div
                                     // eslint-disable-next-line react/no-array-index-key
