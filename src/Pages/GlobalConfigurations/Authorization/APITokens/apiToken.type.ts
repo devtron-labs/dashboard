@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import React, { type JSX } from 'react'
 
 import { GenericModalProps } from '@devtron-labs/devtron-fe-common-lib'
 

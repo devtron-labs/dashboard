@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useState } from 'react'
+import React, { type JSX, Fragment, useEffect, useState } from 'react'
 import { components } from 'react-select'
 import Tippy from '@tippyjs/react'
 import EmptyExternalLinks from '../../assets/img/empty-externallinks@2x.png'

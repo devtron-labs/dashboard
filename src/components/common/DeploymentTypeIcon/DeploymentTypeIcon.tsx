@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 import { DeploymentAppTypes, Tooltip } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ArgoCD } from '@Icons/argo-cd-app.svg'

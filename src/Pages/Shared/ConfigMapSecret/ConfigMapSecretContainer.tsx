@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { type JSX, useEffect, useMemo, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
@@ -140,8 +140,8 @@ export const ConfigMapSecretContainer = ({
     })
 
     // REFS
-    const abortControllerRef = useRef<AbortController>()
-    const savedFormData = useRef<ConfigMapSecretUseFormProps>()
+    const abortControllerRef = useRef<AbortController | null>(null)
+    const savedFormData = useRef<ConfigMapSecretUseFormProps | null>(null)
     const formValuesBeforeExpressEditView = useRef<ConfigMapSecretUseFormProps>(null)
     const expressEditFormInitialValues = useRef<ConfigMapSecretUseFormProps>(null)
 

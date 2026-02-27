@@ -36,7 +36,7 @@ import { ToolSelectStyles } from '../ExternalLinks.utils'
 import { customOptionWithIcon, customValueContainerWithIcon, ToolsMenuList } from '../ExternalLinks.component'
 import IdentifierSelector from './IdentifierSelector'
 import { CONFIGURE_LINK_NO_NAME } from '../../../config'
-import { ReactNode } from 'react'
+import { ReactNode, type JSX } from 'react'
 
 export default function ConfigureLinkAction({
     isFullMode,

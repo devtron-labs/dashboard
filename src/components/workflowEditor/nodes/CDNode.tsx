@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Component, ReactElement } from 'react'
+import React, { Component, ReactElement, type JSX } from 'react'
 import { generatePath, Link } from 'react-router-dom'
 import {
     Button,

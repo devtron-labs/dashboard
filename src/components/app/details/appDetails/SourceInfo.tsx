@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import ReactGA from 'react-ga4'
 import { Link, useParams } from 'react-router-dom'
 import moment from 'moment'

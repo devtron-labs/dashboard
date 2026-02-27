@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment } from 'react'
+import { Fragment, type JSX } from 'react'
 
 import {
     Button,

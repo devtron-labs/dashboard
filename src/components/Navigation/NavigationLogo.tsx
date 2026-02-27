@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { NavLink } from 'react-router-dom'
 
 import { getRandomColor, Icon, ROUTER_URLS, SERVER_MODE, useMainContext } from '@devtron-labs/devtron-fe-common-lib'

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useRef, useState } from 'react'
+import { type JSX, useRef, useState } from 'react'
 
 import {
     ButtonWithLoader,

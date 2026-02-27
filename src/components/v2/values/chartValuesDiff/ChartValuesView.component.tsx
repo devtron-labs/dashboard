@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { GroupBase } from 'react-select'
 import {
     Progressing,

@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction } from 'react'
+import { Dispatch, type JSX, SetStateAction } from 'react'
 
 import {
     ClusterType,

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, useReducer, useRef } from 'react'
+import { useState, useEffect, useReducer, useRef, type JSX } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 import { getDeploymentAppType, importComponentFromFELibrary, useJsonYaml } from '../../../common'
 import {

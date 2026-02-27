@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { type JSX, Fragment, MouseEvent, useEffect, useRef, useState } from 'react'
 import {
     showError,
     Progressing,
@@ -386,7 +386,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
         )
     }
 
-    const handleCopyToClipboard = async ({ e, token }: { e: React.MouseEvent; token: string }) => {
+    const handleCopyToClipboard = async ({ e, token }: { e: MouseEvent; token: string }) => {
         stopPropagation(e)
         setCopyToClipboardPromise(copyToClipboard(token))
     }
@@ -543,7 +543,7 @@ export const WebhookDetailsModal = ({ close, isTemplateView }: WebhookDetailType
     const renderSchema = (schemaData: SchemaType, schemaName: string): JSX.Element => {
         return (
             <div
-                ref={(el) => (schemaRef.current[schemaName] = el)}
+                ref={(el) => { schemaRef.current[schemaName] = el }}
                 className={`dc__border-top ${selectedSchema === schemaName ? 'bcy-1' : ''}`}
             >
                 <div className="json-schema-row dc__border-bottom pt-8 pb-8 fw-6 fs-13">

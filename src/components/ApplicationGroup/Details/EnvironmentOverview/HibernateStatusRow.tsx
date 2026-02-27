@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react'
-import { HibernateResponseRowType, HibernateStatusRowType } from '../../AppGroup.types'
+import type { JSX } from 'react'
+import { HibernateStatusRowType } from '../../AppGroup.types'
 import { ReactComponent as Error } from '../../../../assets/icons/ic-error-exclamation.svg'
 import { ReactComponent as Success } from '../../../../assets/icons/appstatus/healthy.svg'
 import { ReactComponent as UnAuthorized } from '../../../../assets/icons/ic-locked.svg'

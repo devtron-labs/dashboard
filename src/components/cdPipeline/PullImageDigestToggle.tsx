@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
+
 import { DTSwitch } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as DockerWithImage } from '../../assets/icons/ic-docker-with-image.svg'
