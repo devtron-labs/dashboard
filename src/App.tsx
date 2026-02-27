@@ -156,6 +156,32 @@ const App = () => {
         setGlobalAPITimeout(window._env_.GLOBAL_API_TIMEOUT)
     }, [])
 
+    useEffect(() => {
+        // Mapping few commonly used old routes to new routes
+        const parts = location.pathname.split('/').filter((part) => part)
+
+        if (parts?.[0] === 'app') {
+            if (Number.isNaN(Number(parts?.[1]))) {
+                return
+            }
+
+            const pageHeaderTab = parts?.[2]
+
+            if (
+                pageHeaderTab === CommonURLS.APP_DETAILS ||
+                pageHeaderTab === CommonURLS.APP_TRIGGER ||
+                pageHeaderTab === URLS.APP_CI_DETAILS ||
+                pageHeaderTab === URLS.APP_CD_DETAILS ||
+                pageHeaderTab === URLS.APP_DEPLOYMENT_METRICS ||
+                pageHeaderTab === CommonURLS.APP_CONFIG
+            ) {
+                parts[0] = URLS.APPLICATION_MANAGEMENT_APP
+                const newPath = parts.join('/')
+                push(newPath)
+            }
+        }
+    }, [location])
+
     const renderRoutesWithErrorBoundary = () =>
         errorPage ? (
             <div className="full-height-width bg__tertiary">
