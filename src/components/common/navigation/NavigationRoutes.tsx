@@ -101,6 +101,7 @@ import { AppContext, ErrorBoundary } from '..'
 import { ENVIRONMENT_DATA_FALLBACK, INITIAL_ENV_DATA_STATE, NAVBAR_WIDTH } from './constants'
 import { AppRouter, InfraAppsRouter, RedirectUserWithSentry } from './NavRoutes.components'
 import { EnvironmentDataStateType, NavigationRoutesTypes } from './types'
+import UpgradeToOSSPlusDialog from './UpgradeToOSSPlusDialog'
 
 import './navigation.scss'
 
@@ -176,6 +177,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
     const [environmentDataState, setEnvironmentDataState] = useState<EnvironmentDataStateType>(INITIAL_ENV_DATA_STATE)
     const [licenseInfoDialogType, setLicenseInfoDialogType] = useState<LicenseInfoDialogType>(null)
     const [intelligenceConfig, setIntelligenceConfig] = useState<IntelligenceConfig>(null)
+    const [showUpgradeToOSSPlusDialog, setShowUpgradeToOSSPlusDialog] =
+        useState<MainContext['showUpgradeToOSSPlusDialog']>(false)
 
     const [sidePanelConfig, setSidePanelConfig] = useState<SidePanelConfig>({
         state: 'closed',
@@ -761,6 +764,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     handleUpdateUserThemePreference={handleUpdateUserThemePreference}
                 />
             )}
+            {!isFELibAvailable && <UpgradeToOSSPlusDialog />}
             {renderAboutDevtronDialog()}
         </motion.main>
     )
@@ -820,6 +824,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 debugAgentContext,
                 setDebugAgentContext,
                 AskDevtronButton,
+                showUpgradeToOSSPlusDialog,
+                setShowUpgradeToOSSPlusDialog,
             }}
         >
             <ConfirmationModalProvider>
