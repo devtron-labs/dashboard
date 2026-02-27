@@ -17,6 +17,7 @@
 import { RouteComponentProps } from 'react-router-dom'
 
 import {
+    CHECKBOX_VALUE,
     DynamicDataTableRowType,
     GenericEmptyStateType,
     PaginationProps,
@@ -253,17 +254,22 @@ export interface ConfigurationTabSwitcherType {
     isEmptyView: boolean
 }
 
-export interface NotificationConfiguration {
+export interface NotificationEventsType {
+    trigger: boolean
+    success: boolean
+    failure: boolean
+    configApproval: boolean
+    imageApproval: boolean
+}
+
+export interface NotificationConfiguration extends NotificationEventsType {
     id: number
     pipelineId?: number
     appName: string
     pipelineName?: string
-    pipelineType: 'CI' | 'CD'
+    pipelineType: NotificationPipelineType
     environmentName?: string
     branch?: string
-    trigger: boolean
-    success: boolean
-    failure: boolean
     isSelected: boolean
     providers: { dest: string; configId: number; recipient: string; name?: string }[]
     appliedFilters: {
@@ -281,7 +287,15 @@ export interface NotificationConfiguration {
 
 interface NotificationTabCheckboxTypes {
     isChecked: boolean
-    value: 'INTERMEDIATE' | 'CHECKED'
+    value: CHECKBOX_VALUE.INTERMEDIATE | CHECKBOX_VALUE.CHECKED
+}
+
+export interface NotificationTabEvents {
+    trigger: NotificationTabCheckboxTypes
+    success: NotificationTabCheckboxTypes
+    failure: NotificationTabCheckboxTypes
+    configApproval: NotificationTabCheckboxTypes
+    imageApproval: NotificationTabCheckboxTypes
 }
 
 export interface NotificationTabState {
@@ -291,17 +305,15 @@ export interface NotificationTabState {
     channelList: any[]
     showDeleteDialog: boolean
     showModifyRecipientsModal: boolean
+    events: NotificationTabEvents
     headerCheckbox: NotificationTabCheckboxTypes
-    triggerCheckbox: NotificationTabCheckboxTypes
-    successCheckbox: NotificationTabCheckboxTypes
-    failureCheckbox: NotificationTabCheckboxTypes
     payloadUpdateEvents: Array<{ id: number; eventTypeIds: number[] }>
     pagination: Pick<PaginationProps, 'offset' | 'size' | 'pageSize'>
     hostURLConfig: HostURLConfig
     deleting: boolean
     confirmation: boolean
     singleDeletedId: number
-    disableEdit: boolean
+    selectedNotificationList: NotificationConfiguration[]
 }
 
 export interface BaseConfigurationTableRowType {
@@ -321,4 +333,140 @@ export interface SMTPConfigurationTableRowType extends BaseConfigurationTableRow
 
 export interface SlackWebhookConfigurationTableRowType extends BaseConfigurationTableRowType {
     webhookUrl: string
+}
+
+export interface RecipientType {
+    configId: number
+    recipient: string
+    dest: string
+    name?: string
+}
+
+export interface ModifyRecipientsModalProps {
+    channelList: SelectedRecipientType[]
+    onSaveSuccess: () => void
+    closeModifyRecipientsModal: () => void
+    notificationListFromParent: {
+        id: number
+        providers: RecipientType[]
+    }[]
+}
+
+export interface SelectedRecipientType {
+    __isNew__?: boolean
+    label: string
+    value: string
+    data: RecipientType
+}
+
+export interface ModifyRecipientsModalState {
+    isLoading: boolean
+    savedRecipients: RecipientType[]
+    selectedRecipient: SelectedRecipientType[]
+    showEmailAgents: boolean
+    selectedEmailAgent: string
+    recipientWithoutEmailAgent: boolean
+}
+
+export interface AddNotificationsProps extends RouteComponentProps<{}> {}
+
+export enum FilterOptions {
+    ENVIRONMENT = 'environment',
+    APPLICATION = 'application',
+    PROJECT = 'project',
+    CLUSTER = 'cluster',
+}
+
+interface BaseOptionsType {
+    value: number
+    label: string
+    type: string
+}
+interface Options {
+    environment: BaseOptionsType[]
+    application: BaseOptionsType[]
+    project: BaseOptionsType[]
+    cluster: BaseOptionsType[]
+}
+
+export enum NotificationPipelineType {
+    CI = 'CI',
+    CD = 'CD',
+    BASE = 'BASE',
+}
+export interface PipelineType extends NotificationEventsType {
+    checkbox: {
+        isChecked: boolean
+        value: CHECKBOX_VALUE
+    }
+    type: NotificationPipelineType
+    pipelineId: number
+    pipelineName: string
+    environmentName?: string
+    branch?: string
+    appName: string
+    appliedFilters: Array<{ type: string; value: number | string | undefined; name: string; label: string | undefined }>
+    isVirtualEnvironment?: boolean
+}
+
+interface BaseConfigType {
+    id: number
+    configName: string
+    dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''
+    recipient: string
+}
+
+interface ChannelType {
+    __isNew__?: boolean
+    label: string
+    value: string
+    data: { dest: 'slack' | 'ses' | 'smtp' | 'webhook' | ''; configId: number; recipient: string }
+}
+
+export interface AddNotificationState {
+    view: string
+    showSlackConfigModal: boolean
+    showSESConfigModal: boolean
+    showSMTPConfigModal: boolean
+    channelOptions: ChannelType[]
+    sesConfigOptions: BaseConfigType[]
+    smtpConfigOptions: BaseConfigType[]
+    isLoading: boolean
+    appliedFilters: Array<{ type: string; value: number | string | undefined; label: string | undefined }>
+    selectedChannels: ChannelType[]
+    openSelectPipeline: boolean
+    pipelineList: PipelineType[]
+    filterInput: string
+    emailAgentConfigId: number
+    options: Options
+    isApplistLoading: boolean
+    selectedEmailAgent: string
+    showWebhookConfigModal: boolean
+}
+
+export interface ModifyRecipientPopUpType extends Pick<NotificationTabState, 'selectedNotificationList'> {
+    events: NotificationTabEvents
+    applyModifyEvents: () => void
+    onChangeCheckboxHandler: (e, value) => () => void
+}
+
+export interface NotificationsProps extends RouteComponentProps<{}> {
+    isSuperAdmin: boolean
+}
+
+export interface NotificationsState {
+    disableEdit: boolean
+}
+
+export interface BulkMultiSelectTagWidgetType {
+    parentRef: React.RefObject<HTMLDivElement>
+    selectedIdentifiersCount: number
+    showDeleteModal: () => void
+    events: NotificationTabEvents
+    applyModifyEvents: () => void
+    onChangeCheckboxHandler: (e, value) => () => void
+    selectedNotificationList: NotificationConfiguration[]
+    onOpenEditNotificationMenu: () => void
+    showModifyModal: () => void
+    toggleAllNotification: () => void
 }
