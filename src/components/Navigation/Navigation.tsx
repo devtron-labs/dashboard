@@ -28,6 +28,7 @@ import {
     NavigationGroupType,
     SearchBar,
     URLS,
+    useMainContext,
     useQuery,
     UseRegisterShortcutProvider,
 } from '@devtron-labs/devtron-fe-common-lib'
@@ -60,6 +61,7 @@ export const Navigation = ({
 
     // HOOKS
     const { pathname } = useLocation()
+    const { isFELibAvailable, setShowUpgradeToOSSPlusDialog } = useMainContext()
 
     // REFS
     const securityTrivyModuleTimeout = useRef<NodeJS.Timeout>(null)
@@ -215,6 +217,10 @@ export const Navigation = ({
         })
     }
 
+    const handleShowUpgradeToOSSPlusDialog = () => {
+        setShowUpgradeToOSSPlusDialog(true)
+    }
+
     return (
         <>
             <div className="navigation dc__position-rel">
@@ -238,15 +244,6 @@ export const Navigation = ({
                         }
                         onHover={handleCloseExpandedNavigation(true)}
                     />
-                    <NavGroup
-                        title="Overview"
-                        icon="ic-global-overview"
-                        to="/dummy-url"
-                        isExpanded={isExpanded}
-                        onHover={handleCloseExpandedNavigation(true)}
-                        disabled
-                        showTooltip
-                    />
                     {NAVIGATION_LIST.map((item) => (
                         <NavGroup
                             key={item.id}
@@ -261,6 +258,7 @@ export const Navigation = ({
                             showTooltip={item.disabled}
                         />
                     ))}
+
                     {!window._env_.K8S_CLIENT && !isAirgapped && showStackManager && (
                         <NavGroup
                             title="Stack Manager"
@@ -269,6 +267,15 @@ export const Navigation = ({
                             isExpanded={isExpanded}
                             onHover={handleCloseExpandedNavigation(true)}
                             showTooltip
+                        />
+                    )}
+
+                    {!isFELibAvailable && (
+                        <NavGroup
+                            key="upgrade-to-oss-plus"
+                            title="Upgrade to OSS Plus"
+                            icon="ic-arrow-up-circle-with-dot"
+                            onClick={handleShowUpgradeToOSSPlusDialog}
                         />
                     )}
                 </nav>
