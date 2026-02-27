@@ -468,4 +468,5 @@ export interface BulkMultiSelectTagWidgetType {
     selectedNotificationList: NotificationConfiguration[]
     onOpenEditNotificationMenu: () => void
     showModifyModal: () => void
+    toggleAllNotification: () => void
 }

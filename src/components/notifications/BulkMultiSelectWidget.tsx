@@ -26,6 +26,7 @@ export const BulkMultiSelectTagWidget = ({
     selectedNotificationList,
     onOpenEditNotificationMenu,
     showModifyModal,
+    toggleAllNotification,
 }: BulkMultiSelectTagWidgetType) => {
     const renderModifyEventPopUpBody = () => (
         <PopupMenu.Body>
@@ -87,6 +88,18 @@ export const BulkMultiSelectTagWidget = ({
                         style={ButtonStyleType.neutral}
                         ariaLabel="Delete Notifications"
                         onClick={showDeleteModal}
+                        showAriaLabelInTippy
+                    />
+
+                    <div className="dc__divider h-16" />
+
+                    <Button
+                        dataTestId="notification-delete-button"
+                        icon={<Icon name="ic-close-large" color={null} />}
+                        variant={ButtonVariantType.borderLess}
+                        style={ButtonStyleType.neutral}
+                        ariaLabel="Clear"
+                        onClick={toggleAllNotification}
                         showAriaLabelInTippy
                     />
                 </div>

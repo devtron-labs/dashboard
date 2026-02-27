@@ -17,21 +17,14 @@
 import { Component } from 'react'
 import { Switch, Route, Redirect, RouteComponentProps } from 'react-router-dom'
 import {
-    Button,
-    ButtonVariantType,
-    ComponentSizeType,
     ErrorScreenNotAuthorized,
     FeatureTitleWithInfo,
-    Icon,
     TabGroup,
-    TOAST_ACCESS_DENIED,
-    ToastManager,
-    ToastVariantType,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { ConfigurationTab } from './ConfigurationTab'
 import { NotificationTab } from './NotificationTab'
 import { ErrorBoundary } from '../common'
-import { HEADER_TEXT, URLS } from '../../config'
+import { HEADER_TEXT } from '../../config'
 import './notifications.scss'
 import { NotificationsProps, NotificationsState } from './types'
 import { AddNotificationButton } from './AddNotificationButton'

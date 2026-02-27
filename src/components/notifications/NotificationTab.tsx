@@ -746,6 +746,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                         selectedNotificationList={this.state.selectedNotificationList}
                         onOpenEditNotificationMenu={this.onOpenEditNotificationMenu}
                         showModifyModal={this.showModifyModal}
+                        toggleAllNotification={this.toggleAllNotification}
                     />
                 )}
             </div>
