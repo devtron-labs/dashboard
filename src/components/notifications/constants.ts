@@ -213,5 +213,5 @@ export const EVENT_ICONS = {
     [EVENTS.SUCCESS]: 'ic-check',
     [EVENTS.FAILURE]: 'ic-close-small',
     [EVENTS.CONFIG_APPROVAL]: 'ic-code',
-    [EVENTS.IMAGE_APPROVAL]: 'ic-image-approve',
+    [EVENTS.IMAGE_APPROVAL]: 'ic-rocket-launch',
 }

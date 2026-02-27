@@ -619,7 +619,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
                                     {row.imageApproval ? (
                                         <Icon
-                                            name="ic-image-approve"
+                                            name="ic-rocket-launch"
                                             color={null}
                                             tooltipProps={{
                                                 content: 'Deployment Approval',
