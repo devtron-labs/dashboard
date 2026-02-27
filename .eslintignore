@@ -122,7 +122,6 @@ src/components/app/list/__tests__/AppListView.test.tsx
 src/components/app/list/appList.modal.ts
 src/components/app/list/emptyView/Empty.tsx
 src/components/app/list/expandedRow/ExpandedRow.tsx
-src/components/app/service.ts
 src/components/bulkEdits/bulkedit.utils.tsx
 src/components/cdPipeline/BuildCD.tsx
 src/components/cdPipeline/CDPipeline.tsx
