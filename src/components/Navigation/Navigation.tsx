@@ -275,7 +275,16 @@ export const Navigation = ({
                             key="upgrade-to-oss-plus"
                             title="Upgrade to OSS Plus"
                             icon="ic-arrow-up-circle-with-dot"
+                            isExpanded={isExpanded}
                             onClick={handleShowUpgradeToOSSPlusDialog}
+                            onHover={handleCloseExpandedNavigation(true)}
+                            showTooltip
+                            tooltip={
+                                <div className="flexbox-col dc__gap-2">
+                                    <h6 className="m-0 fs-12 fw-6 lh-18">Upgrade to OSS Plus</h6>
+                                    <p className="m-0 fs-12 fw-4 lh-18">Run Devtron OSS with Expert Support</p>
+                                </div>
+                            }
                         />
                     )}
                 </nav>
