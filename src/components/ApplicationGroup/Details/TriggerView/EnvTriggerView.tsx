@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react'
+import { MouseEvent, useEffect, useState, type JSX } from 'react'
 import { generatePath, Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom'
 import Tippy from '@tippyjs/react'
 
@@ -403,7 +403,7 @@ const EnvTriggerView = ({ filteredAppIds, isVirtualEnv }: AppGroupDetailDefaultT
             })
     }
 
-    const closeApprovalModal = (e: React.MouseEvent): void => {
+    const closeApprovalModal = (e: MouseEvent): void => {
         e.stopPropagation()
         navigate({
             search: '',

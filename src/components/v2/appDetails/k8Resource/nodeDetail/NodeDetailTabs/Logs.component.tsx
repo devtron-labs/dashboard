@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef, useState } from 'react'
+import { type JSX, useEffect, useRef, useState } from 'react'
 import ReactGA from 'react-ga4'
 import { useLocation, useParams } from 'react-router-dom'
 import Select from 'react-select'

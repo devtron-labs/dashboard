@@ -131,7 +131,7 @@ const CostVisibilityRouter = importComponentFromFELibrary('CostVisibilityRouter'
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const navigate = useNavigate()
     const location = useLocation()
-    const navRouteRef = useRef<HTMLDivElement>()
+    const navRouteRef = useRef<HTMLDivElement | null>(null)
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)

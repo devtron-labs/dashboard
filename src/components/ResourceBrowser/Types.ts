@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, RefObject, SetStateAction } from 'react'
+import React, { Dispatch, type JSX, RefObject, SetStateAction } from 'react'
 import { GroupBase } from 'react-select'
 
 import {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect } from 'react'
+import { useEffect, type JSX } from 'react'
 import {
     Drawer,
     GenericEmptyState,

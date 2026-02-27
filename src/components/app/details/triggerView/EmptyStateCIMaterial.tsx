@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { Button, ButtonVariantType, GenericEmptyState } from '@devtron-labs/devtron-fe-common-lib'
 import ErrorImage from '../../../../assets/img/ic-empty-error@2x.png'
 import EmptyStateImage from '../../../../assets/img/app-not-deployed.svg'

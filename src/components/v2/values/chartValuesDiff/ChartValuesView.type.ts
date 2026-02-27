@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import YAML from 'yaml'
 
 import { DeploymentAppTypes, GitOpsAuthModeType } from '@devtron-labs/devtron-fe-common-lib'

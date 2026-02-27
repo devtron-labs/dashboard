@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react'
+import { cloneElement, type JSX } from 'react'
 import { components } from 'react-select'
 import { ComponentSizeType, ConditionalWrap, TabGroup } from '@devtron-labs/devtron-fe-common-lib'
 import Tippy from '@tippyjs/react'
@@ -78,7 +78,7 @@ export const ValueContainer = (props): JSX.Element => {
             ) : (
                 <Search className="icon-dim-16 mr-4 mw-18" />
             )}
-            {React.cloneElement(props.children[1])}
+            {cloneElement(props.children[1])}
         </components.ValueContainer>
     )
 }

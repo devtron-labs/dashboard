@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState } from 'react'
+import { type JSX, useState } from 'react'
 import Tippy from '@tippyjs/react'
 import {
     Collapse,

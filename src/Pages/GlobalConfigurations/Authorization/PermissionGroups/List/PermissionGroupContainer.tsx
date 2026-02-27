@@ -57,7 +57,7 @@ const PermissionGroupContainer = ({
 
     const { searchKey, handleSearch: _handleSearch, clearFilters } = urlFilters
 
-    const draggableRef = useRef<HTMLDivElement>()
+    const draggableRef = useRef<HTMLDivElement | null>(null)
     const { getSelectedIdentifiersCount, isBulkSelectionApplied } = useAuthorizationBulkSelection()
     const isSomeRowChecked = getSelectedIdentifiersCount() > 0
     const selectedUsersCount = isBulkSelectionApplied ? totalCount : getSelectedIdentifiersCount()

@@ -43,7 +43,7 @@ const AppGroupAppFilter = () => {
         setSelectedGroupFilter,
         filterParentType,
     }: AppGroupAppFilterContextType = useAppGroupAppFilterContext()
-    const appGroupFilterRef = useRef<SelectInstance<OptionType>>()
+    const appGroupFilterRef = useRef<SelectInstance<OptionType> | null>(null)
     const { registerShortcut, unregisterShortcut } = useRegisterShortcut()
     const [appFilterAppInput, setAppFilterAppInput] = useState('')
     const [appFilterGroupInput, setAppFilterGroupInput] = useState('')

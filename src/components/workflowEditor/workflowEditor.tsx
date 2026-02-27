@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, createContext } from 'react'
+import { Component, createContext, type JSX } from 'react'
 import { Route, Routes, generatePath } from 'react-router-dom'
 import {
     showError,

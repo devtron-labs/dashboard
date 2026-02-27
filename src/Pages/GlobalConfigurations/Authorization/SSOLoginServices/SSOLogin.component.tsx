@@ -24,7 +24,7 @@
 /* eslint-disable jsx-a11y/tabindex-no-positive */
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/destructuring-assignment */
-import React, { Component, createRef } from 'react'
+import { Component, createRef, FC, type JSX, MutableRefObject } from 'react'
 import ReactGA from 'react-ga4'
 import yamlJsParser from 'yaml'
 
@@ -79,7 +79,7 @@ import './ssoLogin.scss'
 const AutoAssignToggleTile = importComponentFromFELibrary('AutoAssignToggleTile')
 const UserPermissionConfirmationModal = importComponentFromFELibrary('UserPermissionConfirmationModal')
 const getAuthorizationGlobalConfig = importComponentFromFELibrary('getAuthorizationGlobalConfig', noop, 'function')
-const SSOLoginTab: React.FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
+const SSOLoginTab: FC<SSOLoginTabType> = ({ handleSSOClick, checked, lastActiveSSO, value, SSOName }) => (
     <label className="dc__tertiary-tab__radio">
         <input
             className="dc__hide-section"
@@ -111,7 +111,7 @@ class SSOLogin extends Component<SSOLoginProps & RouterV5Props<{}>, SSOLoginStat
     /**
      * Ref to store the value from the API, used for showing the modal
      */
-    savedShouldAutoAssignPermissionRef: React.MutableRefObject<SSOLoginState['showAutoAssignConfirmationModal']>
+    savedShouldAutoAssignPermissionRef: MutableRefObject<SSOLoginState['showAutoAssignConfirmationModal']>
 
     /**
      * Whether the auto-assign flow should be active or not

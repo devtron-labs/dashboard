@@ -84,7 +84,7 @@ export default function DevtronStackManager({
     const [selectedTabIndex, setSelectedTabIndex] = useState(
         location.pathname.includes(ROUTER_URLS.STACK_MANAGER.ABOUT_RELEASES) ? 1 : 0,
     )
-    const stackManagerRef = useRef<HTMLElement>()
+    const stackManagerRef = useRef<HTMLElement | null>(null)
     const queryParams = new URLSearchParams(location.search)
 
     const [showPreRequisiteConfirmationModal, setShowPreRequisiteConfirmationModal] = useState<boolean>(false)

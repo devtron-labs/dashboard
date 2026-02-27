@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import type { JSX } from 'react'
 import { Icon } from '@devtron-labs/devtron-fe-common-lib'
 import { getAvailableCharts } from '@Services/service'
 import { CHART_LIST_SELECT_QUERY } from './constants'

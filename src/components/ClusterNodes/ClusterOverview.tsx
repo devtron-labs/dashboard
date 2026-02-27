@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useRef, useState } from 'react'
+import React, { type JSX, useEffect, useRef, useState } from 'react'
 import { generatePath, useNavigate, useParams } from 'react-router-dom'
 
 import {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react'
+import React, { useEffect, type JSX } from 'react'
 import AboutDevtron from '../../../assets/img/about-devtron@2x.png'
 import { InstallationWrapper } from './DevtronStackManager.component'
 import { AboutDevtronViewType } from './DevtronStackManager.type'

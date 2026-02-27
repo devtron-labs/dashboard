@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, type JSX, useEffect, useState } from 'react'
 import { generatePath, Link, NavLink, useLocation, useParams } from 'react-router-dom'
 
 import {

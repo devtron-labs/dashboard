@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useEffect } from 'react'
 import moment from 'moment'
 
 import {
@@ -85,7 +86,7 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
         error: appDetailsError,
         refetch: refetchAppDetails,
         status: appDetailsQueryStatus,
-    } = useQuery<AppDetails>({
+    } = useQuery<AppDetails, AppDetails>({
         queryKey: ['dt-app-details', appId, envId],
         queryFn: ({ signal }) =>
             get<AppDetails>(getUrlWithSearchParams(`${Routes.APP_DETAIL}/v2`, { 'app-id': appId, 'env-id': envId }), {
@@ -93,24 +94,32 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             }),
         select: ({ result }) => result,
         enabled: !!appId && !!envId,
-        refetchInterval: (data, query) =>
+        refetchInterval: (query) =>
             // In case query failed and no data is available previously, stop polling and show error state
-            !data && query.state.status === 'error' ? false : Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL),
-        onSuccess: async (data) => {
-            // Publish app details to IndexStore if resource tree is not to be fetched
-            if (!data?.isPipelineTriggered && data?.releaseMode === ReleaseMode.NEW_DEPLOYMENT) {
-                IndexStore.publishAppDetails(
-                    {
-                        ...data,
-                    },
-                    AppType.DEVTRON_APP,
-                )
-            }
-
-            // Refetch resource tree to get latest data after app details fetch
-            await queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
-        },
+            !query.state.data && query.state.status === 'error'
+                ? false
+                : Number(window._env_.DEVTRON_APP_DETAILS_POLLING_INTERVAL),
     })
+
+    useEffect(() => {
+        // Publish app details to IndexStore if resource tree is not to be fetched
+        if (
+            appDetailsQueryStatus === 'success' &&
+            appDetails &&
+            !appDetails.isPipelineTriggered &&
+            appDetails.releaseMode === ReleaseMode.NEW_DEPLOYMENT
+        ) {
+            IndexStore.publishAppDetails(
+                {
+                    ...appDetails,
+                },
+                AppType.DEVTRON_APP,
+            )
+        }
+
+        // Refetch resource tree to get latest data after app details fetch
+        queryClient.refetchQueries({ queryKey: [resourceTreeQueryKey, appId, envId] })
+    }, [appDetails, appDetailsQueryStatus])
 
     const {
         data: resourceTree,
@@ -131,17 +140,21 @@ export const useGetDTAppDetails = ({ appId, envId }: UseGetDTAppDetailsParams): 
             !!envId &&
             !!appDetails &&
             (appDetails.isPipelineTriggered || appDetails.releaseMode === ReleaseMode.MIGRATE_EXTERNAL_APPS), // Fetch resource tree for pipelines which are not triggered only in case of migrate external apps
-        onSuccess: async (data) => {
+    })
+
+    useEffect(() => {
+        // Publish app details with resource tree to IndexStore after resource tree is fetched successfully
+        if (resourceTreeQueryStatus === 'success' && resourceTree) {
             IndexStore.publishAppDetails(
                 {
                     ...appDetails,
-                    resourceTree: data,
+                    resourceTree,
                 },
                 AppType.DEVTRON_APP,
             )
-            await queryClient.refetchQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
-        },
-    })
+            queryClient.refetchQueries({ queryKey: [DEPLOYMENT_STATUS_QUERY_KEY] })
+        }
+    }, [resourceTree, resourceTreeQueryStatus])
 
     // Returning appDetails, resourceTree as null if it doesn't exist, to form loading and error states properly
     const mergedAppDetails: AppDetails = appDetails
@@ -209,7 +222,11 @@ export const useGetDTAppDeploymentStatusDetail = (appId: string, envId: string, 
             }
         },
         enabled: enabled && !!appId && !!envId,
-        refetchInterval: (data) => (data?.deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 10000 : false),
+        refetchInterval: (query) => {
+            const wfrStatus = query.state.data?.result?.wfrStatus
+            const deploymentStatus = WFR_STATUS_DTO_TO_DEPLOYMENT_STATUS_MAP[wfrStatus] || DEPLOYMENT_STATUS.INPROGRESS
+            return deploymentStatus === DEPLOYMENT_STATUS.INPROGRESS ? 10_000 : false
+        },
         meta: {
             showToastError: false,
         },

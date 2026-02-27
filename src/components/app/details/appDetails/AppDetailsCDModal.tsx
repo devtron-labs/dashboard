@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { type JSX } from 'react'
 import { useLocation } from 'react-router-dom'
 
 import { DeploymentNodeType } from '@devtron-labs/devtron-fe-common-lib'

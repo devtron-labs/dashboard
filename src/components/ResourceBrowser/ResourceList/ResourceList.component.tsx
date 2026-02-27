@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { MouseEventHandler, useEffect, useState } from 'react'
+import React, { type JSX, MouseEventHandler, useEffect, useState } from 'react'
 import { ClearIndicatorProps, components, ValueContainerProps } from 'react-select'
 
 import { Button, ButtonVariantType, ComponentSizeType } from '@devtron-labs/devtron-fe-common-lib'
