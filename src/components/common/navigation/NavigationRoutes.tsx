@@ -122,6 +122,7 @@ const SoftwareDistributionHubRenderProvider = importComponentFromFELibrary(
     null,
     'function',
 )
+const AskDevtronButton = importComponentFromFELibrary('AskDevtronButton', null, 'function')
 const migrateUserPreferences: (userPreferences: UserPreferencesType) => Promise<UserPreferencesType> =
     importComponentFromFELibrary('migrateUserPreferences', null, 'function')
 const isFELibAvailable = importComponentFromFELibrary('isFELibAvailable', null, 'function')
@@ -136,12 +137,15 @@ const AIResponseWidget = importComponentFromFELibrary('AIResponseWidget', null, 
 const EnterpriseRouter = importComponentFromFELibrary('EnterpriseRouter', null, 'function')
 const CostVisibilityRenderProvider: FunctionComponent<CostVisibilityRenderProviderProps> | null =
     importComponentFromFELibrary('CostVisibilityRenderProvider', null, 'function')
+const AIRecommendations = importComponentFromFELibrary('AIRecommendations', null, 'function')
+const AIChatProvider = importComponentFromFELibrary('AIChatProvider', null, 'function')
 
 const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesTypes>) => {
     const history = useHistory()
     const location = useLocation()
     const navRouteRef = useRef<HTMLDivElement>()
     const [aiAgentContext, setAIAgentContext] = useState<MainContext['aiAgentContext']>(null)
+    const [debugAgentContext, setDebugAgentContext] = useState<MainContext['debugAgentContext']>(null)
     const [serverMode, setServerMode] = useState<MainContext['serverMode']>(undefined)
     const [pageState, setPageState] = useState(ViewType.LOADING)
     const [currentServerInfo, setCurrentServerInfo] = useState<MainContext['currentServerInfo']>({
@@ -411,6 +415,8 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     result.devtronManagedLicensingEnabled ?? ENVIRONMENT_DATA_FALLBACK.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled:
                     result.isResourceRecommendationEnabled ?? ENVIRONMENT_DATA_FALLBACK.isResourceRecommendationEnabled,
+                featureAskDevtronExpert:
+                    result.featureAskDevtronExpert ?? ENVIRONMENT_DATA_FALLBACK.featureAskDevtronExpert,
             }
         } catch {
             return ENVIRONMENT_DATA_FALLBACK
@@ -440,6 +446,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 canFetchHelmAppStatus: environmentDataResponse.canFetchHelmAppStatus,
                 devtronManagedLicensingEnabled: environmentDataResponse.devtronManagedLicensingEnabled,
                 isResourceRecommendationEnabled: environmentDataResponse.isResourceRecommendationEnabled,
+                featureAskDevtronExpert: environmentDataResponse.featureAskDevtronExpert,
             })
 
             setServerMode(serverModeResponse)
@@ -695,6 +702,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                                     )}
                                     {EnterpriseRouter && CostVisibilityRenderProvider && (
                                         <Route
+                                            key="enterprise-router"
                                             path={[
                                                 CommonURLS.COST_VISIBILITY,
                                                 ...(serverMode === SERVER_MODE.FULL
@@ -723,6 +731,39 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
             )
         )
     }
+
+    const renderMainBody = () => (
+        <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
+            {!isOnboardingPage && (
+                <Navigation
+                    showStackManager={showStackManager}
+                    isAirgapped={isAirgapped}
+                    serverMode={serverMode}
+                    moduleInInstallingState={moduleInInstallingState}
+                    installedModuleMap={installedModuleMap}
+                    pageState={pageState}
+                />
+            )}
+            <>
+                <motion.div
+                    className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
+                    ref={navRouteRef}
+                >
+                    {renderMainContent()}
+                </motion.div>
+
+                <SidePanel asideWidth={asideWidth} />
+            </>
+            {showThemeSwitcherDialog && (
+                <SwitchThemeDialog
+                    initialThemePreference={userPreferences?.themePreference}
+                    handleClose={handleCloseSwitchThemeDialog}
+                    handleUpdateUserThemePreference={handleUpdateUserThemePreference}
+                />
+            )}
+            {renderAboutDevtronDialog()}
+        </motion.main>
+    )
 
     return (
         <MainContextProvider
@@ -761,6 +802,7 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                 licenseData,
                 setLicenseData,
                 canFetchHelmAppStatus: environmentDataState.canFetchHelmAppStatus,
+                featureAskDevtronExpert: environmentDataState.featureAskDevtronExpert,
                 reloadVersionConfig,
                 intelligenceConfig,
                 setIntelligenceConfig,
@@ -774,39 +816,16 @@ const NavigationRoutes = ({ reloadVersionConfig }: Readonly<NavigationRoutesType
                     isGrafanaModuleInstalled && environmentDataState.isResourceRecommendationEnabled,
                 tempAppWindowConfig,
                 setTempAppWindowConfig,
+                AIRecommendations,
+                debugAgentContext,
+                setDebugAgentContext,
+                AskDevtronButton,
             }}
         >
             <ConfirmationModalProvider>
                 <BaseConfirmationModal />
-                <motion.main id={DEVTRON_BASE_MAIN_ID} style={{ gridTemplateColumns }}>
-                    {!isOnboardingPage && (
-                        <Navigation
-                            showStackManager={showStackManager}
-                            isAirgapped={isAirgapped}
-                            serverMode={serverMode}
-                            moduleInInstallingState={moduleInInstallingState}
-                            installedModuleMap={installedModuleMap}
-                            pageState={pageState}
-                        />
-                    )}
-                    <>
-                        <motion.div
-                            className={`main flexbox-col bg__primary dc__position-rel ${appTheme === AppThemeType.light ? 'dc__no-border' : 'border__primary-translucent'} br-6 dc__overflow-hidden mt-8 mb-8 ml-8 ${sidePanelConfig.state === 'closed' ? 'mr-8' : ''}`}
-                            ref={navRouteRef}
-                        >
-                            {renderMainContent()}
-                        </motion.div>
-                        <SidePanel asideWidth={asideWidth} />
-                    </>
-                    {showThemeSwitcherDialog && (
-                        <SwitchThemeDialog
-                            initialThemePreference={userPreferences?.themePreference}
-                            handleClose={handleCloseSwitchThemeDialog}
-                            handleUpdateUserThemePreference={handleUpdateUserThemePreference}
-                        />
-                    )}
-                    {renderAboutDevtronDialog()}
-                </motion.main>
+                {/* Ensure useAIChat is used in fe-lib only! */}
+                {AIChatProvider ? <AIChatProvider>{renderMainBody()}</AIChatProvider> : renderMainBody()}
             </ConfirmationModalProvider>
         </MainContextProvider>
     )

@@ -19,12 +19,14 @@ import { Redirect, Route, Switch, useHistory, useLocation, useParams, useRouteMa
 
 import {
     abortPreviousRequests,
+    AIAgentContextSourceType,
     API_STATUS_CODES,
     DetailsProgressing,
     ErrorScreenManager,
     GenericEmptyState,
     getIsRequestAborted,
     showError,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { URLS } from '../../config'
@@ -50,6 +52,8 @@ const RouterComponent = () => {
     const { path } = useRouteMatch()
     const location = useLocation()
     const history = useHistory()
+    const { setAIAgentContext } = useMainContext()
+
     const abortControllerRef = useRef<AbortController>(new AbortController())
 
     const [errorResponseCode, setErrorResponseCode] = useState(undefined)
@@ -87,6 +91,7 @@ const RouterComponent = () => {
 
     useEffect(
         () => () => {
+            setAIAgentContext(null)
             abortControllerRef.current.abort()
         },
         [],
@@ -144,6 +149,20 @@ const RouterComponent = () => {
             ...response.result,
             helmReleaseStatus: response.result?.releaseStatus || appDetailsRef.current?.helmReleaseStatus,
         }
+
+        // There is no env change so can handle AIAgentContext here directly instead of useEffect
+        setAIAgentContext({
+            source: AIAgentContextSourceType.APP_DETAILS,
+            data: {
+                appId: +params.appId,
+                envId: +params.envId,
+                clusterId: appDetailsRef.current.clusterId,
+                appName: appDetailsRef.current.appName,
+                envName: appDetailsRef.current.environmentName,
+                appType: 'devtronHelmChart'
+            }
+        })
+
         IndexStore.publishAppDetails(appDetailsRef.current, AppType.DEVTRON_HELM_CHART)
         setErrorResponseCode(undefined)
     }

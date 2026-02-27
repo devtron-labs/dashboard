@@ -34,3 +34,5 @@ export enum TaskActionMenuOptionIdEnum {
     DELETE = 'delete',
     MOVE = 'move',
 }
+
+export const BOUNDARY_GAP = { x: 16, y: 78 }

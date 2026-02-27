@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 
-import { useSearchString } from '@devtron-labs/devtron-fe-common-lib'
+import { FiltersTypeEnum, PaginationEnum, Table, useSearchString } from '@devtron-labs/devtron-fe-common-lib'
 
 import { InteractiveCellText } from '@Components/common/helpers/InteractiveCellText/InteractiveCellText'
-import { DeleteComponentsName } from '@Config/constantMessaging'
 
-import { ConfigTableRowActionButton } from './ConfigTableRowActionButton'
-import { ConfigurationsTabTypes } from './constants'
-import { getConfigTabIcons } from './notifications.util'
-import { ConfigurationTableProps } from './types'
+import { ConfigurationRowActionButtonWrapper } from './ConfigTableRowActionButton'
+import { BASE_CONFIG, ConfigurationsTabTypes, SLACK_WEBHOOK_TABLE_COLUMNS } from './constants'
+import { ConfigurationTableProps, SlackWebhookConfigurationTableRowType } from './types'
 
 export const WebhookConfigurationTable = ({ state, deleteClickHandler }: ConfigurationTableProps) => {
     const { webhookConfigurationList } = state
@@ -42,42 +41,56 @@ export const WebhookConfigurationTable = ({ state, deleteClickHandler }: Configu
         })
     }
 
+    const tableRows = useMemo(
+        () =>
+            webhookConfigurationList.map((webhookConfig) => ({
+                id: `${webhookConfig.id}`,
+                data: {
+                    name: (
+                        <div className="flex left dc__gap-8 py-10">
+                            <InteractiveCellText
+                                text={webhookConfig.name}
+                                onClickHandler={onClickWebhookConfigEdit(webhookConfig.id)}
+                            />
+                        </div>
+                    ),
+                    webhookUrl: webhookConfig.webhookUrl,
+                },
+            })),
+        [webhookConfigurationList],
+    )
+
+    const onRowClick = (rowData) => {
+        onClickWebhookConfigEdit(Number(rowData.id))()
+    }
+
     return (
-        <div className="webhook-config-container">
-            <div className="webhook-config-grid fs-12 fw-6 dc__uppercase cn-7 py-6 dc__gap-16 dc__border-bottom-n1 px-20 dc__position-sticky dc__top-0 bg__primary">
-                <p className="icon-dim-24 m-0" />
-                <p className="flex left m-0">Name</p>
-                <p className="dc__truncate-text flex left m-0">Webhook URL</p>
-                <p className="m-0" />
-            </div>
-            <div className="flex-grow-1">
-                {webhookConfigurationList.map((webhookConfig) => (
-                    <div
-                        key={webhookConfig.id}
-                        className="configuration-tab__table-row webhook-config-grid fs-13 cn-9 dc__gap-16 py-6 px-20 dc__hover-n50 dc__visible-hover dc__visible-hover--parent"
-                        data-testid={`webhook-container-${webhookConfig.name}`}
-                    >
-                        {getConfigTabIcons(ConfigurationsTabTypes.WEBHOOK)}
-                        <InteractiveCellText
-                            text={webhookConfig.name}
-                            onClickHandler={onClickWebhookConfigEdit(webhookConfig.id)}
-                            dataTestId={`webhook-config-name-${webhookConfig.name}`}
-                        />
-                        <InteractiveCellText
-                            text={webhookConfig.webhookUrl}
-                            dataTestId={`webhook-url-${webhookConfig.webhookUrl}`}
-                        />
-                        <ConfigTableRowActionButton
-                            onClickEditRow={onClickWebhookConfigEdit(webhookConfig.id)}
-                            onClickDeleteRow={deleteClickHandler(
-                                webhookConfig.id,
-                                DeleteComponentsName.WebhookConfigurationTab,
-                            )}
-                            modal={ConfigurationsTabTypes.WEBHOOK}
-                        />
-                    </div>
-                ))}
-            </div>
-        </div>
+        <Table<SlackWebhookConfigurationTableRowType, FiltersTypeEnum.STATE>
+            id="table__webhook-configuration"
+            columns={SLACK_WEBHOOK_TABLE_COLUMNS}
+            rows={tableRows}
+            emptyStateConfig={{
+                noRowsConfig: {
+                    title: 'No Webhook Configurations Found',
+                },
+            }}
+            filtersVariant={FiltersTypeEnum.STATE}
+            additionalFilterProps={{
+                initialSortKey: BASE_CONFIG[0].field,
+            }}
+            paginationVariant={PaginationEnum.NOT_PAGINATED}
+            filter={null}
+            rowStartIconConfig={{
+                name: 'ic-webhook-config',
+                color: null,
+                size: 24,
+            }}
+            rowActionOnHoverConfig={{
+                width: 100,
+                Component: ConfigurationRowActionButtonWrapper,
+            }}
+            additionalProps={{ deleteClickHandler, modal: ConfigurationsTabTypes.WEBHOOK }}
+            onRowClick={onRowClick}
+        />
     )
 }

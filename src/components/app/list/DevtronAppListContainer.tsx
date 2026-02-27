@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { Link, useHistory } from 'react-router-dom'
-import Tippy from '@tippyjs/react'
-import moment from 'moment'
+import { MouseEvent, useCallback, useMemo, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 
 import {
-    abortPreviousRequests,
-    AppStatus,
-    DATE_TIME_FORMATS,
-    DEFAULT_BASE_PAGE_SIZE,
-    ErrorScreenManager,
-    GenericFilterEmptyState,
-    getClassNameForStickyHeaderWithShadow,
-    getIsRequestAborted,
-    handleUTCTime,
-    Pagination,
-    SortableTableHeaderCell,
+    Button,
+    ButtonStyleType,
+    ButtonVariantType,
+    ComponentSizeType,
+    FiltersTypeEnum,
+    Icon,
+    PaginationEnum,
+    Table,
+    TableRowActionsOnHoverComponentProps,
     URLS as CommonURLS,
-    useAsync,
-    useStickyEvent,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as PlayMedia } from '@Icons/ic-play-outline.svg'
@@ -42,152 +36,74 @@ import { CardLinkIconPlacement } from '@Components/common/ContentCard/ContentCar
 import { HELM_GUIDED_CONTENT_CARDS_TEXTS } from '@Components/onboardingGuide/OnboardingGuide.constants'
 
 import { ReactComponent as ArrowRight } from '../../../assets/icons/ic-arrow-right.svg'
-import { ReactComponent as DevtronAppIcon } from '../../../assets/icons/ic-devtron-app.svg'
-import { ReactComponent as Arrow } from '../../../assets/icons/ic-dropdown-filled.svg'
-import { ReactComponent as ICHelpOutline } from '../../../assets/icons/ic-help-outline.svg'
-import { ReactComponent as Edit } from '../../../assets/icons/ic-settings.svg'
 import DeployCICD from '../../../assets/img/guide-onboard.png'
 import NodeAppThumbnail from '../../../assets/img/node-app-thumbnail.png'
 import { DEVTRON_NODE_DEPLOY_VIDEO, Routes, URLS } from '../../../config'
 import { AppListSortableKeys } from '../list-new/AppListType'
-import { APP_LIST_HEADERS, appListLoadingArray } from '../list-new/Constants'
 import { getAppList } from '../service'
-import { ExpandedRow } from './expandedRow/ExpandedRow'
 import { appListModal, getDevtronAppListPayload } from './appList.modal'
-import { INITIAL_EXPANDED_STATE } from './constants'
-import { App, DevtronAppExpandedState, DevtronAppListProps } from './types'
+import { App, DevtronAppListProps, Environment, TableAdditionalPropsType } from './types'
+import { getTableColumns } from './utils'
 
 import './list.scss'
+
+const HoverComponent = ({ row: { data } }: TableRowActionsOnHoverComponentProps<App | Environment>) => {
+    const { push } = useHistory()
+    const app = data as App
+
+    const handleEditAppClick = (e: MouseEvent<HTMLButtonElement>) => {
+        e.stopPropagation()
+        const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/${Routes.EDIT}`
+        push(url)
+    }
+
+    return (
+        <div className="flex right pr-12 py-2">
+            <Button
+                dataTestId="edit-app-button"
+                icon={<Icon name="ic-gear" color={null} />}
+                ariaLabel="redirect-to-app-config"
+                showAriaLabelInTippy={false}
+                onClick={handleEditAppClick}
+                style={ButtonStyleType.neutral}
+                variant={ButtonVariantType.borderLess}
+                size={ComponentSizeType.xs}
+            />
+        </div>
+    )
+}
 
 const DevtronAppList = ({
     filterConfig,
     environmentList,
     namespaceList,
-    appFiltersResponseLoading,
     syncListData,
     updateDataSyncing,
-    setCurrentAppName,
     clearAllFilters,
-    handleSorting,
     isArgoInstalled,
-    changePage,
-    changePageSize,
     setAppCount,
-    appListContainerRef,
 }: DevtronAppListProps) => {
-    const history = useHistory()
+    const [noRows, setNoRows] = useState<boolean>(false)
 
-    const { stickyElementRef, isStuck: isHeaderStuck } = useStickyEvent({
-        identifier: 'app-list',
-        containerRef: appListContainerRef,
-    })
+    const { searchKey, appStatus, project, environment, namespace, cluster } = filterConfig
 
-    const [expandedState, setExpandedState] = useState<DevtronAppExpandedState>(INITIAL_EXPANDED_STATE)
+    const { push } = useHistory()
 
-    const { searchKey, offset, pageSize, appStatus, project, environment, namespace, cluster, sortBy, sortOrder } =
-        filterConfig
-
-    const isSearchOrFilterApplied =
-        searchKey || appStatus.length || project.length || environment.length || namespace.length || cluster.length
-
-    const abortControllerRef = useRef<AbortController>(new AbortController())
-    const [appListResponseLoading, appListResponse, appListError, appListReload] = useAsync(
-        () =>
-            abortPreviousRequests(
-                () =>
-                    getAppList(getDevtronAppListPayload(filterConfig, environmentList, namespaceList), {
-                        signal: abortControllerRef.current.signal,
-                    }),
-                abortControllerRef,
-            ),
-        [filterConfig, syncListData],
-        !appFiltersResponseLoading, // We need to wait until environment filters are created from cluster and namespace
+    const isSearchOrFilterApplied = !!(
+        searchKey ||
+        appStatus.length ||
+        project.length ||
+        environment.length ||
+        namespace.length ||
+        cluster.length
     )
-
-    const appListLoading = appListResponseLoading || getIsRequestAborted(appListError)
-
-    const parsedAppList: App[] = useMemo(
-        () => (appListResponse?.result?.appContainers ? appListModal(appListResponse.result.appContainers) : []),
-        [appListResponse],
-    )
-
-    useEffect(() => {
-        if (appListResponseLoading) {
-            updateDataSyncing(true)
-            return
-        }
-        updateDataSyncing(false)
-        setExpandedState({
-            ...expandedState,
-            isAllExpandable: parsedAppList.some((app) => app.environments.length > 1),
-        })
-        setAppCount(appListResponse?.result?.appCount || 0)
-    }, [appListResponseLoading])
-
-    const handleEditApp = (appId: number): void => {
-        const url = `${URLS.APPLICATION_MANAGEMENT_APP}/${appId}/${Routes.EDIT}`
-        history.push(url)
-    }
-
-    const handleEditAppRedirect = (event): void => {
-        event.stopPropagation()
-        event.preventDefault()
-        handleEditApp(event.currentTarget.dataset.key)
-    }
 
     const redirectToAppDetails = (app, envId: number): string => {
-        setCurrentAppName(app.name)
-
         if (envId) {
             return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/details/${envId}`
         }
+
         return `${URLS.APPLICATION_MANAGEMENT_APP}/${app.id}/trigger`
-    }
-
-    const expandRow = (id: number): void => {
-        setExpandedState((prevState) => ({ ...prevState, expandedRow: { ...prevState.expandedRow, [id]: true } }))
-    }
-
-    const expandEnv = (event): void => {
-        event.stopPropagation()
-        event.preventDefault()
-        expandRow(event.currentTarget.dataset.key)
-    }
-
-    const closeExpandedRow = (id: number): void => {
-        setExpandedState((prevState) => ({ ...prevState, expandedRow: { ...prevState.expandedRow, [id]: false } }))
-    }
-
-    const handleCloseExpandedRow = (event): void => {
-        closeExpandedRow(event.currentTarget.dataset.key)
-    }
-
-    const toggleExpandAllRow = (): void => {
-        setExpandedState((prevState) => {
-            const _expandedRow = {}
-            if (!prevState.isAllExpanded) {
-                parsedAppList.forEach((app) => {
-                    _expandedRow[app.id] = app.environments.length > 1
-                })
-            }
-
-            return { ...prevState, expandedRow: _expandedRow, isAllExpanded: !prevState.isAllExpanded }
-        })
-    }
-
-    const handleAppNameSorting = () => {
-        handleSorting(AppListSortableKeys.APP_NAME)
-    }
-
-    const handleLastDeployedSorting = () => {
-        handleSorting(AppListSortableKeys.LAST_DEPLOYED)
-    }
-
-    const getArrowIconClass = (): string => {
-        if (expandedState.isAllExpandable) {
-            return `fcn-7 dc__transition--transform ${expandedState.isAllExpanded ? '' : 'dc__flip-n90'}`
-        }
-        return 'cursor-not-allowed dc__flip-n90'
     }
 
     const renderGuidedCards = () => (
@@ -220,244 +136,96 @@ const DevtronAppList = ({
         </div>
     )
 
-    if (!appListLoading && appListError) {
-        return <ErrorScreenManager code={appListError.code} reload={appListReload} />
+    const getRows = useCallback(
+        async (_, signal) => {
+            updateDataSyncing(true)
+            const data = await getAppList(getDevtronAppListPayload(filterConfig, environmentList, namespaceList), {
+                signal,
+            })
+            updateDataSyncing(false)
+
+            const parsedData = data?.result?.appContainers ? appListModal(data.result.appContainers) : []
+            const totalCount = data?.result?.appCount ?? 0
+            setNoRows(totalCount === 0)
+            setAppCount(totalCount)
+
+            return {
+                rows: parsedData.map((app) => ({
+                    data: app,
+                    id: String(app.id),
+                    expandableRows:
+                        app.defaultEnv.name && app.environments.length > 1
+                            ? app.environments.map((env) => ({
+                                  id: `expanded-row-${app.id}-${env.id}`,
+                                  data: {
+                                      app,
+                                      ...env,
+                                  },
+                              }))
+                            : null,
+                })),
+                totalRows: totalCount,
+            }
+        },
+        [syncListData, filterConfig],
+    )
+
+    const onClearFilters = () => {
+        setNoRows(false)
+        clearAllFilters()
     }
 
-    if (isSearchOrFilterApplied && appListResponse?.result?.appCount === 0) {
-        return <GenericFilterEmptyState handleClearFilters={clearAllFilters} />
-    }
+    const onRowClick = useCallback(({ data }, isExpandedRow) => {
+        if (!isExpandedRow) {
+            const app = data as App
 
-    if (appListResponse?.result.appCount === 0) {
+            push(redirectToAppDetails(app, app.defaultEnv.id))
+
+            return
+        }
+
+        const { app, id } = data as Environment & { app: App }
+
+        push(redirectToAppDetails(app, id))
+    }, [])
+
+    const columns = useMemo(() => getTableColumns(isArgoInstalled), [isArgoInstalled])
+
+    if (noRows && !isSearchOrFilterApplied) {
         return renderGuidedCards()
     }
 
-    const renderEnvironmentList = (app: App) => {
-        const envCount = app.environments.length
-        if (envCount) {
-            const isEnvConfigured = app?.defaultEnv.name
-            return (
-                <div className="app-list__cell app-list__cell--env">
-                    <p
-                        data-testid={`${app.defaultEnv.name}-environment`}
-                        className={`app-list__cell--env-text ${isEnvConfigured ? '' : 'not-configured'}`}
-                    >
-                        {isEnvConfigured ? app.defaultEnv.name : 'Not configured'}
-                    </p>
-                    {envCount > 1 ? (
-                        <button
-                            type="button"
-                            className="cell__link fs-13 dc__truncate-text mw-18"
-                            data-key={app.id}
-                            onClick={expandEnv}
-                        >
-                            +{envCount - 1} more
-                        </button>
-                    ) : null}
-                </div>
-            )
-        }
-        return <div className="app-list__cell app-list__cell--env" />
-    }
-
-    const renderAppList = () => (
-        <div className="app-list" data-testid="app-list-container">
-            <div
-                ref={stickyElementRef}
-                className={`app-list__header border__secondary--bottom ${!isArgoInstalled ? 'app-list__header--argo-not-installed' : ''} ${getClassNameForStickyHeaderWithShadow(
-                    isHeaderStuck,
-                    'dc__top-47',
-                )}`}
-            >
-                <div className="app-list__cell--icon flex left cursor" onClick={toggleExpandAllRow}>
-                    <Arrow className={`icon-dim-24 p-2 ${getArrowIconClass()}`} />
-                </div>
-                <div className="app-list__cell app-list__cell--name">
-                    <SortableTableHeaderCell
-                        title={APP_LIST_HEADERS.AppName}
-                        isSorted={sortBy === AppListSortableKeys.APP_NAME}
-                        sortOrder={sortOrder}
-                        isSortable
-                        triggerSorting={handleAppNameSorting}
-                        disabled={false}
-                    />
-                </div>
-                {isArgoInstalled && (
-                    <div className="app-list__cell app-list__cell--app_status">
-                        <span className="app-list__cell-header" data-testid="appstatus">
-                            {APP_LIST_HEADERS.AppStatus}
-                        </span>
-                    </div>
-                )}
-                <div className="app-list__cell app-list__cell--env">
-                    <span className="app-list__cell-header mr-4" data-testid="environment">
-                        {APP_LIST_HEADERS.Environment}
-                    </span>
-                    <Tippy
-                        data-testid="env-tippy"
-                        className="default-tt w-200"
-                        arrow={false}
-                        placement="top"
-                        content="Environment is a unique combination of cluster and namespace"
-                    >
-                        <div className="flex">
-                            <ICHelpOutline className="icon-dim-16" />
-                        </div>
-                    </Tippy>
-                </div>
-                <div className="app-list__cell app-list__cell--cluster">
-                    <span className="app-list__cell-header" data-testid="cluster">
-                        {APP_LIST_HEADERS.Cluster}
-                    </span>
-                </div>
-                <div className="app-list__cell app-list__cell--namespace">
-                    <span className="app-list__cell-header" data-testid="namespace">
-                        {APP_LIST_HEADERS.Namespace}
-                    </span>
-                </div>
-                <div className="app-list__cell app-list__cell--time ">
-                    <SortableTableHeaderCell
-                        title={APP_LIST_HEADERS.LastDeployedAt}
-                        isSorted={sortBy === AppListSortableKeys.LAST_DEPLOYED}
-                        sortOrder={sortOrder}
-                        isSortable
-                        triggerSorting={handleLastDeployedSorting}
-                        disabled={false}
-                    />
-                </div>
-                <div className="app-list__cell app-list__cell--action" />
-            </div>
-            {appListLoading || appFiltersResponseLoading ? (
-                <div className="cn-9 fs-13 fw-4 lh-20 show-shimmer-loading">
-                    {appListLoadingArray.map((eachRow) => (
-                        <div className="pl-20 resource-list__table-row" key={eachRow.id}>
-                            {Object.keys(eachRow).map((eachKey) => (
-                                <div className="child child-shimmer-loading" key={eachKey} />
-                            ))}
-                        </div>
-                    ))}
-                </div>
-            ) : (
-                parsedAppList.map((app) => {
-                    const len = app.environments.length > 1
-                    return (
-                        <React.Fragment key={app.id}>
-                            {!expandedState.expandedRow[app.id] ? (
-                                <Link
-                                    to={redirectToAppDetails(app, app.defaultEnv.id)}
-                                    className={`app-list__row ${!isArgoInstalled ? 'app-list__row--argo-not-installed' : ''} ${len ? 'dc__hover-icon' : ''}`}
-                                    data-testid="app-list-row"
-                                >
-                                    <div className="app-list__cell--icon">
-                                        <DevtronAppIcon className="icon-dim-24 dc__show-first--icon" />
-                                        {len && (
-                                            <Arrow
-                                                className="icon-dim-24 p-2 dc__flip-270 fcn-7 dc__show-second--icon"
-                                                onClick={expandEnv}
-                                                data-key={app.id}
-                                            />
-                                        )}
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--name">
-                                        <p className="dc__truncate-text m-0 value" data-testid="app-list-for-sort">
-                                            {app.name}
-                                        </p>
-                                    </div>
-                                    {isArgoInstalled && (
-                                        <div
-                                            className="app-list__cell app-list__cell--app_status"
-                                            data-testid="devtron-app-status"
-                                        >
-                                            <AppStatus
-                                                status={app.defaultEnv.appStatus}
-                                                isVirtualEnv={app.defaultEnv.isVirtualEnvironment}
-                                            />
-                                        </div>
-                                    )}
-                                    {renderEnvironmentList(app)}
-                                    <div className="app-list__cell app-list__cell--cluster">
-                                        <p
-                                            data-testid={`${app.defaultEnv.clusterName}-cluster`}
-                                            className="dc__truncate-text  m-0"
-                                        >
-                                            {app.defaultEnv ? app.defaultEnv.clusterName : ''}
-                                        </p>
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--namespace">
-                                        <p
-                                            data-testid={`${app.defaultEnv.namespace}-namespace`}
-                                            className="dc__truncate-text  m-0"
-                                        >
-                                            {app.defaultEnv ? app.defaultEnv.namespace : ''}
-                                        </p>
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--time">
-                                        {app.defaultEnv?.lastDeployedTime && (
-                                            <Tippy
-                                                className="default-tt"
-                                                arrow
-                                                placement="top"
-                                                content={moment(app.defaultEnv.lastDeployedTime).format(
-                                                    DATE_TIME_FORMATS.TWELVE_HOURS_FORMAT,
-                                                )}
-                                            >
-                                                <p className="dc__truncate-text  m-0" data-testid="last-deployed-time">
-                                                    {handleUTCTime(app.defaultEnv.lastDeployedTime, true)}
-                                                </p>
-                                            </Tippy>
-                                        )}
-                                    </div>
-                                    <div className="app-list__cell app-list__cell--action">
-                                        <button
-                                            data-testid="edit-app-button"
-                                            type="button"
-                                            aria-label="redirect-to-app-config"
-                                            data-key={app.id}
-                                            className="button-edit"
-                                            onClick={handleEditAppRedirect}
-                                        >
-                                            <Edit className="button-edit__icon" />
-                                        </button>
-                                    </div>
-                                </Link>
-                            ) : null}
-                            {expandedState.expandedRow[app.id] && (
-                                <ExpandedRow
-                                    app={app}
-                                    close={handleCloseExpandedRow}
-                                    redirect={redirectToAppDetails}
-                                    handleEdit={handleEditApp}
-                                    isArgoInstalled={isArgoInstalled}
-                                />
-                            )}
-                        </React.Fragment>
-                    )
-                })
-            )}
-        </div>
-    )
-
-    const renderPagination = () => {
-        if (appListResponse?.result.appCount > DEFAULT_BASE_PAGE_SIZE) {
-            return (
-                <Pagination
-                    rootClassName="flex dc__content-space px-20"
-                    size={appListResponse?.result.appCount}
-                    pageSize={pageSize}
-                    offset={offset}
-                    changePage={changePage}
-                    changePageSize={changePageSize}
-                />
-            )
-        }
-        return null
-    }
-
     return (
-        <>
-            {renderAppList()}
-            {renderPagination()}
-        </>
+        <Table<App | Environment, FiltersTypeEnum.URL, TableAdditionalPropsType>
+            id="table__devtron-app-list"
+            getRows={getRows}
+            paginationVariant={PaginationEnum.PAGINATED}
+            filtersVariant={FiltersTypeEnum.URL}
+            columns={columns}
+            rowActionOnHoverConfig={{
+                width: 42,
+                Component: HoverComponent,
+            }}
+            additionalProps={{
+                filterConfig,
+            }}
+            additionalFilterProps={{
+                initialSortKey: AppListSortableKeys.APP_NAME,
+            }}
+            emptyStateConfig={{
+                // empty state is handled externally
+                noRowsConfig: null,
+            }}
+            clearFilters={onClearFilters}
+            areFiltersApplied={isSearchOrFilterApplied}
+            filter={null}
+            rowStartIconConfig={{
+                name: 'ic-devtron',
+                color: 'B500',
+                size: 18,
+            }}
+            onRowClick={onRowClick}
+        />
     )
 }
 

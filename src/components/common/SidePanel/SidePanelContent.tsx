@@ -25,6 +25,7 @@ import {
     Icon,
     ImageType,
     SidePanelTab,
+    useMainContext,
 } from '@devtron-labs/devtron-fe-common-lib'
 
 import { ReactComponent as ICMaintenance } from '@Images/ic-maintenance.svg'
@@ -40,6 +41,8 @@ import { getContentWrapperClassNameForTab, renderOpenTicketButton } from './util
 const AIChat = importComponentFromFELibrary('AIChat', null, 'function')
 
 export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig }: SidePanelContentProps) => {
+    const { featureAskDevtronExpert } = useMainContext()
+
     const tab = sidePanelConfig.state as SidePanelTab
 
     const renderAIChat = () => {
@@ -53,7 +56,7 @@ export const SidePanelContent = ({ onClose, setSidePanelConfig, sidePanelConfig 
             )
         }
 
-        if (!window._env_?.FEATURE_ASK_DEVTRON_EXPERT) {
+        if (!featureAskDevtronExpert) {
             return (
                 <GenericEmptyState
                     title="AI Integration not configured"
