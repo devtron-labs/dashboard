@@ -155,17 +155,17 @@ export const Option = (props) => {
     )
 }
 
-export const renderPipelineTypeIcon = (row) => {
+export const renderPipelineTypeIcon = (row, size = 24 as IconBaseSizeType ) => {
     if (row.isVirtualEnvironment) {
         return <Rocket className="icon-dim-24" />
     }
     if (row.pipelineType === 'CI' || row.type === 'CI') {
-        return <CI className="icon-dim-20 dc__flip" />
+        return <Icon name="ic-build-color" color={null} size={size}  />
     }
     if (row.pipelineType === NotificationPipelineType.BASE || row.type === NotificationPipelineType.BASE ) {
-        return <Icon name="ic-configuration-file" color={null} size={24} />
+        return <Icon name="ic-configuration-file" color={null} size={size} />
     }
-    return <CD className="icon-dim-20 dc__flip" />
+    return <Icon name="ic-deploy-color" color={null} size={size} />
 }
 
 export const getConfigTabIcons = (tab: ConfigurationsTabTypes, size: IconBaseSizeType = 24) => {

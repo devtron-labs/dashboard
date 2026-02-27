@@ -42,6 +42,7 @@ import {
     IconsProps,
     ButtonComponentType,
     stopPropagation,
+    BreadCrumb,
 } from '@devtron-labs/devtron-fe-common-lib'
 import { components } from 'react-select'
 import CreatableSelect from 'react-select/creatable'
@@ -278,11 +279,17 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         } else {
             const baseEvents = pipeline.success && pipeline.trigger && pipeline.failure
             const approvalEvents = pipeline.configApproval && pipeline.imageApproval
-            const anyEvent = pipeline.success || pipeline.trigger || pipeline.failure || pipeline.configApproval || pipeline.imageApproval
+            const anyEvent =
+                pipeline.success ||
+                pipeline.trigger ||
+                pipeline.failure ||
+                pipeline.configApproval ||
+                pipeline.imageApproval
 
-            const isFullySelected = rowType === NotificationPipelineType.CI 
-                ? baseEvents && !pipeline.configApproval && !pipeline.imageApproval
-                : baseEvents && approvalEvents
+            const isFullySelected =
+                rowType === NotificationPipelineType.CI
+                    ? baseEvents && !pipeline.configApproval && !pipeline.imageApproval
+                    : baseEvents && approvalEvents
 
             if (isFullySelected) {
                 pipeline.checkbox = {
@@ -696,7 +703,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                         <th className="pipeline-list__checkbox fw-6" />
                         <th className="pipeline-list__pipeline-name fw-6">Resource</th>
                         <th className="pipeline-list__pipeline-name fw-6">Application Name</th>
-                        <th className="pipeline-list__type fw-6">Type</th>
                         <th className="pipeline-list__environment fw-6">Env/Branch</th>
                         <th className="pipeline-list__stages dc__block fw-6">Events</th>
                     </tr>
@@ -731,6 +737,7 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         </Checkbox>
                                     </td>
                                     <td className="pipeline-list__pipeline-name">
+                                        <span className="pipeline-list__type">{renderPipelineTypeIcon(row, 16)}</span>
                                         {row.appliedFilters.length ? (
                                             <>
                                                 <i>
@@ -753,7 +760,6 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
                                         )}
                                     </td>
                                     <th className="pipeline-list__pipeline-name fw-6">{row?.appName}</th>
-                                    <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
                                     <td className="pipeline-list__environment">
                                         {_isCi && (
                                             <span className="flex left">
@@ -1058,28 +1064,29 @@ export class AddNotification extends Component<AddNotificationsProps, AddNotific
         this.getInitialData()
     }
 
+    renderBreadcrumbs = () => {
+        const breadcrumbs = [
+            {
+                name: 'Notifications',
+                to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
+            },
+            {
+                name: 'Add Notification',
+                to: '',
+            },
+        ]
+        return <BreadCrumb breadcrumbs={breadcrumbs} />
+    }
+
     render() {
         return (
             <ErrorBoundary>
                 <div className="flexbox-col bg__primary h-100 dc__gap-24 px-20 py-16">
                     <div
                         data-testid="add-notifications-heading-title"
-                        className="form__title mb-16 flex left dc__gap-12"
+                        className="fs-16 fw-6 cn-9 flex left dc__gap-4"
                     >
-                        <Button
-                            dataTestId="back-to-notifications"
-                            icon={<Icon name="ic-arrow-right" color={null} rotateBy={180} />}
-                            component={ButtonComponentType.link}
-                            linkProps={{
-                                to: URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS,
-                            }}
-                            ariaLabel="Back to notifications"
-                            showAriaLabelInTippy={false}
-                            variant={ButtonVariantType.borderLess}
-                            style={ButtonStyleType.neutral}
-                            size={ComponentSizeType.small}
-                        />
-                        Add Notifications
+                        {this.renderBreadcrumbs()}
                     </div>
                     {this.renderAddCard()}
                     {this.renderShowSlackConfigModal()}

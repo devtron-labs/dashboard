@@ -45,7 +45,7 @@ import {
 import { InValidHostUrlWarningBlock } from '@Components/common'
 
 import EmptyImage from '../../assets/img/ic-empty-notifications.png'
-import { URLS, ViewType } from '../../config'
+import { ViewType } from '../../config'
 import { getHostURLConfiguration } from '../../services/service'
 import { ModifyRecipientsModal } from './ModifyRecipientsModal'
 import {
@@ -56,10 +56,14 @@ import {
 } from './notifications.service'
 import { getRecipientChipStartIcon, renderPipelineTypeIcon } from './notifications.util'
 import { NotificationPipelineType, NotificationTabState } from './types'
-import { ModifyRecipientPopUp } from './ModifyRecipientPopUp'
 import { EVENT_ID } from './constants'
+import { BulkMultiSelectTagWidget } from './BulkMultiSelectWidget'
+import React from 'react'
+import { AddNotificationButton } from './AddNotificationButton'
 
 export class NotificationTab extends Component<any, NotificationTabState> {
+    bulkMultiSelectWidgetRef = React.createRef<HTMLDivElement>()
+
     constructor(props) {
         super(props)
         this.state = {
@@ -105,7 +109,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             deleting: false,
             confirmation: false,
             singleDeletedId: 0,
-            disableEdit: false,
             selectedNotificationList: [],
         }
     }
@@ -164,8 +167,8 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                 }))
                 this.setState({ channelList: list })
             })
-            .catch((error) => {
-                this.setState({ disableEdit: true })
+            .catch(() => {
+                this.props.toggleDisableEdit(true)
             })
     }
 
@@ -375,28 +378,9 @@ export class NotificationTab extends Component<any, NotificationTabState> {
         )
     }
 
-    createNewNotification = () => {
-        if (this.state.disableEdit) {
-            ToastManager.showToast({
-                variant: ToastVariantType.notAuthorized,
-                description: TOAST_ACCESS_DENIED.SUBTITLE,
-            })
-        } else {
-            this.props.history.push(URLS.APPLICATION_MANAGEMENT_CONFIGURATIONS_NOTIFICATIONS_ADD_NEW)
-        }
-    }
-
     renderAddNotificationButton = () => (
-        <Button
-            text="Add Notification"
-            variant={ButtonVariantType.primary}
-            size={ComponentSizeType.medium}
-            onClick={this.createNewNotification}
-            dataTestId="add-notification-button"
-            startIcon={<Icon name="ic-add" color={null} />}
-        />
+        <AddNotificationButton disableEdit={this.props.disableEdit} />
     )
-
     renderGenericEmptyState = () => (
         <GenericEmptyState
             image={EmptyImage}
@@ -408,7 +392,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     )
 
     validateAccess = (updateState): void => {
-        if (this.state.disableEdit) {
+        if (this.props.disableEdit) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,
                 description: TOAST_ACCESS_DENIED.SUBTITLE,
@@ -423,7 +407,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
     }
 
     applyModifyEvents = () => {
-        if (this.state.disableEdit) {
+        if (this.props.disableEdit) {
             ToastManager.showToast({
                 variant: ToastVariantType.notAuthorized,
                 description: TOAST_ACCESS_DENIED.SUBTITLE,
@@ -435,62 +419,6 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     showModifyModal = (): void => {
         this.validateAccess({ showModifyRecipientsModal: !this.state.showModifyRecipientsModal })
-    }
-
-    renderModifyEventPopUpBody = () => (
-        <PopupMenu.Body>
-            <ModifyRecipientPopUp
-                events={this.state.events}
-                applyModifyEvents={this.applyModifyEvents}
-                onChangeCheckboxHandler={this.onChangeCheckboxHandler}
-                selectedNotificationList={this.state.selectedNotificationList}
-            />
-        </PopupMenu.Body>
-    )
-
-    renderBulkOptions = () => {
-        if (this.state.headerCheckbox.isChecked) {
-            return (
-                <div className="flex left dc__gap-16">
-                    <Button
-                        dataTestId="notification-delete-button"
-                        icon={<Icon name="ic-delete" color={null} />}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        ariaLabel="Delete Notifications"
-                        onClick={this.showDeleteModal}
-                        showAriaLabelInTippy
-                    />
-                    <PopupMenu
-                        onToggleCallback={(isOpen) => {
-                            if (isOpen) {
-                                this.onOpenEditNotificationMenu()
-                            }
-                        }}
-                    >
-                        <PopupMenu.Button rootClassName="popup-button--notification-tab">
-                            <Icon
-                                name="ic-bell"
-                                color={null}
-                                size={20}
-                                tooltipProps={{ content: 'Modify events', alwaysShowTippyOnHover: true }}
-                            />
-                        </PopupMenu.Button>
-                        {this.renderModifyEventPopUpBody()}
-                    </PopupMenu>
-
-                    <Button
-                        dataTestId="button__modify-recipients"
-                        icon={<Icon name="ic-users" color={null} />}
-                        variant={ButtonVariantType.borderLess}
-                        style={ButtonStyleType.neutral}
-                        ariaLabel="Modify Recipients"
-                        onClick={this.showModifyModal}
-                        showAriaLabelInTippy
-                    />
-                </div>
-            )
-        }
     }
 
     onChangePipelineCheckbox = (e) => {
@@ -513,11 +441,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderPipelineList = () => (
         <table className="flexbox-col flex-grow-1">
-            <tbody>
+            <thead>
                 <tr className="pipeline-list__header">
-                    <th className="pipeline-list__checkbox">
+                    <th className="pipeline-list__checkbox flex-grow-1">
                         <Checkbox
-                            rootClassName=""
+                            rootClassName="mb-0 flex"
                             isChecked={this.state.headerCheckbox.isChecked}
                             value={this.state.headerCheckbox.value}
                             onChange={this.onChangePipelineCheckbox}
@@ -526,14 +454,18 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             <span />
                         </Checkbox>
                     </th>
-                    <th className="pipeline-list__pipeline-name fw-6">Resource</th>
+                    <th className="pipeline-list__pipeline-name fw-6 flex left dc__gap-8">
+                        <span className="icon-dim-16" />
+                        Resource
+                    </th>
                     <th className="pipeline-list__app-name fw-6">Application Name</th>
-                    <th className="pipeline-list__type fw-6">Type</th>
                     <th className="pipeline-list__environment fw-6">Env/Branch</th>
                     <th className="pipeline-list__stages fw-6">Events</th>
                     <th className="pipeline-list__recipients fw-6">Recipients</th>
                     <th className="pipeline-list__hover " />
                 </tr>
+            </thead>
+            <tbody>
                 {this.state.notificationList.map((row) => {
                     const _isCi = row.branch && row.pipelineType === NotificationPipelineType.CI
                     let _isWebhookCi
@@ -545,6 +477,11 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                             _isWebhookCi = false
                         }
                     }
+                    const isBaseConfig =
+                        row.appliedFilters.environment?.length ||
+                        row.appliedFilters.application.length ||
+                        row.appliedFilters.project?.length ||
+                        row.appliedFilters.cluster?.length
                     return (
                         <tr
                             key={row.id}
@@ -564,15 +501,24 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                     <span />
                                 </Checkbox>
                             </td>
-                            <td className="pipeline-list__pipeline-name">
-                                {row.pipelineName ? row.pipelineName : ''}
-                                {row.appliedFilters.environment?.length ||
-                                row.appliedFilters.application.length ||
-                                row.appliedFilters.project?.length ||
-                                row.appliedFilters.cluster?.length ? (
-                                    <>
-                                        <i>{row.pipelineType === NotificationPipelineType.BASE ? 'Base configuration matching:' : 'All existing and future deployment pipelines matching:'}</i>
-                                        <div className='flex left dc__gap-6'>
+                            <td className="pipeline-list__pipeline-name ">
+                                <div className="flex left dc__gap-8">
+                                    {!isBaseConfig && renderPipelineTypeIcon(row)}
+                                    {row.pipelineName ? row.pipelineName : ''}
+                                </div>
+
+                                {isBaseConfig ? (
+                                    <div className="flexbox-col dc__gap-4">
+                                        <div className="flex left dc__gap-8">
+                                            {renderPipelineTypeIcon(row)}
+
+                                            <i>
+                                                {row.pipelineType === NotificationPipelineType.BASE
+                                                    ? 'Base configuration matching:'
+                                                    : `All existing and future ${row.pipelineType === NotificationPipelineType.CI ? 'build' : 'deployment'}  pipelines matching:`}
+                                            </i>
+                                        </div>
+                                        <div className="flex left dc__gap-6">
                                             {row.appliedFilters.project.map((element) => (
                                                 <Chip
                                                     data-testid={`${row.pipelineType}-${element.name}`}
@@ -602,11 +548,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                                 />
                                             ))}
                                         </div>
-                                    </>
+                                    </div>
                                 ) : null}
                             </td>
                             <td className="pipeline-list__app-name">{row?.appName}</td>
-                            <td className="pipeline-list__type">{renderPipelineTypeIcon(row)}</td>
                             <td className="pipeline-list__environment">
                                 {_isCi && (
                                     <span className="flex left">
@@ -674,7 +619,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
                                     {row.imageApproval ? (
                                         <Icon
-                                            name="ic-image-approve"
+                                            name="ic-rocket-launch"
                                             color={null}
                                             tooltipProps={{
                                                 content: 'Deployment Approval',
@@ -687,7 +632,7 @@ export class NotificationTab extends Component<any, NotificationTabState> {
                                 </div>
                             </td>
                             <td className="pipeline-list__recipients">
-                                <div className="flexbox-col dc__gap-4">
+                                <div className="dc__devtron-tag__container flex left dc__gap-4 flex-wrap">
                                     {row.providers.map((p) => (
                                         <Chip
                                             data-testid={`recipient-${p.configId}`}
@@ -735,17 +680,10 @@ export class NotificationTab extends Component<any, NotificationTabState> {
 
     renderBody = () => (
         <div className="flexbox-col flex-grow-1 dc__gap-16">
-            <Button
-                variant={ButtonVariantType.primary}
-                text="Add New"
-                size={ComponentSizeType.medium}
-                onClick={this.createNewNotification}
-                dataTestId="delete-notification-button"
-                startIcon={<Icon name="ic-add" color={null} />}
-            />
-            {this.renderBulkOptions()}
-            {this.renderPipelineList()}
-            {this.renderPagination()}
+            <div className="flexbox-col flex-grow-1">
+                {this.renderPipelineList()}
+                {this.renderPagination()}
+            </div>
         </div>
     )
 
@@ -792,11 +730,25 @@ export class NotificationTab extends Component<any, NotificationTabState> {
             )
         }
         return (
-            <div className="flexbox-col flex-grow-1 p-16 dc__gap-16 bg__primary">
+            <div className="flexbox-col flex-grow-1 p-16 dc__gap-16 bg__primary" ref={this.bulkMultiSelectWidgetRef}>
                 {this.renderHostErrorMessage()}
                 {this.renderBody()}
                 {this.state.showDeleteDialog && this.renderDeleteDialog()}
                 {this.renderModifyRecipients()}
+                {this.state.headerCheckbox.isChecked && (
+                    <BulkMultiSelectTagWidget
+                        parentRef={this.bulkMultiSelectWidgetRef}
+                        selectedIdentifiersCount={this.state.notificationList.filter((row) => row.isSelected).length}
+                        showDeleteModal={this.showDeleteModal}
+                        events={this.state.events}
+                        applyModifyEvents={this.applyModifyEvents}
+                        onChangeCheckboxHandler={this.onChangeCheckboxHandler}
+                        selectedNotificationList={this.state.selectedNotificationList}
+                        onOpenEditNotificationMenu={this.onOpenEditNotificationMenu}
+                        showModifyModal={this.showModifyModal}
+                        toggleAllNotification={this.toggleAllNotification}
+                    />
+                )}
             </div>
         )
     }

@@ -313,7 +313,6 @@ export interface NotificationTabState {
     deleting: boolean
     confirmation: boolean
     singleDeletedId: number
-    disableEdit: boolean
     selectedNotificationList: NotificationConfiguration[]
 }
 
@@ -449,4 +448,25 @@ export interface ModifyRecipientPopUpType extends Pick<NotificationTabState, 'se
     events: NotificationTabEvents
     applyModifyEvents: () => void
     onChangeCheckboxHandler: (e, value) => () => void
+}
+
+export interface NotificationsProps extends RouteComponentProps<{}> {
+    isSuperAdmin: boolean
+}
+
+export interface NotificationsState {
+    disableEdit: boolean
+}
+
+export interface BulkMultiSelectTagWidgetType {
+    parentRef: React.RefObject<HTMLDivElement>
+    selectedIdentifiersCount: number
+    showDeleteModal: () => void
+    events: NotificationTabEvents
+    applyModifyEvents: () => void
+    onChangeCheckboxHandler: (e, value) => () => void
+    selectedNotificationList: NotificationConfiguration[]
+    onOpenEditNotificationMenu: () => void
+    showModifyModal: () => void
+    toggleAllNotification: () => void
 }

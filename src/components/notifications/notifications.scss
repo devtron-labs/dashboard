@@ -54,14 +54,24 @@
     color: var(--N500);
     text-transform: capitalize;
     display: table-row;
+
+    th {
+        padding: 10px;
+        vertical-align: left;
+    }
+}
+
+thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
     box-shadow: inset 0 -1px 0 0 var(--N200);
-    padding: 10px 0 16px 0;
+    background-color: var(--bg-primary);
 }
 
 .pipeline-list__checkbox {
     width: 24px;
     padding: 10px;
-    padding-top: 15px;
 }
 
 .pipeline-list__pipeline-name {
@@ -125,8 +135,8 @@
 }
 
 
-.configuration-drawer{
-    .webhook-config-modal{
+.configuration-drawer {
+    .webhook-config-modal {
         display: grid;
         grid-template-columns: 1fr 280px;
     }
